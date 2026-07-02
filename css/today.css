@@ -1,0 +1,112 @@
+/* css/today.css — 今日任務 (Today Mission) component. BEM + RWD.
+   Reuses tokens from tokens.css. Does not touch Hero styles. */
+
+.today-card {
+  background-color: #ffffff;
+  border: 1px solid #e7ebe9;
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: 0 10px 30px rgba(26, 74, 60, 0.08);
+}
+
+.today-card__title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2a26;
+}
+
+.today-card__list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.today-card__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background-color: #f6f8f7;
+}
+
+.today-card__item-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: #e7f2ec;
+  font-size: 15px;
+}
+
+.today-card__item-label {
+  flex: 0 0 auto;
+  color: #5c6b64;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.today-card__item-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  color: #1f2a26;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.today-card__progress {
+  padding-top: 4px;
+}
+
+.today-card__progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.today-card__progress-pct {
+  color: #1a4a3c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.today-card__progressbar {
+  height: 12px;
+  border-radius: 999px;
+  background-color: #e7ebe9;
+  overflow: hidden;
+}
+
+.today-card__progressfill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: #1a4a3c;
+  transition: width 0.4s ease;
+}
+
+@media (max-width: 560px) {
+  .today-card { padding: 20px 18px; }
+
+  .today-card__item {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+
+  .today-card__item-value {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today-card__progressfill { transition: none; }
+}

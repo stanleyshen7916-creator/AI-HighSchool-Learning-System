@@ -1,0 +1,62 @@
+/* css/tokens.css — design tokens (Apple + Notion + Duolingo).
+   Custom properties are used only in standard declarations
+   (never inside gradients / calc pairs) to satisfy the HTML5 validator. */
+:root {
+  --ink: #1a4a3c;          /* primary ink-green (巧巧老師 blazer) */
+  --ink-strong: #143b30;
+  --ink-soft: #e7f2ec;
+  --ink-line: #cfe4d8;
+
+  --text: #1f2a26;
+  --text-muted: #5c6b64;
+  --bg: #f6f8f7;
+  --card: #ffffff;
+  --line: #e7ebe9;
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 10px 30px rgba(26, 74, 60, 0.08);
+  --shadow-btn: 0 6px 16px rgba(26, 74, 60, 0.20);
+
+  --space-1: 6px;
+  --space-2: 12px;
+  --space-3: 18px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+    "Noto Sans TC", "Microsoft JhengHei", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background-color: var(--bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Scroll flow & safety (UX_001 polish) --------------------------- */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Media and vector art never force horizontal overflow. */
+img,
+svg {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
