@@ -1,38 +1,41 @@
-/* js/app.js — bootstraps the Home Hero (Task T001). */
+/* js/app.js — bootstraps the Home v1.0 page inside the shared AppShell. */
 window.AHS = window.AHS || {};
 (function () {
   "use strict";
 
-  function init() {
-    var root = document.getElementById("hero-root");
-    if (!root) { return; }
+  function slot(area, node) {
+    var wrap = AHS.UI.el("div", { class: "home__" + area });
+    wrap.appendChild(node);
+    return wrap;
+  }
 
+  function buildHome() {
     var hero = AHS.HeroCard.create(AHS.Mock, {
-      onStart: function () { /* Mock event — no navigation in this task. */ },
-      onContinue: function () { /* Mock event — no navigation in this task. */ }
+      onStart: function () { /* Mock event — no real navigation yet. */ },
+      onContinue: function () { /* Mock event — no real navigation yet. */ }
     });
 
-    AHS.UI.mount(root, hero);
+    return AHS.UI.el("div", { class: "home" }, [
+      slot("hero", hero),
+      slot("today", AHS.TodayMission.create()),
+      slot("recent", AHS.HomeRecentMaterials.create()),
+      slot("tutor", AHS.AiTutorHomeCard.create()),
+      slot("stats", AHS.StudyStats.create()),
+      slot("plan", AHS.StudyPlan.create()),
+      slot("badges", AHS.AchievementBadges.create())
+    ]);
+  }
 
-    var todayRoot = document.getElementById("today-root");
-    if (todayRoot && AHS.TodayMission) {
-      AHS.UI.mount(todayRoot, AHS.TodayMission.create());
-    }
+  function init() {
+    var app = document.getElementById("app");
+    if (!app) { return; }
 
-    var resumeRoot = document.getElementById("resume-root");
-    if (resumeRoot && AHS.ResumeLearning) {
-      AHS.UI.mount(resumeRoot, AHS.ResumeLearning.create());
-    }
+    var shell = AHS.AppShell.create(AHS.Mock, {
+      onNavigate: function () { /* Mock navigation — single-page prototype. */ }
+    });
 
-    var recentRoot = document.getElementById("recent-materials-root");
-    if (recentRoot && AHS.HomeRecentMaterials) {
-      AHS.UI.mount(recentRoot, AHS.HomeRecentMaterials.create());
-    }
-
-    var bottomNavRoot = document.getElementById("bottom-nav-root");
-    if (bottomNavRoot && AHS.HomeBottomNavigation) {
-      AHS.UI.mount(bottomNavRoot, AHS.HomeBottomNavigation.create());
-    }
+    AHS.UI.mount(app, shell.root);
+    shell.main.appendChild(buildHome());
   }
 
   if (document.readyState === "loading") {
