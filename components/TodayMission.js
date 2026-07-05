@@ -1,52 +1,57 @@
-/* components/TodayMission.js — 今日任務 (Today Mission) component.
-   Shows 今日教材 / 今日考卷 / 今日完成率 (all Mock). PascalCase component
-   under window.AHS. Self-contained Mock so no other file is modified. */
+/* components/TodayMission.js — 今日任務 (Today Mission) v1.0.
+   Checklist of today's tasks: subject chip + unit + done/total counter,
+   each toggleable (Mock). PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.TodayMission = (function () {
   "use strict";
   var el = AHS.UI.el;
 
-  /* Mock data for this task (no API / backend). */
-  var MOCK = {
-    title: "今日任務",
-    items: [
-      { icon: "📘", label: "今日教材", value: "數學《三角函數》· 課本" },
-      { icon: "📝", label: "今日考卷", value: "三角函數 隨堂測驗 · 4 題" }
-    ],
-    completion: { label: "今日完成率", percent: 40 }
-  };
-
-  function itemRow(item) {
-    return el("li", { class: "today-card__item" }, [
-      el("span", { class: "today-card__item-icon", "aria-hidden": "true", text: item.icon }),
-      el("span", { class: "today-card__item-label", text: item.label }),
-      el("span", { class: "today-card__item-value", text: item.value })
+  function taskRow(item) {
+    var subj = AHS.Subjects[item.subject];
+    var check = el("button", {
+      type: "button",
+      class: "today-task__check",
+      "aria-pressed": "false",
+      "aria-label": "標記完成：" + subj.name + " " + item.unit
+    });
+    var row = el("li", { class: "today-task" }, [
+      check,
+      el("span", {
+        class: "chip",
+        style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
+      }, [el("span", { text: subj.name })]),
+      el("span", { class: "today-task__unit", text: item.unit }),
+      el("span", { class: "today-task__count", text: item.done + "/" + item.total })
     ]);
+    check.addEventListener("click", function () {
+      var on = check.getAttribute("aria-pressed") === "true";
+      check.setAttribute("aria-pressed", on ? "false" : "true");
+      row.classList.toggle("is-done", !on);
+    });
+    return row;
   }
 
-  /* create(model?) — model defaults to the embedded Mock. */
+  /* create(model?) — model defaults to AHS.Mock.todayTasks. */
   function create(model) {
-    var data = model || MOCK;
-    var pct = Math.max(0, Math.min(100, data.completion.percent));
+    var data = model || AHS.Mock.todayTasks;
 
-    return el("section", { class: "today-card", "aria-label": data.title }, [
-      el("h2", { class: "today-card__title", text: data.title }),
-      el("ul", { class: "today-card__list" }, data.items.map(itemRow)),
-      el("div", { class: "today-card__progress" }, [
-        el("div", { class: "today-card__progress-head" }, [
-          el("span", { class: "today-card__item-label", text: data.completion.label }),
-          el("span", { class: "today-card__progress-pct", text: pct + "%" })
-        ]),
-        el("div", {
-          class: "today-card__progressbar",
-          role: "progressbar",
-          "aria-valuenow": String(pct),
-          "aria-valuemin": "0",
-          "aria-valuemax": "100"
-        }, [
-          el("div", { class: "today-card__progressfill", style: "width:" + pct + "%" })
+    var addBtn = el("button", {
+      type: "button", class: "today-card__add"
+    }, [
+      el("span", { class: "today-card__add-icon", html: AHS.Icons.plus() }),
+      el("span", { text: "新增任務" })
+    ]);
+
+    return el("section", { class: "card today-card", "aria-label": data.title }, [
+      el("div", { class: "card__head" }, [
+        el("h2", { class: "card__title", text: data.title }),
+        el("a", { class: "card__more", href: "#" }, [
+          el("span", { text: "查看全部" }),
+          el("span", { html: AHS.Icons.chevronRight() })
         ])
-      ])
+      ]),
+      el("ul", { class: "today-card__list" }, data.items.map(taskRow)),
+      addBtn
     ]);
   }
 
