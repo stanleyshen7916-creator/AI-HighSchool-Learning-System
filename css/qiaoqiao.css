@@ -1,45 +1,55 @@
 /* css/qiaoqiao.css — shared sizing utilities for the AI 巧巧老師 asset
-   library (js/Qiaoqiao.js). Pages should use these classes instead of
-   inventing their own avatar dimensions, so sizing stays consistent
-   across Home / AI Tutor / Dashboard / etc. */
+   library (js/Qiaoqiao.js). Pages use these classes instead of inventing
+   their own avatar dimensions, so sizing stays consistent across pages.
+   The character is served as <img> (approved official illustration). */
 
 .qiaoqiao-bust {
   display: inline-block;
   border-radius: var(--radius-pill, 999px);
   overflow: hidden;
-  background-color: var(--ink-soft, #e7f2ec);
+  background-color: #f1ecf8;
   flex: 0 0 auto;
 }
-
-.qiaoqiao-bust svg {
+.qiaoqiao-bust svg,
+.qiaoqiao-bust .qiaoqiao-img {
   display: block;
   width: 100%;
   height: 100%;
 }
+/* portrait busts: fill the round frame, biased toward the face */
+.qiaoqiao-img--bust {
+  object-fit: cover;
+  object-position: center 22%;
+}
 
-.qiaoqiao-bust--sm { width: 40px; height: 43px; }
-.qiaoqiao-bust--md { width: 64px; height: 69px; }
-.qiaoqiao-bust--lg { width: 112px; height: 121px; }
-.qiaoqiao-bust--xl { width: 160px; height: 173px; }
+.qiaoqiao-bust--sm { width: 40px; height: 40px; }
+.qiaoqiao-bust--md { width: 64px; height: 64px; }
+.qiaoqiao-bust--lg { width: 112px; height: 112px; }
+.qiaoqiao-bust--xl { width: 160px; height: 160px; }
 
 .qiaoqiao-full {
   display: inline-block;
   flex: 0 0 auto;
 }
-
-.qiaoqiao-full svg {
+.qiaoqiao-full svg,
+.qiaoqiao-full .qiaoqiao-img {
   display: block;
   width: 100%;
   height: 100%;
 }
+/* full poses: show the whole figure (no crop); wide blackboard letterboxes */
+.qiaoqiao-img--full {
+  object-fit: contain;
+  object-position: center bottom;
+}
 
 .qiaoqiao-full--sm { width: 96px; height: 168px; }
-.qiaoqiao-full--md { width: 140px; height: 245px; }
-.qiaoqiao-full--lg { width: 200px; height: 350px; }
+.qiaoqiao-full--md { width: 150px; height: 245px; }
+.qiaoqiao-full--lg { width: 210px; height: 350px; }
 
 @media (max-width: 560px) {
-  .qiaoqiao-bust--lg { width: 88px; height: 95px; }
-  .qiaoqiao-bust--xl { width: 120px; height: 130px; }
-  .qiaoqiao-full--md { width: 112px; height: 196px; }
-  .qiaoqiao-full--lg { width: 150px; height: 263px; }
+  .qiaoqiao-bust--lg { width: 88px; height: 88px; }
+  .qiaoqiao-bust--xl { width: 120px; height: 120px; }
+  .qiaoqiao-full--md { width: 120px; height: 196px; }
+  .qiaoqiao-full--lg { width: 160px; height: 263px; }
 }

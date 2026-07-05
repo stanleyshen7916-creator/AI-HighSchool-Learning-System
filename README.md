@@ -5,7 +5,7 @@
 
 ## 進度：全部頁面完成 ✔
 
-- [x] 巧巧老師 SVG 素材庫（表情 10 款 + 姿勢 6 款）
+- [x] 巧巧老師素材庫（官方插畫，表情 10 款 + 姿勢 6 款）
 - [x] 首頁 Home
 - [x] 教材中心 Material Center
 - [x] 測驗中心 Quiz Center
@@ -45,7 +45,7 @@ js/
   ui.js             DOM helper（AHS.UI）
   Icons.js          共用 inline SVG 圖示 + 九科 metadata（AHS.Icons / AHS.Subjects）
   mock-data.js      全站 Mock Data（AHS.Mock）
-  Qiaoqiao.js       巧巧老師素材庫（AHS.Qiaoqiao：bust ×10、full ×6）
+  Qiaoqiao.js       巧巧老師素材庫（AHS.Qiaoqiao：bust ×10、full ×6，回傳官方插畫 <img>）
   HeroCard.js       首頁 Hero
   app.js / app-materials.js / app-quiz.js / app-wrongbook.js /
   app-summary.js / app-learning.js / app-tutor.js   各頁啟動
@@ -57,6 +57,7 @@ components/
   SummaryCenter.js / MyLearning.js / AiTutor.js         各頁主元件
   QiaoqiaoGallery.js 素材庫頁面（QA）
 assets/favicon.svg
+assets/qiaoqiao/   巧巧老師官方插畫素材（10 表情 + 6 姿勢 PNG，透明底）
 ```
 
 ## 技術約束
