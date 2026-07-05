@@ -7,6 +7,18 @@ AHS.AppShell = (function () {
   "use strict";
   var el = AHS.UI.el;
 
+  /* Pages that actually exist as standalone files. Nav items pointing here
+     render as real links; the rest stay mock (single-page prototype). */
+  var ROUTES = {
+    home: "index.html",
+    materials: "materials.html",
+    quiz: "quiz.html",
+    wrongbook: "wrongbook.html",
+    summary: "summary.html",
+    learning: "learning.html",
+    tutor: "tutor.html"
+  };
+
   function topbar(model) {
     var search = el("div", { class: "topbar__search" }, [
       el("span", { class: "topbar__search-icon", html: AHS.Icons.search() }),
@@ -51,21 +63,30 @@ AHS.AppShell = (function () {
     ]);
   }
 
-  function sidebar(nav, onNavigate) {
+  function sidebar(nav, active, onNavigate) {
     var list = el("ul", { class: "sidebar__list" });
     nav.items.forEach(function (item) {
-      var isActive = item.id === nav.active;
-      var btn = el("button", {
-        type: "button",
-        class: "sidebar__item" + (isActive ? " is-active" : ""),
-        "data-id": item.id,
-        "aria-current": isActive ? "page" : null
-      }, [
+      var isActive = item.id === active;
+      var route = ROUTES[item.id];
+      var inner = [
         el("span", { class: "sidebar__icon", html: AHS.Icons[item.icon]() }),
         el("span", { class: "sidebar__label", text: item.label })
-      ]);
-      btn.addEventListener("click", function () { onNavigate(item); });
-      list.appendChild(el("li", {}, [btn]));
+      ];
+      var node;
+      if (route && !isActive) {
+        node = el("a", {
+          class: "sidebar__item", href: route, "data-id": item.id
+        }, inner);
+      } else {
+        node = el("button", {
+          type: "button",
+          class: "sidebar__item" + (isActive ? " is-active" : ""),
+          "data-id": item.id,
+          "aria-current": isActive ? "page" : null
+        }, inner);
+        node.addEventListener("click", function () { onNavigate(item); });
+      }
+      list.appendChild(el("li", {}, [node]));
     });
 
     return el("aside", { class: "sidebar", "aria-label": "主要導覽" }, [
@@ -83,31 +104,30 @@ AHS.AppShell = (function () {
     ]);
   }
 
-  function bottomNav(nav, onNavigate) {
+  function bottomNav(nav, active, onNavigate) {
     var inner = el("div", { class: "bottom-nav__inner" });
-    var buttons = [];
     nav.bottomItems.forEach(function (item) {
-      var isActive = item.id === nav.active;
-      var btn = el("button", {
-        type: "button",
-        class: "bottom-nav__item" + (isActive ? " is-active" : ""),
-        "data-id": item.id,
-        "aria-current": isActive ? "page" : null
-      }, [
+      var isActive = item.id === active;
+      var route = ROUTES[item.id];
+      var content = [
         el("span", { class: "bottom-nav__icon", html: AHS.Icons[item.icon]() }),
         el("span", { class: "bottom-nav__label", text: item.label })
-      ]);
-      btn.addEventListener("click", function () {
-        buttons.forEach(function (b) {
-          b.classList.remove("is-active");
-          b.removeAttribute("aria-current");
-        });
-        btn.classList.add("is-active");
-        btn.setAttribute("aria-current", "page");
-        onNavigate(item);
-      });
-      buttons.push(btn);
-      inner.appendChild(btn);
+      ];
+      var node;
+      if (route && !isActive) {
+        node = el("a", {
+          class: "bottom-nav__item", href: route, "data-id": item.id
+        }, content);
+      } else {
+        node = el("button", {
+          type: "button",
+          class: "bottom-nav__item" + (isActive ? " is-active" : ""),
+          "data-id": item.id,
+          "aria-current": isActive ? "page" : null
+        }, content);
+        node.addEventListener("click", function () { onNavigate(item); });
+      }
+      inner.appendChild(node);
     });
     return el("nav", {
       class: "bottom-nav", role: "navigation", "aria-label": "底部導覽"
@@ -115,11 +135,13 @@ AHS.AppShell = (function () {
   }
 
   /* create(model, options)
+     options.active — active nav id (defaults to model.nav.active).
      options.onNavigate(item) — mock navigation callback (optional).
      Returns { root, main } — caller mounts page content into `main`. */
   function create(model, options) {
     options = options || {};
     var onNavigate = options.onNavigate || function () {};
+    var active = options.active || model.nav.active;
     var nav = model.nav;
 
     var main = el("main", { class: "shell__main", id: "shell-main" });
@@ -127,10 +149,10 @@ AHS.AppShell = (function () {
     var root = el("div", { class: "shell" }, [
       topbar(model),
       el("div", { class: "shell__body" }, [
-        sidebar(nav, onNavigate),
+        sidebar(nav, active, onNavigate),
         main
       ]),
-      bottomNav(nav, onNavigate)
+      bottomNav(nav, active, onNavigate)
     ]);
 
     return { root: root, main: main };
