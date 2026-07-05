@@ -1,35 +1,48 @@
-# AI High School · UX Prototype Preview（Prototype v0.1）
+# AI High School Learning System — Prototype
 
-Task **P001_Prototype_Preview** — 整合目前 Home，可直接預覽的 UX Prototype。
+高中生 AI 學習平台原型。純 HTML5 / CSS3 / Vanilla JavaScript，全部 Mock Data，
+無後端 / 無 API / 無 build 工具，相容 file:// 與 GitHub Pages。
 
-## 執行方式
-**雙擊 `index.html`** 即可執行。無需 Node.js、npm、Live Server 或任何伺服器；
-無網路請求、無建置工具。
+## 目前進度
 
-## 整合內容（目前 Home，由上而下）
-1. Home Hero（AI 巧巧老師、問候、今日建議、開始／繼續學習）
-2. Today Mission（今日教材／今日考卷／今日完成率）
-3. Resume Learning（最近科目／章節／學習進度／繼續學習）
-4. Recent Materials（最近教材卡，可點擊）
-5. Bottom Navigation（首頁／教材／考卷／錯題本／我的，Active 可切換）
+- [x] 巧巧老師 SVG 素材庫（表情 10 款 + 姿勢 6 款）
+- [x] 首頁 Home v1.0（App Shell + Hero + 今日任務 + 最近教材 + AI 巧巧老師 + 學習統計 + 學習計畫 + 成就徽章）
+- [ ] 教材中心 / 測驗中心 / 錯題本 / 總結中心 / 我的學習 / 儀表板 / AI Tutor
 
-所有互動皆為 Mock 事件；全部使用 Mock Data；未新增任何功能。
+## 目錄結構
 
-## 已驗證裝置（RWD）
-- iPhone Safari（直向；卡片單欄、按鈕滿版、底部導覽固定）
-- Android Chrome（同上）
-- iPad（置中、最大寬度 720px 版心）
-- Desktop（置中版心、最近教材兩欄 grid）
+```
+index.html                     首頁（進入點）
+qiaoqiao-gallery.html          巧巧老師素材庫（QA 用，不連結至產品導覽）
+css/
+  tokens.css                   設計 token（紫色系 + 九科色票）
+  shell.css                    App Shell（頂欄 / 側邊欄 / 底部導覽）
+  home.css                     首頁版面 + 共用元件（card / chip / progressbar）
+  qiaoqiao.css                 巧巧老師素材尺寸工具
+  qiaoqiao-gallery.css         素材庫頁面版面
+js/
+  ui.js                        DOM helper（AHS.UI）
+  Icons.js                     共用 inline SVG 圖示 + 九科 metadata
+  mock-data.js                 全站 Mock Data（AHS.Mock）
+  Qiaoqiao.js                  巧巧老師素材庫（AHS.Qiaoqiao.bust / .full）
+  HeroCard.js                  首頁 Hero
+  app.js                       首頁啟動
+components/
+  AppShell.js                  共用外框
+  TodayMission.js              今日任務
+  HomeRecentMaterials.js       最近教材
+  AiTutorHomeCard.js           AI 巧巧老師卡
+  StudyStats.js                學習統計
+  StudyPlan.js                 學習計畫
+  AchievementBadges.js         成就徽章
+  QiaoqiaoGallery.js           素材庫頁面（QA）
+assets/
+  favicon.svg
+```
 
-無橫向捲動、元件無重疊、內容不超出畫面。
+## 技術約束
 
-## 技術
-- 純 HTML5（Semantic）／CSS3（BEM）／ES5+ JavaScript（camelCase）；元件 PascalCase。
-- 共用 window.AHS，依序 <script> 載入；無框架、無 ES modules、無建置。
-
-## 檔案
-index.html
-assets/     favicon.svg
-css/        tokens.css, hero.css, today.css, resume.css, recent-materials.css, bottom-nav.css
-js/         ui.js, mock-data.js, HeroCard.js, app.js
-components/ TodayMission.js, ResumeLearning.js, HomeRecentMaterials.js, HomeBottomNavigation.js
+- 不使用 React / Vue / Node / npm / server / build tools
+- 所有 JS 共用 `window.AHS` 命名空間，以順序 `<script>` 載入
+- CSS 採 BEM 命名；JS 採 camelCase；元件採 PascalCase
+- Console Error = 0；html5validator EXIT 0

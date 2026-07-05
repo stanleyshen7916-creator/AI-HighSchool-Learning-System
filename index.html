@@ -3,34 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#1a4a3c">
+  <meta name="theme-color" content="#7c5cff">
   <meta name="color-scheme" content="light">
-  <title>AI 高中學習系統 · Prototype v0.1</title>
+  <title>AI 高中學習系統 · 首頁</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/hero.css">
-  <link rel="stylesheet" href="css/today.css">
-  <link rel="stylesheet" href="css/resume.css">
-  <link rel="stylesheet" href="css/recent-materials.css">
-  <link rel="stylesheet" href="css/bottom-nav.css">
+  <link rel="stylesheet" href="css/qiaoqiao.css">
+  <link rel="stylesheet" href="css/shell.css">
+  <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
-  <main class="page">
-    <section id="hero-root" aria-label="首頁 Hero"></section>
-    <section id="today-root"></section>
-    <section id="resume-root"></section>
-    <section id="recent-materials-root"></section>
-  </main>
-  <section id="bottom-nav-root"></section>
+  <div id="app"></div>
 
   <!-- Ordered scripts sharing the window.AHS namespace (no modules, no build). -->
   <script src="js/ui.js"></script>
+  <script src="js/Icons.js"></script>
   <script src="js/mock-data.js"></script>
+  <script src="js/Qiaoqiao.js"></script>
+  <script src="components/AppShell.js"></script>
   <script src="js/HeroCard.js"></script>
   <script src="components/TodayMission.js"></script>
-  <script src="components/ResumeLearning.js"></script>
   <script src="components/HomeRecentMaterials.js"></script>
-  <script src="components/HomeBottomNavigation.js"></script>
+  <script src="components/AiTutorHomeCard.js"></script>
+  <script src="components/StudyStats.js"></script>
+  <script src="components/StudyPlan.js"></script>
+  <script src="components/AchievementBadges.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
