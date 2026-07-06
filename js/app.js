@@ -3,27 +3,34 @@ window.AHS = window.AHS || {};
 (function () {
   "use strict";
 
-  function slot(area, node) {
-    var wrap = AHS.UI.el("div", { class: "home__" + area });
-    wrap.appendChild(node);
-    return wrap;
-  }
-
   function buildHome() {
     var hero = AHS.HeroCard.create(AHS.Mock, {
       onStart: function () { /* Mock event — no real navigation yet. */ },
       onContinue: function () { /* Mock event — no real navigation yet. */ }
     });
 
-    return AHS.UI.el("div", { class: "home" }, [
-      slot("hero", hero),
-      slot("today", AHS.TodayMission.create()),
-      slot("recent", AHS.HomeRecentMaterials.create()),
-      slot("tutor", AHS.AiTutorHomeCard.create()),
-      slot("stats", AHS.StudyStats.create()),
-      slot("plan", AHS.StudyPlan.create()),
-      slot("badges", AHS.AchievementBadges.create())
+    var el = AHS.UI.el;
+
+    /* Main column (left): hero, recent materials, then 學習統計 | 學習計畫
+       side by side. Right rail: 今日任務, AI 巧巧老師, 成就勳章.
+       Two independent vertical stacks — matches the approved mockup and
+       keeps card heights from coupling across columns. */
+    var main = el("div", { class: "home__main" }, [
+      hero,
+      AHS.HomeRecentMaterials.create(),
+      el("div", { class: "home__statsplan" }, [
+        AHS.StudyStats.create(),
+        AHS.StudyPlan.create()
+      ])
     ]);
+
+    var rail = el("div", { class: "home__rail" }, [
+      AHS.TodayMission.create(),
+      AHS.AiTutorHomeCard.create(),
+      AHS.AchievementBadges.create()
+    ]);
+
+    return el("div", { class: "home" }, [main, rail]);
   }
 
   function init() {

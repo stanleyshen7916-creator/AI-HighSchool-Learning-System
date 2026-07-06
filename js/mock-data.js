@@ -464,6 +464,95 @@ AHS.Mock = {
     ]
   },
 
+  dashboard: {
+    title: "學習儀表板",
+    subtitle: "掌握學習狀況，讓進步看得見！",
+    stats: [
+      { icon: "clock", label: "總學習時間", value: "128.6", unit: "小時", delta: "較上週 +12.4 小時", tone: "#7c5cff" },
+      { icon: "check", label: "完成題數", value: "2,540", unit: "題", delta: "較上週 +320 題", tone: "#3b82f6" },
+      { icon: "target", label: "正確率", value: "78.6", unit: "%", delta: "較上週 +6.3%", tone: "#22b573" },
+      { icon: "star", label: "連續學習天數", value: "46", unit: "天", delta: "累計最佳 46 天", tone: "#f59e0b" },
+      { icon: "award", label: "總積分", value: "14,080", unit: "分", delta: "較上週 +256 分", tone: "#7c5cff" }
+    ],
+    trend: {
+      range: "近 7 天",
+      hoursMax: 30,
+      days: [
+        { label: "5/12 一", hours: 14.2, acc: 72 },
+        { label: "5/13 二", hours: 16.8, acc: 74 },
+        { label: "5/14 三", hours: 18.6, acc: 77 },
+        { label: "5/15", hours: 15.3, acc: 75 },
+        { label: "5/16", hours: 17.9, acc: 78 },
+        { label: "5/17 六", hours: 20.4, acc: 80 },
+        { label: "5/18 日", hours: 25.4, acc: 82 }
+      ]
+    },
+    timeDist: {
+      total: "128.6", unit: "小時",
+      items: [
+        { subject: "math", label: "數學", percent: 28 },
+        { subject: "english", label: "英文", percent: 20 },
+        { subject: "physics", label: "物理", percent: 15 },
+        { subject: "chemistry", label: "化學", percent: 13 },
+        { subject: "biology", label: "生物", percent: 11 },
+        { subject: "other", label: "其他", percent: 13 }
+      ]
+    },
+    progress: {
+      overall: 68,
+      items: [
+        { subject: "math", percent: 75 },
+        { subject: "english", percent: 65 },
+        { subject: "physics", percent: 60 },
+        { subject: "chemistry", percent: 70 },
+        { subject: "biology", percent: 55 },
+        { subject: "history", percent: 60 },
+        { subject: "geography", percent: 65 }
+      ]
+    },
+    knowledge: [
+      { name: "指數與對數", percent: 92 },
+      { name: "二次函數", percent: 88 },
+      { name: "力與運動", percent: 85 },
+      { name: "化學計量", percent: 82 },
+      { name: "細胞構造", percent: 78 },
+      { name: "英文閱讀理解", percent: 75 },
+      { name: "電學基礎", percent: 72 },
+      { name: "酸鹼反應", percent: 70 },
+      { name: "光合作用", percent: 68 },
+      { name: "世界大戰", percent: 65 }
+    ],
+    todayTasks: {
+      goalText: "完成 5 個任務可獲得 120 積分",
+      goalDone: 3, goalTotal: 5,
+      items: [
+        { unit: "完成數學練習：指數與對數", points: 30, done: true },
+        { unit: "閱讀英文長篇文章", points: 20, done: true },
+        { unit: "觀看物理教學影片", points: 20, done: false },
+        { unit: "完成化學章節測驗", points: 30, done: false },
+        { unit: "整理生物重點筆記", points: 20, done: false }
+      ]
+    },
+    subjectStatus: [
+      { subject: "math", percent: 75 },
+      { subject: "english", percent: 65 },
+      { subject: "physics", percent: 60 },
+      { subject: "chemistry", percent: 70 },
+      { subject: "biology", percent: 55 },
+      { subject: "history", percent: 60 },
+      { subject: "geography", percent: 65 },
+      { subject: "chinese", percent: 70 }
+    ],
+    aiTips: {
+      intro: "根據你的學習狀況，巧巧建議你：",
+      tips: [
+        "加強「二次函數」的練習，正確率可提升至 85% 以上",
+        "增加「英文閱讀」時間，每天 20 分鐘效果更佳",
+        "本週可挑戰「化學計量」進階題型，提升應試能力"
+      ]
+    }
+  },
+
   nav: {
     active: "home",
     items: [

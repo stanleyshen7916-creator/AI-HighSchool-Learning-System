@@ -9,6 +9,7 @@
   border-radius: var(--radius-xl); padding: 22px 26px;
   background-image: linear-gradient(120deg, #efeaff 0%, #f5effe 100%);
   border: 1px solid var(--brand-line);
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.10);
 }
 .sum-banner__title { margin: 0; font-size: 24px; font-weight: 800; }
 .sum-banner__subtitle { margin: 4px 0 0; font-size: 14px; color: var(--text-muted); }

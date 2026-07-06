@@ -16,7 +16,8 @@ AHS.AppShell = (function () {
     wrongbook: "wrongbook.html",
     summary: "summary.html",
     learning: "learning.html",
-    tutor: "tutor.html"
+    tutor: "tutor.html",
+    dashboard: "dashboard.html"
   };
 
   function topbar(model) {

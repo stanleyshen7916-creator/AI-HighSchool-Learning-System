@@ -21,6 +21,7 @@
   background-image: linear-gradient(120deg, #efeaff 0%, #f4effe 60%, #eee7ff 100%);
   border: 1px solid var(--brand-line);
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.10);
 }
 .quiz-banner__title { margin: 0; font-size: 24px; font-weight: 800; }
 .quiz-banner__en { margin: 2px 0 8px; font-size: 13px; font-weight: 600; color: var(--brand); letter-spacing: 0.04em; }

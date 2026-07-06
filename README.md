@@ -13,6 +13,7 @@
 - [x] 總結中心 / 學習總結 Summary Center
 - [x] 我的學習 My Learning
 - [x] AI Tutor（巧巧老師對話）
+- [x] 學習儀表板 Dashboard
 
 ## 頁面
 
@@ -25,6 +26,7 @@
 | `summary.html` | 總結中心 / 學習總結（AI 總結 + 思維導圖 + 知識樹） |
 | `learning.html` | 我的學習（總覽 + 長條圖 + 雷達圖 + 學習日曆 + 徽章） |
 | `tutor.html` | AI Tutor（巧巧老師對話，Mock 回覆） |
+| `dashboard.html` | 學習儀表板（統計卡 + 趨勢折線 + 分布甜甜圈 + 進度環 + 知識點 Top10） |
 | `qiaoqiao-gallery.html` | 巧巧老師素材庫（QA 用，不連結至產品導覽） |
 
 側邊欄與底部導覽支援分頁跳轉：七個產品頁皆為真連結，可互相切換。
