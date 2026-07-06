@@ -94,13 +94,17 @@ AHS.AppShell = (function () {
       list,
       el("div", { class: "sidebar__foot" }, [
         el("button", {
-          type: "button", class: "sidebar__item",
-          html: AHS.Icons.settings()
-        }, [el("span", { class: "sidebar__label", text: "設定" })]),
+          type: "button", class: "sidebar__item"
+        }, [
+          el("span", { class: "sidebar__icon", html: AHS.Icons.settings() }),
+          el("span", { class: "sidebar__label", text: "設定" })
+        ]),
         el("button", {
-          type: "button", class: "sidebar__item",
-          html: AHS.Icons.logout()
-        }, [el("span", { class: "sidebar__label", text: "登出" })])
+          type: "button", class: "sidebar__item"
+        }, [
+          el("span", { class: "sidebar__icon", html: AHS.Icons.logout() }),
+          el("span", { class: "sidebar__label", text: "登出" })
+        ])
       ])
     ]);
   }

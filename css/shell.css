@@ -170,6 +170,7 @@
 
 .sidebar__icon { display: flex; }
 .sidebar__icon svg { width: 20px; height: 20px; }
+.sidebar__item > svg { width: 20px; height: 20px; flex: 0 0 auto; }
 .sidebar__item:hover { background-color: var(--bg); color: var(--text); }
 
 .sidebar__item.is-active {
