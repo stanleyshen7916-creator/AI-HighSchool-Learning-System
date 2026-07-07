@@ -1,6 +1,11 @@
-/* components/TodayMission.js — 今日任務 (Today Mission) v1.0.
-   Checklist of today's tasks: subject chip + unit + done/total counter,
-   each toggleable (Mock). PascalCase component under window.AHS. */
+/* components/TodayMission.js — 今日任務 (Today Mission).
+   Checklist of today's tasks: subject chip + title + done/total counter,
+   each toggleable (Mock UI interaction only — checkbox state is not tied
+   to done/total, matching the original mock behaviour).
+   HOME-F005 Correction (PMO final decision, 2026-07-07): data model
+   finalized to { id, subject, title, done, total } — reads
+   AHS.Mock.todayTasks directly (no percentage, no AHS.Data/AHS.Utils
+   task layer). PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.TodayMission = (function () {
   "use strict";
@@ -12,7 +17,7 @@ AHS.TodayMission = (function () {
       type: "button",
       class: "today-task__check",
       "aria-pressed": "false",
-      "aria-label": "標記完成：" + subj.name + " " + item.unit
+      "aria-label": "標記完成：" + subj.name + " " + item.title
     });
     var row = el("li", { class: "today-task" }, [
       check,
@@ -20,7 +25,7 @@ AHS.TodayMission = (function () {
         class: "chip",
         style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
       }, [el("span", { text: subj.name })]),
-      el("span", { class: "today-task__unit", text: item.unit }),
+      el("span", { class: "today-task__unit", text: item.title }),
       el("span", { class: "today-task__count", text: item.done + "/" + item.total })
     ]);
     check.addEventListener("click", function () {
@@ -34,24 +39,17 @@ AHS.TodayMission = (function () {
   /* create(model?) — model defaults to AHS.Mock.todayTasks. */
   function create(model) {
     var data = model || AHS.Mock.todayTasks;
+    var items = (data && data.items) || [];
 
-    var addBtn = el("button", {
-      type: "button", class: "today-card__add"
-    }, [
-      el("span", { class: "today-card__add-icon", html: AHS.Icons.plus() }),
-      el("span", { text: "新增任務" })
-    ]);
+    var body = items.length
+      ? el("ul", { class: "today-card__list" }, items.map(taskRow))
+      : el("p", { class: "today-card__empty", text: "今天沒有安排學習任務" });
 
-    return el("section", { class: "card today-card", "aria-label": data.title }, [
+    return el("section", { class: "card today-card", "aria-label": data.title || "今日任務" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: data.title }),
-        el("a", { class: "card__more", href: "#" }, [
-          el("span", { text: "查看全部" }),
-          el("span", { html: AHS.Icons.chevronRight() })
-        ])
+        el("h2", { class: "card__title", text: data.title || "今日任務" })
       ]),
-      el("ul", { class: "today-card__list" }, data.items.map(taskRow)),
-      addBtn
+      body
     ]);
   }
 

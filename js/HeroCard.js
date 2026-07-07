@@ -50,9 +50,24 @@ AHS.HeroCard = (function () {
       el("span", { class: "hero-card__bubble-heart", html: AHS.Icons.heart() })
     ]);
 
+    var dateInfo = el("div", { class: "hero-date-info" }, [
+      el("span", { class: "hero-date" }),
+      el("span", { class: "hero-weekday" })
+    ]);
+
+    var examInfo = el("div", { class: "hero-exam-info" }, [
+      el("span", { class: "hero-exam-name" }),
+      el("span", { class: "hero-exam-days" })
+    ]);
+
+    var quoteInfo = el("p", { class: "hero-quote" });
+
     return el("section", { class: "hero-card", "aria-label": "首頁 Hero" }, [
       el("div", { class: "hero-card__body" }, [
         el("p", { class: "hero-card__greeting", text: hero.greeting }),
+        dateInfo,
+        examInfo,
+        quoteInfo,
         el("h1", { class: "hero-card__headline", text: hero.headline }),
         el("p", { class: "hero-card__reco", text: hero.recommendation }),
         el("div", { class: "hero-card__actions" }, [startBtn, continueBtn]),

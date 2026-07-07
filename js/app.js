@@ -4,10 +4,45 @@ window.AHS = window.AHS || {};
   "use strict";
 
   function buildHome() {
+    /* Sprint 1 · Task 001: 依系統時間更新問候文字，其餘 hero 內容不變。 */
+    if (AHS.Utils && typeof AHS.Utils.getGreeting === "function") {
+      AHS.Mock.hero.greeting = AHS.Utils.getGreeting();
+    }
+
     var hero = AHS.HeroCard.create(AHS.Mock, {
       onStart: function () { /* Mock event — no real navigation yet. */ },
       onContinue: function () { /* Mock event — no real navigation yet. */ }
     });
+
+    /* Sprint 1 · Task 002: 填入 Hero Card 日期／星期區塊（不修改其他元件）。 */
+    if (AHS.Utils && typeof AHS.Utils.getCurrentDate === "function") {
+      var dateInfo = AHS.Utils.getCurrentDate();
+      var dateEl = hero.querySelector(".hero-date");
+      var weekdayEl = hero.querySelector(".hero-weekday");
+      if (dateEl) { dateEl.textContent = dateInfo.date; }
+      if (weekdayEl) { weekdayEl.textContent = dateInfo.weekday; }
+    }
+
+    /* Sprint 1 · Task 003: 填入 Hero Card 下一次段考倒數區塊。
+       若 exam Data 不存在，顯示「尚未設定段考資訊」，不得產生 Console Error。 */
+    if (AHS.Utils && typeof AHS.Utils.getExamCountdown === "function") {
+      var examCountdown = AHS.Utils.getExamCountdown();
+      var examNameEl = hero.querySelector(".hero-exam-name");
+      var examDaysEl = hero.querySelector(".hero-exam-days");
+      if (examCountdown) {
+        if (examNameEl) { examNameEl.textContent = examCountdown.examName; }
+        if (examDaysEl) { examDaysEl.textContent = "倒數 " + examCountdown.remainingDays + " 天"; }
+      } else {
+        if (examNameEl) { examNameEl.textContent = "尚未設定段考資訊"; }
+        if (examDaysEl) { examDaysEl.textContent = ""; }
+      }
+    }
+
+    /* Sprint 1 · Task 004: 填入 Hero Card 今日鼓勵文字（每次初始化隨機一句）。 */
+    if (AHS.Utils && typeof AHS.Utils.getDailyQuote === "function") {
+      var quoteEl = hero.querySelector(".hero-quote");
+      if (quoteEl) { quoteEl.textContent = AHS.Utils.getDailyQuote(); }
+    }
 
     var el = AHS.UI.el;
 
@@ -27,7 +62,8 @@ window.AHS = window.AHS || {};
     var rail = el("div", { class: "home__rail" }, [
       AHS.TodayMission.create(),
       AHS.AiTutorHomeCard.create(),
-      AHS.AchievementBadges.create()
+      AHS.AchievementBadges.create(),
+      AHS.LearningTime.create()
     ]);
 
     return el("div", { class: "home" }, [main, rail]);

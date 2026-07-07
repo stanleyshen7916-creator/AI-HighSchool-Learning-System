@@ -22,9 +22,10 @@ AHS.Mock = {
   todayTasks: {
     title: "今日任務",
     items: [
-      { subject: "math", unit: "二次函數的圖形與性質", done: 0, total: 10 },
-      { subject: "english", unit: "文法練習", done: 0, total: 8 },
-      { subject: "physics", unit: "牛頓運動定律", done: 0, total: 12 }
+      { id: 1, subject: "math", title: "第三章 指數函數", done: 2, total: 5 },
+      { id: 2, subject: "english", title: "Unit 4 文法練習", done: 7, total: 10 },
+      { id: 3, subject: "physics", title: "牛頓運動定律總整理", done: 5, total: 5 },
+      { id: 4, subject: "chemistry", title: "化學反應與平衡", done: 0, total: 4 }
     ]
   },
 
@@ -572,5 +573,10 @@ AHS.Mock = {
       { id: "wrongbook", label: "錯題", icon: "wrong" },
       { id: "me", label: "我的", icon: "tutor" }
     ]
+  },
+
+  /* Sprint 1 · HOME-F006: 今日學習時間 (Learning Time). */
+  learning: {
+    todayMinutes: 85
   }
 };

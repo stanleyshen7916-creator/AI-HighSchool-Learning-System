@@ -101,6 +101,49 @@
 .hero-card__bubble-heart { position: absolute; right: 12px; bottom: 8px; color: var(--brand); }
 .hero-card__bubble-heart svg { width: 16px; height: 16px; }
 
+/* ---- Hero: date / exam countdown / daily quote (Sprint 1 · Task 002-004) */
+/* Minimal data-carrying nodes per PMO Decision (Sprint1-Task002-Clarification
+   + Future Rule). Does not alter hero layout, spacing rules, or typography
+   system. (Corrected 2026-07-07: moved here from the orphaned css/hero.css,
+   which is never linked by index.html and therefore never applied.) */
+.hero-date-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.hero-date { color: var(--text-muted); }
+.hero-weekday { color: var(--text-muted); }
+
+.hero-exam-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.hero-exam-name { color: var(--text-muted); }
+.hero-exam-days { color: var(--brand-ink); }
+
+.hero-quote {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+@media (max-width: 560px) {
+  .hero-date-info { justify-content: center; }
+  .hero-exam-info { justify-content: center; }
+}
+
 /* ---- 今日任務 -------------------------------------------------------- */
 .today-card__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 
@@ -142,6 +185,14 @@
 .today-task__unit { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 600; }
 .today-task__count { flex: 0 0 auto; font-size: 13px; font-weight: 700; color: var(--text-faint); }
 .today-task.is-done .today-task__unit { color: var(--text-faint); text-decoration: line-through; }
+
+.today-card__empty {
+  margin: 0;
+  padding: 12px 0 4px;
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+}
 
 .today-card__add {
   margin-top: 10px;
@@ -399,4 +450,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-card__btn { transition: none; }
+}
+
+/* ---- 今日學習時間 (HOME-F006) ------------------------------------------ */
+.learning-time-card__value {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--brand-ink);
 }
