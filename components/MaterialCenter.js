@@ -139,7 +139,14 @@ AHS.MaterialCenter = (function () {
   }
 
   /* ---- Material card --------------------------------------------------- */
-  function materialCard(item, status) {
+  function progressLabel(progress) {
+    var p = typeof progress === "number" && !isNaN(progress) ? progress : 0;
+    if (p < 0) { p = 0; }
+    if (p > 100) { p = 100; }
+    return p === 0 ? "未開始" : p + "%";
+  }
+
+  function materialCard(item, status, onOpenDetail) {
     var subj = AHS.Subjects[item.subject];
     var view = el("button", {
       type: "button", class: "mat-card__act",
@@ -152,15 +159,20 @@ AHS.MaterialCenter = (function () {
     function announce(msg) {
       status.textContent = msg; status.removeAttribute("hidden");
     }
-    view.addEventListener("click", function () {
+    view.addEventListener("click", function (e) {
+      e.stopPropagation();
       announce("（Mock）檢視教材：" + subj.name + "《" + item.title + "》");
     });
-    dl.addEventListener("click", function () {
+    dl.addEventListener("click", function (e) {
+      e.stopPropagation();
       announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》");
     });
 
-    return el("article", {
-      class: "mat-card", "data-subject": item.subject
+    var card = el("article", {
+      class: "mat-card",
+      "data-subject": item.subject,
+      "data-chapter": item.chapter,
+      "data-id": item.id
     }, [
       el("div", {
         class: "mat-card__thumb",
@@ -174,6 +186,7 @@ AHS.MaterialCenter = (function () {
       el("p", { class: "mat-card__meta", text: "高一" + subj.name + "｜" + item.chapter }),
       el("div", { class: "mat-card__foot" }, [
         el("span", { class: "mat-card__date", text: item.date }),
+        el("span", { class: "mat-card__progress", text: progressLabel(item.progress) }),
         el("span", { class: "mat-card__views" }, [
           el("span", { html: AHS.Icons.search() }),
           el("span", { text: item.views })
@@ -181,12 +194,63 @@ AHS.MaterialCenter = (function () {
       ]),
       el("div", { class: "mat-card__acts" }, [view, dl])
     ]);
+
+    /* MAT-F001 acceptance: clicking a material logs its id.
+       MAT-F004 acceptance: clicking a material opens its detail. */
+    card.addEventListener("click", function () {
+      console.log(item.id);
+      onOpenDetail(item.id);
+    });
+
+    return card;
   }
 
-  function grid(data, status) {
+  function grid(data, status, onOpenDetail) {
     var wrap = el("div", { class: "mat-grid", "data-view": "grid" },
-      data.items.map(function (it) { return materialCard(it, status); }));
+      data.items.map(function (it) { return materialCard(it, status, onOpenDetail); }));
     return wrap;
+  }
+
+  /* ---- Chapter filter panel (MAT-F003) --------------------------------- */
+  /* Chapters shown depend on the currently selected subject; "全部章節"
+     resets to showing every chapter under that subject scope. */
+  function chaptersForSubject(data, subjectId) {
+    var chapters = [];
+    data.items.forEach(function (item) {
+      var inScope = subjectId === "all" || item.subject === subjectId;
+      if (inScope && chapters.indexOf(item.chapter) === -1) {
+        chapters.push(item.chapter);
+      }
+    });
+    return chapters;
+  }
+
+  function chapterPanel(data, subjectId, onPick) {
+    var buttons = [];
+    function makeBtn(id, label, isAll) {
+      var btn = el("button", {
+        type: "button",
+        class: "chapter-filter__item" + (isAll ? " is-active" : ""),
+        "data-chapter-id": id
+      }, [el("span", { text: label })]);
+      btn.addEventListener("click", function () {
+        buttons.forEach(function (b) { b.classList.remove("is-active"); });
+        btn.classList.add("is-active");
+        onPick(id);
+      });
+      buttons.push(btn);
+      return btn;
+    }
+
+    var list = el("div", { class: "chapter-filter__list" }, [makeBtn("all", "全部章節", true)]);
+    chaptersForSubject(data, subjectId).forEach(function (c) {
+      list.appendChild(makeBtn(c, c, false));
+    });
+
+    return el("div", { class: "chapter-filter", "aria-label": "章節篩選" }, [
+      el("h3", { class: "chapter-filter__title", text: "章節" }),
+      list
+    ]);
   }
 
   /* ---- Upload panel + recent files ------------------------------------ */
@@ -241,6 +305,22 @@ AHS.MaterialCenter = (function () {
     ]);
   }
 
+  /* ---- Material detail (MAT-F004) --------------------------------------
+     Reuses the existing .mat-status announcement area as the material
+     detail display region (no new layout/UI section introduced). */
+  function findMaterialById(data, id) {
+    for (var i = 0; i < data.items.length; i++) {
+      if (data.items[i].id === id) { return data.items[i]; }
+    }
+    return null;
+  }
+
+  function formatDetail(item) {
+    var subj = AHS.Subjects[item.subject];
+    return "教材詳情：《" + item.title + "》｜" + subj.name + "｜" + item.chapter +
+      " — " + item.content;
+  }
+
   /* create(model?) — model defaults to AHS.Mock.materials. */
   function create(model) {
     var data = model || AHS.Mock.materials;
@@ -248,22 +328,100 @@ AHS.MaterialCenter = (function () {
       class: "mat-status", "aria-live": "polite", hidden: "hidden"
     });
 
-    var theGrid = grid(data, status);
-
-    function filterBySubject(id) {
-      var cards = theGrid.querySelectorAll(".mat-card");
-      Array.prototype.forEach.call(cards, function (c) {
-        var match = id === "all" || c.getAttribute("data-subject") === id;
-        c.style.display = match ? "" : "none";
-      });
+    function openDetail(id) {
+      var item = findMaterialById(data, id);
+      if (!item) {
+        status.textContent = "教材不存在";
+        status.removeAttribute("hidden");
+        return;
+      }
+      status.textContent = formatDetail(item);
+      status.removeAttribute("hidden");
     }
+
+    /* ---- Continue reading (MAT-F005) ------------------------------------
+       Hidden entirely when AHS.Mock.lastReading is missing or its
+       materialId no longer matches any material. */
+    function findLastReadingItem() {
+      var lastReading = AHS.Mock.lastReading;
+      if (!lastReading || typeof lastReading.materialId !== "number") { return null; }
+      return findMaterialById(data, lastReading.materialId);
+    }
+
+    function continueReadingBanner(item) {
+      if (!item) { return null; }
+      var subj = AHS.Subjects[item.subject];
+      var openBtn = el("button", {
+        type: "button", class: "continue-reading__btn", text: "繼續閱讀"
+      });
+      openBtn.addEventListener("click", function () {
+        openDetail(item.id);
+      });
+      return el("section", { class: "card continue-reading", "aria-label": "繼續閱讀" }, [
+        el("span", { class: "continue-reading__icon", html: AHS.Icons.book() }),
+        el("div", { class: "continue-reading__meta" }, [
+          el("span", { class: "continue-reading__label", text: "上次閱讀" }),
+          el("span", { class: "continue-reading__title", text: subj.name + "《" + item.title + "》" })
+        ]),
+        openBtn
+      ]);
+    }
+
+    var continueBanner = continueReadingBanner(findLastReadingItem());
+
+    var theGrid = grid(data, status, openDetail);
+    var emptyState = el("p", {
+      class: "mat-grid__empty", text: "目前沒有教材", hidden: "hidden"
+    });
+
+    var currentSubject = "all";
+    var currentChapter = "all";
+
+    function applyFilters() {
+      var cards = theGrid.querySelectorAll(".mat-card");
+      var visibleCount = 0;
+      Array.prototype.forEach.call(cards, function (c) {
+        var subjMatch = currentSubject === "all" || c.getAttribute("data-subject") === currentSubject;
+        var chapMatch = currentChapter === "all" || c.getAttribute("data-chapter") === currentChapter;
+        var match = subjMatch && chapMatch;
+        c.style.display = match ? "" : "none";
+        if (match) { visibleCount += 1; }
+      });
+      if (visibleCount === 0) {
+        emptyState.removeAttribute("hidden");
+      } else {
+        emptyState.setAttribute("hidden", "hidden");
+      }
+    }
+
+    var chapterSlot = el("div", { class: "chapter-filter-slot" });
+    function renderChapterPanel() {
+      chapterSlot.innerHTML = "";
+      chapterSlot.appendChild(chapterPanel(data, currentSubject, function (chapterId) {
+        currentChapter = chapterId;
+        applyFilters();
+      }));
+    }
+
+    function onSubjectPick(id) {
+      currentSubject = id;
+      currentChapter = "all";
+      renderChapterPanel();
+      applyFilters();
+    }
+
     function setView(mode) { theGrid.setAttribute("data-view", mode); }
 
+    var subjPanelEl = subjectPanel(data, onSubjectPick);
+    renderChapterPanel();
+    subjPanelEl.appendChild(chapterSlot);
+
     var main = el("div", { class: "mat-main" }, [
-      subjectPanel(data, filterBySubject),
+      subjPanelEl,
       el("div", { class: "mat-content" }, [
         toolbar(data, setView),
         theGrid,
+        emptyState,
         status
       ])
     ]);
@@ -285,6 +443,7 @@ AHS.MaterialCenter = (function () {
 
     return el("div", { class: "mat-page" }, [
       header(data, status),
+      continueBanner,
       el("div", { class: "mat-layout" }, [main, rail])
     ]);
   }

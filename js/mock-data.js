@@ -108,14 +108,14 @@ AHS.Mock = {
     sorts: ["最新上傳", "最多觀看", "學習進度"],
     formats: ["全部格式", "PDF", "PPT", "DOCX", "MP4"],
     items: [
-      { subject: "math", title: "二次函數的圖形與性質", chapter: "第三章", date: "2024/06/20", views: "1.2k" },
-      { subject: "english", title: "英文閱讀理解攻略", chapter: "Unit 3", date: "2024/06/19", views: "980" },
-      { subject: "physics", title: "牛頓運動定律總整理", chapter: "第二章", date: "2024/06/18", views: "756" },
-      { subject: "chemistry", title: "化學反應與平衡", chapter: "第三章", date: "2024/06/17", views: "832" },
-      { subject: "biology", title: "細胞構造與功能", chapter: "第 1-2 節", date: "2024/06/16", views: "1.1k" },
-      { subject: "history", title: "中國古代史總整理", chapter: "第二章", date: "2024/06/15", views: "645" },
-      { subject: "geography", title: "臺灣的地形與氣候", chapter: "第二章", date: "2024/06/14", views: "701" },
-      { subject: "civics", title: "憲法基本原則", chapter: "第一章", date: "2024/06/13", views: "589" }
+      { id: 1, subject: "math", title: "二次函數的圖形與性質", chapter: "第三章", date: "2024/06/20", views: "1.2k", content: "本教材介紹二次函數的圖形特徵、頂點座標與對稱軸，並透過範例說明如何由標準式判斷開口方向與最大最小值。", progress: 45 },
+      { id: 2, subject: "english", title: "英文閱讀理解攻略", chapter: "Unit 3", date: "2024/06/19", views: "980", content: "本教材整理閱讀理解常見題型與解題技巧，包含主旨判斷、細節查找與推論題的解題步驟。", progress: 100 },
+      { id: 3, subject: "physics", title: "牛頓運動定律總整理", chapter: "第二章", date: "2024/06/18", views: "756", content: "本教材彙整牛頓三大運動定律的定義與應用範例，並附上常見計算題型解析。", progress: 0 },
+      { id: 4, subject: "chemistry", title: "化學反應與平衡", chapter: "第三章", date: "2024/06/17", views: "832", content: "本教材說明化學反應速率與平衡常數的關係，並介紹勒沙特列原理的應用情境。", progress: 70 },
+      { id: 5, subject: "biology", title: "細胞構造與功能", chapter: "第 1-2 節", date: "2024/06/16", views: "1.1k", content: "本教材介紹動植物細胞的基本構造與各胞器功能，並比較兩者的差異。", progress: 0 },
+      { id: 6, subject: "history", title: "中國古代史總整理", chapter: "第二章", date: "2024/06/15", views: "645", content: "本教材整理中國古代重要朝代的政治制度與社會變遷重點。", progress: 100 },
+      { id: 7, subject: "geography", title: "臺灣的地形與氣候", chapter: "第二章", date: "2024/06/14", views: "701", content: "本教材說明臺灣主要地形分布與氣候特徵，並分析其對產業發展的影響。", progress: 30 },
+      { id: 8, subject: "civics", title: "憲法基本原則", chapter: "第一章", date: "2024/06/13", views: "589", content: "本教材介紹憲法的基本原則與立憲精神，並說明其在國家治理中的角色。", progress: 0 }
     ],
     recentFiles: [
       { name: "二次函數重點整理.pdf", type: "PDF", size: "2.4 MB", date: "2024/06/20" },
@@ -578,5 +578,10 @@ AHS.Mock = {
   /* Sprint 1 · HOME-F006: 今日學習時間 (Learning Time). */
   learning: {
     todayMinutes: 85
+  },
+
+  /* Material Center Sprint 3 · MAT-F005: 繼續閱讀 (Continue Reading). */
+  lastReading: {
+    materialId: 1
   }
 };
