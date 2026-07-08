@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a4a3c">
+  <meta name="color-scheme" content="light">
+  <title>AI 巧巧老師 素材庫 · QA Gallery</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/qiaoqiao.css">
+  <link rel="stylesheet" href="css/qiaoqiao-gallery.css">
+</head>
+<body>
+  <main id="qq-gallery-root"></main>
+
+  <!-- Ordered scripts sharing the window.AHS namespace (no modules, no build). -->
+  <script src="js/ui.js"></script>
+  <script src="js/Qiaoqiao.js"></script>
+  <script src="components/QiaoqiaoGallery.js"></script>
+  <script>
+    window.AHS = window.AHS || {};
+    (function () {
+      "use strict";
+      function init() {
+        var root = document.getElementById("qq-gallery-root");
+        if (root && AHS.QiaoqiaoGallery) {
+          AHS.UI.mount(root, AHS.QiaoqiaoGallery.create());
+        }
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>

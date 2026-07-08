@@ -1,35 +1,84 @@
-# AI High School · UX Prototype Preview（Prototype v0.1）
+# AI High School Learning System — Prototype v0.1
 
-Task **P001_Prototype_Preview** — 整合目前 Home，可直接預覽的 UX Prototype。
+高中生 AI 學習平台原型。純 HTML5 / CSS3 / Vanilla JavaScript，全部 Mock Data，
+無後端 / 無 API / 無 build 工具，相容 file:// 與 GitHub Pages。
 
-## 執行方式
-**雙擊 `index.html`** 即可執行。無需 Node.js、npm、Live Server 或任何伺服器；
-無網路請求、無建置工具。
+## 進度：全部頁面完成 ✔
 
-## 整合內容（目前 Home，由上而下）
-1. Home Hero（AI 巧巧老師、問候、今日建議、開始／繼續學習）
-2. Today Mission（今日教材／今日考卷／今日完成率）
-3. Resume Learning（最近科目／章節／學習進度／繼續學習）
-4. Recent Materials（最近教材卡，可點擊）
-5. Bottom Navigation（首頁／教材／考卷／錯題本／我的，Active 可切換）
+- [x] 巧巧老師素材庫（官方插畫，表情 10 款 + 姿勢 6 款）
+- [x] 首頁 Home
+- [x] 教材中心 Material Center
+- [x] 測驗中心 Quiz Center
+- [x] 錯題本 Wrong Book
+- [x] 總結中心 / 學習總結 Summary Center
+- [x] 我的學習 My Learning
+- [x] AI Tutor（巧巧老師對話）
+- [x] 學習儀表板 Dashboard
 
-所有互動皆為 Mock 事件；全部使用 Mock Data；未新增任何功能。
+## 頁面
 
-## 已驗證裝置（RWD）
-- iPhone Safari（直向；卡片單欄、按鈕滿版、底部導覽固定）
-- Android Chrome（同上）
-- iPad（置中、最大寬度 720px 版心）
-- Desktop（置中版心、最近教材兩欄 grid）
+| 檔案 | 說明 |
+|------|------|
+| `index.html` | 首頁 Home（七大區塊） |
+| `materials.html` | 教材中心 Material Center |
+| `quiz.html` | 測驗中心 Quiz Center（含純 SVG 甜甜圈圖） |
+| `wrongbook.html` | 錯題本 Wrong Book（左列表 + 右題目詳解，主從式） |
+| `summary.html` | 總結中心 / 學習總結（AI 總結 + 思維導圖 + 知識樹） |
+| `learning.html` | 我的學習（總覽 + 長條圖 + 雷達圖 + 學習日曆 + 徽章） |
+| `tutor.html` | AI Tutor（巧巧老師對話，Mock 回覆） |
+| `dashboard.html` | 學習儀表板（統計卡 + 趨勢折線 + 分布甜甜圈 + 進度環 + 知識點 Top10） |
+| `qiaoqiao-gallery.html` | 巧巧老師素材庫（QA 用，不連結至產品導覽） |
 
-無橫向捲動、元件無重疊、內容不超出畫面。
+側邊欄與底部導覽支援分頁跳轉：七個產品頁皆為真連結，可互相切換。
 
-## 技術
-- 純 HTML5（Semantic）／CSS3（BEM）／ES5+ JavaScript（camelCase）；元件 PascalCase。
-- 共用 window.AHS，依序 <script> 載入；無框架、無 ES modules、無建置。
+## 目錄結構
 
-## 檔案
-index.html
-assets/     favicon.svg
-css/        tokens.css, hero.css, today.css, resume.css, recent-materials.css, bottom-nav.css
-js/         ui.js, mock-data.js, HeroCard.js, app.js
-components/ TodayMission.js, ResumeLearning.js, HomeRecentMaterials.js, HomeBottomNavigation.js
+```
+index.html / materials.html / quiz.html / wrongbook.html /
+summary.html / learning.html / tutor.html / qiaoqiao-gallery.html
+css/
+  tokens.css        設計 token（紫色系 + 九科色票 + 共用變數）
+  shell.css         App Shell（頂欄 / 側邊欄 / 底部導覽）
+  home.css          首頁 + 共用元件（card / chip / progressbar）
+  material.css / quiz.css / wrongbook.css / summary.css /
+  learning.css / tutor.css                各頁版面
+  qiaoqiao.css / qiaoqiao-gallery.css     巧巧老師素材尺寸與素材庫
+js/
+  ui.js             DOM helper（AHS.UI）
+  Icons.js          共用 inline SVG 圖示 + 九科 metadata（AHS.Icons / AHS.Subjects）
+  mock-data.js      全站 Mock Data（AHS.Mock）
+  Qiaoqiao.js       巧巧老師素材庫（AHS.Qiaoqiao：bust ×10、full ×6，回傳官方插畫 <img>）
+  HeroCard.js       首頁 Hero
+  app.js / app-materials.js / app-quiz.js / app-wrongbook.js /
+  app-summary.js / app-learning.js / app-tutor.js   各頁啟動
+components/
+  AppShell.js       共用外框（頂欄 / 側邊欄 / 底部導覽 + 分頁路由）
+  TodayMission.js / HomeRecentMaterials.js / AiTutorHomeCard.js /
+  StudyStats.js / StudyPlan.js / AchievementBadges.js   首頁區塊
+  MaterialCenter.js / QuizCenter.js / WrongBook.js /
+  SummaryCenter.js / MyLearning.js / AiTutor.js         各頁主元件
+  QiaoqiaoGallery.js 素材庫頁面（QA）
+assets/favicon.svg
+assets/qiaoqiao/   巧巧老師官方插畫素材（10 表情 + 6 姿勢 PNG，透明底）
+```
+
+## 技術約束
+
+- 不使用 React / Vue / Angular / Node.js / Docker / build tools
+- 不串接 OpenAI / Gemini / 後端 / 資料庫；全站 Mock Data
+- 所有 JS 共用 `window.AHS` 命名空間，以順序 `<script>` 載入（無 modules）
+- HTML 語意化；CSS 採 BEM；JS 採 camelCase；元件採 PascalCase
+- 設計風格：Apple + Notion + Duolingo（大量留白、卡片式、一致性、RWD）
+
+## 品質狀態（全頁面）
+
+- html5validator（vnu）：EXIT 0
+- jsdom 行為測試：Console Error = 0（8 頁全數通過）
+- 禁用樣式掃描：無 fetch / XHR / import / export / inline handler /
+  localStorage / AI API；CSS 無 var()-in-gradient、calc(var+var)、dvh、
+  inset:、env() 等 vnu 禁用樣式
+- 無 Dead Code / 未使用 CSS / 未使用 JS
+
+## 部署
+
+GitHub Pages（`.nojekyll` + Actions 就緒）。開發者手動 push，前端不具 write 權限。
