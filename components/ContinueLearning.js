@@ -1,0 +1,54 @@
+/* components/ContinueLearning.js — Continue Learning (HOME-F007).
+   Reads AHS.Mock.lastLearning and renders subject / chapter / lesson /
+   progress; the whole card links to the corresponding material. Shows
+   "尚無學習紀錄" and disables the click target when data is missing.
+   Reuses shared .card / .card__head / .card__title primitives — no new
+   layout, matches existing rail cards (e.g. LearningTime, HOME-F006).
+   PascalCase component under window.AHS. */
+window.AHS = window.AHS || {};
+AHS.ContinueLearning = (function () {
+  "use strict";
+  var el = AHS.UI.el;
+
+  /* Actual materials page is materials.html (plural) — the task spec's
+     literal "material.html" does not exist in this project, so the real
+     filename is used here. */
+  var MATERIALS_PAGE = "materials.html";
+
+  function clampProgress(value) {
+    var n = typeof value === "number" && !isNaN(value) ? value : 0;
+    if (n < 0) { return 0; }
+    if (n > 100) { return 100; }
+    return n;
+  }
+
+  /* create(model?) — model defaults to AHS.Mock.lastLearning. */
+  function create(model) {
+    var data = model !== undefined ? model : (AHS.Mock && AHS.Mock.lastLearning);
+    var hasData = !!(data && data.subject && data.chapter && data.lesson && data.materialId);
+
+    var body;
+    if (hasData) {
+      var pct = clampProgress(data.progress);
+      body = el("a", {
+        class: "continue-learning-card__link",
+        href: MATERIALS_PAGE + "?id=" + encodeURIComponent(data.materialId)
+      }, [
+        el("p", { class: "continue-learning-card__subject", text: data.subject + "｜" + data.chapter }),
+        el("p", { class: "continue-learning-card__lesson", text: data.lesson }),
+        el("p", { class: "continue-learning-card__progress", text: pct + "%" })
+      ]);
+    } else {
+      body = el("p", { class: "continue-learning-card__empty", text: "尚無學習紀錄" });
+    }
+
+    return el("section", { class: "card continue-learning-card", "aria-label": "Continue Learning" }, [
+      el("div", { class: "card__head" }, [
+        el("h2", { class: "card__title", text: "繼續學習" })
+      ]),
+      body
+    ]);
+  }
+
+  return { create: create };
+})();

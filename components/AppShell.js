@@ -20,6 +20,56 @@ AHS.AppShell = (function () {
     dashboard: "dashboard.html"
   };
 
+  /* ---- Notification menu (HOME-F009) ------------------------------------
+     Extends the existing bell icon-button (already in topbar) with a
+     real dropdown driven by AHS.Mock.notifications. Empty state reuses
+     the project's existing shared empty-state style (.today-card__empty)
+     — no new Empty UI is designed. */
+  function notificationItem(n, onToggleRead) {
+    var item = el("li", {
+      class: "notif-menu__item" + (n.unread ? " is-unread" : ""),
+      role: "menuitem"
+    }, [
+      el("p", { class: "notif-menu__title", text: n.title }),
+      el("p", { class: "notif-menu__message", text: n.message }),
+      el("span", { class: "notif-menu__time", text: n.time })
+    ]);
+    item.addEventListener("click", function () { onToggleRead(n.id, item); });
+    return item;
+  }
+
+  function notificationPanel(notifications, onToggleRead) {
+    var body = notifications.length
+      ? el("ul", { class: "notif-menu__list" },
+          notifications.map(function (n) { return notificationItem(n, onToggleRead); }))
+      : el("p", { class: "today-card__empty", text: "尚無通知" });
+
+    return el("div", { class: "notif-menu", role: "menu", "aria-label": "通知", hidden: "hidden" }, [
+      el("div", { class: "notif-menu__head" }, [el("strong", { text: "通知" })]),
+      body
+    ]);
+  }
+
+  /* ---- Profile menu (HOME-F010) ------------------------------------------
+     Extends the existing .topbar__user block with a dropdown. Guest
+     fallback when AHS.Mock.user is missing — never throws. */
+  function profilePanel(onAction) {
+    var actions = [
+      { id: "profile", label: "Profile" },
+      { id: "settings", label: "Settings" },
+      { id: "logout", label: "Logout" }
+    ];
+    var list = el("ul", { class: "profile-menu__list" });
+    actions.forEach(function (a) {
+      var btn = el("button", {
+        type: "button", class: "profile-menu__item", role: "menuitem", text: a.label
+      });
+      btn.addEventListener("click", function () { onAction(a.id); });
+      list.appendChild(el("li", {}, [btn]));
+    });
+    return el("div", { class: "profile-menu", role: "menu", "aria-label": "使用者選單", hidden: "hidden" }, [list]);
+  }
+
   function topbar(model) {
     var search = el("div", { class: "topbar__search" }, [
       el("span", { class: "topbar__search-icon", html: AHS.Icons.search() }),
@@ -32,6 +82,88 @@ AHS.AppShell = (function () {
       el("kbd", { class: "topbar__search-kbd", text: "⌘K" })
     ]);
 
+    var notifications = (model && model.notifications) || [];
+    var user = (model && model.user) || null; // Guest fallback below.
+
+    var badge = el("span", { class: "topbar__badge" });
+    function unreadCount() {
+      var n = 0;
+      notifications.forEach(function (item) { if (item.unread) { n += 1; } });
+      return n;
+    }
+    function syncBadge() {
+      var count = unreadCount();
+      if (count > 0) {
+        badge.textContent = String(count);
+        badge.removeAttribute("hidden");
+      } else {
+        badge.setAttribute("hidden", "hidden");
+      }
+    }
+    syncBadge();
+
+    function closeMenus() {
+      notifPanel.setAttribute("hidden", "hidden");
+      profMenu.setAttribute("hidden", "hidden");
+    }
+
+    var notifPanel = notificationPanel(notifications, function (id, itemEl) {
+      var target = notifications.filter(function (n) { return n.id === id; })[0];
+      if (target && target.unread) {
+        target.unread = false;
+        itemEl.classList.remove("is-unread");
+        syncBadge();
+      }
+    });
+
+    var bellBtn = el("button", {
+      type: "button", class: "topbar__icon-btn",
+      "aria-label": "通知", "aria-haspopup": "true", html: AHS.Icons.bell()
+    }, [badge]);
+    bellBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = notifPanel.hasAttribute("hidden");
+      closeMenus();
+      if (willOpen) { notifPanel.removeAttribute("hidden"); }
+    });
+
+    var profMenu = profilePanel(function (actionId) {
+      console.log("（Mock）Profile Menu：" + actionId);
+      closeMenus();
+    });
+
+    var userName = user && user.name ? user.name : "Guest";
+    var userBtn = el("div", {
+      class: "topbar__user", role: "button", tabindex: "0", "aria-haspopup": "true",
+      "aria-label": userName
+    }, [
+      el("span", {
+        class: "topbar__avatar qiaoqiao-bust qiaoqiao-bust--sm",
+        html: AHS.Qiaoqiao.bust("gentle")
+      }),
+      el("span", { class: "topbar__user-meta" }, [
+        el("strong", { text: userName }),
+        el("small", { text: model.student.grade })
+      ])
+    ]);
+    function toggleProfileMenu() {
+      var willOpen = profMenu.hasAttribute("hidden");
+      closeMenus();
+      if (willOpen) { profMenu.removeAttribute("hidden"); }
+    }
+    userBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleProfileMenu();
+    });
+    userBtn.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleProfileMenu();
+      }
+    });
+
+    document.addEventListener("click", closeMenus);
+
     return el("header", { class: "topbar" }, [
       el("a", { class: "topbar__brand", href: "index.html" }, [
         el("span", { class: "topbar__logo", html: AHS.Icons.book() }),
@@ -42,24 +174,12 @@ AHS.AppShell = (function () {
       ]),
       search,
       el("div", { class: "topbar__tools" }, [
-        el("button", {
-          type: "button", class: "topbar__icon-btn",
-          "aria-label": "通知", html: AHS.Icons.bell()
-        }, [el("span", { class: "topbar__badge", text: "3" })]),
+        el("div", { class: "topbar__menu-slot" }, [bellBtn, notifPanel]),
         el("button", {
           type: "button", class: "topbar__icon-btn",
           "aria-label": "訊息", html: AHS.Icons.chat()
         }),
-        el("div", { class: "topbar__user" }, [
-          el("span", {
-            class: "topbar__avatar qiaoqiao-bust qiaoqiao-bust--sm",
-            html: AHS.Qiaoqiao.bust("gentle")
-          }),
-          el("span", { class: "topbar__user-meta" }, [
-            el("strong", { text: "同學你好！" }),
-            el("small", { text: model.student.grade })
-          ])
-        ])
+        el("div", { class: "topbar__menu-slot" }, [userBtn, profMenu])
       ])
     ]);
   }

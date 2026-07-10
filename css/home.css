@@ -459,3 +459,24 @@
   font-weight: 800;
   color: var(--brand-ink);
 }
+
+/* ---- Continue Learning (HOME-F007) ------------------------------------ */
+.continue-learning-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.continue-learning-card__subject { margin: 0 0 4px; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.continue-learning-card__lesson { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: var(--text); }
+.continue-learning-card__progress { margin: 0; font-size: 14px; font-weight: 800; color: var(--brand-ink); }
+.continue-learning-card__empty { margin: 0; padding: 8px 0 4px; color: var(--text-muted); font-size: 14px; text-align: center; }
+
+/* ---- Recent Materials: card is now clickable (HOME-F008) ---------------
+   Supplementary rule (does not modify the existing .recent-card block
+   above) — card stays an <article> (buttons inside it can't legally
+   nest in an <a href>) but behaves like a link via JS + role="link". */
+.recent-card { cursor: pointer; }
+.recent-card:focus-visible { outline: 3px solid var(--brand-soft); outline-offset: 2px; }
+.recent-card__title { margin: 0; font-size: 13px; color: var(--text-muted); }
+.recent-card__last-opened { margin: 0; font-size: 12px; color: var(--text-faint); }

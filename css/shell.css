@@ -127,6 +127,54 @@
 .topbar__user-meta strong { font-size: 13px; }
 .topbar__user-meta small { font-size: 11px; color: var(--text-faint); }
 
+/* ---- Notification + Profile dropdowns (HOME-F009 / HOME-F010) --------- */
+.topbar__menu-slot { position: relative; }
+.topbar__user { cursor: pointer; }
+.topbar__user:focus-visible { outline: 3px solid var(--brand-soft); outline-offset: 2px; border-radius: 10px; }
+
+.notif-menu,
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-width: 260px;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 12px;
+}
+
+.notif-menu__head { margin: 0 0 8px; padding: 0 4px; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.notif-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 320px; overflow-y: auto; }
+
+.notif-menu__item {
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.notif-menu__item:hover { background-color: var(--bg); }
+.notif-menu__item.is-unread { background-color: var(--brand-soft); }
+.notif-menu__title { margin: 0 0 2px; font-size: 13px; font-weight: 700; }
+.notif-menu__message { margin: 0 0 4px; font-size: 12px; color: var(--text-muted); }
+.notif-menu__time { font-size: 11px; color: var(--text-faint); }
+
+.profile-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.profile-menu__item {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+.profile-menu__item:hover { background-color: var(--bg); }
+
 /* ---- Body: sidebar + main ------------------------------------------- */
 .shell__body {
   flex: 1 1 auto;
@@ -293,4 +341,6 @@
   .topbar__brand-text { display: none; }
   .topbar__search-kbd { display: none; }
   .topbar__user-meta { display: none; }
+  .notif-menu,
+  .profile-menu { min-width: 220px; right: -8px; }
 }

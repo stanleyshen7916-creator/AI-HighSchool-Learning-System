@@ -63,7 +63,8 @@ window.AHS = window.AHS || {};
       AHS.TodayMission.create(),
       AHS.AiTutorHomeCard.create(),
       AHS.AchievementBadges.create(),
-      AHS.LearningTime.create()
+      AHS.LearningTime.create(),
+      AHS.ContinueLearning.create()
     ]);
 
     return el("div", { class: "home" }, [main, rail]);
