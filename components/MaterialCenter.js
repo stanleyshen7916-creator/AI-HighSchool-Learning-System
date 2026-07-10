@@ -13,29 +13,15 @@ AHS.MaterialCenter = (function () {
     XLSX: "#22b573", MP4: "#7c5cff"
   };
 
-  function chip(subjectKey) {
-    var subj = AHS.Subjects[subjectKey];
-    return el("span", {
-      class: "chip",
-      style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
-    }, [el("span", { text: subj.name })]);
-  }
-
   /* ---- Header ---------------------------------------------------------- */
-  function header(data, status) {
-    var search = el("div", { class: "mat-search" }, [
-      el("span", { class: "mat-search__icon", html: AHS.Icons.search() }),
-      el("input", {
-        class: "mat-search__input", type: "search",
-        placeholder: "搜尋教材名稱、章節、關鍵字…", "aria-label": "搜尋教材"
-      })
-    ]);
+  function header(data, searchBar) {
+    /* M001: Title/Subtitle delegated to AHS.MaterialHeader.
+       M002/M013: Search Bar instance is created by the integrator
+       (create() below) so its callback + clear() are wired into the
+       unified filter pipeline. Same combined layout — no visual change. */
     return el("div", { class: "mat-header" }, [
-      el("div", { class: "mat-header__titles" }, [
-        el("h1", { class: "mat-header__title", text: data.title }),
-        el("p", { class: "mat-header__subtitle", text: data.subtitle })
-      ]),
-      search
+      AHS.MaterialHeader.create(data),
+      searchBar
     ]);
   }
 
@@ -138,78 +124,7 @@ AHS.MaterialCenter = (function () {
     ]);
   }
 
-  /* ---- Material card --------------------------------------------------- */
-  function progressLabel(progress) {
-    var p = typeof progress === "number" && !isNaN(progress) ? progress : 0;
-    if (p < 0) { p = 0; }
-    if (p > 100) { p = 100; }
-    return p === 0 ? "未開始" : p + "%";
-  }
-
-  function materialCard(item, status, onOpenDetail) {
-    var subj = AHS.Subjects[item.subject];
-    var view = el("button", {
-      type: "button", class: "mat-card__act",
-      "aria-label": "檢視", html: AHS.Icons.search()
-    });
-    var dl = el("button", {
-      type: "button", class: "mat-card__act",
-      "aria-label": "下載", html: AHS.Icons.download()
-    });
-    function announce(msg) {
-      status.textContent = msg; status.removeAttribute("hidden");
-    }
-    view.addEventListener("click", function (e) {
-      e.stopPropagation();
-      announce("（Mock）檢視教材：" + subj.name + "《" + item.title + "》");
-    });
-    dl.addEventListener("click", function (e) {
-      e.stopPropagation();
-      announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》");
-    });
-
-    var card = el("article", {
-      class: "mat-card",
-      "data-subject": item.subject,
-      "data-chapter": item.chapter,
-      "data-id": item.id
-    }, [
-      el("div", {
-        class: "mat-card__thumb",
-        style: "background-color:" + subj.hex + "1f"
-      }, [
-        chip(item.subject),
-        el("span", { class: "mat-card__thumb-icon",
-          style: "color:" + subj.hex, html: AHS.Icons.book() })
-      ]),
-      el("h3", { class: "mat-card__title", text: item.title }),
-      el("p", { class: "mat-card__meta", text: "高一" + subj.name + "｜" + item.chapter }),
-      el("div", { class: "mat-card__foot" }, [
-        el("span", { class: "mat-card__date", text: item.date }),
-        el("span", { class: "mat-card__progress", text: progressLabel(item.progress) }),
-        el("span", { class: "mat-card__views" }, [
-          el("span", { html: AHS.Icons.search() }),
-          el("span", { text: item.views })
-        ])
-      ]),
-      el("div", { class: "mat-card__acts" }, [view, dl])
-    ]);
-
-    /* MAT-F001 acceptance: clicking a material logs its id.
-       MAT-F004 acceptance: clicking a material opens its detail. */
-    card.addEventListener("click", function () {
-      console.log(item.id);
-      onOpenDetail(item.id);
-    });
-
-    return card;
-  }
-
-  function grid(data, status, onOpenDetail) {
-    var wrap = el("div", { class: "mat-grid", "data-view": "grid" },
-      data.items.map(function (it) { return materialCard(it, status, onOpenDetail); }));
-    return wrap;
-  }
+  /* ---- Material grid (M005/M006 delegated to AHS.MaterialGrid / AHS.MaterialCard) */
 
   /* ---- Chapter filter panel (MAT-F003) --------------------------------- */
   /* Chapters shown depend on the currently selected subject; "全部章節"
@@ -339,59 +254,114 @@ AHS.MaterialCenter = (function () {
       status.removeAttribute("hidden");
     }
 
-    /* ---- Continue reading (MAT-F005) ------------------------------------
-       Hidden entirely when AHS.Mock.lastReading is missing or its
-       materialId no longer matches any material. */
-    function findLastReadingItem() {
-      var lastReading = AHS.Mock.lastReading;
-      if (!lastReading || typeof lastReading.materialId !== "number") { return null; }
-      return findMaterialById(data, lastReading.materialId);
-    }
+    /* M004: Recent Learning section delegated to AHS.MaterialRecentLearning
+       (extracted/upgraded from the previous inline "繼續閱讀" banner,
+       MAT-F005). Data source (AHS.Mock.lastReading) and hide-when-absent
+       behavior are unchanged. */
+    var continueBanner = AHS.MaterialRecentLearning.create(data, openDetail);
 
-    function continueReadingBanner(item) {
-      if (!item) { return null; }
-      var subj = AHS.Subjects[item.subject];
-      var openBtn = el("button", {
-        type: "button", class: "continue-reading__btn", text: "繼續閱讀"
-      });
-      openBtn.addEventListener("click", function () {
-        openDetail(item.id);
-      });
-      return el("section", { class: "card continue-reading", "aria-label": "繼續閱讀" }, [
-        el("span", { class: "continue-reading__icon", html: AHS.Icons.book() }),
-        el("div", { class: "continue-reading__meta" }, [
-          el("span", { class: "continue-reading__label", text: "上次閱讀" }),
-          el("span", { class: "continue-reading__title", text: subj.name + "《" + item.title + "》" })
-        ]),
-        openBtn
-      ]);
-    }
+    /* M005/M006: Grid + Card delegated to AHS.MaterialGrid / AHS.MaterialCard. */
+    var theGrid = AHS.MaterialGrid.create(data.items, status, openDetail);
 
-    var continueBanner = continueReadingBanner(findLastReadingItem());
-
-    var theGrid = grid(data, status, openDetail);
-    var emptyState = el("p", {
-      class: "mat-grid__empty", text: "目前沒有教材", hidden: "hidden"
-    });
+    /* M010: Empty State — full component (illustration / title /
+       description / reset action) rendered into this slot on demand. */
+    var emptyState = el("div", { class: "mat-grid__empty-slot", hidden: "hidden" });
 
     var currentSubject = "all";
     var currentChapter = "all";
+    /* M008: Filter Panel state. */
+    var currentFilter = { subject: "all", grade: "all", status: "all" };
+    /* M009: Sort state. */
+    var currentSort = "newest";
+    /* M013: Search keyword + Subject Tabs group — all state lives in
+       memory (plain closure vars), confirming the Memory State flow. */
+    var currentSearch = "";
+    var currentTabGroup = "all";
+    var searchLoadingTimer = null;
 
-    function applyFilters() {
-      var cards = theGrid.querySelectorAll(".mat-card");
-      var visibleCount = 0;
-      Array.prototype.forEach.call(cards, function (c) {
-        var subjMatch = currentSubject === "all" || c.getAttribute("data-subject") === currentSubject;
-        var chapMatch = currentChapter === "all" || c.getAttribute("data-chapter") === currentChapter;
-        var match = subjMatch && chapMatch;
-        c.style.display = match ? "" : "none";
-        if (match) { visibleCount += 1; }
+    function computeVisibleItems() {
+      var keyword = currentSearch.trim().toLowerCase();
+      var groupSubjects = AHS.MaterialSubjectTabs.subjectsForGroup(currentTabGroup);
+
+      var list = data.items.filter(function (item) {
+        var subjMatch = currentSubject === "all" || item.subject === currentSubject;
+        var chapMatch = currentChapter === "all" || item.chapter === currentChapter;
+        var filterSubjMatch = currentFilter.subject === "all" || item.subject === currentFilter.subject;
+        var filterGradeMatch = currentFilter.grade === "all" || item.grade === currentFilter.grade;
+        var filterStatusMatch = currentFilter.status === "all" ||
+          AHS.MaterialFilter.statusOf(item.progress) === currentFilter.status;
+        /* M013: Subject Tabs group filter (null = 全部, no restriction). */
+        var tabMatch = !groupSubjects || groupSubjects.indexOf(item.subject) !== -1;
+        /* M013: keyword search over 名稱/章節/簡介. */
+        var searchMatch = !keyword ||
+          String(item.title).toLowerCase().indexOf(keyword) !== -1 ||
+          String(item.chapter).toLowerCase().indexOf(keyword) !== -1 ||
+          String(item.content || "").toLowerCase().indexOf(keyword) !== -1;
+        return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
+          filterStatusMatch && tabMatch && searchMatch;
       });
-      if (visibleCount === 0) {
+      return AHS.MaterialSort.apply(list, currentSort);
+    }
+
+    function resetAllFilters() {
+      currentSubject = "all";
+      currentChapter = "all";
+      currentFilter = { subject: "all", grade: "all", status: "all" };
+      currentSearch = "";
+      currentTabGroup = "all";
+      /* Sync sidebar active states back to 全部科目 without redesigning
+         them: re-render the chapter panel and clear subject highlight. */
+      var subjButtons = subjPanelEl.querySelectorAll(".subj-filter__item");
+      Array.prototype.forEach.call(subjButtons, function (b) {
+        b.classList.toggle("is-active", b.getAttribute("data-id") === "all");
+      });
+      /* Reset Filter Panel selects to 全部. */
+      var filterSelects = filterEl.querySelectorAll(".mat-filter__control");
+      Array.prototype.forEach.call(filterSelects, function (s) { s.value = "all"; });
+      /* M013: clear search input + reset Subject Tabs to 全部. */
+      searchBar.clear();
+      tabsEl.resetToAll();
+      renderChapterPanel();
+      renderGrid();
+    }
+
+    function emptyVariant() {
+      return currentSearch.trim() ? "search" : "filter";
+    }
+
+    function renderGrid() {
+      var list = computeVisibleItems();
+      var newGrid = AHS.MaterialGrid.create(list, status, openDetail);
+      newGrid.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
+      theGrid.parentNode.replaceChild(newGrid, theGrid);
+      theGrid = newGrid;
+
+      if (list.length === 0) {
+        /* M010/M013: variant depends on whether a search keyword is the
+           likely cause of the empty result. */
+        emptyState.innerHTML = "";
+        emptyState.appendChild(AHS.MaterialEmptyState.create(emptyVariant(), resetAllFilters));
         emptyState.removeAttribute("hidden");
       } else {
+        emptyState.innerHTML = "";
         emptyState.setAttribute("hidden", "hidden");
       }
+    }
+
+    /* M011/M013: Loading State display logic for search — swap in the
+       skeleton grid briefly, then render results. Uses a plain timer +
+       memory state only; no network, no library. */
+    function renderGridWithLoading() {
+      if (searchLoadingTimer) { clearTimeout(searchLoadingTimer); }
+      var skeleton = AHS.MaterialLoadingState.skeletonGrid(computeVisibleItems().length || 3);
+      skeleton.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
+      theGrid.parentNode.replaceChild(skeleton, theGrid);
+      theGrid = skeleton;
+      emptyState.setAttribute("hidden", "hidden");
+      searchLoadingTimer = setTimeout(function () {
+        searchLoadingTimer = null;
+        renderGrid();
+      }, 250);
     }
 
     var chapterSlot = el("div", { class: "chapter-filter-slot" });
@@ -399,7 +369,7 @@ AHS.MaterialCenter = (function () {
       chapterSlot.innerHTML = "";
       chapterSlot.appendChild(chapterPanel(data, currentSubject, function (chapterId) {
         currentChapter = chapterId;
-        applyFilters();
+        renderGrid();
       }));
     }
 
@@ -407,7 +377,7 @@ AHS.MaterialCenter = (function () {
       currentSubject = id;
       currentChapter = "all";
       renderChapterPanel();
-      applyFilters();
+      renderGrid();
     }
 
     function setView(mode) { theGrid.setAttribute("data-view", mode); }
@@ -416,10 +386,35 @@ AHS.MaterialCenter = (function () {
     renderChapterPanel();
     subjPanelEl.appendChild(chapterSlot);
 
+    /* M008 Filter + M009 Sort — new controls, mounted as siblings next
+       to the existing (untouched) toolbar. */
+    var filterEl = AHS.MaterialFilter.create(data, function (state) {
+      currentFilter = state;
+      renderGrid();
+    });
+    var sortEl = AHS.MaterialSort.create(function (sortId) {
+      currentSort = sortId;
+      renderGrid();
+    });
+    var filterSortRow = el("div", { class: "mat-filter-sort-row" }, [filterEl, sortEl]);
+
+    /* M013: Search + Subject Tabs instances, wired into the unified
+       filter pipeline. Search shows the M011 skeleton briefly; tab
+       switches render immediately (in-memory, no wait to simulate). */
+    var searchBar = AHS.MaterialSearchBar.create(function (keyword) {
+      currentSearch = keyword;
+      renderGridWithLoading();
+    });
+    var tabsEl = AHS.MaterialSubjectTabs.create(function (groupId) {
+      currentTabGroup = groupId;
+      renderGrid();
+    });
+
     var main = el("div", { class: "mat-main" }, [
       subjPanelEl,
       el("div", { class: "mat-content" }, [
         toolbar(data, setView),
+        filterSortRow,
         theGrid,
         emptyState,
         status
@@ -442,7 +437,8 @@ AHS.MaterialCenter = (function () {
     ]);
 
     return el("div", { class: "mat-page" }, [
-      header(data, status),
+      header(data, searchBar),
+      tabsEl,
       continueBanner,
       el("div", { class: "mat-layout" }, [main, rail])
     ]);
