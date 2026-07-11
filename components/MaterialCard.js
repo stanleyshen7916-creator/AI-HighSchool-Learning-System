@@ -83,16 +83,13 @@ AHS.MaterialCard = (function () {
     /* 收藏 Icon — reflects item.favorite (Runtime). Quick toggle stays
        on the card for one-tap favoriting; also available in the ⋯ menu. */
     var isFav = !!item.favorite;
-    function favLabel(f) { return f ? "取消收藏" : "收藏教材"; }
     var favBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__fav" + (isFav ? " is-active" : ""),
-      "aria-label": favLabel(isFav), title: favLabel(isFav), "aria-pressed": isFav ? "true" : "false",
+      "aria-label": "收藏教材", "data-tip": "收藏教材", "aria-pressed": isFav ? "true" : "false",
       html: isFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark()
     });
     function applyFav(nowFav) {
       favBtn.setAttribute("aria-pressed", nowFav ? "true" : "false");
-      favBtn.setAttribute("aria-label", favLabel(nowFav));
-      favBtn.setAttribute("title", favLabel(nowFav));
       favBtn.classList.toggle("is-active", nowFav);
       favBtn.innerHTML = nowFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark();
     }
@@ -102,10 +99,29 @@ AHS.MaterialCard = (function () {
       applyFav(nowFav);
     });
 
+    /* Open / Download standalone icon buttons — hover shows only a
+       tooltip (WO-006 §1/§3); the action fires on click, never on hover. */
+    var openBtn = el("button", {
+      type: "button", class: "mat-card__act mat-card__open",
+      "aria-label": "開啟教材", "data-tip": "開啟教材", html: AHS.Icons.book()
+    });
+    openBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      openMaterial();
+    });
+    var dlBtn = el("button", {
+      type: "button", class: "mat-card__act mat-card__dl",
+      "aria-label": "下載教材", "data-tip": "下載教材", html: AHS.Icons.download()
+    });
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      downloadMaterial();
+    });
+
     /* 更多 (⋯) menu — 開啟 / 下載 / 收藏 / 刪除. */
     var moreBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__more",
-      "aria-label": "更多功能", title: "更多功能", "aria-haspopup": "true",
+      "aria-label": "更多功能", "data-tip": "更多功能", "aria-haspopup": "true",
       html: AHS.Icons.more()
     });
     var menu = el("div", { class: "mat-card__menu", role: "menu", hidden: "hidden" });
@@ -114,37 +130,60 @@ AHS.MaterialCard = (function () {
       var b = el("button", { type: "button", class: "mat-card__menu-item", role: "menuitem", text: label });
       b.addEventListener("click", function (e) {
         e.stopPropagation();
-        menu.setAttribute("hidden", "hidden");
+        closeMenu();
         handler();
       });
       return b;
     }
     menu.appendChild(menuItem("開啟教材", openMaterial));
     menu.appendChild(menuItem("下載教材", downloadMaterial));
-    var favMenuItem = menuItem("收藏教材", function () {
+    menu.appendChild(menuItem("收藏教材", function () {
       var nowFav = typeof onToggleFavorite === "function" ? onToggleFavorite(item.id) : !favBtn.classList.contains("is-active");
       applyFav(nowFav);
-    });
-    menu.appendChild(favMenuItem);
+    }));
     if (typeof onDelete === "function") {
       menu.appendChild(menuItem("刪除教材", function () { onDelete(item.id); }));
     }
 
+    /* Menu open/close helpers. Esc + outside-click + re-click all close;
+       these listeners are added only while the menu is open and removed
+       on close, so no duplicate/global listener leaks accumulate. */
+    function onDocClick() { closeMenu(); }
+    function onKeydown(e) {
+      if (e.key === "Escape" || e.keyCode === 27) { closeMenu(); }
+    }
+    function openMenu() {
+      /* Close any other open menus first. */
+      var others = document.querySelectorAll(".mat-card__menu");
+      Array.prototype.forEach.call(others, function (m) {
+        if (m !== menu) { m.setAttribute("hidden", "hidden"); }
+      });
+      menu.removeAttribute("hidden");
+      moreBtn.setAttribute("aria-expanded", "true");
+      /* Listeners attach synchronously; the opening click already called
+         stopPropagation so it won't reach onDocClick this same tick. */
+      document.addEventListener("click", onDocClick);
+      document.addEventListener("keydown", onKeydown);
+    }
+    function closeMenu() {
+      if (menu.hasAttribute("hidden")) { return; }
+      menu.setAttribute("hidden", "hidden");
+      moreBtn.setAttribute("aria-expanded", "false");
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKeydown);
+    }
+    moreBtn.setAttribute("aria-expanded", "false");
     moreBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var willOpen = menu.hasAttribute("hidden");
-      /* close any other open menus first */
-      var others = document.querySelectorAll(".mat-card__menu");
-      Array.prototype.forEach.call(others, function (m) { m.setAttribute("hidden", "hidden"); });
-      if (willOpen) { menu.removeAttribute("hidden"); }
+      if (menu.hasAttribute("hidden")) { openMenu(); } else { closeMenu(); }
     });
-    document.addEventListener("click", function () { menu.setAttribute("hidden", "hidden"); });
     menu.addEventListener("click", function (e) { e.stopPropagation(); });
 
     var moreWrap = el("div", { class: "mat-card__more-wrap" }, [moreBtn, menu]);
 
-    /* Action row: quick favorite + ⋯ menu. */
-    var acts = [favBtn, moreWrap];
+    /* Action row: favorite + open + download + ⋯ menu (four hover
+       tooltip targets per WO-006). */
+    var acts = [favBtn, openBtn, dlBtn, moreWrap];
 
     /* Continue Button — reuses .continue-reading__btn (same pill style,
        same Design Token as the Recent Learning section's button). */

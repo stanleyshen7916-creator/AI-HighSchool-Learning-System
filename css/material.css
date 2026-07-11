@@ -564,12 +564,15 @@
 }
 .mat-card__menu-item:hover { background-color: var(--bg); }
 
-/* ---- Tooltip (Feature 6) — native title used; add a subtle CSS tip on
-   pointer devices only, so touch is unaffected. ---------------------- */
+/* ---- Tooltip (WO-006) — CSS-only tip driven by [data-tip]. Shows after
+   a 300ms hover delay, disappears immediately on leave. No native title
+   is used (avoids a duplicate, slow browser tooltip). Enabled only on
+   fine-pointer + hover-capable devices, so Tablet/Mobile are unaffected.
+   -------------------------------------------------------------------- */
 @media (hover: hover) and (pointer: fine) {
-  .mat-card__act[title] { position: relative; }
-  .mat-card__act[title]:hover::after {
-    content: attr(title);
+  .mat-card__act[data-tip] { position: relative; }
+  .mat-card__act[data-tip]::after {
+    content: attr(data-tip);
     position: absolute;
     bottom: calc(100% + 6px);
     left: 50%;
@@ -583,6 +586,16 @@
     border-radius: 6px;
     pointer-events: none;
     z-index: 40;
+    opacity: 0;
+    visibility: hidden;
+    /* leave: hide immediately (no delay) */
+    transition: opacity 0s linear 0s, visibility 0s linear 0s;
+  }
+  .mat-card__act[data-tip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    /* show: after a 300ms hover delay */
+    transition: opacity 0.12s ease 0.3s, visibility 0s linear 0.3s;
   }
 }
 
