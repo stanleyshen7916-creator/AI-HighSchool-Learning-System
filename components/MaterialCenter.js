@@ -73,23 +73,6 @@ AHS.MaterialCenter = (function () {
 
   /* ---- Toolbar --------------------------------------------------------- */
   function toolbar(data, onView) {
-    var catChips = el("div", { class: "mat-toolbar__cats" },
-      data.categories.map(function (c, i) {
-        var b = el("button", {
-          type: "button",
-          class: "mat-toolbar__cat" + (i === 0 ? " is-active" : ""),
-          text: c
-        });
-        b.addEventListener("click", function () {
-          var sibs = catChips.querySelectorAll(".mat-toolbar__cat");
-          Array.prototype.forEach.call(sibs, function (s) {
-            s.classList.remove("is-active");
-          });
-          b.classList.add("is-active");
-        });
-        return b;
-      }));
-
     function select(label, options) {
       return el("label", { class: "mat-select" }, [
         el("span", { class: "mat-select__label", text: label }),
@@ -118,7 +101,6 @@ AHS.MaterialCenter = (function () {
     });
 
     return el("div", { class: "mat-toolbar" }, [
-      catChips,
       el("div", { class: "mat-toolbar__selects" }, [
         select("年級", data.grades),
         select("排序", data.sorts),

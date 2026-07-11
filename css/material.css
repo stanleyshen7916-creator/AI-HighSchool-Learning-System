@@ -145,20 +145,6 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
 }
-.mat-toolbar__cats { display: flex; flex-wrap: wrap; gap: 8px; }
-.mat-toolbar__cat {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  background-color: var(--card);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-.mat-toolbar__cat:hover { background-color: var(--bg); }
-.mat-toolbar__cat.is-active { background-color: var(--brand); border-color: var(--brand); color: #ffffff; }
 
 .mat-toolbar__selects { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
 .mat-select { display: flex; flex-direction: column; gap: 4px; }
