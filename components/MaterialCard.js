@@ -118,72 +118,33 @@ AHS.MaterialCard = (function () {
       downloadMaterial();
     });
 
-    /* 更多 (⋯) menu — 開啟 / 下載 / 收藏 / 刪除. */
-    var moreBtn = el("button", {
-      type: "button", class: "mat-card__act mat-card__more",
-      "aria-label": "更多功能", "data-tip": "更多功能", "aria-haspopup": "true",
-      html: AHS.Icons.more()
-    });
-    var menu = el("div", { class: "mat-card__menu", role: "menu", hidden: "hidden" });
-
-    function menuItem(label, handler) {
-      var b = el("button", { type: "button", class: "mat-card__menu-item", role: "menuitem", text: label });
-      b.addEventListener("click", function (e) {
-        e.stopPropagation();
-        closeMenu();
-        handler();
-      });
-      return b;
-    }
-    menu.appendChild(menuItem("開啟教材", openMaterial));
-    menu.appendChild(menuItem("下載教材", downloadMaterial));
-    menu.appendChild(menuItem("收藏教材", function () {
-      var nowFav = typeof onToggleFavorite === "function" ? onToggleFavorite(item.id) : !favBtn.classList.contains("is-active");
-      applyFav(nowFav);
-    }));
+    /* RC-001-A: the ⋯ "更多選項" dropdown is removed entirely. Its four
+       actions are represented directly on the card: 收藏 (favBtn),
+       開啟 (openBtn), 下載 (dlBtn), and a single explicit 刪除 button
+       (icon + text, danger tone). Delete keeps the confirm → remove →
+       list-refresh flow (the confirm lives in MaterialCenter). */
+    var acts = [favBtn, openBtn, dlBtn];
     if (typeof onDelete === "function") {
-      menu.appendChild(menuItem("刪除教材", function () { onDelete(item.id); }));
-    }
-
-    /* Menu open/close helpers. Esc + outside-click + re-click all close;
-       these listeners are added only while the menu is open and removed
-       on close, so no duplicate/global listener leaks accumulate. */
-    function onDocClick() { closeMenu(); }
-    function onKeydown(e) {
-      if (e.key === "Escape" || e.keyCode === 27) { closeMenu(); }
-    }
-    function openMenu() {
-      /* Close any other open menus first. */
-      var others = document.querySelectorAll(".mat-card__menu");
-      Array.prototype.forEach.call(others, function (m) {
-        if (m !== menu) { m.setAttribute("hidden", "hidden"); }
+      /* Trash icon defined locally (the shared Icons.js is out of this
+         WO's modify scope); matches the spec's 垃圾桶 glyph. */
+      var trashSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" ' +
+        'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" ' +
+        'stroke-linejoin="round" aria-hidden="true">' +
+        '<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/>' +
+        '<path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg>';
+      var deleteBtn = el("button", {
+        type: "button", class: "mat-card__act mat-card__delete-btn",
+        "aria-label": "刪除教材", "data-tip": "刪除教材"
+      }, [
+        el("span", { class: "mat-card__delete-icon", html: trashSvg }),
+        el("span", { class: "mat-card__delete-text", text: "刪除" })
+      ]);
+      deleteBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        onDelete(item.id);
       });
-      menu.removeAttribute("hidden");
-      moreBtn.setAttribute("aria-expanded", "true");
-      /* Listeners attach synchronously; the opening click already called
-         stopPropagation so it won't reach onDocClick this same tick. */
-      document.addEventListener("click", onDocClick);
-      document.addEventListener("keydown", onKeydown);
+      acts.push(deleteBtn);
     }
-    function closeMenu() {
-      if (menu.hasAttribute("hidden")) { return; }
-      menu.setAttribute("hidden", "hidden");
-      moreBtn.setAttribute("aria-expanded", "false");
-      document.removeEventListener("click", onDocClick);
-      document.removeEventListener("keydown", onKeydown);
-    }
-    moreBtn.setAttribute("aria-expanded", "false");
-    moreBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      if (menu.hasAttribute("hidden")) { openMenu(); } else { closeMenu(); }
-    });
-    menu.addEventListener("click", function (e) { e.stopPropagation(); });
-
-    var moreWrap = el("div", { class: "mat-card__more-wrap" }, [moreBtn, menu]);
-
-    /* Action row: favorite + open + download + ⋯ menu (four hover
-       tooltip targets per WO-006). */
-    var acts = [favBtn, openBtn, dlBtn, moreWrap];
 
     /* Continue Button — reuses .continue-reading__btn (same pill style,
        same Design Token as the Recent Learning section's button). */

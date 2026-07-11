@@ -349,7 +349,7 @@ AHS.MaterialCenter = (function () {
       Array.prototype.forEach.call(subjButtons, function (b) {
         b.classList.toggle("is-active", b.getAttribute("data-id") === "all");
       });
-      var filterSelects = filterEl.querySelectorAll(".mat-filter__control");
+      var filterSelects = filterUI.panel.querySelectorAll(".mat-filter__control");
       Array.prototype.forEach.call(filterSelects, function (s) { s.value = "all"; });
       searchBar.clear();
       tabsEl.resetToAll();
@@ -499,12 +499,44 @@ AHS.MaterialCenter = (function () {
       if (item) { doDownload(item); }
     }
 
-    /* Delete with confirm prompt (Feature 2). */
+    /* WO-008-004: custom confirm modal (replaces native window.confirm).
+       "是否確定刪除此教材？" with【取消】【刪除】. Reuses .mat-dialog
+       styles. Deletes only on explicit 刪除. */
     function confirmDeleteMaterial(id) {
       var item = AHS.MaterialRuntime.getById(id);
       var name = item ? (item.title || "此教材") : "此教材";
-      var ok = (typeof window.confirm === "function") ? window.confirm("確定要刪除《" + name + "》嗎？") : true;
-      if (ok) { onDeleteMaterial(id); }
+
+      var overlay = el("div", {
+        class: "mat-dialog__overlay", role: "dialog", "aria-modal": "true", "aria-label": "刪除教材"
+      });
+      function close() { if (overlay.parentNode) { overlay.parentNode.removeChild(overlay); } }
+
+      var cancelBtn = el("button", { type: "button", class: "mat-dialog__btn mat-dialog__btn--ghost", text: "取消" });
+      cancelBtn.addEventListener("click", close);
+
+      var confirmBtn = el("button", { type: "button", class: "mat-dialog__btn mat-dialog__btn--danger", text: "刪除" });
+      confirmBtn.addEventListener("click", function () {
+        close();
+        onDeleteMaterial(id);
+      });
+
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
+      function onKey(e) {
+        if (e.key === "Escape" || e.keyCode === 27) { close(); document.removeEventListener("keydown", onKey); }
+      }
+      document.addEventListener("keydown", onKey);
+
+      overlay.appendChild(el("div", { class: "mat-dialog mat-dialog--confirm" }, [
+        el("div", { class: "mat-dialog__head" }, [
+          el("h2", { class: "mat-dialog__title", text: "刪除教材" })
+        ]),
+        el("div", { class: "mat-dialog__body" }, [
+          el("p", { class: "mat-dialog__confirm-text", text: "是否確定刪除此教材？" }),
+          el("p", { class: "mat-dialog__confirm-sub", text: "《" + name + "》" })
+        ]),
+        el("div", { class: "mat-dialog__foot" }, [cancelBtn, confirmBtn])
+      ]));
+      document.body.appendChild(overlay);
     }
 
     /* Delete: MaterialRuntime.remove() -> renderAll (grid + empty state
@@ -551,7 +583,7 @@ AHS.MaterialCenter = (function () {
     renderChapterPanel();
     subjPanelEl.appendChild(chapterSlot);
 
-    var filterEl = AHS.MaterialFilter.create(seed, function (state) {
+    var filterUI = AHS.MaterialFilter.create(seed, function (state) {
       currentFilter = state;
       renderGrid();
     });
@@ -559,7 +591,11 @@ AHS.MaterialCenter = (function () {
       currentSort = sortId;
       renderGrid();
     });
-    var filterSortRow = el("div", { class: "mat-filter-sort-row" }, [filterEl, sortEl]);
+    /* Filter button + Sort sit in the controls row; the Filter PANEL is a
+       separate full-width in-flow block placed BELOW the row and ABOVE
+       the grid, so opening it reserves layout space and pushes the grid
+       down instead of overlaying cards (WO-008-001). */
+    var filterSortRow = el("div", { class: "mat-filter-sort-row" }, [filterUI.button, sortEl]);
 
     var searchBar = AHS.MaterialSearchBar.create(function (keyword) {
       currentSearch = keyword;
@@ -575,6 +611,7 @@ AHS.MaterialCenter = (function () {
       el("div", { class: "mat-content" }, [
         toolbar(seed, setView),
         filterSortRow,
+        filterUI.panel,
         theGrid,
         emptyState,
         status

@@ -186,13 +186,13 @@
 .mat-toolbar__view.is-active { background-color: var(--brand-soft); color: var(--brand); border-color: var(--brand-line); }
 
 /* ---- Material grid --------------------------------------------------- */
-.mat-grid { display: grid; gap: 14px; }
+.mat-grid { display: grid; gap: 18px; }
 .mat-grid[data-view="grid"] { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .mat-grid[data-view="list"] { grid-template-columns: minmax(0, 1fr); }
 
 /* ---- Grouped layout (RC-001) ----------------------------------------- */
-.mat-groups { display: flex; flex-direction: column; gap: 26px; }
-.mat-group { display: flex; flex-direction: column; gap: 12px; }
+.mat-groups { display: flex; flex-direction: column; gap: 34px; }
+.mat-group { display: flex; flex-direction: column; gap: 18px; }
 .mat-group__header {
   display: flex; align-items: center; gap: 8px;
   padding-bottom: 8px; border-bottom: 1px solid var(--line);
@@ -417,7 +417,8 @@
    Button matches existing .mat-toolbar__view sizing/border language;
    panel reuses the same dropdown recipe as .notif-menu/.profile-menu
    (position/shadow/radius all from existing tokens, no new value). */
-.mat-filter { position: relative; }
+.mat-filter { position: relative; display: inline-flex; }
+.mat-filter__btn.is-active { background-color: var(--brand-soft); color: var(--brand); border-color: var(--brand); }
 .mat-filter__btn {
   display: inline-flex; align-items: center; gap: 6px;
   height: 40px; padding: 0 14px;
@@ -432,20 +433,24 @@
 .mat-filter__btn:hover { background-color: var(--bg); }
 
 .mat-filter__panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 20;
-  min-width: 220px;
+  /* Own full-width in-flow block (child of .mat-content), placed above
+     the grid. Opening it reserves layout space and pushes the grid down
+     — never overlays a card (WO-008-001). */
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 14px;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
   background-color: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   padding: 14px;
 }
+.mat-filter__panel[hidden] { display: none; }
+.mat-filter__panel .mat-filter__field { flex: 1 1 180px; min-width: 0; }
 .mat-filter__field { display: flex; flex-direction: column; gap: 4px; }
 .mat-filter__field-label { font-size: 12px; color: var(--text-muted); }
 .mat-filter__control {
@@ -536,7 +541,7 @@
   .mat-select { flex: 1 1 auto; }
   .mat-select__control { width: 100%; }
   .mat-filter-sort-row { flex-direction: column; align-items: stretch; }
-  .mat-filter__panel { left: -8px; right: -8px; min-width: 0; }
+  .mat-filter__panel { flex-direction: column; }
   /* M012: layout-only mobile fixes (no design change) */
   .mat-header { flex-direction: column; align-items: stretch; gap: 12px; }
   .mat-search { width: 100%; }
@@ -546,45 +551,30 @@
   .mat-empty__illustration img { width: 110px; }
 }
 
-/* ---- More (⋯) menu on card (Feature 2) -------------------------------- */
-.mat-card__more-wrap { position: relative; flex: 1 1 auto; display: flex; }
-.mat-card__more { width: 100%; }
-.mat-card__menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  z-index: 30;
-  min-width: 160px;
-  background-color: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-/* The menu is controlled ONLY by the [hidden] attribute (toggled on
-   Click in MaterialCard.js). Because .mat-card__menu sets display:flex,
-   the UA's low-specificity [hidden]{display:none} is overridden — so we
-   must restore it here with matching specificity. Without this the menu
-   renders permanently (which on the live site looked like a hover-open
-   menu). This is the single source of truth; there is NO :hover rule
-   that opens the menu. */
-.mat-card__menu[hidden] { display: none; }
-.mat-card__menu-item {
-  width: 100%;
-  text-align: left;
-  padding: 9px 10px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  font: inherit;
+/* ---- Delete button on card (RC-001-A) --------------------------------
+   Replaces the removed ⋯ dropdown with a single explicit delete button
+   (trash icon + text, danger tone). */
+.mat-card__delete-btn {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  color: #d9534f;
+  border: 1px solid #f3c9c9;
+  background-color: #fff5f5;
   font-size: 13px;
-  color: var(--text);
-  cursor: pointer;
+  font-weight: 700;
 }
-.mat-card__menu-item:hover { background-color: var(--bg); }
+.mat-card__delete-btn:hover {
+  background-color: #fdecec;
+  color: #c9302c;
+  border-color: #e6a9a9;
+}
+.mat-card__delete-icon { display: inline-flex; }
+.mat-card__delete-icon svg { width: 16px; height: 16px; }
+.mat-card__delete-text { line-height: 1; }
 
 /* ---- Tooltip (WO-006) — CSS-only tip driven by [data-tip]. Shows after
    a 300ms hover delay, disappears immediately on leave. No native title
@@ -658,6 +648,11 @@
 .mat-dialog__btn--primary { background-color: var(--brand); color: #fff; border-color: var(--brand); }
 .mat-dialog__btn--primary:hover { background-color: var(--brand-strong); }
 .mat-dialog__btn--ghost:hover { background-color: var(--bg); }
+.mat-dialog__btn--danger { background-color: #d9534f; color: #fff; border-color: #d9534f; }
+.mat-dialog__btn--danger:hover { background-color: #c9302c; border-color: #c9302c; }
+.mat-dialog--confirm { max-width: 360px; }
+.mat-dialog__confirm-text { margin: 0; font-size: 15px; font-weight: 600; color: var(--text); }
+.mat-dialog__confirm-sub { margin: 6px 0 0; font-size: 13px; color: var(--text-muted); word-break: break-all; }
 
 /* ---- Material preview overlay (Feature 5) ----------------------------- */
 .mat-preview__overlay {

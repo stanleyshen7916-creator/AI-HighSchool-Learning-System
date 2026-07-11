@@ -55,8 +55,11 @@ AHS.MaterialFilter = (function () {
     ]);
   }
 
-  /* create(data, onApply) — onApply({subject, grade, status}) fires on
-     any select change. Panel starts closed. */
+  /* create(data, onApply) — returns { button, panel } as SEPARATE nodes
+     so the integrator can place the panel as its own in-flow block that
+     reserves layout space and pushes the grid down (WO-008-001), instead
+     of nesting/overlaying. onApply({subject,grade,status}) fires on any
+     select change. Panel starts closed; toggled by the button. */
   function create(data, onApply) {
     var state = { subject: "all", grade: "all", status: "all" };
 
@@ -71,25 +74,27 @@ AHS.MaterialFilter = (function () {
     ]);
 
     var btn = el("button", {
-      type: "button", class: "mat-filter__btn", "aria-haspopup": "true",
-      html: AHS.Icons.filterX()
-    }, [el("span", { text: "篩選" })]);
+      type: "button", class: "mat-filter__btn", "aria-haspopup": "true", "aria-expanded": "false"
+    }, [
+      el("span", { html: AHS.Icons.filterX() }),
+      el("span", { text: "篩選" })
+    ]);
 
     btn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var isHidden = panel.hasAttribute("hidden");
-      if (isHidden) {
+      var willOpen = panel.hasAttribute("hidden");
+      if (willOpen) {
         panel.removeAttribute("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        btn.classList.add("is-active");
       } else {
         panel.setAttribute("hidden", "hidden");
+        btn.setAttribute("aria-expanded", "false");
+        btn.classList.remove("is-active");
       }
     });
-    document.addEventListener("click", function () {
-      panel.setAttribute("hidden", "hidden");
-    });
-    panel.addEventListener("click", function (e) { e.stopPropagation(); });
 
-    return el("div", { class: "mat-filter" }, [btn, panel]);
+    return { button: btn, panel: panel };
   }
 
   return { create: create, statusOf: statusOf };
