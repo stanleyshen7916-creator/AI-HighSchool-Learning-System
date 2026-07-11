@@ -187,8 +187,10 @@ AHS.MaterialCenter = (function () {
       fileInput.value = "";
     });
 
+    function openPicker() { fileInput.click(); }
+
     var pick = el("button", { type: "button", class: "upload__pick", text: "選擇檔案" });
-    pick.addEventListener("click", function () { fileInput.click(); });
+    pick.addEventListener("click", openPicker);
 
     var drop = el("div", { class: "upload__drop" }, [
       el("span", { class: "upload__drop-icon", html: AHS.Icons.download() }),
@@ -209,10 +211,14 @@ AHS.MaterialCenter = (function () {
       }
     });
 
-    return el("section", { class: "card upload", "aria-label": "上傳教材" }, [
+    var root = el("section", { class: "card upload", "aria-label": "上傳教材" }, [
       el("h2", { class: "card__title", text: "上傳教材" }),
       drop
     ]);
+
+    /* Bug 001: expose openPicker so the top "上傳教材" button shares the
+       exact same file-picker flow as the "選擇檔案" button. */
+    return { root: root, openPicker: openPicker };
   }
 
   /* recentFilesFromRuntime — mirrors uploaded materials (newest first),
@@ -567,18 +573,22 @@ AHS.MaterialCenter = (function () {
       ])
     ]);
 
+    var uploadUI = uploadPanel(status, onFilesPicked);
+    var uploadBtn = el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--ghost" }, [
+      el("span", { html: AHS.Icons.download() }),
+      el("span", { text: "上傳教材" })
+    ]);
+    uploadBtn.addEventListener("click", function () { uploadUI.openPicker(); });
+
     var rail = el("div", { class: "mat-rail" }, [
       el("div", { class: "mat-rail__actions" }, [
-        el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--ghost" }, [
-          el("span", { html: AHS.Icons.download() }),
-          el("span", { text: "上傳教材" })
-        ]),
+        uploadBtn,
         el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--primary" }, [
           el("span", { html: AHS.Icons.plus() }),
           el("span", { text: "新增資料夾" })
         ])
       ]),
-      uploadPanel(status, onFilesPicked),
+      uploadUI.root,
       recentFilesSlot
     ]);
 

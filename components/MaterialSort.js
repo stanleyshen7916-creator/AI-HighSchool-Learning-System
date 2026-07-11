@@ -18,14 +18,22 @@ AHS.MaterialSort = (function () {
 
   var OPTIONS = [
     { id: "newest", label: "最新加入" },
-    { id: "recent", label: "最近學習" },
-    { id: "progress", label: "學習進度" },
-    { id: "title", label: "名稱排序" }
+    { id: "oldest", label: "最舊加入" },
+    { id: "title_asc", label: "名稱（A-Z）" },
+    { id: "title_desc", label: "名稱（Z-A）" }
   ];
 
   function parseDate(str) {
     var t = str ? Date.parse(str.replace(/\//g, "-")) : NaN;
     return isNaN(t) ? 0 : t;
+  }
+
+  /* createdKey(item) — prefer the runtime created-order (`order`, a
+     monotonic sequence) for a stable newest/oldest sort; fall back to
+     the day-granularity `date` for seed-shaped items without `order`. */
+  function createdKey(item) {
+    if (typeof item.order === "number") { return item.order; }
+    return parseDate(item.date);
   }
 
   /* apply(items, sortId) — returns a NEW sorted array; never mutates
@@ -35,22 +43,16 @@ AHS.MaterialSort = (function () {
 
     switch (sortId) {
       case "newest":
-        list.sort(function (a, b) { return parseDate(b.date) - parseDate(a.date); });
+        list.sort(function (a, b) { return createdKey(b) - createdKey(a); });
         break;
-      case "recent":
-        list.sort(function (a, b) {
-          var aStudied = (a.progress || 0) > 0 ? 1 : 0;
-          var bStudied = (b.progress || 0) > 0 ? 1 : 0;
-          if (aStudied !== bStudied) { return bStudied - aStudied; }
-          if (b.progress !== a.progress) { return (b.progress || 0) - (a.progress || 0); }
-          return parseDate(b.date) - parseDate(a.date);
-        });
+      case "oldest":
+        list.sort(function (a, b) { return createdKey(a) - createdKey(b); });
         break;
-      case "progress":
-        list.sort(function (a, b) { return (b.progress || 0) - (a.progress || 0); });
-        break;
-      case "title":
+      case "title_asc":
         list.sort(function (a, b) { return String(a.title).localeCompare(String(b.title), "zh-Hant"); });
+        break;
+      case "title_desc":
+        list.sort(function (a, b) { return String(b.title).localeCompare(String(a.title), "zh-Hant"); });
         break;
       default:
         break;
