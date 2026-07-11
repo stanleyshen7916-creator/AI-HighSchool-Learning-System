@@ -1,40 +1,27 @@
-/* js/utils/greeting.js — Sprint 1 · Task 001: AI 老師今日問候 (Greeting).
-   Pure Vanilla JS utility under window.AHS.Utils. Returns a time-based
-   greeting string; never throws. No DOM access, no localStorage, no
-   HTML/CSS changes — this file only computes a String. */
-window.AHS = window.AHS || {};
-AHS.Utils = AHS.Utils || {};
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7c5cff">
+  <meta name="color-scheme" content="light">
+  <title>AI 高中學習系統 · 測驗中心</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/qiaoqiao.css">
+  <link rel="stylesheet" href="css/shell.css">
+  <link rel="stylesheet" href="css/quiz.css">
+</head>
+<body>
+  <div id="app"></div>
 
-/* getGreeting()
-   回傳依目前系統時間對應的問候文字（String）。
-   時間區間：
-     05:00–10:59  早安
-     11:00–16:59  午安
-     17:00–22:59  晚安
-     23:00–04:59  深夜
-   若系統時間取得失敗，回傳預設歡迎詞，不得拋出例外。 */
-AHS.Utils.getGreeting = function () {
-  var FALLBACK = "歡迎回來，開始今天的學習吧！";
-
-  try {
-    var hour = new Date().getHours();
-
-    if (typeof hour !== "number" || isNaN(hour)) {
-      return FALLBACK;
-    }
-
-    if (hour >= 5 && hour <= 10) {
-      return "☀️ 早安，今天一起努力學習吧！";
-    }
-    if (hour >= 11 && hour <= 16) {
-      return "🌤 午安，保持節奏，繼續加油！";
-    }
-    if (hour >= 17 && hour <= 22) {
-      return "🌙 晚安，今天也完成不少進度了！";
-    }
-    /* 23:00–04:59 */
-    return "🌌 夜深了，記得適當休息，明天再努力。";
-  } catch (err) {
-    return FALLBACK;
-  }
-};
+  <!-- Ordered scripts sharing the window.AHS namespace (no modules, no build). -->
+  <script src="js/ui.js"></script>
+  <script src="js/Icons.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/Qiaoqiao.js"></script>
+  <script src="components/AppShell.js"></script>
+  <script src="components/QuizCenter.js"></script>
+  <script src="js/app-quiz.js"></script>
+</body>
+</html>

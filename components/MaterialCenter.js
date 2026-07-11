@@ -253,6 +253,18 @@ AHS.MaterialCenter = (function () {
     ]);
   }
 
+  function fileExt(name) {
+    var m = /\.([a-zA-Z0-9]+)$/.exec(name || "");
+    return m ? m[1].toUpperCase() : "FILE";
+  }
+
+  function formatSize(bytes) {
+    if (typeof bytes !== "number" || isNaN(bytes) || bytes <= 0) { return ""; }
+    if (bytes < 1024) { return bytes + " B"; }
+    if (bytes < 1024 * 1024) { return Math.round(bytes / 1024) + " KB"; }
+    return (Math.round(bytes / (1024 * 1024) * 10) / 10) + " MB";
+  }
+
   /* ---- Material detail (MAT-F004) --------------------------------------
      Reuses the existing .mat-status announcement area as the material
      detail display region (no new layout/UI section introduced).
@@ -362,10 +374,8 @@ AHS.MaterialCenter = (function () {
 
     function renderGrid() {
       var list = computeVisibleItems();
-      /* Scope boundary (this WO): Delete is NOT surfaced — no onDelete
-         handler is passed, so MaterialCard renders no delete button.
-         The dormant delete code stays in place per PMO "no rollback". */
-      var newGrid = AHS.MaterialGrid.create(list, status, openDetail);
+      /* Module Completion: Delete + Favorite are now wired to Runtime. */
+      var newGrid = AHS.MaterialGrid.create(list, status, openDetail, onDeleteMaterial, onToggleFavorite);
       newGrid.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
       theGrid.parentNode.replaceChild(newGrid, theGrid);
       theGrid = newGrid;
@@ -420,26 +430,48 @@ AHS.MaterialCenter = (function () {
       }, 250);
     }
 
-    /* ---- Upload: Button -> File Picker -> File Object ------------------
-       Scope boundary (this WO): stop at obtaining the File object. Do
-       NOT build a material / write Runtime / update Grid (Upload Flow &
-       CRUD are explicitly out of scope). We only read the picked File
-       objects and acknowledge them, proving the picker works. */
+    /* ---- Upload Flow (Module Completion) ------------------------------
+       File Object -> build Material Object -> MaterialRuntime.add() ->
+       renderAll (grid + recent learning + recent files refresh, empty
+       state auto-hides). Memory only, no server. Material Object reuses
+       the existing runtime record shape (MaterialRuntime.add defaults);
+       no data-model redesign. */
     function onFilesPicked(fileList) {
       if (!fileList || fileList.length === 0) { return; }
-      /* Access the File object(s) to confirm they are obtained. */
-      var names = [];
+      var added = null;
       for (var i = 0; i < fileList.length; i++) {
         var f = fileList[i]; /* File object */
-        names.push(f.name);
+        added = AHS.MaterialRuntime.add({
+          title: f.name.replace(/\.[^.]+$/, ""),
+          fileName: f.name,
+          fileType: fileExt(f.name),
+          fileSize: formatSize(f.size)
+        });
       }
-      status.textContent = "已取得檔案：" + names.join("、");
+      status.textContent = "已新增教材：" + (added ? added.title : "");
       status.removeAttribute("hidden");
+      renderAll();
     }
 
-    /* Delete is out of scope for this WO and is not wired anywhere; its
-       handler is therefore omitted to keep Dead Code = 0. It can be
-       reintroduced when a Delete Work Order is issued. */
+    /* Delete: MaterialRuntime.remove() -> renderAll (grid + empty state
+       + recent all update; empty state auto-shows when none left). */
+    function onDeleteMaterial(id) {
+      if (AHS.MaterialRuntime.remove(id)) {
+        status.textContent = "已刪除教材";
+        status.removeAttribute("hidden");
+        renderAll();
+      }
+    }
+
+    /* Favorite: MaterialRuntime.toggleFavorite() is the single source of
+       truth; the card reflects the returned state. Grid is NOT fully
+       re-rendered here (the card updates its own icon in place), except
+       when the favorite-only view is active, where the set changes. */
+    function onToggleFavorite(id) {
+      var nowFav = AHS.MaterialRuntime.toggleFavorite(id);
+      if (currentFavoriteOnly) { renderGrid(); }
+      return nowFav;
+    }
 
     var chapterSlot = el("div", { class: "chapter-filter-slot" });
     function renderChapterPanel() {

@@ -17,19 +17,12 @@ AHS.MaterialCard = (function () {
   "use strict";
   var el = AHS.UI.el;
 
-  /* M007: shared Memory State for Favorite — a plain object living for
-     the lifetime of this page load (module-level closure variable).
-     Persists across grid re-renders triggered by Filter/Sort (M008/M009)
-     without any localStorage/API/fetch/XHR. Resets naturally on page
-     reload, matching "Memory State only" per M007 spec. */
-  var favoriteState = {};
-
-  function isFavorited(id) { return !!favoriteState[id]; }
-  function toggleFavorite(id) {
-    favoriteState[id] = !favoriteState[id];
-    return favoriteState[id];
-  }
-
+  /* Module Completion: Favorite state is now owned by MaterialRuntime
+     (item.favorite is the single source of truth). The card reads
+     item.favorite for initial render and delegates toggling to the
+     onToggleFavorite callback, which updates the runtime and returns the
+     new state. No separate in-card favorite store (removed to avoid a
+     second, conflicting source of truth). */
   function clampProgress(value) {
     var n = typeof value === "number" && !isNaN(value) ? value : 0;
     if (n < 0) { return 0; }
@@ -41,8 +34,8 @@ AHS.MaterialCard = (function () {
     return p === 0 ? "未開始" : p + "%";
   }
 
-  /* create(item, status, onOpenDetail, onDelete) */
-  function create(item, status, onOpenDetail, onDelete) {
+  /* create(item, status, onOpenDetail, onDelete, onToggleFavorite) */
+  function create(item, status, onOpenDetail, onDelete, onToggleFavorite) {
     var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };
     var pct = clampProgress(item.progress);
 
@@ -62,16 +55,19 @@ AHS.MaterialCard = (function () {
         style: "color:" + subj.hex, html: AHS.Icons.book() })
     ]);
 
-    /* 收藏 Icon — driven by shared Memory State (favoriteState), so the
-       toggle survives grid re-renders from Filter/Sort. */
+    /* 收藏 Icon — reflects item.favorite (Runtime). Toggling delegates to
+       onToggleFavorite (Runtime.toggleFavorite) and mirrors the result. */
+    var isFav = !!item.favorite;
     var favBtn = el("button", {
-      type: "button", class: "mat-card__act mat-card__fav" + (isFavorited(item.id) ? " is-active" : ""),
-      "aria-label": "收藏", "aria-pressed": isFavorited(item.id) ? "true" : "false",
-      html: isFavorited(item.id) ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark()
+      type: "button", class: "mat-card__act mat-card__fav" + (isFav ? " is-active" : ""),
+      "aria-label": "收藏", "aria-pressed": isFav ? "true" : "false",
+      html: isFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark()
     });
     favBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var nowFavorited = toggleFavorite(item.id);
+      var nowFavorited = typeof onToggleFavorite === "function"
+        ? onToggleFavorite(item.id)
+        : !isFav;
       favBtn.setAttribute("aria-pressed", nowFavorited ? "true" : "false");
       favBtn.classList.toggle("is-active", nowFavorited);
       favBtn.innerHTML = nowFavorited ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark();
@@ -128,6 +124,20 @@ AHS.MaterialCard = (function () {
       el("div", { class: "progressbar__fill", style: "width:" + pct + "%;background-color:" + subj.hex })
     ]);
 
+    /* File info line — only for uploaded runtime materials (have a
+       fileName). Shows 檔案名稱 / 檔案類型 / 檔案大小 / 建立時間, per the
+       Material Card spec. Seed-shaped items (no fileName) skip this. */
+    var fileInfo = null;
+    if (item.fileName) {
+      var bits = [item.fileType];
+      if (item.fileSize) { bits.push(item.fileSize); }
+      bits.push(item.date);
+      fileInfo = el("p", { class: "mat-card__fileinfo" }, [
+        el("span", { class: "mat-card__filename", text: item.fileName }),
+        el("span", { class: "mat-card__filemeta", text: bits.join(" · ") })
+      ]);
+    }
+
     var card = el("article", {
       class: "mat-card",
       "data-subject": item.subject,
@@ -137,6 +147,7 @@ AHS.MaterialCard = (function () {
       cover,
       el("h3", { class: "mat-card__title", text: item.title }),
       el("p", { class: "mat-card__meta", text: (item.grade || "") + subj.name + "｜" + item.chapter }),
+      fileInfo,
       el("p", { class: "mat-card__intro", text: item.content || "" }),
       el("div", { class: "mat-card__progress-block" }, [
         el("div", { class: "mat-card__progress-head" }, [
@@ -166,5 +177,5 @@ AHS.MaterialCard = (function () {
     return card;
   }
 
-  return { create: create, isFavorited: isFavorited };
+  return { create: create };
 })();

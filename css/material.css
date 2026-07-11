@@ -230,6 +230,16 @@
 .mat-card__act svg { width: 16px; height: 16px; }
 .mat-card__act:hover { background-color: var(--brand-soft); color: var(--brand); }
 .mat-card__fav.is-active { background-color: var(--brand-soft); color: var(--brand); }
+.mat-card__delete:hover { background-color: #fdecec; color: #d9534f; border-color: #f3c9c9; }
+
+/* File info line (Module Completion: uploaded materials) */
+.mat-card__fileinfo { margin: 2px 0 0; display: flex; flex-direction: column; gap: 2px; }
+.mat-card__filename { font-size: 12px; font-weight: 700; color: var(--text); word-break: break-all; }
+.mat-card__filemeta { font-size: 11px; color: var(--text-faint); }
+
+/* Upload input (hidden) + drag-over state */
+.upload__input { display: none; }
+.upload__drop.is-dragover { border-color: var(--brand); background-color: var(--brand-soft); }
 
 /* ---- Material Card additions (M006) ----------------------------------- */
 .mat-card__intro {
