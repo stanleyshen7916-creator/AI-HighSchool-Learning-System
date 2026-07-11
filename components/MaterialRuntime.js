@@ -62,7 +62,10 @@ AHS.MaterialRuntime = (function () {
       favorite: false,
       fileName: partial.fileName || "",
       fileType: partial.fileType || "FILE",
-      fileSize: partial.fileSize || ""
+      fileSize: partial.fileSize || "",
+      /* runtime-only File reference for open/preview; null for
+         seed-shaped or fileless records. Not persisted. */
+      file: partial.file || null
     };
     store.materials.push(record);
     return record;

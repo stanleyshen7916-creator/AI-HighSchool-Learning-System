@@ -216,8 +216,9 @@ AHS.MaterialCenter = (function () {
   }
 
   /* recentFilesFromRuntime — mirrors uploaded materials (newest first),
-     replacing the old AHS.Mock.recentFiles seed list. */
-  function recentFilesFromRuntime(status) {
+     replacing the old AHS.Mock.recentFiles seed list. onOpen(id) opens
+     the material (Bug 002). */
+  function recentFilesFromRuntime(status, onOpen) {
     var recent = AHS.MaterialRuntime.recentByCreatedOrder();
     var body;
     if (recent.length === 0) {
@@ -238,8 +239,7 @@ AHS.MaterialCenter = (function () {
           el("span", { class: "recent-file__dl", html: AHS.Icons.download() })
         ]);
         row.addEventListener("click", function () {
-          status.textContent = "（Prototype）開啟檔案：" + (m.fileName || m.title);
-          status.removeAttribute("hidden");
+          if (typeof onOpen === "function") { onOpen(m.id); }
         });
         return row;
       }));
@@ -340,6 +340,7 @@ AHS.MaterialCenter = (function () {
         var searchMatch = !keyword ||
           String(item.title).toLowerCase().indexOf(keyword) !== -1 ||
           String(item.chapter).toLowerCase().indexOf(keyword) !== -1 ||
+          String(item.fileName || "").toLowerCase().indexOf(keyword) !== -1 ||
           String(item.content || "").toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
           filterStatusMatch && tabMatch && favMatch && searchMatch;
@@ -407,7 +408,7 @@ AHS.MaterialCenter = (function () {
     var recentFilesSlot = el("div", { class: "mat-recent-files-slot" });
     function renderRecentFiles() {
       recentFilesSlot.innerHTML = "";
-      recentFilesSlot.appendChild(recentFilesFromRuntime(status));
+      recentFilesSlot.appendChild(recentFilesFromRuntime(status, openMaterial));
     }
 
     /* Full refresh after any runtime mutation. */
@@ -445,12 +446,51 @@ AHS.MaterialCenter = (function () {
           title: f.name.replace(/\.[^.]+$/, ""),
           fileName: f.name,
           fileType: fileExt(f.name),
-          fileSize: formatSize(f.size)
+          fileSize: formatSize(f.size),
+          file: f /* runtime-only reference to the File, for open/preview */
         });
       }
       status.textContent = "已新增教材：" + (added ? added.title : "");
       status.removeAttribute("hidden");
       renderAll();
+    }
+
+    /* ---- Open material (Bug 002) --------------------------------------
+       Preview-able types (PDF / image / video / audio) open in a new tab
+       via an object URL built from the retained File; other types
+       download. When there is no underlying File (e.g. a record without a
+       blob), fall back to the existing detail view. Uses only in-memory
+       URL.createObjectURL — no fetch/XHR/backend. */
+    function openMaterial(id) {
+      var item = AHS.MaterialRuntime.getById(id);
+      if (!item) {
+        status.textContent = "教材不存在";
+        status.removeAttribute("hidden");
+        return;
+      }
+      if (!item.file || typeof window.URL === "undefined" || !window.URL.createObjectURL) {
+        /* No blob available — fall back to detail display. */
+        openDetail(id);
+        return;
+      }
+      var url = window.URL.createObjectURL(item.file);
+      var ext = String(item.fileType || "").toLowerCase();
+      var previewable = ["pdf", "png", "jpg", "jpeg", "gif", "webp", "svg",
+        "mp4", "webm", "ogg", "mov", "mp3", "wav", "m4a"];
+      if (previewable.indexOf(ext) !== -1) {
+        window.open(url, "_blank"); /* browser previews inline */
+        status.textContent = "已開啟教材：" + (item.fileName || item.title);
+      } else {
+        /* Other formats: trigger a download. */
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = item.fileName || item.title;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        status.textContent = "已下載教材：" + (item.fileName || item.title);
+      }
+      status.removeAttribute("hidden");
     }
 
     /* Delete: MaterialRuntime.remove() -> renderAll (grid + empty state
