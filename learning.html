@@ -1,26 +1,40 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#7c5cff">
-  <meta name="color-scheme" content="light">
-  <title>AI 高中學習系統 · 我的學習</title>
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/qiaoqiao.css">
-  <link rel="stylesheet" href="css/shell.css">
-  <link rel="stylesheet" href="css/learning.css">
-</head>
-<body>
-  <div id="app"></div>
+/* js/utils/countdown.js — Sprint 1 · Task 003: 下一次段考倒數.
+   Pure Vanilla JS utility under window.AHS.Utils. Reads AHS.Data.exam and
+   returns { examName, remainingDays }. Never throws — returns null when
+   exam data is missing/invalid, so the caller can render the fallback
+   message ("尚未設定段考資訊") without any Console Error. */
+window.AHS = window.AHS || {};
+AHS.Utils = AHS.Utils || {};
 
-  <script src="js/ui.js"></script>
-  <script src="js/Icons.js"></script>
-  <script src="js/mock-data.js"></script>
-  <script src="js/Qiaoqiao.js"></script>
-  <script src="components/AppShell.js"></script>
-  <script src="components/MyLearning.js"></script>
-  <script src="js/app-learning.js"></script>
-</body>
-</html>
+/* getExamCountdown()
+   remainingDays = examDate - 今天（以「日」為單位，忽略時分秒）。
+   最低為 0，不得出現負數。
+   若 AHS.Data.exam 不存在或格式無效，回傳 null。 */
+AHS.Utils.getExamCountdown = function () {
+  try {
+    var exam = AHS.Data && AHS.Data.exam;
+
+    if (!exam || !exam.examName || !exam.examDate) {
+      return null;
+    }
+
+    var examDate = new Date(exam.examDate + "T00:00:00");
+    if (isNaN(examDate.getTime())) {
+      return null;
+    }
+
+    var today = new Date();
+    var todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var examMidnight = new Date(examDate.getFullYear(), examDate.getMonth(), examDate.getDate());
+
+    var msPerDay = 1000 * 60 * 60 * 24;
+    var diffDays = Math.round((examMidnight.getTime() - todayMidnight.getTime()) / msPerDay);
+
+    return {
+      examName: exam.examName,
+      remainingDays: diffDays < 0 ? 0 : diffDays
+    };
+  } catch (err) {
+    return null;
+  }
+};

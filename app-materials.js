@@ -1,0 +1,130 @@
+/* css/tutor.css — AI Tutor (巧巧老師) chat page. BEM. RWD. */
+
+.tutor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  align-items: start;
+}
+.tutor-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.tutor-rail { display: flex; flex-direction: column; gap: 16px; }
+
+/* ---- Hero ------------------------------------------------------------ */
+.tutor-hero {
+  display: flex; align-items: center; gap: 18px;
+  border-radius: var(--radius-xl); padding: 20px 24px;
+  background-image: linear-gradient(120deg, #efeaff 0%, #f4effe 60%, #eee7ff 100%);
+  border: 1px solid var(--brand-line);
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.10);
+}
+.tutor-hero__avatar { flex: 0 0 auto; box-shadow: 0 6px 18px rgba(124, 92, 255, 0.18); }
+.tutor-hero__title { margin: 0; font-size: 22px; font-weight: 800; }
+.tutor-hero__tagline { margin: 4px 0 10px; font-size: 14px; color: var(--text-muted); }
+.tutor-hero__badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: var(--brand);
+  background-color: var(--card); border: 1px solid var(--brand-line);
+  padding: 5px 12px; border-radius: var(--radius-pill);
+}
+.tutor-hero__badge svg { width: 15px; height: 15px; }
+
+/* ---- Chat ------------------------------------------------------------ */
+.tutor-chat { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.tutor-thread {
+  display: flex; flex-direction: column; gap: 14px;
+  max-height: 460px; overflow-y: auto; padding: 4px;
+}
+.tutor-thread__day { align-self: center; font-size: 12px; color: var(--text-faint);
+  background-color: var(--bg); padding: 4px 12px; border-radius: var(--radius-pill); }
+
+.tutor-msg { display: flex; gap: 10px; max-width: 82%; }
+.tutor-msg--user { align-self: flex-end; flex-direction: column; align-items: flex-end; }
+.tutor-msg--ai { align-self: flex-start; }
+.tutor-msg__avatar { flex: 0 0 auto; margin-top: 2px; }
+.tutor-msg__col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tutor-msg__bubble {
+  padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.7;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.tutor-msg--user .tutor-msg__bubble { background-color: var(--brand); color: #ffffff; border-bottom-right-radius: 4px; }
+.tutor-msg--ai .tutor-msg__bubble { background-color: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
+.tutor-msg__line { display: block; }
+.tutor-msg__time { font-size: 11px; color: var(--text-faint); }
+.tutor-msg__foot { display: flex; align-items: center; gap: 10px; }
+.tutor-msg__actions { display: flex; gap: 2px; }
+.tutor-msg__act { width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: var(--text-faint); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.tutor-msg__act svg { width: 15px; height: 15px; }
+.tutor-msg__act:hover { background-color: var(--bg); color: var(--brand); }
+
+/* ---- Input ----------------------------------------------------------- */
+.tutor-input { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.tutor-input__row { display: flex; align-items: center; gap: 10px; }
+.tutor-input__field {
+  flex: 1 1 auto; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-pill);
+  padding: 12px 18px; font: inherit; font-size: 14px; outline: none; background-color: var(--card);
+}
+.tutor-input__field:focus { border-color: var(--brand-line); }
+.tutor-input__send {
+  flex: 0 0 auto; width: 46px; height: 46px; border: 0; border-radius: var(--radius-pill);
+  background-color: var(--brand); color: #ffffff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-btn);
+}
+.tutor-input__send svg { width: 20px; height: 20px; }
+.tutor-input__send:hover { background-color: var(--brand-strong); }
+.tutor-input__tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.tutor-input__tool {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 8px 14px;
+  background-color: var(--card); color: var(--text-muted); font: inherit; font-size: 13px; cursor: pointer;
+}
+.tutor-input__tool svg { width: 15px; height: 15px; }
+.tutor-input__tool:hover { background-color: var(--bg); color: var(--brand); }
+
+/* ---- Suggestions ----------------------------------------------------- */
+.tutor-suggest__title { display: flex; align-items: center; gap: 6px; }
+.tutor-suggest__spark { color: var(--brand); display: inline-flex; }
+.tutor-suggest__spark svg { width: 18px; height: 18px; }
+.tutor-suggest__list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.tutor-suggest__item {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+  background-color: var(--card); cursor: pointer; text-align: left; font: inherit; width: 100%;
+}
+.tutor-suggest__item:hover { background-color: var(--brand-soft); border-color: var(--brand-line); }
+.tutor-suggest__icon { width: 38px; height: 38px; border-radius: 10px; background-color: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.tutor-suggest__icon svg { width: 18px; height: 18px; }
+.tutor-suggest__meta { display: flex; flex-direction: column; }
+.tutor-suggest__label { font-size: 14px; font-weight: 700; }
+.tutor-suggest__desc { font-size: 12px; color: var(--text-faint); }
+
+/* ---- History --------------------------------------------------------- */
+.tutor-history__list { display: flex; flex-direction: column; gap: 2px; }
+.tutor-history__item { display: flex; gap: 10px; padding: 10px 8px; border: 0; border-radius: 12px; background: transparent; cursor: pointer; text-align: left; font: inherit; width: 100%; }
+.tutor-history__item:hover { background-color: var(--bg); }
+.tutor-history__icon { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px; background-color: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; }
+.tutor-history__icon svg { width: 17px; height: 17px; }
+.tutor-history__meta { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tutor-history__title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tutor-history__title { font-size: 14px; font-weight: 700; }
+.tutor-history__time { font-size: 11px; color: var(--text-faint); flex: 0 0 auto; }
+.tutor-history__sub { font-size: 12px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---- Resources ------------------------------------------------------- */
+.tutor-res__list { display: flex; flex-direction: column; gap: 2px; }
+.tutor-res__item { display: flex; align-items: center; gap: 10px; padding: 10px 6px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; text-align: left; font: inherit; width: 100%; }
+.tutor-res__item:hover { background-color: var(--bg); }
+.tutor-res__badge { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+.tutor-res__name { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tutor-res__dl { flex: 0 0 auto; color: var(--text-faint); display: flex; }
+.tutor-res__dl svg { width: 18px; height: 18px; }
+
+/* ---- RWD ------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .tutor-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .tutor-hero { flex-direction: column; text-align: center; }
+  .tutor-msg { max-width: 92%; }
+  .tutor-input__tool span:last-child { display: none; }
+  .tutor-input__tool { padding: 8px; }
+}
