@@ -2,11 +2,11 @@
    Loading State: Skeleton Card / Skeleton Grid / Search Loading /
    Recent Learning Loading. Pure CSS shimmer (a plain keyframes rule in
    css/material.css) — no third-party library, no animation framework.
-   Prototype-only: since the whole app is synchronous Mock Data, these
-   skeletons are not auto-shown anywhere yet; wiring them into a real
-   async flow is M013 Integration scope. They are exposed as factory
-   functions so QA (and M013 later) can render each variant.
-   PascalCase component under window.AHS. */
+   Data operations run against AHS.MaterialRuntime (in-memory); there is
+   no network wait, so these skeletons model a short simulated delay.
+   The Skeleton Grid is shown by MaterialCenter during the search flow
+   (renderGridWithLoading) before results render; the other factories are
+   exposed for reuse/QA. PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MaterialLoadingState = (function () {
   "use strict";

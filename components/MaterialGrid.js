@@ -9,12 +9,13 @@ AHS.MaterialGrid = (function () {
   "use strict";
   var el = AHS.UI.el;
 
-  /* create(items, status, onOpenDetail, onDelete, onToggleFavorite) */
-  function create(items, status, onOpenDetail, onDelete, onToggleFavorite) {
+  /* create(items, status, opts)
+     opts = { onOpen, onDownload, onDelete, onToggleFavorite } */
+  function create(items, status, opts) {
     var list = items || [];
     return el("div", { class: "mat-grid", "data-view": "grid" },
       list.map(function (item) {
-        return AHS.MaterialCard.create(item, status, onOpenDetail, onDelete, onToggleFavorite);
+        return AHS.MaterialCard.create(item, status, opts);
       }));
   }
 

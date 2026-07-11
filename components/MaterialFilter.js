@@ -1,9 +1,13 @@
 /* components/MaterialFilter.js — Material Center Sprint 2 · M008.
    Filter: a Filter Button that toggles a Filter Panel with three
-   selects — 科目 / 年級 / 狀態. Uses AHS.Mock only (subjectCounts /
-   grades already defined in AHS.Mock.materials) — no backend, no
-   fetch/XHR. Status buckets (未開始/進行中/已完成) are derived from each
-   item's existing `progress` field at filter-time — no data structure
+   selects — 科目 / 年級 / 狀態. This component only BUILDS the panel UI;
+   the option LABELS for the 科目 / 年級 selects are read from the
+   Developer Seed Data (AHS.Mock.materials subjectCounts / grades) purely
+   to populate the dropdown choices. The actual filtering runs in
+   MaterialCenter.computeVisibleItems() against MaterialRuntime — this
+   component never filters data itself. No backend, no fetch/XHR. Status
+   buckets (未開始/進行中/已完成) are derived from each item's existing
+   `progress` field via statusOf() at filter-time — no data structure
    change.
 
    Deliberately independent from the existing subject sidebar

@@ -34,13 +34,38 @@ AHS.MaterialCard = (function () {
     return p === 0 ? "未開始" : p + "%";
   }
 
-  /* create(item, status, onOpenDetail, onDelete, onToggleFavorite) */
-  function create(item, status, onOpenDetail, onDelete, onToggleFavorite) {
+  /* create(item, status, opts)
+     opts = { onOpen, onDownload, onDelete, onToggleFavorite }
+     - onOpen(id): open preview (Feature 5). Also the card-body click.
+     - onDownload(id): explicit download.
+     - onDelete(id): remove from runtime (with confirm handled upstream).
+     - onToggleFavorite(id): toggle favorite in runtime, returns new bool.
+     A legacy positional signature (…, onOpenDetail, onDelete,
+     onToggleFavorite) is still accepted for backward compatibility. */
+  function create(item, status, opts, legacyDelete, legacyFav) {
+    /* Backward-compat: if opts is a function, treat as onOpenDetail. */
+    if (typeof opts === "function") {
+      opts = { onOpen: opts, onDelete: legacyDelete, onToggleFavorite: legacyFav };
+    }
+    opts = opts || {};
+    var onOpen = opts.onOpen;
+    var onDownload = opts.onDownload;
+    var onDelete = opts.onDelete;
+    var onToggleFavorite = opts.onToggleFavorite;
+
     var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };
     var pct = clampProgress(item.progress);
 
     function announce(msg) {
       status.textContent = msg; status.removeAttribute("hidden");
+    }
+
+    function openMaterial() {
+      if (typeof onOpen === "function") { onOpen(item.id); }
+    }
+    function downloadMaterial() {
+      if (typeof onDownload === "function") { onDownload(item.id); }
+      else { announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》"); }
     }
 
     /* 科目 Icon + 教材封面 (existing thumb block, reused as the cover area) */
@@ -55,55 +80,71 @@ AHS.MaterialCard = (function () {
         style: "color:" + subj.hex, html: AHS.Icons.book() })
     ]);
 
-    /* 收藏 Icon — reflects item.favorite (Runtime). Toggling delegates to
-       onToggleFavorite (Runtime.toggleFavorite) and mirrors the result. */
+    /* 收藏 Icon — reflects item.favorite (Runtime). Quick toggle stays
+       on the card for one-tap favoriting; also available in the ⋯ menu. */
     var isFav = !!item.favorite;
+    function favLabel(f) { return f ? "取消收藏" : "收藏教材"; }
     var favBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__fav" + (isFav ? " is-active" : ""),
-      "aria-label": "收藏", "aria-pressed": isFav ? "true" : "false",
+      "aria-label": favLabel(isFav), title: favLabel(isFav), "aria-pressed": isFav ? "true" : "false",
       html: isFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark()
     });
+    function applyFav(nowFav) {
+      favBtn.setAttribute("aria-pressed", nowFav ? "true" : "false");
+      favBtn.setAttribute("aria-label", favLabel(nowFav));
+      favBtn.setAttribute("title", favLabel(nowFav));
+      favBtn.classList.toggle("is-active", nowFav);
+      favBtn.innerHTML = nowFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark();
+    }
     favBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var nowFavorited = typeof onToggleFavorite === "function"
-        ? onToggleFavorite(item.id)
-        : !isFav;
-      favBtn.setAttribute("aria-pressed", nowFavorited ? "true" : "false");
-      favBtn.classList.toggle("is-active", nowFavorited);
-      favBtn.innerHTML = nowFavorited ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark();
+      var nowFav = typeof onToggleFavorite === "function" ? onToggleFavorite(item.id) : !favBtn.classList.contains("is-active");
+      applyFav(nowFav);
     });
 
-    var viewBtn = el("button", {
-      type: "button", class: "mat-card__act",
-      "aria-label": "檢視", html: AHS.Icons.search()
+    /* 更多 (⋯) menu — 開啟 / 下載 / 收藏 / 刪除. */
+    var moreBtn = el("button", {
+      type: "button", class: "mat-card__act mat-card__more",
+      "aria-label": "更多功能", title: "更多功能", "aria-haspopup": "true",
+      html: AHS.Icons.more()
     });
-    var dlBtn = el("button", {
-      type: "button", class: "mat-card__act",
-      "aria-label": "下載", html: AHS.Icons.download()
-    });
-    viewBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      announce("（Mock）檢視教材：" + subj.name + "《" + item.title + "》");
-    });
-    dlBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》");
-    });
+    var menu = el("div", { class: "mat-card__menu", role: "menu", hidden: "hidden" });
 
-    /* Delete button — only present when an onDelete handler is provided
-       (Runtime Migration). Removes the material from Runtime Memory. */
-    var acts = [favBtn, viewBtn, dlBtn];
-    if (typeof onDelete === "function") {
-      var delBtn = el("button", {
-        type: "button", class: "mat-card__act mat-card__delete",
-        "aria-label": "刪除", html: AHS.Icons.filterX()
-      });
-      delBtn.addEventListener("click", function (e) {
+    function menuItem(label, handler) {
+      var b = el("button", { type: "button", class: "mat-card__menu-item", role: "menuitem", text: label });
+      b.addEventListener("click", function (e) {
         e.stopPropagation();
-        onDelete(item.id);
+        menu.setAttribute("hidden", "hidden");
+        handler();
       });
-      acts.push(delBtn);
+      return b;
     }
+    menu.appendChild(menuItem("開啟教材", openMaterial));
+    menu.appendChild(menuItem("下載教材", downloadMaterial));
+    var favMenuItem = menuItem("收藏教材", function () {
+      var nowFav = typeof onToggleFavorite === "function" ? onToggleFavorite(item.id) : !favBtn.classList.contains("is-active");
+      applyFav(nowFav);
+    });
+    menu.appendChild(favMenuItem);
+    if (typeof onDelete === "function") {
+      menu.appendChild(menuItem("刪除教材", function () { onDelete(item.id); }));
+    }
+
+    moreBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hasAttribute("hidden");
+      /* close any other open menus first */
+      var others = document.querySelectorAll(".mat-card__menu");
+      Array.prototype.forEach.call(others, function (m) { m.setAttribute("hidden", "hidden"); });
+      if (willOpen) { menu.removeAttribute("hidden"); }
+    });
+    document.addEventListener("click", function () { menu.setAttribute("hidden", "hidden"); });
+    menu.addEventListener("click", function (e) { e.stopPropagation(); });
+
+    var moreWrap = el("div", { class: "mat-card__more-wrap" }, [moreBtn, menu]);
+
+    /* Action row: quick favorite + ⋯ menu. */
+    var acts = [favBtn, moreWrap];
 
     /* Continue Button — reuses .continue-reading__btn (same pill style,
        same Design Token as the Recent Learning section's button). */
@@ -113,7 +154,7 @@ AHS.MaterialCard = (function () {
     });
     continueBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      onOpenDetail(item.id);
+      openMaterial();
     });
 
     var progressBar = el("div", {
@@ -171,7 +212,7 @@ AHS.MaterialCard = (function () {
        MAT-F004 acceptance: clicking a material opens its detail. */
     card.addEventListener("click", function () {
       console.log(item.id);
-      onOpenDetail(item.id);
+      openMaterial();
     });
 
     return card;

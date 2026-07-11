@@ -1,15 +1,16 @@
 /* components/MaterialSort.js — Material Center Sprint 2 · M009.
-   Sort: a single select with the four required options. Sorting reads
-   only existing fields already on AHS.Mock.materials.items (date /
-   progress / title) — no data structure change, no new per-item field.
+   Sort: a single select with four options — 最新加入 / 最舊加入 /
+   名稱（A-Z）/ 名稱（Z-A）. apply() is a PURE function: it sorts whatever
+   array it is handed (in Beta, always the MaterialRuntime-derived list
+   from MaterialCenter.computeVisibleItems) and returns a NEW array,
+   never mutating the input. It has no data source of its own and does
+   not read AHS.Mock.
 
-   Note on "最近學習" (Recently Studied): the data model has no dedicated
-   per-item "last studied" timestamp (only a page-level
-   AHS.Mock.lastReading / lastLearning, and per-item `date` / `progress`).
-   Given "不得修改資料結構", this option is implemented as: progress > 0
-   items first (has been studied at all), ordered by progress desc, then
-   by date desc as a tiebreaker. This is a reasonable approximation, not
-   a literal "last studied" timestamp — flagged for PMO visibility.
+   newest/oldest use createdKey(): the runtime created-order (`order`, a
+   monotonic sequence set by MaterialRuntime.add) for a stable ordering,
+   falling back to the day-granularity `date` for any seed-shaped item
+   that lacks `order`. No per-item timestamp field is required — flagged
+   for PMO visibility as the interim "created order" approach.
    PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MaterialSort = (function () {
@@ -36,8 +37,8 @@ AHS.MaterialSort = (function () {
     return parseDate(item.date);
   }
 
-  /* apply(items, sortId) — returns a NEW sorted array; never mutates
-     the input (so AHS.Mock.materials.items itself is left untouched). */
+  /* apply(items, sortId) — returns a NEW sorted array; never mutates the
+     input list (which, in Beta, is the MaterialRuntime-derived list). */
   function apply(items, sortId) {
     var list = (items || []).slice();
 

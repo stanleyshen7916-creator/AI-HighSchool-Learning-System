@@ -1,7 +1,11 @@
 /* components/MaterialCenter.js — 教材中心 (Material Center) page.
    Subject filter panel + toolbar (categories / grade / sort / format /
    grid-list toggle) + material card grid + upload dropzone + recent files.
-   All Mock. PascalCase component under window.AHS.
+   Beta: all material data (list / upload / delete / favorite / search /
+   filter / sort / recent) is driven by AHS.MaterialRuntime (in-memory,
+   starts empty). AHS.Mock.materials is used ONLY as Developer Seed Data
+   for static config/labels (e.g. filter option lists), never as the
+   material list. PascalCase component under window.AHS.
    File-type colors for recent files. */
 window.AHS = window.AHS || {};
 AHS.MaterialCenter = (function () {
@@ -381,16 +385,18 @@ AHS.MaterialCenter = (function () {
 
     function renderGrid() {
       var list = computeVisibleItems();
-      /* Module Completion: Delete + Favorite are now wired to Runtime. */
-      var newGrid = AHS.MaterialGrid.create(list, status, openDetail, onDeleteMaterial, onToggleFavorite);
+      var newGrid = AHS.MaterialGrid.create(list, status, {
+        onOpen: openMaterial,
+        onDownload: downloadMaterial,
+        onDelete: confirmDeleteMaterial,
+        onToggleFavorite: onToggleFavorite
+      });
       newGrid.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
       theGrid.parentNode.replaceChild(newGrid, theGrid);
       theGrid = newGrid;
 
       if (list.length === 0) {
         emptyState.innerHTML = "";
-        /* First-open (runtime totally empty & no filters) => plain empty;
-           otherwise variant reflects the active narrowing cause. */
         var variant = AHS.MaterialRuntime.isEmpty() ? "empty" : emptyVariant();
         emptyState.appendChild(AHS.MaterialEmptyState.create(variant, resetAllFilters));
         emptyState.removeAttribute("hidden");
@@ -406,7 +412,7 @@ AHS.MaterialCenter = (function () {
       var recent = AHS.MaterialRuntime.recentByCreatedOrder();
       if (recent.length === 0) { return; }
       recentLearningSlot.appendChild(
-        AHS.MaterialRecentLearning.createFromRuntime(recent, openDetail)
+        AHS.MaterialRecentLearning.createFromRuntime(recent, openMaterial)
       );
     }
 
@@ -437,36 +443,45 @@ AHS.MaterialCenter = (function () {
       }, 250);
     }
 
-    /* ---- Upload Flow (Module Completion) ------------------------------
-       File Object -> build Material Object -> MaterialRuntime.add() ->
-       renderAll (grid + recent learning + recent files refresh, empty
-       state auto-hides). Memory only, no server. Material Object reuses
-       the existing runtime record shape (MaterialRuntime.add defaults);
-       no data-model redesign. */
+    /* ---- Upload Flow (with metadata dialog) ---------------------------
+       Pick file -> "新增教材" dialog (name/subject/grade/category) ->
+       confirm -> MaterialRuntime.add() with metadata -> renderAll.
+       Metadata is required, so file name alone is never the sole data. */
     function onFilesPicked(fileList) {
       if (!fileList || fileList.length === 0) { return; }
-      var added = null;
-      for (var i = 0; i < fileList.length; i++) {
-        var f = fileList[i]; /* File object */
-        added = AHS.MaterialRuntime.add({
-          title: f.name.replace(/\.[^.]+$/, ""),
-          fileName: f.name,
-          fileType: fileExt(f.name),
-          fileSize: formatSize(f.size),
-          file: f /* runtime-only reference to the File, for open/preview */
+      /* Handle one file at a time via the dialog (queue the rest). */
+      var files = Array.prototype.slice.call(fileList);
+      function next() {
+        if (files.length === 0) { return; }
+        var f = files.shift();
+        var dialog = AHS.MaterialUploadDialog.open(f, function (meta) {
+          AHS.MaterialRuntime.add({
+            title: meta.title,
+            subject: meta.subject,
+            grade: meta.grade,
+            category: meta.category,
+            fileName: f.name,
+            fileType: fileExt(f.name),
+            fileSize: formatSize(f.size),
+            file: f
+          });
+          status.textContent = "已新增教材：" + meta.title;
+          status.removeAttribute("hidden");
+          renderAll();
+          next();
+        }, function () {
+          /* cancelled — continue with remaining files if any */
+          next();
         });
+        document.body.appendChild(dialog);
       }
-      status.textContent = "已新增教材：" + (added ? added.title : "");
-      status.removeAttribute("hidden");
-      renderAll();
+      next();
     }
 
-    /* ---- Open material (Bug 002) --------------------------------------
-       Preview-able types (PDF / image / video / audio) open in a new tab
-       via an object URL built from the retained File; other types
-       download. When there is no underlying File (e.g. a record without a
-       blob), fall back to the existing detail view. Uses only in-memory
-       URL.createObjectURL — no fetch/XHR/backend. */
+    /* ---- Open material -> Preview (Feature 5) -------------------------
+       Always opens the preview overlay first (never auto-download).
+       The preview renders inline for supported types, or shows an info
+       page with an explicit Download button for others. */
     function openMaterial(id) {
       var item = AHS.MaterialRuntime.getById(id);
       if (!item) {
@@ -474,29 +489,42 @@ AHS.MaterialCenter = (function () {
         status.removeAttribute("hidden");
         return;
       }
+      var overlay = AHS.MaterialPreview.open(item, function (it) {
+        doDownload(it);
+      });
+      document.body.appendChild(overlay);
+    }
+
+    /* Low-level download (explicit user action only). */
+    function doDownload(item) {
       if (!item.file || typeof window.URL === "undefined" || !window.URL.createObjectURL) {
-        /* No blob available — fall back to detail display. */
-        openDetail(id);
+        status.textContent = "此教材沒有可下載的檔案";
+        status.removeAttribute("hidden");
         return;
       }
       var url = window.URL.createObjectURL(item.file);
-      var ext = String(item.fileType || "").toLowerCase();
-      var previewable = ["pdf", "png", "jpg", "jpeg", "gif", "webp", "svg",
-        "mp4", "webm", "ogg", "mov", "mp3", "wav", "m4a"];
-      if (previewable.indexOf(ext) !== -1) {
-        window.open(url, "_blank"); /* browser previews inline */
-        status.textContent = "已開啟教材：" + (item.fileName || item.title);
-      } else {
-        /* Other formats: trigger a download. */
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = item.fileName || item.title;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        status.textContent = "已下載教材：" + (item.fileName || item.title);
-      }
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = item.fileName || item.title;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      if (window.URL.revokeObjectURL) { window.URL.revokeObjectURL(url); }
+      status.textContent = "已下載教材：" + (item.fileName || item.title);
       status.removeAttribute("hidden");
+    }
+
+    function downloadMaterial(id) {
+      var item = AHS.MaterialRuntime.getById(id);
+      if (item) { doDownload(item); }
+    }
+
+    /* Delete with confirm prompt (Feature 2). */
+    function confirmDeleteMaterial(id) {
+      var item = AHS.MaterialRuntime.getById(id);
+      var name = item ? (item.title || "此教材") : "此教材";
+      var ok = (typeof window.confirm === "function") ? window.confirm("確定要刪除《" + name + "》嗎？") : true;
+      if (ok) { onDeleteMaterial(id); }
     }
 
     /* Delete: MaterialRuntime.remove() -> renderAll (grid + empty state

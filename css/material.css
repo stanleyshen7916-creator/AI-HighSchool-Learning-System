@@ -531,3 +531,153 @@
   .mat-empty { padding: 28px 12px; }
   .mat-empty__illustration img { width: 110px; }
 }
+
+/* ---- More (⋯) menu on card (Feature 2) -------------------------------- */
+.mat-card__more-wrap { position: relative; flex: 1 1 auto; display: flex; }
+.mat-card__more { width: 100%; }
+.mat-card__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 160px;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mat-card__menu-item {
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+.mat-card__menu-item:hover { background-color: var(--bg); }
+
+/* ---- Tooltip (Feature 6) — native title used; add a subtle CSS tip on
+   pointer devices only, so touch is unaffected. ---------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .mat-card__act[title] { position: relative; }
+  .mat-card__act[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background-color: var(--text);
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
+    padding: 5px 8px;
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 40;
+  }
+}
+
+/* ---- Upload metadata dialog (Feature 1) ------------------------------- */
+.mat-dialog__overlay {
+  position: fixed; inset: 0;
+  z-index: 100;
+  background-color: rgba(31, 36, 48, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.mat-dialog {
+  width: 100%; max-width: 420px;
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.mat-dialog__head { padding: 18px 20px 8px; }
+.mat-dialog__title { margin: 0; font-size: 18px; font-weight: 800; }
+.mat-dialog__sub { margin: 4px 0 0; font-size: 12px; color: var(--text-faint); word-break: break-all; }
+.mat-dialog__body { padding: 8px 20px 4px; display: flex; flex-direction: column; gap: 12px; }
+.mat-dialog__field { display: flex; flex-direction: column; gap: 4px; }
+.mat-dialog__field-label { font-size: 12px; color: var(--text-muted); }
+.mat-dialog__control {
+  font: inherit; font-size: 14px;
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 9px 12px; background-color: var(--bg); color: var(--text);
+}
+.mat-dialog__error { margin: 2px 0 0; font-size: 12px; color: #d9534f; }
+.mat-dialog__foot { padding: 12px 20px 18px; display: flex; justify-content: flex-end; gap: 10px; }
+.mat-dialog__btn {
+  padding: 9px 18px; border-radius: var(--radius-pill);
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+}
+.mat-dialog__btn--primary { background-color: var(--brand); color: #fff; border-color: var(--brand); }
+.mat-dialog__btn--primary:hover { background-color: var(--brand-strong); }
+.mat-dialog__btn--ghost:hover { background-color: var(--bg); }
+
+/* ---- Material preview overlay (Feature 5) ----------------------------- */
+.mat-preview__overlay {
+  position: fixed; inset: 0;
+  z-index: 100;
+  background-color: rgba(31, 36, 48, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.mat-preview {
+  width: 100%; max-width: 760px; max-height: 90vh;
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.mat-preview__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--line);
+}
+.mat-preview__title { margin: 0; font-size: 16px; font-weight: 800; }
+.mat-preview__close {
+  border: 0; background: transparent; cursor: pointer; color: var(--text-muted);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+}
+.mat-preview__close:hover { background-color: var(--bg); }
+.mat-preview__close svg { width: 18px; height: 18px; }
+.mat-preview__body { flex: 1 1 auto; overflow: auto; padding: 16px 18px; }
+.mat-preview__stage { display: flex; align-items: center; justify-content: center; }
+.mat-preview__media { max-width: 100%; max-height: 60vh; border-radius: 10px; }
+.mat-preview__frame { width: 100%; height: 60vh; border: 0; border-radius: 10px; background: var(--bg); }
+.mat-preview__info { display: flex; flex-direction: column; gap: 8px; }
+.mat-preview__inforow { display: flex; gap: 10px; font-size: 14px; }
+.mat-preview__infolabel { flex: 0 0 84px; color: var(--text-muted); }
+.mat-preview__infovalue { color: var(--text); font-weight: 600; word-break: break-all; }
+.mat-preview__notice {
+  margin: 8px 0 0; padding: 12px 14px; font-size: 13px; line-height: 1.6;
+  color: var(--text-muted); background-color: var(--bg); border-radius: 10px;
+}
+.mat-preview__foot {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 12px 18px; border-top: 1px solid var(--line);
+}
+.mat-preview__btn {
+  padding: 9px 18px; border-radius: var(--radius-pill);
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+}
+.mat-preview__btn--primary { background-color: var(--brand); color: #fff; border-color: var(--brand); }
+.mat-preview__btn--primary:hover { background-color: var(--brand-strong); }
+.mat-preview__btn--ghost:hover { background-color: var(--bg); }
+
+@media (max-width: 560px) {
+  .mat-preview__frame, .mat-preview__media { height: auto; max-height: 50vh; }
+  .mat-dialog__foot, .mat-preview__foot { flex-direction: column-reverse; }
+  .mat-dialog__btn, .mat-preview__btn { width: 100%; }
+}

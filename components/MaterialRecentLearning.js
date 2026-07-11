@@ -7,12 +7,15 @@
    an inline function inside components/MaterialCenter.js, delivered as
    MAT-F005) rather than building a second, parallel "recently read
    material" UI — the two specs describe the same underlying concept.
-   Data source is unchanged: AHS.Mock.lastReading (Mock only, no API).
-   Hidden entirely when there is no matching material (same behavior as
-   MAT-F005). Reuses .progressbar / .progressbar__fill (shared, already
-   used by components/HomeRecentMaterials.js) for the new Progress Bar —
-   no new Design Token.
-   PascalCase component under window.AHS. */
+
+   Data source (Beta): the ACTIVE path is createFromRuntime(), driven by
+   AHS.MaterialRuntime (newest-created material, no API). The original
+   create() — which read the page-level AHS.Mock.lastReading seed — is
+   retained only for backward compatibility and is not used by the Beta
+   Material Center page. Hidden entirely when there is no material (same
+   behavior as MAT-F005). Reuses .progressbar / .progressbar__fill
+   (shared, already used by components/HomeRecentMaterials.js) — no new
+   Design Token. PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MaterialRecentLearning = (function () {
   "use strict";
