@@ -9,11 +9,11 @@ AHS.MaterialGrid = (function () {
   "use strict";
   var el = AHS.UI.el;
 
-  /* create(items, status, onOpenDetail) */
-  function create(items, status, onOpenDetail) {
+  /* create(items, status, onOpenDetail, onDelete) */
+  function create(items, status, onOpenDetail, onDelete) {
     var list = items || [];
     return el("div", { class: "mat-grid", "data-view": "grid" },
-      list.map(function (item) { return AHS.MaterialCard.create(item, status, onOpenDetail); }));
+      list.map(function (item) { return AHS.MaterialCard.create(item, status, onOpenDetail, onDelete); }));
   }
 
   return { create: create };

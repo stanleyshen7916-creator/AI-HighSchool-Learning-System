@@ -78,5 +78,52 @@ AHS.MaterialRecentLearning = (function () {
     ]);
   }
 
-  return { create: create };
+  /* createFromRuntime(recentItems, onOpenDetail) — Runtime Migration
+     version. recentItems is the runtime list already sorted newest-first
+     (created order) by AHS.MaterialRuntime.recentByCreatedOrder(). Shows
+     the single most-recent runtime material as the Continue Learning
+     card. Returns null when there is nothing (caller then renders nothing
+     — no fake data). subject may be "other" for uploaded files, so the
+     lookup is guarded. Reuses the exact same markup/classes as create()
+     above — no new UI, no new Design Token. */
+  function createFromRuntime(recentItems, onOpenDetail) {
+    if (!recentItems || recentItems.length === 0) { return null; }
+
+    var item = recentItems[0];
+    var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };
+    var pct = clampProgress(item.progress);
+
+    var continueBtn = el("button", {
+      type: "button", class: "continue-reading__btn", text: "繼續閱讀"
+    });
+    continueBtn.addEventListener("click", function () {
+      onOpenDetail(item.id);
+    });
+
+    var card = el("section", { class: "card continue-reading", "aria-label": "最近學習" }, [
+      el("span", { class: "continue-reading__icon", html: AHS.Icons.book() }),
+      el("div", { class: "continue-reading__meta" }, [
+        el("span", { class: "continue-reading__label", text: "上次閱讀" }),
+        el("span", { class: "continue-reading__title", text: subj.name + "《" + item.title + "》" }),
+        el("span", { class: "continue-reading__chapter", text: item.chapter }),
+        el("div", { class: "continue-reading__progress" }, [
+          el("div", {
+            class: "progressbar",
+            role: "progressbar",
+            "aria-valuenow": String(pct), "aria-valuemin": "0", "aria-valuemax": "100"
+          }, [
+            el("div", { class: "progressbar__fill", style: "width:" + pct + "%;background-color:" + subj.hex })
+          ])
+        ])
+      ]),
+      continueBtn
+    ]);
+
+    return el("section", { class: "material-recent-learning", "aria-label": "最近學習" }, [
+      el("h2", { class: "material-recent-learning__title", text: "最近學習" }),
+      card
+    ]);
+  }
+
+  return { create: create, createFromRuntime: createFromRuntime };
 })();

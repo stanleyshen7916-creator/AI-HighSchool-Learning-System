@@ -16,6 +16,10 @@ AHS.MaterialEmptyState = (function () {
   var el = AHS.UI.el;
 
   var PRESETS = {
+    empty: {
+      title: "尚無教材",
+      description: "點擊右側「選擇檔案」上傳你的第一份教材。"
+    },
     search: {
       title: "找不到符合的教材",
       description: "換個關鍵字試試，或返回全部教材繼續探索。"
@@ -30,27 +34,32 @@ AHS.MaterialEmptyState = (function () {
     }
   };
 
-  /* create(variant, onReset) — variant: "search" | "filter" | "favorite"
-     (unknown values fall back to "filter"). onReset fires when the
-     Action Button is clicked. Never throws. */
+  /* create(variant, onReset) — variant: "empty" | "search" | "filter" |
+     "favorite" (unknown values fall back to "filter"). onReset fires
+     when the Action Button is clicked. The first-open "empty" variant
+     shows no reset button (nothing to reset). Never throws. */
   function create(variant, onReset) {
     var preset = PRESETS[variant] || PRESETS.filter;
 
-    var actionBtn = el("button", {
-      type: "button",
-      class: "continue-reading__btn mat-empty__btn",
-      text: "返回全部教材"
-    });
-    actionBtn.addEventListener("click", function () {
-      if (typeof onReset === "function") { onReset(); }
-    });
-
-    return el("div", { class: "mat-empty", role: "status" }, [
+    var children = [
       el("div", { class: "mat-empty__illustration", html: AHS.Qiaoqiao.full("reading") }),
       el("h3", { class: "mat-empty__title", text: preset.title }),
-      el("p", { class: "mat-empty__description", text: preset.description }),
-      actionBtn
-    ]);
+      el("p", { class: "mat-empty__description", text: preset.description })
+    ];
+
+    if (variant !== "empty") {
+      var actionBtn = el("button", {
+        type: "button",
+        class: "continue-reading__btn mat-empty__btn",
+        text: "返回全部教材"
+      });
+      actionBtn.addEventListener("click", function () {
+        if (typeof onReset === "function") { onReset(); }
+      });
+      children.push(actionBtn);
+    }
+
+    return el("div", { class: "mat-empty", role: "status" }, children);
   }
 
   return { create: create };

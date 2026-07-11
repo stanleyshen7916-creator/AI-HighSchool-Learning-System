@@ -41,9 +41,9 @@ AHS.MaterialCard = (function () {
     return p === 0 ? "未開始" : p + "%";
   }
 
-  /* create(item, status, onOpenDetail) */
-  function create(item, status, onOpenDetail) {
-    var subj = AHS.Subjects[item.subject];
+  /* create(item, status, onOpenDetail, onDelete) */
+  function create(item, status, onOpenDetail, onDelete) {
+    var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };
     var pct = clampProgress(item.progress);
 
     function announce(msg) {
@@ -94,6 +94,21 @@ AHS.MaterialCard = (function () {
       announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》");
     });
 
+    /* Delete button — only present when an onDelete handler is provided
+       (Runtime Migration). Removes the material from Runtime Memory. */
+    var acts = [favBtn, viewBtn, dlBtn];
+    if (typeof onDelete === "function") {
+      var delBtn = el("button", {
+        type: "button", class: "mat-card__act mat-card__delete",
+        "aria-label": "刪除", html: AHS.Icons.filterX()
+      });
+      delBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        onDelete(item.id);
+      });
+      acts.push(delBtn);
+    }
+
     /* Continue Button — reuses .continue-reading__btn (same pill style,
        same Design Token as the Recent Learning section's button). */
     var continueBtn = el("button", {
@@ -137,7 +152,7 @@ AHS.MaterialCard = (function () {
           el("span", { text: item.views })
         ])
       ]),
-      el("div", { class: "mat-card__acts" }, [favBtn, viewBtn, dlBtn]),
+      el("div", { class: "mat-card__acts" }, acts),
       continueBtn
     ]);
 

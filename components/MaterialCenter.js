@@ -168,83 +168,124 @@ AHS.MaterialCenter = (function () {
     ]);
   }
 
-  /* ---- Upload panel + recent files ------------------------------------ */
-  function uploadPanel(status) {
-    var pick = el("button", { type: "button", class: "upload__pick", text: "選擇檔案" });
-    pick.addEventListener("click", function () {
-      status.textContent = "（Mock）開啟檔案選擇器"; status.removeAttribute("hidden");
+  /* ---- Upload panel + recent files ------------------------------------
+     Runtime Migration: real <input type="file"> + File Picker; picked
+     files are handed to onFilesPicked (which writes to runtime). No
+     server, memory only. */
+  function uploadPanel(status, onFilesPicked) {
+    var fileInput = el("input", {
+      type: "file",
+      class: "upload__input",
+      multiple: "multiple",
+      "aria-hidden": "true",
+      tabindex: "-1"
     });
+    fileInput.style.display = "none";
+    fileInput.addEventListener("change", function () {
+      if (typeof onFilesPicked === "function") { onFilesPicked(fileInput.files); }
+      /* Reset so picking the same file again re-triggers change. */
+      fileInput.value = "";
+    });
+
+    var pick = el("button", { type: "button", class: "upload__pick", text: "選擇檔案" });
+    pick.addEventListener("click", function () { fileInput.click(); });
+
+    var drop = el("div", { class: "upload__drop" }, [
+      el("span", { class: "upload__drop-icon", html: AHS.Icons.download() }),
+      el("p", { class: "upload__drop-text", text: "拖曳檔案到此處，或點擊上傳" }),
+      el("p", { class: "upload__drop-hint", text: "支援 PDF、PPT、DOCX、MP4 等格式" }),
+      pick,
+      fileInput
+    ]);
+
+    /* Drag & drop also feeds the same runtime path. */
+    drop.addEventListener("dragover", function (e) { e.preventDefault(); drop.classList.add("is-dragover"); });
+    drop.addEventListener("dragleave", function () { drop.classList.remove("is-dragover"); });
+    drop.addEventListener("drop", function (e) {
+      e.preventDefault();
+      drop.classList.remove("is-dragover");
+      if (e.dataTransfer && typeof onFilesPicked === "function") {
+        onFilesPicked(e.dataTransfer.files);
+      }
+    });
+
     return el("section", { class: "card upload", "aria-label": "上傳教材" }, [
       el("h2", { class: "card__title", text: "上傳教材" }),
-      el("div", { class: "upload__drop" }, [
-        el("span", { class: "upload__drop-icon", html: AHS.Icons.download() }),
-        el("p", { class: "upload__drop-text", text: "拖曳檔案到此處，或點擊上傳" }),
-        el("p", { class: "upload__drop-hint", text: "支援 PDF、PPT、DOCX、MP4 等格式" }),
-        pick
-      ])
+      drop
     ]);
   }
 
-  function recentFiles(data, status) {
-    var list = el("div", { class: "recent-files__list" },
-      data.recentFiles.map(function (f) {
-        var tone = FILE_TONE[f.type] || "#6b7280";
+  /* recentFilesFromRuntime — mirrors uploaded materials (newest first),
+     replacing the old AHS.Mock.recentFiles seed list. */
+  function recentFilesFromRuntime(status) {
+    var recent = AHS.MaterialRuntime.recentByCreatedOrder();
+    var body;
+    if (recent.length === 0) {
+      body = el("p", { class: "today-card__empty", text: "尚無檔案" });
+    } else {
+      body = el("div", { class: "recent-files__list" }, recent.map(function (m) {
+        var tone = FILE_TONE[m.fileType] || "#6b7280";
         var row = el("button", { type: "button", class: "recent-file" }, [
           el("span", {
             class: "recent-file__badge",
             style: "color:" + tone + ";background-color:" + tone + "1a",
-            text: f.type
+            text: m.fileType
           }),
           el("span", { class: "recent-file__meta" }, [
-            el("span", { class: "recent-file__name", text: f.name }),
-            el("span", { class: "recent-file__sub", text: f.type + " · " + f.size + " · " + f.date })
+            el("span", { class: "recent-file__name", text: m.fileName || m.title }),
+            el("span", { class: "recent-file__sub", text: m.fileType + (m.fileSize ? " · " + m.fileSize : "") + " · " + m.date })
           ]),
           el("span", { class: "recent-file__dl", html: AHS.Icons.download() })
         ]);
         row.addEventListener("click", function () {
-          status.textContent = "（Mock）開啟檔案：" + f.name;
+          status.textContent = "（Prototype）開啟檔案：" + (m.fileName || m.title);
           status.removeAttribute("hidden");
         });
         return row;
       }));
+    }
 
     return el("section", { class: "card recent-files", "aria-label": "最近檔案" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: "最近檔案" }),
-        el("a", { class: "card__more", href: "#" }, [
-          el("span", { text: "查看全部" }),
-          el("span", { html: AHS.Icons.chevronRight() })
-        ])
+        el("h2", { class: "card__title", text: "最近檔案" })
       ]),
-      list
+      body
     ]);
   }
 
   /* ---- Material detail (MAT-F004) --------------------------------------
      Reuses the existing .mat-status announcement area as the material
-     detail display region (no new layout/UI section introduced). */
-  function findMaterialById(data, id) {
-    for (var i = 0; i < data.items.length; i++) {
-      if (data.items[i].id === id) { return data.items[i]; }
+     detail display region (no new layout/UI section introduced).
+     Runtime Migration: now searches a passed-in items array (the runtime
+     list), not AHS.Mock. */
+  function findMaterialById(items, id) {
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].id === id) { return items[i]; }
     }
     return null;
   }
 
   function formatDetail(item) {
-    var subj = AHS.Subjects[item.subject];
-    return "教材詳情：《" + item.title + "》｜" + subj.name + "｜" + item.chapter +
-      " — " + item.content;
+    var subj = AHS.Subjects[item.subject] || { name: "其他" };
+    var tail = item.content ? " — " + item.content : "";
+    return "教材詳情：《" + item.title + "》｜" + subj.name + "｜" + item.chapter + tail;
   }
 
-  /* create(model?) — model defaults to AHS.Mock.materials. */
-  function create(model) {
-    var data = model || AHS.Mock.materials;
+  /* create() — Runtime Migration: Material Center now reads/writes
+     AHS.MaterialRuntime (starts empty), NOT AHS.Mock.materials. Mock is
+     kept only as Developer Seed Data for other modules. `data` below is
+     used ONLY for static config still sourced from seed (title/subtitle,
+     subjectCounts labels, grades, sorts) — never for the item list. */
+  function create() {
+    var seed = AHS.Mock.materials; /* Developer Seed Data: labels/config only. */
     var status = el("p", {
       class: "mat-status", "aria-live": "polite", hidden: "hidden"
     });
 
+    function runtimeItems() { return AHS.MaterialRuntime.list(); }
+
     function openDetail(id) {
-      var item = findMaterialById(data, id);
+      var item = AHS.MaterialRuntime.getById(id);
       if (!item) {
         status.textContent = "教材不存在";
         status.removeAttribute("hidden");
@@ -254,51 +295,42 @@ AHS.MaterialCenter = (function () {
       status.removeAttribute("hidden");
     }
 
-    /* M004: Recent Learning section delegated to AHS.MaterialRecentLearning
-       (extracted/upgraded from the previous inline "繼續閱讀" banner,
-       MAT-F005). Data source (AHS.Mock.lastReading) and hide-when-absent
-       behavior are unchanged. */
-    var continueBanner = AHS.MaterialRecentLearning.create(data, openDetail);
+    /* Recent Learning — Runtime-driven (created-order). Rendered into a
+       slot so it can refresh / hide on every runtime change. */
+    var recentLearningSlot = el("div", { class: "mat-recent-learning-slot" });
 
-    /* M005/M006: Grid + Card delegated to AHS.MaterialGrid / AHS.MaterialCard. */
-    var theGrid = AHS.MaterialGrid.create(data.items, status, openDetail);
-
-    /* M010: Empty State — full component (illustration / title /
-       description / reset action) rendered into this slot on demand. */
+    /* Grid starts from the (initially empty) runtime list. */
+    var theGrid = AHS.MaterialGrid.create(runtimeItems(), status, openDetail);
     var emptyState = el("div", { class: "mat-grid__empty-slot", hidden: "hidden" });
 
     var currentSubject = "all";
     var currentChapter = "all";
-    /* M008: Filter Panel state. */
     var currentFilter = { subject: "all", grade: "all", status: "all" };
-    /* M009: Sort state. */
     var currentSort = "newest";
-    /* M013: Search keyword + Subject Tabs group — all state lives in
-       memory (plain closure vars), confirming the Memory State flow. */
     var currentSearch = "";
     var currentTabGroup = "all";
+    var currentFavoriteOnly = false;
     var searchLoadingTimer = null;
 
     function computeVisibleItems() {
       var keyword = currentSearch.trim().toLowerCase();
       var groupSubjects = AHS.MaterialSubjectTabs.subjectsForGroup(currentTabGroup);
 
-      var list = data.items.filter(function (item) {
+      var list = runtimeItems().filter(function (item) {
         var subjMatch = currentSubject === "all" || item.subject === currentSubject;
         var chapMatch = currentChapter === "all" || item.chapter === currentChapter;
         var filterSubjMatch = currentFilter.subject === "all" || item.subject === currentFilter.subject;
         var filterGradeMatch = currentFilter.grade === "all" || item.grade === currentFilter.grade;
         var filterStatusMatch = currentFilter.status === "all" ||
           AHS.MaterialFilter.statusOf(item.progress) === currentFilter.status;
-        /* M013: Subject Tabs group filter (null = 全部, no restriction). */
         var tabMatch = !groupSubjects || groupSubjects.indexOf(item.subject) !== -1;
-        /* M013: keyword search over 名稱/章節/簡介. */
+        var favMatch = !currentFavoriteOnly || item.favorite === true;
         var searchMatch = !keyword ||
           String(item.title).toLowerCase().indexOf(keyword) !== -1 ||
           String(item.chapter).toLowerCase().indexOf(keyword) !== -1 ||
           String(item.content || "").toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
-          filterStatusMatch && tabMatch && searchMatch;
+          filterStatusMatch && tabMatch && favMatch && searchMatch;
       });
       return AHS.MaterialSort.apply(list, currentSort);
     }
@@ -309,38 +341,41 @@ AHS.MaterialCenter = (function () {
       currentFilter = { subject: "all", grade: "all", status: "all" };
       currentSearch = "";
       currentTabGroup = "all";
-      /* Sync sidebar active states back to 全部科目 without redesigning
-         them: re-render the chapter panel and clear subject highlight. */
+      currentFavoriteOnly = false;
       var subjButtons = subjPanelEl.querySelectorAll(".subj-filter__item");
       Array.prototype.forEach.call(subjButtons, function (b) {
         b.classList.toggle("is-active", b.getAttribute("data-id") === "all");
       });
-      /* Reset Filter Panel selects to 全部. */
       var filterSelects = filterEl.querySelectorAll(".mat-filter__control");
       Array.prototype.forEach.call(filterSelects, function (s) { s.value = "all"; });
-      /* M013: clear search input + reset Subject Tabs to 全部. */
       searchBar.clear();
       tabsEl.resetToAll();
       renderChapterPanel();
-      renderGrid();
+      renderAll();
     }
 
     function emptyVariant() {
-      return currentSearch.trim() ? "search" : "filter";
+      if (currentFavoriteOnly) { return "favorite"; }
+      if (currentSearch.trim()) { return "search"; }
+      return "filter";
     }
 
     function renderGrid() {
       var list = computeVisibleItems();
+      /* Scope boundary (this WO): Delete is NOT surfaced — no onDelete
+         handler is passed, so MaterialCard renders no delete button.
+         The dormant delete code stays in place per PMO "no rollback". */
       var newGrid = AHS.MaterialGrid.create(list, status, openDetail);
       newGrid.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
       theGrid.parentNode.replaceChild(newGrid, theGrid);
       theGrid = newGrid;
 
       if (list.length === 0) {
-        /* M010/M013: variant depends on whether a search keyword is the
-           likely cause of the empty result. */
         emptyState.innerHTML = "";
-        emptyState.appendChild(AHS.MaterialEmptyState.create(emptyVariant(), resetAllFilters));
+        /* First-open (runtime totally empty & no filters) => plain empty;
+           otherwise variant reflects the active narrowing cause. */
+        var variant = AHS.MaterialRuntime.isEmpty() ? "empty" : emptyVariant();
+        emptyState.appendChild(AHS.MaterialEmptyState.create(variant, resetAllFilters));
         emptyState.removeAttribute("hidden");
       } else {
         emptyState.innerHTML = "";
@@ -348,9 +383,30 @@ AHS.MaterialCenter = (function () {
       }
     }
 
-    /* M011/M013: Loading State display logic for search — swap in the
-       skeleton grid briefly, then render results. Uses a plain timer +
-       memory state only; no network, no library. */
+    /* Recent Learning: hide entirely if runtime empty (no fake data). */
+    function renderRecentLearning() {
+      recentLearningSlot.innerHTML = "";
+      var recent = AHS.MaterialRuntime.recentByCreatedOrder();
+      if (recent.length === 0) { return; }
+      recentLearningSlot.appendChild(
+        AHS.MaterialRecentLearning.createFromRuntime(recent, openDetail)
+      );
+    }
+
+    /* Recent Files: mirror runtime uploads (newest first). */
+    var recentFilesSlot = el("div", { class: "mat-recent-files-slot" });
+    function renderRecentFiles() {
+      recentFilesSlot.innerHTML = "";
+      recentFilesSlot.appendChild(recentFilesFromRuntime(status));
+    }
+
+    /* Full refresh after any runtime mutation. */
+    function renderAll() {
+      renderGrid();
+      renderRecentLearning();
+      renderRecentFiles();
+    }
+
     function renderGridWithLoading() {
       if (searchLoadingTimer) { clearTimeout(searchLoadingTimer); }
       var skeleton = AHS.MaterialLoadingState.skeletonGrid(computeVisibleItems().length || 3);
@@ -364,13 +420,36 @@ AHS.MaterialCenter = (function () {
       }, 250);
     }
 
+    /* ---- Upload: Button -> File Picker -> File Object ------------------
+       Scope boundary (this WO): stop at obtaining the File object. Do
+       NOT build a material / write Runtime / update Grid (Upload Flow &
+       CRUD are explicitly out of scope). We only read the picked File
+       objects and acknowledge them, proving the picker works. */
+    function onFilesPicked(fileList) {
+      if (!fileList || fileList.length === 0) { return; }
+      /* Access the File object(s) to confirm they are obtained. */
+      var names = [];
+      for (var i = 0; i < fileList.length; i++) {
+        var f = fileList[i]; /* File object */
+        names.push(f.name);
+      }
+      status.textContent = "已取得檔案：" + names.join("、");
+      status.removeAttribute("hidden");
+    }
+
+    /* Delete is out of scope for this WO and is not wired anywhere; its
+       handler is therefore omitted to keep Dead Code = 0. It can be
+       reintroduced when a Delete Work Order is issued. */
+
     var chapterSlot = el("div", { class: "chapter-filter-slot" });
     function renderChapterPanel() {
       chapterSlot.innerHTML = "";
-      chapterSlot.appendChild(chapterPanel(data, currentSubject, function (chapterId) {
-        currentChapter = chapterId;
-        renderGrid();
-      }));
+      chapterSlot.appendChild(chapterPanel(
+        { items: runtimeItems() }, currentSubject, function (chapterId) {
+          currentChapter = chapterId;
+          renderGrid();
+        }
+      ));
     }
 
     function onSubjectPick(id) {
@@ -382,13 +461,11 @@ AHS.MaterialCenter = (function () {
 
     function setView(mode) { theGrid.setAttribute("data-view", mode); }
 
-    var subjPanelEl = subjectPanel(data, onSubjectPick);
+    var subjPanelEl = subjectPanel(seed, onSubjectPick);
     renderChapterPanel();
     subjPanelEl.appendChild(chapterSlot);
 
-    /* M008 Filter + M009 Sort — new controls, mounted as siblings next
-       to the existing (untouched) toolbar. */
-    var filterEl = AHS.MaterialFilter.create(data, function (state) {
+    var filterEl = AHS.MaterialFilter.create(seed, function (state) {
       currentFilter = state;
       renderGrid();
     });
@@ -398,9 +475,6 @@ AHS.MaterialCenter = (function () {
     });
     var filterSortRow = el("div", { class: "mat-filter-sort-row" }, [filterEl, sortEl]);
 
-    /* M013: Search + Subject Tabs instances, wired into the unified
-       filter pipeline. Search shows the M011 skeleton briefly; tab
-       switches render immediately (in-memory, no wait to simulate). */
     var searchBar = AHS.MaterialSearchBar.create(function (keyword) {
       currentSearch = keyword;
       renderGridWithLoading();
@@ -413,7 +487,7 @@ AHS.MaterialCenter = (function () {
     var main = el("div", { class: "mat-main" }, [
       subjPanelEl,
       el("div", { class: "mat-content" }, [
-        toolbar(data, setView),
+        toolbar(seed, setView),
         filterSortRow,
         theGrid,
         emptyState,
@@ -432,14 +506,23 @@ AHS.MaterialCenter = (function () {
           el("span", { text: "新增資料夾" })
         ])
       ]),
-      uploadPanel(status),
-      recentFiles(data, status)
+      uploadPanel(status, onFilesPicked),
+      recentFilesSlot
     ]);
 
+    /* Initial paint (runtime empty => grid empty + recent hidden). */
+    renderRecentLearning();
+    renderRecentFiles();
+    if (AHS.MaterialRuntime.isEmpty()) {
+      emptyState.innerHTML = "";
+      emptyState.appendChild(AHS.MaterialEmptyState.create("empty", resetAllFilters));
+      emptyState.removeAttribute("hidden");
+    }
+
     return el("div", { class: "mat-page" }, [
-      header(data, searchBar),
+      header(seed, searchBar),
       tabsEl,
-      continueBanner,
+      recentLearningSlot,
       el("div", { class: "mat-layout" }, [main, rail])
     ]);
   }
