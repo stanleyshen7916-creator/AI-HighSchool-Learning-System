@@ -275,24 +275,6 @@ AHS.MaterialCenter = (function () {
     return (Math.round(bytes / (1024 * 1024) * 10) / 10) + " MB";
   }
 
-  /* ---- Material detail (MAT-F004) --------------------------------------
-     Reuses the existing .mat-status announcement area as the material
-     detail display region (no new layout/UI section introduced).
-     Runtime Migration: now searches a passed-in items array (the runtime
-     list), not AHS.Mock. */
-  function findMaterialById(items, id) {
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].id === id) { return items[i]; }
-    }
-    return null;
-  }
-
-  function formatDetail(item) {
-    var subj = AHS.Subjects[item.subject] || { name: "其他" };
-    var tail = item.content ? " — " + item.content : "";
-    return "教材詳情：《" + item.title + "》｜" + subj.name + "｜" + item.chapter + tail;
-  }
-
   /* create() — Runtime Migration: Material Center now reads/writes
      AHS.MaterialRuntime (starts empty), NOT AHS.Mock.materials. Mock is
      kept only as Developer Seed Data for other modules. `data` below is
@@ -306,23 +288,13 @@ AHS.MaterialCenter = (function () {
 
     function runtimeItems() { return AHS.MaterialRuntime.list(); }
 
-    function openDetail(id) {
-      var item = AHS.MaterialRuntime.getById(id);
-      if (!item) {
-        status.textContent = "教材不存在";
-        status.removeAttribute("hidden");
-        return;
-      }
-      status.textContent = formatDetail(item);
-      status.removeAttribute("hidden");
-    }
-
     /* Recent Learning — Runtime-driven (created-order). Rendered into a
        slot so it can refresh / hide on every runtime change. */
     var recentLearningSlot = el("div", { class: "mat-recent-learning-slot" });
 
-    /* Grid starts from the (initially empty) runtime list. */
-    var theGrid = AHS.MaterialGrid.create(runtimeItems(), status, openDetail);
+    /* Grid starts empty (runtime is empty on first open); renderGrid()
+       rebuilds it as a grouped layout on every change. */
+    var theGrid = AHS.MaterialGrid.create([], status, {});
     var emptyState = el("div", { class: "mat-grid__empty-slot", hidden: "hidden" });
 
     var currentSubject = "all";
@@ -330,22 +302,26 @@ AHS.MaterialCenter = (function () {
     var currentFilter = { subject: "all", grade: "all", status: "all" };
     var currentSort = "newest";
     var currentSearch = "";
-    var currentTabGroup = "all";
+    var currentCategory = "all";
     var currentFavoriteOnly = false;
     var searchLoadingTimer = null;
 
+    /* computeVisibleItems() — returns the filtered list (NOT sorted here;
+       RC-006 sorts per-group inside the grid). Applies: left-sidebar
+       subject/chapter, Filter Panel (subject/grade/status), top category
+       tab (RC-002), favorite-only, and keyword search. */
     function computeVisibleItems() {
       var keyword = currentSearch.trim().toLowerCase();
-      var groupSubjects = AHS.MaterialSubjectTabs.subjectsForGroup(currentTabGroup);
 
-      var list = runtimeItems().filter(function (item) {
+      return runtimeItems().filter(function (item) {
         var subjMatch = currentSubject === "all" || item.subject === currentSubject;
         var chapMatch = currentChapter === "all" || item.chapter === currentChapter;
         var filterSubjMatch = currentFilter.subject === "all" || item.subject === currentFilter.subject;
         var filterGradeMatch = currentFilter.grade === "all" || item.grade === currentFilter.grade;
         var filterStatusMatch = currentFilter.status === "all" ||
           AHS.MaterialFilter.statusOf(item.progress) === currentFilter.status;
-        var tabMatch = !groupSubjects || groupSubjects.indexOf(item.subject) !== -1;
+        /* RC-002: top category tab controls which Group(s) show. */
+        var categoryMatch = currentCategory === "all" || item.category === currentCategory;
         var favMatch = !currentFavoriteOnly || item.favorite === true;
         var searchMatch = !keyword ||
           String(item.title).toLowerCase().indexOf(keyword) !== -1 ||
@@ -353,8 +329,12 @@ AHS.MaterialCenter = (function () {
           String(item.fileName || "").toLowerCase().indexOf(keyword) !== -1 ||
           String(item.content || "").toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
-          filterStatusMatch && tabMatch && favMatch && searchMatch;
+          filterStatusMatch && categoryMatch && favMatch && searchMatch;
       });
+    }
+
+    /* Per-group sort function passed to the grid (RC-006). */
+    function sortWithin(list) {
       return AHS.MaterialSort.apply(list, currentSort);
     }
 
@@ -363,7 +343,7 @@ AHS.MaterialCenter = (function () {
       currentChapter = "all";
       currentFilter = { subject: "all", grade: "all", status: "all" };
       currentSearch = "";
-      currentTabGroup = "all";
+      currentCategory = "all";
       currentFavoriteOnly = false;
       var subjButtons = subjPanelEl.querySelectorAll(".subj-filter__item");
       Array.prototype.forEach.call(subjButtons, function (b) {
@@ -390,7 +370,7 @@ AHS.MaterialCenter = (function () {
         onDownload: downloadMaterial,
         onDelete: confirmDeleteMaterial,
         onToggleFavorite: onToggleFavorite
-      });
+      }, sortWithin);
       newGrid.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
       theGrid.parentNode.replaceChild(newGrid, theGrid);
       theGrid = newGrid;
@@ -585,8 +565,8 @@ AHS.MaterialCenter = (function () {
       currentSearch = keyword;
       renderGridWithLoading();
     });
-    var tabsEl = AHS.MaterialSubjectTabs.create(function (groupId) {
-      currentTabGroup = groupId;
+    var tabsEl = AHS.MaterialCategoryTabs.create(function (categoryId) {
+      currentCategory = categoryId;
       renderGrid();
     });
 

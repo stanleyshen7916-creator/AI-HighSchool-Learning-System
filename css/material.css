@@ -190,6 +190,19 @@
 .mat-grid[data-view="grid"] { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .mat-grid[data-view="list"] { grid-template-columns: minmax(0, 1fr); }
 
+/* ---- Grouped layout (RC-001) ----------------------------------------- */
+.mat-groups { display: flex; flex-direction: column; gap: 26px; }
+.mat-group { display: flex; flex-direction: column; gap: 12px; }
+.mat-group__header {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--line);
+}
+.mat-group__icon { font-size: 18px; line-height: 1; }
+.mat-group__name { margin: 0; font-size: 16px; font-weight: 800; color: var(--text); }
+.mat-group__count { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+.mat-groups[data-view="grid"] .mat-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.mat-groups[data-view="list"] .mat-grid { grid-template-columns: minmax(0, 1fr); }
+
 .mat-card {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -257,7 +270,8 @@
 .mat-card__continue { width: 100%; }
 
 /* list view tweak */
-.mat-grid[data-view="list"] .mat-card {
+.mat-grid[data-view="list"] .mat-card,
+.mat-groups[data-view="list"] .mat-card {
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
@@ -550,6 +564,14 @@
   flex-direction: column;
   gap: 2px;
 }
+/* The menu is controlled ONLY by the [hidden] attribute (toggled on
+   Click in MaterialCard.js). Because .mat-card__menu sets display:flex,
+   the UA's low-specificity [hidden]{display:none} is overridden — so we
+   must restore it here with matching specificity. Without this the menu
+   renders permanently (which on the live site looked like a hover-open
+   menu). This is the single source of truth; there is NO :hover rule
+   that opens the menu. */
+.mat-card__menu[hidden] { display: none; }
 .mat-card__menu-item {
   width: 100%;
   text-align: left;
