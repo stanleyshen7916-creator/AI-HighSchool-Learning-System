@@ -72,12 +72,16 @@ AHS.MaterialCenter = (function () {
   }
 
   /* ---- Toolbar --------------------------------------------------------- */
-  function toolbar(data, onView) {
-    function select(label, options) {
+  function toolbar(data, onView, onGrade, onFormat) {
+    function select(label, options, onChange) {
+      var sel = el("select", { class: "mat-select__control", "aria-label": label },
+        options.map(function (o) { return el("option", { text: o }); }));
+      if (typeof onChange === "function") {
+        sel.addEventListener("change", function () { onChange(sel.value); });
+      }
       return el("label", { class: "mat-select" }, [
         el("span", { class: "mat-select__label", text: label }),
-        el("select", { class: "mat-select__control", "aria-label": label },
-          options.map(function (o) { return el("option", { text: o }); }))
+        sel
       ]);
     }
 
@@ -102,9 +106,9 @@ AHS.MaterialCenter = (function () {
 
     return el("div", { class: "mat-toolbar" }, [
       el("div", { class: "mat-toolbar__selects" }, [
-        select("年級", data.grades),
+        select("年級", ["全部年級"].concat(data.grades), onGrade),
         select("排序", data.sorts),
-        select("格式", data.formats),
+        select("格式", data.formats, onFormat),
         el("div", { class: "mat-toolbar__views" }, [gridBtn, listBtn])
       ])
     ]);
@@ -202,9 +206,9 @@ AHS.MaterialCenter = (function () {
       drop
     ]);
 
-    /* Bug 001: expose openPicker so the top "上傳教材" button shares the
-       exact same file-picker flow as the "選擇檔案" button. */
-    return { root: root, openPicker: openPicker };
+    /* The Upload Panel is now the single upload entry (BUG-011); the
+       panel's own "選擇檔案" button drives openPicker internally. */
+    return { root: root };
   }
 
   /* recentFilesFromRuntime — mirrors uploaded materials (newest first),
@@ -287,6 +291,8 @@ AHS.MaterialCenter = (function () {
     var currentCategory = "all";
     var currentFolder = "all"; /* "all" | null (未分類) | folderId */
     var currentFavoriteOnly = false;
+    var currentToolbarGrade = "all"; /* RC-003-001 toolbar 年級 */
+    var currentFormat = "all";       /* RC-003-001 toolbar 格式 */
     var searchLoadingTimer = null;
 
     /* computeVisibleItems() — returns the filtered list (NOT sorted here;
@@ -308,6 +314,12 @@ AHS.MaterialCenter = (function () {
         var categoryMatch = currentCategory === "all" || item.category === currentCategory;
         /* BUG-010-006: folder filter. "all" = 不限；null = 未分類。 */
         var folderMatch = currentFolder === "all" || (item.folderId || null) === currentFolder;
+        /* RC-003-001: toolbar 年級 / 格式. */
+        var toolbarGradeMatch = currentToolbarGrade === "all" || currentToolbarGrade === "全部年級" ||
+          item.grade === currentToolbarGrade;
+        var fmt = String(currentFormat || "").toLowerCase();
+        var formatMatch = currentFormat === "all" || currentFormat === "全部格式" || !fmt ||
+          String(item.fileType || "").toLowerCase() === fmt;
         var favMatch = !currentFavoriteOnly || item.favorite === true;
         var folderName = "";
         if (item.folderId) {
@@ -321,7 +333,8 @@ AHS.MaterialCenter = (function () {
           String(item.content || "").toLowerCase().indexOf(keyword) !== -1 ||
           String(folderName).toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
-          filterStatusMatch && categoryMatch && folderMatch && favMatch && searchMatch;
+          filterStatusMatch && categoryMatch && folderMatch && toolbarGradeMatch &&
+          formatMatch && favMatch && searchMatch;
       });
     }
 
@@ -338,6 +351,8 @@ AHS.MaterialCenter = (function () {
       currentCategory = "all";
       currentFolder = "all";
       currentFavoriteOnly = false;
+      currentToolbarGrade = "all";
+      currentFormat = "all";
       var subjButtons = subjPanelEl.querySelectorAll(".subj-filter__item");
       Array.prototype.forEach.call(subjButtons, function (b) {
         b.classList.toggle("is-active", b.getAttribute("data-id") === "all");
@@ -359,7 +374,8 @@ AHS.MaterialCenter = (function () {
     function renderGrid() {
       var list = computeVisibleItems();
       var newGrid = AHS.MaterialGrid.create(list, status, {
-        onOpen: openMaterial,
+        onPreview: previewMaterial,
+        onLearn: startLearningSession,
         onDownload: downloadMaterial,
         onDelete: confirmDeleteMaterial,
         onToggleFavorite: onToggleFavorite
@@ -385,7 +401,7 @@ AHS.MaterialCenter = (function () {
       var recent = AHS.MaterialRuntime.recentByCreatedOrder();
       if (recent.length === 0) { return; }
       recentLearningSlot.appendChild(
-        AHS.MaterialRecentLearning.createFromRuntime(recent, openMaterial)
+        AHS.MaterialRecentLearning.createFromRuntime(recent, startLearningSession)
       );
     }
 
@@ -393,7 +409,7 @@ AHS.MaterialCenter = (function () {
     var recentFilesSlot = el("div", { class: "mat-recent-files-slot" });
     function renderRecentFiles() {
       recentFilesSlot.innerHTML = "";
-      recentFilesSlot.appendChild(recentFilesFromRuntime(status, openMaterial));
+      recentFilesSlot.appendChild(recentFilesFromRuntime(status, previewMaterial));
     }
 
     /* Folder list slot (BUG-010): left sidebar folder container list. */
@@ -472,21 +488,41 @@ AHS.MaterialCenter = (function () {
       next();
     }
 
-    /* ---- Open material -> Preview (Feature 5) -------------------------
-       Always opens the preview overlay first (never auto-download).
-       The preview renders inline for supported types, or shows an info
-       page with an explicit Download button for others. */
-    function openMaterial(id) {
+    /* ---- Preview (RC-003-006) ----------------------------------------
+       Opens the preview overlay (view only). Records lastOpenedAt via
+       markPreviewed but NEVER changes progress / learning stats. */
+    function previewMaterial(id) {
       var item = AHS.MaterialRuntime.getById(id);
       if (!item) {
         status.textContent = "教材不存在";
         status.removeAttribute("hidden");
         return;
       }
+      AHS.MaterialRuntime.markPreviewed(id);
       var overlay = AHS.MaterialPreview.open(item, function (it) {
         doDownload(it);
       });
       document.body.appendChild(overlay);
+    }
+
+    /* ---- Learning Session (RC-003-005/006/008) -----------------------
+       Starts/continues learning: advances progress and updates learning
+       statistics + Recent Learning + Recent Files. Opens the material
+       for viewing too (same overlay), but the key difference from
+       preview is that progress/learning ARE updated here. */
+    function startLearningSession(id) {
+      var item = AHS.MaterialRuntime.getById(id);
+      if (!item) {
+        status.textContent = "教材不存在";
+        status.removeAttribute("hidden");
+        return;
+      }
+      AHS.MaterialRuntime.startLearning(id);
+      status.textContent = "開始學習：" + item.title + "（進度 " + item.progress + "%）";
+      status.removeAttribute("hidden");
+      var overlay = AHS.MaterialPreview.open(item, function (it) { doDownload(it); });
+      document.body.appendChild(overlay);
+      renderAll();
     }
 
     /* Low-level download (explicit user action only). */
@@ -676,7 +712,13 @@ AHS.MaterialCenter = (function () {
     var main = el("div", { class: "mat-main" }, [
       subjPanelEl,
       el("div", { class: "mat-content" }, [
-        toolbar(seed, setView),
+        toolbar(seed, setView, function (g) {
+          currentToolbarGrade = g;
+          renderGrid();
+        }, function (fmt) {
+          currentFormat = fmt;
+          renderGrid();
+        }),
         filterSortRow,
         filterUI.panel,
         theGrid,
@@ -686,11 +728,6 @@ AHS.MaterialCenter = (function () {
     ]);
 
     var uploadUI = uploadPanel(status, onFilesPicked);
-    var uploadBtn = el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--ghost" }, [
-      el("span", { html: AHS.Icons.download() }),
-      el("span", { text: "上傳教材" })
-    ]);
-    uploadBtn.addEventListener("click", function () { uploadUI.openPicker(); });
 
     var newFolderBtn = el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--primary" }, [
       el("span", { html: AHS.Icons.plus() }),
@@ -708,7 +745,6 @@ AHS.MaterialCenter = (function () {
 
     var rail = el("div", { class: "mat-rail" }, [
       el("div", { class: "mat-rail__actions" }, [
-        uploadBtn,
         newFolderBtn
       ]),
       uploadUI.root,

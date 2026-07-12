@@ -48,7 +48,12 @@ AHS.MaterialCard = (function () {
       opts = { onOpen: opts, onDelete: legacyDelete, onToggleFavorite: legacyFav };
     }
     opts = opts || {};
-    var onOpen = opts.onOpen;
+    /* RC-003-006/007: preview (查看，不更新進度) is separate from learn
+       (開始/繼續學習，更新進度). onPreview preferred; onOpen kept as a
+       backward-compat alias for preview. onLearn starts a Learning
+       Session. */
+    var onPreview = opts.onPreview || opts.onOpen;
+    var onLearn = opts.onLearn;
     var onDownload = opts.onDownload;
     var onDelete = opts.onDelete;
     var onToggleFavorite = opts.onToggleFavorite;
@@ -60,8 +65,12 @@ AHS.MaterialCard = (function () {
       status.textContent = msg; status.removeAttribute("hidden");
     }
 
-    function openMaterial() {
-      if (typeof onOpen === "function") { onOpen(item.id); }
+    function previewMaterial() {
+      if (typeof onPreview === "function") { onPreview(item.id); }
+    }
+    function learnMaterial() {
+      if (typeof onLearn === "function") { onLearn(item.id); }
+      else { previewMaterial(); }
     }
     function downloadMaterial() {
       if (typeof onDownload === "function") { onDownload(item.id); }
@@ -83,13 +92,16 @@ AHS.MaterialCard = (function () {
     /* 收藏 Icon — reflects item.favorite (Runtime). Quick toggle stays
        on the card for one-tap favoriting; also available in the ⋯ menu. */
     var isFav = !!item.favorite;
+    function favTip(f) { return f ? "取消收藏" : "收藏教材"; }
     var favBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__fav" + (isFav ? " is-active" : ""),
-      "aria-label": "收藏教材", "data-tip": "收藏教材", "aria-pressed": isFav ? "true" : "false",
+      "aria-label": favTip(isFav), "data-tip": favTip(isFav), "aria-pressed": isFav ? "true" : "false",
       html: isFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark()
     });
     function applyFav(nowFav) {
       favBtn.setAttribute("aria-pressed", nowFav ? "true" : "false");
+      favBtn.setAttribute("aria-label", favTip(nowFav));
+      favBtn.setAttribute("data-tip", favTip(nowFav));
       favBtn.classList.toggle("is-active", nowFav);
       favBtn.innerHTML = nowFav ? AHS.Icons.bookmarkFill() : AHS.Icons.bookmark();
     }
@@ -99,15 +111,16 @@ AHS.MaterialCard = (function () {
       applyFav(nowFav);
     });
 
-    /* Open / Download standalone icon buttons — hover shows only a
-       tooltip (WO-006 §1/§3); the action fires on click, never on hover. */
-    var openBtn = el("button", {
-      type: "button", class: "mat-card__act mat-card__open",
-      "aria-label": "開啟教材", "data-tip": "開啟教材", html: AHS.Icons.book()
+    /* 預覽 / 下載 standalone icon buttons — hover shows only a tooltip
+       (WO-006); the action fires on click, never on hover. Preview does
+       NOT update progress/learning (RC-003-006). */
+    var previewBtn = el("button", {
+      type: "button", class: "mat-card__act mat-card__preview",
+      "aria-label": "預覽教材", "data-tip": "預覽教材", html: AHS.Icons.book()
     });
-    openBtn.addEventListener("click", function (e) {
+    previewBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      openMaterial();
+      previewMaterial();
     });
     var dlBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__dl",
@@ -118,12 +131,9 @@ AHS.MaterialCard = (function () {
       downloadMaterial();
     });
 
-    /* RC-001-A: the ⋯ "更多選項" dropdown is removed entirely. Its four
-       actions are represented directly on the card: 收藏 (favBtn),
-       開啟 (openBtn), 下載 (dlBtn), and a single explicit 刪除 button
-       (icon + text, danger tone). Delete keeps the confirm → remove →
-       list-refresh flow (the confirm lives in MaterialCenter). */
-    var acts = [favBtn, openBtn, dlBtn];
+    /* RC-003-007: card icons are 收藏 / 預覽教材 / 下載教材 / 刪除教材.
+       No 開啟教材 icon. */
+    var acts = [favBtn, previewBtn, dlBtn];
     if (typeof onDelete === "function") {
       /* Trash icon defined locally (the shared Icons.js is out of this
          WO's modify scope); matches the spec's 垃圾桶 glyph. */
@@ -146,15 +156,16 @@ AHS.MaterialCard = (function () {
       acts.push(deleteBtn);
     }
 
-    /* Continue Button — reuses .continue-reading__btn (same pill style,
-       same Design Token as the Recent Learning section's button). */
+    /* Bottom button — 開始學習 (progress 0) / 繼續學習 (progress > 0).
+       Clicking starts a Learning Session (updates progress / recent
+       learning / learning time), NOT a preview (RC-003-006). */
     var continueBtn = el("button", {
       type: "button", class: "continue-reading__btn mat-card__continue",
-      text: "繼續學習"
+      text: pct > 0 ? "繼續學習" : "開始學習"
     });
     continueBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      openMaterial();
+      learnMaterial();
     });
 
     var progressBar = el("div", {
@@ -209,10 +220,11 @@ AHS.MaterialCard = (function () {
     ]);
 
     /* MAT-F001 acceptance: clicking a material logs its id.
-       MAT-F004 acceptance: clicking a material opens its detail. */
+       RC-003-006: clicking a card opens PREVIEW (view only, no progress
+       update). Learning is started explicitly via the bottom button. */
     card.addEventListener("click", function () {
       console.log(item.id);
-      openMaterial();
+      previewMaterial();
     });
 
     return card;

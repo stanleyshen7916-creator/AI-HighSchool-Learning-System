@@ -64,6 +64,12 @@ AHS.MaterialRuntime = (function () {
       views: partial.views || "0",
       content: partial.content || "",
       progress: typeof partial.progress === "number" ? partial.progress : 0,
+      /* RC-003-008 Learning Statistics (Learning Runtime). progress is the
+         single source of truth for 0 未開始 / 1-99 學習中 / 100 已完成. */
+      lastOpenedAt: partial.lastOpenedAt || null,
+      lastLearningAt: partial.lastLearningAt || null,
+      learningTime: typeof partial.learningTime === "number" ? partial.learningTime : 0,
+      learningCount: typeof partial.learningCount === "number" ? partial.learningCount : 0,
       favorite: false,
       fileName: partial.fileName || "",
       fileType: partial.fileType || "FILE",
@@ -173,6 +179,38 @@ AHS.MaterialRuntime = (function () {
     });
   }
 
+  /* markPreviewed(id) — RC-003-006: preview only records lastOpenedAt.
+     It must NOT change progress / learning stats. */
+  function markPreviewed(id) {
+    var m = getById(id);
+    if (!m) { return null; }
+    m.lastOpenedAt = new Date().toISOString();
+    return m;
+  }
+
+  /* startLearning(id, opts) — RC-003-005/006/008: a Learning Session.
+     Updates lastLearningAt, learningCount, learningTime and advances
+     progress. progress moves 0 → 學習中 → 100 (clamped). opts.minutes
+     defaults to a small mock increment; opts.progress can set an
+     explicit value. */
+  function startLearning(id, opts) {
+    var m = getById(id);
+    if (!m) { return null; }
+    opts = opts || {};
+    m.lastLearningAt = new Date().toISOString();
+    m.lastOpenedAt = m.lastLearningAt;
+    m.learningCount = (m.learningCount || 0) + 1;
+    m.learningTime = (m.learningTime || 0) + (typeof opts.minutes === "number" ? opts.minutes : 5);
+    if (typeof opts.progress === "number") {
+      m.progress = Math.max(0, Math.min(100, opts.progress));
+    } else {
+      /* Advance toward 100 in mock steps; first session leaves 學習中. */
+      var next = (typeof m.progress === "number" ? m.progress : 0) + 25;
+      m.progress = Math.max(1, Math.min(100, next));
+    }
+    return m;
+  }
+
   function formatDate(d) {
     function pad(n) { return n < 10 ? "0" + n : String(n); }
     return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
@@ -195,6 +233,8 @@ AHS.MaterialRuntime = (function () {
     toggleFavorite: toggleFavorite,
     favorites: favorites,
     recentByCreatedOrder: recentByCreatedOrder,
+    markPreviewed: markPreviewed,
+    startLearning: startLearning,
     addFolder: addFolder,
     listFolders: listFolders,
     getFolderById: getFolderById,
