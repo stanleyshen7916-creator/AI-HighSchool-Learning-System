@@ -21,10 +21,14 @@ AHS.MaterialRuntime = (function () {
 
   /* Material Center runtime store. `materials` grows via upload, shrinks
      via delete; `seq` gives a stable created-order id + ordering key
-     (used by Recent Learning "Created Order" per spec). */
+     (used by Recent Learning "Created Order" per spec). `folders` holds
+     Folder containers (BUG-010); a Material references its folder via
+     folderId (null = 未分類). */
   var store = {
     materials: [],
-    seq: 0
+    folders: [],
+    seq: 0,
+    folderSeq: 0
   };
 
   function list() {
@@ -64,6 +68,8 @@ AHS.MaterialRuntime = (function () {
       fileName: partial.fileName || "",
       fileType: partial.fileType || "FILE",
       fileSize: partial.fileSize || "",
+      /* BUG-010: container reference; null = 未分類. */
+      folderId: partial.folderId || null,
       /* runtime-only File reference for open/preview; null for
          seed-shaped or fileless records. Not persisted. */
       file: partial.file || null
@@ -100,6 +106,73 @@ AHS.MaterialRuntime = (function () {
     return store.materials.slice().sort(function (a, b) { return b.order - a.order; });
   }
 
+  /* ---- Folder API (BUG-010) ------------------------------------------
+     Folder = Material Container (1 → N). Deleting a folder never deletes
+     materials; it detaches them (folderId = null → 未分類). */
+  function addFolder(partial) {
+    store.folderSeq += 1;
+    var now = new Date();
+    var folder = {
+      id: "fd_" + store.folderSeq,
+      order: store.folderSeq,
+      name: partial.name || "未命名資料夾",
+      subject: partial.subject || "other",
+      grade: partial.grade || "高一",
+      defaultCategory: partial.defaultCategory || "",
+      createdAt: partial.createdAt || formatDate(now),
+      /* reserved (not implemented yet) */
+      color: null,
+      icon: null
+    };
+    store.folders.push(folder);
+    return folder;
+  }
+
+  function listFolders() {
+    return store.folders.slice();
+  }
+
+  function getFolderById(id) {
+    for (var i = 0; i < store.folders.length; i++) {
+      if (store.folders[i].id === id) { return store.folders[i]; }
+    }
+    return null;
+  }
+
+  /* folderMaterialCount(folderId) — how many materials live in a folder. */
+  function folderMaterialCount(folderId) {
+    var n = 0;
+    for (var i = 0; i < store.materials.length; i++) {
+      if (store.materials[i].folderId === folderId) { n++; }
+    }
+    return n;
+  }
+
+  /* removeFolder(id) — detaches all its materials (folderId = null) then
+     removes the folder. Returns true if a folder was removed. Materials
+     are always preserved (BUG-010-007). */
+  function removeFolder(id) {
+    var found = false;
+    for (var i = 0; i < store.folders.length; i++) {
+      if (store.folders[i].id === id) { found = true; break; }
+    }
+    if (!found) { return false; }
+    for (var j = 0; j < store.materials.length; j++) {
+      if (store.materials[j].folderId === id) { store.materials[j].folderId = null; }
+    }
+    store.folders = store.folders.filter(function (f) { return f.id !== id; });
+    return true;
+  }
+
+  /* searchFolders(keyword) — folders whose name matches (BUG-010-005). */
+  function searchFolders(keyword) {
+    var k = String(keyword || "").trim().toLowerCase();
+    if (!k) { return store.folders.slice(); }
+    return store.folders.filter(function (f) {
+      return String(f.name).toLowerCase().indexOf(k) !== -1;
+    });
+  }
+
   function formatDate(d) {
     function pad(n) { return n < 10 ? "0" + n : String(n); }
     return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
@@ -108,7 +181,9 @@ AHS.MaterialRuntime = (function () {
   /* reset() — test helper; clears the store back to first-open state. */
   function reset() {
     store.materials = [];
+    store.folders = [];
     store.seq = 0;
+    store.folderSeq = 0;
   }
 
   return {
@@ -120,6 +195,12 @@ AHS.MaterialRuntime = (function () {
     toggleFavorite: toggleFavorite,
     favorites: favorites,
     recentByCreatedOrder: recentByCreatedOrder,
+    addFolder: addFolder,
+    listFolders: listFolders,
+    getFolderById: getFolderById,
+    folderMaterialCount: folderMaterialCount,
+    removeFolder: removeFolder,
+    searchFolders: searchFolders,
     reset: reset
   };
 })();

@@ -34,7 +34,7 @@ AHS.MaterialUploadDialog = (function () {
      receives { title, subject, grade, category }. Returns the overlay
      node (caller appends to document). Validates the three required
      fields before confirming. */
-  function open(file, onConfirm, onCancel) {
+  function open(file, onConfirm, onCancel, folders) {
     var defaultName = file && file.name ? file.name.replace(/\.[^.]+$/, "") : "未命名教材";
 
     var nameInput = el("input", {
@@ -55,6 +55,24 @@ AHS.MaterialUploadDialog = (function () {
     var categoryF = selectField("教材分類", CATEGORIES.map(function (c) {
       return { value: c, label: c };
     }), true);
+
+    /* BUG-010-003: optional Folder select. Choosing a folder with a
+       defaultCategory pre-fills 教材分類 (user can still change it). */
+    var folderList = folders || [];
+    var folderF = selectField("資料夾", [{ value: "", label: "未分類" }].concat(
+      folderList.map(function (f) { return { value: f.id, label: f.name }; })
+    ), false);
+    folderF.control.addEventListener("change", function () {
+      var fid = folderF.control.value;
+      if (!fid) { return; }
+      var folder = null;
+      for (var i = 0; i < folderList.length; i++) {
+        if (folderList[i].id === fid) { folder = folderList[i]; break; }
+      }
+      if (folder && folder.defaultCategory) {
+        categoryF.control.value = folder.defaultCategory;
+      }
+    });
 
     var errorMsg = el("p", { class: "mat-dialog__error", role: "alert", hidden: "hidden" });
 
@@ -83,7 +101,10 @@ AHS.MaterialUploadDialog = (function () {
       }
       close();
       if (typeof onConfirm === "function") {
-        onConfirm({ title: title, subject: subject, grade: grade, category: category });
+        onConfirm({
+          title: title, subject: subject, grade: grade, category: category,
+          folderId: folderF.control.value || null
+        });
       }
     });
 
@@ -101,7 +122,7 @@ AHS.MaterialUploadDialog = (function () {
         el("p", { class: "mat-dialog__sub", text: file && file.name ? file.name : "" })
       ]),
       el("div", { class: "mat-dialog__body" }, [
-        nameField, subjectF.field, gradeF.field, categoryF.field, errorMsg
+        nameField, subjectF.field, gradeF.field, categoryF.field, folderF.field, errorMsg
       ]),
       el("div", { class: "mat-dialog__foot" }, [cancelBtn, confirmBtn])
     ]);

@@ -697,3 +697,43 @@
   .mat-dialog__foot, .mat-preview__foot { flex-direction: column-reverse; }
   .mat-dialog__btn, .mat-preview__btn { width: 100%; }
 }
+
+/* ---- Folder list in sidebar (BUG-010) -------------------------------- */
+.mat-folder { padding: 16px; border-top: 1px solid var(--line); }
+.mat-folder__title { margin: 0 0 10px; font-size: 14px; font-weight: 700; color: var(--text-muted); }
+.mat-folder__list { display: flex; flex-direction: column; gap: 2px; }
+.mat-folder__row { display: flex; align-items: center; gap: 4px; }
+.mat-folder__item {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.mat-folder__item:hover { background-color: var(--bg); }
+.mat-folder__item.is-active { background-color: var(--brand-soft); color: var(--brand); font-weight: 700; }
+.mat-folder__icon { display: inline-flex; flex: 0 0 auto; }
+.mat-folder__icon svg { width: 15px; height: 15px; }
+.mat-folder__name { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mat-folder__count { flex: 0 0 auto; font-size: 12px; color: var(--text-faint); }
+.mat-folder__del {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border: 0; border-radius: 8px;
+  background: transparent; color: var(--text-faint);
+  cursor: pointer;
+}
+.mat-folder__del:hover { background-color: #fdecec; color: #d9534f; }
+.mat-folder__del svg { width: 14px; height: 14px; }

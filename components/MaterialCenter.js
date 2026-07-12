@@ -285,13 +285,15 @@ AHS.MaterialCenter = (function () {
     var currentSort = "newest";
     var currentSearch = "";
     var currentCategory = "all";
+    var currentFolder = "all"; /* "all" | null (未分類) | folderId */
     var currentFavoriteOnly = false;
     var searchLoadingTimer = null;
 
     /* computeVisibleItems() — returns the filtered list (NOT sorted here;
        RC-006 sorts per-group inside the grid). Applies: left-sidebar
        subject/chapter, Filter Panel (subject/grade/status), top category
-       tab (RC-002), favorite-only, and keyword search. */
+       tab (RC-002), folder filter (BUG-010-006), favorite-only, and
+       keyword search (which also matches a material's folder name). */
     function computeVisibleItems() {
       var keyword = currentSearch.trim().toLowerCase();
 
@@ -304,14 +306,22 @@ AHS.MaterialCenter = (function () {
           AHS.MaterialFilter.statusOf(item.progress) === currentFilter.status;
         /* RC-002: top category tab controls which Group(s) show. */
         var categoryMatch = currentCategory === "all" || item.category === currentCategory;
+        /* BUG-010-006: folder filter. "all" = 不限；null = 未分類。 */
+        var folderMatch = currentFolder === "all" || (item.folderId || null) === currentFolder;
         var favMatch = !currentFavoriteOnly || item.favorite === true;
+        var folderName = "";
+        if (item.folderId) {
+          var fd = AHS.MaterialRuntime.getFolderById(item.folderId);
+          folderName = fd ? fd.name : "";
+        }
         var searchMatch = !keyword ||
           String(item.title).toLowerCase().indexOf(keyword) !== -1 ||
           String(item.chapter).toLowerCase().indexOf(keyword) !== -1 ||
           String(item.fileName || "").toLowerCase().indexOf(keyword) !== -1 ||
-          String(item.content || "").toLowerCase().indexOf(keyword) !== -1;
+          String(item.content || "").toLowerCase().indexOf(keyword) !== -1 ||
+          String(folderName).toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
-          filterStatusMatch && categoryMatch && favMatch && searchMatch;
+          filterStatusMatch && categoryMatch && folderMatch && favMatch && searchMatch;
       });
     }
 
@@ -326,6 +336,7 @@ AHS.MaterialCenter = (function () {
       currentFilter = { subject: "all", grade: "all", status: "all" };
       currentSearch = "";
       currentCategory = "all";
+      currentFolder = "all";
       currentFavoriteOnly = false;
       var subjButtons = subjPanelEl.querySelectorAll(".subj-filter__item");
       Array.prototype.forEach.call(subjButtons, function (b) {
@@ -385,11 +396,31 @@ AHS.MaterialCenter = (function () {
       recentFilesSlot.appendChild(recentFilesFromRuntime(status, openMaterial));
     }
 
+    /* Folder list slot (BUG-010): left sidebar folder container list. */
+    var folderSlot = el("div", { class: "mat-folder-slot" });
+    function renderFolders() {
+      folderSlot.innerHTML = "";
+      folderSlot.appendChild(AHS.MaterialFolder.renderList(
+        AHS.MaterialRuntime.listFolders(),
+        {
+          activeId: currentFolder,
+          countOf: function (fid) { return AHS.MaterialRuntime.folderMaterialCount(fid); },
+          onPick: function (id) {
+            currentFolder = id;
+            renderFolders();
+            renderGrid();
+          },
+          onDelete: function (id) { confirmDeleteFolder(id); }
+        }
+      ));
+    }
+
     /* Full refresh after any runtime mutation. */
     function renderAll() {
       renderGrid();
       renderRecentLearning();
       renderRecentFiles();
+      renderFolders();
     }
 
     function renderGridWithLoading() {
@@ -422,6 +453,7 @@ AHS.MaterialCenter = (function () {
             subject: meta.subject,
             grade: meta.grade,
             category: meta.category,
+            folderId: meta.folderId || null,
             fileName: f.name,
             fileType: fileExt(f.name),
             fileSize: formatSize(f.size),
@@ -434,7 +466,7 @@ AHS.MaterialCenter = (function () {
         }, function () {
           /* cancelled — continue with remaining files if any */
           next();
-        });
+        }, AHS.MaterialRuntime.listFolders());
         document.body.appendChild(dialog);
       }
       next();
@@ -531,6 +563,57 @@ AHS.MaterialCenter = (function () {
       }
     }
 
+    /* BUG-010-007: delete folder. Empty folder -> delete directly.
+       Non-empty -> confirm; on 確定, folder is removed and its materials
+       are detached (folderId = null → 未分類), never deleted. */
+    function confirmDeleteFolder(id) {
+      var folder = AHS.MaterialRuntime.getFolderById(id);
+      if (!folder) { return; }
+      var count = AHS.MaterialRuntime.folderMaterialCount(id);
+
+      if (count === 0) {
+        doDeleteFolder(id);
+        return;
+      }
+
+      var overlay = el("div", {
+        class: "mat-dialog__overlay", role: "dialog", "aria-modal": "true", "aria-label": "刪除資料夾"
+      });
+      function close() { if (overlay.parentNode) { overlay.parentNode.removeChild(overlay); } }
+
+      var cancelBtn = el("button", { type: "button", class: "mat-dialog__btn mat-dialog__btn--ghost", text: "取消" });
+      cancelBtn.addEventListener("click", close);
+      var confirmBtn = el("button", { type: "button", class: "mat-dialog__btn mat-dialog__btn--danger", text: "確定" });
+      confirmBtn.addEventListener("click", function () { close(); doDeleteFolder(id); });
+
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
+      function onKey(e) {
+        if (e.key === "Escape" || e.keyCode === 27) { close(); document.removeEventListener("keydown", onKey); }
+      }
+      document.addEventListener("keydown", onKey);
+
+      overlay.appendChild(el("div", { class: "mat-dialog mat-dialog--confirm" }, [
+        el("div", { class: "mat-dialog__head" }, [
+          el("h2", { class: "mat-dialog__title", text: "刪除資料夾" })
+        ]),
+        el("div", { class: "mat-dialog__body" }, [
+          el("p", { class: "mat-dialog__confirm-text", text: "資料夾內仍有教材，是否刪除資料夾？" }),
+          el("p", { class: "mat-dialog__confirm-sub", text: "教材將移至【未分類】，不會被刪除。" })
+        ]),
+        el("div", { class: "mat-dialog__foot" }, [cancelBtn, confirmBtn])
+      ]));
+      document.body.appendChild(overlay);
+    }
+
+    function doDeleteFolder(id) {
+      if (AHS.MaterialRuntime.removeFolder(id)) {
+        if (currentFolder === id) { currentFolder = "all"; }
+        status.textContent = "已刪除資料夾（教材已移至未分類）";
+        status.removeAttribute("hidden");
+        renderAll();
+      }
+    }
+
     /* Favorite: MaterialRuntime.toggleFavorite() is the single source of
        truth; the card reflects the returned state. Grid is NOT fully
        re-rendered here (the card updates its own icon in place), except
@@ -564,6 +647,8 @@ AHS.MaterialCenter = (function () {
     var subjPanelEl = subjectPanel(seed, onSubjectPick);
     renderChapterPanel();
     subjPanelEl.appendChild(chapterSlot);
+    renderFolders();
+    subjPanelEl.appendChild(folderSlot);
 
     var filterUI = AHS.MaterialFilter.create(seed, function (state) {
       currentFilter = state;
@@ -607,13 +692,24 @@ AHS.MaterialCenter = (function () {
     ]);
     uploadBtn.addEventListener("click", function () { uploadUI.openPicker(); });
 
+    var newFolderBtn = el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--primary" }, [
+      el("span", { html: AHS.Icons.plus() }),
+      el("span", { text: "新增資料夾" })
+    ]);
+    newFolderBtn.addEventListener("click", function () {
+      var dialog = AHS.MaterialFolder.openDialog(function (meta) {
+        var folder = AHS.MaterialRuntime.addFolder(meta);
+        status.textContent = "已新增資料夾：" + folder.name;
+        status.removeAttribute("hidden");
+        renderFolders();
+      });
+      document.body.appendChild(dialog);
+    });
+
     var rail = el("div", { class: "mat-rail" }, [
       el("div", { class: "mat-rail__actions" }, [
         uploadBtn,
-        el("button", { type: "button", class: "mat-rail__btn mat-rail__btn--primary" }, [
-          el("span", { html: AHS.Icons.plus() }),
-          el("span", { text: "新增資料夾" })
-        ])
+        newFolderBtn
       ]),
       uploadUI.root,
       recentFilesSlot
