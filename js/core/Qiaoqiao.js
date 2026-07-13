@@ -3,8 +3,9 @@
 
    Per GPT (PMO) direction, the character now uses the APPROVED official
    illustration assets (cropped from Qiaoqiao_Expressions / Qiaoqiao_Poses),
-   served as <img> from assets/qiaoqiao/. This guarantees 100% visual
-   consistency with the approved reference art across every page.
+   served as <img> from assets/expressions/ (bust) and assets/avatars/
+   (full pose) — relocated under Repository Refactor v2.0. This guarantees
+   100% visual consistency with the approved reference art across every page.
 
    Assets are plain PNG referenced by relative path, so everything still
    works over file:// and GitHub Pages with no build step and no API.
@@ -19,7 +20,8 @@ window.AHS = window.AHS || {};
 AHS.Qiaoqiao = (function () {
   "use strict";
 
-  var BASE = "assets/qiaoqiao/";
+  var EXPR_BASE = "assets/expressions/";
+  var POSE_BASE = "assets/avatars/";
 
   /* expression key -> Chinese label (10 approved expressions) */
   var EXPRESSIONS = {
@@ -60,13 +62,13 @@ AHS.Qiaoqiao = (function () {
   /* ---- Bust (portrait) ------------------------------------------------- */
   function bust(expressionKey) {
     var key = EXPRESSIONS[expressionKey] ? expressionKey : "gentle";
-    return img(BASE + "expr_" + key + ".png", EXPRESSIONS[key], "bust");
+    return img(EXPR_BASE + "expr_" + key + ".png", EXPRESSIONS[key], "bust");
   }
 
   /* ---- Full body / pose ------------------------------------------------ */
   function full(poseKey) {
     var key = POSES[poseKey] ? poseKey : "standing";
-    return img(BASE + "pose_" + key + ".png", POSES[key], "full");
+    return img(POSE_BASE + "pose_" + key + ".png", POSES[key], "full");
   }
 
   function expressionLabel(key) { return EXPRESSIONS[key] || ""; }
