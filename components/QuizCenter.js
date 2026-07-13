@@ -1,7 +1,11 @@
 /* components/QuizCenter.js — 測驗中心 (Quiz Center) page.
-   Banner + filter bar + quiz list + right rail (stat cards / subject
-   accuracy donut / history). All Mock. PascalCase component under
-   window.AHS. Donut is pure inline SVG (no chart library). */
+   WO-Q004: Exam list + Exam-taking flow are now driven entirely by
+   window.AHS.ExamRuntime (+ window.AHS.QuestionBank for question
+   detail via questionIds). No Mock Data is used for the exam list or
+   exam-taking flow. The right rail (stat cards / subject accuracy
+   donut / history) is unrelated pre-existing Sprint 1 content and is
+   left untouched by this Work Order — still driven by AHS.Mock.quiz.
+   PascalCase component under window.AHS. Donut is pure inline SVG. */
 window.AHS = window.AHS || {};
 AHS.QuizCenter = (function () {
   "use strict";
@@ -32,142 +36,162 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
-  /* ---- Filter bar ------------------------------------------------------ */
-  function filterBar(data, onSubject, onToggleIncomplete) {
-    var subjChips = el("div", { class: "quiz-filter__subjects" },
-      data.subjects.map(function (id, i) {
-        var label = id === "all" ? "全部科目" : AHS.Subjects[id].name;
-        var b = el("button", {
-          type: "button",
-          class: "quiz-filter__subject" + (i === 0 ? " is-active" : ""),
-          "data-id": id, text: label
-        });
-        b.addEventListener("click", function () {
-          var sibs = subjChips.querySelectorAll(".quiz-filter__subject");
-          Array.prototype.forEach.call(sibs, function (s) { s.classList.remove("is-active"); });
-          b.classList.add("is-active");
-          onSubject(id);
-        });
-        return b;
-      }));
+  /* ---- Exam status label ------------------------------------------------ */
+  var STATUS_LABEL = { draft: "未就緒", ready: "待測驗", running: "進行中", finished: "已完成" };
+  function examStatusLabel(status) { return STATUS_LABEL[status] || status; }
 
-    function select(label, options) {
-      return el("label", { class: "quiz-select" }, [
-        el("span", { class: "quiz-select__label", text: label }),
-        el("select", { class: "quiz-select__control", "aria-label": label },
-          options.map(function (o) { return el("option", { text: o }); }))
-      ]);
-    }
+  function formatDuration(minutes) { return minutes + " 分鐘"; }
 
-    var toggle = el("button", {
-      type: "button", class: "quiz-toggle", "aria-pressed": "false"
-    }, [
-      el("span", { class: "quiz-toggle__track" }, [
-        el("span", { class: "quiz-toggle__thumb" })
-      ]),
-      el("span", { class: "quiz-toggle__label", text: "只看未完成" })
-    ]);
-    toggle.addEventListener("click", function () {
-      var on = toggle.getAttribute("aria-pressed") === "true";
-      toggle.setAttribute("aria-pressed", on ? "false" : "true");
-      onToggleIncomplete(!on);
-    });
-
-    return el("div", { class: "quiz-filter card" }, [
-      el("div", { class: "quiz-filter__row" }, [
-        el("span", { class: "quiz-filter__caption", text: "科目" }),
-        subjChips
-      ]),
-      el("div", { class: "quiz-filter__row quiz-filter__row--controls" }, [
-        select("年級", data.grades),
-        select("章節", data.chapters),
-        select("難易度", data.difficulties),
-        select("題型", data.types),
-        toggle,
-        select("排序", data.sorts)
-      ])
-    ]);
+  /* ---- mm:ss clock (display only — no auto-submit) ---------------------- */
+  function formatClock(totalSeconds) {
+    var t = Math.max(0, totalSeconds);
+    var m = Math.floor(t / 60);
+    var s = t % 60;
+    function pad(n) { return n < 10 ? "0" + n : String(n); }
+    return pad(m) + ":" + pad(s);
   }
 
-  /* ---- Quiz row -------------------------------------------------------- */
-  function quizRow(item, status) {
-    var subj = AHS.Subjects[item.subject];
-    var diffTone = DIFF_TONE[item.difficulty] || "#6b7280";
+  /* ---- Exam list row (function 1/2/3): data from AHS.ExamRuntime ------- */
+  function examRow(exam, onStart) {
+    var subj = AHS.Subjects[exam.subject];
+    var diffTone = DIFF_TONE[exam.difficulty] || "#6b7280";
+    var canStart = exam.questionIds.length > 0;
 
-    var actionBtn = item.done
-      ? el("span", { class: "quiz-row__done" }, [
-          el("span", { html: AHS.Icons.check() }),
-          el("span", { text: "已完成" })
-        ])
-      : el("button", { type: "button", class: "quiz-row__start" }, [
-          el("span", { html: AHS.Icons.play() }),
-          el("span", { text: "開始測驗" })
-        ]);
-    if (!item.done) {
-      actionBtn.addEventListener("click", function () {
-        status.textContent = "（Mock）開始測驗：" + subj.name + "《" + item.title + "》";
-        status.removeAttribute("hidden");
-      });
+    var label = "開始測驗";
+    if (exam.status === "running") { label = "繼續作答"; }
+    else if (exam.status === "finished") { label = "重新測驗"; }
+
+    var actionBtn = el("button", {
+      type: "button", class: "quiz-row__start"
+    }, [
+      el("span", { html: AHS.Icons.play() }),
+      el("span", { text: canStart ? label : "無題目" })
+    ]);
+    if (canStart) {
+      actionBtn.addEventListener("click", function () { onStart(exam.id); });
+    } else {
+      actionBtn.setAttribute("disabled", "disabled");
     }
 
-    var more = el("button", {
-      type: "button", class: "quiz-row__more",
-      "aria-label": "更多", html: AHS.Icons.more()
-    });
-    more.addEventListener("click", function () {
-      status.textContent = "（Mock）更多選項：" + item.title;
-      status.removeAttribute("hidden");
-    });
-
-    return el("article", {
-      class: "quiz-row" + (item.done ? " is-done" : ""),
-      "data-subject": item.subject, "data-done": item.done ? "1" : "0"
-    }, [
+    return el("article", { class: "quiz-row", "data-exam-id": exam.id }, [
       el("span", {
         class: "quiz-row__icon",
-        style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a",
+        style: subj ? ("color:" + subj.hex + ";background-color:" + subj.hex + "1a") : "",
         html: AHS.Icons.quiz()
       }),
       el("div", { class: "quiz-row__info" }, [
-        el("h3", { class: "quiz-row__title", text: item.title }),
+        el("h3", { class: "quiz-row__title", text: exam.title }),
         el("div", { class: "quiz-row__tags" }, [
-          chip(item.subject),
-          el("span", { class: "quiz-row__tag", text: item.grade }),
-          el("span", { class: "quiz-row__tag", text: item.chapter })
+          subj ? chip(exam.subject) : null,
+          el("span", { class: "quiz-row__tag", text: exam.grade }),
+          el("span", { class: "quiz-row__tag", text: exam.chapter }),
+          el("span", { class: "quiz-exam__status quiz-exam__status--" + exam.status,
+            text: examStatusLabel(exam.status) })
         ]),
         el("p", { class: "quiz-row__desc" }, [
-          el("span", { text: item.count + " 題" }),
+          el("span", { text: exam.totalQuestions + " 題" }),
           el("span", { class: "quiz-row__dot-sep", text: "·" }),
-          el("span", { text: item.type }),
+          el("span", { text: formatDuration(exam.duration) }),
           el("span", { class: "quiz-row__dot-sep", text: "·" }),
-          el("span", { style: "color:" + diffTone + ";font-weight:700", text: item.difficulty })
+          el("span", { style: "color:" + diffTone + ";font-weight:700", text: exam.difficulty })
         ])
       ]),
-      el("div", { class: "quiz-row__metrics" }, [
-        el("div", { class: "quiz-row__metric" }, [
-          el("span", { class: "quiz-row__metric-label", text: "進度" }),
-          el("div", { class: "progressbar quiz-row__bar" }, [
-            el("div", { class: "progressbar__fill",
-              style: "width:" + item.progress + "%;background-color:" + subj.hex })
-          ]),
-          el("span", { class: "quiz-row__metric-val", text: item.progress + "%" })
-        ]),
-        el("div", { class: "quiz-row__metric quiz-row__metric--num" }, [
-          el("span", { class: "quiz-row__metric-label", text: "正確率" }),
-          el("span", { class: "quiz-row__metric-strong", text: item.accuracy + "%" })
-        ]),
-        el("div", { class: "quiz-row__metric quiz-row__metric--num" }, [
-          el("span", { class: "quiz-row__metric-label", text: "最高分" }),
-          el("span", { class: "quiz-row__metric-strong", text: item.best + "/100" })
-        ])
-      ]),
-      el("div", { class: "quiz-row__actions" }, [actionBtn, more])
+      el("div", { class: "quiz-row__actions" }, [actionBtn])
     ]);
   }
 
-  function quizList(data, status) {
-    return el("div", { class: "quiz-list" },
-      data.items.map(function (it) { return quizRow(it, status); }));
+  function examListView(onStart) {
+    var exams = AHS.ExamRuntime.list();
+    var body = exams.length
+      ? el("div", { class: "quiz-list" }, exams.map(function (exam) { return examRow(exam, onStart); }))
+      : el("p", { class: "quiz-empty", text: "目前尚無測驗。" });
+    return el("div", { class: "quiz-exam-list" }, [body]);
+  }
+
+  /* ---- Exam-taking view (function 4/5/6/7) ------------------------------
+     Question detail is fetched per-question via AHS.QuestionBank.get(id) —
+     the Exam itself only ever holds questionIds. selectedAnswers is local
+     UI-only state (never persisted, never graded, never leaves this
+     closure): it exists purely to draw the single-choice highlight and
+     the Navigator's "answered" dot. */
+  function examTakingView(state, actions) {
+    var exam = AHS.ExamRuntime.get(state.examId);
+    if (!exam) { return null; }
+    var subj = AHS.Subjects[exam.subject];
+    var total = exam.questionIds.length;
+
+    if (total === 0) {
+      var backBtn = el("button", { type: "button", class: "quiz-exam__nav-btn", text: "返回列表" });
+      backBtn.addEventListener("click", actions.onExit);
+      return el("div", { class: "quiz-exam card" }, [
+        el("p", { class: "quiz-empty", text: "此測驗尚無題目。" }),
+        backBtn
+      ]);
+    }
+
+    if (state.index >= total) { state.index = total - 1; }
+    if (state.index < 0) { state.index = 0; }
+    var qid = exam.questionIds[state.index];
+    var question = AHS.QuestionBank.get(qid);
+
+    var timerVal = el("span", {
+      class: "quiz-exam__timer-val" + (state.remainingSeconds <= 0 ? " is-timeout" : ""),
+      text: formatClock(state.remainingSeconds)
+    });
+
+    var head = el("div", { class: "quiz-exam__head card" }, [
+      el("div", { class: "quiz-exam__title-row" }, [
+        el("h2", { class: "quiz-exam__title", text: exam.title }),
+        el("div", { class: "quiz-exam__timer" }, [
+          el("span", { html: AHS.Icons.clock() }),
+          timerVal
+        ])
+      ]),
+      el("div", { class: "quiz-exam__meta" }, [
+        subj ? chip(exam.subject) : null,
+        el("span", { class: "quiz-row__tag", text: exam.grade }),
+        el("span", { class: "quiz-row__tag", text: total + " 題" }),
+        el("span", { class: "quiz-row__tag", text: formatDuration(exam.duration) }),
+        el("span", { class: "quiz-row__tag", text: exam.difficulty })
+      ]),
+      el("div", { class: "quiz-exam__progress" }, [
+        el("span", { class: "quiz-exam__progress-label", text: "第 " + (state.index + 1) + " / " + total + " 題" }),
+        el("div", { class: "progressbar quiz-exam__bar" }, [
+          el("div", { class: "progressbar__fill", style:
+            "width:" + Math.round(((state.index + 1) / total) * 100) + "%;background-color:" +
+            (subj ? subj.hex : "#7c5cff") })
+        ])
+      ])
+    ]);
+
+    var answeredSet = {};
+    exam.questionIds.forEach(function (id, i) {
+      if (state.selectedAnswers[id] != null) { answeredSet[i] = true; }
+    });
+    var nav = AHS.QuestionNavigator.create(total, state.index, answeredSet, actions.onJump);
+
+    var qCard = question
+      ? AHS.QuestionCard.create(
+          question,
+          state.selectedAnswers[qid] != null ? state.selectedAnswers[qid] : null,
+          function (optionIndex) { actions.onSelect(qid, optionIndex); }
+        )
+      : el("p", { class: "quiz-empty", text: "題目載入失敗。" });
+
+    var prevBtn = el("button", { type: "button", class: "quiz-exam__nav-btn", text: "上一題" });
+    if (state.index === 0) { prevBtn.setAttribute("disabled", "disabled"); }
+    prevBtn.addEventListener("click", actions.onPrev);
+
+    var nextBtn = el("button", { type: "button", class: "quiz-exam__nav-btn", text: "下一題" });
+    if (state.index >= total - 1) { nextBtn.setAttribute("disabled", "disabled"); }
+    nextBtn.addEventListener("click", actions.onNext);
+
+    var finishBtn = el("button", { type: "button", class: "quiz-exam__finish", text: "完成考試" });
+    finishBtn.addEventListener("click", actions.onFinish);
+
+    var actionRow = el("div", { class: "quiz-exam__actions" }, [prevBtn, nextBtn, finishBtn]);
+
+    return el("div", { class: "quiz-exam" }, [head, nav, qCard, actionRow]);
   }
 
   /* ---- Right rail: stat cards ------------------------------------------ */
@@ -263,35 +287,105 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
-  /* create(model?) — model defaults to AHS.Mock.quiz. */
+  /* create(model?) — model defaults to AHS.Mock.quiz, used ONLY by the
+     unrelated right rail (stat cards / donut / history), unchanged from
+     Sprint 1. The exam list + exam-taking flow (left side) is entirely
+     driven by AHS.ExamRuntime / AHS.QuestionBank — no Mock Data. */
   function create(model) {
     var data = model || AHS.Mock.quiz;
     var status = el("p", {
       class: "quiz-status", "aria-live": "polite", hidden: "hidden"
     });
 
-    var list = quizList(data, status);
+    var main = el("div", { class: "quiz-main" });
 
-    var subjectFilter = "all";
-    var onlyIncomplete = false;
-    function applyFilters() {
-      var rows = list.querySelectorAll(".quiz-row");
-      Array.prototype.forEach.call(rows, function (r) {
-        var subjOk = subjectFilter === "all" ||
-          r.getAttribute("data-subject") === subjectFilter;
-        var doneOk = !onlyIncomplete || r.getAttribute("data-done") === "0";
-        r.style.display = (subjOk && doneOk) ? "" : "none";
-      });
+    /* ---- exam-taking state (local, UI-only) --------------------------- */
+    var state = {
+      examId: null,
+      index: 0,
+      selectedAnswers: {},   /* { [questionId]: optionIndex } */
+      remainingSeconds: 0
+    };
+    var timerHandle = null;
+
+    function clearTimer() {
+      if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
     }
 
-    var main = el("div", { class: "quiz-main" }, [
-      banner(data),
-      filterBar(data,
-        function (id) { subjectFilter = id; applyFilters(); },
-        function (on) { onlyIncomplete = on; applyFilters(); }),
-      list,
-      status
-    ]);
+    /* startTimer() — pure display countdown from ExamRuntime.duration.
+       WO-Q004: "僅顯示 UI，不實作自動交卷" — reaching 0 never calls
+       finish() on its own; it just stops decrementing and shows 00:00. */
+    function startTimer() {
+      clearTimer();
+      timerHandle = setInterval(function () {
+        if (state.remainingSeconds > 0) {
+          state.remainingSeconds -= 1;
+          var timerVal = main.querySelector(".quiz-exam__timer-val");
+          if (timerVal) {
+            timerVal.textContent = formatClock(state.remainingSeconds);
+            if (state.remainingSeconds <= 0) { timerVal.classList.add("is-timeout"); }
+          }
+        }
+      }, 1000);
+    }
+
+    function showStatus(msg) {
+      status.textContent = msg;
+      status.removeAttribute("hidden");
+    }
+
+    function render() {
+      main.innerHTML = "";
+      var view = state.examId
+        ? examTakingView(state, {
+            onPrev: function () { state.index -= 1; render(); },
+            onNext: function () { state.index += 1; render(); },
+            onJump: function (i) { state.index = i; render(); },
+            onSelect: function (qid, optionIndex) {
+              state.selectedAnswers[qid] = optionIndex;
+              render();
+            },
+            onFinish: function () { onFinishExam(state.examId); },
+            onExit: function () { onFinishExam(state.examId); }
+          })
+        : examListView(onStartExam);
+      if (!state.examId) { main.appendChild(banner(data)); }
+      if (view) { main.appendChild(view); }
+      main.appendChild(status);
+    }
+
+    /* onStartExam (function 2): calls ExamRuntime.start() only. Rejected
+       (null) when a different exam is already running — enforced by
+       ExamRuntime itself ("同時間僅允許一份 Running Exam"). */
+    function onStartExam(examId) {
+      var exam = AHS.ExamRuntime.start(examId);
+      if (!exam) {
+        showStatus("已有測驗正在進行中，請先完成該測驗。");
+        render();
+        return;
+      }
+      state.examId = exam.id;
+      state.index = 0;
+      state.selectedAnswers = {};
+      state.remainingSeconds = exam.duration * 60;
+      startTimer();
+      render();
+    }
+
+    /* onFinishExam (function 7): calls ExamRuntime.finish() only — no
+       Auto Grading, no Wrong Book, no Statistics. */
+    function onFinishExam(examId) {
+      var result = AHS.ExamRuntime.finish(examId);
+      clearTimer();
+      state.examId = null;
+      state.index = 0;
+      state.selectedAnswers = {};
+      state.remainingSeconds = 0;
+      if (result) { showStatus("測驗已完成：" + result.title); }
+      render();
+    }
+
+    render();
 
     var rail = el("div", { class: "quiz-rail" }, [
       el("section", { class: "card quiz-stats", "aria-label": "學習統計" }, [
