@@ -39,6 +39,33 @@
 .wb-action--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .wb-action--ghost:hover { background-color: var(--bg); }
 
+/* ---- Summary Card (W001-1) --------------------------------------------- */
+.wb-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.wb-summary__item { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.wb-summary__icon {
+  flex: 0 0 auto; width: 40px; height: 40px; border-radius: var(--radius-lg);
+  background-color: var(--brand-soft); color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+}
+.wb-summary__icon svg { width: 20px; height: 20px; }
+.wb-summary__meta { display: flex; flex-direction: column; min-width: 0; }
+.wb-summary__value { font-size: 22px; font-weight: 800; line-height: 1.2; }
+.wb-summary__label { font-size: 12px; color: var(--text-muted); }
+
+/* ---- Empty State (W001-2) ---------------------------------------------- */
+.wb-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 8px; padding: 48px 24px;
+}
+.wb-empty__illustration { margin-bottom: 4px; }
+.wb-empty__title { margin: 0; font-size: 17px; font-weight: 700; color: var(--text); }
+.wb-empty__description { margin: 0 0 8px; font-size: 14px; color: var(--text-muted); max-width: 360px; }
+.wb-empty__btn { text-decoration: none; }
+
 /* ---- Layout ---------------------------------------------------------- */
 .wb-layout {
   display: grid;
@@ -75,6 +102,20 @@
   font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
   flex: 0 0 auto;
 }
+.wb-fav-filter {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); border-radius: var(--radius-pill);
+  padding: 9px 14px; background-color: var(--card); color: var(--text-muted);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  flex: 0 0 auto;
+}
+.wb-fav-filter svg { width: 15px; height: 15px; }
+.wb-fav-filter:hover { background-color: var(--bg); }
+.wb-fav-filter.is-on {
+  border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand);
+}
+.wb-fav-filter__count { font-weight: 700; }
+
 .wb-clear svg { width: 15px; height: 15px; }
 .wb-clear:hover { background-color: #e5dcff; }
 
@@ -89,10 +130,17 @@
 .wb-list__cols { margin-left: auto; display: flex; gap: 24px; font-size: 12px; color: var(--text-faint); }
 .wb-list__cols span:nth-child(3) { width: 78px; text-align: right; }
 
+.wb-list__no-match {
+  display: none; flex-direction: column; align-items: center; gap: 10px;
+  padding: 32px 12px; text-align: center;
+}
+.wb-list__no-match:not([hidden]) { display: flex; }
+.wb-list__no-match-text { margin: 0; font-size: 14px; color: var(--text-muted); }
+
 .wb-list__rows { display: flex; flex-direction: column; }
 
 .wb-row {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   padding: 14px 10px;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
@@ -102,15 +150,47 @@
 .wb-row:hover { background-color: var(--bg); }
 .wb-row.is-active { background-color: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
 .wb-row:focus-visible { outline: 2px solid var(--brand-line); outline-offset: 1px; }
-.wb-row__info { flex: 1 1 auto; min-width: 0; }
+.wb-row__info { flex: 1 1 160px; min-width: 120px; }
 .wb-row__title { margin: 0; font-size: 14px; font-weight: 700; }
 .wb-row__meta { margin: 2px 0 0; font-size: 12px; color: var(--text-faint); }
+.wb-row__favbadge {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 6px; padding: 2px 8px; border-radius: 8px;
+  background-color: var(--brand-soft); color: var(--brand);
+  font-size: 11px; font-weight: 700;
+}
+.wb-row__favbadge svg { width: 12px; height: 12px; }
+.wb-row__favbadge.is-hidden { display: none; }
 .wb-row__col { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
 .wb-row__col--diff { width: 56px; }
 .wb-row__col--date { width: 78px; justify-content: flex-end; }
 .wb-row__count { font-size: 13px; font-weight: 700; }
 .wb-row__date { font-size: 12px; color: var(--text-muted); }
 .wb-tag { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
+.wb-tag--muted { color: var(--text-faint); background-color: var(--bg); }
+
+.wb-row__menu-wrap { position: relative; flex: 0 0 auto; }
+.wb-row__more {
+  width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent;
+  color: var(--text-faint); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.wb-row__more svg { width: 18px; height: 18px; }
+.wb-row__more:hover { background-color: var(--card); }
+.wb-row__menu {
+  position: absolute; top: 36px; right: 0; z-index: 5;
+  min-width: 140px; padding: 6px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background-color: var(--card); box-shadow: var(--shadow-btn);
+  display: none; flex-direction: column; gap: 2px;
+}
+.wb-row__menu:not([hidden]) { display: flex; }
+.wb-row__menu-item {
+  text-align: left; border: 0; background: transparent; border-radius: 8px;
+  padding: 8px 10px; font: inherit; font-size: 13px; font-weight: 600;
+  color: var(--text); cursor: pointer;
+}
+.wb-row__menu-item:hover { background-color: var(--bg); }
 
 .wb-row__bookmark {
   flex: 0 0 auto; width: 32px; height: 32px;
@@ -123,18 +203,22 @@
 .wb-row__bookmark:hover { background-color: var(--card); }
 
 .wb-list__foot { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; flex-wrap: wrap; gap: 10px; }
+.wb-list__foot[hidden] { display: none; }
 .wb-pagination { display: flex; align-items: center; gap: 4px; }
-.wb-page {
+.wb-pagination__pages { display: flex; align-items: center; gap: 4px; }
+.wb-pagination__nav,
+.wb-pagination__btn {
   min-width: 34px; height: 34px; padding: 0 8px;
   border: 1px solid var(--line); border-radius: 9px;
   background-color: var(--card); color: var(--text-muted);
   font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
 }
-.wb-page:hover { background-color: var(--bg); }
-.wb-page.is-active { background-color: var(--brand); border-color: var(--brand); color: #ffffff; }
-.wb-page--gap { border: 0; background: transparent; cursor: default; }
-.wb-page--nav svg { width: 16px; height: 16px; }
+.wb-pagination__nav:hover,
+.wb-pagination__btn:hover { background-color: var(--bg); }
+.wb-pagination__nav:disabled { opacity: 0.4; cursor: not-allowed; }
+.wb-pagination__btn.is-active { background-color: var(--brand); border-color: var(--brand); color: #ffffff; }
+.wb-pagination__nav svg { width: 16px; height: 16px; }
 .wb-list__perpage { font-size: 12px; color: var(--text-faint); }
 
 .wb-status {
@@ -154,6 +238,7 @@
   font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
 }
 .wb-detail__tag-btn svg { width: 14px; height: 14px; }
+.wb-detail__tag-btn.is-on { background-color: var(--brand); color: #ffffff; border-color: var(--brand); }
 
 .wb-detail__tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
 .wb-detail__chapter { font-size: 12px; color: var(--text-muted); }
@@ -176,6 +261,38 @@
 .wb-detail__option.is-correct .wb-detail__option-key { background-color: var(--ok); color: #ffffff; }
 .wb-detail__option.is-wrong { border-color: #f6c9c4; background-color: #fdf1f0; }
 .wb-detail__option.is-wrong .wb-detail__option-key { background-color: var(--subj-history); color: #ffffff; }
+.wb-detail__options--interactive .wb-detail__option { cursor: pointer; }
+.wb-detail__options--interactive .wb-detail__option:hover { border-color: var(--brand-line); background-color: var(--brand-soft); }
+.wb-detail__options--interactive .wb-detail__option.is-selected {
+  border-color: var(--brand); background-color: var(--brand-soft);
+}
+.wb-detail__options--interactive .wb-detail__option.is-selected .wb-detail__option-key {
+  background-color: var(--brand); color: #ffffff;
+}
+
+.wb-detail__review { margin-bottom: 16px; }
+.wb-detail__review-prompt { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.wb-detail__review .wb-detail__btn { width: 100%; margin-top: 10px; }
+.wb-detail__review .wb-detail__btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+.wb-review-session__progress { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--brand); }
+
+.wb-review-result__stats {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px;
+  margin: 16px 0 20px; padding: 14px; border-radius: 12px; background-color: var(--bg);
+}
+.wb-review-result__stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.wb-review-result__value { font-size: 20px; font-weight: 800; }
+.wb-review-result__label { font-size: 11px; color: var(--text-muted); text-align: center; }
+
+.wb-row__status { margin-top: 4px; }
+
+.wb-review-center { display: flex; flex-direction: column; gap: 10px; }
+.wb-review-center__head { display: flex; align-items: center; gap: 8px; }
+.wb-review-center__title { margin: 0; font-size: 15px; font-weight: 700; }
+.wb-review-center__count { font-size: 13px; font-weight: 700; color: var(--brand); }
+.wb-review-center__list { display: flex; flex-wrap: wrap; gap: 8px; }
+.wb-review-center__chip { background-color: var(--brand-soft); color: var(--brand); }
 
 .wb-detail__answers {
   display: flex; gap: 10px; margin-bottom: 14px;
@@ -215,6 +332,9 @@
 .wb-detail__btn--primary:hover { background-color: var(--brand-strong); }
 .wb-detail__btn--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .wb-detail__btn--ghost:hover { background-color: var(--bg); }
+.wb-detail__btn--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
+
+.wb-action--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {
@@ -228,7 +348,12 @@
   .wb-row__col--diff { width: auto; }
   .wb-row__col--date { display: none; }
   .wb-select { flex: 1 1 46%; }
+  .wb-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wb-review-result__stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
   .wb-banner { max-width: 100%; }
+  .wb-row { flex-wrap: wrap; }
+  .wb-empty { padding: 32px 16px; }
+  .wb-review-result__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

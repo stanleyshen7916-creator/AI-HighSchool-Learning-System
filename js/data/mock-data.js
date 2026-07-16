@@ -178,7 +178,7 @@ AHS.Mock = {
     subjectOptions: ["全部科目", "國文", "英文", "數學", "物理", "化學", "生物", "歷史", "地理", "公民"],
     knowledgeOptions: ["全部知識點", "二次函數", "關係代名詞", "牛頓運動定律", "反應速率", "光合作用"],
     difficultyOptions: ["全部難易度", "簡單", "中等", "困難"],
-    statusOptions: ["全部狀態", "未複習", "已複習", "已精熟"],
+    statusOptions: ["全部狀態", "待複習", "複習中", "已精熟"],
     totalCount: 58,
     perPage: 6,
     totalPages: 10,
