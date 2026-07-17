@@ -1,137 +1,81 @@
-/* js/runtime/StatisticsRuntime.js — Statistics Runtime (WO-Q010).
-   Follows the MaterialRuntime / QuestionRuntime Pattern (LOCKED):
-     window.AHS → Runtime → Render → UI
-
-   StatisticsRuntime reads (never writes) existing sources:
-     HistoryRuntime.list()   — per-exam score/accuracy/subject history
-     WrongBookRuntime.list() — wrong-question tracking (favorite/mastered)
-   and computes aggregate Statistics ON DEMAND ("即時計算"). It never
-   calls a mutating method on HistoryRuntime / WrongBookRuntime / any
-   other Runtime, and it never stores a copy of History records — only
-   the aggregated numbers ever live in this module's memory.
-
-   Scope (WO-Q010 LOCKED): Statistics computation only. Does NOT build
-   UI. PascalCase component under window.AHS. */
+/* js/runtime/StatisticsRuntime.js — Sprint 4 · Quiz Runtime Foundation.
+   StatisticsRuntime is purely computed: it never stores raw rows of its
+   own, it only reads AHS.HistoryRuntime.list() and derives numbers from
+   it each time it's asked. getSubject() and refresh() always recompute
+   independently from the current history — there is no cached
+   aggregate to go stale. PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.StatisticsRuntime = (function () {
   "use strict";
 
-  /* store.current — the last built/refreshed Statistics snapshot
-     (aggregated numbers ONLY; never a copy of History/WrongBook rows). */
-  var store = { current: null };
-
-  function clone(obj) {
-    return obj == null ? obj : JSON.parse(JSON.stringify(obj));
-  }
-
-  function getHistory() {
-    return (AHS.HistoryRuntime && typeof AHS.HistoryRuntime.list === "function")
-      ? AHS.HistoryRuntime.list() : [];
-  }
-
-  function getWrongBook() {
-    return (AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.list === "function")
-      ? AHS.WrongBookRuntime.list() : [];
-  }
-
-  function round2(n) { return Math.round(n * 100) / 100; }
-
-  function average(nums) {
-    if (!nums.length) { return 0; }
-    return round2(nums.reduce(function (s, n) { return s + n; }, 0) / nums.length);
-  }
-
-  /* subjectStatsFor(subject, history, wrongBook) — one subjectStatistics
-     entry: examCount/averageScore/averageAccuracy come from History
-     rows for that subject; wrongQuestions/masteredQuestions/
-     favoriteQuestions come from WrongBook rows for that subject. */
-  function subjectStatsFor(subject, history, wrongBook) {
-    var rows = history.filter(function (h) { return h.subject === subject; });
-    var wrongRows = wrongBook.filter(function (w) { return w.subject === subject; });
+  /* overview() — total exams taken / average accuracy / total score /
+     total questions answered correctly, computed fresh from history. */
+  function overview() {
+    var items = AHS.HistoryRuntime.list();
+    var totalCount = items.length;
+    var totalAccuracy = 0;
+    var totalScore = 0;
+    var totalCorrect = 0;
+    items.forEach(function (h) {
+      totalAccuracy += h.accuracy || 0;
+      totalScore += h.score || 0;
+      totalCorrect += h.correctCount || 0;
+    });
     return {
-      subject: subject,
-      examCount: rows.length,
-      averageScore: average(rows.map(function (r) { return r.score; })),
-      averageAccuracy: average(rows.map(function (r) { return r.accuracy; })),
-      wrongQuestions: wrongRows.length,
-      masteredQuestions: wrongRows.filter(function (w) { return w.mastered; }).length,
-      favoriteQuestions: wrongRows.filter(function (w) { return w.favorite; }).length
+      totalCount: totalCount,
+      avgAccuracy: totalCount ? Math.round(totalAccuracy / totalCount) : 0,
+      totalScore: totalScore,
+      totalCorrect: totalCorrect
     };
   }
 
-  /* computeAll() — pure computation, always fresh from HistoryRuntime +
-     WrongBookRuntime. No caching inside this function itself. */
-  function computeAll() {
-    var history = getHistory();
-    var wrongBook = getWrongBook();
-    var scores = history.map(function (h) { return h.score; });
-
-    var subjects = [];
-    history.forEach(function (h) { if (subjects.indexOf(h.subject) === -1) { subjects.push(h.subject); } });
-    wrongBook.forEach(function (w) { if (subjects.indexOf(w.subject) === -1) { subjects.push(w.subject); } });
-
-    return {
-      totalExam: history.length,
-      averageScore: average(scores),
-      averageAccuracy: average(history.map(function (h) { return h.accuracy; })),
-      highestScore: scores.length ? Math.max.apply(null, scores) : 0,
-      lowestScore: scores.length ? Math.min.apply(null, scores) : 0,
-      totalWrongQuestions: wrongBook.length,
-      masteredQuestions: wrongBook.filter(function (w) { return w.mastered; }).length,
-      favoriteWrongQuestions: wrongBook.filter(function (w) { return w.favorite; }).length,
-      subjectStatistics: subjects.map(function (s) { return subjectStatsFor(s, history, wrongBook); })
-    };
+  /* accuracyBySubject() — average accuracy per subject, computed fresh
+     from history each call (BUG-free by construction: no stored state
+     to drift from the source list). */
+  function accuracyBySubject() {
+    var items = AHS.HistoryRuntime.list();
+    var bucket = {};
+    items.forEach(function (h) {
+      bucket[h.subject] = bucket[h.subject] || { sum: 0, n: 0 };
+      bucket[h.subject].sum += h.accuracy || 0;
+      bucket[h.subject].n += 1;
+    });
+    return Object.keys(bucket).map(function (subject) {
+      var b = bucket[subject];
+      return { subject: subject, percent: Math.round(b.sum / b.n) };
+    });
   }
 
-  /* init() — no Seed Data; nothing has been computed yet. */
-  function init() {
-    store.current = null;
-    return true;
-  }
-
-  /* build() — computes Statistics from current HistoryRuntime /
-     WrongBookRuntime data and stores the snapshot. Always recomputes
-     ("即時計算"); build() and refresh() are equivalent recompute
-     operations — refresh() exists as the explicit "recompute now" verb. */
-  function build() {
-    store.current = computeAll();
-    return clone(store.current);
-  }
-
-  function refresh() {
-    return build();
-  }
-
-  /* get() — the last built/refreshed Statistics (Deep Clone), or null
-     if build()/refresh() has never been called. */
-  function get() {
-    return store.current ? clone(store.current) : null;
-  }
-
-  /* getSubject(subject) — always computed fresh (independent of
-     whether build() was called), so it reflects live data. Returns
-     null if that subject has no History or WrongBook data at all. */
   function getSubject(subject) {
-    var history = getHistory();
-    var wrongBook = getWrongBook();
-    var hasSubject = history.some(function (h) { return h.subject === subject; }) ||
-      wrongBook.some(function (w) { return w.subject === subject; });
-    if (!hasSubject) { return null; }
-    return clone(subjectStatsFor(subject, history, wrongBook));
+    var all = accuracyBySubject();
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].subject === subject) { return all[i]; }
+    }
+    return null;
   }
 
-  /* reset() — clears the stored snapshot (no Seed Data; does not touch
-     HistoryRuntime / WrongBookRuntime themselves). */
-  function reset() {
-    return init();
+  /* refresh() — shapes overview() + accuracyBySubject() into the exact
+     stat-card / donut shape AHS.QuizCenter already renders
+     (AHS.Mock.quiz.stats / accuracyByStudy), so the UI can swap from
+     static Mock numbers to live Runtime numbers without any markup
+     change. */
+  function refresh() {
+    var ov = overview();
+    return {
+      stats: [
+        { icon: "clock", label: "總測驗次數", value: String(ov.totalCount), unit: "次", delta: "本次 Session" },
+        { icon: "target", label: "平均正確率", value: String(ov.avgAccuracy), unit: "%", delta: "本次 Session" },
+        { icon: "award", label: "總得分", value: String(ov.totalScore), unit: "分", delta: "本次 Session" },
+        { icon: "check", label: "答對題數", value: String(ov.totalCorrect), unit: "題", delta: "本次 Session" }
+      ],
+      accuracyByStudy: accuracyBySubject()
+    };
   }
 
   return {
-    init: init,
-    build: build,
-    refresh: refresh,
-    get: get,
+    overview: overview,
+    accuracyBySubject: accuracyBySubject,
     getSubject: getSubject,
-    reset: reset
+    refresh: refresh
   };
 })();

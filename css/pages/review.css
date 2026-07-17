@@ -1,0 +1,121 @@
+/* css/pages/review.css — Sprint 5 · EO-R001 Review Home.
+   Not explicitly listed in EO-R001 Scope, but every other page in the
+   repository ships one page-specific CSS file (home.css, wrongbook.css,
+   dashboard.css, ...) and inline styles/new global tokens are forbidden;
+   this follows that existing convention. Reuses css/base/tokens.css
+   custom properties and the shared .card / .card__head / .card__title
+   primitives from css/layout/shell.css — no new tokens, no Design Token
+   changes. BEM naming, "rv-" prefix (mirrors wb- / dash- elsewhere). */
+
+.rv-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---- Hero -------------------------------------------------------------- */
+.rv-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.rv-hero__eyebrow {
+  display: inline-block;
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: 0.02em;
+}
+.rv-hero__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+}
+.rv-hero__subtitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.rv-hero__figure { flex: 0 0 auto; }
+
+/* ---- Statistics --------------------------------------------------------- */
+.rv-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.rv-stat { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.rv-stat__icon {
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: var(--radius-lg);
+  background-color: var(--brand-soft); color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+}
+.rv-stat__icon svg { width: 22px; height: 22px; }
+.rv-stat__meta { min-width: 0; }
+.rv-stat__row { display: flex; align-items: baseline; gap: 4px; }
+.rv-stat__value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.2; }
+.rv-stat__unit { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.rv-stat__label { display: block; font-size: 12px; color: var(--text-muted); }
+
+/* ---- Two-column row: Quick Actions | Recent Review --------------------- */
+.rv-row2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* ---- Quick Actions ------------------------------------------------------ */
+.rv-quick__list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.rv-quick__btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  border-radius: var(--radius-pill);
+  padding: 12px 16px;
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.rv-quick__btn svg { width: 16px; height: 16px; }
+.rv-quick__btn--primary { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+.rv-quick__btn--primary:hover { background-color: var(--brand-strong); }
+.rv-quick__btn--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
+.rv-quick__btn--ghost:hover { background-color: var(--bg); }
+.rv-quick__status { margin: 10px 0 0; font-size: 13px; font-weight: 600; color: var(--brand-ink); }
+
+/* ---- Recent Review ------------------------------------------------------ */
+.rv-recent__btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--brand);
+  border-radius: var(--radius-pill);
+  padding: 8px 14px;
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.rv-recent__btn:hover { background-color: var(--brand-soft); }
+.rv-recent__btn-icon svg { width: 14px; height: 14px; display: block; }
+.rv-recent__meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.rv-recent__empty { margin: 12px 0 0; font-size: 13px; color: var(--text-muted); }
+.rv-recent__item { min-width: 0; }
+.rv-recent__value { display: block; font-size: 18px; font-weight: 800; color: var(--text); }
+.rv-recent__label { display: block; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.rv-recent__status { margin: 12px 0 0; font-size: 13px; font-weight: 600; color: var(--brand-ink); }
+
+/* ---- RWD ---------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .rv-row2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .rv-hero { flex-direction: column; align-items: flex-start; text-align: left; }
+  .rv-hero__figure { align-self: center; }
+  .rv-stats { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .rv-recent__meta { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+}

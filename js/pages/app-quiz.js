@@ -1,4 +1,4 @@
-/* js/app-wrongbook.js — bootstraps 錯題本 inside the shared AppShell. */
+/* js/app-quiz.js — bootstraps 測驗中心 inside the shared AppShell. */
 window.AHS = window.AHS || {};
 (function () {
   "use strict";
@@ -8,12 +8,12 @@ window.AHS = window.AHS || {};
     if (!app) { return; }
 
     var shell = AHS.AppShell.create(AHS.Mock, {
-      active: "wrongbook",
+      active: "quiz",
       onNavigate: function () { /* Mock navigation — prototype. */ }
     });
 
     AHS.UI.mount(app, shell.root);
-    shell.main.appendChild(AHS.WrongBook.create());
+    shell.main.appendChild(AHS.QuizCenter.create());
   }
 
   if (document.readyState === "loading") {
