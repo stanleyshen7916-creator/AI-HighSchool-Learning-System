@@ -556,22 +556,31 @@ AHS.Mock = {
 
   nav: {
     active: "home",
+    /* EO-S5-002 · Sidebar 正式 IA：學習總結（原「重點整理」改名）、新增
+       複習中心，並移除「儀表板」（新 IA 清單未列出；dashboard.html 本身
+       未被更動，僅不再由 Sidebar 連結）。Bottom Navigation 不受影響。 */
     items: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材中心", icon: "book" },
       { id: "quiz", label: "測驗中心", icon: "quiz" },
       { id: "wrongbook", label: "錯題本", icon: "wrong" },
-      { id: "summary", label: "重點整理", icon: "summary" },
+      { id: "summary", label: "學習總結", icon: "summary" },
+      { id: "review", label: "複習中心", icon: "clock" },
       { id: "learning", label: "我的學習", icon: "learning" },
-      { id: "dashboard", label: "儀表板", icon: "dashboard" },
       { id: "tutor", label: "AI Tutor", icon: "tutor" }
     ],
+    /* EO-S5-003/004 · Bottom Navigation 正式 IA + Dead Button 根因修正：
+       原 "我的" 項目 id 為 "me"，但 AppShell.js 的 ROUTES 沒有對應項目，
+       導致永遠落入 Mock <button> 分支（無實際作用）。改為 id "dashboard"
+       （ROUTES 已有 dashboard: "dashboard.html"），同時完成 WB-S5-004 要求
+       的重新命名（教材/測驗/複習/我的）。不修改 AppShell.js 的渲染邏輯或
+       ROUTES 本身 — 現有邏輯已支援，只是資料對不上。 */
     bottomItems: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材", icon: "book" },
-      { id: "quiz", label: "考卷", icon: "quiz" },
-      { id: "wrongbook", label: "錯題", icon: "wrong" },
-      { id: "me", label: "我的", icon: "tutor" }
+      { id: "quiz", label: "測驗", icon: "quiz" },
+      { id: "review", label: "複習", icon: "clock" },
+      { id: "dashboard", label: "我的", icon: "tutor" }
     ]
   },
 

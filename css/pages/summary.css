@@ -1,4 +1,11 @@
-/* css/summary.css — 總結中心 / 學習總結 (Summary Center). BEM. RWD. */
+/* css/summary.css — 總結中心 / 學習總結 (Summary Center). BEM. RWD.
+
+   EO-S6-006 System Runtime Integration: Mock-only sections (mindmap /
+   knowledge tree / related resources / notes) were removed from
+   SummaryCenter.js since Summary Runtime's schema has no such fields —
+   their CSS rules were removed here too, to avoid unused CSS. .sum-kp__*
+   (重點整理 numbered-list style) is kept and reused for the fixed
+   five-section format. */
 
 .sum-page { display: flex; flex-direction: column; gap: 18px; }
 
@@ -29,7 +36,28 @@
 .sum-export--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .sum-export--ghost:hover { background-color: var(--bg); }
 
-/* ---- Topic bar ------------------------------------------------------- */
+/* ---- Empty State (EO-S6-006, mandated copy) --------------------------- */
+.sum-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  text-align: center; padding: 48px 24px;
+}
+.sum-empty__icon { color: var(--text-faint); display: flex; }
+.sum-empty__icon svg { width: 40px; height: 40px; }
+.sum-empty__title { margin: 6px 0 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.sum-empty__hint { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+/* ---- Material filter (EO-S6-006) --------------------------------------- */
+.sum-filter { display: flex; align-items: center; gap: 8px; }
+.sum-filter__label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.sum-filter__select {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 6px 10px; font: inherit; font-size: 13px; background-color: var(--card); color: var(--text);
+}
+
+/* ---- One Summary Runtime record ---------------------------------------- */
+.sum-record { display: flex; flex-direction: column; gap: 14px; }
+
+/* ---- Topic bar (per-record header) ------------------------------------- */
 .sum-topic { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
 .sum-topic__id { display: flex; align-items: center; gap: 14px; }
 .sum-topic__badge {
@@ -39,75 +67,17 @@
 .sum-topic__badge svg { width: 26px; height: 26px; }
 .sum-topic__chapter { margin: 6px 0 0; font-size: 14px; font-weight: 700; }
 .sum-topic__section { margin: 2px 0 0; font-size: 13px; color: var(--text-muted); }
-.sum-topic__stats { display: flex; gap: 24px; flex-wrap: wrap; }
-.sum-topic__stat { display: flex; align-items: center; gap: 10px; }
-.sum-topic__stat-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  background-color: var(--brand-soft); color: var(--brand);
-  display: flex; align-items: center; justify-content: center;
-}
-.sum-topic__stat-icon svg { width: 18px; height: 18px; }
-.sum-topic__stat-label { display: block; font-size: 12px; color: var(--text-muted); }
-.sum-topic__stat-value { font-size: 18px; font-weight: 800; }
-.sum-topic__stat-value small { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.sum-topic__generated { font-size: 12px; color: var(--text-faint); }
 
-/* ---- Grid ------------------------------------------------------------ */
-.sum-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.35fr 0.95fr;
-  grid-template-areas:
-    "summary   mindmap  resources"
-    "keypoints tree     notes";
-  gap: 16px;
-  align-items: start;
+/* ---- Five fixed sections (核心概念/重要定義/易錯重點/必背內容/複習建議) */
+.sum-section-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
 }
-.sum-grid__summary { grid-area: summary; }
-.sum-grid__mindmap { grid-area: mindmap; }
-.sum-grid__resources { grid-area: resources; }
-.sum-grid__keypoints { grid-area: keypoints; }
-.sum-grid__tree { grid-area: tree; }
-.sum-grid__notes { grid-area: notes; }
+.sum-section__empty { margin: 0; font-size: 13px; color: var(--text-faint); }
 
-/* ---- AI summary ------------------------------------------------------ */
+/* ---- Numbered list (重點整理 style, reused for each section) ----------- */
 .sum-ai__spark { color: var(--brand); display: inline-flex; margin-right: 4px; vertical-align: -2px; }
 .sum-ai__spark svg { width: 18px; height: 18px; }
-.sum-ai__text { margin: 0 0 14px; font-size: 14px; line-height: 1.9; color: var(--text-muted); }
-.sum-ai__keywords { display: flex; flex-wrap: wrap; gap: 8px; }
-.sum-ai__keyword {
-  font-size: 12px; font-weight: 600; color: var(--brand);
-  background-color: var(--brand-soft); padding: 4px 12px; border-radius: var(--radius-pill);
-}
-
-/* ---- Mind map -------------------------------------------------------- */
-.sum-mm__ctrls { display: flex; gap: 6px; }
-.sum-mm__ctrl {
-  width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 9px;
-  background-color: var(--card); color: var(--text-muted); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.sum-mm__ctrl svg { width: 16px; height: 16px; }
-.sum-mm__ctrl:hover { background-color: var(--brand-soft); color: var(--brand); }
-.sum-mm__center {
-  margin: 4px auto 18px; max-width: 320px; text-align: center;
-  padding: 14px 18px; border-radius: 14px;
-  background-image: linear-gradient(120deg, #7c5cff 0%, #6a49f2 100%);
-  color: #ffffff; font-size: 15px; font-weight: 700;
-  box-shadow: var(--shadow-btn);
-}
-.sum-mm__branches {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-}
-.sum-mm__branch { display: flex; flex-direction: column; gap: 8px; }
-.sum-mm__branch-title {
-  border: 1px solid; border-radius: 12px; padding: 8px 12px;
-  font-size: 13px; font-weight: 700; text-align: center;
-}
-.sum-mm__leaves { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
-.sum-mm__leaf { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);
-  padding: 6px 10px; border: 1px solid var(--line); border-radius: 9px; background-color: var(--card); }
-.sum-mm__leaf-dot { width: 7px; height: 7px; border-radius: var(--radius-pill); flex: 0 0 auto; }
-
-/* ---- Key points ------------------------------------------------------ */
 .sum-kp__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .sum-kp__item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
 .sum-kp__num {
@@ -116,79 +86,14 @@
   display: flex; align-items: center; justify-content: center; margin-top: 1px;
 }
 .sum-kp__text { flex: 1 1 auto; font-size: 14px; line-height: 1.6; }
-.sum-kp__badge {
-  flex: 0 0 auto; font-size: 11px; font-weight: 700; color: var(--warn);
-  background-color: #fff3e0; padding: 2px 8px; border-radius: 6px; margin-top: 2px;
-}
-
-/* ---- Knowledge tree -------------------------------------------------- */
-.sum-tree__tabs { display: flex; gap: 4px; }
-.sum-tree__tab {
-  border: 1px solid var(--line); border-radius: 9px; padding: 5px 14px;
-  background-color: var(--card); font: inherit; font-size: 13px; font-weight: 600;
-  color: var(--text-muted); cursor: pointer;
-}
-.sum-tree__tab.is-active { background-color: var(--brand-soft); color: var(--brand); border-color: var(--brand-line); }
-
-.sum-tree__root {
-  display: inline-block; margin: 4px 0 14px;
-  padding: 10px 16px; border-radius: 12px;
-  background-color: var(--brand-soft); color: var(--brand-ink);
-  font-size: 14px; font-weight: 700;
-}
-.sum-tree__branches { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 2px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
-.sum-tree__node-name { font-size: 14px; font-weight: 700; display: inline-block; margin-bottom: 6px; }
-.sum-tree__leaves { list-style: none; margin: 0; padding: 0 0 0 14px; display: flex; flex-wrap: wrap; gap: 6px; }
-.sum-tree__leaf {
-  font-size: 12px; color: var(--text-muted);
-  border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; background-color: var(--bg);
-}
-.sum-tree__rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.sum-tree__row { display: flex; align-items: center; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); font-size: 13px; }
-.sum-tree__row:last-child { border-bottom: 0; }
-.sum-tree__row-cat { flex: 0 0 96px; font-weight: 700; color: var(--brand); }
-.sum-tree__row-item { color: var(--text-muted); }
-
-/* ---- Resources ------------------------------------------------------- */
-.sum-res__list { display: flex; flex-direction: column; gap: 2px; }
-.sum-res__item { display: flex; align-items: center; gap: 10px; padding: 10px 6px; border: 0; border-radius: 10px; background: transparent; font: inherit; cursor: pointer; text-align: left; width: 100%; }
-.sum-res__item:hover { background-color: var(--bg); }
-.sum-res__badge { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
-.sum-res__name { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sum-res__dl { flex: 0 0 auto; color: var(--text-faint); display: flex; }
-.sum-res__dl svg { width: 18px; height: 18px; }
-
-/* ---- Notes ----------------------------------------------------------- */
-.sum-notes__add { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--brand-line); border-radius: var(--radius-pill); padding: 5px 12px; background-color: var(--brand-soft); color: var(--brand); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
-.sum-notes__add svg { width: 14px; height: 14px; }
-.sum-notes__text { margin: 0 0 12px; font-size: 14px; line-height: 1.8; color: var(--text-muted); background-color: #fff8e6; border-radius: 12px; padding: 12px 14px; }
-.sum-notes__tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.sum-notes__tag { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 8px; }
 
 .sum-status { margin: 0; padding: 8px 12px; border-radius: 10px; background-color: var(--brand-soft); color: var(--brand-ink); font-size: 13px; font-weight: 600; }
 
 /* ---- RWD ------------------------------------------------------------- */
-@media (max-width: 1024px) {
-  .sum-grid {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "summary   mindmap"
-      "keypoints mindmap"
-      "tree      resources"
-      "notes     resources";
-  }
-}
 @media (max-width: 720px) {
-  .sum-grid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "summary" "mindmap" "keypoints" "tree" "resources" "notes";
-  }
-  .sum-mm__branches { grid-template-columns: 1fr 1fr; }
+  .sum-section-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
   .sum-banner__actions { width: 100%; }
   .sum-export { flex: 1 1 auto; }
-  .sum-mm__branches { grid-template-columns: 1fr; }
-  .sum-topic__stats { gap: 14px; }
 }
