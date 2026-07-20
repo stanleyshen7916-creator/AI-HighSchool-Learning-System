@@ -57,6 +57,12 @@ AHS.HomeRecentMaterials = (function () {
       el("p", { class: "recent-card__title", text: item.title }),
       el("p", { class: "recent-card__meta", text: "高一" + subj.name + "｜" + item.teacher }),
       el("p", { class: "recent-card__last-opened", text: "上次開啟：" + item.lastOpened }),
+      item.hasSummary
+        ? el("a", { class: "recent-card__summary-badge", href: "summary.html" }, [
+            el("span", { html: AHS.Icons.summary() }),
+            el("span", { text: "已生成學習總結" })
+          ])
+        : null,
       el("div", { class: "recent-card__progress" }, [
         el("div", { class: "recent-card__progress-head" }, [
           el("span", { text: "學習進度" }),

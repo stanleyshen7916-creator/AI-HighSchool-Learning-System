@@ -480,3 +480,10 @@
 .recent-card:focus-visible { outline: 3px solid var(--brand-soft); outline-offset: 2px; }
 .recent-card__title { margin: 0; font-size: 13px; color: var(--text-muted); }
 .recent-card__last-opened { margin: 0; font-size: 12px; color: var(--text-faint); }
+.recent-card__summary-badge {
+  display: inline-flex; align-items: center; gap: 4px; align-self: flex-start;
+  margin-top: 2px; font-size: 12px; font-weight: 700; color: var(--brand);
+  text-decoration: none;
+}
+.recent-card__summary-badge svg { width: 14px; height: 14px; }
+.recent-card__summary-badge:hover { text-decoration: underline; }

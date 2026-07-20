@@ -35,13 +35,36 @@
    Session-scoped, in-memory only (store starts empty — same convention
    as every other Runtime in this repo). No Storage, no fetch/XHR, no
    ES module.
+
+   PMO Decision 025 · Architecture Evolution v2.0 (2026-07-20): hydrates
+   from AHS.PersistenceAdapter on module load and persists after every
+   accepted write (the completeness gate in add() still runs first — an
+   incomplete record is still refused and never persisted, exactly as
+   before). Only ever goes through the Adapter (never touches
+   sessionStorage directly) — Public API and Schema unchanged.
    PascalCase module under window.AHS, consistent with every existing
    Runtime in this repo. */
 window.AHS = window.AHS || {};
 AHS.LearningQuestionRuntime = (function () {
   "use strict";
 
-  var store = { items: [], seq: 0 };
+  var STORAGE_KEY = "learningQuestionRuntime";
+
+  function hydrate() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function") {
+      var loaded = AHS.PersistenceAdapter.load(STORAGE_KEY);
+      if (loaded && Array.isArray(loaded.items) && typeof loaded.seq === "number") { return loaded; }
+    }
+    return null;
+  }
+
+  function persist() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.save === "function") {
+      AHS.PersistenceAdapter.save(STORAGE_KEY, store);
+    }
+  }
+
+  var store = hydrate() || { items: [], seq: 0 };
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -100,6 +123,7 @@ AHS.LearningQuestionRuntime = (function () {
     })();
 
     store.items.push(stored);
+    persist();
     return clone(stored);
   }
 
@@ -151,6 +175,7 @@ AHS.LearningQuestionRuntime = (function () {
   /* reset() — test helper; clears the store back to first-open state. */
   function reset() {
     store = { items: [], seq: 0 };
+    persist();
   }
 
   return {

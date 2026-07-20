@@ -26,13 +26,35 @@
    as every other Runtime in this repo, e.g. WrongBookRuntime/
    HistoryRuntime "starting empty is expected behavior", R3 precedent).
    No Storage, no fetch/XHR, no ES module.
+
+   PMO Decision 025 · Architecture Evolution v2.0 (2026-07-20): hydrates
+   from AHS.PersistenceAdapter on module load and persists after every
+   write, so data survives navigating to a different page within the
+   same browser session. Only ever goes through the Adapter (never
+   touches sessionStorage directly) — Public API and Schema unchanged.
    PascalCase module under window.AHS, consistent with every existing
    Runtime in this repo. */
 window.AHS = window.AHS || {};
 AHS.KnowledgeRuntime = (function () {
   "use strict";
 
-  var store = { items: [], seq: 0 };
+  var STORAGE_KEY = "knowledgeRuntime";
+
+  function hydrate() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function") {
+      var loaded = AHS.PersistenceAdapter.load(STORAGE_KEY);
+      if (loaded && Array.isArray(loaded.items) && typeof loaded.seq === "number") { return loaded; }
+    }
+    return null;
+  }
+
+  function persist() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.save === "function") {
+      AHS.PersistenceAdapter.save(STORAGE_KEY, store);
+    }
+  }
+
+  var store = hydrate() || { items: [], seq: 0 };
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -75,6 +97,7 @@ AHS.KnowledgeRuntime = (function () {
       createdAt: record.createdAt || formatDate(new Date())
     };
     store.items.push(stored);
+    persist();
     return clone(stored);
   }
 
@@ -118,6 +141,7 @@ AHS.KnowledgeRuntime = (function () {
   /* reset() — test helper; clears the store back to first-open state. */
   function reset() {
     store = { items: [], seq: 0 };
+    persist();
   }
 
   return {
