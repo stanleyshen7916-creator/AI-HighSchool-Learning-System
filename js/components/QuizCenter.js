@@ -521,8 +521,8 @@ AHS.QuizCenter = (function () {
   function practiceEmptyState() {
     return el("section", { class: "card quiz-practice__empty", "aria-label": "尚無練習題" }, [
       el("span", { class: "quiz-practice__empty-icon", html: AHS.Icons.quiz() }),
-      el("p", { class: "quiz-practice__empty-title", text: "尚未建立教材內容。" }),
-      el("p", { class: "quiz-practice__empty-hint", text: "請先上傳教材。" })
+      el("p", { class: "quiz-practice__empty-title", text: "尚未建立題目" }),
+      el("p", { class: "quiz-practice__empty-hint", text: "請先上傳教材，系統會自動產生練習題。" })
     ]);
   }
 

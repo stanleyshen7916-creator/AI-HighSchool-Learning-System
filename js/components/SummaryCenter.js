@@ -131,6 +131,23 @@ AHS.SummaryCenter = (function () {
 
   /* ---- Material filter (EO-S6-006: demonstrates both list() and
      findByMaterialId(), "findByMaterial()" per the EO's wording) -------- */
+  /* materialLabel(materialId) — WO-003: dropdown must show human-readable
+     metadata ("高一｜國文｜赤壁賦.pdf"), never a raw Runtime id. Looks up
+     the real record via AHS.MaterialRuntime.getById() (existing, read-
+     only) — falls back to the raw id only if that Runtime isn't loaded
+     or the material can't be found (never throws). */
+  function materialLabel(materialId) {
+    if (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.getById === "function") {
+      var m = AHS.MaterialRuntime.getById(materialId);
+      if (m) {
+        var subj = AHS.Subjects[m.subject];
+        var parts = [m.grade, subj ? subj.name : m.subject, m.fileName || m.title].filter(Boolean);
+        if (parts.length) { return parts.join("｜"); }
+      }
+    }
+    return materialId;
+  }
+
   function materialFilter(records, onChange) {
     var seen = {};
     var materialIds = [];
@@ -140,7 +157,7 @@ AHS.SummaryCenter = (function () {
     if (materialIds.length < 2) { return null; } /* not worth a filter for 0-1 materials */
 
     var options = [el("option", { value: "", text: "全部教材" })].concat(
-      materialIds.map(function (id) { return el("option", { value: id, text: id }); })
+      materialIds.map(function (id) { return el("option", { value: id, text: materialLabel(id) }); })
     );
     var select = el("select", { class: "sum-filter__select" }, options);
     select.addEventListener("change", function () { onChange(select.value); });

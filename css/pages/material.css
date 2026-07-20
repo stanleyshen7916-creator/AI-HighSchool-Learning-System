@@ -737,3 +737,25 @@
 }
 .mat-folder__del:hover { background-color: #fdecec; color: #d9534f; }
 .mat-folder__del svg { width: 14px; height: 14px; }
+
+/* ---- Sprint 6.6 · GitHub QA Fix (WO-006): Bulk Upload Metadata ------ */
+.mat-dialog--bulk { max-width: 640px; max-height: 85vh; overflow-y: auto; }
+.mat-bulk__shared { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; background-color: var(--bg); }
+.mat-bulk__shared-title { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--text); }
+.mat-bulk__shared-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
+.mat-bulk__rows { display: flex; flex-direction: column; gap: 12px; }
+.mat-bulk__row { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; }
+.mat-bulk__row-file { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mat-bulk__row-fields { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.mat-bulk__mini-field { display: flex; flex-direction: column; gap: 3px; }
+.mat-bulk__mini-label { font-size: 10px; color: var(--text-faint); }
+.mat-bulk__mini-control {
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px;
+  font: inherit; font-size: 12px; background-color: var(--card); color: var(--text);
+}
+.mat-bulk__row-error { display: block; margin-top: 6px; font-size: 12px; color: var(--danger, #e03131); }
+
+@media (max-width: 720px) {
+  .mat-bulk__shared-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mat-bulk__row-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

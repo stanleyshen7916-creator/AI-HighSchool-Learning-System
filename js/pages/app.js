@@ -21,9 +21,11 @@ window.AHS = window.AHS || {};
   "use strict";
 
   function buildRecentMaterialsModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return undefined; }
+    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") {
+      return { title: "最近教材", items: [] };
+    }
     var items = AHS.MaterialRuntime.list();
-    if (!items.length) { return undefined; }
+    if (!items.length) { return { title: "最近教材", items: [] }; }
 
     var summarizedMaterialIds = {};
     if (AHS.SummaryRuntime && typeof AHS.SummaryRuntime.list === "function") {
@@ -48,6 +50,16 @@ window.AHS = window.AHS || {};
         };
       })
     };
+  }
+
+  /* Sprint 6.6 · GitHub QA Fix (WO-001): 今日任務 has no Runtime anywhere
+     in this repository (no Task/Mission Runtime was ever built, and
+     building one now would be a new feature, out of scope). Always
+     returns an explicit empty model — never AHS.Mock.todayTasks — so
+     TodayMission.js's own existing Empty State ("今天沒有安排學習任務")
+     renders honestly instead of Mock content. */
+  function buildTodayMissionModel() {
+    return { title: "今日任務", items: [] };
   }
 
   function buildStudyStatsModel() {
@@ -76,10 +88,30 @@ window.AHS = window.AHS || {};
     };
   }
 
+  /* Sprint 6.6 · GitHub QA Fix (WO-001) 今日學習: real computation from
+     AHS.MaterialRuntime — sums learningTime (minutes) for materials
+     whose lastLearningAt falls on today's calendar date. Honestly 0
+     whenever nothing has called MaterialRuntime.startLearning() yet
+     (currently always, since no page wires that call — see Known
+     Issues), never fabricated. */
+  function buildTodayMinutesModel() {
+    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return { todayMinutes: 0 }; }
+    var now = new Date();
+    var minutes = 0;
+    AHS.MaterialRuntime.list().forEach(function (m) {
+      if (!m.lastLearningAt) { return; }
+      var d = new Date(m.lastLearningAt);
+      if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()) {
+        minutes += (typeof m.learningTime === "number" ? m.learningTime : 0);
+      }
+    });
+    return { todayMinutes: minutes };
+  }
+
   function buildContinueLearningModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return undefined; }
+    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return {}; }
     var items = AHS.MaterialRuntime.list().filter(function (m) { return !!m.lastLearningAt; });
-    if (!items.length) { return undefined; } /* nothing has called startLearning() yet — honest fallback to Mock */
+    if (!items.length) { return {}; } /* nothing has called startLearning() yet — honest empty, ContinueLearning.js shows "尚無學習紀錄" */
 
     var latest = items.sort(function (a, b) { return new Date(b.lastLearningAt) - new Date(a.lastLearningAt); })[0];
     var subj = AHS.Subjects[latest.subject];
@@ -149,10 +181,10 @@ window.AHS = window.AHS || {};
     ]);
 
     var rail = el("div", { class: "home__rail" }, [
-      AHS.TodayMission.create(),
+      AHS.TodayMission.create(buildTodayMissionModel()),
       AHS.AiTutorHomeCard.create(),
       AHS.AchievementBadges.create(),
-      AHS.LearningTime.create(),
+      AHS.LearningTime.create(buildTodayMinutesModel()),
       AHS.ContinueLearning.create(buildContinueLearningModel())
     ]);
 

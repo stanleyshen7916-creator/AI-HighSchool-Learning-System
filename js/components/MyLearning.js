@@ -58,14 +58,27 @@ AHS.MyLearning = (function () {
 
     var tabs = el("div", { class: "ml-tabs" },
       rec.tabs.map(function (t, i) {
-        var b = el("button", { type: "button",
-          class: "ml-tab" + (i === 0 ? " is-active" : ""), text: t });
-        b.addEventListener("click", function () {
-          Array.prototype.forEach.call(tabs.children, function (c) { c.classList.remove("is-active"); });
-          b.classList.add("is-active");
-          status.textContent = "（Mock）切換學習記錄範圍：" + t;
-          status.removeAttribute("hidden");
-        });
+        /* WO-005 (Sprint 6.6 GitHub QA Fix), Option B: only 本週 has a
+           real data source (rec.bars, above). 本月/今年/全部 would need
+           a historical-learning-by-period Runtime that doesn't exist
+           anywhere in this repo — building one is a new feature, out of
+           scope here. Rather than leave them clickable with no real
+           effect, they're disabled with a "Coming Soon" indicator. */
+        var isWeek = (i === 0);
+        var b = el("button", {
+          type: "button",
+          class: "ml-tab" + (isWeek ? " is-active" : " is-disabled"),
+          disabled: isWeek ? null : "disabled"
+        }, [
+          el("span", { text: t }),
+          isWeek ? null : el("span", { class: "ml-tab__soon", text: "Coming Soon" })
+        ]);
+        if (isWeek) {
+          b.addEventListener("click", function () {
+            Array.prototype.forEach.call(tabs.children, function (c) { c.classList.remove("is-active"); });
+            b.classList.add("is-active");
+          });
+        }
         return b;
       }));
 

@@ -453,16 +453,33 @@ AHS.MaterialCenter = (function () {
     }
 
     /* ---- Upload Flow (with metadata dialog) ---------------------------
-       Pick file -> "新增教材" dialog (name/subject/grade/category) ->
-       confirm -> MaterialRuntime.add() with metadata -> renderAll ->
-       LearningPipeline.process() (EO-S6-006: upload no longer stops at
-       "file saved" — it drives Knowledge/Summary/Learning Question
-       creation via the existing Sprint 6 pipeline).
-       Metadata is required, so file name alone is never the sole data. */
+       Single file -> existing AHS.MaterialUploadDialog (unchanged).
+       Multiple files -> AHS.BulkUploadDialog (WO-006): shared metadata
+       step, 套用全部, then per-file override, then one 開始匯入 that
+       creates every material and runs the Learning Pipeline for each. */
     function onFilesPicked(fileList) {
       if (!fileList || fileList.length === 0) { return; }
-      /* Handle one file at a time via the dialog (queue the rest). */
       var files = Array.prototype.slice.call(fileList);
+
+      if (files.length > 1 && AHS.BulkUploadDialog) {
+        var bulkDialog = AHS.BulkUploadDialog.open(files, function (items) {
+          items.forEach(function (item) {
+            var record = AHS.MaterialRuntime.add({
+              title: item.title, subject: item.subject, grade: item.grade,
+              category: item.category, folderId: item.folderId,
+              fileName: item.file.name, fileType: fileExt(item.file.name),
+              fileSize: formatSize(item.file.size), file: item.file
+            });
+            runLearningPipeline(record.id);
+          });
+          status.textContent = "已新增 " + items.length + " 個教材";
+          status.removeAttribute("hidden");
+          renderAll();
+        }, function () { /* cancelled — nothing to do */ }, AHS.MaterialRuntime.listFolders());
+        document.body.appendChild(bulkDialog);
+        return;
+      }
+
       function next() {
         if (files.length === 0) { return; }
         var f = files.shift();
