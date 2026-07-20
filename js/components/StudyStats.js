@@ -1,13 +1,36 @@
 /* components/StudyStats.js — 學習統計 (Study Stats).
    Total study hours + week delta + a per-subject bar chart (pure CSS bars,
-   no external chart lib). PascalCase component under window.AHS. */
+   no external chart lib).
+
+   Sprint 6.6 · GitHub QA Fix (WO-001): no Mock fallback anymore. model
+   must be a real, non-empty stats object (built from AHS.MaterialRuntime
+   by app.js); anything else renders the mandated Empty State. */
 window.AHS = window.AHS || {};
 AHS.StudyStats = (function () {
   "use strict";
   var el = AHS.UI.el;
 
+  function emptyBody() {
+    return el("div", { class: "stats-card__empty" }, [
+      el("span", { class: "stats-card__empty-icon", html: AHS.Icons.clock() }),
+      el("p", { class: "stats-card__empty-title", text: "尚無學習統計" }),
+      el("p", { class: "stats-card__empty-hint", text: "上傳並開始學習教材後即會顯示統計。" })
+    ]);
+  }
+
   function create(model) {
-    var data = model || AHS.Mock.studyStats;
+    var hasData = !!(model && Array.isArray(model.bars) && model.bars.length);
+
+    if (!hasData) {
+      return el("section", { class: "card stats-card", "aria-label": "學習統計" }, [
+        el("div", { class: "card__head" }, [
+          el("h2", { class: "card__title", text: "學習統計" })
+        ]),
+        emptyBody()
+      ]);
+    }
+
+    var data = model;
     var max = data.bars.reduce(function (m, b) {
       return Math.max(m, b.hours);
     }, 0) || 1;
@@ -21,12 +44,12 @@ AHS.StudyStats = (function () {
           el("div", { class: "stats-card__bar-track" }, [
             el("div", {
               class: "stats-card__bar-fill",
-              style: "height:" + h + "%;background-color:" + subj.hex,
+              style: "height:" + h + "%;background-color:" + (subj ? subj.hex : "#6b7280"),
               role: "img",
-              "aria-label": subj.name + " " + b.hours + " 小時"
+              "aria-label": (subj ? subj.name : b.subject) + " " + b.hours + " 小時"
             })
           ]),
-          el("span", { class: "stats-card__bar-label", text: subj.name })
+          el("span", { class: "stats-card__bar-label", text: subj ? subj.name : b.subject })
         ]);
       }));
 

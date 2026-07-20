@@ -510,6 +510,123 @@ AHS.QuizCenter = (function () {
   /* create(model?) — model defaults to AHS.Mock.quiz. Owns view
      switching between: 清單 (list) -> 測驗中 (exam) -> 檢討 (review) ->
      back to 清單, driven by the Runtime chain. */
+  /* ---- Practice Mode (EO-S6-006 System Runtime Integration) --------------
+     Entirely separate from Exam Mode above: reads ONLY
+     AHS.LearningQuestionRuntime (never AHS.QuestionRuntime, never Mock
+     Data), no ExamRuntime session, no AutoGrader, no WrongBook/History
+     sync — "兩者不得混用". Shows the real answer/explanation already
+     carried on each Learning Question record (from QuestionGenerator.js,
+     untouched). Empty State per EO-S6-006 mandated copy when
+     LearningQuestionRuntime has no records. */
+  function practiceEmptyState() {
+    return el("section", { class: "card quiz-practice__empty", "aria-label": "尚無練習題" }, [
+      el("span", { class: "quiz-practice__empty-icon", html: AHS.Icons.quiz() }),
+      el("p", { class: "quiz-practice__empty-title", text: "尚未建立題目" }),
+      el("p", { class: "quiz-practice__empty-hint", text: "請先上傳教材，系統會自動產生練習題。" })
+    ]);
+  }
+
+  function buildPracticeListView(onPractice) {
+    var runtime = AHS.LearningQuestionRuntime;
+    var items = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
+
+    if (!items.length) {
+      return el("div", { class: "quiz-practice" }, [practiceEmptyState()]);
+    }
+
+    var rows = items.map(function (record) {
+      var subj = AHS.Subjects[record.subject] || { name: record.subject || "未分類", hex: "#6b7280" };
+      var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+        el("span", {
+          class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
+        }, [el("span", { text: subj.name })]),
+        el("span", { class: "quiz-practice__row-q", text: record.question || "（尚無題目）" }),
+        el("span", { class: "quiz-practice__row-meta", text: record.knowledgePoint || record.chapter || "" }),
+        el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
+      ]);
+      row.addEventListener("click", function () { onPractice(record); });
+      return row;
+    });
+
+    return el("div", { class: "quiz-practice" }, [
+      el("section", { class: "card quiz-practice__list", "aria-label": "練習題列表" }, [
+        el("div", { class: "card__head" }, [
+          el("h2", { class: "card__title", text: "練習題（" + items.length + "）" })
+        ]),
+        el("div", { class: "quiz-practice__rows" }, rows)
+      ])
+    ]);
+  }
+
+  function buildPracticeQuestionView(record, onBack) {
+    var backBtn = el("button", { type: "button", class: "quiz-practice__back", text: "← 返回列表" });
+    backBtn.addEventListener("click", onBack);
+
+    var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
+    var revealed = false;
+
+    function expBlock(title, items) {
+      var list = Array.isArray(items) ? items.filter(Boolean) : [];
+      if (!list.length) { return null; }
+      return el("div", { class: "quiz-practice__exp-block" }, [
+        el("strong", { class: "quiz-practice__exp-title", text: title }),
+        el("ul", { class: "quiz-practice__exp-list" },
+          list.map(function (t) { return el("li", { text: String(t) }); }))
+      ]);
+    }
+
+    function renderAnswer() {
+      answerSlot.innerHTML = "";
+      var exp = record.explanation || {};
+      answerSlot.appendChild(el("div", { class: "quiz-practice__answer-block" }, [
+        el("strong", { text: "標準答案：" }),
+        el("span", { text: String(record.answer) })
+      ]));
+      [
+        expBlock("解題步驟", exp.steps),
+        expBlock("為什麼答案正確", exp.whyCorrect ? [exp.whyCorrect] : []),
+        expBlock("其他選項錯誤原因", exp.whyOthersWrong),
+        expBlock("常見錯誤", exp.commonMistakes),
+        expBlock("解題技巧", exp.tips)
+      ].filter(Boolean).forEach(function (node) { answerSlot.appendChild(node); });
+      if (record.knowledgePoint) {
+        answerSlot.appendChild(el("p", { class: "quiz-practice__meta", text: "考點：" + record.knowledgePoint }));
+      }
+      if (record.learningObjective) {
+        answerSlot.appendChild(el("p", { class: "quiz-practice__meta", text: "學習目標：" + record.learningObjective }));
+      }
+    }
+
+    var revealBtn = el("button", { type: "button", class: "quiz-practice__reveal", text: "顯示解答" });
+    revealBtn.addEventListener("click", function () {
+      revealed = !revealed;
+      if (revealed) {
+        renderAnswer();
+        answerSlot.removeAttribute("hidden");
+        revealBtn.textContent = "隱藏解答";
+      } else {
+        answerSlot.setAttribute("hidden", "hidden");
+        revealBtn.textContent = "顯示解答";
+      }
+    });
+
+    var optionsBlock = (record.options && record.options.length)
+      ? el("div", { class: "quiz-practice__options" },
+          record.options.map(function (opt) { return el("div", { class: "quiz-practice__option", text: String(opt) }); }))
+      : null;
+
+    return el("div", { class: "quiz-practice" }, [
+      backBtn,
+      el("section", { class: "card quiz-practice__question", "aria-label": "練習題" },
+        [
+          el("p", { class: "quiz-practice__q-text", text: record.question }),
+          optionsBlock,
+          revealBtn,
+          answerSlot
+        ].filter(Boolean))
+    ]);
+  }
+
   function create(model) {
     var data = model || AHS.Mock.quiz;
     var root = el("div", { class: "quiz-root" });
@@ -549,7 +666,41 @@ AHS.QuizCenter = (function () {
     }
 
     showList();
-    return root;
+
+    /* ---- Practice Mode mount (EO-S6-006) — entirely separate root,
+       never touches `root` / any Exam Mode function above. ---- */
+    var practiceRoot = el("div", { class: "quiz-practice-root" });
+    practiceRoot.setAttribute("hidden", "hidden");
+
+    function showPracticeList() {
+      AHS.UI.mount(practiceRoot, buildPracticeListView(showPracticeQuestion));
+    }
+    function showPracticeQuestion(record) {
+      AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, showPracticeList));
+    }
+    showPracticeList();
+
+    /* ---- Mode toggle — "Practice ↓ LearningQuestionRuntime" vs
+       "Exam ↓ QuestionRuntime", 兩者不得混用: switching modes only
+       toggles visibility, it never mounts Exam content into
+       practiceRoot or vice versa. */
+    var examTab = el("button", { type: "button", class: "quiz-mode__tab is-active", text: "正式測驗" });
+    var practiceTab = el("button", { type: "button", class: "quiz-mode__tab", text: "練習模式" });
+    examTab.addEventListener("click", function () {
+      examTab.classList.add("is-active");
+      practiceTab.classList.remove("is-active");
+      root.removeAttribute("hidden");
+      practiceRoot.setAttribute("hidden", "hidden");
+    });
+    practiceTab.addEventListener("click", function () {
+      practiceTab.classList.add("is-active");
+      examTab.classList.remove("is-active");
+      root.setAttribute("hidden", "hidden");
+      practiceRoot.removeAttribute("hidden");
+    });
+    var modeBar = el("div", { class: "quiz-mode", "aria-label": "測驗模式切換" }, [examTab, practiceTab]);
+
+    return el("div", { class: "quiz-page" }, [modeBar, root, practiceRoot]);
   }
 
   return { create: create };

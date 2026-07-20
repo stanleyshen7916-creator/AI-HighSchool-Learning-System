@@ -1,56 +1,77 @@
-# REPORT — EO-R001A Runtime Integration Fix
+# REPORT — HOTFIX-001 Runtime Persistence & Home Sync
 
 ## Status
-COMPLETE — awaiting GPT 執行 GitHub Runtime QA。
+COMPLETE — Architecture Evolution v2.0（PMO Decision 025）已實作並
+驗證，提交審核。
 
-## PMO Decision Applied
-Option B（已於對話中確認）：Statistics 與 Recent Review 改用既有
-window.AHS.HistoryRuntime 提供資料；ReviewRuntime.build() 保留供 Review
-Session／Review Result 詳細資料使用；今日待複習固定 0；花費時間顯示
-「尚無資料」；HistoryRuntime 無紀錄時顯示 0／空狀態（預期行為）。
+## PMO Decision 025 Applied
+撤銷 Sprint 1 Baseline 的 Memory-Only 限制，建立 sessionStorage-based
+Runtime Persistence Layer（UI → Runtime → Persistence Adapter →
+sessionStorage）。詳見 docs/qa/HOTFIX-001_Architecture_Update.md。
+
+## New Files
+- js/core/PersistenceAdapter.js（唯一直接操作 sessionStorage 的模組）
+- docs/qa/HOTFIX-001_Runtime_Persistence_QA.md
+- docs/qa/HOTFIX-001_Architecture_Update.md
 
 ## Modified Files
-- review.html（新增 3 個 Runtime script 標籤，順序與 quiz.html 一致）
-- js/pages/ReviewHome.js（改為讀取 HistoryRuntime 推算真實數字）
-- js/components/ReviewHomeCard.js（移除內部 Mock，改接收真實 statsModel）
-- js/components/ReviewRecentSession.js（移除內部 Mock，改接收真實 model /
-  null）
-- css/pages/review.css（新增 .rv-recent__empty 空狀態樣式，既有規則未動）
+- js/runtime/MaterialRuntime.js（新增 hydrate/persist，8 個 mutating
+  方法皆已接上 persist()；Public API／Schema 未變）
+- js/runtime/KnowledgeRuntime.js／SummaryRuntime.js／
+  LearningQuestionRuntime.js（同上模式：hydrate on load + persist on
+  add()/reset()；Public API／Schema 未變）
+- js/pages/app.js（Fix-002：新增 3 個 buildXModel() 函式，讀取真實
+  Runtime 資料傳入既有元件，元件本身未修改）
+- js/components/HomeRecentMaterials.js（新增誠實的 Summary 徽章，僅
+  在真實 SummaryRuntime 有對應記錄時顯示）
+- css/pages/home.css（新增徽章樣式）
+- index.html／materials.html／summary.html／quiz.html（新增
+  PersistenceAdapter.js 及既有 Runtime 之 script 標籤）
 
-未變動：js/components/ReviewQuickAction.js、
-js/runtime/ReviewRuntime.js、js/runtime/HistoryRuntime.js（皆逐位元組
-確認未被編輯，只被讀取）、以及所有 Do NOT Modify 清單內的頁面／檔案。
+## Unmodified（已逐一確認）
+四個 Core Engine 之 Public API／Schema；Learning Pipeline（零程式碼
+修改，因完全透過 Runtime 既有方法運作）；既有 QuestionRuntime.js
+（Sprint 4）；QuizCenter.js；SummaryCenter.js；Wrong Book／Dashboard／
+AI Tutor／Review Center 全部頁面元件；Repository Structure（僅新增
+一個檔案於既有 js/core/，未新增資料夾）。
 
-## Completed Items
-- ReviewRuntime 與 HistoryRuntime 皆正確載入且順序符合現有 Runtime
-  載入規則（比對 quiz.html）
-- ReviewHome.js 改用既有 Runtime 取得資料，未建立 Mock Data、未建立
-  第二份 Runtime、未修改 Runtime API
-- Statistics／Recent Session 皆為真實計算（已用 HistoryRuntime.record()
-  這個既有公開 API 實測驗證，並驗證空狀態）
-- 今日待複習固定 0；花費時間固定顯示「尚無資料」，皆未自行估算
-- 未新增功能、未修改 UI 版面（僅資料來源由靜態改為真實 Runtime）
+## Fix-001（Runtime Persistence）— 已解決
+以真實檔案上傳互動 + 模擬瀏覽器分頁間 sessionStorage 共用（誠實記錄
+測試方法：jsdom 不會自動跨執行個體共用 storage，故於頁面 script
+執行前明確轉移，如實模擬真實瀏覽器分頁行為）驗證：上傳教材 → 離開
+`materials.html` → 重新進入：四個 Runtime 資料皆正確還原，UI 正確
+渲染，Console Error = 0。
+
+## Fix-002（Home Sync）— 已解決
+`index.html` 於初始化時透過既有 `AHS.MaterialRuntime.list()`／
+`AHS.SummaryRuntime.list()`（唯讀）建立真實 model，傳入既有
+HomeRecentMaterials／StudyStats／ContinueLearning 元件（三者皆已有
+Mock Fallback 機制，元件本身未修改）。已驗證：上傳前顯示既有 Mock
+Seed Data；上傳後正確改為顯示真實「最近教材」／「已生成學習總結」
+徽章／「學習統計」（誠實反映真實資料，含尚無真實學習時數時顯示 0，
+不虛構）。僅更新需要的 Component，未重新整理整個 App。
+
+## Fix-003（Beta Mode Mock Data）— 確認無需變動
+已確認全部 Runtime（含新增持久化的四個）起始狀態仍為空，本次持久化
+實作未改變此行為。未新增 Developer Mode（依 PMO 指示不需要）。
 
 ## Developer QA
-詳見 docs/qa/EO-R001A_Runtime_Integration_QA.md。摘要：
-- node --check：4 個 JS 檔案全通過
-- 禁用模式 grep：乾淨
-- html5validator：exit 0
-- jsdom 行為測試（空狀態 + 真實資料兩種情境皆測試）：
-  Console Error = 0，Console Warning = 0
-- Script Loading Order：確認正確且未影響其他頁面
-- Dead Button 檢查：通過
+詳見 docs/qa/HOTFIX-001_Runtime_Persistence_QA.md。摘要：第一次開啟
+全空、上傳教材、切換頁面、重新返回 Material、首頁立即更新、Summary
+更新、Practice Mode 更新，皆 PASS；Console Error = 0。
 
 ## Regression QA
-index.html、wrongbook.html、dashboard.html 重新測試：Console Error = 0，
-皆未受影響。以 diff -rq 比對 Baseline 確認：除本次列出的檔案外，其餘
-既有檔案逐位元組未變動。
+diff -rq 比對前次交付（EO-S6-007）：確認變動範圍精確符合本次授權
+（見上方 Modified Files），Core Engine／Learning Pipeline／既有
+QuestionRuntime／QuizCenter／SummaryCenter／其他 Do NOT Modify 頁面
+元件逐一 diff 確認未變動。9 個頁面重新載入測試：0 錯誤。
 
 ## Known Issues
-1. 今日待複習仍無資料來源，維持固定 0（全系統無此概念）
-2. 花費時間全系統無此欄位，非 Review 專屬缺口
-3. review.html 目前仍無 Bottom Navigation／Sidebar 入口（延續 EO-R001
-   已知項目）
+1. `file`（上傳檔案物件參考）無法跨頁保存，還原後為 null（符合原始
+   碼既有註明，非本次引入的限制）
+2. 「Recent Learning」目前仍顯示 Mock，因無流程呼叫 startLearning()
+3. 測試過程中一項測試方法造成的假象已排除並記錄（見 QA 文件）
 
 ## Next
-交由 GPT 執行 GitHub Runtime QA。Repository QA 不需重新進行。
+提交 GPT PMO 審核 Architecture Evolution v2.0 之 Compatibility Review
+與 Regression QA。

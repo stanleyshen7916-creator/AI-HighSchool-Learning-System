@@ -25,12 +25,32 @@
    still loaded in review.html so it initializes correctly (Acceptance:
    "ReviewRuntime 正常載入").
 
+   EO-S5-002 flag: that EO's "Review Runtime" section restates "所有資料
+   由 ReviewRuntime 提供" / "不得建立第二份 Runtime" — the same framing
+   already superseded by the PMO's Option B ruling on EO-R001A (nothing
+   changed technically: ReviewRuntime.build(examId) still cannot
+   aggregate). This file keeps the Option B architecture; "ReviewRuntime
+   正常載入" / "Review Runtime 正常運作" are treated as confirming that
+   architecture still functions, not as a mandate to revert it. Flagged
+   for PMO in REPORT.md.
+
    Path/role note carried from EO-R001: page-content components live in
    js/components/ (repository convention) with this file as the thin
-   bootstrap, matching js/pages/app-wrongbook.js's role. AppShell.js is
-   mounted with a non-matching "review" active id since Review Center has
-   no Bottom Navigation / Sidebar slot (Product Baseline's nav sets were
-   not modified). */
+   bootstrap, matching js/pages/app-wrongbook.js's role.
+
+   EO-S5-002: "review" is now a real Sidebar nav id (複習中心 was added to
+   js/data/mock-data.js's nav.items and js/components/AppShell.js's
+   ROUTES as part of the formal Sidebar IA). AppShell is mounted with
+   active: "review" exactly as every other page mounts its own id — no
+   workaround needed anymore.
+
+   EO-S5-003 (WB-S5-002): 開始今日複習 and 錯題複習 must run genuinely
+   different flows. This file now also reads AHS.WrongBookRuntime.list()
+   — the existing, unmodified Wrong Book Runtime, read-only, same reuse
+   pattern already used for HistoryRuntime — to give ReviewQuickAction.js
+   a real hasWrongItems check for 錯題複習. dueToday (already computed
+   below, fixed at 0) is passed through unchanged for 開始今日複習's own
+   real check. No new Runtime, no Storage, no Architecture change. */
 window.AHS = window.AHS || {};
 (function () {
   "use strict";
@@ -90,6 +110,7 @@ window.AHS = window.AHS || {};
     var historyItems = (AHS.HistoryRuntime ? AHS.HistoryRuntime.list() : []);
     var stats = deriveStats(historyItems);
     var mostRecent = historyItems.length ? historyItems[0] : null; // list() is newest-first
+    var wrongItems = (AHS.WrongBookRuntime ? AHS.WrongBookRuntime.list() : []);
 
     var shell = AHS.AppShell.create(AHS.Mock, {
       active: "review",
@@ -103,7 +124,10 @@ window.AHS = window.AHS || {};
 
     var row = document.createElement("div");
     row.className = "rv-row2";
-    row.appendChild(AHS.ReviewQuickAction.create({}));
+    row.appendChild(AHS.ReviewQuickAction.create(
+      { dueToday: stats.dueToday, hasWrongItems: wrongItems.length > 0 },
+      {}
+    ));
     row.appendChild(AHS.ReviewRecentSession.create(mostRecent, {}));
     page.appendChild(row);
 

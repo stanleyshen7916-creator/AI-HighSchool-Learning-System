@@ -453,18 +453,38 @@ AHS.MaterialCenter = (function () {
     }
 
     /* ---- Upload Flow (with metadata dialog) ---------------------------
-       Pick file -> "新增教材" dialog (name/subject/grade/category) ->
-       confirm -> MaterialRuntime.add() with metadata -> renderAll.
-       Metadata is required, so file name alone is never the sole data. */
+       Single file -> existing AHS.MaterialUploadDialog (unchanged).
+       Multiple files -> AHS.BulkUploadDialog (WO-006): shared metadata
+       step, 套用全部, then per-file override, then one 開始匯入 that
+       creates every material and runs the Learning Pipeline for each. */
     function onFilesPicked(fileList) {
       if (!fileList || fileList.length === 0) { return; }
-      /* Handle one file at a time via the dialog (queue the rest). */
       var files = Array.prototype.slice.call(fileList);
+
+      if (files.length > 1 && AHS.BulkUploadDialog) {
+        var bulkDialog = AHS.BulkUploadDialog.open(files, function (items) {
+          items.forEach(function (item) {
+            var record = AHS.MaterialRuntime.add({
+              title: item.title, subject: item.subject, grade: item.grade,
+              category: item.category, folderId: item.folderId,
+              fileName: item.file.name, fileType: fileExt(item.file.name),
+              fileSize: formatSize(item.file.size), file: item.file
+            });
+            runLearningPipeline(record.id);
+          });
+          status.textContent = "已新增 " + items.length + " 個教材";
+          status.removeAttribute("hidden");
+          renderAll();
+        }, function () { /* cancelled — nothing to do */ }, AHS.MaterialRuntime.listFolders());
+        document.body.appendChild(bulkDialog);
+        return;
+      }
+
       function next() {
         if (files.length === 0) { return; }
         var f = files.shift();
         var dialog = AHS.MaterialUploadDialog.open(f, function (meta) {
-          AHS.MaterialRuntime.add({
+          var record = AHS.MaterialRuntime.add({
             title: meta.title,
             subject: meta.subject,
             grade: meta.grade,
@@ -478,6 +498,7 @@ AHS.MaterialCenter = (function () {
           status.textContent = "已新增教材：" + meta.title;
           status.removeAttribute("hidden");
           renderAll();
+          runLearningPipeline(record.id);
           next();
         }, function () {
           /* cancelled — continue with remaining files if any */
@@ -486,6 +507,48 @@ AHS.MaterialCenter = (function () {
         document.body.appendChild(dialog);
       }
       next();
+    }
+
+    /* ---- Learning Pipeline progress (EO-S6-006) -------------------------
+       Runs the existing AHS.LearningPipeline.process() (untouched Public
+       API, not re-implemented here) and narrates it stage-by-stage via
+       AHS.LearningPipeline.getProgress(). process() itself is
+       synchronous, so the staged reveal below is a paced UI narration of
+       the REAL final outcome (which stage was actually reached, and
+       whether it errored) — never a fabricated animation of stages that
+       didn't happen. */
+    function runLearningPipeline(materialId) {
+      if (!AHS.LearningPipeline || typeof AHS.LearningPipeline.process !== "function") { return; }
+
+      var STAGE_LABELS = {
+        material: "解析教材", knowledge: "建立知識結構",
+        summary: "生成摘要", questions: "生成練習題", done: "完成"
+      };
+      var STAGE_ORDER = ["material", "knowledge", "summary", "questions", "done"];
+
+      AHS.LearningPipeline.process(materialId);
+      var result = AHS.LearningPipeline.getProgress();
+      var reachedIndex = STAGE_ORDER.indexOf(result.stage);
+
+      var i = 0;
+      function step() {
+        var stage = STAGE_ORDER[i];
+        var label = STAGE_LABELS[stage] || stage;
+        if (i === reachedIndex && result.status === "error") {
+          status.textContent = "學習內容建立失敗（" + label + "）：" + (result.errors[0] || "");
+          status.removeAttribute("hidden");
+          return;
+        }
+        if (stage === "done") {
+          status.textContent = "學習內容已建立完成（知識結構／摘要／練習題）";
+        } else {
+          status.textContent = "處理中：" + label + " …";
+        }
+        status.removeAttribute("hidden");
+        i += 1;
+        if (i <= reachedIndex) { setTimeout(step, 260); }
+      }
+      step();
     }
 
     /* ---- Preview (RC-003-006) ----------------------------------------

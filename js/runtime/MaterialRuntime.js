@@ -9,27 +9,75 @@
    - Starts EMPTY (no seed). First open => Empty State.
    - All Material Center operations (upload / delete / favorite / search
      / filter / sort) act on this store, never on AHS.Mock.
-   - Memory only: no localStorage / API / backend. Resets on reload,
-     which is expected Prototype behavior.
    - AHS.Mock.materials is kept untouched as Developer Seed Data and is
      still used by other modules (e.g. Home), which this migration must
      not affect.
+
+   PMO Decision 025 · Architecture Evolution v2.0 (2026-07-20): the
+   "Memory only, resets on reload" limitation above is now upgraded.
+   This Runtime hydrates from AHS.PersistenceAdapter on module load and
+   persists after every mutation, so data survives navigating to a
+   different page within the same browser session — while still going
+   through the Adapter only (never touching sessionStorage directly
+   here), keeping this file's Public API and Schema unchanged. Still no
+   localStorage / IndexedDB / backend — sessionStorage clears
+   automatically when the browser session ends, exactly as authorized.
+   `file` (a runtime-only File object reference, already documented
+   below as "Not persisted") is stripped before every persist() call —
+   File objects aren't meaningfully serializable, so after a fresh page
+   load hydrates this store, `file` is legitimately null for materials
+   uploaded in a previous page's session; every other field survives.
    PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MaterialRuntime = (function () {
   "use strict";
 
+  var STORAGE_KEY = "materialRuntime";
+
+  function hydrate() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function") {
+      var loaded = AHS.PersistenceAdapter.load(STORAGE_KEY);
+      if (loaded && Array.isArray(loaded.materials) && Array.isArray(loaded.folders)) {
+        return loaded;
+      }
+    }
+    return null;
+  }
+
+  /* persist() — saves a clone of `store` with each material's non-
+     serializable `file` reference stripped (kept live in-memory only). */
+  function persist() {
+    if (!AHS.PersistenceAdapter || typeof AHS.PersistenceAdapter.save !== "function") { return; }
+    var snapshot = {
+      materials: store.materials.map(function (m) {
+        var copy = {};
+        for (var k in m) { if (Object.prototype.hasOwnProperty.call(m, k) && k !== "file") { copy[k] = m[k]; } }
+        return copy;
+      }),
+      folders: store.folders.slice(),
+      seq: store.seq,
+      folderSeq: store.folderSeq
+    };
+    AHS.PersistenceAdapter.save(STORAGE_KEY, snapshot);
+  }
+
   /* Material Center runtime store. `materials` grows via upload, shrinks
      via delete; `seq` gives a stable created-order id + ordering key
      (used by Recent Learning "Created Order" per spec). `folders` holds
      Folder containers (BUG-010); a Material references its folder via
-     folderId (null = 未分類). */
-  var store = {
+     folderId (null = 未分類). Hydrated from a previous page's session
+     if AHS.PersistenceAdapter has anything saved; otherwise starts
+     EMPTY exactly as before (first-ever open => Empty State, unchanged). */
+  var store = hydrate() || {
     materials: [],
     folders: [],
     seq: 0,
     folderSeq: 0
   };
+  /* Every hydrated material's `file` is legitimately absent (never
+     persisted) — normalize to null so downstream code that checks
+     `m.file` behaves the same as any other fileless/seed-shaped record. */
+  store.materials.forEach(function (m) { m.file = m.file || null; });
 
   function list() {
     return store.materials.slice();
@@ -81,6 +129,7 @@ AHS.MaterialRuntime = (function () {
       file: partial.file || null
     };
     store.materials.push(record);
+    persist();
     return record;
   }
 
@@ -92,6 +141,7 @@ AHS.MaterialRuntime = (function () {
       else { next.push(store.materials[i]); }
     }
     store.materials = next;
+    persist();
     return removed;
   }
 
@@ -99,6 +149,7 @@ AHS.MaterialRuntime = (function () {
     var m = getById(id);
     if (!m) { return false; }
     m.favorite = !m.favorite;
+    persist();
     return m.favorite;
   }
 
@@ -131,6 +182,7 @@ AHS.MaterialRuntime = (function () {
       icon: null
     };
     store.folders.push(folder);
+    persist();
     return folder;
   }
 
@@ -167,6 +219,7 @@ AHS.MaterialRuntime = (function () {
       if (store.materials[j].folderId === id) { store.materials[j].folderId = null; }
     }
     store.folders = store.folders.filter(function (f) { return f.id !== id; });
+    persist();
     return true;
   }
 
@@ -185,6 +238,7 @@ AHS.MaterialRuntime = (function () {
     var m = getById(id);
     if (!m) { return null; }
     m.lastOpenedAt = new Date().toISOString();
+    persist();
     return m;
   }
 
@@ -208,6 +262,7 @@ AHS.MaterialRuntime = (function () {
       var next = (typeof m.progress === "number" ? m.progress : 0) + 25;
       m.progress = Math.max(1, Math.min(100, next));
     }
+    persist();
     return m;
   }
 
@@ -222,6 +277,7 @@ AHS.MaterialRuntime = (function () {
     store.folders = [];
     store.seq = 0;
     store.folderSeq = 0;
+    persist();
   }
 
   return {

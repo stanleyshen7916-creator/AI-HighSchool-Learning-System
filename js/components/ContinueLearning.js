@@ -1,6 +1,7 @@
 /* components/ContinueLearning.js — Continue Learning (HOME-F007).
-   Reads AHS.Mock.lastLearning and renders subject / chapter / lesson /
-   progress; the whole card links to the corresponding material. Shows
+   Sprint 6.6 WO-007: no longer reads AHS.Mock.lastLearning. Renders
+   whatever real model js/pages/app.js passes in (subject / chapter /
+   lesson / progress, derived from AHS.MaterialRuntime). Shows
    "尚無學習紀錄" and disables the click target when data is missing.
    Reuses shared .card / .card__head / .card__title primitives — no new
    layout, matches existing rail cards (e.g. LearningTime, HOME-F006).
@@ -22,9 +23,11 @@ AHS.ContinueLearning = (function () {
     return n;
   }
 
-  /* create(model?) — model defaults to AHS.Mock.lastLearning. */
+  /* create(model) — Sprint 6.6 WO-007: no Mock fallback anymore. app.js
+     always passes a real object (real data or {} when nothing has
+     called MaterialRuntime.startLearning() yet). */
   function create(model) {
-    var data = model !== undefined ? model : (AHS.Mock && AHS.Mock.lastLearning);
+    var data = model || {};
     var hasData = !!(data && data.subject && data.chapter && data.lesson && data.materialId);
 
     var body;

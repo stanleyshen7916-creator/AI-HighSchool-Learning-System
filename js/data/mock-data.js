@@ -19,26 +19,6 @@ AHS.Mock = {
     continueFeedback: "（Mock）繼續昨天進度：英文《文法練習》"
   },
 
-  todayTasks: {
-    title: "今日任務",
-    items: [
-      { id: 1, subject: "math", title: "第三章 指數函數", done: 2, total: 5 },
-      { id: 2, subject: "english", title: "Unit 4 文法練習", done: 7, total: 10 },
-      { id: 3, subject: "physics", title: "牛頓運動定律總整理", done: 5, total: 5 },
-      { id: 4, subject: "chemistry", title: "化學反應與平衡", done: 0, total: 4 }
-    ]
-  },
-
-  recentMaterials: {
-    title: "最近教材",
-    items: [
-      { id: 1, subject: "math", unit: "第三章 指數函數", title: "二次函數的圖形與性質", teacher: "張老師", lastOpened: "2024/06/20", progress: 60 },
-      { id: 2, subject: "english", unit: "Unit 3", title: "英文閱讀理解攻略", teacher: "Amy 老師", lastOpened: "2024/06/19", progress: 40 },
-      { id: 3, subject: "physics", unit: "第二章", title: "牛頓運動定律總整理", teacher: "王老師", lastOpened: "2024/06/18", progress: 80 },
-      { id: 4, subject: "chemistry", unit: "第三章", title: "化學反應與平衡", teacher: "林老師", lastOpened: "2024/06/17", progress: 30 }
-    ]
-  },
-
   aiTutor: {
     title: "AI 巧巧老師",
     message: "同學加油！我建議你今天先從數學開始，打好基礎會讓學習更輕鬆喔！",
@@ -49,21 +29,6 @@ AHS.Mock = {
       { id: "summary", icon: "summary", label: "重點整理", desc: "AI 快速整理筆記" },
       { id: "word", icon: "aa", label: "單字小幫手", desc: "英文單字隨記憶卡" },
       { id: "plan", icon: "calendar", label: "學習計畫", desc: "客製你的學習計畫" }
-    ]
-  },
-
-  studyStats: {
-    title: "學習統計",
-    rangeLabel: "本週",
-    totalHours: 18.6,
-    deltaHours: 2.4,
-    bars: [
-      { subject: "math", hours: 5.2 },
-      { subject: "english", hours: 4.1 },
-      { subject: "physics", hours: 3.6 },
-      { subject: "chemistry", hours: 2.9 },
-      { subject: "biology", hours: 1.8 },
-      { subject: "history", hours: 1.0 }
     ]
   },
 
@@ -556,42 +521,37 @@ AHS.Mock = {
 
   nav: {
     active: "home",
+    /* EO-S5-002 · Sidebar 正式 IA：學習總結（原「重點整理」改名）、新增
+       複習中心，並移除「儀表板」（新 IA 清單未列出；dashboard.html 本身
+       未被更動，僅不再由 Sidebar 連結）。Bottom Navigation 不受影響。 */
     items: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材中心", icon: "book" },
       { id: "quiz", label: "測驗中心", icon: "quiz" },
       { id: "wrongbook", label: "錯題本", icon: "wrong" },
-      { id: "summary", label: "重點整理", icon: "summary" },
+      { id: "summary", label: "學習總結", icon: "summary" },
+      { id: "review", label: "複習中心", icon: "clock" },
       { id: "learning", label: "我的學習", icon: "learning" },
-      { id: "dashboard", label: "儀表板", icon: "dashboard" },
       { id: "tutor", label: "AI Tutor", icon: "tutor" }
     ],
+    /* EO-S5-003/004 · Bottom Navigation 正式 IA + Dead Button 根因修正：
+       原 "我的" 項目 id 為 "me"，但 AppShell.js 的 ROUTES 沒有對應項目，
+       導致永遠落入 Mock <button> 分支（無實際作用）。改為 id "dashboard"
+       （ROUTES 已有 dashboard: "dashboard.html"），同時完成 WB-S5-004 要求
+       的重新命名（教材/測驗/複習/我的）。不修改 AppShell.js 的渲染邏輯或
+       ROUTES 本身 — 現有邏輯已支援，只是資料對不上。 */
     bottomItems: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材", icon: "book" },
-      { id: "quiz", label: "考卷", icon: "quiz" },
-      { id: "wrongbook", label: "錯題", icon: "wrong" },
-      { id: "me", label: "我的", icon: "tutor" }
+      { id: "quiz", label: "測驗", icon: "quiz" },
+      { id: "review", label: "複習", icon: "clock" },
+      { id: "dashboard", label: "我的", icon: "tutor" }
     ]
-  },
-
-  /* Sprint 1 · HOME-F006: 今日學習時間 (Learning Time). */
-  learning: {
-    todayMinutes: 85
   },
 
   /* Material Center Sprint 3 · MAT-F005: 繼續閱讀 (Continue Reading). */
   lastReading: {
     materialId: 1
-  },
-
-  /* Sprint 1 · HOME-F007: Continue Learning. */
-  lastLearning: {
-    subject: "數學",
-    chapter: "第三章 指數函數",
-    lesson: "3-2 指數函數圖形",
-    progress: 65,
-    materialId: "math_03_02"
   },
 
   /* HOME-F009: Notification. */

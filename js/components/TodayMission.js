@@ -2,10 +2,14 @@
    Checklist of today's tasks: subject chip + title + done/total counter,
    each toggleable (Mock UI interaction only — checkbox state is not tied
    to done/total, matching the original mock behaviour).
-   HOME-F005 Correction (PMO final decision, 2026-07-07): data model
-   finalized to { id, subject, title, done, total } — reads
-   AHS.Mock.todayTasks directly (no percentage, no AHS.Data/AHS.Utils
-   task layer). PascalCase component under window.AHS. */
+
+   Sprint 6.6 Runtime Integration Fix (WO-007): no Mock Data fallback
+   anymore. No Task/Mission Runtime exists anywhere in this repository
+   (building one would be a new feature, out of scope), so js/pages/
+   app.js always passes an explicit model — real if one ever exists,
+   otherwise { title: "今日任務", items: [] } — and this component always
+   honestly renders whatever it's given, including the Empty State when
+   items is empty. PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.TodayMission = (function () {
   "use strict";
@@ -36,10 +40,12 @@ AHS.TodayMission = (function () {
     return row;
   }
 
-  /* create(model?) — model defaults to AHS.Mock.todayTasks. */
+  /* create(model) — model must be a real, fully-shaped object
+     ({ title, items }); no Mock fallback. Missing/invalid input renders
+     the Empty State rather than throwing. */
   function create(model) {
-    var data = model || AHS.Mock.todayTasks;
-    var items = (data && data.items) || [];
+    var data = model || {};
+    var items = Array.isArray(data.items) ? data.items : [];
 
     var body = items.length
       ? el("ul", { class: "today-card__list" }, items.map(taskRow))

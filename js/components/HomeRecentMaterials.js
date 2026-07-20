@@ -57,6 +57,12 @@ AHS.HomeRecentMaterials = (function () {
       el("p", { class: "recent-card__title", text: item.title }),
       el("p", { class: "recent-card__meta", text: "高一" + subj.name + "｜" + item.teacher }),
       el("p", { class: "recent-card__last-opened", text: "上次開啟：" + item.lastOpened }),
+      item.hasSummary
+        ? el("a", { class: "recent-card__summary-badge", href: "summary.html" }, [
+            el("span", { html: AHS.Icons.summary() }),
+            el("span", { text: "已生成學習總結" })
+          ])
+        : null,
       el("div", { class: "recent-card__progress" }, [
         el("div", { class: "recent-card__progress-head" }, [
           el("span", { text: "學習進度" }),
@@ -89,9 +95,12 @@ AHS.HomeRecentMaterials = (function () {
     return cardEl;
   }
 
-  /* create(model?) — model defaults to AHS.Mock.recentMaterials. */
+  /* create(model) — Sprint 6.6 WO-007: no Mock fallback anymore. model
+     must be a real, fully-shaped object; js/pages/app.js always passes
+     one (real data or an explicit empty shape). Missing/invalid input
+     renders the Empty State rather than throwing. */
   function create(model) {
-    var data = model || AHS.Mock.recentMaterials;
+    var data = model || { title: "最近教材", items: [] };
     var status = el("p", {
       class: "recent-materials__status", "aria-live": "polite", hidden: "hidden"
     });
