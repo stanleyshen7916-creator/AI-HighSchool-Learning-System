@@ -251,6 +251,8 @@
 }
 .recent-card__act svg { width: 18px; height: 18px; }
 .recent-card__act:hover { background-color: var(--brand-soft); color: var(--brand); }
+.recent-card__act.is-disabled { cursor: not-allowed; opacity: 0.4; }
+.recent-card__act.is-disabled:hover { background-color: transparent; color: inherit; }
 
 .recent-materials__status,
 .tutor-card__status,

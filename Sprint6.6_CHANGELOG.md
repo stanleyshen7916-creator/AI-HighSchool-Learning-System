@@ -1,6 +1,45 @@
 # Sprint 6.6 — CHANGELOG
 
-## Round 2 — Runtime Integration Fix (WO-007 Prototype Mock Cleanup)
+## Round 3 — Runtime QA Round 2, Phase 1~4 Bug Fix
+
+### Modified Files
+- `js/pages/app.js` — `buildRecentMaterialsModel()`: added real `grade`
+  (fixes a hardcoded "高一" found during investigation), `file` (live
+  File object reference), `fileName` per item
+- `js/components/HomeRecentMaterials.js` (Issue #016) — 開啟/下載 now
+  genuinely open/download the file via `URL.createObjectURL()` when a
+  live File reference exists; disabled with an explanatory `aria-label`
+  when it doesn't (never a fake success message); removed the now-dead
+  `announce()` helper; fixed the hardcoded "高一" grade display; Summary
+  badge now deep-links with `?materialId=`
+- `js/pages/app-summary.js` (Issue #021) — reads `?materialId=` from the
+  URL and passes it to `SummaryCenter.create()`
+- `js/components/SummaryCenter.js` (Issue #021) — `create(model,
+  initialMaterialId)`: when given, renders that one material's Summary
+  Detail via the existing `findByMaterialId()`, with the filter dropdown
+  pre-selected; shows the Empty State (not a blank screen) if that
+  material has no summary yet
+- `css/pages/home.css` — disabled-state styling for
+  `.recent-card__act`
+
+### Investigated, No Fix Needed
+- Issue #019 (Material Search) — re-verified via a real upload +
+  keystroke-driven search test; already works correctly (real-time
+  filtering by title/chapter/fileName/content/folder name). Likely
+  Deploy Lag, consistent with the WO-002 pattern from Round 1/2.
+
+### Unchanged (confirmed via diff)
+All Runtimes, Persistence Adapter, Learning Pipeline, and every file
+delivered in Rounds 1–2 not listed above (`MaterialCenter.js`,
+`QuizCenter.js`, `MyLearning.js`, `BulkUploadDialog.js`,
+`TodayMission.js`, `ContinueLearning.js`, `LearningTime.js`,
+`AiTutor.js`, `mock-data.js`).
+
+---
+
+## Round 2 (original content, for reference)
+
+
 
 ### Modified Files
 - `js/components/TodayMission.js` — removed internal `AHS.Mock.todayTasks`

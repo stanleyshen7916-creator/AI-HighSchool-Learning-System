@@ -41,12 +41,21 @@ window.AHS = window.AHS || {};
         return {
           id: m.id,
           subject: m.subject,
+          grade: m.grade,
           unit: m.chapter,
           title: m.title,
           teacher: "", /* no real teacher field exists on MaterialRuntime records — left honestly empty, never fabricated */
           lastOpened: m.lastOpenedAt || m.date,
           progress: typeof m.progress === "number" ? m.progress : 0,
-          hasSummary: !!summarizedMaterialIds[m.id]
+          hasSummary: !!summarizedMaterialIds[m.id],
+          /* Sprint 6.6 Runtime QA Round 2 (WO-008, Issue #016): the live
+             File object reference (in-memory only — never persisted,
+             see js/runtime/MaterialRuntime.js's own hydrate()/persist()
+             comments) so 開啟/下載 can be genuinely functional when
+             available, and cleanly disabled (not a fake Mock message)
+             when it isn't (e.g. after a page reload that lost it). */
+          file: m.file || null,
+          fileName: m.fileName || m.title
         };
       })
     };

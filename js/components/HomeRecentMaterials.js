@@ -14,26 +14,42 @@ AHS.HomeRecentMaterials = (function () {
     var subj = AHS.Subjects[item.subject];
     var pct = Math.max(0, Math.min(100, item.progress));
 
+    var canAccessFile = !!item.file;
     var docBtn = el("button", {
-      type: "button", class: "recent-card__act",
-      "aria-label": "開啟教材", html: AHS.Icons.doc()
+      type: "button", class: "recent-card__act" + (canAccessFile ? "" : " is-disabled"),
+      disabled: canAccessFile ? null : "disabled",
+      "aria-label": canAccessFile ? "開啟教材" : "教材檔案暫無法開啟（請重新整理教材中心分頁後再試）",
+      html: AHS.Icons.doc()
     });
     var dlBtn = el("button", {
-      type: "button", class: "recent-card__act",
-      "aria-label": "下載教材", html: AHS.Icons.download()
+      type: "button", class: "recent-card__act" + (canAccessFile ? "" : " is-disabled"),
+      disabled: canAccessFile ? null : "disabled",
+      "aria-label": canAccessFile ? "下載教材" : "教材檔案暫無法下載（請重新整理教材中心分頁後再試）",
+      html: AHS.Icons.download()
     });
-    function announce(msg) {
-      status.textContent = msg;
-      status.removeAttribute("hidden");
+    if (canAccessFile) {
+      docBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var url = URL.createObjectURL(item.file);
+        window.open(url, "_blank");
+      });
+      dlBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var url = URL.createObjectURL(item.file);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = item.fileName || item.title;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
     }
-    docBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      announce("（Mock）開啟教材：" + subj.name + "《" + item.title + "》");
-    });
-    dlBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》");
-    });
+    /* WO-008: when the file reference is genuinely gone (File objects
+       can't survive a page's own PersistenceAdapter-backed hydration,
+       per HOTFIX-001), the honest, correct behavior is a disabled
+       control (aria-label explains why) — not a clickable button with
+       a fake success message. Disabled buttons don't fire click events
+       in a real browser, so no handler is attached in that case. */
 
     /* HOME-F008 acceptance: clicking the card opens the material.
        Kept as <article> (not <a>) because it contains <button>
@@ -55,10 +71,10 @@ AHS.HomeRecentMaterials = (function () {
       }, [el("span", { text: subj.name })]),
       el("h3", { class: "recent-card__unit", text: item.unit }),
       el("p", { class: "recent-card__title", text: item.title }),
-      el("p", { class: "recent-card__meta", text: "高一" + subj.name + "｜" + item.teacher }),
+      el("p", { class: "recent-card__meta", text: (item.grade || "") + subj.name + "｜" + item.teacher }),
       el("p", { class: "recent-card__last-opened", text: "上次開啟：" + item.lastOpened }),
       item.hasSummary
-        ? el("a", { class: "recent-card__summary-badge", href: "summary.html" }, [
+        ? el("a", { class: "recent-card__summary-badge", href: "summary.html?materialId=" + encodeURIComponent(item.id) }, [
             el("span", { html: AHS.Icons.summary() }),
             el("span", { text: "已生成學習總結" })
           ])

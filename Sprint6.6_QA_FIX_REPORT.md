@@ -1,6 +1,98 @@
 # Sprint 6.6 — GitHub QA Fix — QA Fix Report
 
-## Round 2 — Runtime Integration Fix (this update)
+## Round 3 — Runtime QA Round 2, Phase 1~4 Bug Fix (this update)
+
+### Scope Confirmation
+確認本輪完全未修改：UI Library、Design Token、Architecture、Runtime
+API、Repository Structure（已用 diff 逐一確認）。未新增任何 Framework。
+
+### Issue #016｜WO-008 Home Recent Material Action
+**根因**：`docBtn`／`dlBtn`（開啟／下載）點擊後只顯示
+「（Mock）開啟教材：...」文字，未真正開啟或下載檔案——這確實是「可
+點擊但沒有真實反應」，非本次新引入，是既有既有行為首次被明確標為 Bug。
+
+**調查中額外發現**：卡片的科目/年級說明列將年級**寫死為「高一」**
+（`"高一" + subj.name + ...`），與真實教材的年級無關——這是本次
+遷移過程中一直存在、之前未被發現的顯示錯誤，順手一併修正。
+
+**修正**：
+- `js/pages/app.js`：`buildRecentMaterialsModel()` 的每個 item 新增
+  真實 `grade`（修正上述寫死問題）與真實 `file`（記憶體中的 File
+  物件參考，僅在同一頁面 Session 內有效——File 物件本身無法序列化，
+  無法跨頁保存，這是 HOTFIX-001 已記載的既有限制）、`fileName`
+- `js/components/HomeRecentMaterials.js`：
+  - 有真實 `file` 參考時：「開啟」透過 `URL.createObjectURL()` +
+    `window.open()` 真正在新分頁開啟檔案；「下載」透過臨時 `<a
+    download>` 觸發真實瀏覽器下載 —— 皆為真實 Event Binding + File
+    Runtime 操作，非 Mock
+  - 沒有真實 `file` 參考時（例如已跨頁導覽，File 物件已遺失）：
+    按鈕改為 `disabled`，並以 `aria-label` 說明原因，**不再顯示假的
+    成功訊息** —— 符合「若尚未支援：Disabled。不得：可點擊但沒有任何
+    反應」
+  - 移除因此變成真正死程式碼的 `announce()` 函式
+- `css/pages/home.css`：新增 disabled 狀態樣式
+
+**驗證**：真實檔案物件存在時，按鈕可正常點擊且不被 disabled；模擬跨頁
+導覽（File 物件遺失）後，按鈕正確變為 `disabled` 且 `aria-label` 正確
+說明原因；年級欄位正確顯示「高二」（測試教材）而非寫死的「高一」。
+Console Error = 0。
+
+### Issue #019｜WO-009 Material Search
+**調查結果**：以真實檔案上傳互動（上傳 2 筆不同教材）+ 在搜尋框輸入
+關鍵字（觸發真實 `input` 事件）重新測試 Material Center 既有搜尋功能
+——結果**正確即時過濾**（2 筆 → 輸入「細胞」→ 正確篩選為 1 筆
+「細胞分裂」）。程式碼確認搜尋邏輯本已比對教材名稱／章節／檔名／
+內容／資料夾名稱，且透過 `input` 事件即時觸發，並非「沒有任何
+Filter」。**未發現可重現的真實缺陷**，判斷為 Deploy Lag（與前兩輪
+WO-002 相同模式）。本輪未變更任何搜尋相關程式碼。
+
+### Issue #021｜WO-010 Summary Detail
+**根因**：`HomeRecentMaterials.js` 的「已生成學習總結」徽章原本連結到
+純 `summary.html`（無參數），導向的是**未篩選的完整列表**，而非該
+教材的「Detail」——使用者體感上等同於「Summary Detail 無法載入」
+（看不到自己剛剛那筆教材的摘要，除非自己手動用 Dropdown 篩選）。
+`summary.html` 本身也從未支援任何 URL 參數做深層連結。
+
+**修正**：
+- `js/components/HomeRecentMaterials.js`：徽章連結改為
+  `summary.html?materialId=<真實id>`
+- `js/pages/app-summary.js`：讀取 `?materialId=` 參數，傳入
+  `SummaryCenter.create()`
+- `js/components/SummaryCenter.js`：`create(model, initialMaterialId)`
+  —— 有 `initialMaterialId` 時，初次渲染直接使用既有
+  `SummaryRuntime.findByMaterialId()` 顯示該教材的 Detail（而非完整
+  列表），Dropdown 同時正確預選該教材；若該教材確實還沒有 Summary，
+  正確顯示 Empty State（**不是空白畫面**）
+
+**驗證**：植入教材＋摘要後點擊徽章 → 正確只顯示該教材的 Summary
+Detail（章節資訊正確）；改用一個不存在的 materialId 深層連結測試 →
+正確顯示 Empty State，`#app` 內容非空（排除空白畫面情況）。Console
+Error = 0。
+
+### Round 3 Regression
+- 全站 9 個頁面重新載入：Console Error = 0
+- Phase 1／Phase 2 已 PASS 功能重新測試：單檔案上傳、批量上傳
+  （3 檔案＋共同設定＋個別修改）、Practice Mode 皆與前一輪結果一致
+- `diff -rq` 比對前一輪交付：確認本輪異動精確為 5 個檔案，其餘（含
+  全部 Runtime、Persistence Adapter、Learning Pipeline、
+  `MaterialCenter.js`、`QuizCenter.js`、`MyLearning.js`、
+  `BulkUploadDialog.js`、`TodayMission.js`、`ContinueLearning.js`、
+  `LearningTime.js`、`AiTutor.js`、`mock-data.js`）逐位元組未變動
+
+### Acceptance Checklist
+- [x] Issue #016 PASS
+- [x] Issue #019 PASS（確認既有功能已正常運作，非本輪缺陷）
+- [x] Issue #021 PASS
+- [x] 未影響 Phase 1／Phase 2 已 PASS 功能
+- [x] Console Error = 0
+- [x] 未修改 UI Library／Design Token／Architecture／Runtime API／
+  Repository Structure
+
+---
+
+## Round 2（前次內容，供對照）
+
+
 
 ### Scope Confirmation
 確認以下項目本輪完全未修改：Runtime API、Repository Architecture、

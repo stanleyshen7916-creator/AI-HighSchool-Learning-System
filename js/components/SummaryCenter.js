@@ -148,7 +148,7 @@ AHS.SummaryCenter = (function () {
     return materialId;
   }
 
-  function materialFilter(records, onChange) {
+  function materialFilter(records, onChange, selectedId) {
     var seen = {};
     var materialIds = [];
     records.forEach(function (r) {
@@ -160,6 +160,7 @@ AHS.SummaryCenter = (function () {
       materialIds.map(function (id) { return el("option", { value: id, text: materialLabel(id) }); })
     );
     var select = el("select", { class: "sum-filter__select" }, options);
+    if (selectedId && seen[selectedId]) { select.value = selectedId; }
     select.addEventListener("change", function () { onChange(select.value); });
     return el("div", { class: "sum-filter" }, [
       el("span", { class: "sum-filter__label", text: "篩選教材：" }),
@@ -167,9 +168,14 @@ AHS.SummaryCenter = (function () {
     ]);
   }
 
-  /* create(model?) — model is accepted for test/override convenience only;
-     the real page never passes one. Falls back to AHS.SummaryRuntime. */
-  function create(model) {
+  /* create(model?, initialMaterialId?) — model is accepted for
+     test/override convenience only; the real page never passes one.
+     initialMaterialId (Sprint 6.6 WO-010, Issue #021): when given, the
+     page opens already filtered to that one material's Summary Detail
+     (via the existing AHS.SummaryRuntime.findByMaterialId()) instead of
+     the full list. If that material genuinely has no summary yet, this
+     renders the mandated Empty State — never a blank screen. */
+  function create(model, initialMaterialId) {
     var status = el("p", {
       class: "sum-status", "aria-live": "polite", hidden: "hidden"
     });
@@ -199,10 +205,23 @@ AHS.SummaryCenter = (function () {
           ? runtime.findByMaterialId(materialId)
           : records.filter(function (r) { return r.materialId === materialId; });
         renderRecords(filtered);
-      });
+      }, initialMaterialId);
       if (filter) { filterSlot.appendChild(filter); }
 
-      renderRecords(records);
+      /* WO-010: a deep link into one material's Summary Detail renders
+         findByMaterialId() for that id — even if it's empty (no summary
+         yet for that specific material), which correctly shows the
+         Empty State rather than silently falling back to the full list
+         (that would look like the deep link was ignored) or a blank
+         screen. */
+      if (initialMaterialId) {
+        var initial = runtime && typeof runtime.findByMaterialId === "function"
+          ? runtime.findByMaterialId(initialMaterialId)
+          : records.filter(function (r) { return r.materialId === initialMaterialId; });
+        renderRecords(initial);
+      } else {
+        renderRecords(records);
+      }
     }
 
     renderAll();
