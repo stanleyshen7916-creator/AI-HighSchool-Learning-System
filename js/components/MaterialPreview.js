@@ -6,6 +6,19 @@
    subject / grade / category / format / size) plus a notice and
    Download / Back actions — download only happens on explicit click.
    Object URLs are built in-memory; no fetch/XHR/backend.
+
+   Sprint 6.7 Hotfix-001 (Issue 001, Batch JPG Preview): kind resolution
+   now checks BOTH the file extension (existing, still primary) AND the
+   real File object's MIME type (`file.type`) as a fallback — per this
+   Hotfix's explicit checklist (File.type / MIME Type / Extension /
+   Preview Type). This is purely additive: every format that already
+   resolved correctly via extension (PDF/PNG/DOCX/MP4, etc.) is
+   completely unaffected, since extension match is checked first and
+   short-circuits. The MIME-type check only helps in the specific case
+   where extension-based detection alone would miss a real image and
+   fall through to the Generic File Preview info page. No Runtime
+   change, no Storage, no Parser Interface change — this file has no
+   dependency on either.
    PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MaterialPreview = (function () {
@@ -20,8 +33,23 @@ AHS.MaterialPreview = (function () {
     txt: "text"
   };
 
-  function kindOf(ext) {
-    return PREVIEWABLE[String(ext || "").toLowerCase()] || null;
+  /* MIME-type fallback map — only consulted when extension-based
+     lookup finds nothing. Keeps every existing extension-based result
+     untouched. */
+  var MIME_PREVIEWABLE = {
+    "application/pdf": "pdf",
+    "image/png": "image", "image/jpeg": "image", "image/jpg": "image",
+    "image/gif": "image", "image/webp": "image", "image/svg+xml": "image",
+    "video/mp4": "video", "video/webm": "video", "video/ogg": "video", "video/quicktime": "video",
+    "audio/mpeg": "audio", "audio/wav": "audio", "audio/mp4": "audio", "audio/x-m4a": "audio",
+    "text/plain": "text"
+  };
+
+  function kindOf(ext, mimeType) {
+    var byExt = PREVIEWABLE[String(ext || "").toLowerCase()];
+    if (byExt) { return byExt; }
+    var byMime = MIME_PREVIEWABLE[String(mimeType || "").toLowerCase()];
+    return byMime || null;
   }
 
   function infoRow(label, value) {
@@ -37,7 +65,7 @@ AHS.MaterialPreview = (function () {
   function open(item, onDownload) {
     var subjName = (AHS.Subjects[item.subject] || { name: "其他" }).name;
     var ext = String(item.fileType || "").toLowerCase();
-    var kind = kindOf(ext);
+    var kind = kindOf(ext, item.file && item.file.type);
 
     var overlay = el("div", {
       class: "mat-preview__overlay", role: "dialog", "aria-modal": "true",
