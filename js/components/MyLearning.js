@@ -478,24 +478,21 @@ AHS.MyLearning = (function () {
   }
 
   /* ---- Badges -------------------------------------------------------------
-     No achievement/badge-earning Runtime exists anywhere in this repo —
-     defining earn-thresholds now would be new gamification logic (a new
-     feature), out of scope for a Bug Fix. The illustrative badge catalog
-     stays (unchanged content, not this round's concern), but its two
-     previously-dead interactive elements are now honestly Coming Soon /
-     disabled rather than inert `href="#"` links. */
-  function badges(data) {
-    var bd = data.badges;
-    var grid = el("div", { class: "ml-badges__grid" },
-      bd.items.map(function (b) {
-        return el("div", { class: "ml-badge" }, [
-          el("span", { class: "ml-badge__icon",
-            style: "color:" + b.tone + ";background-color:" + b.tone + "1a",
-            html: AHS.Icons[b.icon]() }),
-          el("span", { class: "ml-badge__label", text: b.label }),
-          el("span", { class: "ml-badge__desc", text: b.desc })
-        ]);
-      }));
+     Sprint 6.6 Hotfix (Runtime QA Rework): no achievement/badge-earning
+     Runtime exists anywhere in this repo — defining earn-thresholds now
+     would be new gamification logic (a new feature), out of scope for a
+     Bug Fix. Per this round's explicit "Mock Data 不得出現在 Production"
+     standard, the illustrative badge catalog (including the
+     "最近獲得...2024/05/17" Mock date) is no longer shown at all — this
+     section is now a genuine Empty State, consistent with every other
+     section on this page. "分享成就" stays visibly Disabled + Coming
+     Soon rather than disappearing, so the card isn't empty chrome with
+     no explanation. */
+  function badges() {
+    var moreLink = el("span", { class: "card__more card__more--soon" }, [
+      el("span", { text: "查看全部" }),
+      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
+    ]);
 
     var shareBtn = el("button", {
       type: "button", class: "ml-badges__share is-disabled", disabled: "disabled",
@@ -506,25 +503,13 @@ AHS.MyLearning = (function () {
       el("span", { class: "ml-tab__soon", text: "Coming Soon" })
     ]);
 
-    var moreLink = el("span", { class: "card__more card__more--soon" }, [
-      el("span", { text: "查看全部" }),
-      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
-    ]);
-
-    return el("section", { class: "card ml-badges", "aria-label": bd.title }, [
+    return el("section", { class: "card ml-badges", "aria-label": "成就徽章" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: bd.title }),
+        el("h2", { class: "card__title", text: "成就徽章" }),
         moreLink
       ]),
-      grid,
-      el("div", { class: "ml-badges__recent" }, [
-        el("span", { class: "ml-badges__recent-icon", html: AHS.Icons.quiz() }),
-        el("div", { class: "ml-badges__recent-meta" }, [
-          el("span", { class: "ml-badges__recent-label", text: "最近獲得：" + bd.recent.label }),
-          el("span", { class: "ml-badges__recent-desc", text: bd.recent.desc + " · " + bd.recent.date })
-        ]),
-        shareBtn
-      ])
+      el("p", { class: "ml-record__empty", text: "尚無成就紀錄。完成更多學習與測驗後，這裡會顯示你獲得的徽章。" }),
+      el("div", { class: "ml-badges__recent ml-badges__recent--empty" }, [shareBtn])
     ]);
   }
 
@@ -580,12 +565,12 @@ AHS.MyLearning = (function () {
     ]);
   }
 
-  /* create(model?) — model is accepted for test/override convenience
-     only (badges still reads AHS.Mock.myLearning.badges — see file
-     header note on why the badge catalog itself is out of this round's
-     scope). Everything else is computed live from real Runtimes. */
-  function create(model) {
-    var data = model || AHS.Mock.myLearning;
+  /* create() — Sprint 6.6 Hotfix (Runtime QA Rework): no parameter, no
+     AHS.Mock reference anywhere in this file anymore — the last
+     remaining Mock read path (badges' catalog + recent-earned date) was
+     removed this round. Every section is computed live from real
+     Runtimes, with an honest Empty State wherever no real data exists. */
+  function create() {
     var status = el("p", { class: "ml-status", "aria-live": "polite", hidden: "hidden" });
 
     function slot(area, node) {
@@ -599,7 +584,7 @@ AHS.MyLearning = (function () {
       slot("record", record()),
       slot("weekly", weeklyReport()),
       slot("calendar", calendar(status)),
-      slot("badges", badges(data)),
+      slot("badges", badges()),
       slot("progress", progress())
     ]);
 

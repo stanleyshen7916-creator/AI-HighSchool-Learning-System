@@ -121,6 +121,7 @@
 .ml-badge__label { font-size: 12px; font-weight: 700; }
 .ml-badge__desc { font-size: 11px; color: var(--text-faint); }
 .ml-badges__recent { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 12px 14px; border-radius: 14px; background-color: var(--bg); }
+.ml-badges__recent--empty { justify-content: center; }
 .ml-badges__recent-icon { width: 40px; height: 40px; border-radius: 10px; background-color: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 .ml-badges__recent-icon svg { width: 20px; height: 20px; }
 .ml-badges__recent-meta { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
