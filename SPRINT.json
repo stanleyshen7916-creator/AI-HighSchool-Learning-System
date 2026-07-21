@@ -1,0 +1,27 @@
+{
+  "currentSprint": "Sprint 6.6",
+  "status": "LOCK-pending-PMO-confirmation",
+  "history": [
+    { "sprint": "Sprint 4", "status": "LOCK", "summary": "Wrong Book module + interactive features" },
+    { "sprint": "Sprint 5", "status": "LOCK", "summary": "Review Center, Runtime integration fixes, navigation IA restructuring" },
+    { "sprint": "Sprint 6", "status": "LOCK", "summary": "AI Learning Pipeline foundation: Material Parser, Knowledge Builder, Summary Generator, Question Generator, Learning Pipeline, System Runtime Integration" },
+    {
+      "sprint": "Sprint 6.6",
+      "status": "LOCK-pending-PMO-confirmation",
+      "summary": "Architecture Evolution v2.0 (PMO Decision 025): Runtime Persistence Layer via sessionStorage Adapter; Home/Material Center/Summary Center/Quiz Center Practice Mode/Learning Center Runtime integration; Bulk Upload Metadata; Prototype Mock Cleanup; Header global search; format filter expansion; Summary Detail deep-linking; Learning Calendar real-date fix",
+      "rounds": [
+        "GitHub QA Fix (WO-001~006)",
+        "Runtime Integration Fix (WO-007 Prototype Mock Cleanup)",
+        "Runtime QA Round 2 Fix (Issue #016, #021)",
+        "Runtime QA Round 3 Fix (Issue #022, #023, #024)",
+        "Runtime QA Final Bug Fix (Issue #026, #027 — Learning Center)"
+      ]
+    }
+  ],
+  "nextSprint": {
+    "id": "Sprint 6.7",
+    "name": "AI Learning Pipeline (Document Parser → Summary → Question → Quiz → Review)",
+    "status": "NOT STARTED",
+    "gate": "Awaiting formal EO after Sprint 6.6 LOCK is confirmed by PMO. Not to be started preemptively."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "lastUpdated": "2026-07-21",
+  "consoleErrors": 0,
+  "runtimeErrors": 0,
+  "openIssues": [],
+  "closedIssues": [
+    { "id": "Issue-016", "title": "首頁最近教材卡片按鈕無反應", "round": "Round 2", "status": "closed" },
+    { "id": "Issue-019", "title": "教材搜尋無 Filter", "round": "Round 2", "status": "closed-no-fix-needed", "note": "Investigated, functionality already correct; likely Deploy Lag" },
+    { "id": "Issue-021", "title": "Summary Detail 無法載入", "round": "Round 2", "status": "closed" },
+    { "id": "Issue-022", "title": "教材中心 Header 全域搜尋無法使用", "round": "Round 3", "status": "closed" },
+    { "id": "Issue-023", "title": "格式篩選內容不足", "round": "Round 3", "status": "closed" },
+    { "id": "Issue-024", "title": "學習總結摘要內容未載入", "round": "Round 3", "status": "closed", "note": "Not a bug — confirmed Runtime read correctly; content sparsity is Stub Implementation by design. Improved messaging without fabricating content." },
+    { "id": "Issue-026", "title": "我的學習日曆日期錯誤", "round": "Final", "status": "closed" },
+    { "id": "Issue-027", "title": "Learning Center Runtime Integration", "round": "Final", "status": "closed" }
+  ],
+  "regressionScope": [
+    "首頁", "教材中心", "學習總結", "測驗中心", "複習中心",
+    "Material Runtime", "Summary Runtime", "Search Runtime", "Quiz Runtime",
+    "Repository", "Architecture"
+  ],
+  "regressionResult": "PASS — 0 console errors across all 9 pages on every round",
+  "auditResults": {
+    "materialCenterInteractiveComponentAudit": {
+      "round": "Round 3",
+      "result": "PASS — all 13 named elements either already fully implemented or fixed to be so this round"
+    },
+    "learningCenterButtonRuleAudit": {
+      "round": "Final",
+      "result": "PASS — every interactive element confirmed to satisfy one of: ① real Runtime-backed, ② Disabled+reason, ③ Coming Soon"
+    }
+  }
+}

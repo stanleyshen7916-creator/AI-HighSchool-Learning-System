@@ -1,12 +1,64 @@
-# Release Note — v0.6.6-beta.4
+# Release Note — v0.6.6-beta.5
 
-**Sprint 6.6 · Runtime QA Round 3 Bug Fix**
+**Sprint 6.6 · Runtime QA Final Bug Fix — Learning Center Runtime Integration**
 Date: 2026-07-21
 Architecture Baseline: Architecture Evolution v2.0（PMO Decision 025，LOCK）
+
+**Sprint 6.6 Runtime QA 正式結案**（待 GPT PMO 最終確認）。下一個
+Sprint（6.7 AI Learning Pipeline）將於 LOCK 確認後、收到正式 EO 才
+開始。
 
 ---
 
 ## 本版修正
+
+### Issue #026 — 我的學習日曆日期錯誤
+學習日曆原本固定顯示「2024 年 5 月」，與系統實際日期無關。本版改為
+即時依系統日期計算目前月份，「上一月」／「下一月」／「今日」皆為
+真實可用的月份切換，點擊任一日期會顯示該日真實學習時數（或誠實顯示
+沒有學習記錄）。
+
+### Issue #027 — Learning Center Runtime Integration
+「我的學習」頁面所有互動元件已全面確認符合三種狀態之一：已完成真實
+Runtime 串接、明確 Disabled 並說明原因、或明確標示 Coming Soon：
+- **學習總覽**：累積學習天數／完成題數／正確率改為真實計算
+- **學習記錄**：「本週」長條圖改為真實資料；「本月／今年／全部」
+  維持 Disabled + Coming Soon（無對應歷史資料可用）
+- **週報告**：雷達圖改為真實本週對上週資料比較；「查看全部」改為
+  明確 Coming Soon
+- **學習日曆**：見 Issue #026
+- **科目進度**：長條圖改為真實計算；「查看全部」改為明確 Coming Soon
+- **成就徽章**：「分享成就」按鈕與「查看全部」連結原本完全無反應，
+  現已明確標示 Disabled／Coming Soon
+
+---
+
+## 已知限制（誠實記錄，非本版可解決範圍）
+
+1. 「今日學習重點」與「今日任務」／「AI 老師建議」目前沒有對應
+   Runtime，永久顯示 Empty State
+2. 「本月／今年／全部」學習記錄檢視需要一個依時間區間查詢的歷史
+   Runtime，目前不存在，屬新功能範疇
+3. 成就徽章目前沒有真正的達成判定邏輯，展示內容維持既有視覺呈現，
+   互動功能待未來 Sprint 決定是否納入
+4. 學習總結五大區塊內容偏少，因全站無真實文件解析能力（Stub
+   Implementation 設計，非本次缺陷）
+
+---
+
+## Compatibility
+本版未修改：Repository Structure、Runtime API、Runtime Schema、
+Design Token、UI Library、Architecture。全站迴歸測試 Console Error =
+0，Runtime Error = 0。
+
+## Upgrade Notes
+無需任何手動遷移步驟。純前端靜態檔案更新，直接部署即可生效。
+
+---
+
+## 歷史版本
+
+
 
 ### Issue #022 — 教材中心 Header 全域搜尋無法使用
 教材中心頁面最上方共用 Header 的搜尋框，過去從未綁定任何事件，輸入

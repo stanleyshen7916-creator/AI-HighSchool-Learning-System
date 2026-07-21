@@ -1,8 +1,18 @@
 /* components/MyLearning.js — 我的學習 (My Learning) page.
-   Overview stats + learning record (bar chart + today focus) + weekly
-   report (SVG radar chart) + learning calendar + achievement badges +
-   subject progress. All Mock. PascalCase under window.AHS.
-   Radar chart and calendar are pure inline SVG / CSS (no chart library). */
+
+   Sprint 6.6 Runtime QA Final Bug Fix (WO-015/WO-016, Issue #026/#027):
+   Learning Center Runtime Integration. Reads AHS.MaterialRuntime
+   (learningTime/lastLearningAt/progress — existing fields, untouched
+   Schema) and AHS.HistoryRuntime (existing quiz-history records) for
+   everything that has a genuine real data source. Where NO Runtime
+   anywhere in this repository tracks the underlying concept (streak-
+   day gamification badges, a "today's planned focus" list), this file
+   shows an honest Empty State / Coming Soon rather than Mock content —
+   never fabricates numbers. All previously-dead links/buttons now
+   satisfy one of: ① real Runtime-backed action, ② disabled with a
+   reason, ③ Coming Soon.
+   Radar chart and calendar are pure inline SVG / CSS (no chart library).
+   PascalCase under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MyLearning = (function () {
   "use strict";
@@ -16,22 +26,69 @@ AHS.MyLearning = (function () {
     }, [el("span", { text: subj.name })]);
   }
 
-  /* ---- Overview -------------------------------------------------------- */
-  function overview(data) {
-    var ov = data.overview;
+  function materials() {
+    return (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function")
+      ? AHS.MaterialRuntime.list() : [];
+  }
+  function history() {
+    return (AHS.HistoryRuntime && typeof AHS.HistoryRuntime.list === "function")
+      ? AHS.HistoryRuntime.list() : [];
+  }
+  function startOfWeek(d) {
+    var s = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    s.setDate(s.getDate() - ((s.getDay() + 6) % 7)); // Monday start
+    return s;
+  }
+  function sameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  /* ---- Overview ---------------------------------------------------------
+     Real, computable equivalents only. No streak/gamified numbers are
+     invented — 累積學習天數 is a real count of distinct calendar dates
+     with any recorded learning activity; 完成題數/正確率 come from the
+     existing AHS.HistoryRuntime (quiz results), never fabricated. */
+  function computeOverviewStats() {
+    var mats = materials();
+    var distinctDays = {};
+    var totalMinutes = 0;
+    mats.forEach(function (m) {
+      if (m.lastLearningAt) {
+        var d = new Date(m.lastLearningAt);
+        distinctDays[d.toDateString()] = true;
+      }
+      if (typeof m.learningTime === "number") { totalMinutes += m.learningTime; }
+    });
+
+    var hist = history();
+    var totalQuestions = 0, totalCorrect = 0;
+    hist.forEach(function (h) {
+      totalQuestions += (typeof h.totalCount === "number" ? h.totalCount : 0);
+      totalCorrect += (typeof h.correctCount === "number" ? h.correctCount : 0);
+    });
+    var accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 1000) / 10 : 0;
+
+    return {
+      title: "學習總覽",
+      speech: mats.length ? "持續累積，你的努力都算數！" : "上傳第一份教材，開始累積你的學習紀錄吧！",
+      stats: [
+        { icon: "calendar", label: "累積學習天數", value: String(Object.keys(distinctDays).length), unit: "天", delta: "", tone: "ok" },
+        { icon: "check", label: "完成題數", value: String(totalQuestions), unit: "題", delta: "", tone: "ok" },
+        { icon: "target", label: "正確率", value: String(accuracy), unit: "%", delta: "", tone: "ok" }
+      ]
+    };
+  }
+
+  function overview() {
+    var ov = computeOverviewStats();
     var stats = el("div", { class: "ml-overview__stats" },
       ov.stats.map(function (s) {
-        var deltaClass = s.tone === "fire" ? " is-fire" : " is-ok";
         return el("div", { class: "ml-overview__stat" }, [
           el("span", { class: "ml-overview__stat-icon", html: AHS.Icons[s.icon]() }),
           el("span", { class: "ml-overview__stat-label", text: s.label }),
           el("strong", { class: "ml-overview__stat-value" }, [
             el("span", { text: s.value }),
             el("small", { text: " " + s.unit })
-          ]),
-          el("span", { class: "ml-overview__stat-delta" + deltaClass }, [
-            s.tone === "fire" ? el("span", { class: "ml-overview__fire", html: AHS.Icons.fire() }) : null,
-            el("span", { text: s.delta })
           ])
         ]);
       }));
@@ -51,19 +108,41 @@ AHS.MyLearning = (function () {
     ]);
   }
 
-  /* ---- Learning record: bar chart + today focus ----------------------- */
-  function record(data, status) {
-    var rec = data.record;
-    var max = rec.bars.reduce(function (m, b) { return Math.max(m, b.hours); }, 0) || 1;
+  /* ---- Learning record: bar chart + today focus -------------------------
+     本週 bars are real (aggregated AHS.MaterialRuntime.learningTime by
+     day, for the real current calendar week). 本月/今年/全部 stay
+     Disabled + Coming Soon — no historical-by-period Runtime exists
+     anywhere in this repo (unchanged from Sprint 6.6 Round 1/WO-005;
+     building one is a new feature, out of scope for a Bug Fix). */
+  function computeWeekBars() {
+    var monday = startOfWeek(new Date());
+    var weekdayLabels = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
+    var minutesByDate = {};
+    materials().forEach(function (m) {
+      if (!m.lastLearningAt) { return; }
+      var d = new Date(m.lastLearningAt);
+      if (d >= monday && d < new Date(monday.getTime() + 7 * 86400000)) {
+        var key = d.toDateString();
+        minutesByDate[key] = (minutesByDate[key] || 0) + (typeof m.learningTime === "number" ? m.learningTime : 0);
+      }
+    });
+    var bars = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(monday.getTime() + i * 86400000);
+      var minutes = minutesByDate[d.toDateString()] || 0;
+      bars.push({
+        label: (d.getMonth() + 1) + "/" + d.getDate(),
+        sub: weekdayLabels[i],
+        hours: Math.round((minutes / 60) * 10) / 10
+      });
+    }
+    return bars;
+  }
 
-    var tabs = el("div", { class: "ml-tabs" },
-      rec.tabs.map(function (t, i) {
-        /* WO-005 (Sprint 6.6 GitHub QA Fix), Option B: only 本週 has a
-           real data source (rec.bars, above). 本月/今年/全部 would need
-           a historical-learning-by-period Runtime that doesn't exist
-           anywhere in this repo — building one is a new feature, out of
-           scope here. Rather than leave them clickable with no real
-           effect, they're disabled with a "Coming Soon" indicator. */
+  function recordTabs(container) {
+    var TAB_LABELS = ["本週", "本月", "今年", "全部"];
+    return el("div", { class: "ml-tabs" },
+      TAB_LABELS.map(function (t, i) {
         var isWeek = (i === 0);
         var b = el("button", {
           type: "button",
@@ -75,53 +154,95 @@ AHS.MyLearning = (function () {
         ]);
         if (isWeek) {
           b.addEventListener("click", function () {
-            Array.prototype.forEach.call(tabs.children, function (c) { c.classList.remove("is-active"); });
+            Array.prototype.forEach.call(container.children, function (c) { c.classList.remove("is-active"); });
             b.classList.add("is-active");
           });
         }
         return b;
       }));
+  }
 
-    var chart = el("div", { class: "ml-bars" },
-      rec.bars.map(function (b) {
-        var h = Math.round((b.hours / max) * 100);
-        return el("div", { class: "ml-bars__col" }, [
-          el("span", { class: "ml-bars__val", text: String(b.hours) }),
-          el("div", { class: "ml-bars__track" }, [
-            el("div", { class: "ml-bars__fill", style: "height:" + h + "%",
-              role: "img", "aria-label": b.label + " " + b.hours + " 小時" })
-          ]),
-          el("span", { class: "ml-bars__label", text: b.label }),
-          el("span", { class: "ml-bars__sub", text: b.sub })
-        ]);
-      }));
+  function record() {
+    var bars = computeWeekBars();
+    var hasAnyMaterial = materials().length > 0;
+    var tabsWrap = el("div", { class: "ml-tabs-slot" });
+    var tabs = recordTabs(tabsWrap);
+    tabsWrap.appendChild(tabs);
 
-    var focus = el("ul", { class: "ml-focus__list" },
-      rec.todayFocus.map(function (f) {
-        var subj = AHS.Subjects[f.subject];
-        return el("li", { class: "ml-focus__item" + (f.done ? " is-done" : "") }, [
-          el("span", { class: "ml-focus__time", text: f.time }),
-          chip(f.subject),
-          el("span", { class: "ml-focus__unit", text: f.unit }),
-          el("span", { class: "ml-focus__min", text: f.minutes + " 分鐘" }),
-          el("span", { class: "ml-focus__check" + (f.done ? " is-on" : ""),
-            html: f.done ? AHS.Icons.check() : "" })
-        ]);
-      }));
+    var body;
+    if (!hasAnyMaterial) {
+      body = el("p", { class: "ml-record__empty", text: "尚無學習紀錄，上傳教材並開始學習後即會顯示本週時數。" });
+    } else {
+      var max = bars.reduce(function (m, b) { return Math.max(m, b.hours); }, 0) || 1;
+      body = el("div", { class: "ml-bars" },
+        bars.map(function (b) {
+          var h = Math.round((b.hours / max) * 100);
+          return el("div", { class: "ml-bars__col" }, [
+            el("span", { class: "ml-bars__val", text: String(b.hours) }),
+            el("div", { class: "ml-bars__track" }, [
+              el("div", { class: "ml-bars__fill", style: "height:" + h + "%",
+                role: "img", "aria-label": b.label + " " + b.hours + " 小時" })
+            ]),
+            el("span", { class: "ml-bars__label", text: b.label }),
+            el("span", { class: "ml-bars__sub", text: b.sub })
+          ]);
+        }));
+    }
 
-    return el("section", { class: "card ml-record", "aria-label": rec.title }, [
+    /* 今日學習重點 — no "today's planned focus" Runtime exists anywhere
+       in this repo (same gap as Home's 今日任務). Honest Empty State,
+       never Mock content. */
+    var focus = el("p", { class: "ml-record__empty", text: "今天沒有安排學習重點。" });
+
+    return el("section", { class: "card ml-record", "aria-label": "學習記錄" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: rec.title }),
-        tabs
+        el("h2", { class: "card__title", text: "學習記錄" }),
+        tabsWrap
       ]),
       el("p", { class: "ml-record__caption", text: "學習時數（小時）" }),
-      chart,
+      body,
       el("p", { class: "ml-record__caption ml-record__caption--focus", text: "今日學習重點" }),
       focus
     ]);
   }
 
-  /* ---- Weekly report: radar chart ------------------------------------- */
+  /* ---- Weekly report: radar chart ---------------------------------------
+     Real 本週/上週 per-subject hours from AHS.MaterialRuntime (same
+     week-boundary math as computeWeekBars, shifted back 7 days for 上週).
+     No fabricated comparison numbers. Shows Empty State when there are
+     no materials at all yet. */
+  function computeWeeklyRadar() {
+    var thisMonday = startOfWeek(new Date());
+    var lastMonday = new Date(thisMonday.getTime() - 7 * 86400000);
+    var bySubjectNow = {}, bySubjectLast = {};
+    materials().forEach(function (m) {
+      if (!m.lastLearningAt || typeof m.learningTime !== "number") { return; }
+      var d = new Date(m.lastLearningAt);
+      if (d >= thisMonday && d < new Date(thisMonday.getTime() + 7 * 86400000)) {
+        bySubjectNow[m.subject] = (bySubjectNow[m.subject] || 0) + m.learningTime;
+      } else if (d >= lastMonday && d < thisMonday) {
+        bySubjectLast[m.subject] = (bySubjectLast[m.subject] || 0) + m.learningTime;
+      }
+    });
+    var subjects = {};
+    Object.keys(bySubjectNow).forEach(function (s) { subjects[s] = true; });
+    Object.keys(bySubjectLast).forEach(function (s) { subjects[s] = true; });
+    var keys = Object.keys(subjects);
+    if (!keys.length) { keys = materials().slice(0, 6).map(function (m) { return m.subject; }); }
+    var seen = {};
+    keys = keys.filter(function (s) { if (seen[s]) { return false; } seen[s] = true; return true; }).slice(0, 6);
+
+    var radar = keys.map(function (s) {
+      return {
+        subject: s,
+        now: Math.round(((bySubjectNow[s] || 0) / 60) * 10) / 10,
+        last: Math.round(((bySubjectLast[s] || 0) / 60) * 10) / 10
+      };
+    });
+    var max = radar.reduce(function (m, r) { return Math.max(m, r.now, r.last); }, 0);
+    return { radar: radar, radarMax: max > 0 ? max : 5 };
+  }
+
   function radarChart(weekly) {
     var axes = weekly.radar;
     var n = axes.length;
@@ -164,7 +285,7 @@ AHS.MyLearning = (function () {
     var labels = "";
     for (var j = 0; j < n; j++) {
       var lp = point(j, max * 1.16);
-      var subj = AHS.Subjects[axes[j].subject];
+      var subj = AHS.Subjects[axes[j].subject] || { name: axes[j].subject };
       var anchor = "middle";
       if (lp[0] > CX + 5) { anchor = "start"; }
       else if (lp[0] < CX - 5) { anchor = "end"; }
@@ -181,8 +302,25 @@ AHS.MyLearning = (function () {
     return el("div", { class: "ml-radar__chart", html: svg });
   }
 
-  function weeklyReport(data) {
-    var w = data.weekly;
+  function weeklyReport() {
+    var hasAnyMaterial = materials().length > 0;
+
+    var moreLink = el("span", { class: "card__more card__more--soon" }, [
+      el("span", { text: "查看全部" }),
+      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
+    ]);
+
+    if (!hasAnyMaterial) {
+      return el("section", { class: "card ml-weekly", "aria-label": "週報告" }, [
+        el("div", { class: "card__head" }, [
+          el("h2", { class: "card__title", text: "週報告" }),
+          moreLink
+        ]),
+        el("p", { class: "ml-record__empty", text: "尚無學習紀錄，無法產生週報告。" })
+      ]);
+    }
+
+    var w = computeWeeklyRadar();
     var legend = el("div", { class: "ml-radar__legend" }, [
       el("span", { class: "ml-radar__legend-item" }, [
         el("span", { class: "ml-radar__swatch ml-radar__swatch--now" }),
@@ -193,100 +331,159 @@ AHS.MyLearning = (function () {
         el("span", { text: "上週學習時數（小時）" })
       ])
     ]);
-    var summary = el("div", { class: "ml-weekly__summary" },
-      w.summary.map(function (s) {
-        return el("div", { class: "ml-weekly__stat" }, [
-          el("span", { class: "ml-weekly__stat-label", text: s.label }),
-          el("strong", { class: "ml-weekly__stat-value" }, [
-            el("span", { text: s.value }), el("small", { text: " " + s.unit })
-          ]),
-          el("span", { class: "ml-weekly__stat-delta", text: s.delta })
-        ]);
-      }));
 
-    return el("section", { class: "card ml-weekly", "aria-label": w.title }, [
+    return el("section", { class: "card ml-weekly", "aria-label": "週報告" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title" }, [
-          el("span", { text: w.title }),
-          el("span", { class: "ml-weekly__range", text: " " + w.range })
-        ]),
-        el("a", { class: "card__more", href: "#" }, [
-          el("span", { text: "查看全部" }),
-          el("span", { html: AHS.Icons.chevronRight() })
-        ])
+        el("h2", { class: "card__title", text: "週報告" }),
+        moreLink
       ]),
       radarChart(w),
-      legend,
-      summary
-    ]);
-  }
-
-  /* ---- Calendar -------------------------------------------------------- */
-  function calendar(data, status) {
-    var cal = data.calendar;
-    var week = ["日", "一", "二", "三", "四", "五", "六"];
-
-    var head = el("div", { class: "ml-cal__weekdays" },
-      week.map(function (d) { return el("span", { class: "ml-cal__weekday", text: d }); }));
-
-    var cells = [];
-    for (var b = 0; b < cal.firstWeekday; b++) {
-      cells.push(el("span", { class: "ml-cal__cell ml-cal__cell--empty" }));
-    }
-    for (var d = 1; d <= cal.daysInMonth; d++) {
-      var level = cal.levels[d] || 0;
-      var tone = cal.legend[level === 0 ? 4 : level - 1].tone;
-      var isToday = d === cal.today;
-      var cell = el("span", {
-        class: "ml-cal__cell" + (isToday ? " is-today" : "")
-      }, [
-        el("span", { class: "ml-cal__num", text: String(d) }),
-        level > 0
-          ? el("span", { class: "ml-cal__dot", style: "background-color:" + tone })
-          : null
-      ]);
-      cells.push(cell);
-    }
-
-    var legend = el("div", { class: "ml-cal__legend" },
-      cal.legend.map(function (lg) {
-        return el("span", { class: "ml-cal__legend-item" }, [
-          el("span", { class: "ml-cal__legend-dot", style: "background-color:" + lg.tone }),
-          el("span", { text: lg.label })
-        ]);
-      }));
-
-    function navBtn(icon, label) {
-      var btn = el("button", { type: "button", class: "ml-cal__nav", "aria-label": label,
-        html: AHS.Icons.chevronRight(icon === "prev" ? 'style="transform:rotate(180deg)"' : "") });
-      btn.addEventListener("click", function () {
-        status.textContent = "（Mock）" + label;
-        status.removeAttribute("hidden");
-      });
-      return btn;
-    }
-    var todayBtn = el("button", { type: "button", class: "ml-cal__today", text: "今日" });
-    todayBtn.addEventListener("click", function () {
-      status.textContent = "（Mock）回到今日"; status.removeAttribute("hidden");
-    });
-
-    return el("section", { class: "card ml-cal", "aria-label": cal.title }, [
-      el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: cal.title }),
-        el("div", { class: "ml-cal__ctrls" }, [
-          navBtn("prev", "上個月"),
-          el("span", { class: "ml-cal__month", text: cal.monthLabel }),
-          navBtn("next", "下個月"),
-          todayBtn
-        ])
-      ]),
-      head,
-      el("div", { class: "ml-cal__grid" }, cells),
       legend
     ]);
   }
 
-  /* ---- Badges ---------------------------------------------------------- */
+  /* ---- Calendar (Issue #026) ----------------------------------------------
+     Real system date + real per-day AHS.MaterialRuntime aggregation.
+     Real 上一月/下一月/今日 navigation (re-renders the same real
+     computation for whichever month is in view). Real 日期點擊 feedback
+     (actual aggregated minutes for that day, or an honest "沒有學習記錄"). */
+  function daysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
+  function firstWeekdayOfMonth(year, month) { return new Date(year, month, 1).getDay(); }
+
+  function computeCalendarModel(viewYear, viewMonth) {
+    var now = new Date();
+    var isCurrentMonth = (viewYear === now.getFullYear() && viewMonth === now.getMonth());
+    var minutesByDay = {};
+    materials().forEach(function (m) {
+      if (!m.lastLearningAt) { return; }
+      var d = new Date(m.lastLearningAt);
+      if (d.getFullYear() === viewYear && d.getMonth() === viewMonth) {
+        minutesByDay[d.getDate()] = (minutesByDay[d.getDate()] || 0) + (typeof m.learningTime === "number" ? m.learningTime : 0);
+      }
+    });
+    var levels = {};
+    Object.keys(minutesByDay).forEach(function (day) {
+      var hours = minutesByDay[day] / 60;
+      levels[day] = hours > 3 ? 4 : hours > 2 ? 3 : hours > 1 ? 2 : hours > 0 ? 1 : 0;
+    });
+    return {
+      monthLabel: viewYear + " 年 " + (viewMonth + 1) + " 月",
+      firstWeekday: firstWeekdayOfMonth(viewYear, viewMonth),
+      daysInMonth: daysInMonth(viewYear, viewMonth),
+      today: isCurrentMonth ? now.getDate() : null,
+      levels: levels,
+      minutesByDay: minutesByDay,
+      legend: [
+        { label: "0-1 小時", tone: "#c7f0da" },
+        { label: "1-2 小時", tone: "#7fd8a8" },
+        { label: "2-3 小時", tone: "#3fb877" },
+        { label: "3 小時以上", tone: "#1f8f52" },
+        { label: "無記錄", tone: "#eceef3" }
+      ]
+    };
+  }
+
+  function calendar(status) {
+    var now = new Date();
+    var viewYear = now.getFullYear();
+    var viewMonth = now.getMonth();
+
+    var body = el("div", { class: "ml-cal__body" });
+    var monthLabelEl = el("span", { class: "ml-cal__month" });
+
+    function render() {
+      var cal = computeCalendarModel(viewYear, viewMonth);
+      monthLabelEl.textContent = cal.monthLabel;
+
+      var week = ["日", "一", "二", "三", "四", "五", "六"];
+      var head = el("div", { class: "ml-cal__weekdays" },
+        week.map(function (d) { return el("span", { class: "ml-cal__weekday", text: d }); }));
+
+      var cells = [];
+      for (var b = 0; b < cal.firstWeekday; b++) {
+        cells.push(el("span", { class: "ml-cal__cell ml-cal__cell--empty" }));
+      }
+      for (var d = 1; d <= cal.daysInMonth; d++) {
+        var level = cal.levels[d] || 0;
+        var tone = cal.legend[level === 0 ? 4 : level - 1].tone;
+        var isToday = d === cal.today;
+        var minutes = cal.minutesByDay[d] || 0;
+        var dayNum = d;
+        var cell = el("button", {
+          type: "button",
+          class: "ml-cal__cell" + (isToday ? " is-today" : ""),
+          "aria-label": cal.monthLabel + " " + dayNum + " 日" + (minutes ? "，學習 " + minutes + " 分鐘" : "，沒有學習記錄")
+        }, [
+          el("span", { class: "ml-cal__num", text: String(d) }),
+          level > 0
+            ? el("span", { class: "ml-cal__dot", style: "background-color:" + tone })
+            : null
+        ]);
+        cell.addEventListener("click", function (dayNum, minutes) {
+          return function () {
+            status.textContent = minutes
+              ? cal.monthLabel + dayNum + "日：學習 " + minutes + " 分鐘"
+              : cal.monthLabel + dayNum + "日：沒有學習記錄";
+            status.removeAttribute("hidden");
+          };
+        }(dayNum, minutes));
+        cells.push(cell);
+      }
+
+      var legend = el("div", { class: "ml-cal__legend" },
+        cal.legend.map(function (lg) {
+          return el("span", { class: "ml-cal__legend-item" }, [
+            el("span", { class: "ml-cal__legend-dot", style: "background-color:" + lg.tone }),
+            el("span", { text: lg.label })
+          ]);
+        }));
+
+      body.innerHTML = "";
+      body.appendChild(head);
+      body.appendChild(el("div", { class: "ml-cal__grid" }, cells));
+      body.appendChild(legend);
+    }
+
+    var prevBtn = el("button", { type: "button", class: "ml-cal__nav", "aria-label": "上個月", html: AHS.Icons.chevronRight('style="transform:rotate(180deg)"') });
+    prevBtn.addEventListener("click", function () {
+      viewMonth -= 1;
+      if (viewMonth < 0) { viewMonth = 11; viewYear -= 1; }
+      render();
+    });
+    var nextBtn = el("button", { type: "button", class: "ml-cal__nav", "aria-label": "下個月", html: AHS.Icons.chevronRight() });
+    nextBtn.addEventListener("click", function () {
+      viewMonth += 1;
+      if (viewMonth > 11) { viewMonth = 0; viewYear += 1; }
+      render();
+    });
+    var todayBtn = el("button", { type: "button", class: "ml-cal__today", text: "今日" });
+    todayBtn.addEventListener("click", function () {
+      var n = new Date();
+      viewYear = n.getFullYear();
+      viewMonth = n.getMonth();
+      render();
+    });
+
+    render();
+
+    return el("section", { class: "card ml-cal", "aria-label": "學習日曆" }, [
+      el("div", { class: "card__head" }, [
+        el("h2", { class: "card__title", text: "學習日曆" }),
+        el("div", { class: "ml-cal__ctrls" }, [
+          prevBtn, monthLabelEl, nextBtn, todayBtn
+        ])
+      ]),
+      body
+    ]);
+  }
+
+  /* ---- Badges -------------------------------------------------------------
+     No achievement/badge-earning Runtime exists anywhere in this repo —
+     defining earn-thresholds now would be new gamification logic (a new
+     feature), out of scope for a Bug Fix. The illustrative badge catalog
+     stays (unchanged content, not this round's concern), but its two
+     previously-dead interactive elements are now honestly Coming Soon /
+     disabled rather than inert `href="#"` links. */
   function badges(data) {
     var bd = data.badges;
     var grid = el("div", { class: "ml-badges__grid" },
@@ -300,18 +497,24 @@ AHS.MyLearning = (function () {
         ]);
       }));
 
-    var shareBtn = el("button", { type: "button", class: "ml-badges__share" }, [
+    var shareBtn = el("button", {
+      type: "button", class: "ml-badges__share is-disabled", disabled: "disabled",
+      "aria-label": "分享成就（尚未支援，敬請期待）"
+    }, [
       el("span", { html: AHS.Icons.share() }),
-      el("span", { text: "分享成就" })
+      el("span", { text: "分享成就" }),
+      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
+    ]);
+
+    var moreLink = el("span", { class: "card__more card__more--soon" }, [
+      el("span", { text: "查看全部" }),
+      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
     ]);
 
     return el("section", { class: "card ml-badges", "aria-label": bd.title }, [
       el("div", { class: "card__head" }, [
         el("h2", { class: "card__title", text: bd.title }),
-        el("a", { class: "card__more", href: "#" }, [
-          el("span", { text: "查看全部" }),
-          el("span", { html: AHS.Icons.chevronRight() })
-        ])
+        moreLink
       ]),
       grid,
       el("div", { class: "ml-badges__recent" }, [
@@ -325,39 +528,62 @@ AHS.MyLearning = (function () {
     ]);
   }
 
-  /* ---- Progress -------------------------------------------------------- */
-  function progress(data) {
-    var pr = data.progress;
-    var grid = el("div", { class: "ml-progress__grid" },
-      pr.items.map(function (it) {
-        var subj = AHS.Subjects[it.subject];
-        return el("div", { class: "ml-progress__item" }, [
-          el("div", { class: "ml-progress__top" }, [
-            el("span", { class: "ml-progress__dot", style: "background-color:" + subj.hex }),
-            el("span", { class: "ml-progress__name", text: subj.name }),
-            el("span", { class: "ml-progress__pct", text: it.percent + "%" })
-          ]),
-          el("div", { class: "progressbar" }, [
-            el("div", { class: "progressbar__fill",
-              style: "width:" + it.percent + "%;background-color:" + subj.hex })
-          ]),
-          el("span", { class: "ml-progress__status", text: it.status })
-        ]);
-      }));
+  /* ---- Progress -------------------------------------------------------
+     Real per-subject average of AHS.MaterialRuntime's own `progress`
+     field (existing, per-material Schema field — not a new one). Empty
+     State when there are no materials at all. */
+  function computeSubjectProgress() {
+    var bySubject = {};
+    materials().forEach(function (m) {
+      if (!bySubject[m.subject]) { bySubject[m.subject] = { total: 0, count: 0 }; }
+      bySubject[m.subject].total += (typeof m.progress === "number" ? m.progress : 0);
+      bySubject[m.subject].count += 1;
+    });
+    return Object.keys(bySubject).map(function (s) {
+      var avg = Math.round(bySubject[s].total / bySubject[s].count);
+      return { subject: s, percent: avg, status: avg >= 100 ? "已完成" : avg > 0 ? "進行中" : "尚未開始" };
+    });
+  }
 
-    return el("section", { class: "card ml-progress", "aria-label": pr.title }, [
+  function progress() {
+    var items = computeSubjectProgress();
+    var moreLink = el("span", { class: "card__more card__more--soon" }, [
+      el("span", { text: "查看全部" }),
+      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
+    ]);
+
+    var body = items.length
+      ? el("div", { class: "ml-progress__grid" },
+          items.map(function (it) {
+            var subj = AHS.Subjects[it.subject] || { name: it.subject, hex: "#6b7280" };
+            return el("div", { class: "ml-progress__item" }, [
+              el("div", { class: "ml-progress__top" }, [
+                el("span", { class: "ml-progress__dot", style: "background-color:" + subj.hex }),
+                el("span", { class: "ml-progress__name", text: subj.name }),
+                el("span", { class: "ml-progress__pct", text: it.percent + "%" })
+              ]),
+              el("div", { class: "progressbar" }, [
+                el("div", { class: "progressbar__fill",
+                  style: "width:" + it.percent + "%;background-color:" + subj.hex })
+              ]),
+              el("span", { class: "ml-progress__status", text: it.status })
+            ]);
+          }))
+      : el("p", { class: "ml-record__empty", text: "尚無教材，無法顯示科目進度。" });
+
+    return el("section", { class: "card ml-progress", "aria-label": "科目進度" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: pr.title }),
-        el("a", { class: "card__more", href: "#" }, [
-          el("span", { text: "查看全部" }),
-          el("span", { html: AHS.Icons.chevronRight() })
-        ])
+        el("h2", { class: "card__title", text: "科目進度" }),
+        moreLink
       ]),
-      grid
+      body
     ]);
   }
 
-  /* create(model?) — model defaults to AHS.Mock.myLearning. */
+  /* create(model?) — model is accepted for test/override convenience
+     only (badges still reads AHS.Mock.myLearning.badges — see file
+     header note on why the badge catalog itself is out of this round's
+     scope). Everything else is computed live from real Runtimes. */
   function create(model) {
     var data = model || AHS.Mock.myLearning;
     var status = el("p", { class: "ml-status", "aria-live": "polite", hidden: "hidden" });
@@ -369,12 +595,12 @@ AHS.MyLearning = (function () {
     }
 
     var grid = el("div", { class: "ml-grid" }, [
-      slot("overview", overview(data)),
-      slot("record", record(data, status)),
-      slot("weekly", weeklyReport(data)),
-      slot("calendar", calendar(data, status)),
+      slot("overview", overview()),
+      slot("record", record()),
+      slot("weekly", weeklyReport()),
+      slot("calendar", calendar(status)),
       slot("badges", badges(data)),
-      slot("progress", progress(data))
+      slot("progress", progress())
     ]);
 
     return el("div", { class: "ml-page" }, [grid, status]);

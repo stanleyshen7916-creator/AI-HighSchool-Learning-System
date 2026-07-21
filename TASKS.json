@@ -1,48 +1,35 @@
 {
   "sprint": "6.6",
-  "round": 4,
+  "round": "Final",
   "tasks": [
     {
-      "id": "Issue-022",
-      "wo": "WO-011",
-      "title": "教材中心－Header 全域搜尋無法使用",
+      "id": "Issue-026",
+      "wo": "WO-015",
+      "title": "我的學習－學習日曆日期錯誤",
       "status": "done",
-      "rootCause": ".topbar__search-input in AppShell.js had no event listener at all",
-      "fix": "Added optional AppShell.create() options.onGlobalSearch, wired to MaterialCenter's existing search pipeline via a new setKeyword() hook",
+      "rootCause": "mock-data.js's calendar.monthLabel was hardcoded to \"2024 年 5 月\", with all grid values hand-filled to match that fixed month.",
+      "fix": "computeCalendarModel(viewYear, viewMonth) computes monthLabel/firstWeekday/daysInMonth/today from a real Date() every time; calendar() is now stateful with real 上一月/下一月/今日 navigation and real per-day activity from AHS.MaterialRuntime.",
       "verified": true
     },
     {
-      "id": "Issue-023",
-      "wo": "WO-012",
-      "title": "教材中心－格式篩選內容不足",
+      "id": "Issue-027",
+      "wo": "WO-016",
+      "title": "Learning Center Runtime Integration",
       "status": "done",
-      "rootCause": "formats list in mock-data.js only had 5 options",
-      "fix": "Expanded to 17 options; added real matching logic for 其他 (Other)",
-      "verified": true
-    },
-    {
-      "id": "Issue-024",
-      "wo": "WO-013",
-      "title": "學習總結－摘要內容未載入",
-      "status": "done",
-      "rootCause": "Not a Runtime-read bug — confirmed SummaryCenter.js correctly reads AHS.SummaryRuntime. Sections are genuinely empty because upstream KnowledgeBuilder/MaterialParser use Stub Implementation (no real document parsing exists).",
-      "fix": "Distinguished 'no Summary record at all' (尚未建立學習總結) from 'record exists but stub-empty' (single honest consolidated message instead of five repetitive 尚無資料 blocks). No content fabricated.",
-      "verified": true
-    },
-    {
-      "id": "WO-014",
-      "title": "Runtime Interactive Component Audit",
-      "status": "done",
-      "result": "All 13 named interactive elements confirmed either already fully implemented, or fixed to be fully implemented this round (Header Search, 格式). No additional silently-broken elements found.",
+      "summary": "All interactive elements audited against the 3-state rule (① real Runtime ② Disabled+reason ③ Coming Soon). Real Runtime wiring added where a genuine data source exists (學習記錄-本週, 週報告, 學習日曆, 科目進度, 學習總覽). Coming Soon/Disabled applied honestly where no Runtime exists anywhere in the repo (本月/今年/全部 tabs, 成就徽章's 分享/查看全部, 週報告/科目進度's 查看全部).",
       "verified": true
     }
   ],
   "regression": {
-    "scope": ["首頁", "教材中心", "最近學習教材", "已生成學習總結", "Material Runtime", "Summary Runtime", "Search Runtime", "Quiz Runtime", "Repository", "Architecture"],
+    "scope": ["首頁", "教材中心", "學習總結", "測驗中心", "複習中心", "Runtime", "Architecture", "Repository"],
     "result": "PASS — 0 console errors across all 9 pages, all prior-round fixes re-verified unaffected"
   },
+  "sprintClosure": {
+    "sprint": "Sprint 6.6",
+    "status": "Runtime QA officially closed pending PMO confirmation"
+  },
   "nextSteps": [
-    "Awaiting GPT PMO review of Round 4 deliverables",
-    "Recommended future Sprint (not this round): implement real document text extraction if Summary content richness is a priority; would require a new Architecture decision (parsing library / backend), not achievable under current Stub-only constraints"
+    "Awaiting GPT PMO final confirmation of Sprint 6.6 LOCK",
+    "Sprint 6.7 (AI Learning Pipeline: Document Parser → Summary → Question → Quiz → Review) must not begin until a formal EO is issued after LOCK"
   ]
 }

@@ -1,7 +1,7 @@
 {
   "project": "AI High School Learning System",
   "currentSprint": "Sprint 6.6",
-  "stage": "Runtime QA Round 3 — Bug Fix Complete",
+  "stage": "Runtime QA — CLOSED (pending PMO confirmation)",
   "lastUpdated": "2026-07-21",
   "baseline": "Architecture Evolution v2.0 (PMO Decision 025)",
   "runtimePersistence": {
@@ -26,20 +26,28 @@
     "summaryCenter": "complete (content sparse pending real document parsing — see knownLimitations)",
     "quizCenterPracticeMode": "complete",
     "quizCenterExamMode": "unchanged, Mock/QuestionBank-driven by design",
-    "home": "partial — 最近教材/學習統計/繼續學習/今日學習 real; 今日任務/AI 建議 have no Runtime source, show Empty State by design",
-    "learningCenter": "partial — 本週 tab functional, 本月/今年/全部 Disabled + Coming Soon (no historical-period Runtime exists)"
+    "home": "complete for sections with a real data source (最近教材/學習統計/繼續學習/今日學習); 今日任務/AI 建議 have no Runtime anywhere, honest permanent Empty State",
+    "learningCenter": "complete for sections with a real data source (學習總覽/學習記錄-本週/週報告/學習日曆/科目進度); 本月/今年/全部 tabs and 成就徽章 interactions are Disabled + Coming Soon (no historical-period or achievement Runtime exists)"
   },
   "qaRounds": {
     "sprint6_6_round1": "PASS (WO-001~006)",
     "sprint6_6_round2": "PASS (WO-007 Prototype Mock Cleanup)",
     "sprint6_6_round3": "PASS (WO-008, WO-010; WO-009 investigated, no fix needed)",
-    "sprint6_6_round4": "PASS (Issue #022, #023, #024; Interactive Component Audit PASS)"
+    "sprint6_6_round4": "PASS (Issue #022, #023, #024; Interactive Component Audit PASS)",
+    "sprint6_6_final": "PASS (Issue #026, #027; Learning Center Runtime Integration complete)"
   },
   "knownLimitations": [
     "Summary Center's 五大區塊 are mostly empty for real uploads because MaterialParser/KnowledgeBuilder use Stub Implementation (no real PDF/document text extraction exists in this repo). Not a bug — reflects Sprint 6's documented architecture.",
     "File preview/download on Home's Recent Material cards only works within the same browser session as the upload (File objects can't be persisted to sessionStorage).",
-    "今日任務 / AI 老師建議 on Home have no Runtime anywhere and permanently show Empty State until a Task Runtime or AI capability is authorized in a future Sprint."
+    "今日任務 / AI 老師建議 on Home, and 今日學習重點 on Learning Center, have no Runtime anywhere and permanently show Empty State until a Task Runtime or AI capability is authorized in a future Sprint.",
+    "成就徽章 (achievement badges) have no earning-rule Runtime; the illustrative catalog display is unchanged, but its interactive elements (分享成就/查看全部) are honestly Disabled/Coming Soon.",
+    "學習記錄/週報告 的 本月/今年/全部 period views require a historical-by-period Runtime that doesn't exist; Disabled + Coming Soon per PMO-sanctioned Option B."
   ],
+  "nextSprint": {
+    "id": "Sprint 6.7",
+    "name": "AI Learning Pipeline (Document Parser → Summary → Question → Quiz → Review)",
+    "status": "NOT STARTED — awaiting formal EO after Sprint 6.6 LOCK"
+  },
   "consoleErrors": 0,
   "runtimeErrors": 0
 }

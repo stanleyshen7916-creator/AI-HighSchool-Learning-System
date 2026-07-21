@@ -101,9 +101,12 @@
 .ml-cal__weekdays, .ml-cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .ml-cal__weekdays { margin: 10px 0 6px; }
 .ml-cal__weekday { text-align: center; font-size: 12px; color: var(--text-faint); }
-.ml-cal__cell { aspect-ratio: 1 / 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; }
-.ml-cal__cell--empty { background: transparent; }
+.ml-cal__cell { aspect-ratio: 1 / 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; border: 0; background: transparent; font: inherit; cursor: pointer; color: var(--text); }
+.ml-cal__cell:hover { background-color: var(--bg); }
+.ml-cal__cell--empty { background: transparent; cursor: default; }
+.ml-cal__cell--empty:hover { background: transparent; }
 .ml-cal__cell.is-today { background-color: var(--brand); color: #ffffff; font-weight: 700; }
+.ml-cal__cell.is-today:hover { background-color: var(--brand); }
 .ml-cal__dot { width: 6px; height: 6px; border-radius: var(--radius-pill); }
 .ml-cal__cell.is-today .ml-cal__dot { background-color: #ffffff !important; }
 .ml-cal__legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
@@ -125,6 +128,12 @@
 .ml-badges__recent-desc { font-size: 12px; color: var(--text-faint); }
 .ml-badges__share { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--radius-pill); padding: 8px 14px; background-color: var(--brand); color: #ffffff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .ml-badges__share svg { width: 15px; height: 15px; }
+.ml-badges__share.is-disabled { background-color: var(--line); color: var(--text-faint); cursor: not-allowed; }
+
+/* ---- Sprint 6.6 Runtime QA Final (WO-016): Coming Soon variant for
+   previously-dead "查看全部" links, and Empty State text ------------- */
+.card__more--soon { display: inline-flex; align-items: center; gap: 6px; color: var(--text-faint); cursor: default; }
+.ml-record__empty { margin: 8px 0 0; font-size: 13px; color: var(--text-muted); padding: 12px 0; }
 
 /* ---- Progress -------------------------------------------------------- */
 .ml-progress__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
