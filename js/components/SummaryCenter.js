@@ -230,20 +230,37 @@ AHS.SummaryCenter = (function () {
       readBtn.querySelector("span:last-child").textContent = readDone ? "已閱讀完成" : "標記已閱讀完成";
     });
 
-    var quizLink = el("a", { class: "sum-footer__quiz", href: "quiz.html" }, [
-      el("span", { text: "前往測驗" }),
+    /* Sprint 6.8 EO-S6.8-001 (Task 001/002): real navigation into
+       Practice Mode, filtered to this material — completes the Material
+       → AI Summary → Practice flow. Practice Mode itself (untouched
+       here) shows the honest Empty State if this material has no real
+       LearningQuestionRuntime records yet; never a fabricated question. */
+    var practiceLink = el("a", {
+      class: "sum-footer__quiz",
+      href: "quiz.html?mode=practice&materialId=" + encodeURIComponent(record.materialId || "")
+    }, [
+      el("span", { text: "開始 AI 練習" }),
       el("span", { html: AHS.Icons.chevronRight() })
     ]);
 
-    var aiEntry = el("button", {
+    var examLink = el("a", { class: "sum-footer__exam", href: "quiz.html" }, [
+      el("span", { text: "前往正式測驗" })
+    ]);
+
+    /* On-demand AI question GENERATION (as opposed to navigating to see
+       whatever already exists) is a distinct, not-yet-built capability
+       — per the existing roadmap (Sprint 6.7-2 AI Question Guide /
+       6.7-3 Question Generator + AI Parser). Honestly Coming Soon,
+       never a Mock Question. */
+    var aiGenerateEntry = el("button", {
       type: "button", class: "sum-footer__ai is-disabled", disabled: "disabled",
-      "aria-label": "AI 練習入口（尚未支援，敬請期待）"
+      "aria-label": "AI 自動出題（尚未支援，敬請期待）"
     }, [
-      el("span", { text: "AI 練習入口" }),
+      el("span", { text: "AI 自動出題" }),
       el("span", { class: "ml-tab__soon", text: "Coming Soon" })
     ]);
 
-    return el("div", { class: "sum-footer" }, [readBtn, quizLink, aiEntry]);
+    return el("div", { class: "sum-footer" }, [readBtn, practiceLink, examLink, aiGenerateEntry]);
   }
 
   /* ---- One Summary Runtime record ---------------------------------------- */

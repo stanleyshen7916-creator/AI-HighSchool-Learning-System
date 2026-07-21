@@ -155,6 +155,12 @@
 }
 .sum-footer__quiz svg { width: 16px; height: 16px; }
 .sum-footer__quiz:hover { background-color: var(--brand-strong); }
+.sum-footer__exam {
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+  border-radius: var(--radius-pill); padding: 10px 18px; font-size: 14px; font-weight: 700;
+}
+.sum-footer__exam:hover { background-color: var(--bg); }
 .sum-footer__ai {
   display: inline-flex; align-items: center; gap: 8px;
   border: 1px dashed var(--line); background-color: transparent; color: var(--text-faint);
@@ -164,7 +170,7 @@
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 720px) {
   .sum-footer { flex-direction: column; align-items: stretch; }
-  .sum-footer__read, .sum-footer__quiz, .sum-footer__ai { justify-content: center; }
+  .sum-footer__read, .sum-footer__quiz, .sum-footer__exam, .sum-footer__ai { justify-content: center; }
 }
 @media (max-width: 480px) {
   .sum-guide__title { font-size: 15px; }

@@ -518,20 +518,28 @@ AHS.QuizCenter = (function () {
      carried on each Learning Question record (from QuestionGenerator.js,
      untouched). Empty State per EO-S6-006 mandated copy when
      LearningQuestionRuntime has no records. */
-  function practiceEmptyState() {
+  function practiceEmptyState(forMaterialId) {
+    var hint = forMaterialId
+      ? "這份教材目前還沒有練習題，AI 出題功能仍在開發中。"
+      : "請先上傳教材，系統會自動產生練習題。";
     return el("section", { class: "card quiz-practice__empty", "aria-label": "尚無練習題" }, [
       el("span", { class: "quiz-practice__empty-icon", html: AHS.Icons.quiz() }),
       el("p", { class: "quiz-practice__empty-title", text: "尚未建立題目" }),
-      el("p", { class: "quiz-practice__empty-hint", text: "請先上傳教材，系統會自動產生練習題。" })
+      el("p", { class: "quiz-practice__empty-hint", text: hint })
     ]);
   }
 
-  function buildPracticeListView(onPractice) {
+  function buildPracticeListView(onPractice, filterMaterialId) {
     var runtime = AHS.LearningQuestionRuntime;
-    var items = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
+    var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
+    var items = filterMaterialId
+      ? (typeof runtime.findByMaterialId === "function"
+          ? runtime.findByMaterialId(filterMaterialId)
+          : allItems.filter(function (r) { return r.materialId === filterMaterialId; }))
+      : allItems;
 
     if (!items.length) {
-      return el("div", { class: "quiz-practice" }, [practiceEmptyState()]);
+      return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
     }
 
     var rows = items.map(function (record) {
@@ -627,7 +635,18 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
-  function create(model) {
+  /* create(model, initialMode, initialMaterialId)
+     Sprint 6.8 EO-S6.8-001 (Task 001/002, AI Learning Flow): initialMode
+     ("practice" | undefined) and initialMaterialId are optional and
+     additive — every existing caller (js/pages/app-quiz.js with no
+     extra args) gets EXACTLY the same behavior as before (Exam Mode
+     tab active by default). When a real deep link from Summary Detail
+     passes initialMode: "practice", Practice Mode is shown first
+     instead, optionally pre-filtered to one material's own questions —
+     completing the Material → AI Summary → Practice flow. No change to
+     any Exam Mode function below, no change to ExamRuntime/QuestionBank/
+     QuestionRuntime. */
+  function create(model, initialMode, initialMaterialId) {
     var data = model || AHS.Mock.quiz;
     var root = el("div", { class: "quiz-root" });
 
@@ -670,10 +689,11 @@ AHS.QuizCenter = (function () {
     /* ---- Practice Mode mount (EO-S6-006) — entirely separate root,
        never touches `root` / any Exam Mode function above. ---- */
     var practiceRoot = el("div", { class: "quiz-practice-root" });
-    practiceRoot.setAttribute("hidden", "hidden");
+    var startOnPractice = (initialMode === "practice");
+    if (!startOnPractice) { practiceRoot.setAttribute("hidden", "hidden"); }
 
     function showPracticeList() {
-      AHS.UI.mount(practiceRoot, buildPracticeListView(showPracticeQuestion));
+      AHS.UI.mount(practiceRoot, buildPracticeListView(showPracticeQuestion, initialMaterialId));
     }
     function showPracticeQuestion(record) {
       AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, showPracticeList));
@@ -684,8 +704,9 @@ AHS.QuizCenter = (function () {
        "Exam ↓ QuestionRuntime", 兩者不得混用: switching modes only
        toggles visibility, it never mounts Exam content into
        practiceRoot or vice versa. */
-    var examTab = el("button", { type: "button", class: "quiz-mode__tab is-active", text: "正式測驗" });
-    var practiceTab = el("button", { type: "button", class: "quiz-mode__tab", text: "練習模式" });
+    var examTab = el("button", { type: "button", class: "quiz-mode__tab" + (startOnPractice ? "" : " is-active"), text: "正式測驗" });
+    var practiceTab = el("button", { type: "button", class: "quiz-mode__tab" + (startOnPractice ? " is-active" : ""), text: "練習模式" });
+    if (startOnPractice) { root.setAttribute("hidden", "hidden"); }
     examTab.addEventListener("click", function () {
       examTab.classList.add("is-active");
       practiceTab.classList.remove("is-active");

@@ -596,20 +596,41 @@ AHS.MaterialCenter = (function () {
     }
 
     /* Low-level download (explicit user action only). */
+    /* Sprint 6.7 Hotfix-002 (PAT-003, Issue 001/002): root cause of
+       "點擊下載無反應" — revokeObjectURL() was called synchronously
+       immediately after a.click(). In many browsers the actual download
+       read of the blob URL hasn't started yet at that point in the same
+       call stack; revoking it that early can silently cancel the
+       download before it begins. Deferring the revoke via setTimeout
+       gives the browser time to actually start reading the blob first.
+       This is the only change to the download mechanism itself — no
+       Runtime, no new Storage, no Parser Interface change. */
     function doDownload(item) {
       if (!item.file || typeof window.URL === "undefined" || !window.URL.createObjectURL) {
-        status.textContent = "此教材沒有可下載的檔案";
+        /* Issue 004: never a silent fail — always a real status message,
+           whether the file reference was simply lost (e.g. after a page
+           reload — File objects can't be persisted, per existing
+           documented behavior) or the material never had a real
+           uploaded file to begin with. */
+        status.textContent = "此教材沒有可下載的原始檔案，此檔案來源不支援直接下載。";
         status.removeAttribute("hidden");
         return;
       }
       var url = window.URL.createObjectURL(item.file);
       var a = document.createElement("a");
       a.href = url;
-      a.download = item.fileName || item.title;
+      /* Issue 005: always the original fileName (set verbatim from the
+         real File.name at upload time — see onFilesPicked below), so
+         the browser saves it with its real name and extension, never
+         "download.bin" / "unknown.file". Falls back to title only in
+         the defensive case fileName itself is somehow missing. */
+      a.download = item.fileName || item.title || "教材";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      if (window.URL.revokeObjectURL) { window.URL.revokeObjectURL(url); }
+      if (window.URL.revokeObjectURL) {
+        setTimeout(function () { window.URL.revokeObjectURL(url); }, 1000);
+      }
       status.textContent = "已下載教材：" + (item.fileName || item.title);
       status.removeAttribute("hidden");
     }
