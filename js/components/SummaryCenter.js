@@ -68,6 +68,21 @@ AHS.SummaryCenter = (function () {
     ]);
   }
 
+  /* Sprint 6.6 Runtime QA Round 3 (WO-013, Issue #024): distinct from
+     emptyState() above — this is for a deep-link (?materialId=...) into
+     ONE specific material that has real materials on record elsewhere
+     but genuinely has no Summary Runtime record of its own yet. Wording
+     matches the WO exactly ("尚未建立學習總結"), not the generic
+     "尚未建立教材內容" (which would be misleading — the material itself
+     exists, just not its summary). */
+  function noSummaryForMaterialState(materialId) {
+    return el("section", { class: "card sum-empty", "aria-label": "尚未建立學習總結" }, [
+      el("span", { class: "sum-empty__icon", html: AHS.Icons.summary() }),
+      el("p", { class: "sum-empty__title", text: "尚未建立學習總結。" }),
+      el("p", { class: "sum-empty__hint", text: materialLabel(materialId) + " 目前還沒有產生學習總結。" })
+    ]);
+  }
+
   /* ---- One of the five fixed sections ------------------------------------
      Reuses the existing 重點整理-style numbered list (.sum-kp__*) for
      visual consistency with the rest of the repo. items may legitimately
@@ -118,13 +133,36 @@ AHS.SummaryCenter = (function () {
       el("span", { class: "sum-topic__generated", text: "產生時間：" + (record.generatedAt || "—") })
     ]);
 
-    var sections = el("div", { class: "sum-section-grid" }, [
-      sectionList("sparkle", "核心概念", record.coreConcepts),
-      sectionList("summary", "重要定義", record.definitions),
-      sectionList("wrong", "易錯重點", record.pitfalls),
-      sectionList("bookmark", "必背內容", record.memorize),
-      sectionList("refresh", "複習建議", record.reviewSuggestions)
-    ]);
+    /* Sprint 6.6 Runtime QA Round 3 (WO-013, Issue #024): a real Summary
+       record whose five sections are ALL genuinely empty (current
+       upstream Knowledge Runtime has no real extracted content yet —
+       an honest Stub-pipeline state, not a bug) gets ONE clear
+       explanatory block instead of five repetitive, alarming-looking
+       "尚無資料" sections. If ANY section has real content, sections
+       render individually as before (including honestly-empty ones
+       alongside populated ones, for contrast). Never fabricates
+       content either way. */
+    var fiveSections = [
+      { key: "coreConcepts", icon: "sparkle", title: "核心概念" },
+      { key: "definitions", icon: "summary", title: "重要定義" },
+      { key: "pitfalls", icon: "wrong", title: "易錯重點" },
+      { key: "memorize", icon: "bookmark", title: "必背內容" },
+      { key: "reviewSuggestions", icon: "refresh", title: "複習建議" }
+    ];
+    var anyContent = fiveSections.some(function (s) {
+      return Array.isArray(record[s.key]) && record[s.key].length;
+    });
+
+    var sections;
+    if (anyContent) {
+      sections = el("div", { class: "sum-section-grid" },
+        fiveSections.map(function (s) { return sectionList(s.icon, s.title, record[s.key]); }));
+    } else {
+      sections = el("section", { class: "card sum-section sum-section--pending", "aria-label": "學習總結內容" }, [
+        el("p", { class: "sum-section__pending", text: "此教材的學習總結尚未包含具體內容。" }),
+        el("p", { class: "sum-section__pending-hint", text: "教材解析（核心概念／重要定義／易錯重點／必背內容）功能持續開發中，完成後會自動顯示於此。" })
+      ]);
+    }
 
     return el("div", { class: "sum-record" }, [head, sections]);
   }
@@ -183,10 +221,10 @@ AHS.SummaryCenter = (function () {
     var body = el("div", { class: "sum-body" });
     var filterSlot = el("div", { class: "sum-filter-slot" });
 
-    function renderRecords(records) {
+    function renderRecords(records, forMaterialId) {
       body.innerHTML = "";
       if (!records || !records.length) {
-        body.appendChild(emptyState());
+        body.appendChild(forMaterialId ? noSummaryForMaterialState(forMaterialId) : emptyState());
         return;
       }
       records.forEach(function (r) { body.appendChild(summaryRecordCard(r)); });
@@ -204,21 +242,20 @@ AHS.SummaryCenter = (function () {
         var filtered = runtime && typeof runtime.findByMaterialId === "function"
           ? runtime.findByMaterialId(materialId)
           : records.filter(function (r) { return r.materialId === materialId; });
-        renderRecords(filtered);
+        renderRecords(filtered, materialId);
       }, initialMaterialId);
       if (filter) { filterSlot.appendChild(filter); }
 
-      /* WO-010: a deep link into one material's Summary Detail renders
-         findByMaterialId() for that id — even if it's empty (no summary
-         yet for that specific material), which correctly shows the
-         Empty State rather than silently falling back to the full list
-         (that would look like the deep link was ignored) or a blank
-         screen. */
+      /* WO-010/WO-013: a deep link into one material's Summary Detail
+         renders findByMaterialId() for that id — even if it's empty (no
+         summary yet for that specific material), which correctly shows
+         the dedicated "尚未建立學習總結" state (not the generic
+         whole-list Empty State, and never a blank screen). */
       if (initialMaterialId) {
         var initial = runtime && typeof runtime.findByMaterialId === "function"
           ? runtime.findByMaterialId(initialMaterialId)
           : records.filter(function (r) { return r.materialId === initialMaterialId; });
-        renderRecords(initial);
+        renderRecords(initial, initialMaterialId);
       } else {
         renderRecords(records);
       }

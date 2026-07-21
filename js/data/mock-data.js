@@ -71,7 +71,7 @@ AHS.Mock = {
     categories: ["全部分類", "課本", "講義", "考卷", "筆記", "補充資料", "影片", "其他"],
     grades: ["高一", "高二", "高三"],
     sorts: ["最新上傳", "最多觀看", "學習進度"],
-    formats: ["全部格式", "PDF", "PPT", "DOCX", "MP4"],
+    formats: ["全部格式", "PDF", "PPT", "PPTX", "DOC", "DOCX", "XLS", "XLSX", "TXT", "MP4", "MP3", "JPG", "JPEG", "PNG", "GIF", "WEBP", "其他"],
     items: [
       { id: 1, subject: "math", title: "二次函數的圖形與性質", chapter: "第三章", grade: "高一", date: "2024/06/20", views: "1.2k", content: "本教材介紹二次函數的圖形特徵、頂點座標與對稱軸，並透過範例說明如何由標準式判斷開口方向與最大最小值。", progress: 45 },
       { id: 2, subject: "english", title: "英文閱讀理解攻略", chapter: "Unit 3", grade: "高一", date: "2024/06/19", views: "980", content: "本教材整理閱讀理解常見題型與解題技巧，包含主旨判斷、細節查找與推論題的解題步驟。", progress: 100 },

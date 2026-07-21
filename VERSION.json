@@ -1,0 +1,14 @@
+{
+  "version": "v0.6.6-beta.4",
+  "previousVersion": "v0.6.6-beta.3",
+  "date": "2026-07-21",
+  "sprint": "Sprint 6.6",
+  "round": 4,
+  "label": "Runtime QA Round 3 Bug Fix",
+  "architectureBaseline": "Architecture Evolution v2.0 (PMO Decision 025, LOCK)",
+  "changeType": "bugfix",
+  "breakingChanges": false,
+  "runtimeApiChanged": false,
+  "runtimeSchemaChanged": false,
+  "repositoryStructureChanged": false
+}

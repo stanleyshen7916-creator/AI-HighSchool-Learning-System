@@ -97,3 +97,10 @@
   .sum-banner__actions { width: 100%; }
   .sum-export { flex: 1 1 auto; }
 }
+
+/* ---- Sprint 6.6 Runtime QA Round 3 (WO-013): consolidated pending-
+   content message when a real Summary record's five sections are all
+   genuinely empty, instead of five repetitive "尚無資料" blocks ------ */
+.sum-section--pending { text-align: center; padding: 28px 20px; }
+.sum-section__pending { margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--text); }
+.sum-section__pending-hint { margin: 0; font-size: 12px; color: var(--text-muted); }

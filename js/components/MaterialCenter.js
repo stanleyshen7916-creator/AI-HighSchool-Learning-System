@@ -314,12 +314,18 @@ AHS.MaterialCenter = (function () {
         var categoryMatch = currentCategory === "all" || item.category === currentCategory;
         /* BUG-010-006: folder filter. "all" = 不限；null = 未分類。 */
         var folderMatch = currentFolder === "all" || (item.folderId || null) === currentFolder;
-        /* RC-003-001: toolbar 年級 / 格式. */
+        /* RC-003-001: toolbar 年級 / 格式.
+           Sprint 6.6 Runtime QA Round 3 (WO-012, Issue #023): "其他"
+           genuinely filters now — matches any fileType NOT in the named
+           list below, instead of being a decorative option with no
+           real effect on the list. */
         var toolbarGradeMatch = currentToolbarGrade === "all" || currentToolbarGrade === "全部年級" ||
           item.grade === currentToolbarGrade;
+        var KNOWN_FORMATS = ["PDF", "PPT", "PPTX", "DOC", "DOCX", "XLS", "XLSX", "TXT", "MP4", "MP3", "JPG", "JPEG", "PNG", "GIF", "WEBP"];
         var fmt = String(currentFormat || "").toLowerCase();
+        var itemFmt = String(item.fileType || "").toUpperCase();
         var formatMatch = currentFormat === "all" || currentFormat === "全部格式" || !fmt ||
-          String(item.fileType || "").toLowerCase() === fmt;
+          (currentFormat === "其他" ? KNOWN_FORMATS.indexOf(itemFmt) === -1 : itemFmt.toLowerCase() === fmt);
         var favMatch = !currentFavoriteOnly || item.favorite === true;
         var folderName = "";
         if (item.folderId) {
@@ -331,6 +337,7 @@ AHS.MaterialCenter = (function () {
           String(item.chapter).toLowerCase().indexOf(keyword) !== -1 ||
           String(item.fileName || "").toLowerCase().indexOf(keyword) !== -1 ||
           String(item.content || "").toLowerCase().indexOf(keyword) !== -1 ||
+          String(item.id || "").toLowerCase().indexOf(keyword) !== -1 ||
           String(folderName).toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
           filterStatusMatch && categoryMatch && folderMatch && toolbarGradeMatch &&
@@ -823,12 +830,33 @@ AHS.MaterialCenter = (function () {
       emptyState.removeAttribute("hidden");
     }
 
-    return el("div", { class: "mat-page" }, [
+    var page = el("div", { class: "mat-page" }, [
       header(seed, searchBar),
       tabsEl,
       recentLearningSlot,
       el("div", { class: "mat-layout" }, [main, rail])
     ]);
+
+    /* Sprint 6.6 Runtime QA Round 3 (WO-011, Issue #022): the shared
+       AppShell Header search bar lives OUTSIDE this component (it's a
+       sibling in the page shell, not a descendant), so it can't reach
+       MaterialCenter's internal currentSearch closure directly. This
+       hook lets the page bootstrap (js/pages/app-materials.js) forward
+       keystrokes from that Header input into the exact same, already-
+       working search pipeline this page's own search bar uses — same
+       matching logic (title/chapter/fileName/content/folder name), same
+       real-time re-render, same Empty State on no matches. Attached to
+       the DOM node itself (same pattern MaterialSearchBar.js already
+       uses for its own .clear() helper) rather than changing this
+       function's return type, so every existing caller is unaffected. */
+    page.setKeyword = function (keyword) {
+      currentSearch = keyword || "";
+      var inPageInput = searchBar.querySelector(".mat-search__input");
+      if (inPageInput) { inPageInput.value = currentSearch; }
+      renderGridWithLoading();
+    };
+
+    return page;
   }
 
   return { create: create };

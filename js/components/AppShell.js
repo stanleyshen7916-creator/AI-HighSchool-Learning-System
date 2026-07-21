@@ -71,15 +71,21 @@ AHS.AppShell = (function () {
     return el("div", { class: "profile-menu", role: "menu", "aria-label": "使用者選單", hidden: "hidden" }, [list]);
   }
 
-  function topbar(model) {
+  function topbar(model, onGlobalSearch) {
+    var searchInput = el("input", {
+      class: "topbar__search-input",
+      type: "search",
+      placeholder: "搜尋教材、課程、題目…",
+      "aria-label": "搜尋"
+    });
+    if (typeof onGlobalSearch === "function") {
+      searchInput.addEventListener("input", function () {
+        onGlobalSearch(searchInput.value);
+      });
+    }
     var search = el("div", { class: "topbar__search" }, [
       el("span", { class: "topbar__search-icon", html: AHS.Icons.search() }),
-      el("input", {
-        class: "topbar__search-input",
-        type: "search",
-        placeholder: "搜尋教材、課程、題目…",
-        "aria-label": "搜尋"
-      }),
+      searchInput,
       el("kbd", { class: "topbar__search-kbd", text: "⌘K" })
     ]);
 
@@ -263,6 +269,10 @@ AHS.AppShell = (function () {
   /* create(model, options)
      options.active — active nav id (defaults to model.nav.active).
      options.onNavigate(item) — mock navigation callback (optional).
+     options.onGlobalSearch(keyword) — Sprint 6.6 Runtime QA Round 3
+       (WO-011): fires on every keystroke in the topbar search input.
+       Optional; every page that doesn't pass it keeps the exact same
+       (previously non-functional) input, unaffected by this change.
      Returns { root, main } — caller mounts page content into `main`. */
   function create(model, options) {
     options = options || {};
@@ -273,7 +283,7 @@ AHS.AppShell = (function () {
     var main = el("main", { class: "shell__main", id: "shell-main" });
 
     var root = el("div", { class: "shell" }, [
-      topbar(model),
+      topbar(model, options.onGlobalSearch),
       el("div", { class: "shell__body" }, [
         sidebar(nav, active, onNavigate),
         main

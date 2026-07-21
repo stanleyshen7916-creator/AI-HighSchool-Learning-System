@@ -1,0 +1,45 @@
+{
+  "project": "AI High School Learning System",
+  "currentSprint": "Sprint 6.6",
+  "stage": "Runtime QA Round 3 — Bug Fix Complete",
+  "lastUpdated": "2026-07-21",
+  "baseline": "Architecture Evolution v2.0 (PMO Decision 025)",
+  "runtimePersistence": {
+    "provider": "sessionStorage",
+    "adapter": "js/core/PersistenceAdapter.js",
+    "coveredRuntimes": [
+      "MaterialRuntime",
+      "KnowledgeRuntime",
+      "SummaryRuntime",
+      "LearningQuestionRuntime"
+    ],
+    "notCovered": [
+      "QuestionRuntime (Sprint 4, intentionally out of scope — Exam Mode)",
+      "WrongBookRuntime",
+      "HistoryRuntime",
+      "ReviewRuntime",
+      "StatisticsRuntime"
+    ]
+  },
+  "runtimeIntegration": {
+    "materialCenter": "complete",
+    "summaryCenter": "complete (content sparse pending real document parsing — see knownLimitations)",
+    "quizCenterPracticeMode": "complete",
+    "quizCenterExamMode": "unchanged, Mock/QuestionBank-driven by design",
+    "home": "partial — 最近教材/學習統計/繼續學習/今日學習 real; 今日任務/AI 建議 have no Runtime source, show Empty State by design",
+    "learningCenter": "partial — 本週 tab functional, 本月/今年/全部 Disabled + Coming Soon (no historical-period Runtime exists)"
+  },
+  "qaRounds": {
+    "sprint6_6_round1": "PASS (WO-001~006)",
+    "sprint6_6_round2": "PASS (WO-007 Prototype Mock Cleanup)",
+    "sprint6_6_round3": "PASS (WO-008, WO-010; WO-009 investigated, no fix needed)",
+    "sprint6_6_round4": "PASS (Issue #022, #023, #024; Interactive Component Audit PASS)"
+  },
+  "knownLimitations": [
+    "Summary Center's 五大區塊 are mostly empty for real uploads because MaterialParser/KnowledgeBuilder use Stub Implementation (no real PDF/document text extraction exists in this repo). Not a bug — reflects Sprint 6's documented architecture.",
+    "File preview/download on Home's Recent Material cards only works within the same browser session as the upload (File objects can't be persisted to sessionStorage).",
+    "今日任務 / AI 老師建議 on Home have no Runtime anywhere and permanently show Empty State until a Task Runtime or AI capability is authorized in a future Sprint."
+  ],
+  "consoleErrors": 0,
+  "runtimeErrors": 0
+}
