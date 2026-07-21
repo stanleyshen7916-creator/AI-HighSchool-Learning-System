@@ -87,8 +87,37 @@ AHS.SummaryCenter = (function () {
      Reuses the existing 重點整理-style numbered list (.sum-kp__*) for
      visual consistency with the rest of the repo. items may legitimately
      be empty (e.g. pitfalls, until upstream Knowledge has real content)
-     — shown as an honest "尚無資料", never invented. */
-  function sectionList(icon, title, items) {
+     — shown as an honest "尚無資料", never invented.
+
+     Sprint 6.7-1 (AI Summary Experience): each section now has a
+     consistent Header + Icon + Divider + Content structure, and an
+     optional Badge (⭐常考 / ⚠️易錯 / 🔑關鍵). Badges are NOT a new data
+     field on the Summary Runtime record — they're a fixed, honest label
+     on the SECTION ITSELF, matching what that section has always meant
+     since SummaryGenerator.js defined the five-section format (EO-S6-003):
+     every item under "易錯重點" is inherently error-prone by definition,
+     every item under "核心概念" is inherently key, and "複習建議" is
+     inherently what's recommended to prioritize (⭐常考). "重要定義" and
+     "必背內容" get no badge — there's no equally direct semantic mapping
+     for those two, and inventing one would be exactly the kind of
+     unsupported classification this task's "不得使用假資料" rules out. */
+  var SECTION_BADGES = {
+    coreConcepts: { icon: "🔑", label: "關鍵" },
+    pitfalls: { icon: "⚠️", label: "易錯" },
+    reviewSuggestions: { icon: "⭐", label: "常考" }
+  };
+
+  function sectionBadge(key) {
+    var b = SECTION_BADGES[key];
+    if (!b) { return null; }
+    return el("span", { class: "sum-badge" }, [
+      el("span", { class: "sum-badge__icon", text: b.icon }),
+      el("span", { text: b.label })
+    ]);
+  }
+
+  function sectionList(sectionKey, icon, title, items) {
+    var badge = sectionBadge(sectionKey);
     var body = (items && items.length)
       ? el("ol", { class: "sum-kp__list" }, items.map(function (text, i) {
           return el("li", { class: "sum-kp__item" }, [
@@ -99,14 +128,122 @@ AHS.SummaryCenter = (function () {
       : el("p", { class: "sum-section__empty", text: "尚無資料" });
 
     return el("section", { class: "card sum-section", "aria-label": title }, [
-      el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title" }, [
-          el("span", { class: "sum-ai__spark", html: AHS.Icons[icon]() }),
-          el("span", { text: title })
-        ])
+      el("div", { class: "sum-section__head" }, [
+        el("span", { class: "sum-ai__spark", html: AHS.Icons[icon]() }),
+        el("h2", { class: "sum-section__title", text: title }),
+        badge
+      ]),
+      el("hr", { class: "sum-section__divider" }),
+      body
+    ]);
+  }
+
+  /* ---- 巧巧老師導讀 (Sprint 6.7-1) ----------------------------------------
+     Collapsible guide card at the top of a Summary Detail. Every line is
+     computed from the record's own real fields/counts — no fabricated
+     advice, no Lorem, no placeholder. If the record has no content in
+     any section yet, this honestly says so instead of inventing tips. */
+  function guideCard(record) {
+    var counts = {
+      coreConcepts: (record.coreConcepts || []).length,
+      definitions: (record.definitions || []).length,
+      pitfalls: (record.pitfalls || []).length,
+      memorize: (record.memorize || []).length,
+      reviewSuggestions: (record.reviewSuggestions || []).length
+    };
+    var totalItems = counts.coreConcepts + counts.definitions + counts.pitfalls + counts.memorize + counts.reviewSuggestions;
+
+    var highlightParts = [];
+    if (counts.coreConcepts) { highlightParts.push(counts.coreConcepts + " 個核心概念"); }
+    if (counts.pitfalls) { highlightParts.push(counts.pitfalls + " 個易錯重點"); }
+    if (counts.memorize) { highlightParts.push(counts.memorize + " 項必背內容"); }
+    var highlightText = highlightParts.length
+      ? "《" + (record.title || "本教材") + "》整理了 " + highlightParts.join("、") + "。"
+      : "《" + (record.title || "本教材") + "》的內容仍在整理中，尚未有具體重點可顯示。";
+
+    var reminderText;
+    if (counts.pitfalls > 0) {
+      reminderText = "本教材有 " + counts.pitfalls + " 個易錯重點，複習時請特別留意。";
+    } else if (totalItems === 0) {
+      reminderText = "目前尚無足夠內容可提醒，建議稍後再查看。";
+    } else {
+      reminderText = "目前沒有標記易錯重點，可依複習建議安排學習節奏。";
+    }
+
+    var body = el("div", { class: "sum-guide__body" }, [
+      el("div", { class: "sum-guide__row" }, [
+        el("strong", { class: "sum-guide__row-label", text: "今日教材重點" }),
+        el("p", { class: "sum-guide__row-text", text: highlightText })
+      ]),
+      el("div", { class: "sum-guide__row" }, [
+        el("strong", { class: "sum-guide__row-label", text: "建議閱讀順序" }),
+        el("p", { class: "sum-guide__row-text", text: "核心概念 → 重要定義 → 易錯重點 → 必背內容 → 複習建議" })
+      ]),
+      el("div", { class: "sum-guide__row" }, [
+        el("strong", { class: "sum-guide__row-label", text: "提醒事項" }),
+        el("p", { class: "sum-guide__row-text", text: reminderText })
+      ])
+    ]);
+
+    var toggleBtn = el("button", {
+      type: "button", class: "sum-guide__toggle", "aria-expanded": "true", "aria-label": "收合巧巧老師導讀"
+    }, [el("span", { html: AHS.Icons.chevronRight('style="transform:rotate(90deg)"') })]);
+
+    toggleBtn.addEventListener("click", function () {
+      var expanded = toggleBtn.getAttribute("aria-expanded") === "true";
+      toggleBtn.setAttribute("aria-expanded", expanded ? "false" : "true");
+      toggleBtn.setAttribute("aria-label", expanded ? "展開巧巧老師導讀" : "收合巧巧老師導讀");
+      toggleBtn.querySelector("span").innerHTML = AHS.Icons.chevronRight(
+        expanded ? "" : 'style="transform:rotate(90deg)"'
+      );
+      body.hidden = expanded;
+    });
+
+    return el("section", { class: "card sum-guide", "aria-label": "巧巧老師導讀" }, [
+      el("div", { class: "sum-guide__head" }, [
+        el("div", {
+          class: "sum-guide__avatar qiaoqiao-bust qiaoqiao-bust--sm",
+          html: AHS.Qiaoqiao.bust("thinking")
+        }),
+        el("h2", { class: "sum-guide__title", text: "巧巧老師導讀" }),
+        toggleBtn
       ]),
       body
     ]);
+  }
+
+  /* ---- Summary Footer (Sprint 6.7-1) --------------------------------------
+     已閱讀完成 — a real, working UI toggle scoped to this render only
+     (no new Runtime/Storage; SummaryRuntime's Schema/API is untouched,
+     per this task's explicit "不得新增 Runtime"). 前往測驗 — a real
+     link into the existing Practice Mode (quiz.html), not fabricated.
+     AI 練習入口 — explicitly required to be Disabled + Coming Soon. */
+  function summaryFooter(record) {
+    var readBtn = el("button", { type: "button", class: "sum-footer__read" }, [
+      el("span", { html: AHS.Icons.check() }),
+      el("span", { text: "標記已閱讀完成" })
+    ]);
+    var readDone = false;
+    readBtn.addEventListener("click", function () {
+      readDone = !readDone;
+      readBtn.classList.toggle("is-done", readDone);
+      readBtn.querySelector("span:last-child").textContent = readDone ? "已閱讀完成" : "標記已閱讀完成";
+    });
+
+    var quizLink = el("a", { class: "sum-footer__quiz", href: "quiz.html" }, [
+      el("span", { text: "前往測驗" }),
+      el("span", { html: AHS.Icons.chevronRight() })
+    ]);
+
+    var aiEntry = el("button", {
+      type: "button", class: "sum-footer__ai is-disabled", disabled: "disabled",
+      "aria-label": "AI 練習入口（尚未支援，敬請期待）"
+    }, [
+      el("span", { text: "AI 練習入口" }),
+      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
+    ]);
+
+    return el("div", { class: "sum-footer" }, [readBtn, quizLink, aiEntry]);
   }
 
   /* ---- One Summary Runtime record ---------------------------------------- */
@@ -133,22 +270,20 @@ AHS.SummaryCenter = (function () {
       el("span", { class: "sum-topic__generated", text: "產生時間：" + (record.generatedAt || "—") })
     ]);
 
-    /* Sprint 6.6 Runtime QA Round 3 (WO-013, Issue #024): a real Summary
-       record whose five sections are ALL genuinely empty (current
-       upstream Knowledge Runtime has no real extracted content yet —
-       an honest Stub-pipeline state, not a bug) gets ONE clear
-       explanatory block instead of five repetitive, alarming-looking
-       "尚無資料" sections. If ANY section has real content, sections
-       render individually as before (including honestly-empty ones
-       alongside populated ones, for contrast). Never fabricates
-       content either way. */
     var fiveSections = [
-      { key: "coreConcepts", icon: "sparkle", title: "核心概念" },
-      { key: "definitions", icon: "summary", title: "重要定義" },
-      { key: "pitfalls", icon: "wrong", title: "易錯重點" },
-      { key: "memorize", icon: "bookmark", title: "必背內容" },
-      { key: "reviewSuggestions", icon: "refresh", title: "複習建議" }
+      { key: "coreConcepts", icon: "sparkle", title: "① 核心概念" },
+      { key: "definitions", icon: "summary", title: "② 重要定義／公式／關鍵字" },
+      { key: "pitfalls", icon: "wrong", title: "③ 易錯與常考題型" },
+      { key: "memorize", icon: "bookmark", title: "④ 必背重點" },
+      { key: "reviewSuggestions", icon: "refresh", title: "⑤ 複習建議" }
     ];
+    /* Sprint 6.6 Round 3 (WO-013, Issue #024) fix, preserved here: a real
+       Summary record whose five sections are ALL genuinely empty (no
+       real Knowledge content extracted yet — an honest Stub-pipeline
+       state, not a bug) gets ONE clear explanatory block instead of
+       five repetitive "尚無資料" sections. If ANY section has real
+       content, each of the five renders individually (with Section
+       Header/Icon/Divider/Badge per this task's Section UI spec). */
     var anyContent = fiveSections.some(function (s) {
       return Array.isArray(record[s.key]) && record[s.key].length;
     });
@@ -156,7 +291,7 @@ AHS.SummaryCenter = (function () {
     var sections;
     if (anyContent) {
       sections = el("div", { class: "sum-section-grid" },
-        fiveSections.map(function (s) { return sectionList(s.icon, s.title, record[s.key]); }));
+        fiveSections.map(function (s) { return sectionList(s.key, s.icon, s.title, record[s.key]); }));
     } else {
       sections = el("section", { class: "card sum-section sum-section--pending", "aria-label": "學習總結內容" }, [
         el("p", { class: "sum-section__pending", text: "此教材的學習總結尚未包含具體內容。" }),
@@ -164,7 +299,12 @@ AHS.SummaryCenter = (function () {
       ]);
     }
 
-    return el("div", { class: "sum-record" }, [head, sections]);
+    return el("div", { class: "sum-record" }, [
+      head,
+      guideCard(record),
+      sections,
+      summaryFooter(record)
+    ]);
   }
 
   /* ---- Material filter (EO-S6-006: demonstrates both list() and

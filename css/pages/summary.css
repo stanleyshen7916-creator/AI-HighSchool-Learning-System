@@ -104,3 +104,68 @@
 .sum-section--pending { text-align: center; padding: 28px 20px; }
 .sum-section__pending { margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--text); }
 .sum-section__pending-hint { margin: 0; font-size: 12px; color: var(--text-muted); }
+
+/* ---- Sprint 6.7-1 AI Summary Experience ------------------------------- */
+
+/* Section Header / Icon / Divider / Content (consistent across all five
+   sections) + Badge */
+.sum-section__head { display: flex; align-items: center; gap: 8px; }
+.sum-section__title { margin: 0; font-size: 17px; font-weight: 700; color: var(--text); flex: 1 1 auto; }
+.sum-section__divider { border: 0; border-top: 1px solid var(--line); margin: 12px 0 14px; }
+
+.sum-badge {
+  display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto;
+  border-radius: var(--radius-pill); padding: 3px 10px;
+  background-color: var(--brand-soft); color: var(--brand-ink);
+  font-size: 12px; font-weight: 700;
+}
+.sum-badge__icon { font-size: 13px; line-height: 1; }
+
+/* 巧巧老師導讀 (collapsible guide card) */
+.sum-guide { display: flex; flex-direction: column; gap: 4px; }
+.sum-guide__head { display: flex; align-items: center; gap: 10px; }
+.sum-guide__avatar { flex: 0 0 auto; }
+.sum-guide__avatar img { display: block; }
+.sum-guide__title { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); flex: 1 1 auto; }
+.sum-guide__toggle {
+  flex: 0 0 auto; border: 0; background: transparent; cursor: pointer;
+  color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--radius-pill);
+}
+.sum-guide__toggle:hover { background-color: var(--bg); }
+.sum-guide__toggle svg { width: 18px; height: 18px; transition: transform 0.15s ease; }
+.sum-guide__body { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.sum-guide__row { display: flex; flex-direction: column; gap: 2px; }
+.sum-guide__row-label { font-size: 12px; font-weight: 700; color: var(--brand-ink); }
+.sum-guide__row-text { margin: 0; font-size: 14px; color: var(--text); line-height: 1.6; }
+
+/* Summary Footer */
+.sum-footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
+.sum-footer__read {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+  border-radius: var(--radius-pill); padding: 10px 18px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.sum-footer__read svg { width: 16px; height: 16px; }
+.sum-footer__read.is-done { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
+.sum-footer__quiz {
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+  border: 0; background-color: var(--brand); color: #ffffff;
+  border-radius: var(--radius-pill); padding: 10px 18px; font-size: 14px; font-weight: 700;
+}
+.sum-footer__quiz svg { width: 16px; height: 16px; }
+.sum-footer__quiz:hover { background-color: var(--brand-strong); }
+.sum-footer__ai {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px dashed var(--line); background-color: transparent; color: var(--text-faint);
+  border-radius: var(--radius-pill); padding: 10px 18px; font: inherit; font-size: 14px; font-weight: 700; cursor: not-allowed;
+}
+
+/* ---- RWD ------------------------------------------------------------- */
+@media (max-width: 720px) {
+  .sum-footer { flex-direction: column; align-items: stretch; }
+  .sum-footer__read, .sum-footer__quiz, .sum-footer__ai { justify-content: center; }
+}
+@media (max-width: 480px) {
+  .sum-guide__title { font-size: 15px; }
+}
