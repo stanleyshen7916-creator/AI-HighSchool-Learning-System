@@ -4,7 +4,7 @@
    array it is handed (in Beta, always the MaterialRuntime-derived list
    from MaterialCenter.computeVisibleItems) and returns a NEW array,
    never mutating the input. It has no data source of its own and does
-   not read AHS.Mock.
+   not read AHS.AppConfig.
 
    newest/oldest use createdKey(): the runtime created-order (`order`, a
    monotonic sequence set by MaterialRuntime.add) for a stable ordering,

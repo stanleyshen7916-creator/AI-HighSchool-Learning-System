@@ -179,8 +179,10 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
   const practiceRoot = doc.querySelector(".quiz-practice-root");
   check("Practice root hidden by default", practiceRoot && practiceRoot.hasAttribute("hidden"));
   check("No guide rendered without materialId deep link", !doc.querySelector(".qguide"));
-  const quizRows = doc.querySelectorAll(".quiz-row");
-  check("Exam Mode quiz list renders (untouched)", quizRows.length > 0);
+  /* EO-S7.0-003 Production Cleanup: 預設題庫已移除 — Exam Mode 首次
+     開啟為正式 Empty State。 */
+  check("Exam Mode 正式 Empty State（預設題庫已移除）",
+    doc.querySelectorAll(".quiz-row").length === 0 && /目前沒有可用的測驗/.test(doc.body.textContent));
   // Task 004 also inside default practice tab:
   const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
   practiceTab.click();
@@ -289,16 +291,106 @@ console.log("\n[8] EO-S6.9-002 — Question Generation wiring (guide picker -> f
   check("列表零 Stub/Mock/Placeholder", rows.every(n => !/\[Stub\]|Mock|Placeholder/.test(n.textContent)));
   check("Session 實際寫入 5 題且 LearningQuestionRuntime 零寫入",
     window.AHS.LearningQuestionSession.count() === 5 && window.AHS.LearningQuestionRuntime.list().length === 0);
+  /* EO-S7.0-002: Practice Submit flow — pick a WRONG option, expect
+     grading + answer reveal + Wrong Book + Review Queue integration. */
   rows[0].closest(".quiz-practice__row") ? rows[0].closest(".quiz-practice__row").click() : rows[0].click();
-  const reveal = mountEl.querySelector(".quiz-practice__reveal");
-  if (reveal) {
-    reveal.click();
-    check("v1.0 字串 explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
-  } else {
-    check("v1.0 字串 explanation 正常渲染（詳解區塊）", false);
-  }
+  const optBtns = [...mountEl.querySelectorAll(".quiz-practice__option--btn")];
+  check("single_choice 呈現可作答選項", optBtns.length === 4);
+  const q0 = window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  const wrongOpt = optBtns.find(b => b.textContent !== String(q0.answer));
+  wrongOpt.click();
+  check("Submit 後顯示批改結果（答錯）", /答錯了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
+  check("v1.0 字串 explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
+  check("答錯 → WrongBookSession 自動建立 1 筆", window.AHS.WrongBookSession.count() === 1);
+  const wbRec = window.AHS.WrongBookSession.list()[0];
+  check("錯題記錄內容解析自真實題目", wbRec.questionId === q0.id && wbRec.correctAnswer === q0.answer && wbRec.userAnswer === wrongOpt.textContent);
+  check("Review Queue 同步建立（priority=wrongCount, nextReviewAt=null）",
+    (() => { const e = window.AHS.ReviewQueue.getByQuestionId(q0.id);
+             return !!e && e.priority === 1 && e.nextReviewAt === null && e.masteryLevel === "new"; })());
   check("Console errors = 0 (generation wiring)", consoleErrors.length === 0);
   if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0,3));
+}
+
+console.log("\n[10] EO-S7.0-002 — 答對不建立 / 重複答錯累加不重建");
+{
+  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
+  const { window } = loadPage("quiz.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": realSummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
+  });
+  const doc = window.document;
+  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  doc.body.appendChild(mountEl);
+  [...mountEl.querySelectorAll(".qguide__diff")][0].click();
+  mountEl.querySelector(".qguide__start").click();
+  const q0 = window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+
+  function openRow(idx) {
+    const rows = [...mountEl.querySelectorAll(".quiz-practice__row-q")];
+    (rows[idx].closest(".quiz-practice__row") || rows[idx]).click();
+  }
+  // Correct answer first: no wrong-book entry
+  openRow(0);
+  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click();
+  check("答對 → 不建立 Wrong Book", window.AHS.WrongBookSession.count() === 0 && /答對了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
+  // Wrong twice: single record, wrongCount 2, firstWrongAt preserved
+  mountEl.querySelector(".quiz-practice__back").click();
+  openRow(0);
+  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  const first = window.AHS.WrongBookSession.list()[0];
+  mountEl.querySelector(".quiz-practice__back").click();
+  openRow(0);
+  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  const after = window.AHS.WrongBookSession.list()[0];
+  check("重複答錯不重建資料（仍 1 筆）", window.AHS.WrongBookSession.count() === 1);
+  check("wrongCount 正常累加 (2) 且 firstWrongAt 不覆蓋",
+    after.wrongCount === 2 && after.firstWrongAt === first.firstWrongAt && after.id === first.id);
+  check("Queue 取代更新 priority=2", window.AHS.ReviewQueue.getByQuestionId(q0.id).priority === 2);
+}
+
+console.log("\n[11] EO-S7.0-002 — Wrong Book 頁面：Session 資料橋接 + 即時統計");
+{
+  // Seed a real wrong-book record chain, then load wrongbook.html
+  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
+  const pre = loadPage("quiz.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": realSummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
+  });
+  const preMount = pre.window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  pre.window.document.body.appendChild(preMount);
+  [...preMount.querySelectorAll(".qguide__diff")][0].click();
+  preMount.querySelector(".qguide__start").click();
+  const rows = [...preMount.querySelectorAll(".quiz-practice__row-q")];
+  const q0 = pre.window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  (rows[0].closest(".quiz-practice__row") || rows[0]).click();
+  [...preMount.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  const carried = {
+    "ahs:learningQuestionSession": JSON.parse(pre.window.sessionStorage.getItem("ahs:learningQuestionSession")),
+    "ahs:wrongBookSession": JSON.parse(pre.window.sessionStorage.getItem("ahs:wrongBookSession")),
+    "ahs:reviewQueue": JSON.parse(pre.window.sessionStorage.getItem("ahs:reviewQueue"))
+  };
+  check("前置：quiz 頁答錯已持久化", carried["ahs:wrongBookSession"].items.length === 1);
+
+  const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carried });
+  const doc = window.document;
+  check("Sprint-4 列表顯示真實錯題（題幹來自 LearningQuestionSession）",
+    doc.body.textContent.includes(q0.question.slice(0, 12)));
+  check("Mock Seed 已移除（無 wb_seed 資料/科目混入）", !/岳陽樓記|文言文虛詞/.test(doc.body.textContent));
+  const stats = doc.querySelector(".wb-live-stats");
+  check("即時統計卡渲染", !!stats);
+  const values = [...stats.querySelectorAll(".wb-live-stats__item")].map(n => n.textContent);
+  check("統計值：Total Wrong=1 / Active=1 / New=1",
+    values.some(v => /1\s*Total Wrong/.test(v)) && values.some(v => /1\s*Active/.test(v)) && values.some(v => /1\s*New/.test(v)));
+  check("Console errors = 0 (wrongbook 整合)", consoleErrors.length === 0);
+  if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0,3));
+}
+
+console.log("\n[12] EO-S7.0-002 — 無錯題：mandated Empty State，零 Mock");
+{
+  const { window, consoleErrors } = loadPage("wrongbook.html", {});
+  const doc = window.document;
+  check("Empty State 顯示「目前沒有錯題紀錄。」", /目前沒有錯題紀錄。/.test(doc.body.textContent));
+  check("零 Mock/Seed 錯題", !/岳陽樓記|wb_seed/.test(doc.body.textContent));
+  check("統計卡全 0", [...doc.querySelectorAll(".wb-live-stats__value")].every(n => n.textContent === "0"));
+  check("Console errors = 0 (wrongbook empty)", consoleErrors.length === 0);
 }
 
 console.log("\n[9] EO-S6.9-002 — empty-content summary -> mandated Empty State, zero fake questions");
@@ -316,6 +408,50 @@ console.log("\n[9] EO-S6.9-002 — empty-content summary -> mandated Empty State
   const empty = mountEl.querySelector(".quiz-practice__empty");
   check("Summary 尚未完成 -> AI 正在建立練習題……", !!empty && /AI 正在建立練習題/.test(empty.textContent));
   check("零假題目寫入 Session", window.AHS.LearningQuestionSession.count() === 0);
+}
+
+
+console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統（零 Mock/Seed/Demo）");
+{
+  for (const page of ["index.html", "materials.html", "quiz.html", "wrongbook.html", "dashboard.html", "tutor.html"]) {
+    const { window, consoleErrors } = loadPage(page, {});
+    const text = window.document.body.textContent;
+    check(page + "：零模擬內容（無假教材/假測驗/假錯題/假統計/假通知/陳同學）",
+      !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+/.test(text));
+    check(page + "：Console Error = 0", consoleErrors.length === 0);
+  }
+  // 首頁 Review Widget（資料來自 ReviewModel）
+  const { window } = loadPage("index.html", {});
+  const w = window.document.querySelector(".review-widget");
+  check("首頁 Review Widget 渲染（今日待複習/已完成/總錯題）",
+    !!w && /今日待複習/.test(w.textContent) && /已完成/.test(w.textContent) && /總錯題/.test(w.textContent));
+  check("空系統 Widget 全 0 + 正式空狀態文案",
+    [...w.querySelectorAll(".review-widget__value")].every(n => n.textContent === "0") && /目前沒有錯題紀錄/.test(w.textContent));
+  check("Dashboard 正式 Empty State", /尚無學習數據/.test(loadPage("dashboard.html", {}).window.document.body.textContent));
+}
+
+console.log("\n[14] EO-S7.0-003 — Review Widget 反映真實錯題（Mastery Progress 即時）");
+{
+  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
+  const pre = loadPage("quiz.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": realSummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
+  });
+  const m = pre.window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  pre.window.document.body.appendChild(m);
+  [...m.querySelectorAll(".qguide__diff")][0].click();
+  m.querySelector(".qguide__start").click();
+  const q0 = pre.window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  const rows = [...m.querySelectorAll(".quiz-practice__row-q")];
+  (rows[0].closest(".quiz-practice__row") || rows[0]).click();
+  [...m.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  const carried = {};
+  for (const k of ["ahs:wrongBookSession", "ahs:reviewQueue"]) carried[k] = JSON.parse(pre.window.sessionStorage.getItem(k));
+  const { window } = loadPage("index.html", { seedSession: carried });
+  const w = window.document.querySelector(".review-widget");
+  check("總錯題 = 1、今日待複習 = 0（nextReviewAt=null 排除，等待 Scheduler）",
+    (() => { const v = [...w.querySelectorAll(".review-widget__value")].map(n => n.textContent);
+             return v[0] === "0" && v[1] === "0" && v[2] === "1"; })());
+  check("Mastery Progress 即時：New 1", /New 1/.test(w.textContent));
 }
 
 console.log("\n==============================");

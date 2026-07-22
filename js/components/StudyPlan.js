@@ -12,7 +12,7 @@ AHS.StudyPlan = (function () {
       type: "button", class: "plan-card__start"
     }, [el("span", { text: "開始學習" })]);
     startBtn.addEventListener("click", function () {
-      status.textContent = "（Mock）開始學習：" + subj.name + "《" + slot.unit + "》";
+      status.textContent = "開始學習：" + subj.name + "《" + slot.unit + "》";
       status.removeAttribute("hidden");
     });
 
@@ -30,7 +30,17 @@ AHS.StudyPlan = (function () {
   }
 
   function create(model) {
-    var data = model || AHS.Mock.studyPlan;
+    /* EO-S7.0-003 Production Cleanup: the Mock study plan is gone —
+       no real plan source exists yet, so this renders the 正式 Empty
+       State until a planning feature ships. Never fabricates a plan. */
+    var data = model;
+    if (!data || !Array.isArray(data.slots) || !data.slots.length) {
+      return AHS.EmptyState.create({
+        title: "尚未建立學習計畫",
+        hint: "完成教材上傳與練習後，這裡會協助你安排學習計畫。",
+        ariaLabel: "學習計畫"
+      });
+    }
     var status = el("p", {
       class: "plan-card__status", "aria-live": "polite", hidden: "hidden"
     });

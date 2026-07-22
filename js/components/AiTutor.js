@@ -57,7 +57,7 @@ AHS.AiTutor = (function () {
   }
 
   function create(model) {
-    var data = model || AHS.Mock.aiTutorPage;
+    var data = model || AHS.AppConfig.aiTutorPage;
     var replyIndex = 0;
 
     var thread = el("div", { class: "tutor-thread" }, [

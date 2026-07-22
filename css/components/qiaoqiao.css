@@ -53,3 +53,9 @@
   .qiaoqiao-full--md { width: 120px; height: 196px; }
   .qiaoqiao-full--lg { width: 160px; height: 263px; }
 }
+
+/* ---- 正式 Empty State（共用元件）— EO-S7.0-003。 ---- */
+.empty-state { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.empty-state__title { margin: 0; font-size: 14px; font-weight: 700; color: var(--text); }
+.empty-state__hint { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.empty-state--compact { padding: 14px 16px; }

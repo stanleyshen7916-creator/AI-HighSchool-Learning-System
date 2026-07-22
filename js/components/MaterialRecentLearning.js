@@ -10,7 +10,7 @@
 
    Data source (Beta): the ACTIVE path is createFromRuntime(), driven by
    AHS.MaterialRuntime (newest-created material, no API). The original
-   create() — which read the page-level AHS.Mock.lastReading seed — is
+   create() — which read the page-level AHS.AppConfig.lastReading seed — is
    retained only for backward compatibility and is not used by the Beta
    Material Center page. Hidden entirely when there is no material (same
    behavior as MAT-F005). Reuses .progressbar / .progressbar__fill
@@ -36,10 +36,10 @@ AHS.MaterialRecentLearning = (function () {
   }
 
   /* create(data, onOpenDetail)
-     data — AHS.Mock.materials (needed to resolve lastReading.materialId).
+     data — AHS.AppConfig.materials (needed to resolve lastReading.materialId).
      onOpenDetail(id) — reuses MaterialCenter's existing detail-open flow. */
   function create(data, onOpenDetail) {
-    var lastReading = AHS.Mock && AHS.Mock.lastReading;
+    var lastReading = null; /* EO-S7.0-003: Mock lastReading seed removed — real path only. */
     if (!lastReading || typeof lastReading.materialId !== "number") { return null; }
 
     var item = findMaterialById(data, lastReading.materialId);

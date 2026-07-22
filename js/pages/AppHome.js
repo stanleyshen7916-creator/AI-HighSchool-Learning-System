@@ -12,7 +12,7 @@
    access centralized in the Adapter as required.
 
    Each buildXModel() below returns undefined (falling back to the
-   existing AHS.Mock.* Developer Seed Data, unchanged) whenever there's
+   existing AHS.AppConfig.* Developer Seed Data, unchanged) whenever there's
    no real data yet — never fabricates content to fill a gap. This
    preserves "維持目前 Repository 行為" for Mock Data (PMO Decision 025's
    Fix-003 note) while genuinely syncing real data once it exists. */
@@ -64,7 +64,7 @@ window.AHS = window.AHS || {};
   /* Sprint 6.6 · GitHub QA Fix (WO-001): 今日任務 has no Runtime anywhere
      in this repository (no Task/Mission Runtime was ever built, and
      building one now would be a new feature, out of scope). Always
-     returns an explicit empty model — never AHS.Mock.todayTasks — so
+     returns an explicit empty model — never AHS.AppConfig.todayTasks — so
      TodayMission.js's own existing Empty State ("今天沒有安排學習任務")
      renders honestly instead of Mock content. */
   function buildTodayMissionModel() {
@@ -136,10 +136,10 @@ window.AHS = window.AHS || {};
   function buildHome() {
     /* Sprint 1 · Task 001: 依系統時間更新問候文字，其餘 hero 內容不變。 */
     if (AHS.Utils && typeof AHS.Utils.getGreeting === "function") {
-      AHS.Mock.hero.greeting = AHS.Utils.getGreeting();
+      AHS.AppConfig.hero.greeting = AHS.Utils.getGreeting();
     }
 
-    var hero = AHS.HeroCard.create(AHS.Mock, {
+    var hero = AHS.HeroCard.create(AHS.AppConfig, {
       onStart: function () { /* Mock event — no real navigation yet. */ },
       onContinue: function () { /* Mock event — no real navigation yet. */ }
     });
@@ -191,11 +191,14 @@ window.AHS = window.AHS || {};
 
     var rail = el("div", { class: "home__rail" }, [
       AHS.TodayMission.create(buildTodayMissionModel()),
+      /* EO-S7.0-003 · Review Widget：今日待複習/已完成/總錯題/Mastery
+         Progress，資料全部來自 AHS.ReviewModel（唯讀查詢層）。 */
+      (AHS.ReviewWidget ? AHS.ReviewWidget.create() : null),
       AHS.AiTutorHomeCard.create(),
       AHS.AchievementBadges.create(),
       AHS.LearningTime.create(buildTodayMinutesModel()),
       AHS.ContinueLearning.create(buildContinueLearningModel())
-    ]);
+    ].filter(Boolean));
 
     return el("div", { class: "home" }, [main, rail]);
   }
@@ -204,7 +207,7 @@ window.AHS = window.AHS || {};
     var app = document.getElementById("app");
     if (!app) { return; }
 
-    var shell = AHS.AppShell.create(AHS.Mock, {
+    var shell = AHS.AppShell.create(AHS.AppConfig, {
       onNavigate: function () { /* Mock navigation — single-page prototype. */ }
     });
 

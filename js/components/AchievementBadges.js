@@ -29,7 +29,15 @@ AHS.AchievementBadges = (function () {
   }
 
   function create(model) {
-    var data = model || AHS.Mock.achievements;
+    /* EO-S7.0-003 Production Cleanup: Mock achievements removed. */
+    var data = model;
+    if (!data || !Array.isArray(data.items) || !data.items.length) {
+      return AHS.EmptyState.create({
+        title: "尚未獲得成就",
+        hint: "持續完成學習任務，成就徽章會出現在這裡。",
+        ariaLabel: "成就徽章"
+      });
+    }
     return el("section", { class: "card badges-card", "aria-label": data.title }, [
       el("div", { class: "card__head" }, [
         el("h2", { class: "card__title", text: data.title }),

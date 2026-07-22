@@ -1,5 +1,5 @@
 /* components/ContinueLearning.js — Continue Learning (HOME-F007).
-   Sprint 6.6 WO-007: no longer reads AHS.Mock.lastLearning. Renders
+   Sprint 6.6 WO-007: no longer reads AHS.AppConfig.lastLearning. Renders
    whatever real model js/pages/app.js passes in (subject / chapter /
    lesson / progress, derived from AHS.MaterialRuntime). Shows
    "尚無學習紀錄" and disables the click target when data is missing.

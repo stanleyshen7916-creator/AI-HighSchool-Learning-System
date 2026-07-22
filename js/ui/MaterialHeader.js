@@ -20,12 +20,12 @@ AHS.MaterialHeader = (function () {
   var DEFAULT_TITLE = "教材中心";
   var DEFAULT_SUBTITLE = "選擇教材，開始今天的學習。";
 
-  /* create(model?) — model defaults to AHS.Mock.materials.
+  /* create(model?) — model defaults to AHS.AppConfig.materials.
      Falls back to the UI Library's fixed copy if title/subtitle are
      missing, per this feature's spec ("若 UI Library 已固定文案，
      請以 UI Library 為準"). Never throws. */
   function create(model) {
-    var data = model || (AHS.Mock && AHS.Mock.materials) || {};
+    var data = model || (AHS.AppConfig && AHS.AppConfig.materials) || {};
     var title = data.title || DEFAULT_TITLE;
     var subtitle = data.subtitle || DEFAULT_SUBTITLE;
 

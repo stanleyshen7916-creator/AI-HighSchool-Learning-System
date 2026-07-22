@@ -357,3 +357,15 @@
   .wb-empty { padding: 32px 16px; }
   .wb-review-result__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ---- 錯題即時統計 — EO-S7.0-002（WrongBookSession.statistics()，
+   全部即時計算、永不儲存）。 ---- */
+.wb-live-stats { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.wb-live-stats__title { margin: 0; font-size: 14px; font-weight: 700; color: var(--text); }
+.wb-live-stats__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; }
+.wb-live-stats__item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px 6px;
+}
+.wb-live-stats__value { font-size: 18px; font-weight: 800; color: var(--brand-ink); }
+.wb-live-stats__label { font-size: 11px; color: var(--text-muted); }

@@ -272,7 +272,7 @@ AHS.WrongBook = (function () {
         class: "wb-empty__illustration qiaoqiao-full qiaoqiao-full--sm",
         html: AHS.Qiaoqiao.full("reading")
       }),
-      el("h3", { class: "wb-empty__title", text: "尚未建立錯題" }),
+      el("h3", { class: "wb-empty__title", text: "目前沒有錯題紀錄。" }) /* EO-S7.0-002 mandated Empty State copy */,
       el("p", {
         class: "wb-empty__description",
         text: "完成測驗後，答錯的題目會自動整理在這裡，方便你複習。"
@@ -673,7 +673,7 @@ AHS.WrongBook = (function () {
 
   /* Master-detail body (filter bar + row list + detail panel) — unchanged
      structure, now sourced from AHS.WrongBookRuntime.list() instead of
-     AHS.Mock.wrongBook. `data` still supplies page copy (title/subtitle/
+     AHS.AppConfig.wrongBook. `data` still supplies page copy (title/subtitle/
      bannerTip) and filter dropdown option labels only.
      onFavoriteOnlyChange(isOn) — optional callback so a caller outside this
      function (the Header's 我的最愛 button, built separately in create())
@@ -781,11 +781,46 @@ AHS.WrongBook = (function () {
       var results = { total: queue.length, correct: 0, wrong: 0, newlyMastered: 0 };
       var returnItemId = currentDetailItemId;
 
+      /* EO-S7.0-003 · Review → Submit → WrongBook 更新（單一路徑）：
+         複習作答結果同步回 v1.0 WrongBookSession —— 一律經
+         WrongBookGenerator Interface，絕不直接操作 Session。
+         規則（決定性，非 AI）：
+           答對 → masteryLevel 沿固定階梯升一級
+                  new → learning → reviewing → mastered
+           答錯 → Generator.add()（同一 Duplicate Rule：wrongCount+1、
+                  降回 new、firstWrongAt 不覆蓋）
+         兩者皆同步更新 Review Queue（priority = wrongCount；
+         nextReviewAt 維持既值/null —— 本 Sprint 不排程）。
+         查無對應 v1.0 記錄（legacy 資料）則安靜略過。 */
+      function syncV1OnReviewResult(item, wasCorrect, selectedKey) {
+        var session = AHS.WrongBookSession, gen = AHS.WrongBookGenerator, rq = AHS.ReviewQueue;
+        if (!session || !gen) { return; }
+        var rec = session.getByQuestionId(item.questionId);
+        if (!rec) { return; }
+        var updated = null;
+        if (wasCorrect) {
+          var ladder = gen.MASTERY_LEVELS;
+          var next = ladder[Math.min(ladder.indexOf(rec.masteryLevel) + 1, ladder.length - 1)];
+          updated = gen.update(rec.id, { masteryLevel: next });
+        } else {
+          updated = gen.add({ questionId: item.questionId, userAnswer: selectedKey || "（複習答錯）" });
+        }
+        if (updated && rq && typeof rq.enqueue === "function") {
+          rq.enqueue({
+            questionId: updated.questionId,
+            masteryLevel: updated.masteryLevel,
+            priority: updated.wrongCount,
+            nextReviewAt: updated.nextReviewAt || null
+          });
+        }
+      }
+
       function renderStep() {
         var item = queue[index];
         var interaction = buildReviewInteraction(item, function (wasCorrect, selectedKey) {
           var wasMasteredBefore = getMasteryStatus(item.id) === "已精熟";
           applyReviewResult(item.id, wasCorrect, selectedKey);
+          syncV1OnReviewResult(item, wasCorrect, selectedKey);
           if (wasCorrect) { results.correct += 1; } else { results.wrong += 1; }
           if (!wasMasteredBefore && getMasteryStatus(item.id) === "已精熟") { results.newlyMastered += 1; }
           index += 1;
@@ -1129,12 +1164,12 @@ AHS.WrongBook = (function () {
     };
   }
 
-  /* create(model?) — model defaults to AHS.Mock.wrongBook (page copy +
+  /* create(model?) — model defaults to AHS.AppConfig.wrongBook (page copy +
      filter option labels only; wrong-question records always come from
      AHS.WrongBookRuntime, per PMO ruling — Runtime is Source of Truth,
      no Mock fallback for records, no seed injection). */
   function create(model) {
-    var data = model || AHS.Mock.wrongBook;
+    var data = model || AHS.AppConfig.wrongBook;
     var runtime = AHS.WrongBookRuntime;
     var runtimeItems = runtime ? runtime.list() : [];
     var isEmpty = runtime ? runtime.isEmpty() : runtimeItems.length === 0;

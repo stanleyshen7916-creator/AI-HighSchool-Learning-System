@@ -16,7 +16,7 @@ window.AHS = window.AHS || {};
 
     var materialCenterRoot = AHS.MaterialCenter.create();
 
-    var shell = AHS.AppShell.create(AHS.Mock, {
+    var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "materials",
       onNavigate: function () { /* Mock navigation — prototype. */ },
       onGlobalSearch: function (keyword) {

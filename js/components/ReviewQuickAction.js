@@ -63,7 +63,7 @@ AHS.ReviewQuickAction = (function () {
         /* Real branch, currently unreachable — see file header note.
            Kept honest rather than building a Review Session destination
            (new Architecture/feature, out of scope this EO). */
-        feedback("（Mock）Review Session 尚未實作");
+        feedback("Review Session 尚未實作");
       } else {
         feedback("今天沒有待複習內容。可先完成新的測驗或前往錯題本。");
       }
@@ -96,7 +96,7 @@ AHS.ReviewQuickAction = (function () {
     }, iconLabel("refresh", "繼續上次複習"));
     continueBtn.addEventListener("click", function () {
       if (handlers.onContinueSession) { handlers.onContinueSession(); }
-      feedback("（Mock）尚無可繼續的上次複習");
+      feedback("尚無可繼續的上次複習");
     });
 
     return el("section", { class: "card rv-quick", "aria-label": "快速操作" }, [

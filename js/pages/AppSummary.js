@@ -11,7 +11,7 @@ window.AHS = window.AHS || {};
   function init() {
     var app = document.getElementById("app");
     if (!app) { return; }
-    var shell = AHS.AppShell.create(AHS.Mock, {
+    var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "summary",
       onNavigate: function () { /* Mock navigation — prototype. */ }
     });

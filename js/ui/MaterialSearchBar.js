@@ -4,7 +4,7 @@
    M013 adds an optional onSearch(keyword) callback wired to the native
    "input" event — without a callback the component remains the exact
    M002 UI-only control. No fake/real API; filtering happens in the
-   integrator against AHS.Mock in memory.
+   integrator against AHS.AppConfig in memory.
    PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.MaterialSearchBar = (function () {

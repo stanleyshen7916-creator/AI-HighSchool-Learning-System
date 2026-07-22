@@ -2,7 +2,7 @@
    Sprint 6.6 WO-007: no Mock Data fallback anymore. app.js always
    passes a real, computed model (from AHS.MaterialRuntime). Falls back
    to "0 min" only when the model itself is missing/invalid — never
-   throws, never reads AHS.Mock.
+   throws, never reads AHS.AppConfig.
    Minimal card, reuses shared .card / .card__head / .card__title
    primitives (shell.css) — no new layout, matches existing rail cards.
    PascalCase component under window.AHS. */

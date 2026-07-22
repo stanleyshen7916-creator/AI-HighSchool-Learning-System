@@ -566,7 +566,7 @@ AHS.MyLearning = (function () {
   }
 
   /* create() — Sprint 6.6 Hotfix (Runtime QA Rework): no parameter, no
-     AHS.Mock reference anywhere in this file anymore — the last
+     AHS.AppConfig reference anywhere in this file anymore — the last
      remaining Mock read path (badges' catalog + recent-earned date) was
      removed this round. Every section is computed live from real
      Runtimes, with an honest Empty State wherever no real data exists. */

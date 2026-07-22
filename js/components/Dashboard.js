@@ -229,7 +229,7 @@ AHS.Dashboard = (function () {
           check.setAttribute("aria-pressed", on ? "false" : "true");
           check.classList.toggle("is-on", !on);
           check.innerHTML = on ? "" : AHS.Icons.check();
-          status.textContent = "（Mock）" + (on ? "取消完成：" : "完成任務：") + it.unit;
+          status.textContent = "" + (on ? "取消完成：" : "完成任務：") + it.unit;
           status.removeAttribute("hidden");
         });
         return el("li", { class: "dash-task" + (it.done ? " is-done" : "") }, [
@@ -322,9 +322,19 @@ AHS.Dashboard = (function () {
     ]);
   }
 
-  /* create(model?) — model defaults to AHS.Mock.dashboard. */
+  /* create(model?) — model defaults to AHS.AppConfig.dashboard. */
   function create(model) {
-    var data = model || AHS.Mock.dashboard;
+    /* EO-S7.0-003 Production Cleanup: the Mock 學習分析 dataset is
+       removed. Until real analytics derive from the Runtimes, the page
+       shows the 正式 Empty State — never fake statistics. */
+    var data = model;
+    if (!data) {
+      return AHS.EmptyState.create({
+        title: "尚無學習數據",
+        hint: "開始上傳教材並完成練習後，你的學習分析會顯示在這裡。",
+        ariaLabel: "學習分析"
+      });
+    }
     var status = el("p", { class: "dash-status", "aria-live": "polite", hidden: "hidden" });
 
     var main = el("div", { class: "dash-main" }, [

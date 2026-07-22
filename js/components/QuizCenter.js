@@ -129,7 +129,7 @@ AHS.QuizCenter = (function () {
       "aria-label": "更多", html: AHS.Icons.more()
     });
     more.addEventListener("click", function () {
-      status.textContent = "（Mock）更多選項：" + item.title;
+      status.textContent = "更多選項：" + item.title;
       status.removeAttribute("hidden");
     });
 
@@ -327,12 +327,23 @@ AHS.QuizCenter = (function () {
   }
 
   /* ---- List view (Exam List) -------------------------------------------
-     data: AHS.Mock.quiz. onStart(item): begins the real exam flow.
+     data: AHS.AppConfig.quiz. onStart(item): begins the real exam flow.
      Sprint 4.1: 科目/年級/章節/難易度/題型/只看未完成/排序 all drive a real
      filter+sort of data.items, re-rendered immediately into listContainer
      on every change (no page reload). Filter State lives here, in
      QuizCenter's own closure — not a new Runtime, not a new global. */
   function buildListView(data, onStart) {
+    /* EO-S7.0-003 Production Cleanup: 預設題庫已移除 — Exam Mode 無
+       真實測驗來源前顯示正式 Empty State（未來由測驗建立功能填入）。 */
+    if (!data.items || !data.items.length) {
+      return el("div", { class: "quiz-list quiz-list--empty" }, [
+        AHS.EmptyState.create({
+          title: "目前沒有可用的測驗",
+          hint: "上傳教材並由 AI 建立練習後，正式測驗會在這裡開放。",
+          ariaLabel: "測驗清單"
+        })
+      ]);
+    }
     var status = el("p", {
       class: "quiz-status", "aria-live": "polite", hidden: "hidden"
     });
@@ -507,7 +518,7 @@ AHS.QuizCenter = (function () {
     return el("div", { class: "qreview" }, [summary, list, backBtn]);
   }
 
-  /* create(model?) — model defaults to AHS.Mock.quiz. Owns view
+  /* create(model?) — model defaults to AHS.AppConfig.quiz. Owns view
      switching between: 清單 (list) -> 測驗中 (exam) -> 檢討 (review) ->
      back to 清單, driven by the Runtime chain. */
   /* ---- Practice Mode (EO-S6-006 System Runtime Integration) --------------
@@ -609,12 +620,44 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
+  /* EO-S7.0-002 · Wrong Book Runtime Integration hook — the ONLY new
+     step appended after answer check: wrong answer → WrongBookGenerator
+     .add() (Interface, sole write path; its data source is exclusively
+     LearningQuestionSession, so records from the old runtime simply
+     return null — no fake wrong-book entry can appear) → on success,
+     Review Queue upsert with runtime-derived values only: priority =
+     wrongCount (real data, not inference), nextReviewAt = null (no
+     scheduling EO exists — 不得自動排程/AI 推論). Exam Mode's
+     AnswerRuntime / AutoGrader (Score & Answer Logic) are untouched. */
+  function wrongBookHook(rec, userAnswer) {
+    if (!AHS.WrongBookGenerator || typeof AHS.WrongBookGenerator.add !== "function") { return; }
+    var wb = AHS.WrongBookGenerator.add({ questionId: rec.id, userAnswer: userAnswer });
+    if (wb && AHS.ReviewQueue && typeof AHS.ReviewQueue.enqueue === "function") {
+      AHS.ReviewQueue.enqueue({
+        questionId: wb.questionId,
+        masteryLevel: wb.masteryLevel,
+        priority: wb.wrongCount,
+        nextReviewAt: null
+      });
+    }
+  }
+
+  /* Deterministic answer check — string/set comparison only, no AI. */
+  function answersMatch(expected, given) {
+    function key(v) {
+      if (Array.isArray(v)) { return v.map(function (x) { return String(x).trim(); }).sort().join("||"); }
+      return (v === undefined || v === null) ? "" : String(v).trim();
+    }
+    return key(expected) === key(given) && key(given) !== "";
+  }
+
   function buildPracticeQuestionView(record, onBack) {
     var backBtn = el("button", { type: "button", class: "quiz-practice__back", text: "← 返回列表" });
     backBtn.addEventListener("click", onBack);
 
     var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
-    var revealed = false;
+    var resultBanner = el("p", { class: "quiz-practice__result", "aria-live": "polite", hidden: "hidden" });
+    var submitted = false;
 
     function expBlock(title, items) {
       var list = Array.isArray(items) ? items.filter(Boolean) : [];
@@ -654,33 +697,99 @@ AHS.QuizCenter = (function () {
       if (record.learningObjective) {
         answerSlot.appendChild(el("p", { class: "quiz-practice__meta", text: "學習目標：" + record.learningObjective }));
       }
+      answerSlot.removeAttribute("hidden");
     }
 
-    var revealBtn = el("button", { type: "button", class: "quiz-practice__reveal", text: "顯示解答" });
-    revealBtn.addEventListener("click", function () {
-      revealed = !revealed;
-      if (revealed) {
-        renderAnswer();
-        answerSlot.removeAttribute("hidden");
-        revealBtn.textContent = "隱藏解答";
-      } else {
-        answerSlot.setAttribute("hidden", "hidden");
-        revealBtn.textContent = "顯示解答";
-      }
-    });
+    /* EO-S7.0-002 · Practice Submit → Answer Check → (wrong) Wrong Book.
+       Practice Mode previously had a reveal-only flow (answering existed
+       solely in Exam Mode); the EO's fixed Runtime Flow requires a
+       Submit step here, so a minimal, fully deterministic interaction is
+       added per question type. Grading result is shown, then the full
+       answer/explanation — and only a WRONG submit triggers the hook. */
+    function finishSubmit(isCorrect, userAnswer) {
+      if (submitted) { return; }
+      submitted = true;
+      resultBanner.textContent = isCorrect ? "答對了！" : "答錯了，已加入錯題本。";
+      resultBanner.classList.add(isCorrect ? "is-correct" : "is-wrong");
+      resultBanner.removeAttribute("hidden");
+      renderAnswer();
+      if (!isCorrect) { wrongBookHook(record, userAnswer); }
+    }
 
-    var optionsBlock = (record.options && record.options.length)
-      ? el("div", { class: "quiz-practice__options" },
-          record.options.map(function (opt) { return el("div", { class: "quiz-practice__option", text: String(opt) }); }))
-      : null;
+    var interaction;
+    var type = String(record.questionType || "");
+
+    if ((type === "single_choice" || type === "true_false") && record.options && record.options.length) {
+      /* Single pick — submitting the pick IS the answer check. */
+      var singleBtns = record.options.map(function (opt) {
+        var b = el("button", { type: "button", class: "quiz-practice__option quiz-practice__option--btn", text: String(opt) });
+        b.addEventListener("click", function () {
+          if (submitted) { return; }
+          singleBtns.forEach(function (x) { x.classList.remove("is-picked"); });
+          b.classList.add("is-picked");
+          finishSubmit(answersMatch(record.answer, opt), String(opt));
+        });
+        return b;
+      });
+      interaction = el("div", { class: "quiz-practice__options" }, singleBtns);
+    } else if (type === "multiple_choice" && record.options && record.options.length) {
+      var picked = {};
+      var multiBtns = record.options.map(function (opt) {
+        var b = el("button", { type: "button", class: "quiz-practice__option quiz-practice__option--btn", text: String(opt) });
+        b.addEventListener("click", function () {
+          if (submitted) { return; }
+          picked[opt] = !picked[opt];
+          b.classList.toggle("is-picked", !!picked[opt]);
+        });
+        return b;
+      });
+      var multiSubmit = el("button", { type: "button", class: "quiz-practice__submit", text: "提交作答" });
+      multiSubmit.addEventListener("click", function () {
+        var chosen = Object.keys(picked).filter(function (k) { return picked[k]; });
+        if (!chosen.length) { return; }
+        finishSubmit(answersMatch(record.answer, chosen), chosen);
+      });
+      interaction = el("div", { class: "quiz-practice__options" }, multiBtns.concat([multiSubmit]));
+    } else if (type === "fill_blank") {
+      var input = el("input", { type: "text", class: "quiz-practice__input", placeholder: "填入答案" });
+      var fbSubmit = el("button", { type: "button", class: "quiz-practice__submit", text: "提交作答" });
+      fbSubmit.addEventListener("click", function () {
+        if (!input.value.trim()) { return; }
+        finishSubmit(answersMatch(record.answer, input.value), input.value.trim());
+      });
+      interaction = el("div", { class: "quiz-practice__fill" }, [input, fbSubmit]);
+    } else {
+      /* short_answer (and any legacy record without options): free
+         answers can't be machine-graded deterministically — the student
+         writes an answer, reveals the standard answer, and self-assesses.
+         The self-assessment is the Answer Check for this type; a typed
+         answer is recorded, an empty one is recorded truthfully as
+         「（未作答）」— never fabricated. */
+      var saInput = el("textarea", { class: "quiz-practice__input quiz-practice__input--area", placeholder: "寫下你的答案（自評用）" });
+      var saReveal = el("button", { type: "button", class: "quiz-practice__reveal", text: "顯示解答並自評" });
+      var saAssess = el("div", { class: "quiz-practice__assess", hidden: "hidden" }, [
+        el("span", { class: "quiz-practice__assess-label", text: "對照標準答案，你答對了嗎？" })
+      ]);
+      var okBtn = el("button", { type: "button", class: "quiz-practice__submit", text: "我答對了" });
+      var noBtn = el("button", { type: "button", class: "quiz-practice__submit quiz-practice__submit--wrong", text: "我答錯了" });
+      okBtn.addEventListener("click", function () { finishSubmit(true, saInput.value.trim() || "（未作答）"); });
+      noBtn.addEventListener("click", function () { finishSubmit(false, saInput.value.trim() || "（未作答）"); });
+      saAssess.appendChild(okBtn); saAssess.appendChild(noBtn);
+      saReveal.addEventListener("click", function () {
+        renderAnswer();
+        saAssess.removeAttribute("hidden");
+        saReveal.setAttribute("hidden", "hidden");
+      });
+      interaction = el("div", { class: "quiz-practice__self" }, [saInput, saReveal, saAssess]);
+    }
 
     return el("div", { class: "quiz-practice" }, [
       backBtn,
       el("section", { class: "card quiz-practice__question", "aria-label": "練習題" },
         [
           el("p", { class: "quiz-practice__q-text", text: record.question }),
-          optionsBlock,
-          revealBtn,
+          interaction,
+          resultBanner,
           answerSlot
         ].filter(Boolean))
     ]);
@@ -698,7 +807,7 @@ AHS.QuizCenter = (function () {
      any Exam Mode function below, no change to ExamRuntime/QuestionBank/
      QuestionRuntime. */
   function create(model, initialMode, initialMaterialId) {
-    var data = model || AHS.Mock.quiz;
+    var data = model || AHS.AppConfig.quiz;
     var root = el("div", { class: "quiz-root" });
 
     function showList() {

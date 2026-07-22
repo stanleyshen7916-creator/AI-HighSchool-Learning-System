@@ -142,11 +142,16 @@ AHS.WrongBookGenerator = (function () {
 
     if (existing) {
       /* Wrong Count rule: +1, refresh lastWrongAt; firstWrongAt is
-         deliberately NOT part of this patch — 不得覆蓋. */
+         deliberately NOT part of this patch — 不得覆蓋.
+         EO-S7.0-002 Duplicate Rule: masteryLevel is also updated on a
+         repeat wrong — deterministically demoted to "new" (a wrong
+         answer returns the question to the start of the fixed Mastery
+         Model; no AI inference). */
       return session.store(Object.assign({}, existing, {
         userAnswer: user,
         wrongCount: existing.wrongCount + 1,
         lastWrongAt: now,
+        masteryLevel: "new",
         updatedAt: now
       }), validate);
     }

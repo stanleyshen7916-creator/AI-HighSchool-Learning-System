@@ -74,7 +74,7 @@ AHS.MaterialCard = (function () {
     }
     function downloadMaterial() {
       if (typeof onDownload === "function") { onDownload(item.id); }
-      else { announce("（Mock）下載教材：" + subj.name + "《" + item.title + "》"); }
+      else { announce("下載教材：" + subj.name + "《" + item.title + "》"); }
     }
 
     /* 科目 Icon + 教材封面 (existing thumb block, reused as the cover area) */

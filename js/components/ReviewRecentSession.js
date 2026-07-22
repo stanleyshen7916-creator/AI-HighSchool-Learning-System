@@ -47,7 +47,7 @@ AHS.ReviewRecentSession = (function () {
     ]);
     continueBtn.addEventListener("click", function () {
       if (handlers.onContinue) { handlers.onContinue(); }
-      status.textContent = "（Mock）尚無可繼續的複習紀錄";
+      status.textContent = "尚無可繼續的複習紀錄";
       status.removeAttribute("hidden");
     });
 

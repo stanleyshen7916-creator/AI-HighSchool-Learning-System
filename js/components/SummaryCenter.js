@@ -40,7 +40,7 @@ AHS.SummaryCenter = (function () {
         ])
       ]);
       b.addEventListener("click", function () {
-        status.textContent = "（Mock）" + label + "（" + sub + "）";
+        status.textContent = "" + label + "（" + sub + "）";
         status.removeAttribute("hidden");
       });
       return b;

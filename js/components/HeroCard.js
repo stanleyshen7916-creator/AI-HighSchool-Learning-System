@@ -8,7 +8,7 @@ AHS.HeroCard = (function () {
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   /* create(model, handlers)
-     model: AHS.Mock (student, hero)
+     model: AHS.AppConfig (student, hero)
      handlers: { onStart, onContinue } — invoked on button clicks. */
   function create(model, handlers) {
     handlers = handlers || {};

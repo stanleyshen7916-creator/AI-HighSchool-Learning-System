@@ -391,3 +391,25 @@
 .qguide__diff:hover { border-color: var(--brand); color: var(--brand); }
 .qguide__diff.is-active { background-color: var(--brand); border-color: var(--brand); color: #ffffff; }
 .qguide__start[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+/* ---- Practice Submit interaction — EO-S7.0-002. ---- */
+.quiz-practice__option--btn { font: inherit; text-align: left; cursor: pointer; background-color: transparent; width: 100%; }
+.quiz-practice__option--btn:hover { border-color: var(--brand); }
+.quiz-practice__option--btn.is-picked { border-color: var(--brand); background-color: var(--brand-soft); }
+.quiz-practice__submit {
+  align-self: flex-start; border: 0; border-radius: var(--radius-pill);
+  background-color: var(--brand); color: #ffffff; font: inherit;
+  font-size: 13px; font-weight: 700; padding: 8px 18px; cursor: pointer; margin-top: 4px;
+}
+.quiz-practice__submit--wrong { background-color: #b91c1c; }
+.quiz-practice__fill, .quiz-practice__self { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.quiz-practice__input {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 10px 12px; font: inherit; font-size: 13px; color: var(--text); background-color: var(--bg);
+}
+.quiz-practice__input--area { min-height: 72px; resize: vertical; }
+.quiz-practice__assess { display: flex; align-items: center; gap: 8px; }
+.quiz-practice__assess-label { font-size: 13px; color: var(--text-muted); }
+.quiz-practice__result { margin: 10px 0 0; font-size: 14px; font-weight: 700; }
+.quiz-practice__result.is-correct { color: #15803d; }
+.quiz-practice__result.is-wrong { color: #b91c1c; }

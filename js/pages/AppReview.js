@@ -112,7 +112,7 @@ window.AHS = window.AHS || {};
     var mostRecent = historyItems.length ? historyItems[0] : null; // list() is newest-first
     var wrongItems = (AHS.WrongBookRuntime ? AHS.WrongBookRuntime.list() : []);
 
-    var shell = AHS.AppShell.create(AHS.Mock, {
+    var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "review",
       onNavigate: function () { /* Mock navigation — prototype. */ }
     });

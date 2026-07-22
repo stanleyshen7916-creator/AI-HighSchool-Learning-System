@@ -2,7 +2,7 @@
    Filter: a Filter Button that toggles a Filter Panel with three
    selects — 科目 / 年級 / 狀態. This component only BUILDS the panel UI;
    the option LABELS for the 科目 / 年級 selects are read from the
-   Developer Seed Data (AHS.Mock.materials subjectCounts / grades) purely
+   Developer Seed Data (AHS.AppConfig.materials subjectCounts / grades) purely
    to populate the dropdown choices. The actual filtering runs in
    MaterialCenter.computeVisibleItems() against MaterialRuntime — this
    component never filters data itself. No backend, no fetch/XHR. Status

@@ -3,7 +3,7 @@
    grid-list toggle) + material card grid + upload dropzone + recent files.
    Beta: all material data (list / upload / delete / favorite / search /
    filter / sort / recent) is driven by AHS.MaterialRuntime (in-memory,
-   starts empty). AHS.Mock.materials is used ONLY as Developer Seed Data
+   starts empty). AHS.AppConfig.materials is used ONLY as Developer Seed Data
    for static config/labels (e.g. filter option lists), never as the
    material list. PascalCase component under window.AHS.
    File-type colors for recent files. */
@@ -212,7 +212,7 @@ AHS.MaterialCenter = (function () {
   }
 
   /* recentFilesFromRuntime — mirrors uploaded materials (newest first),
-     replacing the old AHS.Mock.recentFiles seed list. onOpen(id) opens
+     replacing the old AHS.AppConfig.recentFiles seed list. onOpen(id) opens
      the material (Bug 002). */
   function recentFilesFromRuntime(status, onOpen) {
     var recent = AHS.MaterialRuntime.recentByCreatedOrder();
@@ -262,12 +262,26 @@ AHS.MaterialCenter = (function () {
   }
 
   /* create() — Runtime Migration: Material Center now reads/writes
-     AHS.MaterialRuntime (starts empty), NOT AHS.Mock.materials. Mock is
+     AHS.MaterialRuntime (starts empty), NOT AHS.AppConfig.materials. Mock is
      kept only as Developer Seed Data for other modules. `data` below is
      used ONLY for static config still sourced from seed (title/subtitle,
      subjectCounts labels, grades, sorts) — never for the item list. */
   function create() {
-    var seed = AHS.Mock.materials; /* Developer Seed Data: labels/config only. */
+    var seed = AHS.AppConfig.materials; /* 正式 UI config：標籤/選項，零模擬資料。 */
+    /* EO-S7.0-003: per-subject counts are REAL — derived live from
+       MaterialRuntime, never faked (the old Mock 128/156… numbers are
+       gone). */
+    if (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function") {
+      var realCounts = {};
+      AHS.MaterialRuntime.list().forEach(function (m) {
+        realCounts[m.subject] = (realCounts[m.subject] || 0) + 1;
+      });
+      seed = Object.assign({}, seed, {
+        subjectCounts: seed.subjectCounts.map(function (c) {
+          return { subject: c.subject, count: realCounts[c.subject] || 0 };
+        })
+      });
+    }
     var status = el("p", {
       class: "mat-status", "aria-live": "polite", hidden: "hidden"
     });

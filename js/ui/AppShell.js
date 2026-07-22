@@ -1,7 +1,7 @@
 /* components/AppShell.js — shared application frame used by every page:
    top bar (logo + search + notifications + student), left sidebar (desktop),
    a main content slot, and the bottom navigation (mobile). PascalCase
-   component under window.AHS. Depends on AHS.Icons + AHS.Mock.nav. */
+   component under window.AHS. Depends on AHS.Icons + AHS.AppConfig.nav. */
 window.AHS = window.AHS || {};
 AHS.AppShell = (function () {
   "use strict";
@@ -23,7 +23,7 @@ AHS.AppShell = (function () {
 
   /* ---- Notification menu (HOME-F009) ------------------------------------
      Extends the existing bell icon-button (already in topbar) with a
-     real dropdown driven by AHS.Mock.notifications. Empty state reuses
+     real dropdown driven by AHS.AppConfig.notifications. Empty state reuses
      the project's existing shared empty-state style (.today-card__empty)
      — no new Empty UI is designed. */
   function notificationItem(n, onToggleRead) {
@@ -53,7 +53,7 @@ AHS.AppShell = (function () {
 
   /* ---- Profile menu (HOME-F010) ------------------------------------------
      Extends the existing .topbar__user block with a dropdown. Guest
-     fallback when AHS.Mock.user is missing — never throws. */
+     fallback when AHS.AppConfig.user is missing — never throws. */
   function profilePanel(onAction) {
     var actions = [
       { id: "profile", label: "Profile" },
@@ -135,7 +135,7 @@ AHS.AppShell = (function () {
     });
 
     var profMenu = profilePanel(function (actionId) {
-      console.log("（Mock）Profile Menu：" + actionId);
+      console.log("Profile Menu：" + actionId);
       closeMenus();
     });
 

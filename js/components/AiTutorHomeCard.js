@@ -24,7 +24,7 @@ AHS.AiTutorHomeCard = (function () {
       el("span", { class: "tutor-card__tile-desc", text: action.desc })
     ]);
     btn.addEventListener("click", function () {
-      status.textContent = "（Mock）啟動：" + action.label;
+      status.textContent = "啟動：" + action.label;
       status.removeAttribute("hidden");
     });
     return btn;
@@ -54,7 +54,7 @@ AHS.AiTutorHomeCard = (function () {
         el("span", { text: model.askLabel || "詢問巧巧老師" })
       ]);
       askBtn.addEventListener("click", function () {
-        status.textContent = model.askFeedback || "（Mock）已送出詢問";
+        status.textContent = model.askFeedback || "已送出詢問";
         status.removeAttribute("hidden");
       });
       top = el("div", { class: "tutor-card__top" }, [
