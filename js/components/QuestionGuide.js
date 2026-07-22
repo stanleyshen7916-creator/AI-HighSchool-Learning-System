@@ -172,12 +172,37 @@ AHS.QuestionGuide = (function () {
     var questions = Array.isArray(opts.questions) ? opts.questions : [];
     var summary = latestSummaryFor(opts.materialId);
 
-    var startBtn = el("button", { type: "button", class: "qguide__start" }, [
+    /* EO-S6.9-002 · Difficulty is the Generator Interface's caller
+       parameter (PMO Ruling 2B): the student picks it EXPLICITLY here —
+       no option is pre-selected and 開始練習 stays disabled until one
+       is chosen, so the flow can never run on an inferred or defaulted
+       difficulty. */
+    var chosenDifficulty = null;
+    var startBtn = el("button", { type: "button", class: "qguide__start", disabled: "disabled" }, [
       el("span", { text: "開始練習" }),
       el("span", { html: AHS.Icons.chevronRight() })
     ]);
+
+    var diffBtns = [
+      { value: "easy", label: "易" },
+      { value: "medium", label: "中等" },
+      { value: "hard", label: "難" }
+    ].map(function (d) {
+      var btn = el("button", {
+        type: "button", class: "qguide__diff", "data-difficulty": d.value, text: d.label
+      });
+      btn.addEventListener("click", function () {
+        chosenDifficulty = d.value;
+        diffBtns.forEach(function (b) { b.classList.remove("is-active"); });
+        btn.classList.add("is-active");
+        startBtn.removeAttribute("disabled");
+      });
+      return btn;
+    });
+
     startBtn.addEventListener("click", function () {
-      if (typeof opts.onStart === "function") { opts.onStart(); }
+      if (!chosenDifficulty) { return; }
+      if (typeof opts.onStart === "function") { opts.onStart(chosenDifficulty); }
     });
 
     /* Real <a href> back into this material's Summary Detail — never
@@ -204,6 +229,10 @@ AHS.QuestionGuide = (function () {
         guideRow("建議難度", difficultyAdvice(questions)),
         guideRow("作答提醒", answeringReminder(summary, questions)),
         guideRow("學習建議", learningAdvice(summary))
+      ]),
+      el("div", { class: "qguide__pick" }, [
+        el("strong", { class: "qguide__row-label", text: "選擇本次練習難度（必選）" }),
+        el("div", { class: "qguide__diffs" }, diffBtns)
       ]),
       el("div", { class: "qguide__actions" }, [backLink, startBtn])
     ]);

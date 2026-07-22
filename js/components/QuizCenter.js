@@ -540,13 +540,29 @@ AHS.QuizCenter = (function () {
     return q.indexOf("[Stub]") !== 0 && a.indexOf("[Stub]") !== 0;
   }
 
+  /* EO-S6.9-002: Session (Schema v1.0) questions for the Practice list —
+     read-only view of AHS.LearningQuestionSession. Session records are
+     already validate-gated at add() (no Stub can exist there), but the
+     same isRealLearningQuestion filter is applied for defense in depth. */
+  function sessionQuestions(filterMaterialId) {
+    var session = AHS.LearningQuestionSession;
+    if (!session) { return []; }
+    var items = filterMaterialId
+      ? (typeof session.findByMaterialId === "function" ? session.findByMaterialId(filterMaterialId) : [])
+      : (typeof session.list === "function" ? session.list() : []);
+    return items.filter(isRealLearningQuestion);
+  }
+
   function practiceEmptyState(forMaterialId) {
     var hint = forMaterialId
-      ? "這份教材目前還沒有練習題，AI 出題功能仍在開發中。"
-      : "請先上傳教材，系統會自動產生練習題。";
+      ? "這份教材目前還沒有練習題，完成建立後會自動顯示於此。"
+      : "請先上傳教材，AI 完成建立後練習題會自動顯示於此。";
+    /* EO-S6.9-001 (PMO Ruling 5, 納入): mandated Empty State copy.
+       Pure text change — the empty-state logic and the Task 004 [Stub]
+       filter above are untouched. */
     return el("section", { class: "card quiz-practice__empty", "aria-label": "尚無練習題" }, [
       el("span", { class: "quiz-practice__empty-icon", html: AHS.Icons.quiz() }),
-      el("p", { class: "quiz-practice__empty-title", text: "尚未建立題目" }),
+      el("p", { class: "quiz-practice__empty-title", text: "AI 正在建立練習題……" }),
       el("p", { class: "quiz-practice__empty-hint", text: hint })
     ]);
   }
@@ -562,6 +578,8 @@ AHS.QuizCenter = (function () {
     /* Task 004: never render a [Stub] placeholder as a practice
        question — real records only, else the honest Empty State. */
     items = items.filter(isRealLearningQuestion);
+    /* EO-S6.9-002: merge in Schema v1.0 questions from the Session. */
+    items = items.concat(sessionQuestions(filterMaterialId));
 
     if (!items.length) {
       return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
@@ -615,13 +633,21 @@ AHS.QuizCenter = (function () {
         el("strong", { text: "標準答案：" }),
         el("span", { text: String(record.answer) })
       ]));
-      [
-        expBlock("解題步驟", exp.steps),
-        expBlock("為什麼答案正確", exp.whyCorrect ? [exp.whyCorrect] : []),
-        expBlock("其他選項錯誤原因", exp.whyOthersWrong),
-        expBlock("常見錯誤", exp.commonMistakes),
-        expBlock("解題技巧", exp.tips)
-      ].filter(Boolean).forEach(function (node) { answerSlot.appendChild(node); });
+      /* EO-S6.9-002: Schema v1.0 records carry a STRING explanation;
+         EO-S6-004 records carry the structured object. Render both —
+         display-layer compatibility only, neither schema is altered. */
+      if (typeof exp === "string") {
+        [expBlock("詳解", exp ? [exp] : [])]
+          .filter(Boolean).forEach(function (node) { answerSlot.appendChild(node); });
+      } else {
+        [
+          expBlock("解題步驟", exp.steps),
+          expBlock("為什麼答案正確", exp.whyCorrect ? [exp.whyCorrect] : []),
+          expBlock("其他選項錯誤原因", exp.whyOthersWrong),
+          expBlock("常見錯誤", exp.commonMistakes),
+          expBlock("解題技巧", exp.tips)
+        ].filter(Boolean).forEach(function (node) { answerSlot.appendChild(node); });
+      }
       if (record.knowledgePoint) {
         answerSlot.appendChild(el("p", { class: "quiz-practice__meta", text: "考點：" + record.knowledgePoint }));
       }
@@ -734,14 +760,28 @@ AHS.QuizCenter = (function () {
        Question records only (same isRealLearningQuestion filter as the
        Practice list itself — Task 004 — so its 題型/難度 statistics can
        never be computed from a [Stub] placeholder). */
+    /* EO-S6.9-002 · Question Generation wiring: 開始練習 now carries the
+       student's explicit difficulty (Ruling 2B) into
+       AHS.QuestionGenerationFlow.run() — Summary → Generator → Schema
+       v1.0 → Session, triple-validated, deduped, zero fabrication —
+       then reveals the Practice list, which merges Session questions
+       with the existing real Runtime questions (read-only on both;
+       LearningQuestionRuntime itself is untouched). An empty-content
+       summary generates nothing and the mandated
+       「AI 正在建立練習題……」Empty State shows. */
     function showQuestionGuide() {
       var runtime = AHS.LearningQuestionRuntime;
       var records = (runtime && typeof runtime.findByMaterialId === "function")
         ? runtime.findByMaterialId(initialMaterialId) : [];
       AHS.UI.mount(practiceRoot, AHS.QuestionGuide.create({
         materialId: initialMaterialId,
-        questions: records.filter(isRealLearningQuestion),
-        onStart: showPracticeList
+        questions: records.filter(isRealLearningQuestion).concat(sessionQuestions(initialMaterialId)),
+        onStart: function (difficulty) {
+          if (AHS.QuestionGenerationFlow && typeof AHS.QuestionGenerationFlow.run === "function") {
+            AHS.QuestionGenerationFlow.run(initialMaterialId, difficulty);
+          }
+          showPracticeList();
+        }
       }));
     }
 

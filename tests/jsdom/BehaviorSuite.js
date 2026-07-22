@@ -130,10 +130,11 @@ console.log("\n[1] quiz.html — Task 001/004: guide entry + stub filtering (stu
     !!guide.querySelector('a.qguide__back[href="summary.html?materialId=rt_1"]'));
 
   // 開始練習 → practice list must show Empty State (stub filtered out)
+  guide.querySelectorAll(".qguide__diff")[1].click(); /* Ruling 2B: explicit pick */
   guide.querySelector(".qguide__start").click();
   const empty = guideMount.querySelector(".quiz-practice__empty");
   check("開始練習 reveals Practice list", !!guideMount.querySelector(".quiz-practice"));
-  check("Task 004: [Stub] question filtered — Empty State shown", !!empty && /尚未建立題目/.test(empty.textContent));
+  check("Task 004: [Stub] question filtered — Empty State shown", !!empty && /AI 正在建立練習題/.test(empty.textContent));
   check("Practice list contains no [Stub] text anywhere",
     ![...doc.querySelectorAll(".quiz-practice__row-q")].some(n => /\[Stub\]/.test(n.textContent)));
   check("Console errors = 0 (quiz.html, stub data)", consoleErrors.length === 0);
@@ -160,6 +161,7 @@ console.log("\n[2] quiz.html — Task 001: guide with REAL summary + real questi
   check("難度 advice from real record (易)", /「易」難度為主/.test(guide.textContent));
   check("作答提醒 cites real pitfalls count", /1 個易錯重點/.test(guide.textContent));
   check("學習建議 passes through real reviewSuggestions", /建議複習：第三章/.test(guide.textContent));
+  guide.querySelectorAll(".qguide__diff")[1].click(); /* Ruling 2B: explicit pick */
   guide.querySelector(".qguide__start").click();
   const rows = [...mountEl.querySelectorAll(".quiz-practice__row-q")];
   check("Practice list shows exactly the 1 real question", rows.length === 1 && /sinθ/.test(rows[0].textContent));
@@ -257,6 +259,63 @@ for (const page of ["index.html", "materials.html", "summary.html", "quiz.html",
     check(page + " loads without throwing", false);
     console.log("   threw:", e.message);
   }
+}
+
+
+console.log("\n[8] EO-S6.9-002 — Question Generation wiring (guide picker -> flow -> practice list)");
+{
+  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
+  const { window, consoleErrors } = loadPage("quiz.html", {
+    seedSession: {
+      "ahs:materialRuntime": materialSeed,
+      "ahs:knowledgeRuntime": knowSeed,
+      "ahs:summaryRuntime": realSummary,
+      "ahs:learningQuestionRuntime": { items: [], seq: 0 }
+    }
+  });
+  const doc = window.document;
+  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  doc.body.appendChild(mountEl);
+  const guide = mountEl.querySelector(".qguide");
+  const start = guide.querySelector(".qguide__start");
+  check("開始練習 disabled until難度明確選擇 (Ruling 2B)", start.hasAttribute("disabled"));
+  const diffs = [...guide.querySelectorAll(".qguide__diff")];
+  check("三個難度選項、無預設 is-active", diffs.length === 3 && diffs.every(b => !b.classList.contains("is-active")));
+  diffs.find(b => b.getAttribute("data-difficulty") === "easy").click();
+  check("選擇後 start 啟用", !start.hasAttribute("disabled"));
+  start.click();
+  const rows = [...mountEl.querySelectorAll(".quiz-practice__row-q")];
+  check("真實 Summary 產生 Schema v1.0 題目並顯示於 Practice 列表 (5 KP -> 5 題)", rows.length === 5);
+  check("列表零 Stub/Mock/Placeholder", rows.every(n => !/\[Stub\]|Mock|Placeholder/.test(n.textContent)));
+  check("Session 實際寫入 5 題且 LearningQuestionRuntime 零寫入",
+    window.AHS.LearningQuestionSession.count() === 5 && window.AHS.LearningQuestionRuntime.list().length === 0);
+  rows[0].closest(".quiz-practice__row") ? rows[0].closest(".quiz-practice__row").click() : rows[0].click();
+  const reveal = mountEl.querySelector(".quiz-practice__reveal");
+  if (reveal) {
+    reveal.click();
+    check("v1.0 字串 explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
+  } else {
+    check("v1.0 字串 explanation 正常渲染（詳解區塊）", false);
+  }
+  check("Console errors = 0 (generation wiring)", consoleErrors.length === 0);
+  if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0,3));
+}
+
+console.log("\n[9] EO-S6.9-002 — empty-content summary -> mandated Empty State, zero fake questions");
+{
+  const emptySummary = { items: [Object.assign({}, realSummary.items[0], { coreConcepts: [], definitions: [], pitfalls: [], memorize: [], reviewSuggestions: [] })], seq: 1 };
+  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "", section: "", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
+  const { window } = loadPage("quiz.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": emptySummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
+  });
+  const doc = window.document;
+  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  doc.body.appendChild(mountEl);
+  [...mountEl.querySelectorAll(".qguide__diff")][1].click();
+  mountEl.querySelector(".qguide__start").click();
+  const empty = mountEl.querySelector(".quiz-practice__empty");
+  check("Summary 尚未完成 -> AI 正在建立練習題……", !!empty && /AI 正在建立練習題/.test(empty.textContent));
+  check("零假題目寫入 Session", window.AHS.LearningQuestionSession.count() === 0);
 }
 
 console.log("\n==============================");

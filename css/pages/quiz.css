@@ -377,3 +377,17 @@
 }
 .qguide__start:hover { filter: brightness(1.05); }
 .qguide__start svg { width: 16px; height: 16px; }
+
+/* ---- Question Guide difficulty picker — EO-S6.9-002 (Ruling 2B:
+   explicit choice required; no pre-selected default). ---- */
+.qguide__pick { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; border-top: 1px solid var(--line); }
+.qguide__diffs { display: flex; gap: 8px; }
+.qguide__diff {
+  border: 1px solid var(--line); border-radius: var(--radius-pill);
+  background-color: transparent; color: var(--text);
+  font: inherit; font-size: 13px; font-weight: 700;
+  padding: 8px 18px; cursor: pointer;
+}
+.qguide__diff:hover { border-color: var(--brand); color: var(--brand); }
+.qguide__diff.is-active { background-color: var(--brand); border-color: var(--brand); color: #ffffff; }
+.qguide__start[disabled] { opacity: 0.45; cursor: not-allowed; }
