@@ -174,7 +174,7 @@ window.AHS = window.AHS || {};
       if (quoteEl) { quoteEl.textContent = AHS.Utils.getDailyQuote(); }
     }
 
-    var el = AHS.UI.el;
+    var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
     /* Main column (left): hero, recent materials, then 學習統計 | 學習計畫
        side by side. Right rail: 今日任務, AI 巧巧老師, 成就勳章.
@@ -212,9 +212,30 @@ window.AHS = window.AHS || {};
     shell.main.appendChild(buildHome());
   }
 
+  function coreReady() {
+    return !!(window.AHS && AHS.UI && typeof AHS.UI.el === "function" &&
+              AHS.AppShell && typeof AHS.AppShell.create === "function");
+  }
+
+  /* EO-S7.0-HOTFIX-001 · Initialization Order gate: Browser -> window.AHS
+     -> Core Runtime -> AppShell -> Page Runtime -> Component -> Render.
+     Components are never created before AppShell's dependencies exist.
+     On core-load failure (e.g. a 404'd script), show a diagnostic
+     instead of a white page. */
+  function guardedInit() {
+    if (coreReady()) { init(); return; }
+    var app = document.getElementById("app");
+    if (app) {
+      app.textContent = "系統資源載入失敗（js/core/UI.js 或 AppShell 未載入）。請重新整理；若持續發生，請回報 PMO 檢查部署檔案。";
+    }
+    if (window.console && console.warn) {
+      console.warn("AHS core not ready — component mount aborted (EO-S7.0-HOTFIX-001 gate).");
+    }
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", guardedInit);
   } else {
-    init();
+    guardedInit();
   }
 })();

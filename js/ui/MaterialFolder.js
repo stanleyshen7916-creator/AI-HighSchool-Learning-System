@@ -6,7 +6,7 @@
 window.AHS = window.AHS || {};
 AHS.MaterialFolder = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   var SUBJECTS = ["chinese", "english", "math", "physics", "chemistry",
     "biology", "history", "geography", "civics"];

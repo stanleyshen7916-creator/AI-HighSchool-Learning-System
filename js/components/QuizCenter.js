@@ -17,7 +17,7 @@
 window.AHS = window.AHS || {};
 AHS.QuizCenter = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   var DIFF_TONE = { "易": "#22b573", "易~中等": "#22b573", "中等": "#f59e0b", "難": "#ef4444" };
 

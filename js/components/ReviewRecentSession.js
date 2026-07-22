@@ -16,7 +16,7 @@
 window.AHS = window.AHS || {};
 AHS.ReviewRecentSession = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   function metaItem(label, value) {
     return el("div", { class: "rv-recent__item" }, [

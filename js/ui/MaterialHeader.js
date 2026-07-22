@@ -15,7 +15,7 @@
 window.AHS = window.AHS || {};
 AHS.MaterialHeader = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   var DEFAULT_TITLE = "教材中心";
   var DEFAULT_SUBTITLE = "選擇教材，開始今天的學習。";

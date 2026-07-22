@@ -29,7 +29,7 @@
 window.AHS = window.AHS || {};
 AHS.QuestionGuide = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   /* Fixed five-section order — mirrors SummaryCenter.js exactly. */
   var SECTION_ORDER = [

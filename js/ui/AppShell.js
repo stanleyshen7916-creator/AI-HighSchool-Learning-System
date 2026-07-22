@@ -5,7 +5,7 @@
 window.AHS = window.AHS || {};
 AHS.AppShell = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   /* Pages that actually exist as standalone files. Nav items pointing here
      render as real links; the rest stay mock (single-page prototype). */

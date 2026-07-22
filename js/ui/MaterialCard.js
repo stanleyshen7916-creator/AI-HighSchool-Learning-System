@@ -15,7 +15,7 @@
 window.AHS = window.AHS || {};
 AHS.MaterialCard = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   /* Module Completion: Favorite state is now owned by MaterialRuntime
      (item.favorite is the single source of truth). The card reads

@@ -9,7 +9,7 @@
 window.AHS = window.AHS || {};
 AHS.MaterialSearchBar = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   var PLACEHOLDER = "搜尋教材、章節或關鍵字";
 

@@ -19,7 +19,7 @@
 window.AHS = window.AHS || {};
 AHS.MaterialFilter = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   var STATUS_OPTIONS = [
     { id: "all", label: "全部狀態" },

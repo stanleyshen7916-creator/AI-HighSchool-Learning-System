@@ -8,7 +8,7 @@
 window.AHS = window.AHS || {};
 AHS.MaterialGrid = (function () {
   "use strict";
-  var el = AHS.UI.el;
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
   /* Canonical category order + icon, per RC-001. Categories not in this
      list still render (fallback bucket) after the known ones. */
