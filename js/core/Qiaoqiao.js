@@ -20,8 +20,20 @@ window.AHS = window.AHS || {};
 AHS.Qiaoqiao = (function () {
   "use strict";
 
+  /* EO-S6.8-Repository-002 · Repository Structure v2.1 (LOCK): image
+     assets live directly under assets/expressions/ and assets/avatars/
+     (v2.1 flattened the v2.0 illustrations/ level) with lowercase
+     kebab-case filenames. The two SEPARATE base constants are deliberately kept
+     (a single BASE caused a 16-image 404 regression in the past — do
+     not merge them). kebab() converts a camelCase key (e.g. thumbsUp)
+     to its kebab-case filename segment (thumbs-up) — path construction
+     only, zero behavior change. */
   var EXPR_BASE = "assets/expressions/";
   var POSE_BASE = "assets/avatars/";
+
+  function kebab(key) {
+    return String(key).replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+  }
 
   /* expression key -> Chinese label (10 approved expressions) */
   var EXPRESSIONS = {
@@ -62,13 +74,13 @@ AHS.Qiaoqiao = (function () {
   /* ---- Bust (portrait) ------------------------------------------------- */
   function bust(expressionKey) {
     var key = EXPRESSIONS[expressionKey] ? expressionKey : "gentle";
-    return img(EXPR_BASE + "expr_" + key + ".png", EXPRESSIONS[key], "bust");
+    return img(EXPR_BASE + "expr-" + kebab(key) + ".png", EXPRESSIONS[key], "bust");
   }
 
   /* ---- Full body / pose ------------------------------------------------ */
   function full(poseKey) {
     var key = POSES[poseKey] ? poseKey : "standing";
-    return img(POSE_BASE + "pose_" + key + ".png", POSES[key], "full");
+    return img(POSE_BASE + "pose-" + kebab(key) + ".png", POSES[key], "full");
   }
 
   function expressionLabel(key) { return EXPRESSIONS[key] || ""; }

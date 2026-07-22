@@ -1,5 +1,0 @@
-<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI 高中學習系統">
-  <rect width="64" height="64" rx="14" fill="#1a4a3c"/>
-  <path d="M32 16L12 24l20 8 16-6.4V38h4V24L32 16z" fill="#ffffff"/>
-  <path d="M20 33v6c0 3.3 5.4 6 12 6s12-2.7 12-6v-6l-12 4.8L20 33z" fill="#e7f2ec"/>
-</svg>

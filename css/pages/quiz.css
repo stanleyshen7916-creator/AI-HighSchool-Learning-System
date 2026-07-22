@@ -346,3 +346,34 @@
 .quiz-practice__exp-title { display: block; margin-bottom: 4px; color: var(--brand-ink); }
 .quiz-practice__exp-list { margin: 0; padding-left: 18px; color: var(--text-muted); line-height: 1.7; }
 .quiz-practice__meta { margin: 0; font-size: 12px; color: var(--text-faint); }
+
+/* ---- AI Question Guide (巧巧老師出題引導) — Sprint 6.8 EO-S6.8-002
+   Task 001. Shown as the entry view of the Summary → Question Guide →
+   Practice flow (deep link with materialId only). BEM, tokens only. ---- */
+.qguide { display: flex; flex-direction: column; gap: 16px; }
+.qguide__head { display: flex; align-items: flex-start; gap: 12px; }
+.qguide__avatar { flex: 0 0 auto; }
+.qguide__avatar img { display: block; }
+.qguide__titles { flex: 1 1 auto; min-width: 0; }
+.qguide__title { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.qguide__intro { margin: 4px 0 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.qguide__rows { display: flex; flex-direction: column; gap: 12px; }
+.qguide__row { display: flex; flex-direction: column; gap: 2px; }
+.qguide__row-label { font-size: 12px; font-weight: 700; color: var(--brand-ink); }
+.qguide__row-text { margin: 0; font-size: 13px; color: var(--text); line-height: 1.7; }
+.qguide__row-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--text); line-height: 1.7; }
+.qguide__actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 4px; border-top: 1px solid var(--line); }
+.qguide__back {
+  display: inline-flex; align-items: center; color: var(--text-muted);
+  font-size: 13px; font-weight: 700; text-decoration: none; padding: 8px 4px;
+}
+.qguide__back:hover { color: var(--brand); }
+.qguide__start {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 0; border-radius: var(--radius-pill); padding: 10px 20px;
+  background-color: var(--brand); color: #ffffff;
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  box-shadow: var(--shadow-btn);
+}
+.qguide__start:hover { filter: brightness(1.05); }
+.qguide__start svg { width: 16px; height: 16px; }

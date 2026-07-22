@@ -157,15 +157,18 @@ AHS.SummaryCenter = (function () {
     if (counts.coreConcepts) { highlightParts.push(counts.coreConcepts + " 個核心概念"); }
     if (counts.pitfalls) { highlightParts.push(counts.pitfalls + " 個易錯重點"); }
     if (counts.memorize) { highlightParts.push(counts.memorize + " 項必背內容"); }
+    /* Task 003 (PMO ruling): the no-content branch uses the mandated
+       analyzing-state wording — never「尚未有具體內容」-style copy, and
+       never fabricated highlights. */
     var highlightText = highlightParts.length
       ? "《" + (record.title || "本教材") + "》整理了 " + highlightParts.join("、") + "。"
-      : "《" + (record.title || "本教材") + "》的內容仍在整理中，尚未有具體重點可顯示。";
+      : "《" + (record.title || "本教材") + "》AI 正在分析教材，尚未取得可整理內容，完成分析後將自動更新。";
 
     var reminderText;
     if (counts.pitfalls > 0) {
       reminderText = "本教材有 " + counts.pitfalls + " 個易錯重點，複習時請特別留意。";
     } else if (totalItems === 0) {
-      reminderText = "目前尚無足夠內容可提醒，建議稍後再查看。";
+      reminderText = "教材分析完成前，暫無提醒事項；完成分析後將自動更新。";
     } else {
       reminderText = "目前沒有標記易錯重點，可依複習建議安排學習節奏。";
     }
@@ -310,9 +313,16 @@ AHS.SummaryCenter = (function () {
       sections = el("div", { class: "sum-section-grid" },
         fiveSections.map(function (s) { return sectionList(s.key, s.icon, s.title, record[s.key]); }));
     } else {
-      sections = el("section", { class: "card sum-section sum-section--pending", "aria-label": "學習總結內容" }, [
-        el("p", { class: "sum-section__pending", text: "此教材的學習總結尚未包含具體內容。" }),
-        el("p", { class: "sum-section__pending-hint", text: "教材解析（核心概念／重要定義／易錯重點／必背內容）功能持續開發中，完成後會自動顯示於此。" })
+      /* Sprint 6.8 EO-S6.8-002 Task 003 (PAT Critical, PMO ruling):
+         Parser 尚未完成解析時的 Pending State 固定顯示這三句 —— 不得
+         Placeholder、不得虛構五段式內容。渲染邏輯本身不變：一旦
+         Parser 在未來 EO 產出真實內容、Summary Runtime record 的五段
+         陣列有值，上方 anyContent 分支就會自動改走五段式真實呈現，
+         此區塊自然消失（「完成分析後將自動更新」即由此保證）。 */
+      sections = el("section", { class: "card sum-section sum-section--pending", "aria-label": "學習總結分析中" }, [
+        el("p", { class: "sum-section__pending", text: "AI 正在分析教材" }),
+        el("p", { class: "sum-section__pending-hint", text: "尚未取得可整理內容" }),
+        el("p", { class: "sum-section__pending-hint", text: "完成分析後將自動更新" })
       ]);
     }
 

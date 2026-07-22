@@ -518,6 +518,28 @@ AHS.QuizCenter = (function () {
      carried on each Learning Question record (from QuestionGenerator.js,
      untouched). Empty State per EO-S6-006 mandated copy when
      LearningQuestionRuntime has no records. */
+  /* Sprint 6.8 EO-S6.8-002 Task 004 (PAT Critical, Practice Mode audit):
+     QuestionGenerator.js's Mode B ("ai") candidates currently carry an
+     honestly-labeled "[Stub] ..." question/answer (no real AI exists in
+     this environment). They pass the 10-item completeness gate — every
+     field IS present — so LearningQuestionRuntime stores them, and until
+     now Practice Mode rendered them as if they were real questions.
+     That is exactly the Placeholder-in-Practice-Mode state this Task
+     forbids ("不得 Placeholder／Demo Question"). Fix at the UI layer
+     only: Practice Mode (and the Question Guide's statistics) simply do
+     not show a record whose question or answer is still a [Stub] —
+     showing the mandated Empty State instead. QuestionGenerator.js /
+     LearningQuestionRuntime.js themselves are untouched (Runtime
+     Architecture is Do-NOT-Modify this EO); once real AI content
+     replaces the stubs, these same records surface with zero further
+     change here. */
+  function isRealLearningQuestion(record) {
+    var q = String((record && record.question) || "");
+    var a = (record && record.answer !== undefined && record.answer !== null)
+      ? String(record.answer) : "";
+    return q.indexOf("[Stub]") !== 0 && a.indexOf("[Stub]") !== 0;
+  }
+
   function practiceEmptyState(forMaterialId) {
     var hint = forMaterialId
       ? "這份教材目前還沒有練習題，AI 出題功能仍在開發中。"
@@ -537,6 +559,9 @@ AHS.QuizCenter = (function () {
           ? runtime.findByMaterialId(filterMaterialId)
           : allItems.filter(function (r) { return r.materialId === filterMaterialId; }))
       : allItems;
+    /* Task 004: never render a [Stub] placeholder as a practice
+       question — real records only, else the honest Empty State. */
+    items = items.filter(isRealLearningQuestion);
 
     if (!items.length) {
       return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
@@ -698,7 +723,33 @@ AHS.QuizCenter = (function () {
     function showPracticeQuestion(record) {
       AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, showPracticeList));
     }
-    showPracticeList();
+
+    /* Sprint 6.8 EO-S6.8-002 Task 001 (AI Question Guide): a real deep
+       link from Summary Detail (mode=practice&materialId=...) now lands
+       on 巧巧老師出題引導 first — completing the fixed Summary →
+       Question Guide → Practice flow. Its 開始練習 button reveals the
+       existing Practice list, unchanged. Every other way into Practice
+       Mode (mode tab click, no materialId) behaves exactly as before —
+       purely additive. The guide receives this material's REAL Learning
+       Question records only (same isRealLearningQuestion filter as the
+       Practice list itself — Task 004 — so its 題型/難度 statistics can
+       never be computed from a [Stub] placeholder). */
+    function showQuestionGuide() {
+      var runtime = AHS.LearningQuestionRuntime;
+      var records = (runtime && typeof runtime.findByMaterialId === "function")
+        ? runtime.findByMaterialId(initialMaterialId) : [];
+      AHS.UI.mount(practiceRoot, AHS.QuestionGuide.create({
+        materialId: initialMaterialId,
+        questions: records.filter(isRealLearningQuestion),
+        onStart: showPracticeList
+      }));
+    }
+
+    if (startOnPractice && initialMaterialId && AHS.QuestionGuide) {
+      showQuestionGuide();
+    } else {
+      showPracticeList();
+    }
 
     /* ---- Mode toggle — "Practice ↓ LearningQuestionRuntime" vs
        "Exam ↓ QuestionRuntime", 兩者不得混用: switching modes only

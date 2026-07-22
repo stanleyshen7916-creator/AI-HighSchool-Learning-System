@@ -1,0 +1,14 @@
+{
+  "name": "ai-highschool-learning-system",
+  "version": "0.6.8",
+  "private": true,
+  "description": "AI High School Learning System - static prototype (HTML/CSS/JS, Mock Data, no backend)",
+  "scripts": {
+    "test": "node tests/jsdom/BehaviorSuite.js && node tests/regression/PipelineRegression.js",
+    "verify": "node scripts/verify/VerifyPaths.js && node scripts/verify/VerifyForbiddenPatterns.js",
+    "validate:html": "node tests/validator/HtmlValidator.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}
