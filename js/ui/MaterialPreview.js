@@ -65,7 +65,10 @@ AHS.MaterialPreview = (function () {
   function open(item, onDownload) {
     var subjName = (AHS.Subjects[item.subject] || { name: "其他" }).name;
     var ext = String(item.fileType || "").toLowerCase();
-    var kind = kindOf(ext, item.file && item.file.type);
+    /* HF-8.2.003: MIME fallback also reads the stored payload's type, so
+       an extension-less batch upload still previews after a page change. */
+    var storedPayload = (!item.file && AHS.MaterialFileStore) ? AHS.MaterialFileStore.get(item.id) : null;
+    var kind = kindOf(ext, (item.file && item.file.type) || (storedPayload && storedPayload.type) || "");
 
     var overlay = el("div", {
       class: "mat-preview__overlay", role: "dialog", "aria-modal": "true",
@@ -88,9 +91,32 @@ AHS.MaterialPreview = (function () {
     closeX.addEventListener("click", close);
 
     var bodyChildren = [];
-    var hasFile = !!item.file && typeof window.URL !== "undefined" && !!window.URL.createObjectURL;
-    var url = hasFile ? window.URL.createObjectURL(item.file) : null;
-    overlay._objectUrl = url;
+    /* HF-8.2.003: preview no longer depends on the live File object.
+       MaterialRuntime cannot persist a File, so after any page change
+       item.file is null and every preview silently fell back to the
+       "cannot preview" info page — including for freshly batch-uploaded
+       images. The material's own stored bytes (one unique storage key
+       per material, AHS.MaterialFileStore) are now used as the source,
+       so preview works across page views exactly like download does.
+       Only an ObjectURL is revoked on close; a data URL must not be. */
+    var canObjectUrl = typeof window.URL !== "undefined" && !!window.URL.createObjectURL;
+    var url = null;
+    var isObjectUrl = false;
+    if (item.file && canObjectUrl) {
+      url = window.URL.createObjectURL(item.file);
+      isObjectUrl = true;
+    } else if (AHS.MaterialFileStore) {
+      var storedBlob = canObjectUrl ? AHS.MaterialFileStore.blobFor(item.id) : null;
+      if (storedBlob) {
+        url = window.URL.createObjectURL(storedBlob);
+        isObjectUrl = true;
+      } else {
+        /* Data URL renders directly in img / video / audio / iframe. */
+        url = AHS.MaterialFileStore.dataUrlFor(item.id);
+      }
+    }
+    var hasFile = !!url;
+    overlay._objectUrl = isObjectUrl ? url : null;
 
     if (kind && hasFile) {
       /* Inline preview. */

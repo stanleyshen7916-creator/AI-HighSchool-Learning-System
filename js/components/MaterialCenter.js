@@ -484,6 +484,31 @@ AHS.MaterialCenter = (function () {
 
       if (files.length > 1 && AHS.BulkUploadDialog) {
         var bulkDialog = AHS.BulkUploadDialog.open(files, function (items) {
+          /* HF-8.2.003: every file is stored under its OWN key, and the
+             per-file outcome is collected so the user is told exactly
+             which images could not be kept for later sessions — batch
+             upload never fails silently or partially in the dark. */
+          var pending = items.length;
+          var notStored = [];
+          function report() {
+            if (!notStored.length) { return; }
+            var msg = "已新增 " + items.length + " 個教材；其中 " + notStored.length +
+              " 個檔案超出瀏覽器暫存空間（" + notStored.join("、") +
+              "），僅能於本次瀏覽階段預覽與下載。";
+            status.textContent = msg;
+            status.removeAttribute("hidden");
+            /* runLearningPipeline() writes its own staged progress into
+               this same shared status line on a 260ms timer chain (≤5
+               stages), which finishes after the FileReader results do and
+               would otherwise bury this warning. Re-assert it once the
+               chain is certainly over. The authoritative, always-correct
+               feedback remains at the point of action: download / preview
+               report the precise per-file state on demand. */
+            setTimeout(function () {
+              status.textContent = msg;
+              status.removeAttribute("hidden");
+            }, 5 * 260 + 400);
+          }
           items.forEach(function (item) {
             var record = AHS.MaterialRuntime.add({
               title: item.title, subject: item.subject, grade: item.grade,
@@ -491,11 +516,16 @@ AHS.MaterialCenter = (function () {
               fileName: item.file.name, fileType: fileExt(item.file.name),
               fileSize: formatSize(item.file.size), file: item.file
             });
-            /* HF-8.2.001 · HF-002: keep the real bytes so download still
-               works after leaving this page (Runtime cannot persist a File). */
-            rememberFileBytes(record.id, item.file);
+            rememberFileBytes(record.id, item.file, function (result) {
+              if (!result || result.state !== "stored") {
+                notStored.push(item.file.name || record.title);
+              }
+              pending -= 1;
+              if (pending === 0) { report(); }
+            });
             runLearningPipeline(record.id);
           });
+          /* Immediate feedback; refined once every read settles. */
           status.textContent = "已新增 " + items.length + " 個教材";
           status.removeAttribute("hidden");
           renderAll();
@@ -519,9 +549,14 @@ AHS.MaterialCenter = (function () {
             fileSize: formatSize(f.size),
             file: f
           });
-          /* HF-8.2.001 · HF-002: keep the real bytes so download still
-             works after leaving this page (Runtime cannot persist a File). */
-          rememberFileBytes(record.id, f);
+          /* HF-8.2.003: bytes under this material's own unique key. */
+          rememberFileBytes(record.id, f, function (result) {
+            if (result && result.state !== "stored") {
+              status.textContent = "已新增教材：" + meta.title +
+                "（檔案超出瀏覽器暫存空間，僅能於本次瀏覽階段預覽與下載）";
+              status.removeAttribute("hidden");
+            }
+          });
           status.textContent = "已新增教材：" + meta.title;
           status.removeAttribute("hidden");
           renderAll();
@@ -615,103 +650,65 @@ AHS.MaterialCenter = (function () {
       renderAll();
     }
 
-    /* ---- Download Flow · file byte store (HF-8.2.001 · HF-002) ---------
-       Root cause of "教材存在，點擊下載無反應／下載失敗": MaterialRuntime's
-       `file` field holds a live File object and is documented as NOT
-       persisted (a File cannot be JSON-serialised). The material RECORD
-       survives navigation through the Adapter, the File does not — so
-       from the second page view onward every download fell into the
-       "no downloadable file" branch, whose only feedback was one line of
-       small status text that reads as "no reaction".
+    /* ---- Download / Preview Flow · file bytes (HF-8.2.003) -------------
+       Delegated to AHS.MaterialFileStore, which keeps each material's
+       bytes under its OWN unique storage key.
 
-       Fix, without touching the Runtime Schema (forbidden) and without a
-       new Runtime: the Download Flow keeps its own companion store of the
-       real uploaded bytes as a data URL, keyed by material id, written
-       only through AHS.PersistenceAdapter (sessionStorage — the same
-       sanctioned mechanism every Runtime uses; never localStorage /
-       indexedDB). On download, a live File is used when present,
-       otherwise the stored bytes are rebuilt into a Blob. Everything is
-       client-side and same-origin, so it behaves identically on GitHub
-       Pages as locally.
+       HF-8.2.003 root cause of "批次上傳圖片 → 預覽 → 下載失效":
+       HF-8.2.001's store kept every file inside ONE key, so each save
+       rewrote the whole collection — with a batch of images the second
+       write already had to fit image 1 + image 2 into a single value and
+       sessionStorage's ~5 MB quota rejected it, silently degrading every
+       file after the first. Single upload passed, batch upload failed.
+       One key per material removes the cross-file interference entirely:
+       a per-file quota failure can no longer affect any other file, and
+       two uploads can never overwrite each other.
 
-       Honesty: sessionStorage has a quota (~5 MB). When a file is too
-       large to keep, nothing is silently swallowed — the entry is marked
-       oversize and the download message says so explicitly, and the file
-       still downloads normally within the session that uploaded it. */
-    var FILE_STORE_KEY = "materialFileStore";
+       Legacy note: HF-8.2.001's single "materialFileStore" key is read
+       as a fallback below, so a session started before this hotfix keeps
+       working instead of losing its bytes. */
+    var LEGACY_STORE_KEY = "materialFileStore";
 
-    function readFileStore() {
+    function legacyEntry(materialId) {
       var loaded = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function")
-        ? AHS.PersistenceAdapter.load(FILE_STORE_KEY) : null;
-      if (loaded && typeof loaded === "object" && loaded.files && typeof loaded.files === "object") {
-        return loaded;
-      }
-      return { files: {} };
+        ? AHS.PersistenceAdapter.load(LEGACY_STORE_KEY) : null;
+      if (loaded && loaded.files && loaded.files[materialId]) { return loaded.files[materialId]; }
+      return null;
     }
 
-    function writeFileStore(store) {
-      return !!(AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.save === "function" &&
-                AHS.PersistenceAdapter.save(FILE_STORE_KEY, store));
-    }
-
-    /* rememberFileBytes(materialId, file) — called right after a real
-       upload. Reads the actual bytes (FileReader, no network) and stores
-       them verbatim; on quota failure records an honest oversize marker
-       instead of a half-written entry. */
-    function rememberFileBytes(materialId, file) {
-      if (!materialId || !file || typeof window.FileReader === "undefined") { return; }
-      var reader = new window.FileReader();
-      reader.onload = function () {
-        var store = readFileStore();
-        store.files[materialId] = {
-          name: file.name || "",
-          type: file.type || "",
-          dataUrl: String(reader.result || "")
-        };
-        if (!writeFileStore(store)) {
-          /* Quota exceeded — keep the record honest and small. */
-          var fallback = readFileStore();
-          fallback.files[materialId] = { name: file.name || "", type: file.type || "", oversize: true };
-          writeFileStore(fallback);
-        }
-      };
-      reader.onerror = function () { /* nothing stored — download reports honestly */ };
-      try { reader.readAsDataURL(file); } catch (e) { /* same honest fallback */ }
+    /* rememberFileBytes(materialId, file, done) — called right after a
+       real upload; done(result) lets the batch path report honestly. */
+    function rememberFileBytes(materialId, file, done) {
+      if (!AHS.MaterialFileStore) { if (typeof done === "function") { done(null); } return; }
+      AHS.MaterialFileStore.put(materialId, file, done);
     }
 
     function forgetFileBytes(materialId) {
-      var store = readFileStore();
-      if (store.files[materialId]) {
-        delete store.files[materialId];
-        writeFileStore(store);
-      }
+      if (AHS.MaterialFileStore) { AHS.MaterialFileStore.remove(materialId); }
     }
 
-    function storedEntry(materialId) {
-      return readFileStore().files[materialId] || null;
-    }
-
-    /* dataUrlToBlob(dataUrl) — decodes the stored bytes back into a real
-       Blob so the download carries the original binary content, not a
-       text approximation. Returns null if decoding isn't possible. */
-    function dataUrlToBlob(dataUrl) {
-      if (typeof dataUrl !== "string" || dataUrl.indexOf(",") === -1) { return null; }
-      if (typeof window.atob !== "function" || typeof window.Uint8Array === "undefined" ||
-          typeof window.Blob === "undefined") { return null; }
-      var head = dataUrl.slice(0, dataUrl.indexOf(","));
-      var body = dataUrl.slice(dataUrl.indexOf(",") + 1);
-      var mime = /:(.*?);/.exec(head);
-      try {
-        if (head.indexOf("base64") === -1) {
-          return new window.Blob([decodeURIComponent(body)], { type: mime ? mime[1] : "" });
-        }
-        var binary = window.atob(body);
-        var bytes = new window.Uint8Array(binary.length);
-        for (var i = 0; i < binary.length; i += 1) { bytes[i] = binary.charCodeAt(i); }
-        return new window.Blob([bytes], { type: mime ? mime[1] : "application/octet-stream" });
-      } catch (e) {
-        return null;
+    /* downloadSourceFor(item) — { blob?, dataUrl?, state } describing the
+       best available real source for this material. */
+    function downloadSourceFor(item) {
+      if (item.file) { return { blob: item.file, state: "live" }; }
+      var store = AHS.MaterialFileStore;
+      if (store) {
+        var blob = store.blobFor(item.id);
+        if (blob) { return { blob: blob, dataUrl: store.dataUrlFor(item.id), state: "stored" }; }
+        var st = store.state(item.id);
+        if (st === "oversize") { return { state: "oversize" }; }
+        /* Bytes exist but cannot be decoded (corrupt / hand-edited
+           value): report it as unrecoverable rather than pretending the
+           material simply never had a file. */
+        if (st === "stored" || st === "failed") { return { state: "failed" }; }
       }
+      /* Pre-HF-8.2.003 session (single-key store): still honoured so an
+         in-flight session doesn't lose its bytes. The data URL itself is
+         a valid href, and a Blob is not required for it to download. */
+      var legacy = legacyEntry(item.id);
+      if (legacy && legacy.oversize) { return { state: "oversize" }; }
+      if (legacy && legacy.dataUrl) { return { dataUrl: legacy.dataUrl, state: "stored" }; }
+      return { state: "none" };
     }
 
     /* Low-level download (explicit user action only). */
@@ -725,18 +722,16 @@ AHS.MaterialCenter = (function () {
        This is the only change to the download mechanism itself — no
        Runtime, no new Storage, no Parser Interface change. */
     function doDownload(item) {
-      /* HF-8.2.001 · HF-002: prefer the live File (same-session upload),
-         otherwise rebuild the real bytes kept by the Download Flow's
-         companion store — this is what makes download work after any
-         page change, which previously always failed. */
-      var entry = item.file ? null : storedEntry(item.id);
-      var source = item.file || (entry && !entry.oversize ? dataUrlToBlob(entry.dataUrl) : null);
-
-      if (!source) {
+      /* HF-8.2.003: the live File when this session uploaded it,
+         otherwise the material's OWN stored bytes rebuilt into a real
+         Blob — one unique storage key per material, so a batch upload's
+         files can neither overwrite nor starve one another. */
+      var src = downloadSourceFor(item);
+      if (!src.blob && !src.dataUrl) {
         /* Never a silent fail — each cause gets its own precise message. */
-        if (entry && entry.oversize) {
+        if (src.state === "oversize") {
           status.textContent = "此教材檔案過大，超出瀏覽器暫存空間，僅能於上傳的同一次瀏覽階段下載。";
-        } else if (entry) {
+        } else if (src.state === "failed") {
           status.textContent = "此教材的檔案內容已無法還原，請重新上傳後再下載。";
         } else {
           status.textContent = "此教材沒有可下載的原始檔案，此檔案來源不支援直接下載。";
@@ -745,17 +740,17 @@ AHS.MaterialCenter = (function () {
         return;
       }
 
-      var hasObjectUrl = (typeof window.URL !== "undefined" && !!window.URL.createObjectURL);
+      var hasObjectUrl = (typeof window.URL !== "undefined" && !!window.URL.createObjectURL && !!src.blob);
       /* Blob URL is preferred; where createObjectURL is unavailable the
          stored data URL is used directly as the anchor href, so the
          download still works (both are same-origin and need no server —
          identical behaviour on GitHub Pages). */
-      if (!hasObjectUrl && !(entry && entry.dataUrl)) {
+      if (!hasObjectUrl && !src.dataUrl) {
         status.textContent = "此瀏覽器不支援直接下載檔案，請改用其他瀏覽器。";
         status.removeAttribute("hidden");
         return;
       }
-      var url = hasObjectUrl ? window.URL.createObjectURL(source) : entry.dataUrl;
+      var url = hasObjectUrl ? window.URL.createObjectURL(src.blob) : src.dataUrl;
       var a = document.createElement("a");
       a.href = url;
       /* Issue 005: always the original fileName (set verbatim from the

@@ -493,11 +493,14 @@ console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty S
 console.log("\n[17] HF-8.2.001 · HF-002 — 跨頁後仍可下載（Download Flow 位元組保存）");
 {
   const pdfBytes = Buffer.from("%PDF-1.4 AHS real bytes").toString("base64");
+  /* HF-8.2.003: one unique key per material ("materialFile:<id>") plus a
+     tiny index — the single shared key was the batch-upload root cause. */
   const seed = {
     "ahs:materialRuntime": { materials: [Object.assign({}, materialSeed.materials[0],
       { id: "rt_1", fileName: "trig.pdf", fileType: "PDF", file: null })], folders: [], seq: 1, folderSeq: 0 },
-    "ahs:materialFileStore": { files: { rt_1: {
-      name: "trig.pdf", type: "application/pdf", dataUrl: "data:application/pdf;base64," + pdfBytes } } }
+    "ahs:materialFileIndex": { entries: { rt_1: { name: "trig.pdf", type: "application/pdf", state: "stored" } } },
+    "ahs:materialFile:rt_1": { name: "trig.pdf", type: "application/pdf",
+      dataUrl: "data:application/pdf;base64," + pdfBytes }
   };
   const { window, consoleErrors } = loadPage("materials.html", { seedSession: seed });
   const doc = window.document;
@@ -533,18 +536,66 @@ console.log("\n[18] HF-8.2.001 · HF-002 — 無檔案來源／檔案過大：�
     /沒有可下載的原始檔案/.test(noFile.window.document.querySelector(".mat-status, [role='status']").textContent));
 
   const oversize = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base,
-    "ahs:materialFileStore": { files: { rt_1: { name: "big.pdf", type: "application/pdf", oversize: true } } } } });
+    "ahs:materialFileIndex": { entries: { rt_1: { name: "big.pdf", type: "application/pdf", state: "oversize" } } } } });
   oversize.window.document.querySelector(".mat-card__dl").click();
   check("檔案過大 → 明確說明僅同一階段可下載",
     /檔案過大.*同一次瀏覽階段/.test(oversize.window.document.querySelector(".mat-status, [role='status']").textContent));
 
   const corrupt = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base,
-    "ahs:materialFileStore": { files: { rt_1: { name: "x.pdf", type: "application/pdf", dataUrl: "壞掉的內容" } } } } });
+    "ahs:materialFileIndex": { entries: { rt_1: { name: "x.pdf", type: "application/pdf", state: "stored" } } },
+    "ahs:materialFile:rt_1": { name: "x.pdf", type: "application/pdf", dataUrl: "壞掉的內容" } } });
   corrupt.window.document.querySelector(".mat-card__dl").click();
   check("位元組無法還原 → 建議重新上傳",
     /無法還原.*重新上傳/.test(corrupt.window.document.querySelector(".mat-status, [role='status']").textContent));
   check("三種失敗情境 Console errors = 0",
     noFile.consoleErrors.length === 0 && oversize.consoleErrors.length === 0 && corrupt.consoleErrors.length === 0);
+}
+
+
+console.log("\n[19] HF-8.2.003 — 跨頁預覽改由位元組還原（先前必失敗）");
+{
+  const pngBytes = Buffer.from("PNG-real-bytes").toString("base64");
+  const { window, consoleErrors } = loadPage("materials.html", { seedSession: {
+    "ahs:materialRuntime": { materials: [Object.assign({}, materialSeed.materials[0],
+      { id: "rt_1", title: "圖片教材", fileName: "圖一.png", fileType: "PNG", file: null })],
+      folders: [], seq: 1, folderSeq: 0 },
+    "ahs:materialFileIndex": { entries: { rt_1: { name: "圖一.png", type: "image/png", state: "stored" } } },
+    "ahs:materialFile:rt_1": { name: "圖一.png", type: "image/png", dataUrl: "data:image/png;base64," + pngBytes }
+  } });
+  const doc = window.document;
+  window.URL.createObjectURL = function (blob) { return "blob:ahs/" + (blob && blob.size); };
+  window.URL.revokeObjectURL = function () {};
+  doc.querySelector(".mat-card__preview").click();
+  const overlay = doc.querySelector(".mat-preview__overlay, .mat-preview");
+  const img = overlay && overlay.querySelector("img.mat-preview__media");
+  check("跨頁圖片預覽渲染 img 且有 src（file 為 null 亦可）", !!img && !!img.getAttribute("src"));
+  check("預覽 Console errors = 0", consoleErrors.length === 0);
+}
+
+console.log("\n[20] HF-8.2.003 — 舊版單一 key 資料仍可下載（向下相容）");
+{
+  const legacyBytes = Buffer.from("LEGACY-single-key-bytes").toString("base64");
+  const { window, consoleErrors } = loadPage("materials.html", { seedSession: {
+    "ahs:materialRuntime": { materials: [Object.assign({}, materialSeed.materials[0],
+      { id: "rt_1", fileName: "legacy.pdf", fileType: "PDF", file: null })], folders: [], seq: 1, folderSeq: 0 },
+    "ahs:materialFileStore": { files: { rt_1: { name: "legacy.pdf", type: "application/pdf",
+      dataUrl: "data:application/pdf;base64," + legacyBytes } } }
+  } });
+  const doc = window.document;
+  let href = null, fileName = null;
+  const origCreate = doc.createElement.bind(doc);
+  doc.createElement = function (tag) {
+    const node = origCreate(tag);
+    if (String(tag).toLowerCase() === "a") {
+      node.click = function () { href = node.getAttribute("href"); fileName = node.getAttribute("download"); };
+    }
+    return node;
+  };
+  doc.querySelector(".mat-card__dl").click();
+  check("HF-8.2.001 舊資料仍可下載（data URL 直接作 href）",
+    typeof href === "string" && href.indexOf("data:application/pdf;base64,") === 0);
+  check("舊資料下載檔名正確", fileName === "legacy.pdf");
+  check("向下相容 Console errors = 0", consoleErrors.length === 0);
 }
 
 console.log("\n==============================");

@@ -5,6 +5,12 @@
    (the exact scenario that was broken — MaterialRuntime cannot persist a
    File object, so every post-navigation download failed).
 
+   HF-8.2.003 update: the byte store now uses ONE UNIQUE KEY PER
+   MATERIAL (AHS.MaterialFileStore, "materialFile:<id>") instead of
+   HF-8.2.001's single shared key, because the shared key was the root
+   cause of the batch-upload failure. These assertions therefore read
+   through the store's API rather than one raw key.
+
    This lives in its own file because FileReader is asynchronous and the
    jsdom BehaviorSuite is synchronous end-to-end.
    Run: node tests/regression/MaterialDownloadFlow.js */
@@ -41,6 +47,17 @@ function loadMaterials(seed) {
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors, blobSize: () => lastBlobSize };
+}
+
+/* carryAll(ctx) — copy the whole sessionStorage into the next page view,
+   mirroring a real navigation (per-material byte keys included). */
+function carryAll(ctx) {
+  const out = {};
+  for (let i = 0; i < ctx.window.sessionStorage.length; i += 1) {
+    const k = ctx.window.sessionStorage.key(i);
+    out[k] = ctx.window.sessionStorage.getItem(k);
+  }
+  return out;
 }
 
 /* Capture what the anchor was actually asked to download. */
@@ -85,23 +102,22 @@ check("教材已建立於 MaterialRuntime", first.window.AHS.MaterialRuntime.lis
 
 /* FileReader is async — wait for the byte store to be written. */
 setTimeout(function () {
-  const rawStore = first.window.sessionStorage.getItem("ahs:materialFileStore");
-  const store = rawStore ? JSON.parse(rawStore) : null;
-  const keys = store && store.files ? Object.keys(store.files) : [];
-  check("位元組已寫入 Download Flow 存放（經 PersistenceAdapter）", keys.length === 1);
-  const entry = keys.length ? store.files[keys[0]] : null;
-  check("保存原始檔名與 MIME", !!entry && entry.name === "上課講義.pdf" && entry.type === "application/pdf");
+  const fileStore = first.window.AHS.MaterialFileStore;
+  const entries = fileStore.list();
+  check("位元組已寫入 Download Flow 存放（經 PersistenceAdapter）", entries.length === 1);
+  const materialId = entries.length ? entries[0].materialId : null;
+  check("使用該教材專屬的唯一 Storage Key",
+    entries.length === 1 && entries[0].storageKey === "materialFile:" + materialId);
+  const payload = materialId ? fileStore.get(materialId) : null;
+  check("保存原始檔名與 MIME", !!payload && payload.name === "上課講義.pdf" && payload.type === "application/pdf");
   check("保存為 data URL（真實內容，非佔位）",
-    !!entry && /^data:application\/pdf;base64,/.test(entry.dataUrl) && entry.dataUrl.length > 40);
+    !!payload && /^data:application\/pdf;base64,/.test(payload.dataUrl) && payload.dataUrl.length > 40);
   check("首次上傳後 Console errors = 0", first.consoleErrors.length === 0);
 
   console.log("\n[2] 跨頁後下載（HF-002 修正核心：先前必失敗）");
   /* A fresh page view carrying the same sessionStorage — exactly what a
      user does when navigating away and back. The File object is gone. */
-  const second = loadMaterials({
-    "ahs:materialRuntime": first.window.sessionStorage.getItem("ahs:materialRuntime"),
-    "ahs:materialFileStore": rawStore
-  });
+  const second = loadMaterials(carryAll(first));
   const doc2 = second.window.document;
   check("新頁面首次載入即顯示教材（HF-001 亦成立）", doc2.querySelectorAll(".mat-card").length === 1);
   check("Runtime 記錄之 file 已為 null（File 無法持久化，前提成立）",
@@ -117,18 +133,14 @@ setTimeout(function () {
   check("跨頁下載 Console errors = 0", second.consoleErrors.length === 0);
 
   console.log("\n[3] 刪除教材同步釋放位元組（避免暫存空間累積）");
-  const third = loadMaterials({
-    "ahs:materialRuntime": first.window.sessionStorage.getItem("ahs:materialRuntime"),
-    "ahs:materialFileStore": rawStore
-  });
+  const third = loadMaterials(carryAll(first));
   const doc3 = third.window.document;
   doc3.querySelector(".mat-card__delete-btn").click();
   const delConfirm = [...doc3.querySelectorAll(".mat-dialog__overlay button")]
     .find((b) => /^刪除$/.test((b.textContent || "").trim()));
   check("刪除確認對話框出現", !!delConfirm);
   if (delConfirm) { delConfirm.click(); }
-  const afterStore = JSON.parse(third.window.sessionStorage.getItem("ahs:materialFileStore") || '{"files":{}}');
-  check("教材刪除後其位元組亦被釋放", Object.keys(afterStore.files).length === 0);
+  check("教材刪除後其位元組亦被釋放", third.window.AHS.MaterialFileStore.list().length === 0);
   check("刪除流程 Console errors = 0", third.consoleErrors.length === 0);
 
   console.log("\nMaterialDownloadFlow: " + pass + " PASS / " + fail + " FAIL");
