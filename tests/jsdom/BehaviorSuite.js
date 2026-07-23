@@ -454,6 +454,99 @@ console.log("\n[14] EO-S7.0-003 — Review Widget 反映真實錯題（Mastery P
   check("Mastery Progress 即時：New 1", /New 1/.test(w.textContent));
 }
 
+
+console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯示教材（不需再次切換）");
+{
+  const twoMaterials = { materials: [
+    Object.assign({}, materialSeed.materials[0], { id: "rt_1", order: 1 }),
+    { id: "rt_2", order: 2, subject: "physics", title: "牛頓運動定律", chapter: "第一章", grade: "高一",
+      category: "課本", date: "2026/07/22", views: "0", content: "", progress: 0, lastOpenedAt: null,
+      lastLearningAt: null, learningTime: 0, learningCount: 0, favorite: false, fileName: "newton.pdf",
+      fileType: "PDF", fileSize: "2.0 MB", folderId: null, file: null }
+  ], folders: [], seq: 2, folderSeq: 0 };
+
+  const { window, consoleErrors } = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": twoMaterials } });
+  const doc = window.document;
+  const cards = doc.querySelectorAll(".mat-card");
+  check("首次載入即渲染全部教材卡片（2 張，無需切換）", cards.length === 2);
+  check("教材標題正確顯示", /牛頓運動定律/.test(doc.body.textContent));
+  check("Empty State 未誤顯示", !doc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
+  check("Console errors = 0（首次載入）", consoleErrors.length === 0);
+  if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0, 3));
+
+  /* 切換科目分頁後張數不變 —— 證明首次已完整初始化，非靠事件補救。 */
+  const tab = doc.querySelector("[data-subject]");
+  if (tab) { tab.click(); }
+  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === 2);
+}
+
+console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
+  check("顯示正式 Empty State（非空白頁）",
+    !!doc.querySelector(".mat-empty") && !doc.querySelector(".mat-empty[hidden]"));
+  check("Console errors = 0（空狀態）", consoleErrors.length === 0);
+}
+
+console.log("\n[17] HF-8.2.001 · HF-002 — 跨頁後仍可下載（Download Flow 位元組保存）");
+{
+  const pdfBytes = Buffer.from("%PDF-1.4 AHS real bytes").toString("base64");
+  const seed = {
+    "ahs:materialRuntime": { materials: [Object.assign({}, materialSeed.materials[0],
+      { id: "rt_1", fileName: "trig.pdf", fileType: "PDF", file: null })], folders: [], seq: 1, folderSeq: 0 },
+    "ahs:materialFileStore": { files: { rt_1: {
+      name: "trig.pdf", type: "application/pdf", dataUrl: "data:application/pdf;base64," + pdfBytes } } }
+  };
+  const { window, consoleErrors } = loadPage("materials.html", { seedSession: seed });
+  const doc = window.document;
+  /* jsdom 未實作 createObjectURL —— 以最小樁記錄實際傳入的 Blob。 */
+  let blobSize = null;
+  window.URL.createObjectURL = function (blob) { blobSize = blob && blob.size; return "blob:ahs/test"; };
+  window.URL.revokeObjectURL = function () {};
+  let href = null, fileName = null;
+  const origCreate = doc.createElement.bind(doc);
+  doc.createElement = function (tag) {
+    const node = origCreate(tag);
+    if (String(tag).toLowerCase() === "a") {
+      node.click = function () { href = node.getAttribute("href"); fileName = node.getAttribute("download"); };
+    }
+    return node;
+  };
+  doc.querySelector(".mat-card__dl").click();
+  const status = doc.querySelector(".mat-status, [role='status']");
+  check("下載事件觸發並取得 Blob URL", href === "blob:ahs/test");
+  check("Blob 由真實位元組重建（長度正確）", blobSize === Buffer.from("%PDF-1.4 AHS real bytes").length);
+  check("檔名為原始 fileName（非 download.bin）", fileName === "trig.pdf");
+  check("回報下載成功", !!status && /已下載教材：trig\.pdf/.test(status.textContent));
+  check("Console errors = 0（下載）", consoleErrors.length === 0);
+}
+
+console.log("\n[18] HF-8.2.001 · HF-002 — 無檔案來源／檔案過大：誠實訊息，永不靜默失敗");
+{
+  const base = { materials: [Object.assign({}, materialSeed.materials[0], { id: "rt_1", fileName: "trig.pdf", file: null })],
+    folders: [], seq: 1, folderSeq: 0 };
+  const noFile = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base } });
+  noFile.window.document.querySelector(".mat-card__dl").click();
+  check("無任何檔案來源 → 明確訊息",
+    /沒有可下載的原始檔案/.test(noFile.window.document.querySelector(".mat-status, [role='status']").textContent));
+
+  const oversize = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base,
+    "ahs:materialFileStore": { files: { rt_1: { name: "big.pdf", type: "application/pdf", oversize: true } } } } });
+  oversize.window.document.querySelector(".mat-card__dl").click();
+  check("檔案過大 → 明確說明僅同一階段可下載",
+    /檔案過大.*同一次瀏覽階段/.test(oversize.window.document.querySelector(".mat-status, [role='status']").textContent));
+
+  const corrupt = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base,
+    "ahs:materialFileStore": { files: { rt_1: { name: "x.pdf", type: "application/pdf", dataUrl: "壞掉的內容" } } } } });
+  corrupt.window.document.querySelector(".mat-card__dl").click();
+  check("位元組無法還原 → 建議重新上傳",
+    /無法還原.*重新上傳/.test(corrupt.window.document.querySelector(".mat-status, [role='status']").textContent));
+  check("三種失敗情境 Console errors = 0",
+    noFile.consoleErrors.length === 0 && oversize.consoleErrors.length === 0 && corrupt.consoleErrors.length === 0);
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

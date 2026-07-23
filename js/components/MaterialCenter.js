@@ -491,6 +491,9 @@ AHS.MaterialCenter = (function () {
               fileName: item.file.name, fileType: fileExt(item.file.name),
               fileSize: formatSize(item.file.size), file: item.file
             });
+            /* HF-8.2.001 · HF-002: keep the real bytes so download still
+               works after leaving this page (Runtime cannot persist a File). */
+            rememberFileBytes(record.id, item.file);
             runLearningPipeline(record.id);
           });
           status.textContent = "已新增 " + items.length + " 個教材";
@@ -516,6 +519,9 @@ AHS.MaterialCenter = (function () {
             fileSize: formatSize(f.size),
             file: f
           });
+          /* HF-8.2.001 · HF-002: keep the real bytes so download still
+             works after leaving this page (Runtime cannot persist a File). */
+          rememberFileBytes(record.id, f);
           status.textContent = "已新增教材：" + meta.title;
           status.removeAttribute("hidden");
           renderAll();
@@ -609,6 +615,105 @@ AHS.MaterialCenter = (function () {
       renderAll();
     }
 
+    /* ---- Download Flow · file byte store (HF-8.2.001 · HF-002) ---------
+       Root cause of "教材存在，點擊下載無反應／下載失敗": MaterialRuntime's
+       `file` field holds a live File object and is documented as NOT
+       persisted (a File cannot be JSON-serialised). The material RECORD
+       survives navigation through the Adapter, the File does not — so
+       from the second page view onward every download fell into the
+       "no downloadable file" branch, whose only feedback was one line of
+       small status text that reads as "no reaction".
+
+       Fix, without touching the Runtime Schema (forbidden) and without a
+       new Runtime: the Download Flow keeps its own companion store of the
+       real uploaded bytes as a data URL, keyed by material id, written
+       only through AHS.PersistenceAdapter (sessionStorage — the same
+       sanctioned mechanism every Runtime uses; never localStorage /
+       indexedDB). On download, a live File is used when present,
+       otherwise the stored bytes are rebuilt into a Blob. Everything is
+       client-side and same-origin, so it behaves identically on GitHub
+       Pages as locally.
+
+       Honesty: sessionStorage has a quota (~5 MB). When a file is too
+       large to keep, nothing is silently swallowed — the entry is marked
+       oversize and the download message says so explicitly, and the file
+       still downloads normally within the session that uploaded it. */
+    var FILE_STORE_KEY = "materialFileStore";
+
+    function readFileStore() {
+      var loaded = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function")
+        ? AHS.PersistenceAdapter.load(FILE_STORE_KEY) : null;
+      if (loaded && typeof loaded === "object" && loaded.files && typeof loaded.files === "object") {
+        return loaded;
+      }
+      return { files: {} };
+    }
+
+    function writeFileStore(store) {
+      return !!(AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.save === "function" &&
+                AHS.PersistenceAdapter.save(FILE_STORE_KEY, store));
+    }
+
+    /* rememberFileBytes(materialId, file) — called right after a real
+       upload. Reads the actual bytes (FileReader, no network) and stores
+       them verbatim; on quota failure records an honest oversize marker
+       instead of a half-written entry. */
+    function rememberFileBytes(materialId, file) {
+      if (!materialId || !file || typeof window.FileReader === "undefined") { return; }
+      var reader = new window.FileReader();
+      reader.onload = function () {
+        var store = readFileStore();
+        store.files[materialId] = {
+          name: file.name || "",
+          type: file.type || "",
+          dataUrl: String(reader.result || "")
+        };
+        if (!writeFileStore(store)) {
+          /* Quota exceeded — keep the record honest and small. */
+          var fallback = readFileStore();
+          fallback.files[materialId] = { name: file.name || "", type: file.type || "", oversize: true };
+          writeFileStore(fallback);
+        }
+      };
+      reader.onerror = function () { /* nothing stored — download reports honestly */ };
+      try { reader.readAsDataURL(file); } catch (e) { /* same honest fallback */ }
+    }
+
+    function forgetFileBytes(materialId) {
+      var store = readFileStore();
+      if (store.files[materialId]) {
+        delete store.files[materialId];
+        writeFileStore(store);
+      }
+    }
+
+    function storedEntry(materialId) {
+      return readFileStore().files[materialId] || null;
+    }
+
+    /* dataUrlToBlob(dataUrl) — decodes the stored bytes back into a real
+       Blob so the download carries the original binary content, not a
+       text approximation. Returns null if decoding isn't possible. */
+    function dataUrlToBlob(dataUrl) {
+      if (typeof dataUrl !== "string" || dataUrl.indexOf(",") === -1) { return null; }
+      if (typeof window.atob !== "function" || typeof window.Uint8Array === "undefined" ||
+          typeof window.Blob === "undefined") { return null; }
+      var head = dataUrl.slice(0, dataUrl.indexOf(","));
+      var body = dataUrl.slice(dataUrl.indexOf(",") + 1);
+      var mime = /:(.*?);/.exec(head);
+      try {
+        if (head.indexOf("base64") === -1) {
+          return new window.Blob([decodeURIComponent(body)], { type: mime ? mime[1] : "" });
+        }
+        var binary = window.atob(body);
+        var bytes = new window.Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i += 1) { bytes[i] = binary.charCodeAt(i); }
+        return new window.Blob([bytes], { type: mime ? mime[1] : "application/octet-stream" });
+      } catch (e) {
+        return null;
+      }
+    }
+
     /* Low-level download (explicit user action only). */
     /* Sprint 6.7 Hotfix-002 (PAT-003, Issue 001/002): root cause of
        "點擊下載無反應" — revokeObjectURL() was called synchronously
@@ -620,17 +725,37 @@ AHS.MaterialCenter = (function () {
        This is the only change to the download mechanism itself — no
        Runtime, no new Storage, no Parser Interface change. */
     function doDownload(item) {
-      if (!item.file || typeof window.URL === "undefined" || !window.URL.createObjectURL) {
-        /* Issue 004: never a silent fail — always a real status message,
-           whether the file reference was simply lost (e.g. after a page
-           reload — File objects can't be persisted, per existing
-           documented behavior) or the material never had a real
-           uploaded file to begin with. */
-        status.textContent = "此教材沒有可下載的原始檔案，此檔案來源不支援直接下載。";
+      /* HF-8.2.001 · HF-002: prefer the live File (same-session upload),
+         otherwise rebuild the real bytes kept by the Download Flow's
+         companion store — this is what makes download work after any
+         page change, which previously always failed. */
+      var entry = item.file ? null : storedEntry(item.id);
+      var source = item.file || (entry && !entry.oversize ? dataUrlToBlob(entry.dataUrl) : null);
+
+      if (!source) {
+        /* Never a silent fail — each cause gets its own precise message. */
+        if (entry && entry.oversize) {
+          status.textContent = "此教材檔案過大，超出瀏覽器暫存空間，僅能於上傳的同一次瀏覽階段下載。";
+        } else if (entry) {
+          status.textContent = "此教材的檔案內容已無法還原，請重新上傳後再下載。";
+        } else {
+          status.textContent = "此教材沒有可下載的原始檔案，此檔案來源不支援直接下載。";
+        }
         status.removeAttribute("hidden");
         return;
       }
-      var url = window.URL.createObjectURL(item.file);
+
+      var hasObjectUrl = (typeof window.URL !== "undefined" && !!window.URL.createObjectURL);
+      /* Blob URL is preferred; where createObjectURL is unavailable the
+         stored data URL is used directly as the anchor href, so the
+         download still works (both are same-origin and need no server —
+         identical behaviour on GitHub Pages). */
+      if (!hasObjectUrl && !(entry && entry.dataUrl)) {
+        status.textContent = "此瀏覽器不支援直接下載檔案，請改用其他瀏覽器。";
+        status.removeAttribute("hidden");
+        return;
+      }
+      var url = hasObjectUrl ? window.URL.createObjectURL(source) : entry.dataUrl;
       var a = document.createElement("a");
       a.href = url;
       /* Issue 005: always the original fileName (set verbatim from the
@@ -642,7 +767,10 @@ AHS.MaterialCenter = (function () {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      if (window.URL.revokeObjectURL) {
+      /* Only an ObjectURL may be revoked — a data URL must not be, and
+         the revoke stays deferred (Sprint 6.7 Hotfix-002 root cause:
+         revoking synchronously after click() can cancel the download). */
+      if (hasObjectUrl && window.URL.revokeObjectURL) {
         setTimeout(function () { window.URL.revokeObjectURL(url); }, 1000);
       }
       status.textContent = "已下載教材：" + (item.fileName || item.title);
@@ -698,6 +826,9 @@ AHS.MaterialCenter = (function () {
        + recent all update; empty state auto-shows when none left). */
     function onDeleteMaterial(id) {
       if (AHS.MaterialRuntime.remove(id)) {
+        /* HF-8.2.001 · HF-002: release the companion bytes too, so the
+           store never accumulates entries for deleted materials. */
+        forgetFileBytes(id);
         status.textContent = "已刪除教材";
         status.removeAttribute("hidden");
         renderAll();
@@ -856,14 +987,26 @@ AHS.MaterialCenter = (function () {
       recentFilesSlot
     ]);
 
-    /* Initial paint (runtime empty => grid empty + recent hidden). */
-    renderRecentLearning();
-    renderRecentFiles();
-    if (AHS.MaterialRuntime.isEmpty()) {
-      emptyState.innerHTML = "";
-      emptyState.appendChild(AHS.MaterialEmptyState.create("empty", resetAllFilters));
-      emptyState.removeAttribute("hidden");
-    }
+    /* ---- Initial paint ---------------------------------------------------
+       HF-8.2.001 · HF-001 root cause: `theGrid` is created empty at the
+       top of create() (AHS.MaterialGrid.create([], …)) and this initial
+       paint previously rendered ONLY the two recent slots — renderGrid()
+       and renderFolders() were never called. The grid therefore stayed
+       empty until the first user event (subject tab, filter, search…),
+       which is exactly the reported "第二次切換才正常顯示".
+
+       Fix: paint the full page once, here, through the same renderAll()
+       every mutation already uses — grid + recent learning + recent
+       files + folders. renderGrid() itself owns the Empty State
+       (choosing the "empty" variant when the runtime is empty and the
+       filter/search/favorite variant otherwise), so the previous manual
+       empty-state block is removed as redundant — it could only ever
+       produce the same or a less accurate result.
+
+       Timing is safe: `main` (line ~817) is composed before this point,
+       so theGrid.parentNode exists for renderGrid()'s replaceChild.
+       No Runtime, no lifecycle rewrite, no new render path. */
+    renderAll();
 
     var page = el("div", { class: "mat-page" }, [
       header(seed, searchBar),
