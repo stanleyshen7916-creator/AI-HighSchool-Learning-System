@@ -59,3 +59,173 @@
 .empty-state__title { margin: 0; font-size: 14px; font-weight: 700; color: var(--text); }
 .empty-state__hint { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 .empty-state--compact { padding: 14px 16px; }
+
+/* ── EO-S8.3.004 · AI 重點整理（Material Preview 內）─────────────────
+   沿用既有 brand / surface / radius tokens，不引入新設計語言。 */
+.mat-summary {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--brand-line);
+  border-radius: var(--radius-md);
+  background: var(--brand-soft);
+}
+.mat-summary__head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.mat-summary__heading {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--brand-ink);
+}
+.mat-summary__btn {
+  appearance: none;
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.mat-summary__btn:hover { background: var(--brand-strong); }
+.mat-summary__loading {
+  margin: 8px 0;
+  color: var(--brand-ink);
+  font-size: 0.95rem;
+}
+.mat-summary__notice {
+  margin: 8px 0 14px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.mat-summary__card {
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+.mat-summary__title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: var(--text);
+}
+.mat-summary__label {
+  margin: 14px 0 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+.mat-summary__label:first-of-type { margin-top: 0; }
+.mat-summary__points {
+  margin: 0;
+  padding-left: 20px;
+}
+.mat-summary__point {
+  margin: 4px 0;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.mat-summary__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mat-summary__chip {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-line);
+  color: var(--brand-ink);
+  font-size: 0.85rem;
+}
+
+/* ── EO-S8.3.006 · AI 練習題（Material Preview 內）───────────────────
+   沿用 EO-S8.3.004 的 .mat-summary__* 視覺語言與既有 tokens。 */
+.mat-question {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--brand-line);
+  border-radius: var(--radius-md);
+  background: var(--brand-soft);
+}
+.mat-question__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.mat-question__card {
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+.mat-question__q {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.mat-question__num {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+.mat-question__text {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.mat-question__options {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mat-question__option {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.mat-question__optletter {
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+.mat-question__reveal {
+  appearance: none;
+  border: 1px solid var(--brand-line);
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  background: var(--card);
+  color: var(--brand-ink);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.mat-question__reveal:hover { background: var(--brand-soft); }
+.mat-question__answer {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-line);
+}
+.mat-question__answerline { margin: 0 0 6px; font-size: 0.9rem; }
+.mat-question__answerlabel { font-weight: 600; color: var(--brand-ink); }
+.mat-question__answervalue { color: var(--text); }
+.mat-question__explain {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.mat-question__reload { margin-top: 4px; }

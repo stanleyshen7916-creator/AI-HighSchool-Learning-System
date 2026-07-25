@@ -510,20 +510,32 @@ AHS.MaterialCenter = (function () {
             }, 5 * 260 + 400);
           }
           items.forEach(function (item) {
-            var record = AHS.MaterialRuntime.add({
-              title: item.title, subject: item.subject, grade: item.grade,
-              category: item.category, folderId: item.folderId,
-              fileName: item.file.name, fileType: fileExt(item.file.name),
-              fileSize: formatSize(item.file.size), file: item.file
-            });
-            rememberFileBytes(record.id, item.file, function (result) {
-              if (!result || result.state !== "stored") {
-                notStored.push(item.file.name || record.title);
-              }
-              pending -= 1;
-              if (pending === 0) { report(); }
-            });
-            runLearningPipeline(record.id);
+            /* EO-S8.3.005: capture the file's readable text through the
+               unified Text Pipeline BEFORE creating the record, so the
+               downstream chain has real content. MaterialRuntime never
+               parses — the pipeline does, and only for text-type files. */
+            function createWithText(text) {
+              var record = AHS.MaterialRuntime.add({
+                title: item.title, subject: item.subject, grade: item.grade,
+                category: item.category, folderId: item.folderId,
+                fileName: item.file.name, fileType: fileExt(item.file.name),
+                fileSize: formatSize(item.file.size), file: item.file,
+                content: text || ""
+              });
+              rememberFileBytes(record.id, item.file, function (result) {
+                if (!result || result.state !== "stored") {
+                  notStored.push(item.file.name || record.title);
+                }
+                pending -= 1;
+                if (pending === 0) { report(); }
+              });
+              runLearningPipeline(record.id);
+            }
+            if (AHS.MaterialTextPipeline) {
+              AHS.MaterialTextPipeline.readFile(item.file, createWithText);
+            } else {
+              createWithText("");
+            }
           });
           /* Immediate feedback; refined once every read settles. */
           status.textContent = "已新增 " + items.length + " 個教材";
@@ -538,30 +550,41 @@ AHS.MaterialCenter = (function () {
         if (files.length === 0) { return; }
         var f = files.shift();
         var dialog = AHS.MaterialUploadDialog.open(f, function (meta) {
-          var record = AHS.MaterialRuntime.add({
-            title: meta.title,
-            subject: meta.subject,
-            grade: meta.grade,
-            category: meta.category,
-            folderId: meta.folderId || null,
-            fileName: f.name,
-            fileType: fileExt(f.name),
-            fileSize: formatSize(f.size),
-            file: f
-          });
-          /* HF-8.2.003: bytes under this material's own unique key. */
-          rememberFileBytes(record.id, f, function (result) {
-            if (result && result.state !== "stored") {
-              status.textContent = "已新增教材：" + meta.title +
-                "（檔案超出瀏覽器暫存空間，僅能於本次瀏覽階段預覽與下載）";
-              status.removeAttribute("hidden");
-            }
-          });
-          status.textContent = "已新增教材：" + meta.title;
-          status.removeAttribute("hidden");
-          renderAll();
-          runLearningPipeline(record.id);
-          next();
+          /* EO-S8.3.005: capture readable text via the unified Text
+             Pipeline before creating the record (text-type files only;
+             MaterialRuntime never parses). */
+          function createWithText(text) {
+            var record = AHS.MaterialRuntime.add({
+              title: meta.title,
+              subject: meta.subject,
+              grade: meta.grade,
+              category: meta.category,
+              folderId: meta.folderId || null,
+              fileName: f.name,
+              fileType: fileExt(f.name),
+              fileSize: formatSize(f.size),
+              file: f,
+              content: text || ""
+            });
+            /* HF-8.2.003: bytes under this material's own unique key. */
+            rememberFileBytes(record.id, f, function (result) {
+              if (result && result.state !== "stored") {
+                status.textContent = "已新增教材：" + meta.title +
+                  "（檔案超出瀏覽器暫存空間，僅能於本次瀏覽階段預覽與下載）";
+                status.removeAttribute("hidden");
+              }
+            });
+            status.textContent = "已新增教材：" + meta.title;
+            status.removeAttribute("hidden");
+            renderAll();
+            runLearningPipeline(record.id);
+            next();
+          }
+          if (AHS.MaterialTextPipeline) {
+            AHS.MaterialTextPipeline.readFile(f, createWithText);
+          } else {
+            createWithText("");
+          }
         }, function () {
           /* cancelled — continue with remaining files if any */
           next();

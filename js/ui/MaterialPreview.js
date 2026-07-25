@@ -153,6 +153,20 @@ AHS.MaterialPreview = (function () {
     });
     footChildren.push(dlBtn);
 
+    /* EO-S8.3.004: AI 重點整理 section. Rendered from the Summary
+       capability's output; the「開始 AI 分析」button coordinates through
+       AITutorService without re-parsing the material. */
+    if (AHS.MaterialSummaryCard && typeof AHS.MaterialSummaryCard.create === "function") {
+      bodyChildren.push(AHS.MaterialSummaryCard.create(item).node);
+    }
+
+    /* EO-S8.3.006: AI 練習題 section, after 重點整理 (教材→AI 重點→AI
+       題目). Questions come from QuestionGenerationRuntime via
+       AITutorService; the buttons never re-analyse the material. */
+    if (AHS.MaterialQuestionCard && typeof AHS.MaterialQuestionCard.create === "function") {
+      bodyChildren.push(AHS.MaterialQuestionCard.create(item).node);
+    }
+
     overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
 
     var panel = el("div", { class: "mat-preview" }, [

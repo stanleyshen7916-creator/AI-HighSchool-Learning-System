@@ -598,6 +598,146 @@ console.log("\n[20] HF-8.2.003 — 舊版單一 key 資料仍可下載（向下�
   check("向下相容 Console errors = 0", consoleErrors.length === 0);
 }
 
+
+console.log("\n[21] EO-S8.3.004 — AI 重點整理 UI 串接（Material Preview）");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  const A = window.AHS;
+  window.URL.createObjectURL = () => "blob:x";
+  window.URL.revokeObjectURL = () => {};
+
+  check("AI 相依已載入（Pipeline / Summary / Service / SummaryCard）",
+    !!A.KnowledgePipeline && !!A.KnowledgeSummaryRuntime && !!A.AITutorService &&
+    !!A.MaterialSummaryCard && typeof A.AITutorService.ensureLearningSummary === "function");
+
+  /* 建立具真實文字的教材並跑知識管線（模擬上傳後的狀態）。 */
+  const folder = A.FolderRuntime.createFolder({ folderName: "測試", subject: "math", scopeType: "custom" });
+  const TEXT = ["三角函數", "斜邊", "正弦：對邊除以斜邊",
+    "餘弦定理 a² = b² + c² − 2bc·cosA", "本節說明三角函數的定義與應用。"].join("\n");
+  const mat = A.MaterialRuntime.add({ title: "三角函數講義", subject: "math", grade: "高一",
+    chapter: "第三章", category: "講義", fileName: "trig.pdf", fileType: "PDF",
+    folderId: folder.folderId, content: TEXT });
+  A.KnowledgePipeline.process(mat.id);
+
+  const overlay = A.MaterialPreview.open(mat, function () {});
+  doc.body.appendChild(overlay);
+  check("預覽含「AI 重點整理」區塊", !!overlay.querySelector(".mat-summary"));
+  check("區塊標題為「AI 重點整理」",
+    (overlay.querySelector(".mat-summary__heading") || {}).textContent === "AI 重點整理");
+  const btn = overlay.querySelector(".mat-summary__btn");
+  check("提供「開始 AI 分析」按鈕", !!btn && btn.textContent === "開始 AI 分析");
+  check("分析前尚無 Summary（未自動產生）",
+    A.KnowledgeSummaryRuntime.getSummaryByMaterial(mat.id) === null);
+
+  /* 點擊 → loading → 卡片。按鈕處理器以 setTimeout(0) 延後產生，
+     故以旗標攔截 window.setTimeout 立即執行回呼，維持同步測試。 */
+  const realSetTimeout = window.setTimeout;
+  window.setTimeout = function (fn) { if (typeof fn === "function") { fn(); } return 0; };
+  btn.click();
+  window.setTimeout = realSetTimeout;
+
+  const card = overlay.querySelector(".mat-summary__card");
+  check("點擊後顯示 Summary 卡片", !!card);
+  check("卡片顯示標題（教材名稱）",
+    !!card && (card.querySelector(".mat-summary__title") || {}).textContent === "三角函數講義");
+  check("卡片顯示重點條列（至少一項）",
+    !!card && card.querySelectorAll(".mat-summary__point").length >= 1);
+  check("卡片顯示關鍵字（至少一項）",
+    !!card && card.querySelectorAll(".mat-summary__chip").length >= 1);
+  check("Summary 已由 KnowledgeSummaryRuntime 產生（Material→Service→Summary）",
+    !!A.KnowledgeSummaryRuntime.getSummaryByMaterial(mat.id));
+  check("重點內容逐字取自教材（未改寫）",
+    !!card && [...card.querySelectorAll(".mat-summary__point")]
+      .every(li => TEXT.indexOf(li.textContent) !== -1));
+
+  /* 「不得重新解析教材」：分析經 Service→KnowledgeSummaryRuntime（讀 KG），
+     未觸發 AnalysisRuntime 重新分析 —— 以圖譜節點數不變佐證。 */
+  const before = A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length;
+  A.AITutorService.ensureLearningSummary(mat.id);   /* 再次呼叫（idempotent） */
+  check("再次分析不改變知識圖譜（不重新解析教材）",
+    A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length === before);
+
+  check("AI Summary UI 全流程 Console errors = 0", consoleErrors.length === 0);
+  if (consoleErrors.length) { console.log("   errors:", consoleErrors.slice(0, 3)); }
+}
+
+
+console.log("\n[22] EO-S8.3.006 — AI 練習題 UI 串接（Material Preview）");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  const A = window.AHS;
+  window.URL.createObjectURL = () => "blob:x";
+  window.URL.revokeObjectURL = () => {};
+
+  check("AI 題目相依已載入（QuestionCard / ensureQuestionSet）",
+    !!A.MaterialQuestionCard && typeof A.AITutorService.ensureQuestionSet === "function");
+
+  const folder = A.FolderRuntime.createFolder({ folderName: "測試", subject: "math", scopeType: "custom" });
+  const TXT = ["三角函數", "斜邊", "正弦：對邊除以斜邊", "餘弦：鄰邊除以斜邊",
+    "正切：對邊除以鄰邊", "餘弦定理 a² = b² + c² − 2bc·cosA",
+    "本節說明三角函數的定義與應用。"].join("\n");
+  const mat = A.MaterialRuntime.add({ title: "三角函數筆記", subject: "math", grade: "高一",
+    chapter: "第三章", category: "講義", fileName: "notes.txt", fileType: "TXT",
+    folderId: folder.folderId, content: TXT });
+
+  const overlay = A.MaterialPreview.open(mat, function () {});
+  doc.body.appendChild(overlay);
+  const section = overlay.querySelector(".mat-question");
+  check("預覽含「AI 練習題」區塊", !!section);
+  check("順序為 教材→AI 重點→AI 題目（重點在題目之前）",
+    !!(overlay.querySelector(".mat-summary").compareDocumentPosition(section) &
+       window.Node.DOCUMENT_POSITION_FOLLOWING));
+  const genBtn = section.querySelector(".mat-summary__btn");
+  check("提供「產生 AI 題目」按鈕", !!genBtn && genBtn.textContent === "產生 AI 題目");
+  check("產生前尚無題目（未自動產生）",
+    A.QuestionGenerationRuntime.getQuestionsByMaterial(mat.id) === null);
+
+  /* 攔截 setTimeout(0) 立即執行，維持同步測試。 */
+  const realSetTimeout = window.setTimeout;
+  window.setTimeout = function (fn) { if (typeof fn === "function") { fn(); } return 0; };
+
+  genBtn.click();
+  const cards = section.querySelectorAll(".mat-question__card");
+  check("點擊後顯示題目卡片（至少一題）", cards.length >= 1);
+  check("每題顯示題號", [...cards].every(c => /第 \d+ 題/.test((c.querySelector(".mat-question__num") || {}).textContent || "")));
+  check("每題題目非空", [...cards].every(c => !!(c.querySelector(".mat-question__text") || {}).textContent));
+  check("每題恰四個選項", [...cards].every(c => c.querySelectorAll(".mat-question__option").length === 4));
+  check("題目全部來自 QuestionRuntime（UI 未自建）",
+    (() => { const rec = A.QuestionGenerationRuntime.getQuestionsByMaterial(mat.id);
+      return !!rec && rec.questions.length === cards.length; })());
+
+  /* 查看答案 */
+  const card0 = cards[0];
+  const revealBtn = card0.querySelector(".mat-question__reveal");
+  check("提供「查看答案」按鈕", !!revealBtn && revealBtn.textContent === "查看答案");
+  const answerBox = card0.querySelector(".mat-question__answer");
+  check("答案預設隱藏", answerBox.hasAttribute("hidden"));
+  revealBtn.click();
+  check("點擊後顯示正確答案", !answerBox.hasAttribute("hidden") &&
+    !!(card0.querySelector(".mat-question__answervalue") || {}).textContent);
+  check("顯示 AI 解析（既有資料，非新呼叫）", !!card0.querySelector(".mat-question__explain"));
+  check("正確答案在選項之中",
+    (() => { const ans = card0.querySelector(".mat-question__answervalue").textContent;
+      return [...card0.querySelectorAll(".mat-question__opttext")].some(o => o.textContent === ans); })());
+  revealBtn.click();
+  check("再按可隱藏答案", answerBox.hasAttribute("hidden"));
+
+  /* 重新產生題目 — 不重新分析教材 */
+  const reloadBtn = section.querySelector(".mat-question__reload");
+  check("提供「重新產生題目」按鈕", !!reloadBtn && reloadBtn.textContent === "重新產生題目");
+  const kgBefore = A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length;
+  reloadBtn.click();
+  check("重新產生後仍有題目", section.querySelectorAll(".mat-question__card").length >= 1);
+  check("重新產生不改變知識圖譜（不重新分析教材）",
+    A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length === kgBefore);
+
+  window.setTimeout = realSetTimeout;
+  check("AI 題目 UI 全流程 Console errors = 0", consoleErrors.length === 0);
+  if (consoleErrors.length) { console.log("   errors:", consoleErrors.slice(0, 3)); }
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
