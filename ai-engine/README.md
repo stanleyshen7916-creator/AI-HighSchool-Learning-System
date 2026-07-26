@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002 / EO-AI-003) — no service is implemented yet.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002 / EO-AI-003 / EO-AI-004) — no service is implemented yet.
 
 ## Purpose
 
@@ -30,14 +30,17 @@ ai-engine/
       ContextBuilder.js      — assembles a frozen context object
       ContextValidator.js    — structural validation only (plain object, known keys)
     knowledge/
-      KnowledgeRegistry.js    — register/unregister/get/has/list/clear (AIEngine's integration point)
+      KnowledgeRegistry.js    — register/unregister/get/has/list/clear + getVersion(id) (AIEngine's integration point)
       KnowledgeProvider.js    — load/unload/refresh/supports interface (no external source connected)
-      KnowledgeLoader.js       — loadFromObject/loadFromJSON/normalize (no Platform Runtime access)
+      KnowledgeLoader.js       — loadFromObject/loadFromJSON/normalize, plus loadFromMaterial(id)/
+                                   loadAllFromMaterialRuntime() reading AHS.MaterialRuntime read-only
       KnowledgeIndex.js         — build/rebuild/search/remove (exact-match only, no semantic search)
-      KnowledgeCache.js         — set/get/has/remove/clear (memory only, no localStorage/IndexedDB)
-      Metadata.js                — nine reserved fields (subject/grade/chapter/section/topic/difficulty/source/tags/version)
-      MetadataBuilder.js          — fluent builder producing a Metadata instance
-      MetadataValidator.js        — structural validation only (plain object, known keys)
+      KnowledgeCache.js         — set/get/has/remove/clear/invalidate (memory only, no localStorage/IndexedDB)
+      Metadata.js                — 16 reserved fields, see below (studyScope reserved, no logic attached)
+      MetadataBuilder.js          — fluent builder producing a Metadata instance; fromMaterial(material)
+                                     maps a Material Runtime record onto Metadata fields
+      MetadataValidator.js        — plain object + known keys, required field, empty value, duplicate
+                                     tag, invalid type
     prompt/
       PromptManager.js       — register/unregister/get/has/list, delegates to PromptRegistry
       PromptRegistry.js      — five reserved prompt slots (summary/question/review/explanation/tutor)
@@ -72,6 +75,12 @@ Foundation-only surface; no provider or service is registered yet.
 - `AHS.AIEngine.PromptManager` / `PromptRegistry` / `PromptTemplate` / `PromptContext`
 - `AHS.AIEngine.KnowledgeRegistry` / `KnowledgeProvider` / `KnowledgeLoader` / `KnowledgeIndex` / `KnowledgeCache`
 - `AHS.AIEngine.Metadata` / `MetadataBuilder` / `MetadataValidator`
+
+### Metadata fields (16)
+
+`subject grade chapter section topic difficulty source tags version` (EO-AI-003) plus
+`id materialId semester publisher createdAt updatedAt` (EO-AI-004) plus `studyScope`
+(EO-AI-004, reserved — field exists, no logic attached).
 
 ### Error Framework
 

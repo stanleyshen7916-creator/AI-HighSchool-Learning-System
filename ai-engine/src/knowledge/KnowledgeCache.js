@@ -1,6 +1,9 @@
 /* ai-engine/src/knowledge/KnowledgeCache.js — EO-AI-003 · Knowledge Engine Foundation
+   EO-AI-004 · Knowledge Runtime Integration (Cache Extension)
    Pure in-memory cache. No localStorage, no IndexedDB, no persistence
-   of any kind — state lives only for the lifetime of this instance. */
+   of any kind — state lives only for the lifetime of this instance.
+   set/get/has/remove/clear are unchanged from EO-AI-003; invalidate()
+   is additive. */
 window.AHS = window.AHS || {};
 AHS.AIEngine = AHS.AIEngine || {};
 
@@ -32,6 +35,15 @@ AHS.AIEngine = AHS.AIEngine || {};
 
   KnowledgeCache.prototype.clear = function () {
     this._store = {};
+  };
+
+  /* EO-AI-004: invalidate(key) — drop a single entry because the
+     underlying data may be stale, returning whether it existed. Same
+     effect as remove(), added under its own name per spec. */
+  KnowledgeCache.prototype.invalidate = function (key) {
+    var existed = this.has(key);
+    this.remove(key);
+    return existed;
   };
 
   AHS.AIEngine.KnowledgeCache = KnowledgeCache;
