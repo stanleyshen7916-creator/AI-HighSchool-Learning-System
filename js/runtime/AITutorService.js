@@ -52,17 +52,30 @@
 
    EO-AI-012 Revision-1 · AI Summary Legacy Migration (Migration Bridge,
    additive only — public API/signatures/return format unchanged).
-   getLearningSummary() now checks for AHS.AIEngine.SummaryProvider and,
-   if present, delegates the read to it — SummaryProvider alone decides
-   legacy/new/compare (this file never inspects or branches on mode).
-   SummaryProvider is not wired into any page yet (deferred to
-   EO-AI-012A), so on every real page today this check finds nothing and
-   falls through to the exact pre-EO-AI-012 AITutorRuntime-coordinated
-   read below — byte-identical behaviour, zero live regression.
-   ensureLearningSummary()'s generation chain is untouched: Migration
-   is not complete this EO (SummaryProvider's default mode stays
-   'legacy' — see EO-AI-012B), so the only thing that can safely change
-   yet is the read path. */
+   getLearningSummary() checks for AHS.AIEngine.SummaryProvider and, if
+   present, delegates the read to it — SummaryProvider alone decides
+   legacy/new/compare for the READ path (this file never inspects mode
+   to choose a read source).
+
+   EO-AI-012D · Generate Path Migration. ensureLearningSummary()'s
+   generation chain now routes on SummaryProvider's mode too, per that
+   EO's explicit Routing Rule (a deliberate, spec-authorized exception
+   to "this file never branches on mode" — scoped to Generate only):
+   legacy mode keeps the exact pre-EO-AI-012D Legacy chain (Text
+   Pipeline -> KnowledgePipeline -> KnowledgeSummaryRuntime.createSummary,
+   now factored into generateLegacySummary() below, logic unchanged);
+   new mode calls SummaryProvider.generateSummary() instead, so Read and
+   Generate finally share one Runtime; compare mode still generates
+   Legacy (so the UI-facing return value stays Legacy, per the Compare
+   Contract) and additionally calls generateSummary() as a side effect
+   so New's cache is populated for later comparison — SummaryProvider's
+   own Read Contract and getSummary() are untouched by this file.
+   hasProducedContent() below is the "Adapter" EO-AI-012D Part C
+   allows: Legacy and New summaries share the same `.summary` sub-object
+   shape (both have coreConcepts/keywords/definitions/formulas/
+   importantPoints — see EO-AI-009), but only Legacy has a top-level
+   materialId; this private, Public-API-invisible helper checks either
+   shape so idempotency holds regardless of which pipeline produced it. */
 window.AHS = window.AHS || {};
 AHS.AITutorService = (function () {
   "use strict";
@@ -191,18 +204,60 @@ AHS.AITutorService = (function () {
      and this returns the unified empty result
        { status: "no_readable_content", message: "No readable content" }
      — it never throws. */
+  var SUMMARY_SECTIONS = ["coreConcepts", "keywords", "definitions", "formulas", "importantPoints"];
+
+  /* EO-AI-012D Part C — shape-agnostic "has this already been produced"
+     check: Legacy summaries carry a top-level materialId (the original,
+     unchanged idempotency signal); New summaries don't, so they're
+     recognized via their `.summary` sub-object instead (same 5 fields
+     as Legacy's, established EO-AI-009). Not part of the Public API. */
+  function hasProducedContent(summary) {
+    if (!summary) { return false; }
+    if (summary.materialId) { return true; }
+    var s = summary.summary;
+    return !!s && SUMMARY_SECTIONS.some(function (k) {
+      return Array.isArray(s[k]) && s[k].length > 0;
+    });
+  }
+
   function ensureLearningSummary(materialId) {
     if (!materialId) { return noContent(); }
 
     var existing = getLearningSummary(materialId);
-    if (existing && existing.materialId) { return existing; }
+    if (hasProducedContent(existing)) { return existing; }
 
-    /* Text via the unified pipeline — not the upload object. */
+    var provider = summaryProvider();
+    var mode = provider ? provider.getMode() : "legacy";
+
+    /* EO-AI-012D Part B — new mode: Generate routes to SummaryProvider,
+       same Runtime as the Read path. Legacy chain is not touched at all. */
+    if (mode === "new") {
+      var newProduced = provider.generateSummary(materialId);
+      return hasProducedContent(newProduced) ? newProduced : noContent();
+    }
+
+    var legacyProduced = generateLegacySummary(materialId);
+
+    /* compare mode: UI-facing return value stays Legacy (Compare
+       Contract, unchanged), but also generate New as a side effect so
+       SummaryProvider.getLastComparison() has real data to diff. */
+    if (mode === "compare" && provider) {
+      provider.generateSummary(materialId);
+    }
+
+    return legacyProduced ? legacyProduced : noContent();
+  }
+
+  /* EO-AI-012D — the exact pre-EO-AI-012D Legacy generation chain,
+     factored out unchanged so it can serve both the 'legacy' and
+     'compare' mode branches above without duplicating it.
+     Text via the unified pipeline — not the upload object. */
+  function generateLegacySummary(materialId) {
     var pipeline = AHS.MaterialTextPipeline;
     var supplied = (pipeline && typeof pipeline.getText === "function")
       ? pipeline.getText(materialId) : null;
     if (!supplied || supplied.status !== "ready" || !String(supplied.text || "").trim()) {
-      return noContent();
+      return null;
     }
 
     /* Ensure the Knowledge Graph exists for this material, then derive
@@ -222,7 +277,7 @@ AHS.AITutorService = (function () {
       var produced = summaryRuntime.createSummary(materialId);
       if (produced) { return produced; }
     }
-    return noContent();
+    return null;
   }
 
   function noContent() {
