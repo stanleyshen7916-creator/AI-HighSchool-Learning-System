@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), a read-only legacy-compatibility bridge (EO-AI-008), rule-based content extraction (EO-AI-009), its Core Concept classification HOTFIX (EO-AI-010A), and a Legacy/New Dual-run selector (EO-AI-011) — still no LLM anywhere. **EO-AI-012A wired a minimum subset (22 files, dependency-traced — not the whole ai-engine/ tree) into `materials.html`**, so `AHS.AIEngine.SummaryProvider` is now really reachable in the browser for the first time; default mode stays `legacy` (no behavior change — verified byte-identical), and the UI is otherwise still untouched by ai-engine. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see. As of EO-AI-009, `SummaryPipeline.run()` output now includes a `.summary` object shaped exactly like `MaterialSummaryCard.js` expects (`coreConcepts`/`keywords`/`definitions`/`formulas`/`importantPoints`, all rule-extracted verbatim from the material's real text — no LLM, no fabrication) — but **actually wiring `MaterialSummaryCard` to use it is still deferred to a future "AI Summary Migration" EO**, not done here. EO-AI-010 added `SummaryComparator` (real-data equivalence validation only, no code change to either pipeline) and found a known Core Concept coverage gap — EO-AI-010A Revision-1 fixed it (added a concept-explanatory-sentence classification rule; the Keyword length rule is unchanged) and re-validated 100% coverage across all five categories with zero regression — see `docs/migration/EO_AI_010_VALIDATION.md`'s "HOTFIX Comparison" section for the real before/after numbers. EO-AI-011 added `SummaryProvider` — a single entry point selecting between `legacy` (default) / `new` / `compare` mode; in `compare` mode both pipelines run and are diffed via the existing `SummaryComparator`, but the value returned (what a caller/UI would see) is always the Legacy summary, and the diff report lives only in an in-memory variable (`getLastComparison()`), never written to any Runtime. EO-AI-012 Revision-1 added a **Migration Bridge**: `js/runtime/AITutorService.js`'s `getLearningSummary()` now checks for `AHS.AIEngine.SummaryProvider` and, when present, delegates the read to it (SummaryProvider alone decides legacy/new/compare — `AITutorService` never inspects the mode); at that point `SummaryProvider` was not yet wired into any page, so the check found nothing and fell through to the exact pre-EO-AI-012 behaviour. EO-AI-012A (see above) wired it in — the check now finds a real `SummaryProvider`, delegates to it, and since its default mode is `legacy`, behaviour is still verified byte-identical to before. `ensureLearningSummary()`'s generation chain is untouched. Default mode stays `legacy` — flipping it is EO-AI-012B, and true Legacy removal is a separate future EO-AI-013 (`Legacy Cleanup`, gated on a Sprint of stability).
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), a read-only legacy-compatibility bridge (EO-AI-008), rule-based content extraction (EO-AI-009), its Core Concept classification HOTFIX (EO-AI-010A), and a Legacy/New Dual-run selector (EO-AI-011) — still no LLM anywhere. **EO-AI-012A wired a minimum subset (22 files, dependency-traced — not the whole ai-engine/ tree) into `materials.html`**, so `AHS.AIEngine.SummaryProvider` is now really reachable in the browser for the first time; default mode stays `legacy` (no behavior change — verified byte-identical), and the UI is otherwise still untouched by ai-engine. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see. As of EO-AI-009, `SummaryPipeline.run()` output now includes a `.summary` object shaped exactly like `MaterialSummaryCard.js` expects (`coreConcepts`/`keywords`/`definitions`/`formulas`/`importantPoints`, all rule-extracted verbatim from the material's real text — no LLM, no fabrication) — but **actually wiring `MaterialSummaryCard` to use it is still deferred to a future "AI Summary Migration" EO**, not done here. EO-AI-010 added `SummaryComparator` (real-data equivalence validation only, no code change to either pipeline) and found a known Core Concept coverage gap — EO-AI-010A Revision-1 fixed it (added a concept-explanatory-sentence classification rule; the Keyword length rule is unchanged) and re-validated 100% coverage across all five categories with zero regression — see `docs/migration/EO_AI_010_VALIDATION.md`'s "HOTFIX Comparison" section for the real before/after numbers. EO-AI-011 added `SummaryProvider` — a single entry point selecting between `legacy` (default) / `new` / `compare` mode; in `compare` mode both pipelines run and are diffed via the existing `SummaryComparator`, but the value returned (what a caller/UI would see) is always the Legacy summary, and the diff report lives only in an in-memory variable (`getLastComparison()`), never written to any Runtime. EO-AI-012 Revision-1 added a **Migration Bridge**: `js/runtime/AITutorService.js`'s `getLearningSummary()` now checks for `AHS.AIEngine.SummaryProvider` and, when present, delegates the read to it (SummaryProvider alone decides legacy/new/compare — `AITutorService` never inspects the mode); at that point `SummaryProvider` was not yet wired into any page, so the check found nothing and fell through to the exact pre-EO-AI-012 behaviour. EO-AI-012A (see above) wired it in — the check now finds a real `SummaryProvider`, delegates to it, and since its default mode is `legacy`, behaviour is still verified byte-identical to before. `ensureLearningSummary()`'s generation chain is untouched. **EO-AI-012C (Migration Bridge Hotfix)**: an attempt to flip the default mode to `new` (Sprint AI-013 Part A) surfaced a real regression — `SummaryProvider.getSummary()`'s `new`-mode branch called `SummaryService.generate()` unconditionally, so `MaterialSummaryCard`'s very first read (before the user ever clicks anything) silently produced real content and skipped straight to "ready" state, confirmed by 3 real `BehaviorSuite` failures. Fixed by splitting Read and Generate into two separate entry points: `getSummary()` is now **always** read-only in every mode (reads `SummaryService.get()`, never `.generate()`); a new `generateSummary()` is the only thing that actually runs the New pipeline, and nothing calls it automatically — it's meant to be invoked only from an explicit user action. Re-verified: flipping default mode to `new` no longer breaks `BehaviorSuite` (162/162 PASS). Default mode stays `legacy` — the actual migration is Sprint AI-013 Part A, and true Legacy removal is a separate future EO-AI-013 Legacy Cleanup, gated on a Sprint of stability.
 
 ## Purpose
 
@@ -99,12 +99,17 @@ ai-engine/
                                  bridge, not a replacement
       SummaryProvider.js       — EO-AI-011: setMode('legacy'|'new'|'compare')/getMode()/
                                  getSummary(materialId)/getLastComparison(); the single entry point
-                                 for Dual-run. legacy reads AHS.KnowledgeSummaryRuntime read-only; new
-                                 delegates to the existing SummaryService singleton (no second
-                                 Pipeline/Runtime instance); compare runs both, diffs them via the
-                                 existing SummaryComparator, keeps the report only in memory, and
-                                 still returns the Legacy summary — Compare mode never changes what a
-                                 caller/UI would see. Default mode is 'legacy', never auto-switched.
+                                 for Dual-run. Default mode is 'legacy', never auto-switched.
+                                 EO-AI-012C HOTFIX: getSummary() is ALWAYS read-only in every mode
+                                 (legacy reads AHS.KnowledgeSummaryRuntime; new reads
+                                 SummaryService.get() — never .generate()); compare reads both sides
+                                 read-only, diffs via SummaryComparator, keeps the report only in
+                                 memory, and still returns the Legacy summary — Compare mode never
+                                 changes what a caller/UI would see. generateSummary(materialId) is
+                                 the separate, explicit entry point that actually runs the New
+                                 pipeline (via the existing SummaryService singleton, no second
+                                 Pipeline/Runtime instance) — nothing in this file calls it
+                                 automatically.
     common/
       Constants.js            — reserved service/provider ids
       Errors.js                — unified Error Framework (see below)
@@ -117,8 +122,10 @@ ai-engine/
 `getWithFallback`, no DOM, never touches `SummaryRuntime`/`SummaryPipeline`
 directly. EO-AI-011 added a second, independent route through
 `AHS.AIEngine.SummaryProvider` — `setMode`/`getMode`/`getSummary` — purely
-additive, the four EO-AI-007/008 methods above are unchanged. Still not
-loaded by any HTML page — nothing calls `AHS.SummaryAdapter` yet (the
+additive, the four EO-AI-007/008 methods above are unchanged. EO-AI-012C
+added `generateSummary` — a passthrough to `SummaryProvider.generateSummary()`,
+the explicit Generate API; `getSummary()` remains read-only in every mode.
+Still not loaded by any HTML page — nothing calls `AHS.SummaryAdapter` yet (the
 Migration Bridge in `js/runtime/AITutorService.js` talks to
 `AHS.AIEngine.SummaryProvider` directly), so it was correctly left out of
 EO-AI-012A's wiring below.
@@ -175,8 +182,9 @@ Foundation-only surface; no provider is registered and nothing is auto-registere
 - `AHS.AIEngine.SummaryComparator` (`ai-engine/src/validator/`) — compare/coverageReport/missingItems/
   checkCompatibility (the last calls the real `AHS.MaterialSummaryCard.hasSummaryContent()`)
 - `AHS.AIEngine.SummaryService` (singleton) / `AHS.SummaryAdapter` (singleton, Platform namespace)
-- `AHS.AIEngine.SummaryProvider` (singleton) — `setMode`/`getMode`/`getSummary`/`getLastComparison`
-  (EO-AI-011 Dual-run selector, default mode `legacy`)
+- `AHS.AIEngine.SummaryProvider` (singleton) — `setMode`/`getMode`/`getSummary`/`generateSummary`/
+  `getLastComparison` (EO-AI-011 Dual-run selector, default mode `legacy`; EO-AI-012C: `getSummary()`
+  is always read-only, `generateSummary()` is the only method that runs the New pipeline)
 
 ### Summary Model fields (12)
 

@@ -15,7 +15,13 @@
    AHS.AIEngine.SummaryProvider (setMode/getMode/getSummary) for
    Dual-run mode selection. This does not change generate/
    generateFromMaterial/get/getWithFallback above in any way — same
-   Extension Only discipline as every EO before it. */
+   Extension Only discipline as every EO before it.
+
+   EO-AI-012C adds generateSummary — a passthrough to
+   SummaryProvider.generateSummary(), the explicit Generate API added
+   by the Migration Bridge Hotfix. getSummary() above remains Read
+   Only in every mode; this method is the only one that actually runs
+   the New pipeline. */
 window.AHS = window.AHS || {};
 
 AHS.SummaryAdapter = (function () {
@@ -52,6 +58,11 @@ AHS.SummaryAdapter = (function () {
     return AHS.AIEngine.SummaryProvider.getSummary(materialId);
   }
 
+  /* EO-AI-012C — explicit Generate API passthrough. */
+  function generateSummary(materialId) {
+    return AHS.AIEngine.SummaryProvider.generateSummary(materialId);
+  }
+
   return {
     generate: generate,
     generateFromMaterial: generateFromMaterial,
@@ -59,6 +70,7 @@ AHS.SummaryAdapter = (function () {
     getWithFallback: getWithFallback,
     setMode: setMode,
     getMode: getMode,
-    getSummary: getSummary
+    getSummary: getSummary,
+    generateSummary: generateSummary
   };
 })();
