@@ -65,6 +65,35 @@
   <script src="js/parser/WrongBookGenerator.js"></script>
   <script src="js/runtime/ReviewGeneratorRuntime.js"></script>
   <script src="js/runtime/AITutorRuntime.js"></script>
+  <!-- EO-AI-012A: ai-engine Migration Bridge minimum runtime set only —
+       exactly what AHS.AIEngine.SummaryProvider needs to exist and work,
+       traced dependency-by-dependency (not the whole ai-engine/ tree).
+       Default mode stays 'legacy' (SummaryProvider.js) — this wiring
+       changes no visible behavior; AITutorService.getLearningSummary()
+       (EO-AI-012 Revision-1) simply finds AHS.AIEngine.SummaryProvider
+       present now instead of falling back. -->
+  <script src="ai-engine/src/common/Errors.js"></script>
+  <script src="ai-engine/src/common/Constants.js"></script>
+  <script src="ai-engine/src/common/Utilities.js"></script>
+  <script src="ai-engine/src/core/AIService.js"></script>
+  <script src="ai-engine/src/knowledge/Metadata.js"></script>
+  <script src="ai-engine/src/knowledge/MetadataBuilder.js"></script>
+  <script src="ai-engine/src/knowledge/MetadataValidator.js"></script>
+  <script src="ai-engine/src/knowledge/KnowledgeCache.js"></script>
+  <script src="ai-engine/src/knowledge/KnowledgeLoader.js"></script>
+  <script src="ai-engine/src/services/summary/SummaryExtractor.js"></script>
+  <script src="ai-engine/src/services/summary/SummaryBuilder.js"></script>
+  <script src="ai-engine/src/services/summary/SummaryFormatter.js"></script>
+  <script src="ai-engine/src/services/summary/SummaryValidator.js"></script>
+  <script src="ai-engine/src/services/summary/SummaryEngine.js"></script>
+  <script src="ai-engine/src/parser/SummaryContentExtractor.js"></script>
+  <script src="ai-engine/src/runtime/SummaryRuntime.js"></script>
+  <script src="ai-engine/src/runtime/SummaryHistory.js"></script>
+  <script src="ai-engine/src/runtime/SummarySession.js"></script>
+  <script src="ai-engine/src/runtime/SummaryPipeline.js"></script>
+  <script src="ai-engine/src/service/SummaryService.js"></script>
+  <script src="ai-engine/src/validator/SummaryComparator.js"></script>
+  <script src="ai-engine/src/service/SummaryProvider.js"></script>
   <script src="js/runtime/AITutorService.js"></script>
   <script src="js/ui/MaterialSummaryCard.js"></script>
   <script src="js/ui/MaterialQuestionCard.js"></script>
