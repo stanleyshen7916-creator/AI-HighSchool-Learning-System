@@ -1,8 +1,14 @@
 /* ai-engine/src/core/AIEngine.js — EO-MIG-002 · AI Engine Foundation
+   EO-AI-002 · AI Core Foundation (Dependency Injection + Lifecycle)
    The single entry point every AI feature must go through
-   (Platform -> AI Engine -> Provider -> LLM). Foundation only: a
-   provider/service registry with no providers or services registered
-   yet, and no LLM call anywhere in this file. */
+   (Platform -> AI Engine -> Provider -> Service -> Context). Foundation
+   only: no provider, service, or LLM call is registered or made
+   anywhere in this file.
+
+   registerProvider/getProvider/registerService/getService keep the
+   exact external behavior they had in EO-MIG-002 (same thrown error
+   types and messages) — they are now thin wrappers delegating to the
+   composed ProviderManager/ServiceRegistry instead of a bare object. */
 window.AHS = window.AHS || {};
 AHS.AIEngine = AHS.AIEngine || {};
 
@@ -10,42 +16,57 @@ AHS.AIEngine = AHS.AIEngine || {};
   "use strict";
 
   function AIEngine() {
-    this._providers = {};
-    this._services = {};
+    this._initialized = false;
+    this.providers = new AHS.AIEngine.ProviderManager();
+    this.services = new AHS.AIEngine.ServiceRegistry();
+    this.contexts = new AHS.AIEngine.ContextManager();
   }
 
+  // Lifecycle
+
+  AIEngine.prototype.initialize = function () {
+    this._initialized = true;
+    return this;
+  };
+
+  AIEngine.prototype.isInitialized = function () {
+    return this._initialized;
+  };
+
+  AIEngine.prototype.dispose = function () {
+    this.providers = new AHS.AIEngine.ProviderManager();
+    this.services = new AHS.AIEngine.ServiceRegistry();
+    this.contexts = new AHS.AIEngine.ContextManager();
+    this._initialized = false;
+  };
+
+  AIEngine.prototype.reset = function () {
+    this.dispose();
+    this.initialize();
+  };
+
+  AIEngine.prototype.version = function () {
+    return AHS.AIEngine.VERSION;
+  };
+
+  // Provider (delegates to ProviderManager -> ProviderRegistry)
+
   AIEngine.prototype.registerProvider = function (provider) {
-    if (!provider || !provider.id) {
-      throw new AHS.AIEngine.AIEngineError(
-        "registerProvider requires a provider with an id"
-      );
-    }
-    this._providers[provider.id] = provider;
+    this.providers.register(provider);
   };
 
   AIEngine.prototype.getProvider = function (id) {
-    var provider = this._providers[id];
-    if (!provider) {
-      throw new AHS.AIEngine.ProviderNotRegisteredError(id);
-    }
-    return provider;
+    return this.providers.get(id);
   };
 
+  // Service (delegates to ServiceRegistry)
+
   AIEngine.prototype.registerService = function (service) {
-    if (!service || !service.id) {
-      throw new AHS.AIEngine.AIEngineError(
-        "registerService requires a service with an id"
-      );
-    }
-    this._services[service.id] = service;
+    this.services.register(service);
   };
 
   AIEngine.prototype.getService = function (id) {
-    var service = this._services[id];
-    if (!service) {
-      throw new AHS.AIEngine.ServiceNotImplementedError(id);
-    }
-    return service;
+    return this.services.get(id);
   };
 
   AHS.AIEngine.AIEngine = AIEngine;
