@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005) and its Runtime integration (EO-AI-006) — still no LLM connected anywhere.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), and a Service Layer (EO-AI-007) — still no LLM connected anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system — see EO-AI-007's REPORT for why this layer stays UI-free.
 
 ## Purpose
 
@@ -77,12 +77,21 @@ ai-engine/
                                  -> SummaryBuilder -> SummaryValidator (all via the unmodified
                                  SummaryEngine.generate()) -> SummaryFormatter -> SummaryRuntime.save()
                                  -> SummaryHistory.record() -> return
+    service/
+      SummaryService.js       — generate(materialId)/generateFromMaterial(material)/get(materialId);
+                                 singleton owning one SummaryRuntime + one SummaryPipeline for the
+                                 page's lifetime; no DOM, not wired into MaterialPreview.js
     common/
       Constants.js            — reserved service/provider ids
       Errors.js                — unified Error Framework (see below)
       Version.js                — AI Engine layer version
       Utilities.js               — isPlainObject / freeze
 ```
+
+`js/ai/SummaryAdapter.js` (Platform side, `AHS.SummaryAdapter`) sits in front of
+`AHS.AIEngine.SummaryService` — `generate`/`generateFromMaterial`/`get`, no DOM,
+never touches `SummaryRuntime`/`SummaryPipeline` directly. Not loaded by any
+HTML page yet (no `<script>` tag added).
 
 ## Public API (Reserved)
 
@@ -104,6 +113,7 @@ Foundation-only surface; no provider is registered and nothing is auto-registere
 - `AHS.AIEngine.Metadata` / `MetadataBuilder` / `MetadataValidator`
 - `AHS.AIEngine.SummaryEngine` / `SummaryExtractor` / `SummaryBuilder` / `SummaryFormatter` / `SummaryValidator`
 - `AHS.AIEngine.SummaryRuntime` / `SummaryHistory` / `SummarySession` / `SummaryPipeline`
+- `AHS.AIEngine.SummaryService` (singleton) / `AHS.SummaryAdapter` (singleton, Platform namespace)
 
 ### Summary Model fields (12)
 
