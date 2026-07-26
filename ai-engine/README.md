@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), and a Service Layer (EO-AI-007) — still no LLM connected anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system — see EO-AI-007's REPORT for why this layer stays UI-free.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), and a read-only legacy-compatibility bridge (EO-AI-008) — still no LLM connected anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see; this layer cannot yet produce equivalent content (`SummaryPipeline` is an intentional honest stub, EO-AI-005), so **Replace Legacy is explicitly deferred to a future "AI Summary Migration" EO** — see EO-AI-008's REPORT for the full reasoning and the regression-test evidence.
 
 ## Purpose
 
@@ -78,9 +78,14 @@ ai-engine/
                                  SummaryEngine.generate()) -> SummaryFormatter -> SummaryRuntime.save()
                                  -> SummaryHistory.record() -> return
     service/
-      SummaryService.js       — generate(materialId)/generateFromMaterial(material)/get(materialId);
-                                 singleton owning one SummaryRuntime + one SummaryPipeline for the
-                                 page's lifetime; no DOM, not wired into MaterialPreview.js
+      SummaryService.js       — generate(materialId)/generateFromMaterial(material)/get(materialId)/
+                                 getWithFallback(materialId); singleton owning one SummaryRuntime +
+                                 one SummaryPipeline for the page's lifetime; no DOM, not wired into
+                                 MaterialPreview.js. getWithFallback() (EO-AI-008): returns this
+                                 Service's own content only when it's real (non-empty), otherwise
+                                 reads (read-only, never writes) the legacy
+                                 AHS.KnowledgeSummaryRuntime.getSummaryByMaterial() — a compatibility
+                                 bridge, not a replacement
     common/
       Constants.js            — reserved service/provider ids
       Errors.js                — unified Error Framework (see below)
@@ -89,9 +94,10 @@ ai-engine/
 ```
 
 `js/ai/SummaryAdapter.js` (Platform side, `AHS.SummaryAdapter`) sits in front of
-`AHS.AIEngine.SummaryService` — `generate`/`generateFromMaterial`/`get`, no DOM,
-never touches `SummaryRuntime`/`SummaryPipeline` directly. Not loaded by any
-HTML page yet (no `<script>` tag added).
+`AHS.AIEngine.SummaryService` — `generate`/`generateFromMaterial`/`get`/
+`getWithFallback`, no DOM, never touches `SummaryRuntime`/`SummaryPipeline`
+directly. Not loaded by any HTML page yet (no `<script>` tag added) —
+`MaterialSummaryCard.js` does not call it.
 
 ## Public API (Reserved)
 
