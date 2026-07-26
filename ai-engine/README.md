@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002 / EO-AI-003 / EO-AI-004) plus a first real service, `summary` (EO-AI-005) — still no LLM connected anywhere.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005) and its Runtime integration (EO-AI-006) — still no LLM connected anywhere.
 
 ## Purpose
 
@@ -62,6 +62,21 @@ ai-engine/
       question/  review/  explanation/
       tutor/     knowledge/ prompt/
       (still empty — one future EO per remaining service)
+    runtime/
+      SummaryRuntime.js    — save/get/list/remove/clear, keyed by materialId; storage delegated
+                              to a composed KnowledgeCache (reused, not recreated), remove() calls
+                              its invalidate(); id="summaryRuntime" (registrable via registerService).
+                              NOT the LOCKED top-level AHS.SummaryRuntime — different namespace,
+                              different schema (12-field Summary Model, not the Sprint-5 5-section one)
+      SummaryHistory.js     — record()/latest()/list(); generation-time history for Summary Models
+                              (does not call the legacy AHS.HistoryRuntime.record() — see EO-AI-006
+                              REPORT.md for why: that method's fixed exam-result shape is consumed
+                              by StatisticsRuntime and would be corrupted by a Summary payload)
+      SummarySession.js      — start(materialId)/stop()/current(); tracks the in-flight materialId
+      SummaryPipeline.js      — orchestrates MaterialRuntime -> KnowledgeLoader -> SummaryExtractor
+                                 -> SummaryBuilder -> SummaryValidator (all via the unmodified
+                                 SummaryEngine.generate()) -> SummaryFormatter -> SummaryRuntime.save()
+                                 -> SummaryHistory.record() -> return
     common/
       Constants.js            — reserved service/provider ids
       Errors.js                — unified Error Framework (see below)
@@ -88,6 +103,7 @@ Foundation-only surface; no provider is registered and nothing is auto-registere
 - `AHS.AIEngine.KnowledgeRegistry` / `KnowledgeProvider` / `KnowledgeLoader` / `KnowledgeIndex` / `KnowledgeCache`
 - `AHS.AIEngine.Metadata` / `MetadataBuilder` / `MetadataValidator`
 - `AHS.AIEngine.SummaryEngine` / `SummaryExtractor` / `SummaryBuilder` / `SummaryFormatter` / `SummaryValidator`
+- `AHS.AIEngine.SummaryRuntime` / `SummaryHistory` / `SummarySession` / `SummaryPipeline`
 
 ### Summary Model fields (12)
 
