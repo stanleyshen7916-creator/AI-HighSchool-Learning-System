@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), a read-only legacy-compatibility bridge (EO-AI-008), and rule-based content extraction (EO-AI-009) — still no LLM anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see. As of EO-AI-009, `SummaryPipeline.run()` output now includes a `.summary` object shaped exactly like `MaterialSummaryCard.js` expects (`coreConcepts`/`keywords`/`definitions`/`formulas`/`importantPoints`, all rule-extracted verbatim from the material's real text — no LLM, no fabrication) — but **actually wiring `MaterialSummaryCard` to use it is still deferred to a future "AI Summary Migration" EO**, not done here. EO-AI-010 added `SummaryComparator` (real-data equivalence validation only, no code change to either pipeline) — see `docs/migration/EO_AI_010_VALIDATION.md` for the actual coverage numbers and a known gap (`coreConcepts` under-coverage in one tested scenario) that should be addressed before that future Migration EO.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), a read-only legacy-compatibility bridge (EO-AI-008), rule-based content extraction (EO-AI-009), and its Core Concept classification HOTFIX (EO-AI-010A) — still no LLM anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see. As of EO-AI-009, `SummaryPipeline.run()` output now includes a `.summary` object shaped exactly like `MaterialSummaryCard.js` expects (`coreConcepts`/`keywords`/`definitions`/`formulas`/`importantPoints`, all rule-extracted verbatim from the material's real text — no LLM, no fabrication) — but **actually wiring `MaterialSummaryCard` to use it is still deferred to a future "AI Summary Migration" EO**, not done here. EO-AI-010 added `SummaryComparator` (real-data equivalence validation only, no code change to either pipeline) and found a known Core Concept coverage gap — EO-AI-010A Revision-1 fixed it (added a concept-explanatory-sentence classification rule; the Keyword length rule is unchanged) and re-validated 100% coverage across all five categories with zero regression — see `docs/migration/EO_AI_010_VALIDATION.md`'s "HOTFIX Comparison" section for the real before/after numbers.
 
 ## Purpose
 
@@ -83,7 +83,11 @@ ai-engine/
                                     material's raw text into coreConcepts/keywords/definitions/formulas/
                                     importantPoints, each item { text, confidence, sourceRange }; text
                                     is always verbatim from the source, confidence is a fixed per-rule
-                                    score, sourceRange is the real 0-based line index
+                                    score, sourceRange is the real 0-based line index. EO-AI-010A
+                                    Revision-1 HOTFIX: added CONCEPT_SENTENCE_PATTERN so a concept-
+                                    explanatory full sentence (e.g. "本節說明...的定義與應用。") classifies
+                                    as coreConcepts instead of importantPoints; Keyword's line-length
+                                    rule (KEYWORD_MAX_LENGTH=6) is unchanged.
     service/
       SummaryService.js       — generate(materialId)/generateFromMaterial(material)/get(materialId)/
                                  getWithFallback(materialId); singleton owning one SummaryRuntime +

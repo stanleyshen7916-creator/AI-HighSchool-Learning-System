@@ -69,4 +69,57 @@ sparse 情境沒有發現落差（雙方都誠實回報空值，無資料可比�
 - 建議：**在正式 Migration EO 之前，先用一個小型修正 EO 調整 `SummaryContentExtractor` 的 keyword/coreConcept 判斷規則**（例如改用詞性/語意線索而非單純長度），或在 Migration EO 中明確評估此差異是否可接受。
 - 本次僅測試 2 個情境（rich／sparse），樣本數有限；正式 Migration 前建議擴大測試教材種類（更多學科、更長文本）以提高信心。
 
-（本檔案僅建立驗證能力與本次真實測試結果，不代表 Migration 已核准或已執行。）
+> **更新（EO-AI-010A Revision-1）**：上面「Core Concepts 已知邊界案例」已修正——見下方「HOTFIX Comparison」，目前 2 個測試情境 Core Concepts Coverage 已達 100%，其餘分類 Coverage 未降低。
+
+---
+
+## HOTFIX Comparison（EO-AI-010A Revision-1）
+
+### 一個重要的過程記錄：第一版假設是錯的
+
+EO-AI-010A 原始 Background 假設「三角函數／一次函數／氧化還原／細胞分裂這類短詞應該被歸類為 Core Concept」。**用真實 Legacy 資料驗證後發現這個假設不成立**——直接印出 Legacy 對 rich 教材的實際分類：
+
+```
+Legacy 真實輸出：
+coreConcepts: ["本節說明三角函數的定義與應用。"]   ← 是一句完整說明句
+keywords:     ["三角函數", "斜邊"]                ← 短詞本來就被 Legacy 分類為 Keywords
+```
+
+真正的差異：**不是「短詞該歸類成 Core Concept」，而是「具概念說明性的完整句該歸類成 Core Concept，而非 Important Point」**。已在套用第一版錯誤假設的修正前先發現、暫停回報，PMO 確認後發出 Revision-1 修正方向。
+
+### Before（EO-AI-009 原規則）
+
+| 分類 | Legacy Count | New Count | Coverage % |
+|---|---|---|---|
+| Core Concepts | 1 | 0 | 0% |
+| Keywords | 2 | 2 | 100% |
+| Definitions | 1 | 1 | 100% |
+| Formulas | 1 | 1 | 100% |
+| Important Points | 0 | 1 | 100%（New 多找到一筆，Legacy 無） |
+
+### After（EO-AI-010A Revision-1：新增「說明句 → Core Concept」規則，Keyword 長度規則完全不變）
+
+| 分類 | Legacy Count | New Count | Coverage % |
+|---|---|---|---|
+| Core Concepts | 1 | 1 | **100%**（0% → 100%） |
+| Keywords | 2 | 2 | 100%（不變，未降低） |
+| Definitions | 1 | 1 | 100%（不變） |
+| Formulas | 1 | 1 | 100%（不變） |
+| Important Points | 0 | 0 | 0%（雙方一致，New 不再誤放句子進這裡） |
+
+### Coverage Difference
+
+- **Core Concepts：0% → 100%**（真正修正——New 現在把「本節說明三角函數的定義與應用。」正確歸類為 Core Concept，逐字與 Legacy 分類的內容一致）
+- **Keywords：100% → 100%**（未下降，符合規格要求）
+- **Definitions／Formulas：100% → 100%**（未受影響）
+- **Important Points：兩者皆 0**（New 原本額外多出的那 1 筆其實就是被誤放的說明句，修正後正確歸位到 Core Concepts，不算「消失」）
+
+sparse 情境（單行「細胞」）修正前後數字完全相同（皆為 keywords 1/1，其餘 0/0），未受影響。
+
+### Remaining Gap
+
+**目前 2 個測試情境下無殘留落差**——rich／sparse 情境的所有 5 個分類 Coverage 皆為 100% 或雙方一致的 0%。
+
+樣本數仍然有限（僅 2 個情境），建議正式 Migration 前用更多學科/更長文本擴大測試覆蓋，確認這個「說明句 pattern」規則對其他措辭方式（例如「本章介紹…」「…主要探討…」等）也同樣適用，而不僅限於本次測試句型。
+
+（本次 HOTFIX 未改變 Keyword 分類規則，也未進行 Legacy Migration。）
