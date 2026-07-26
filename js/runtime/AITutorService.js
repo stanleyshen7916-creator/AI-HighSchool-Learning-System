@@ -48,7 +48,21 @@
    IndexedDB, no PersistenceAdapter. The only state held is the most
    recently built session (a coordination convenience); all learning
    data is read live from AITutorRuntime, so the service can never serve
-   a stale or divergent copy. */
+   a stale or divergent copy.
+
+   EO-AI-012 Revision-1 · AI Summary Legacy Migration (Migration Bridge,
+   additive only — public API/signatures/return format unchanged).
+   getLearningSummary() now checks for AHS.AIEngine.SummaryProvider and,
+   if present, delegates the read to it — SummaryProvider alone decides
+   legacy/new/compare (this file never inspects or branches on mode).
+   SummaryProvider is not wired into any page yet (deferred to
+   EO-AI-012A), so on every real page today this check finds nothing and
+   falls through to the exact pre-EO-AI-012 AITutorRuntime-coordinated
+   read below — byte-identical behaviour, zero live regression.
+   ensureLearningSummary()'s generation chain is untouched: Migration
+   is not complete this EO (SummaryProvider's default mode stays
+   'legacy' — see EO-AI-012B), so the only thing that can safely change
+   yet is the read path. */
 window.AHS = window.AHS || {};
 AHS.AITutorService = (function () {
   "use strict";
@@ -63,12 +77,32 @@ AHS.AITutorService = (function () {
       ? AHS.AITutorRuntime : null;
   }
 
+  /* EO-AI-012 Revision-1 — present only once EO-AI-012A wires ai-engine
+     into a page; null on every real page today. */
+  function summaryProvider() {
+    return (typeof window !== "undefined" && window.AHS &&
+      AHS.AIEngine && AHS.AIEngine.SummaryProvider &&
+      typeof AHS.AIEngine.SummaryProvider.getSummary === "function")
+      ? AHS.AIEngine.SummaryProvider
+      : null;
+  }
+
   /* ---- getLearningSummary(materialId) ------------------------------------
-     The Summary section, coordinated through AITutorRuntime. Read-only;
-     an empty object when nothing has been produced. */
+     The Summary section. Routes through SummaryProvider when it is
+     present (Migration Bridge); otherwise coordinated through
+     AITutorRuntime exactly as before. Read-only; an empty object when
+     nothing has been produced. */
   function getLearningSummary(materialId) {
+    if (!materialId) { return {}; }
+
+    var provider = summaryProvider();
+    if (provider) {
+      var routed = provider.getSummary(materialId);
+      return routed ? routed : {};
+    }
+
     var t = tutor();
-    if (!t || !materialId || typeof t.getKnowledgeSummary !== "function") { return {}; }
+    if (!t || typeof t.getKnowledgeSummary !== "function") { return {}; }
     var summary = t.getKnowledgeSummary(materialId);
     return summary ? summary : {};
   }
