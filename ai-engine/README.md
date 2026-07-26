@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002) — no service is implemented yet.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002 / EO-AI-003) — no service is implemented yet.
 
 ## Purpose
 
@@ -29,6 +29,15 @@ ai-engine/
       ContextManager.js      — holds one value per reserved context type
       ContextBuilder.js      — assembles a frozen context object
       ContextValidator.js    — structural validation only (plain object, known keys)
+    knowledge/
+      KnowledgeRegistry.js    — register/unregister/get/has/list/clear (AIEngine's integration point)
+      KnowledgeProvider.js    — load/unload/refresh/supports interface (no external source connected)
+      KnowledgeLoader.js       — loadFromObject/loadFromJSON/normalize (no Platform Runtime access)
+      KnowledgeIndex.js         — build/rebuild/search/remove (exact-match only, no semantic search)
+      KnowledgeCache.js         — set/get/has/remove/clear (memory only, no localStorage/IndexedDB)
+      Metadata.js                — nine reserved fields (subject/grade/chapter/section/topic/difficulty/source/tags/version)
+      MetadataBuilder.js          — fluent builder producing a Metadata instance
+      MetadataValidator.js        — structural validation only (plain object, known keys)
     prompt/
       PromptManager.js       — register/unregister/get/has/list, delegates to PromptRegistry
       PromptRegistry.js      — five reserved prompt slots (summary/question/review/explanation/tutor)
@@ -54,12 +63,15 @@ Foundation-only surface; no provider or service is registered yet.
 - `AIEngine.registerProvider(provider)` / `AIEngine.getProvider(id)` — delegates to `AIEngine.providers` (`ProviderManager`)
 - `AIEngine.registerService(service)` / `AIEngine.getService(id)` — delegates to `AIEngine.services` (`ServiceRegistry`)
 - `AIEngine.contexts` — a `ContextManager` instance
+- `AIEngine.knowledge` — a `KnowledgeRegistry` instance
 - `AHS.AIEngine.BaseProvider` — interface every provider extends
 - `AHS.AIEngine.AIService` — interface every service extends; constructor accepts `{ provider, context }` for Dependency Injection
 - `AHS.AIEngine.ProviderManager` / `ProviderRegistry` / `ProviderFactory`
 - `AHS.AIEngine.ServiceRegistry`
 - `AHS.AIEngine.ContextManager` / `ContextBuilder` / `ContextValidator`
 - `AHS.AIEngine.PromptManager` / `PromptRegistry` / `PromptTemplate` / `PromptContext`
+- `AHS.AIEngine.KnowledgeRegistry` / `KnowledgeProvider` / `KnowledgeLoader` / `KnowledgeIndex` / `KnowledgeCache`
+- `AHS.AIEngine.Metadata` / `MetadataBuilder` / `MetadataValidator`
 
 ### Error Framework
 
