@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), and a read-only legacy-compatibility bridge (EO-AI-008) — still no LLM connected anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see; this layer cannot yet produce equivalent content (`SummaryPipeline` is an intentional honest stub, EO-AI-005), so **Replace Legacy is explicitly deferred to a future "AI Summary Migration" EO** — see EO-AI-008's REPORT for the full reasoning and the regression-test evidence.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 ~ EO-AI-004) plus the `summary` service (EO-AI-005), its Runtime integration (EO-AI-006), a Service Layer (EO-AI-007), a read-only legacy-compatibility bridge (EO-AI-008), and rule-based content extraction (EO-AI-009) — still no LLM anywhere, and **not wired into any page's visible UI**. Material Detail's existing AI 重點整理 feature (`MaterialPreview` → `MaterialSummaryCard` → `AITutorService` → `KnowledgeSummaryRuntime`) is a separate, untouched Baseline system and remains the only thing users see. As of EO-AI-009, `SummaryPipeline.run()` output now includes a `.summary` object shaped exactly like `MaterialSummaryCard.js` expects (`coreConcepts`/`keywords`/`definitions`/`formulas`/`importantPoints`, all rule-extracted verbatim from the material's real text — no LLM, no fabrication) — but **actually wiring `MaterialSummaryCard` to use it is still deferred to a future "AI Summary Migration" EO**, not done here.
 
 ## Purpose
 
@@ -75,8 +75,15 @@ ai-engine/
       SummarySession.js      — start(materialId)/stop()/current(); tracks the in-flight materialId
       SummaryPipeline.js      — orchestrates MaterialRuntime -> KnowledgeLoader -> SummaryExtractor
                                  -> SummaryBuilder -> SummaryValidator (all via the unmodified
-                                 SummaryEngine.generate()) -> SummaryFormatter -> SummaryRuntime.save()
-                                 -> SummaryHistory.record() -> return
+                                 SummaryEngine.generate()) -> SummaryFormatter ->
+                                 SummaryContentExtractor (EO-AI-009, adds `.summary`) ->
+                                 SummaryRuntime.save() -> SummaryHistory.record() -> return
+    parser/
+      SummaryContentExtractor.js — rule-based (regex only, no LLM) line-by-line classification of a
+                                    material's raw text into coreConcepts/keywords/definitions/formulas/
+                                    importantPoints, each item { text, confidence, sourceRange }; text
+                                    is always verbatim from the source, confidence is a fixed per-rule
+                                    score, sourceRange is the real 0-based line index
     service/
       SummaryService.js       — generate(materialId)/generateFromMaterial(material)/get(materialId)/
                                  getWithFallback(materialId); singleton owning one SummaryRuntime +
@@ -119,6 +126,7 @@ Foundation-only surface; no provider is registered and nothing is auto-registere
 - `AHS.AIEngine.Metadata` / `MetadataBuilder` / `MetadataValidator`
 - `AHS.AIEngine.SummaryEngine` / `SummaryExtractor` / `SummaryBuilder` / `SummaryFormatter` / `SummaryValidator`
 - `AHS.AIEngine.SummaryRuntime` / `SummaryHistory` / `SummarySession` / `SummaryPipeline`
+- `AHS.AIEngine.SummaryContentExtractor`
 - `AHS.AIEngine.SummaryService` (singleton) / `AHS.SummaryAdapter` (singleton, Platform namespace)
 
 ### Summary Model fields (12)
