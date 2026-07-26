@@ -1,6 +1,6 @@
 # AI Engine
 
-Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002 / EO-AI-003 / EO-AI-004) — no service is implemented yet.
+Status: Core Foundation (EO-MIG-002 / EO-AI-001 / EO-AI-002 / EO-AI-003 / EO-AI-004) plus a first real service, `summary` (EO-AI-005) — still no LLM connected anywhere.
 
 ## Purpose
 
@@ -47,9 +47,21 @@ ai-engine/
       PromptTemplate.js      — render() interface, no prompt content
       PromptContext.js       — five reserved fields (material/history/profile/difficulty/subject)
     services/
-      summary/   question/  review/  explanation/
+      summary/
+        SummaryEngine.js       — generate(materialId)/generateByKnowledge(knowledge)/
+                                  generateBatch(materialIds); extends AIService, id="summary";
+                                  registered via the existing, unmodified AIEngine.registerService()
+        SummaryExtractor.js     — pulls structural facts (metadata/tags/chapter/section/content
+                                   length) out of a Knowledge Object; no NLP, no content reading
+        SummaryBuilder.js        — assembles the 12-field Summary Model; title/concepts/
+                                    definitions/formulas/examples are honest stubs (no AI text
+                                    generation yet); keywords is a pass-through of tags
+        SummaryFormatter.js      — toJSON() / toRuntimeObject(); no HTML
+        SummaryValidator.js      — required field/empty value/duplicate keyword + delegates
+                                    metadata validation to the existing MetadataValidator
+      question/  review/  explanation/
       tutor/     knowledge/ prompt/
-      (empty — one future EO per service)
+      (still empty — one future EO per remaining service)
     common/
       Constants.js            — reserved service/provider ids
       Errors.js                — unified Error Framework (see below)
@@ -59,7 +71,7 @@ ai-engine/
 
 ## Public API (Reserved)
 
-Foundation-only surface; no provider or service is registered yet.
+Foundation-only surface; no provider is registered and nothing is auto-registered — a caller must explicitly `engine.registerService(new AHS.AIEngine.SummaryEngine())` to use it.
 
 - `AHS.AIEngine.AIEngineFactory.getInstance()` — returns the singleton `AIEngine`
 - `AIEngine.initialize()` / `dispose()` / `reset()` / `version()` / `isInitialized()` — Lifecycle
@@ -75,6 +87,11 @@ Foundation-only surface; no provider or service is registered yet.
 - `AHS.AIEngine.PromptManager` / `PromptRegistry` / `PromptTemplate` / `PromptContext`
 - `AHS.AIEngine.KnowledgeRegistry` / `KnowledgeProvider` / `KnowledgeLoader` / `KnowledgeIndex` / `KnowledgeCache`
 - `AHS.AIEngine.Metadata` / `MetadataBuilder` / `MetadataValidator`
+- `AHS.AIEngine.SummaryEngine` / `SummaryExtractor` / `SummaryBuilder` / `SummaryFormatter` / `SummaryValidator`
+
+### Summary Model fields (12)
+
+`title subject grade chapter section keywords concepts definitions formulas examples difficulty metadata`
 
 ### Metadata fields (16)
 
