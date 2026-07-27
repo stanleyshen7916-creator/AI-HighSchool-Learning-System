@@ -1,5 +1,6 @@
 /* ai-engine/src/knowledge/Metadata.js — EO-AI-003 · Knowledge Engine Foundation
    EO-AI-004 · Knowledge Runtime Integration (Metadata Extension)
+   EO-AI-012E · Summary Metadata Migration (title field)
    Plain data holder for the reserved metadata fields. No business
    logic, no Runtime access.
 
@@ -7,7 +8,13 @@
    createdAt/updatedAt) on top of the original nine — all existing
    fields and behavior are unchanged. `studyScope` is reserved (the
    field exists and defaults to null like every other field) but no
-   Study Scope logic is implemented anywhere in this codebase. */
+   Study Scope logic is implemented anywhere in this codebase.
+
+   EO-AI-012E adds `title` — a structural pass-through of the
+   material's real title (see MetadataBuilder.fromMaterial), same
+   nature as subject/grade/chapter above it; not AI-generated, defaults
+   to null like every other field when absent. Backward compatible:
+   every pre-existing field and its behavior is unchanged. */
 window.AHS = window.AHS || {};
 AHS.AIEngine = AHS.AIEngine || {};
 
@@ -32,7 +39,9 @@ AHS.AIEngine = AHS.AIEngine || {};
     "createdAt",
     "updatedAt",
     /* EO-AI-004: reserved for a future EO, no logic attached */
-    "studyScope"
+    "studyScope",
+    /* EO-AI-012E addition */
+    "title"
   ];
 
   function Metadata(values) {

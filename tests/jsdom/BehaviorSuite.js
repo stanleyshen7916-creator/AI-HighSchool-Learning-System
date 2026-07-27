@@ -738,6 +738,72 @@ console.log("\n[22] EO-S8.3.006 — AI 練習題 UI 串接（Material Preview）
   if (consoleErrors.length) { console.log("   errors:", consoleErrors.slice(0, 3)); }
 }
 
+console.log("\n[23] EO-AI-012E — AI 重點整理 UI 串接（New Runtime，SummaryProvider mode='new'）");
+/* EO-AI-012E Part E: 保留 [21] 既有的 KnowledgeSummaryRuntime（Legacy）
+   斷言不變，本區塊為新增的 AI Engine 專屬斷言——materials.html 已於
+   EO-AI-012A 載入 ai-engine，[21] 驗證的是 SummaryProvider 預設 legacy
+   模式；本區塊改把 mode 設為 'new'，驗證同一組真實 UI 操作（開始 AI 分析）
+   改經 AHS.AIEngine.SummaryService 產生時，卡片仍正確顯示教材真實標題
+   （EO-AI-012E 修正的缺口）且內容確實來自 New Runtime 自己的快取，而非
+   Legacy 的 KnowledgeSummaryRuntime。 */
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  const A = window.AHS;
+  window.URL.createObjectURL = () => "blob:x";
+  window.URL.revokeObjectURL = () => {};
+
+  check("AI Engine 相依已載入（SummaryProvider／SummaryService／SummaryComparator）",
+    !!A.AIEngine && !!A.AIEngine.SummaryProvider && !!A.AIEngine.SummaryService && !!A.AIEngine.SummaryComparator);
+
+  A.AIEngine.SummaryProvider.setMode("new");
+  check("SummaryProvider mode 已切換為 'new'", A.AIEngine.SummaryProvider.getMode() === "new");
+
+  const folder = A.FolderRuntime.createFolder({ folderName: "AI Engine 測試", subject: "math", scopeType: "custom" });
+  const TEXT = ["三角函數", "斜邊", "正弦：對邊除以斜邊",
+    "餘弦定理 a² = b² + c² − 2bc·cosA", "本節說明三角函數的定義與應用。"].join("\n");
+  const mat = A.MaterialRuntime.add({ title: "三角函數講義（New）", subject: "math", grade: "高一",
+    chapter: "第三章", category: "講義", fileName: "trig-new.pdf", fileType: "PDF",
+    folderId: folder.folderId, content: TEXT });
+  A.KnowledgePipeline.process(mat.id);
+
+  const overlay = A.MaterialPreview.open(mat, function () {});
+  doc.body.appendChild(overlay);
+  const section = overlay.querySelector(".mat-summary");
+  const btn = section && section.querySelector(".mat-summary__btn");
+  check("mode='new' 下分析前仍為 Idle 狀態（提供「開始 AI 分析」按鈕，未提前產生）",
+    !!btn && btn.textContent === "開始 AI 分析");
+  check("分析前 New Runtime 自己的快取仍為空（AHS.AIEngine.SummaryService.get）",
+    A.AIEngine.SummaryService.get(mat.id) === undefined);
+
+  const realSetTimeout = window.setTimeout;
+  window.setTimeout = function (fn) { if (typeof fn === "function") { fn(); } return 0; };
+  btn.click();
+  window.setTimeout = realSetTimeout;
+
+  const card = section.querySelector(".mat-summary__card");
+  check("點擊後顯示 Summary 卡片（經 New Runtime 產生）", !!card);
+  check("卡片顯示教材真實標題（EO-AI-012E 修正：New Runtime 不再顯示「AI 重點整理」預設字樣）",
+    !!card && (card.querySelector(".mat-summary__title") || {}).textContent === "三角函數講義（New）");
+  check("卡片顯示重點條列（至少一項）", !!card && card.querySelectorAll(".mat-summary__point").length >= 1);
+  check("卡片顯示關鍵字（至少一項）", !!card && card.querySelectorAll(".mat-summary__chip").length >= 1);
+
+  check("Summary 確實由 AI Engine 的 New Runtime 產生（AHS.AIEngine.SummaryService 自己的快取，非 KnowledgeSummaryRuntime）",
+    A.AIEngine.SummaryService.get(mat.id) !== undefined);
+  check("Legacy KnowledgeSummaryRuntime 完全未被寫入（mode='new' 下 Generate 專屬 New Runtime）",
+    A.KnowledgeSummaryRuntime.getSummaryByMaterial(mat.id) === null);
+
+  /* 重新開啟教材預覽——確認狀態持久（EO-AI-012D 修正的重新開啟遺失問題）。 */
+  const overlay2 = A.MaterialPreview.open(mat, function () {});
+  doc.body.appendChild(overlay2);
+  const section2 = overlay2.querySelector(".mat-summary");
+  check("重新開啟教材預覽：直接顯示 Summary 卡片，不會跳回「開始 AI 分析」按鈕",
+    !section2.querySelector(".mat-summary__btn") && !!section2.querySelector(".mat-summary__card"));
+
+  check("AI Engine New Runtime UI 全流程 Console errors = 0", consoleErrors.length === 0);
+  if (consoleErrors.length) { console.log("   errors:", consoleErrors.slice(0, 3)); }
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

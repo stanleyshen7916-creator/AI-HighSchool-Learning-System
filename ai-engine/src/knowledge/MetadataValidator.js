@@ -1,9 +1,14 @@
 /* ai-engine/src/knowledge/MetadataValidator.js — EO-AI-003 · Knowledge Engine Foundation
    EO-AI-004 · Knowledge Runtime Integration (Validation Extension)
+   EO-AI-012E · Summary Metadata Migration (title field)
    Structural validation: plain object, known keys (EO-AI-003), plus
    EO-AI-004's four checks — required field, empty value, duplicate
    (within tags), invalid type. No semantic rules about what a valid
-   "subject" or "difficulty" value looks like beyond "it's a string". */
+   "subject" or "difficulty" value looks like beyond "it's a string".
+
+   EO-AI-012E: `title` added to STRING_FIELDS (must be a string when
+   present, same as every other structural field) but NOT to
+   REQUIRED_FIELDS — it stays optional/null when the material has none. */
 window.AHS = window.AHS || {};
 AHS.AIEngine = AHS.AIEngine || {};
 
@@ -14,7 +19,7 @@ AHS.AIEngine = AHS.AIEngine || {};
   var STRING_FIELDS = [
     "id", "materialId", "subject", "grade", "chapter", "section", "topic",
     "difficulty", "source", "version", "semester", "publisher",
-    "createdAt", "updatedAt", "studyScope"
+    "createdAt", "updatedAt", "studyScope", "title"
   ];
 
   function MetadataValidator() {}
