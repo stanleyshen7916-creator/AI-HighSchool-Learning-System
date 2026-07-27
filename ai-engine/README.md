@@ -89,7 +89,13 @@ ai-engine/
                                     Revision-1 HOTFIX: added CONCEPT_SENTENCE_PATTERN so a concept-
                                     explanatory full sentence (e.g. "本節說明...的定義與應用。") classifies
                                     as coreConcepts instead of importantPoints; Keyword's line-length
-                                    rule (KEYWORD_MAX_LENGTH=6) is unchanged.
+                                    rule (KEYWORD_MAX_LENGTH=6) is unchanged. EO-AI-010B expansion:
+                                    Sprint AI-013 Part B ran Compare Mode against all 8 real Repository
+                                    MockData materials and found 6/8 misclassified (they open with
+                                    "本教材介紹/整理/彙整/說明...", not "本節/本章/本單元/本課") —
+                                    added 本教材 to the subject alternation and 整理/彙整 to the verb
+                                    alternation; every prior alternative unchanged, EO-AI-010A's
+                                    original test case still matches exactly as before.
     service/
       SummaryService.js       — generate(materialId)/generateFromMaterial(material)/get(materialId)/
                                  getWithFallback(materialId); singleton owning one SummaryRuntime +

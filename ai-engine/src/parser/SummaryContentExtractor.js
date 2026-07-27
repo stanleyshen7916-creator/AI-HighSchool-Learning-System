@@ -1,5 +1,6 @@
 /* ai-engine/src/parser/SummaryContentExtractor.js — EO-AI-009 · AI Summary Content Extraction Foundation
    EO-AI-010A Revision-1 · Summary Classification HOTFIX (Core Concept sentence rule)
+   EO-AI-010B · Summary Extraction Rule Expansion (Concept Pattern)
    Rule-based (regex/heuristic) extraction of Core Concepts / Keywords /
    Definitions / Formulas / Important Points directly from a material's
    raw text — line by line, verbatim. No LLM, no NLP model, no
@@ -24,7 +25,20 @@
    extractor was classifying it as an Important Point. CONCEPT_SENTENCE_
    PATTERN below carves that specific sentence shape out of the generic
    Important Point rule; Keyword's line-length rule is UNCHANGED so its
-   coverage cannot regress. */
+   coverage cannot regress.
+
+   EXPANSION (EO-AI-010B): Sprint AI-013 Part B's Equivalence Validation
+   ran Compare Mode against all 8 real Repository MockData materials
+   (js/data/MockData.js — not synthetic test strings) and found 6 of 8
+   lost their Core Concept (misclassified as Important Point): every one
+   opens with "本教材介紹/整理/彙整/說明..." ("this material"), not
+   "本節/本章/本單元/本課" — the subject EO-AI-010A's pattern already
+   covers verbs 說明/介紹 for, but not the 本教材 subject, and not the
+   整理/彙整 verbs. Both additions are Expansion only: every existing
+   alternative in the pattern (本節/本章/本單元/本課, 說明/介紹, 的定義/
+   的概念/主要探討/可分為/包含) is unchanged, so EO-AI-010A's original
+   test case ("本節說明三角函數的定義與應用。") still matches exactly as
+   before. Keyword's line-length rule remains untouched. */
 window.AHS = window.AHS || {};
 AHS.AIEngine = AHS.AIEngine || {};
 
@@ -39,11 +53,13 @@ AHS.AIEngine = AHS.AIEngine || {};
   var DEFINITION_PATTERN = /^(.{1,20}?)(：|:|是|為|定義為)(.+)$/;
 
   /* A sentence reads as a Core Concept explanation when it opens with
-     "本節/本章/本單元/本課 說明/介紹" or contains a fixed set of
-     concept-framing phrases (的定義/的概念/主要探討/可分為/包含). Checked
-     ahead of the generic Important Point rule so these sentences land
-     in coreConcepts instead — this is the only thing this HOTFIX changes. */
-  var CONCEPT_SENTENCE_PATTERN = /^(本節|本章|本單元|本課)(說明|介紹)|的(定義|概念)|主要探討|可分為|包含/;
+     "本節/本章/本單元/本課/本教材 說明/介紹/整理/彙整" or contains a fixed
+     set of concept-framing phrases (的定義/的概念/主要探討/可分為/包含).
+     Checked ahead of the generic Important Point rule so these sentences
+     land in coreConcepts instead. EO-AI-010B added 本教材 to the subject
+     alternation and 整理/彙整 to the verb alternation — real Repository
+     MockData wording — every prior alternative is unchanged. */
+  var CONCEPT_SENTENCE_PATTERN = /^(本節|本章|本單元|本課|本教材)(說明|介紹|整理|彙整)|的(定義|概念)|主要探討|可分為|包含/;
 
   var SENTENCE_END = /[。！？.!?]\s*$/;
   var KEYWORD_MAX_LENGTH = 6;

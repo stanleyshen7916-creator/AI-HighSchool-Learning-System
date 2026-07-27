@@ -123,3 +123,64 @@ sparse 情境（單行「細胞」）修正前後數字完全相同（皆為 key
 樣本數仍然有限（僅 2 個情境），建議正式 Migration 前用更多學科/更長文本擴大測試覆蓋，確認這個「說明句 pattern」規則對其他措辭方式（例如「本章介紹…」「…主要探討…」等）也同樣適用，而不僅限於本次測試句型。
 
 （本次 HOTFIX 未改變 Keyword 分類規則，也未進行 Legacy Migration。）
+
+---
+
+## Pattern Expansion（EO-AI-010B）
+
+上一節結尾建議的「用更多學科擴大測試覆蓋」在 Sprint AI-013 Part B（Equivalence Validation）真正執行時發生了：用真實 jsdom 載入 `materials.html`，對 `js/data/MockData.js` 全部 8 筆真實 Repository 教材（非合成測試字串）跑 Compare Mode，發現：
+
+```
+Aggregate across all 8 Repository MockData materials:
+  coreConcepts   totalLegacy=8  totalNew=2   materials-with-degradation=6
+```
+
+**6/8（75%）真實教材的 Core Concept 遺失**（誤分類為 Important Point）。逐一檢視 8 筆真實內容的開頭句型：
+
+| 學科 | 開頭句型 |
+|---|---|
+| math | 本教材**介紹**二次函數的圖形特徵… |
+| english | 本教材**整理**閱讀理解常見題型… |
+| physics | 本教材**彙整**牛頓三大運動定律… |
+| chemistry | 本教材**說明**化學反應速率… |
+| biology | 本教材**介紹**動植物細胞… |
+| history | 本教材**整理**中國古代重要朝代… |
+| geography | 本教材**說明**臺灣主要地形分布… |
+| civics | 本教材**介紹**憲法的基本原則… |
+
+全部 8 筆真實教材皆以「**本教材**」開頭（而非 EO-AI-010A 涵蓋的「本節/本章/本單元/本課」），且使用「**整理**」「**彙整**」兩個 EO-AI-010A 尚未涵蓋的動詞。其中 english（含「包含」）與 physics（含「的定義」）恰好因句子後段其他觸發詞而僥倖符合，其餘 6 筆完全沒有匹配任何既有規則。
+
+### 修正（EO-AI-010B，僅 Pattern Expansion）
+
+`CONCEPT_SENTENCE_PATTERN` 主詞新增「本教材」、動詞新增「整理／彙整」：
+
+```
+Before: /^(本節|本章|本單元|本課)(說明|介紹)|的(定義|概念)|主要探討|可分為|包含/
+After:  /^(本節|本章|本單元|本課|本教材)(說明|介紹|整理|彙整)|的(定義|概念)|主要探討|可分為|包含/
+```
+
+僅新增選項，既有選項（本節/本章/本單元/本課、說明/介紹、的定義/的概念/主要探討/可分為/包含）逐字未動，Keyword 長度規則未受影響。
+
+### After（EO-AI-010B，真實 8 筆 Repository MockData）
+
+| 學科 | Legacy Count | New Count | Coverage % |
+|---|---|---|---|
+| math | 1 | 1 | 100% |
+| english | 1 | 1 | 100% |
+| physics | 1 | 1 | 100% |
+| chemistry | 1 | 1 | 100% |
+| biology | 1 | 1 | 100% |
+| history | 1 | 1 | 100% |
+| geography | 1 | 1 | 100% |
+| civics | 1 | 1 | 100% |
+
+**全部 8 筆真實教材 Core Concepts Coverage 100%**（0% → 100% 的有 6 筆：math／chemistry／biology／history／geography／civics；english／physics 原本僥倖符合，維持 100%）。
+
+### Backward Compatibility 確認
+
+- EO-AI-010A 原始測試句「本節說明三角函數的定義與應用。」修正後仍正確分類為 coreConcepts（逐字比對一致）。
+- 短詞 Keyword 分類（三角函數／斜邊等）完全未受影響，仍分類為 keywords。
+
+### Remaining Gap
+
+目前 8 筆真實 Repository MockData 全數 Coverage 100%，無殘留落差。未來若 Repository 新增使用其他措辭風格的真實教材，建議比照本次流程用 Compare Mode 對照真實資料驗證，而非僅用單一手寫測試句。
