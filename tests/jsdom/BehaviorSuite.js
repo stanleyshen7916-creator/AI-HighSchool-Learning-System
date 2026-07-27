@@ -54,6 +54,38 @@ function loadPage(htmlFile, { seedSession } = {}) {
   return { window, dom, consoleErrors };
 }
 
+/* Sprint AI-015E (Option A, PMO-approved, EO-AI-015E-002) — the single
+   Production Question Pipeline now runs on materials.html: real text ->
+   AITutorService.ensureQuestionSet() (Knowledge Graph generation) ->
+   QuestionProviderBridge.bridge() (existing, unmodified, Sprint AI-015C)
+   -> LearningQuestionSession + LearningQuestionRuntime. Quiz no longer
+   calls QuestionGenerationFlow itself (Quiz 只能 Read). This helper
+   reproduces that real production flow — the same two calls
+   MaterialQuestionCard.js's「產生 AI 題目」button now makes — then
+   carries the resulting sessionStorage forward so a quiz.html load can
+   read genuinely-bridged content, exactly as a real student would after
+   visiting materials.html once. */
+function seedProductionQuestions(title) {
+  const matPage = loadPage("materials.html", {});
+  const A = matPage.window.AHS;
+  const folder = A.FolderRuntime.createFolder({ folderName: "測試", subject: "math", scopeType: "custom" });
+  const TEXT = ["三角函數", "斜邊", "正弦：對邊除以斜邊", "餘弦：鄰邊除以斜邊", "正切：對邊除以鄰邊",
+    "餘弦定理 a² = b² + c² − 2bc·cosA", "本節說明三角函數的定義與應用。"].join("\n");
+  const mat = A.MaterialRuntime.add({
+    title: title || "三角函數講義", subject: "math", grade: "高一", chapter: "第三章",
+    category: "講義", fileName: "trig.pdf", fileType: "PDF", folderId: folder.folderId, content: TEXT
+  });
+  A.AITutorService.ensureQuestionSet(mat.id);
+  const genRecord = A.QuestionGenerationRuntime.getQuestionsByMaterial(mat.id);
+  A.QuestionProviderBridge.bridge(mat.id);
+  const carried = {};
+  ["ahs:materialRuntime", "ahs:learningQuestionRuntime", "ahs:learningQuestionSession"].forEach(function (k) {
+    const v = matPage.window.sessionStorage.getItem(k);
+    if (v) { carried[k] = JSON.parse(v); }
+  });
+  return { materialId: mat.id, genRecord: genRecord, carried: carried };
+}
+
 /* Real-content Summary/Question fixtures — simulate what the pipeline
    will store once the Parser produces real content (schema-conformant,
    used ONLY inside this test file, never shipped). */
@@ -264,65 +296,61 @@ for (const page of ["index.html", "materials.html", "summary.html", "quiz.html",
 }
 
 
-console.log("\n[8] EO-S6.9-002 — Question Generation wiring (guide picker -> flow -> practice list)");
+console.log("\n[8] Sprint AI-015E — Production Pipeline wiring (materials.html generate+bridge -> quiz.html read-only practice)");
 {
-  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
-  const { window, consoleErrors } = loadPage("quiz.html", {
-    seedSession: {
-      "ahs:materialRuntime": materialSeed,
-      "ahs:knowledgeRuntime": knowSeed,
-      "ahs:summaryRuntime": realSummary,
-      "ahs:learningQuestionRuntime": { items: [], seq: 0 }
-    }
-  });
+  const seed = seedProductionQuestions();
+  check("Production Pipeline: real questions generated on materials.html", !!seed.genRecord && seed.genRecord.questions.length > 0);
+
+  const { window, consoleErrors } = loadPage("quiz.html", { seedSession: seed.carried });
   const doc = window.document;
-  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", seed.materialId);
   doc.body.appendChild(mountEl);
   const guide = mountEl.querySelector(".qguide");
   const start = guide.querySelector(".qguide__start");
-  check("開始練習 disabled until難度明確選擇 (Ruling 2B)", start.hasAttribute("disabled"));
+  check("開始練習 disabled until難度明確選擇 (Ruling 2B UI preserved — MVP: 不驅動任何生成)", start.hasAttribute("disabled"));
   const diffs = [...guide.querySelectorAll(".qguide__diff")];
   check("三個難度選項、無預設 is-active", diffs.length === 3 && diffs.every(b => !b.classList.contains("is-active")));
   diffs.find(b => b.getAttribute("data-difficulty") === "easy").click();
   check("選擇後 start 啟用", !start.hasAttribute("disabled"));
   start.click();
   const rows = [...mountEl.querySelectorAll(".quiz-practice__row-q")];
-  check("真實 Summary 產生 Schema v1.0 題目並顯示於 Practice 列表 (5 KP -> 5 題)", rows.length === 5);
+  check("Quiz 100% Read: LearningQuestionRuntime 顯示已橋接的真實題目",
+    rows.length === seed.genRecord.questions.length);
   check("列表零 Stub/Mock/Placeholder", rows.every(n => !/\[Stub\]|Mock|Placeholder/.test(n.textContent)));
-  check("Session 實際寫入 5 題且 LearningQuestionRuntime 零寫入",
-    window.AHS.LearningQuestionSession.count() === 5 && window.AHS.LearningQuestionRuntime.list().length === 0);
+  check("Quiz 未自行呼叫 QuestionGenerationFlow / 未建立 Question（Runtime 題數與橋接數一致，未額外產生）",
+    window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId).length === seed.genRecord.questions.length);
   /* EO-S7.0-002: Practice Submit flow — pick a WRONG option, expect
-     grading + answer reveal + Wrong Book + Review Queue integration. */
+     grading + answer reveal + Wrong Book + Review Queue integration,
+     now resolved via Sprint AI-015E's Identity Mapping (Runtime record
+     displayed -> Session sibling looked up for WrongBookGenerator). */
   rows[0].closest(".quiz-practice__row") ? rows[0].closest(".quiz-practice__row").click() : rows[0].click();
   const optBtns = [...mountEl.querySelectorAll(".quiz-practice__option--btn")];
   check("single_choice 呈現可作答選項", optBtns.length === 4);
-  const q0 = window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  const q0 = window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const wrongOpt = optBtns.find(b => b.textContent !== String(q0.answer));
   wrongOpt.click();
   check("Submit 後顯示批改結果（答錯）", /答錯了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
-  check("v1.0 字串 explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
-  check("答錯 → WrongBookSession 自動建立 1 筆", window.AHS.WrongBookSession.count() === 1);
+  check("explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
+  check("答錯 → WrongBookSession 自動建立 1 筆（Identity Mapping 成功解析 Runtime→Session）", window.AHS.WrongBookSession.count() === 1);
   const wbRec = window.AHS.WrongBookSession.list()[0];
-  check("錯題記錄內容解析自真實題目", wbRec.questionId === q0.id && wbRec.correctAnswer === q0.answer && wbRec.userAnswer === wrongOpt.textContent);
+  check("錯題記錄內容解析自真實題目", wbRec.correctAnswer === q0.answer && wbRec.userAnswer === wrongOpt.textContent);
   check("Review Queue 同步建立（priority=wrongCount, nextReviewAt=null）",
-    (() => { const e = window.AHS.ReviewQueue.getByQuestionId(q0.id);
+    (() => { const e = window.AHS.ReviewQueue.getByQuestionId(wbRec.questionId);
              return !!e && e.priority === 1 && e.nextReviewAt === null && e.masteryLevel === "new"; })());
-  check("Console errors = 0 (generation wiring)", consoleErrors.length === 0);
+  check("Console errors = 0 (production pipeline wiring)", consoleErrors.length === 0);
   if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0,3));
 }
 
-console.log("\n[10] EO-S7.0-002 — 答對不建立 / 重複答錯累加不重建");
+console.log("\n[10] EO-S7.0-002 / Sprint AI-015E — 答對不建立 / 重複答錯累加不重建（Production Pipeline + Identity Mapping）");
 {
-  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
-  const { window } = loadPage("quiz.html", {
-    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": realSummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
-  });
+  const seed = seedProductionQuestions();
+  const { window } = loadPage("quiz.html", { seedSession: seed.carried });
   const doc = window.document;
-  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  const mountEl = window.AHS.QuizCenter.create(undefined, "practice", seed.materialId);
   doc.body.appendChild(mountEl);
   [...mountEl.querySelectorAll(".qguide__diff")][0].click();
   mountEl.querySelector(".qguide__start").click();
-  const q0 = window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  const q0 = window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
 
   function openRow(idx) {
     const rows = [...mountEl.querySelectorAll(".quiz-practice__row-q")];
@@ -344,22 +372,21 @@ console.log("\n[10] EO-S7.0-002 — 答對不建立 / 重複答錯累加不重�
   check("重複答錯不重建資料（仍 1 筆）", window.AHS.WrongBookSession.count() === 1);
   check("wrongCount 正常累加 (2) 且 firstWrongAt 不覆蓋",
     after.wrongCount === 2 && after.firstWrongAt === first.firstWrongAt && after.id === first.id);
-  check("Queue 取代更新 priority=2", window.AHS.ReviewQueue.getByQuestionId(q0.id).priority === 2);
+  check("Queue 取代更新 priority=2", window.AHS.ReviewQueue.getByQuestionId(after.questionId).priority === 2);
 }
 
-console.log("\n[11] EO-S7.0-002 — Wrong Book 頁面：Session 資料橋接 + 即時統計");
+console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session 資料橋接 + 即時統計（Production Pipeline + Identity Mapping）");
 {
-  // Seed a real wrong-book record chain, then load wrongbook.html
-  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
-  const pre = loadPage("quiz.html", {
-    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": realSummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
-  });
-  const preMount = pre.window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  // Seed a real wrong-book record chain via the Production Pipeline (materials.html
+  // generate+bridge), then quiz.html read-only practice, then load wrongbook.html.
+  const seed = seedProductionQuestions();
+  const pre = loadPage("quiz.html", { seedSession: seed.carried });
+  const preMount = pre.window.AHS.QuizCenter.create(undefined, "practice", seed.materialId);
   pre.window.document.body.appendChild(preMount);
   [...preMount.querySelectorAll(".qguide__diff")][0].click();
   preMount.querySelector(".qguide__start").click();
   const rows = [...preMount.querySelectorAll(".quiz-practice__row-q")];
-  const q0 = pre.window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
   [...preMount.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {
@@ -430,17 +457,15 @@ console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統�
   check("Dashboard 正式 Empty State", /尚無學習數據/.test(loadPage("dashboard.html", {}).window.document.body.textContent));
 }
 
-console.log("\n[14] EO-S7.0-003 — Review Widget 反映真實錯題（Mastery Progress 即時）");
+console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實錯題（Mastery Progress 即時，Production Pipeline）");
 {
-  const knowSeed = { items: [{ id: "know_1", materialId: "rt_1", subject: "math", grade: "高一", chapter: "第三章", section: "第一節", title: "三角函數", concepts: [], structure: [], keywords: [], sourceInfo: {} }], seq: 1 };
-  const pre = loadPage("quiz.html", {
-    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:knowledgeRuntime": knowSeed, "ahs:summaryRuntime": realSummary, "ahs:learningQuestionRuntime": { items: [], seq: 0 } }
-  });
-  const m = pre.window.AHS.QuizCenter.create(undefined, "practice", "rt_1");
+  const seed = seedProductionQuestions();
+  const pre = loadPage("quiz.html", { seedSession: seed.carried });
+  const m = pre.window.AHS.QuizCenter.create(undefined, "practice", seed.materialId);
   pre.window.document.body.appendChild(m);
   [...m.querySelectorAll(".qguide__diff")][0].click();
   m.querySelector(".qguide__start").click();
-  const q0 = pre.window.AHS.LearningQuestionSession.list().find(q => q.questionType === "single_choice");
+  const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const rows = [...m.querySelectorAll(".quiz-practice__row-q")];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
   [...m.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();

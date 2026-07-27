@@ -123,7 +123,23 @@ AHS.MaterialQuestionCard = (function () {
         var service = AHS.AITutorService;
         var set = (service && typeof service.ensureQuestionSet === "function")
           ? service.ensureQuestionSet(item.id, force) : null;
-        if (hasQuestions(set)) { render("ready", set); } else { render("empty"); }
+        if (hasQuestions(set)) {
+          /* Sprint AI-015E (Option A, PMO-approved, EO-AI-015E-002):
+             this button is now the single Production Question Pipeline's
+             real trigger — ensureQuestionSet() generates from the
+             Knowledge Graph, QuestionProviderBridge.bridge() (existing,
+             unmodified, Sprint AI-015C) pushes that same real content
+             into LearningQuestionSession + LearningQuestionRuntime, so
+             quiz.html's read-only Practice Mode can display it. Both
+             calls are existing Public API — no new Runtime, no second
+             pipeline. */
+          if (AHS.QuestionProviderBridge && typeof AHS.QuestionProviderBridge.bridge === "function") {
+            AHS.QuestionProviderBridge.bridge(item.id);
+          }
+          render("ready", set);
+        } else {
+          render("empty");
+        }
       }, 0);
     }
 

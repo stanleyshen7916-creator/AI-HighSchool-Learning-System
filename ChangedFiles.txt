@@ -1,0 +1,27 @@
+Sprint AI-015E｜Quiz Production Cutover (resolved via EO-AI-015E-002, Option A)
+
+Modified (3 files):
+  js/components/QuizCenter.js
+  js/ui/MaterialQuestionCard.js
+  tests/jsdom/BehaviorSuite.js
+
+New (6 files):
+  docs/Architecture/QuizReadFlow.md
+  docs/Architecture/QuestionPipelineAnalysis.md
+  docs/QA/QuizProductionValidation.md
+  docs/migration/Sprint_AI_015E_ArchitectureResolution.md
+  docs/migration/EO_AI_015E_002_REPORT.md
+  docs/migration/Sprint_AI_015E_REPORT.md
+  ChangedFiles.txt
+
+Untouched (Forbidden List, verified via git diff):
+  js/runtime/QuestionGenerationRuntime.js
+  js/runtime/QuestionProviderBridge.js
+  js/runtime/LearningQuestionSession.js
+  js/runtime/LearningQuestionRuntime.js
+  js/runtime/QuestionRuntime.js
+  js/runtime/QuestionBank.js
+  js/runtime/ExamRuntime.js
+  js/parser/WrongBookGenerator.js
+  js/runtime/WrongBookSession.js
+  Review/Summary/KnowledgeGraphRuntime related files

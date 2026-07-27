@@ -551,17 +551,36 @@ AHS.QuizCenter = (function () {
     return q.indexOf("[Stub]") !== 0 && a.indexOf("[Stub]") !== 0;
   }
 
-  /* EO-S6.9-002: Session (Schema v1.0) questions for the Practice list —
-     read-only view of AHS.LearningQuestionSession. Session records are
-     already validate-gated at add() (no Stub can exist there), but the
-     same isRealLearningQuestion filter is applied for defense in depth. */
-  function sessionQuestions(filterMaterialId) {
+  /* Sprint AI-015E Part B · Identity Mapping (read-only cross-reference,
+     no new store, no Runtime API touched, no WrongBookGenerator change).
+     AHS.WrongBookGenerator resolves wrong answers exclusively via
+     AHS.LearningQuestionSession.getById() (its own fixed, LOCK design —
+     see js/parser/WrongBookGenerator.js header). Since Practice Mode now
+     reads questions from AHS.LearningQuestionRuntime only (Production
+     Cutover, below), this maps a displayed Runtime record back to its
+     Session sibling so WrongBookGenerator can still resolve it. Both
+     records were written by the same QuestionProviderBridge.bridge()
+     call from the same source question (Sprint AI-015C), so materialId +
+     traceability.knowledgeId + question text (verbatim passthrough of
+     the same source string on both sides) uniquely identify the pair —
+     nothing here is inferred or fabricated, only matched against
+     already-real, already-stored content. Falls back to record.id when
+     no sibling exists, so WrongBookGenerator still honestly rejects it
+     exactly as it does today for any unresolvable id — no new failure
+     mode is introduced. */
+  function wrongBookQuestionId(record) {
     var session = AHS.LearningQuestionSession;
-    if (!session) { return []; }
-    var items = filterMaterialId
-      ? (typeof session.findByMaterialId === "function" ? session.findByMaterialId(filterMaterialId) : [])
-      : (typeof session.list === "function" ? session.list() : []);
-    return items.filter(isRealLearningQuestion);
+    if (!session || typeof session.findByMaterialId !== "function") { return record.id; }
+    var knowledgeId = record.traceability && record.traceability.knowledgeId;
+    if (!knowledgeId) { return record.id; }
+    var siblings = session.findByMaterialId(record.materialId);
+    for (var i = 0; i < siblings.length; i += 1) {
+      var s = siblings[i];
+      if (s.traceability && s.traceability.knowledgeId === knowledgeId && s.question === record.question) {
+        return s.id;
+      }
+    }
+    return record.id;
   }
 
   function practiceEmptyState(forMaterialId) {
@@ -589,8 +608,11 @@ AHS.QuizCenter = (function () {
     /* Task 004: never render a [Stub] placeholder as a practice
        question — real records only, else the honest Empty State. */
     items = items.filter(isRealLearningQuestion);
-    /* EO-S6.9-002: merge in Schema v1.0 questions from the Session. */
-    items = items.concat(sessionQuestions(filterMaterialId));
+    /* Sprint AI-015E Part B · Production Cutover: Practice Mode now
+       reads 100% from AHS.LearningQuestionRuntime — the Session merge
+       (EO-S6.9-002) is removed. Wrong-answer resolution still reaches
+       WrongBookGenerator correctly via wrongBookQuestionId()'s identity
+       mapping, above. */
 
     if (!items.length) {
       return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
@@ -623,15 +645,19 @@ AHS.QuizCenter = (function () {
   /* EO-S7.0-002 · Wrong Book Runtime Integration hook — the ONLY new
      step appended after answer check: wrong answer → WrongBookGenerator
      .add() (Interface, sole write path; its data source is exclusively
-     LearningQuestionSession, so records from the old runtime simply
-     return null — no fake wrong-book entry can appear) → on success,
-     Review Queue upsert with runtime-derived values only: priority =
-     wrongCount (real data, not inference), nextReviewAt = null (no
-     scheduling EO exists — 不得自動排程/AI 推論). Exam Mode's
-     AnswerRuntime / AutoGrader (Score & Answer Logic) are untouched. */
+     LearningQuestionSession — unchanged, LOCK). Since Sprint AI-015E,
+     `rec` is always a LearningQuestionRuntime record (Production
+     Cutover); wrongBookQuestionId() maps it to its real Session sibling
+     first, above. A record with no Session sibling still honestly
+     returns null from add() — no fake wrong-book entry can appear,
+     exactly as before. On success: Review Queue upsert with
+     runtime-derived values only: priority = wrongCount (real data, not
+     inference), nextReviewAt = null (no scheduling EO exists — 不得自動
+     排程/AI 推論). Exam Mode's AnswerRuntime / AutoGrader (Score &
+     Answer Logic) are untouched. */
   function wrongBookHook(rec, userAnswer) {
     if (!AHS.WrongBookGenerator || typeof AHS.WrongBookGenerator.add !== "function") { return; }
-    var wb = AHS.WrongBookGenerator.add({ questionId: rec.id, userAnswer: userAnswer });
+    var wb = AHS.WrongBookGenerator.add({ questionId: wrongBookQuestionId(rec), userAnswer: userAnswer });
     if (wb && AHS.ReviewQueue && typeof AHS.ReviewQueue.enqueue === "function") {
       AHS.ReviewQueue.enqueue({
         questionId: wb.questionId,
@@ -869,26 +895,23 @@ AHS.QuizCenter = (function () {
        Question records only (same isRealLearningQuestion filter as the
        Practice list itself — Task 004 — so its 題型/難度 statistics can
        never be computed from a [Stub] placeholder). */
-    /* EO-S6.9-002 · Question Generation wiring: 開始練習 now carries the
-       student's explicit difficulty (Ruling 2B) into
-       AHS.QuestionGenerationFlow.run() — Summary → Generator → Schema
-       v1.0 → Session, triple-validated, deduped, zero fabrication —
-       then reveals the Practice list, which merges Session questions
-       with the existing real Runtime questions (read-only on both;
-       LearningQuestionRuntime itself is untouched). An empty-content
-       summary generates nothing and the mandated
-       「AI 正在建立練習題……」Empty State shows. */
+    /* Sprint AI-015E Part B · Production Cutover: the guide's question
+       set now reads 100% from AHS.LearningQuestionRuntime (Session merge
+       removed, matching buildPracticeListView above). "開始練習" no
+       longer calls AHS.QuestionGenerationFlow.run() — Quiz must not
+       create a Question of its own ("不得建立 Question。Quiz 只能
+       Read。"); generation is materials.html's「產生 AI 題目」→
+       QuestionProviderBridge responsibility (Sprint AI-015C), not
+       Quiz's. QuestionGenerationFlow.js itself is untouched — Quiz
+       simply no longer calls it. */
     function showQuestionGuide() {
       var runtime = AHS.LearningQuestionRuntime;
       var records = (runtime && typeof runtime.findByMaterialId === "function")
         ? runtime.findByMaterialId(initialMaterialId) : [];
       AHS.UI.mount(practiceRoot, AHS.QuestionGuide.create({
         materialId: initialMaterialId,
-        questions: records.filter(isRealLearningQuestion).concat(sessionQuestions(initialMaterialId)),
-        onStart: function (difficulty) {
-          if (AHS.QuestionGenerationFlow && typeof AHS.QuestionGenerationFlow.run === "function") {
-            AHS.QuestionGenerationFlow.run(initialMaterialId, difficulty);
-          }
+        questions: records.filter(isRealLearningQuestion),
+        onStart: function () {
           showPracticeList();
         }
       }));
