@@ -43,6 +43,12 @@
   <script src="js/runtime/SummaryRuntime.js"></script>
   <script src="js/parser/QuestionGenerator.js"></script>
   <script src="js/runtime/LearningQuestionRuntime.js"></script>
+  <!-- Sprint AI-015C: Question Provider Bridge Script Wiring — Schema v1.0
+       packager + Session store, previously quiz.html-only, now also
+       reachable from materials.html so the Bridge can write both targets
+       from where QuestionGenerationRuntime actually lives. -->
+  <script src="js/parser/LearningQuestionGenerator.js"></script>
+  <script src="js/runtime/LearningQuestionSession.js"></script>
   <script src="js/parser/LearningPipeline.js"></script>
   <script src="js/ui/MaterialUploadDialog.js"></script>
   <script src="js/ui/BulkUploadDialog.js"></script>
@@ -61,6 +67,7 @@
   <script src="js/parser/KnowledgePipeline.js"></script>
   <script src="js/runtime/KnowledgeSummaryRuntime.js"></script>
   <script src="js/runtime/QuestionGenerationRuntime.js"></script>
+  <script src="js/runtime/QuestionProviderBridge.js"></script>
   <script src="js/runtime/WrongBookSession.js"></script>
   <script src="js/parser/WrongBookGenerator.js"></script>
   <script src="js/runtime/ReviewGeneratorRuntime.js"></script>
