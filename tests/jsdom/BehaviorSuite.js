@@ -599,13 +599,20 @@ console.log("\n[20] HF-8.2.003 — 舊版單一 key 資料仍可下載（向下�
 }
 
 
-console.log("\n[21] EO-S8.3.004 — AI 重點整理 UI 串接（Material Preview）");
+console.log("\n[21] EO-S8.3.004 — AI 重點整理 UI 串接（Material Preview，Legacy Pathway）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {});
   const doc = window.document;
   const A = window.AHS;
   window.URL.createObjectURL = () => "blob:x";
   window.URL.revokeObjectURL = () => {};
+  /* Sprint AI-013 Part A: SummaryProvider's default mode is now 'new'.
+     This test specifically verifies the Legacy pathway (its ground
+     truth is AHS.KnowledgeSummaryRuntime), so it pins mode explicitly
+     rather than depending on whatever the ambient default happens to
+     be — same as test [23] pins 'new' for its own pathway. No
+     assertion below is changed or removed. */
+  A.AIEngine.SummaryProvider.setMode("legacy");
 
   check("AI 相依已載入（Pipeline / Summary / Service / SummaryCard）",
     !!A.KnowledgePipeline && !!A.KnowledgeSummaryRuntime && !!A.AITutorService &&

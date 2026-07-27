@@ -1,13 +1,19 @@
 /* ai-engine/src/service/SummaryProvider.js — EO-AI-011 · AI Summary Dual-run Integration
    EO-AI-012C · Migration Bridge Hotfix (Read/Generate separation)
+   Sprint AI-013 Part A · Default Mode Migration (Beta Cutover)
    Single entry point for retrieving a Summary, selectable between the
    Baseline Legacy system (AHS.KnowledgeSummaryRuntime, read-only, never
    written to) and the New Pipeline (AHS.AIEngine.SummaryService, which
    already owns the one SummaryRuntime/SummaryPipeline singleton pair —
    this file creates no second Runtime, no second Cache, no second UI).
 
-   Mode is one of "legacy" / "new" / "compare", default "legacy" (never
-   auto-switched).
+   Mode is one of "legacy" / "new" / "compare". Default is now "new"
+   (Sprint AI-013 Part A — Beta Cutover; was "legacy" through
+   EO-AI-012D/EO-AI-010B). Both other modes remain fully supported:
+   "legacy" is the Rollback target (setMode("legacy") alone, no code
+   change), and "compare" is preserved for equivalence QA. Never
+   auto-switched by this file — only an explicit setMode() call
+   changes it.
 
    EO-AI-012C LOCK Contract: getSummary() is ALWAYS Read Only, in every
    mode — it never generates, never triggers the pipeline, never
@@ -42,7 +48,7 @@ AHS.AIEngine.SummaryProvider = (function () {
   "use strict";
 
   var MODES = ["legacy", "new", "compare"];
-  var mode = "legacy";
+  var mode = "new";
   var comparator = new AHS.AIEngine.SummaryComparator();
   var lastComparison = null;
 
