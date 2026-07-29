@@ -101,9 +101,39 @@
   <script src="ai-engine/src/service/SummaryService.js"></script>
   <script src="ai-engine/src/validator/SummaryComparator.js"></script>
   <script src="ai-engine/src/service/SummaryProvider.js"></script>
+  <!-- Sprint AI-101: Question Production Pipeline (mirrors the Summary
+       ai-engine subset above), and Sprint AI-100: AI Gateway Foundation
+       + JSON Schemas — first browser wiring for both; each was
+       "built, not wired" until now. Sprint AI-101C additionally wires
+       the first real ApiClient (HttpApiClient.js) and the Platform-side
+       orchestration/UI that actually calls it. -->
+  <script src="ai-engine/src/services/question/QuestionExtractor.js"></script>
+  <script src="ai-engine/src/services/question/QuestionBuilder.js"></script>
+  <script src="ai-engine/src/services/question/QuestionFormatter.js"></script>
+  <script src="ai-engine/src/services/question/QuestionValidator.js"></script>
+  <script src="ai-engine/src/services/question/QuestionEngine.js"></script>
+  <script src="ai-engine/src/runtime/QuestionRuntime.js"></script>
+  <script src="ai-engine/src/runtime/QuestionHistory.js"></script>
+  <script src="ai-engine/src/runtime/QuestionSession.js"></script>
+  <script src="ai-engine/src/runtime/QuestionPipeline.js"></script>
+  <script src="ai-engine/src/service/QuestionService.js"></script>
+  <script src="ai-engine/src/service/QuestionProvider.js"></script>
+  <script src="ai-engine/src/gateway/GatewayConfig.js"></script>
+  <script src="ai-engine/src/gateway/GatewayConfigValidator.js"></script>
+  <script src="ai-engine/src/gateway/ApiClient.js"></script>
+  <script src="ai-engine/src/schema/SummarySchema.js"></script>
+  <script src="ai-engine/src/schema/QuestionSchema.js"></script>
+  <script src="ai-engine/src/schema/ErrorSchema.js"></script>
+  <script src="ai-engine/src/schema/SchemaValidator.js"></script>
+  <script src="ai-engine/src/gateway/AIGateway.js"></script>
+  <script src="ai-engine/src/gateway/HttpApiClient.js"></script>
   <script src="js/runtime/AITutorService.js"></script>
+  <script src="js/ai/SummaryAdapter.js"></script>
+  <script src="js/ai/QuestionAdapter.js"></script>
+  <script src="js/ai/GatewayIntegration.js"></script>
   <script src="js/ui/MaterialSummaryCard.js"></script>
   <script src="js/ui/MaterialQuestionCard.js"></script>
+  <script src="js/ui/AIGatewayPanel.js"></script>
   <script src="js/ui/MaterialPreview.js"></script>
   <script src="js/components/MaterialCenter.js"></script>
   <script src="js/pages/AppMaterials.js"></script>

@@ -167,6 +167,14 @@ AHS.MaterialPreview = (function () {
       bodyChildren.push(AHS.MaterialQuestionCard.create(item).node);
     }
 
+    /* Sprint AI-101C: AI Gateway sections, additive after the existing
+       (untouched) Baseline 重點整理/練習題 cards above — same
+       "append, never replace" pattern already used twice in this file. */
+    if (AHS.AIGatewayPanel && typeof AHS.AIGatewayPanel.createSummaryPanel === "function") {
+      bodyChildren.push(AHS.AIGatewayPanel.createSummaryPanel(item).node);
+      bodyChildren.push(AHS.AIGatewayPanel.createQuestionPanel(item).node);
+    }
+
     overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
 
     var panel = el("div", { class: "mat-preview" }, [

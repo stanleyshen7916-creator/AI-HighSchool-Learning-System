@@ -127,5 +127,23 @@ AHS.AppConfig = {
   },
 
   notifications: [],    /* 假通知已移除 — AppShell 既有通知 Empty State */
-  user: { name: "同學", avatar: "", email: "" }
+  user: { name: "同學", avatar: "", email: "" },
+
+  /* Sprint AI-101C · Frontend AI Integration — configurable AI Gateway
+     endpoint (Scope item 3). endpoint is intentionally EMPTY by default:
+     this project's standing rule is "never guess or fabricate a URL",
+     so no placeholder/workers.dev guess is written here. A deployer
+     sets this to their real, deployed AI-HighSchool-AI-Gateway
+     instance's base URL (see that repository's README) once one
+     exists; until then AHS.AIEngine.AIGateway.isConfigured() stays
+     false and every AI Gateway call path in this app is inert —
+     existing pages behave exactly as before this Sprint. `model` is
+     advisory only (the Gateway pins its own server-side default
+     regardless, per AIGatewayOpenAIIntegrationSpecification.md §3). */
+  aiGateway: {
+    endpoint: "",
+    provider: "cloudflare-ai-gateway",
+    model: "",
+    timeoutMs: 30000
+  }
 };
