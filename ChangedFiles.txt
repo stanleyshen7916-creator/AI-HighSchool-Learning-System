@@ -1,4 +1,5 @@
-Sprint AI-015F｜WrongBook Production Integration (Analysis)
+Sprint RC-001｜Repository Release (v1.0.0-MVP)
++ Sprint AI-015F｜WrongBook Production Integration (Analysis)
 + Sprint AI-015G｜Review Production Integration (Analysis)
 + Sprint AI-016｜Learning History Production Audit (Analysis)
 + Sprint AI-017｜Production Integration Blueprint (Consolidation)
@@ -16,6 +17,36 @@ AI-020 completed the full Material -> AI Summary -> Question -> Quiz ->
 WrongBook -> Review -> History -> Dashboard pipeline; Sprint AI-021
 verified it end-to-end with 57/57 real checks + 970/970 regression PASS,
 zero defects found.)
+
+=== Sprint RC-001 (Release Candidate) — release packaging, no source changes ===
+
+New (3 files, documentation only):
+  docs/Release/Release_v1.0.0-MVP.md            Release Note / ReleaseReport
+  docs/QA/Sprint_RC_001_DeploymentReport.md      Push/Pages/Tag verification
+  docs/migration/Sprint_RC_001_RepositoryStatus.md  Final repository state
+
+Git actions performed:
+  - Single consolidated commit `cb222c6` containing all 38 files from Sprints
+    AI-015F through AI-021 (listed below) plus Release_v1.0.0-MVP.md.
+  - Pushed to origin/main — SUCCEEDED, confirmed via git ls-remote and
+    GitHub API get_commit.
+  - GitHub Pages deployment for cb222c6 — SUCCEEDED (workflow run
+    30442276287, pages-build-deployment, conclusion: success).
+  - Annotated tag v1.0.0-MVP created locally, pointing at cb222c6.
+    Push to origin FAILED (HTTP 403, local git service, tag-refs only,
+    4 attempts with exponential backoff, all identical). Tag remains
+    local-only. Not a defect in the release content — a scoped git-service
+    permission limitation, reported to PMO per this Sprint's own
+    "if deployment fails: STOP, report" instruction. Full detail in
+    docs/QA/Sprint_RC_001_DeploymentReport.md.
+  - GitHub Release object not created (blocked on the tag gap above).
+
+This follow-up commit (containing this file's own update plus the two new
+reports above) is a necessary continuation of Sprint RC-001 itself — it
+documents outcomes (push success, deployment status, tag failure) that
+were only knowable after cb222c6 was pushed and observed. It does not
+reopen or fragment the AI-015F-AI-021 feature history, which remains
+entirely within the single commit cb222c6.
 
 === Sprint AI-021 (PAT) — test/report only, zero code changes ===
 
