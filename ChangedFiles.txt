@@ -1,27 +1,186 @@
-Sprint AI-015E｜Quiz Production Cutover (resolved via EO-AI-015E-002, Option A)
+Sprint AI-015F｜WrongBook Production Integration (Analysis)
++ Sprint AI-015G｜Review Production Integration (Analysis)
++ Sprint AI-016｜Learning History Production Audit (Analysis)
++ Sprint AI-017｜Production Integration Blueprint (Consolidation)
++ Sprint AI-018｜Review Production Integration (IMPLEMENTATION)
++ Sprint AI-019｜History Production Integration (IMPLEMENTATION)
++ Sprint AI-020｜Dashboard Production Integration (IMPLEMENTATION)
++ Sprint AI-021｜End-to-End Product Acceptance Test (PAT)
+(Sprints AI-015F/G/016/017 are Analysis/Blueprint only, no code changes.
+Sprints AI-018/019/020 are real Implementation Sprints — they DO modify/add
+code, per their explicit Scope. Sprint AI-021 is a PAT Sprint — test/report
+only, zero code changes, per its explicit Forbidden list (no fix even if a
+defect were found; none was). None of these eight Sprints commit or push.
+All remain uncommitted in this working tree pending PMO review. Sprint
+AI-020 completed the full Material -> AI Summary -> Question -> Quiz ->
+WrongBook -> Review -> History -> Dashboard pipeline; Sprint AI-021
+verified it end-to-end with 57/57 real checks + 970/970 regression PASS,
+zero defects found.)
+
+=== Sprint AI-021 (PAT) — test/report only, zero code changes ===
+
+New (3 files, documentation only):
+  docs/QA/Sprint_AI_021_PATReport.md
+  docs/QA/Sprint_AI_021_RegressionReport.md
+  docs/QA/Sprint_AI_021_ProductionAcceptanceChecklist.md
+
+Modified: none. Per this Sprint's explicit Forbidden list, no source file
+may be touched unless a reproducible defect is found — none was found, so
+zero source files were modified by this Sprint.
+
+Result: All 8 PAT Scenarios PASS, 57/57 real end-to-end evidence checks
+PASS (one continuous real user journey, real button clicks, zero console
+errors on every page touched), 970/970 total regression assertions PASS,
+zero Critical defects, zero Blueprint violations, zero Runtime duplication,
+zero Runtime API changes. MVP recommended as Production Ready.
+
+=== Sprint AI-020 (Implementation) — real code changes ===
 
 Modified (3 files):
-  js/components/QuizCenter.js
-  js/ui/MaterialQuestionCard.js
-  tests/jsdom/BehaviorSuite.js
+  js/components/Dashboard.js   New sectionEmpty() helper (reuses existing
+                                AHS.EmptyState, compact mode) + create()
+                                now conditionally renders each of its 9
+                                sections: real content when the field is
+                                present, an honest "尚無資料" placeholder
+                                for the 6 sections no Runtime in this
+                                repository produces real data for (trend/
+                                timeDist/progress/knowledge/todayTasks/
+                                aiTips). The model===null full-page Empty
+                                State path is completely unchanged.
+  js/pages/AppDashboard.js     New buildModel(): combines
+                                StatisticsRuntime.refresh().stats (Exam)
+                                + LearningHistoryModel.refresh().stats
+                                (Practice) into one stats array; subjectStatus
+                                from LearningHistoryModel.masteryRateBySubject()
+                                only (not merged with Exam accuracy — avoids
+                                an invented cross-metric derivation). Returns
+                                null (unchanged full Empty State) when neither
+                                HistoryRuntime nor WrongBookSession has any
+                                real record yet.
+  dashboard.html                + PersistenceAdapter.js, HistoryRuntime.js,
+                                StatisticsRuntime.js, WrongBookSession.js,
+                                ReviewQueue.js, ReviewModel.js,
+                                LearningHistoryModel.js (all existing,
+                                unmodified files).
 
-New (6 files):
-  docs/Architecture/QuizReadFlow.md
-  docs/Architecture/QuestionPipelineAnalysis.md
-  docs/QA/QuizProductionValidation.md
-  docs/migration/Sprint_AI_015E_ArchitectureResolution.md
-  docs/migration/EO_AI_015E_002_REPORT.md
-  docs/migration/Sprint_AI_015E_REPORT.md
-  ChangedFiles.txt
+New (2 files, documentation):
+  docs/migration/Sprint_AI_020_ImplementationReport.md
+  docs/QA/Sprint_AI_020_QAReport.md
 
 Untouched (Forbidden List, verified via git diff):
+  Review (ReviewQueue.js, ReviewModel.js, ReviewRuntime.js,
+    ReviewGeneratorRuntime.js — this Sprint made no further changes to it,
+    review.html)
+  History Projection (js/runtime/LearningHistoryModel.js — Sprint AI-019,
+    untouched this Sprint)
+  HistoryRuntime.js / StatisticsRuntime.js (both LOCK, both untouched)
+  Any LOCK Runtime API
+
+Real architecture gap found and resolved: Dashboard.js's original
+create(model) expected 9 model fields; real Repository data honestly
+supports only 2 (stats, subjectStatus) — no Runtime anywhere in this
+repository produces the other 6 (trend/timeDist/progress/knowledge/
+todayTasks/aiTips). Reported to PMO with 3 options before writing code;
+implemented Option 1 (render real sections, honest per-section Empty
+State for the rest) after PMO's "繼續" (continue) authorization — the
+only option consistent with both this Sprint's purpose and the project's
+no-fabrication rule maintained since Sprint 1.
+
+QA: npm test 175/175 (incl. the pre-existing "Dashboard 正式 Empty State"
+check, unchanged), npm run verify PASS, all 21 regression files PASS,
+21/21 real jsdom Implementation Validation checks PASS (cold-load
+Empty-State-unchanged case + real end-to-end Review->History->Dashboard
+case + regression case). No commit, no push, per this Sprint's explicit
+Forbidden list.
+
+=== Sprint AI-019 (Implementation) — real code changes ===
+
+New (4 files):
+  js/runtime/LearningHistoryModel.js         History Projection (Gap 6): read-only,
+                                              derives Practice Mode learning history
+                                              from WrongBookSession + ReviewQueue.
+                                              No new Runtime, no new write path.
+                                              Public API: list(), masteryRateBySubject(),
+                                              getSubject(), refresh() — the last shaped
+                                              identically to StatisticsRuntime.refresh()
+                                              for future Dashboard reuse.
+  tests/regression/LearningHistoryModelV1.js  41 new permanent regression assertions.
+  docs/migration/Sprint_AI_019_ImplementationReport.md
+  docs/QA/Sprint_AI_019_QAReport.md
+
+Modified: none (this Sprint adds files only — no existing file touched).
+
+Untouched (Forbidden List, verified via git diff):
+  Dashboard (Dashboard.js, AppDashboard.js, dashboard.html)
+  History (HistoryRuntime.js — LOCK, Exam Mode only, untouched)
+  StatisticsRuntime.js (compatible shape reused, file itself untouched)
+  Any LOCK Runtime API
+
+QA: npm test 175/175, npm run verify PASS, all 21 regression files PASS
+(new LearningHistoryModelV1.js: 41/41), 18/18 real jsdom Implementation
+Validation checks PASS. No commit, no push, per this Sprint's explicit
+Forbidden list.
+
+=== Sprint AI-018 (Implementation) — real code changes ===
+
+Modified (5 files):
+  js/runtime/ReviewGeneratorRuntime.js   Identity Mapping fallback resolution
+                                          (Gap 5b-1): entry.traceability.knowledgeId
+                                          matched against QuestionGenerationRuntime's
+                                          real question pool when the direct
+                                          getQuestion(entry.questionId) lookup misses.
+                                          Public API unchanged.
+  js/ui/MaterialQuestionCard.js          Real trigger (Gap 5b-2): calls
+                                          AHS.ReviewGeneratorRuntime.generateReview()
+                                          right after the existing Bridge composition.
+  review.html                            Script wiring (Gap 5a): + PersistenceAdapter.js,
+                                          WrongBookSession.js, ReviewQueue.js,
+                                          ReviewModel.js, ReviewWidget.js.
+  js/pages/AppReview.js                  Mounts the existing, unmodified
+                                          AHS.ReviewWidget.create() (Gap 5a),
+                                          additive to existing Exam Mode cards.
+  tests/regression/ReviewGeneratorV1.js  +9 new assertions proving the Identity
+                                          Mapping fix against a real Bridge-shaped
+                                          id scenario (not the file's pre-existing
+                                          artificially-aligned test setup).
+
+New (2 files, documentation):
+  docs/migration/Sprint_AI_018_ImplementationReport.md
+  docs/QA/Sprint_AI_018_QAReport.md
+
+Untouched (Forbidden List, verified via git diff):
+  History (HistoryRuntime.js, StatisticsRuntime.js)
+  Dashboard (Dashboard.js, AppDashboard.js)
   js/runtime/QuestionGenerationRuntime.js
   js/runtime/QuestionProviderBridge.js
-  js/runtime/LearningQuestionSession.js
-  js/runtime/LearningQuestionRuntime.js
-  js/runtime/QuestionRuntime.js
-  js/runtime/QuestionBank.js
-  js/runtime/ExamRuntime.js
-  js/parser/WrongBookGenerator.js
-  js/runtime/WrongBookSession.js
-  Review/Summary/KnowledgeGraphRuntime related files
+  js/runtime/LearningQuestionRuntime.js / LearningQuestionSession.js
+  js/parser/WrongBookGenerator.js / js/runtime/WrongBookSession.js
+  js/runtime/ReviewQueue.js / js/runtime/ReviewModel.js / js/components/ReviewWidget.js
+  js/components/QuizCenter.js (unrelated module, not touched)
+  Any LOCK Runtime API (ReviewGeneratorRuntime's own Public API signature unchanged)
+
+QA: npm test 175/175, npm run verify PASS, all 20 regression files PASS
+(ReviewGeneratorV1.js: 70/70, including new coverage), 24/24 real jsdom
+Implementation Validation checks PASS. No commit, no push, per this Sprint's
+explicit Forbidden list.
+
+=== Prior Sprints (AI-015F/G/016/017) — Analysis/Blueprint only, unchanged from before ===
+
+New (17 files, documentation only):
+  docs/Architecture/WrongBookProductionFlow.md         (AI-015F)
+  docs/Architecture/WrongBookDependencyAudit.md         (AI-015F)
+  docs/QA/WrongBookProductionValidation.md              (AI-015F)
+  docs/migration/Sprint_AI_015F_REPORT.md               (AI-015F)
+  docs/Architecture/ReviewProductionFlow.md             (AI-015G)
+  docs/Architecture/ReviewDependencyAudit.md            (AI-015G)
+  docs/QA/ReviewProductionValidation.md                 (AI-015G)
+  docs/migration/Sprint_AI_015G_REPORT.md               (AI-015G)
+  docs/Architecture/LearningHistoryProductionFlow.md    (AI-016)
+  docs/Architecture/LearningHistoryDependencyAudit.md   (AI-016)
+  docs/QA/LearningHistoryValidation.md                  (AI-016)
+  docs/migration/Sprint_AI_016_REPORT.md                (AI-016)
+  docs/Architecture/ProductionIntegrationBlueprint.md   (AI-017)
+  docs/Architecture/PipelineDependencyMap.md            (AI-017)
+  docs/Architecture/IntegrationExecutionPlan.md         (AI-017)
+  docs/Architecture/RemainingSprintRoadmap.md           (AI-017)
+  docs/migration/Sprint_AI_017_REPORT.md                (AI-017)

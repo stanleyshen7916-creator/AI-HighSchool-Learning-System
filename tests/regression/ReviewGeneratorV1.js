@@ -185,6 +185,57 @@ check("題目無法自 Quiz/Exam Result 解析 → 該筆跳過，不猜測 know
     return hasWrongBook && notInResult && RG.generateReview(m3.id) === null; })());
 check("不存在的 materialId → null", RG.generateReview("rt_none") === null);
 
+console.log("\n[Sprint AI-018 Identity Mapping — 真實 Production Bridge id 形狀（非本檔前置區塊的人工對齊 id）]");
+{
+  /* 前置區塊（第 51-60 行）刻意將 LearningQuestionSession 記錄的 id 設為
+     與 QuestionGenerationRuntime 的 q.id 相同（G.generate({id: q.id, ...})），
+     這不是真實 QuestionProviderBridge 的行為——Bridge 從不指定 id，
+     一律由 LearningQuestionGenerator.generate() 自動配發 lqv1_N（詳見
+     QuestionProviderBridge.js／Sprint AI-015G 稽核發現）。本區塊複現
+     真實 Bridge 形狀，驗證 Sprint AI-018 的 Identity Mapping 修復對
+     真實案例（而非本檔人工對齊案例）確實有效。 */
+  const m4 = MR.add({ title: "真實 Bridge 形狀教材", subject: "math", grade: "高一", chapter: "第三章",
+    category: "講義", fileName: "bridge教材.pdf", fileType: "PDF", folderId: folder.folderId,
+    content: TEXT });
+  KP.process(m4.id);
+  const qSet4 = QG.generateQuestions(m4.id);
+  check("前置：真實教材已產生題目", !!qSet4 && qSet4.questions.length >= 1);
+  const q4 = qSet4.questions[0];
+
+  /* 真實 Bridge 形狀：不指定 id，讓 LearningQuestionGenerator 自動配發
+     lqv1_N；knowledgeId 逐字取自 q4.knowledgeNodeId（Bridge 的真實
+     buildSessionInput() 行為）。 */
+  const sessionRecord = G.generate({
+    materialId: m4.id, subject: "math", grade: "高一", chapter: "第三章", section: "",
+    knowledgePoint: q4.knowledgeNodeId, difficulty: q4.difficulty, questionType: "single_choice",
+    question: q4.question, options: q4.options, answer: q4.answer,
+    explanation: q4.explanation, knowledgeId: q4.knowledgeNodeId, summaryId: null
+  });
+  const stored4 = LQS.add(sessionRecord);
+  check("Session 記錄 id 為自動配發（lqv1_ 開頭），與 QuestionGenerationRuntime 的 qg_ id 不同",
+    /^lqv1_/.test(stored4.id) && stored4.id !== q4.id);
+
+  AHS.WrongBookGenerator.add({ questionId: stored4.id, userAnswer: "錯誤答案" });
+  check("真實 WrongBook 記錄已建立（answer 使用 Session id，非 QuestionGenerationRuntime id）",
+    !!WBS.getByQuestionId(stored4.id));
+  check("修復前提確認：QG.getQuestion(Session id) 直接查找必然失敗（id 空間不匹配，證實 Sprint AI-015G 發現）",
+    QG.getQuestion(stored4.id) === null);
+
+  const rev4 = RG.generateReview(m4.id);
+  check("Sprint AI-018 修復生效：即使直接查找失敗，仍透過 traceability.knowledgeId 正確解析出真實項目",
+    !!rev4 && rev4.reviewItems.length === 1);
+  if (rev4) {
+    const item4 = rev4.reviewItems[0];
+    check("解析結果 knowledgeType 為真實值（非猜測）", RG.KNOWLEDGE_TYPES.indexOf(item4.knowledgeType) !== -1);
+    check("解析結果 knowledgeNodeId 與來源題目一致", item4.knowledgeNodeId === q4.knowledgeNodeId);
+    check("解析結果 difficulty 與來源題目一致", item4.difficulty === q4.difficulty);
+    check("解析結果可回溯真實圖譜節點", !!KG.getNode(item4.knowledgeNodeId));
+  }
+  /* 還原 store 狀態，避免影響本檔後續（第 194 行起）針對 mat.id
+     單一記錄狀態撰寫的既有斷言。 */
+  RG.clearReview(m4.id);
+}
+
 console.log("\n[Runtime — Memory Only]");
 check("原始碼零 localStorage / sessionStorage / IndexedDB / PersistenceAdapter",
   !/localStorage|sessionStorage|indexedDB|PersistenceAdapter/i.test(code));

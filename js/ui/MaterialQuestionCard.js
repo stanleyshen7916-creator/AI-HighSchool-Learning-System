@@ -136,6 +136,17 @@ AHS.MaterialQuestionCard = (function () {
           if (AHS.QuestionProviderBridge && typeof AHS.QuestionProviderBridge.bridge === "function") {
             AHS.QuestionProviderBridge.bridge(item.id);
           }
+          /* Sprint AI-018 · Review Production Integration: refresh this
+             material's Review list from whatever real WrongBook entries
+             already exist for it (e.g. from a prior quiz.html Practice
+             session) — ReviewGeneratorRuntime is memory-only, same as
+             QuestionGenerationRuntime itself, so it must be re-derived on
+             every real trigger rather than assumed stale-free. Honestly
+             returns null when there is nothing to review yet; that is
+             not treated as an error. Existing, unmodified Public API. */
+          if (AHS.ReviewGeneratorRuntime && typeof AHS.ReviewGeneratorRuntime.generateReview === "function") {
+            AHS.ReviewGeneratorRuntime.generateReview(item.id);
+          }
           render("ready", set);
         } else {
           render("empty");

@@ -322,11 +322,37 @@ AHS.Dashboard = (function () {
     ]);
   }
 
+  /* ---- sectionEmpty(title, hint) ----------------------------------------
+     Sprint AI-020: per-section honest placeholder, reusing the existing
+     AHS.EmptyState component (compact mode) — for the sections this
+     Sprint's Repository evidence confirmed have no real data source
+     anywhere in the repository (trend / timeDist / progress / knowledge /
+     todayTasks / aiTips: no Runtime tracks daily study-hour trends, time
+     distribution, an overall-progress ring distinct from mastery rate,
+     per-knowledge-node mastery, a daily task/goal system, or AI tips).
+     Never fabricated — real data or this, same rule every other page in
+     this repository already follows (EO-S7.0-003 Production Cleanup). */
+  function sectionEmpty(title, hint) {
+    return el("section", { class: "card dash-section-empty", "aria-label": title }, [
+      el("div", { class: "card__head" }, [el("h2", { class: "card__title", text: title })]),
+      AHS.EmptyState.create({ title: "尚無資料", hint: hint, compact: true })
+    ]);
+  }
+
   /* create(model?) — model defaults to AHS.AppConfig.dashboard. */
   function create(model) {
     /* EO-S7.0-003 Production Cleanup: the Mock 學習分析 dataset is
        removed. Until real analytics derive from the Runtimes, the page
-       shows the 正式 Empty State — never fake statistics. */
+       shows the 正式 Empty State — never fake statistics. Sprint AI-020:
+       real analytics now exist (AHS.StatisticsRuntime + Sprint AI-019's
+       AHS.LearningHistoryModel), so when the caller supplies a real
+       model this renders the sections real data actually supports
+       (banner copy, stat cards, subject status) and shows an honest
+       per-section Empty State for the six sections no Runtime in this
+       repository can honestly populate — never fabricated to fill the
+       old, fully Mock-shaped layout. The full-page Empty State below is
+       unchanged for the case AppDashboard.js still supplies no model at
+       all (zero real data anywhere yet). */
     var data = model;
     if (!data) {
       return AHS.EmptyState.create({
@@ -339,16 +365,22 @@ AHS.Dashboard = (function () {
 
     var main = el("div", { class: "dash-main" }, [
       banner(data),
-      statCards(data),
-      el("div", { class: "dash-row2" }, [lineChart(data.trend), donut(data.timeDist)]),
-      el("div", { class: "dash-row3" }, [progressCard(data.progress), knowledgeCard(data.knowledge)]),
+      data.stats && data.stats.length ? statCards(data) : null,
+      el("div", { class: "dash-row2" }, [
+        data.trend ? lineChart(data.trend) : sectionEmpty("學習趨勢", "尚無足夠的每日學習紀錄可繪製趨勢。"),
+        data.timeDist ? donut(data.timeDist) : sectionEmpty("學習時間分布", "尚無可統計的學習時間分布資料。")
+      ]),
+      el("div", { class: "dash-row3" }, [
+        data.progress ? progressCard(data.progress) : sectionEmpty("學習進度", "尚無可計算的整體學習進度。"),
+        data.knowledge ? knowledgeCard(data.knowledge) : sectionEmpty("知識點掌握度（Top 10）", "尚無可計算的知識點掌握度資料。")
+      ]),
       status
-    ]);
+    ].filter(Boolean));
 
     var rail = el("div", { class: "dash-rail" }, [
-      todayTasks(data.todayTasks, status),
-      subjectStatus(data.subjectStatus),
-      aiTips(data.aiTips)
+      data.todayTasks ? todayTasks(data.todayTasks, status) : sectionEmpty("今日任務", "目前尚無每日任務功能。"),
+      data.subjectStatus && data.subjectStatus.length ? subjectStatus(data.subjectStatus) : sectionEmpty("科目狀態", "尚無可統計的科目狀態資料。"),
+      data.aiTips ? aiTips(data.aiTips) : sectionEmpty("AI 學習建議", "AI 學習建議功能尚未推出。")
     ]);
 
     return el("div", { class: "dash-layout" }, [main, rail]);

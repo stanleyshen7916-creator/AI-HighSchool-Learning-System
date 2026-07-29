@@ -116,8 +116,32 @@ AHS.ReviewGeneratorRuntime = (function () {
       if (!entry.questionId || seen[entry.questionId]) { return; }
 
       /* Quiz / Exam Result side — the only allowed source of
-         knowledgeType / knowledgeNodeId / difficulty / paragraph trace. */
+         knowledgeType / knowledgeNodeId / difficulty / paragraph trace.
+         Sprint AI-018 Identity Mapping fix: entry.questionId is a
+         LearningQuestionSession id (lqv1_N / lq_N via the Production
+         Bridge, Sprint AI-015C/E) — it never lands in this Runtime's own
+         qg_N id space, so a direct getQuestion(entry.questionId) lookup
+         only succeeds by coincidence. Kept as the first attempt (still a
+         valid lookup for any caller whose ids do align); when it misses,
+         fall back to resolving via the WrongBook entry's own real
+         traceability.knowledgeId against this material's real question
+         pool — the same Knowledge Graph node id the Bridge already
+         copied verbatim onto both WrongBookSession and
+         QuestionGenerationRuntime records, so this is a read-only,
+         no-invention lookup entirely within the two LOCK-allowed sources
+         (WrongBook record + Quiz/Exam Result). No new Runtime, no new
+         Public API — getQuestionsByMaterial() already exists. */
       var question = qr.getQuestion(entry.questionId);
+      if (!question) {
+        var knowledgeId = entry.traceability && entry.traceability.knowledgeId;
+        if (knowledgeId && typeof qr.getQuestionsByMaterial === "function") {
+          var materialSet = qr.getQuestionsByMaterial(materialId);
+          var pool = (materialSet && materialSet.questions) || [];
+          for (var i = 0; i < pool.length; i += 1) {
+            if (pool[i].knowledgeNodeId === knowledgeId) { question = pool[i]; break; }
+          }
+        }
+      }
       if (!question) { return; }                                  /* unresolvable → skipped, never guessed */
       if (KNOWLEDGE_TYPES.indexOf(question.knowledgeType) === -1) { return; }
       if (DIFFICULTIES.indexOf(question.difficulty) === -1) { return; }

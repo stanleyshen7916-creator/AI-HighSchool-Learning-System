@@ -131,6 +131,17 @@ window.AHS = window.AHS || {};
     row.appendChild(AHS.ReviewRecentSession.create(mostRecent, {}));
     page.appendChild(row);
 
+    /* Sprint AI-018 · Review Production Integration: mounts the
+       existing, unmodified AHS.ReviewWidget (Sprint AI-015G confirmed
+       this is the one real, already-Production-connected Review
+       consumer — 100% ReviewModel-sourced) so review.html shows the
+       real WrongBook -> ReviewQueue -> ReviewModel chain alongside its
+       existing Exam Mode cards above, additive only — no existing card
+       above is modified or removed. */
+    if (AHS.ReviewWidget && typeof AHS.ReviewWidget.create === "function") {
+      page.appendChild(AHS.ReviewWidget.create());
+    }
+
     shell.main.appendChild(page);
   }
 

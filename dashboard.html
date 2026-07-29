@@ -18,9 +18,20 @@
   <script src="js/core/UI.js"></script>
   <script src="js/ui/EmptyState.js"></script>
   <script src="js/core/Icons.js"></script>
+  <script src="js/core/PersistenceAdapter.js"></script>
   <script src="js/data/AppConfig.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
+  <!-- Sprint AI-020: Dashboard Production Integration — real data sources,
+       both read-only, both LOCK/unmodified. HistoryRuntime + StatisticsRuntime
+       (Exam Mode, Sprint 4) and WrongBookSession/ReviewQueue/ReviewModel +
+       LearningHistoryModel (Practice Mode, Sprint AI-015F/G/AI-019). -->
+  <script src="js/runtime/HistoryRuntime.js"></script>
+  <script src="js/runtime/StatisticsRuntime.js"></script>
+  <script src="js/runtime/WrongBookSession.js"></script>
+  <script src="js/runtime/ReviewQueue.js"></script>
+  <script src="js/runtime/ReviewModel.js"></script>
+  <script src="js/runtime/LearningHistoryModel.js"></script>
   <script src="js/components/Dashboard.js"></script>
   <script src="js/pages/AppDashboard.js"></script>
 </body>

@@ -19,6 +19,7 @@
   <script src="js/core/UI.js"></script>
   <script src="js/ui/EmptyState.js"></script>
   <script src="js/core/Icons.js"></script>
+  <script src="js/core/PersistenceAdapter.js"></script>
   <script src="js/data/AppConfig.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
@@ -26,6 +27,14 @@
   <script src="js/runtime/WrongBookRuntime.js"></script>
   <script src="js/runtime/ReviewRuntime.js"></script>
   <script src="js/runtime/HistoryRuntime.js"></script>
+  <!-- Sprint AI-018: Review Production Integration — the real, already-
+       Production-validated WrongBook -> ReviewQueue -> ReviewModel chain
+       (Sprint AI-015F/G), wired here so review.html can display it
+       alongside its existing Exam Mode history/cards, additive only. -->
+  <script src="js/runtime/WrongBookSession.js"></script>
+  <script src="js/runtime/ReviewQueue.js"></script>
+  <script src="js/runtime/ReviewModel.js"></script>
+  <script src="js/components/ReviewWidget.js"></script>
   <script src="js/components/ReviewHomeCard.js"></script>
   <script src="js/components/ReviewQuickAction.js"></script>
   <script src="js/components/ReviewRecentSession.js"></script>
