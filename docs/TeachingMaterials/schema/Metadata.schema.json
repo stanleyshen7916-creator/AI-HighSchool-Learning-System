@@ -2,27 +2,24 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "TeachingMaterials/Metadata.schema.json",
   "title": "Teaching Material Metadata",
-  "description": "Per EO-S1.1-001 v1.1. Base fields reused from Sprint AI-103's PMO-approved js/runtime/MetadataParser.js (Subject/Grade/Publisher/Version/Chapter/Unit/Difficulty/Tags/Author/CreatedTime/UpdatedTime); Keywords and Source are EO-S1.1-001's own additions. Every field must be present; unknown values are null (or [] for arrays) — never guessed or fabricated.",
+  "description": "Per EO-S1.1-002 v1.0's exact 11-field list (supersedes EO-S1.1-001 v1.1's initial reuse of Sprint AI-103's MetadataParser.js field names — that PascalCase set described a different context, the raw Metadata.json import file; this camelCase set is EO-S1.1-002's own explicit, LOCKed schema for this Repository). Every field must be present; unknown values are null (or [] for arrays) — never guessed or fabricated.",
   "type": "object",
   "required": [
-    "materialId", "Subject", "Grade", "Publisher", "Version", "Chapter", "Unit",
-    "Difficulty", "Tags", "Keywords", "Author", "Source", "CreatedTime", "UpdatedTime"
+    "materialId", "subject", "grade", "publisher", "chapter", "unit",
+    "keywords", "difficulty", "source", "uploadDate", "version"
   ],
   "properties": {
     "materialId": { "type": "string", "pattern": "^tm_[0-9]+$", "description": "Stable id, assigned once on first analysis, e.g. tm_1" },
-    "Subject": { "type": ["string", "null"] },
-    "Grade": { "type": ["string", "null"] },
-    "Publisher": { "type": ["string", "null"] },
-    "Version": { "type": ["string", "null"] },
-    "Chapter": { "type": ["string", "null"] },
-    "Unit": { "type": ["string", "null"] },
-    "Difficulty": { "type": ["string", "null"] },
-    "Tags": { "type": "array", "items": { "type": "string" } },
-    "Keywords": { "type": "array", "items": { "type": "string" } },
-    "Author": { "type": ["string", "null"] },
-    "Source": { "type": ["string", "null"], "description": "e.g. 教科書/講義/考卷/教師補充教材 — the material's real, disclosed origin" },
-    "CreatedTime": { "type": ["string", "null"], "format": "date-time" },
-    "UpdatedTime": { "type": ["string", "null"], "format": "date-time" }
+    "subject": { "type": ["string", "null"] },
+    "grade": { "type": ["string", "null"] },
+    "publisher": { "type": ["string", "null"] },
+    "chapter": { "type": ["string", "null"] },
+    "unit": { "type": ["string", "null"] },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "difficulty": { "type": ["string", "null"] },
+    "source": { "type": ["string", "null"], "description": "e.g. 教科書/講義/考卷/教師補充教材 — the material's real, disclosed origin" },
+    "uploadDate": { "type": ["string", "null"], "format": "date-time", "description": "When Project Owner provided this material, not when it was originally published" },
+    "version": { "type": ["string", "null"], "description": "Incremented when Existing Material is updated per the Import Rule; starts at \"1\"" }
   },
   "additionalProperties": false
 }

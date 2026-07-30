@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "TeachingMaterials/QuestionBank.schema.json",
   "title": "Teaching Material Question Bank",
-  "description": "Per EO-S1.1-001 v1.1. At minimum single_choice/true_false/fill_blank; calculation/essay added only when the source material genuinely supports them. Every question must carry a source trace — never a bare, untraceable question.",
+  "description": "Per EO-S1.1-001 v1.1, refined by EO-S1.1-002 v1.0. At minimum single_choice/true_false/fill_blank; calculation/essay added only when the source material genuinely supports them. Every question must carry a source trace — never a bare, untraceable question. EO-S1.1-002: every question must also declare origin — 'Original' for a question copied verbatim from the source material (e.g. an actual exam question), 'AI' for a question Claude derived from the material's content (never invented from nothing — still traceable via source).",
   "type": "object",
   "required": ["materialId", "questions"],
   "properties": {
@@ -11,10 +11,11 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "type", "question", "answer", "source"],
+        "required": ["id", "type", "question", "answer", "origin", "source"],
         "properties": {
           "id": { "type": "string" },
           "type": { "type": "string", "enum": ["single_choice", "true_false", "fill_blank", "calculation", "essay"] },
+          "origin": { "type": "string", "enum": ["AI", "Original"], "description": "EO-S1.1-002: 'Original' = copied verbatim from the source material; 'AI' = derived by Claude from the material's real content" },
           "question": { "type": "string" },
           "options": { "type": "array", "items": { "type": "string" }, "description": "single_choice only" },
           "answer": { "type": "string" },
