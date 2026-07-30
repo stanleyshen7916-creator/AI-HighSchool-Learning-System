@@ -14,6 +14,14 @@ window.AHS = window.AHS || {};
     var app = document.getElementById("app");
     if (!app) { return; }
 
+    /* Sprint v1.4 Module C: load any real Teaching Material Repository
+       content into MaterialRuntime/SummaryRuntime before Material Center
+       reads it — no-ops when the Repository is empty (Empty State
+       unchanged). See js/runtime/TeachingMaterialLoader.js. */
+    if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.initialize === "function") {
+      AHS.TeachingMaterialLoader.initialize();
+    }
+
     var materialCenterRoot = AHS.MaterialCenter.create();
 
     var shell = AHS.AppShell.create(AHS.AppConfig, {
