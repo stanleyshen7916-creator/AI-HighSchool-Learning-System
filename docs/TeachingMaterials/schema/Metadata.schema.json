@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TeachingMaterials/Metadata.schema.json",
+  "title": "Teaching Material Metadata",
+  "description": "Per EO-S1.1-001 v1.1. Base fields reused from Sprint AI-103's PMO-approved js/runtime/MetadataParser.js (Subject/Grade/Publisher/Version/Chapter/Unit/Difficulty/Tags/Author/CreatedTime/UpdatedTime); Keywords and Source are EO-S1.1-001's own additions. Every field must be present; unknown values are null (or [] for arrays) — never guessed or fabricated.",
+  "type": "object",
+  "required": [
+    "materialId", "Subject", "Grade", "Publisher", "Version", "Chapter", "Unit",
+    "Difficulty", "Tags", "Keywords", "Author", "Source", "CreatedTime", "UpdatedTime"
+  ],
+  "properties": {
+    "materialId": { "type": "string", "pattern": "^tm_[0-9]+$", "description": "Stable id, assigned once on first analysis, e.g. tm_1" },
+    "Subject": { "type": ["string", "null"] },
+    "Grade": { "type": ["string", "null"] },
+    "Publisher": { "type": ["string", "null"] },
+    "Version": { "type": ["string", "null"] },
+    "Chapter": { "type": ["string", "null"] },
+    "Unit": { "type": ["string", "null"] },
+    "Difficulty": { "type": ["string", "null"] },
+    "Tags": { "type": "array", "items": { "type": "string" } },
+    "Keywords": { "type": "array", "items": { "type": "string" } },
+    "Author": { "type": ["string", "null"] },
+    "Source": { "type": ["string", "null"], "description": "e.g. 教科書/講義/考卷/教師補充教材 — the material's real, disclosed origin" },
+    "CreatedTime": { "type": ["string", "null"], "format": "date-time" },
+    "UpdatedTime": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

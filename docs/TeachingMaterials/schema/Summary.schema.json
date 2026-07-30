@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TeachingMaterials/Summary.schema.json",
+  "title": "Teaching Material Summary",
+  "description": "Per EO-S1.1-001 v1.1. Every array entry must be traceable to the real source material — nothing composed or invented. Empty arrays are honest (a section the material doesn't support), never padded.",
+  "type": "object",
+  "required": ["materialId", "coreConcepts", "definitions", "keywords", "keyPoints", "pitfalls"],
+  "properties": {
+    "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+    "coreConcepts": { "type": "array", "items": { "type": "string" }, "description": "核心概念" },
+    "definitions": { "type": "array", "items": { "type": "string" }, "description": "重要定義" },
+    "keywords": { "type": "array", "items": { "type": "string" }, "description": "關鍵字" },
+    "keyPoints": { "type": "array", "items": { "type": "string" }, "description": "重點整理" },
+    "pitfalls": { "type": "array", "items": { "type": "string" }, "description": "易錯觀念" }
+  },
+  "additionalProperties": false
+}

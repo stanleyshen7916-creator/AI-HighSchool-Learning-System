@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TeachingMaterials/QuestionBank.schema.json",
+  "title": "Teaching Material Question Bank",
+  "description": "Per EO-S1.1-001 v1.1. At minimum single_choice/true_false/fill_blank; calculation/essay added only when the source material genuinely supports them. Every question must carry a source trace — never a bare, untraceable question.",
+  "type": "object",
+  "required": ["materialId", "questions"],
+  "properties": {
+    "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "question", "answer", "source"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["single_choice", "true_false", "fill_blank", "calculation", "essay"] },
+          "question": { "type": "string" },
+          "options": { "type": "array", "items": { "type": "string" }, "description": "single_choice only" },
+          "answer": { "type": "string" },
+          "explanation": { "type": ["string", "null"] },
+          "source": {
+            "type": "object",
+            "required": ["materialId", "page", "section"],
+            "properties": {
+              "materialId": { "type": "string" },
+              "page": { "type": ["integer", "null"] },
+              "section": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false,
+            "description": "Traceability to the real source material — never fabricated"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
