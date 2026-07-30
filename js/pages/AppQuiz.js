@@ -14,6 +14,16 @@ window.AHS = window.AHS || {};
     var app = document.getElementById("app");
     if (!app) { return; }
 
+    /* Sprint v1.4 Module C: (re-)import any real Teaching Material
+       Repository questions into QuestionRuntime before Quiz Center reads
+       it — QuestionRuntime is memory-only (Sprint 4 design), so this
+       must run on quiz.html itself, not just materials.html. No-ops
+       when the Repository is empty. See
+       js/runtime/TeachingMaterialLoader.js. */
+    if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.initialize === "function") {
+      AHS.TeachingMaterialLoader.initialize();
+    }
+
     var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "quiz",
       onNavigate: function () { /* Mock navigation — prototype. */ }

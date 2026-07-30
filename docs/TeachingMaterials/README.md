@@ -1,4 +1,4 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
 
@@ -64,6 +64,8 @@ docs/TeachingMaterials/
     TeachingMaterialAdapter.js  — NEW, EO-S1.2-001 (Revision): pure data-shape converter,
                             Package -> MaterialRuntime/SummaryRuntime/QuestionRuntime-accepted
                             objects. See dedicated section below.
+    GenerateTeachingMaterialData.js  — NEW, Sprint v1.4: offline generator, Repository ->
+                            js/data/TeachingMaterialData.js. See "Runtime Wiring" below.
   materials/
     <materialId>/         — one self-contained Package per material, materialId = tm_<seq>
       source/              — the ORIGINAL uploaded file(s), byte-identical, original filenames,
@@ -219,6 +221,9 @@ Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/�
     tagged, ocrConfidence/needsReview set honestly) / Related Materials built
   → materials/<materialId>/*.json + source/ written; index.json updated
   → QA checklist (below) confirmed, including node scripts/ValidateMaterial.js <materialId>
+  → node scripts/GenerateTeachingMaterialData.js  (NEW, Sprint v1.4 — regenerates
+    js/data/TeachingMaterialData.js so the running app can actually see this material;
+    see "Runtime Wiring" section below)
   → git commit -m "feat(material): import <materialId>"
   → git push
 ```
@@ -241,8 +246,11 @@ Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/�
 - [ ] **JSON Schema 合法**: `node docs/TeachingMaterials/scripts/ValidateMaterial.js
       <materialId>` — all records + Question Source Rule + Original Question Rule +
       `source/` checks PASS
-- [ ] `npm run verify` / `npm test` still PASS (this Repository is inert to the app today,
-      but a regression sweep costs nothing and confirms nothing was accidentally broken)
+- [ ] **NEW, Sprint v1.4**: `node docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js`
+      run and its output (`js/data/TeachingMaterialData.js`) committed — otherwise the
+      Repository is still schema-valid but invisible to the running app (see "Runtime
+      Wiring" below)
+- [ ] `npm run verify` / `npm test` still PASS
 - [ ] Git commit (`feat(material): import <materialId>`)
 - [ ] Git push
 
@@ -296,21 +304,68 @@ conversion, then fed through the real `MaterialRuntime.add()`/`SummaryRuntime.ad
 `QuestionRuntime.importQuestions()` in an isolated Node context to confirm every field is
 genuinely accepted, not just shaped correctly on paper) before being documented as working.
 
-Architecture (per this EO): Repository → Adapter → MaterialRuntime → Material Center. This
-file is called by nothing today — it is a library/CLI utility only (`node
-docs/TeachingMaterials/scripts/TeachingMaterialAdapter.js <materialId>` prints a read-only
-preview), never `<script>`-tagged, never invoked by any Runtime or page. Actually wiring
-Material Center (or any other page) to call it remains explicit future scope, same as every
-other EO in this track — this EO's own constraints ("不得建立新 Runtime／不得修改
-MaterialRuntime／不得修改 Material Center") forbid that wiring here.
+Architecture (per this EO): Repository → Adapter → MaterialRuntime → Material Center. At the
+time this section was first written, the Adapter was called by nothing — see "Runtime Wiring"
+below for how Sprint v1.4 actually connected it.
+
+## Runtime Wiring (Sprint v1.4 "First Real Material Workflow") — the Repository is now live
+
+The full chain is real and wired: **Repository → `GenerateTeachingMaterialData.js` (offline) →
+`js/data/TeachingMaterialData.js` → `TeachingMaterialLoader` (browser) → `MaterialRuntime` /
+`SummaryRuntime` / `QuestionRuntime` → Material Center / Summary / Quiz Center**.
+
+- **`scripts/GenerateTeachingMaterialData.js`** (Node, run manually or by Claude after any
+  Repository change — never automatically, no build step exists): scans `materials/`, converts
+  every Package that passes `ValidateMaterial.js` through the unmodified `TeachingMaterialAdapter`,
+  and writes `js/data/TeachingMaterialData.js` — a plain static data file, `<script>`-tagged
+  exactly like `MockData.js`/`ExamData.js`. This is the answer to "how does Repository JSON
+  reach a browser with no `fetch()`, no bundler, and no server" (flagged as an open question in
+  Sprint v1.3's report): the JSON is inlined offline, not read live.
+- **`js/runtime/TeachingMaterialLoader.js`** (browser, `<script>`-tagged on `materials.html` and
+  `quiz.html`, coordinator only — holds no material-content store of its own, same pattern as
+  `js/runtime/ImportRuntime.js`): `AHS.TeachingMaterialLoader.initialize()` reads
+  `AHS.TeachingMaterialData` and calls only existing, unmodified `MaterialRuntime.add()` /
+  `SummaryRuntime.add()` / `QuestionRuntime.importQuestions()`. Called once at bootstrap on each
+  page (`js/pages/AppMaterials.js`, `js/pages/AppQuiz.js`), before that page's component reads
+  Runtime data. No-ops completely when the Repository is empty — the existing Empty State is
+  untouched, confirmed by test.
+- **Why it runs on `quiz.html` too, not just `materials.html`**: `QuestionRuntime` is
+  intentionally memory-only (never sessionStorage-persisted, per design) and isn't even
+  `<script>`-tagged on `materials.html` — so Teaching-Material questions only actually reach
+  `QuestionRuntime` if the Loader runs again on `quiz.html` itself. `MaterialRuntime`/
+  `SummaryRuntime`, by contrast, **are** sessionStorage-persisted and rehydrate on every page
+  load, so the Loader tracks a small `{Package materialId → MaterialRuntime id}` map of its own
+  (via the same LOCK `PersistenceAdapter`) purely to avoid creating a duplicate `MaterialRuntime`
+  record on a revisit — confirmed by test across three simulated page loads (first visit,
+  revisit, and `quiz.html` with `MaterialRuntime.js` absent from that page).
+- **Material Center / Summary Center need no code changes**: both already read exclusively
+  through `MaterialRuntime.list()`/`isEmpty()` and `SummaryRuntime.findByMaterialId()`/`list()`
+  — once the Loader has written real records, they display through the existing, unmodified
+  rendering path.
+- **Known, honestly-disclosed gap (matching `ImportRuntime.js`'s own precedent for the same
+  situation)**: this app draws a hard, pre-existing line between "練習模式" (Practice Mode —
+  reads *only* `AHS.LearningQuestionRuntime`) and "Exam Mode" (reads *only*
+  `AHS.QuestionRuntime`) — `js/components/QuizCenter.js`'s own comments call this "不得混用."
+  Teaching Material questions are imported into `QuestionRuntime` (per the Adapter's own design —
+  see `EO_S1.2-001_Report.md` judgment call 5), so they are genuinely stored and queryable
+  (`hasExam()`/`getSet()` correctly reflect them, confirmed by test) but reachable only through
+  Exam Mode's `examId`, not through the "開始練習" Practice Mode button. Exam Mode's own list is
+  driven by a fixed catalog (`ExamData.js` via `ExamRuntime.start()`), which has no dynamic entry
+  point for an externally-imported `examId` — so there is currently no live UI button a student
+  can click to reach this content. Building one is out of this Sprint's scope ("不得重新設計
+  UI"); the data-level wiring this Sprint asked for is complete and verified.
+- **Material Card fields** (`出版社`/`關鍵字`/`教材來源`, requested by Sprint v1.3 but dropped
+  from v1.4's scope): still not displayable — `MaterialRuntime.add()`'s field whitelist has no
+  publisher/keywords/source, and `MaterialCard.js` renders none of them. Unresolved, not silently
+  fixed or silently dropped from tracking.
 
 ## Explicitly out of scope, confirmed unaffected
 
-Per "目前階段：建立教材分析能力，不是建立教材內容" and every EO's Runtime Rule ("不得修改
-既有 Runtime／不得重構 Runtime／不得要求修改 UI／不得要求重新設計 Repository"): no Runtime
-loader/adapter **wired into the running app** has been built (the Adapter above is a
-standalone conversion utility, not app wiring — see its own section). `MaterialRuntime`/
-`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`QuizCenter.js`/`Dashboard.js`/
-`WrongBook.js`/`AITutorService.js` are all byte-identical to before every EO in this track.
-Wiring — Material Center/AI Tutor Router/Dashboard/Review Center actually reading this
-Repository — remains future scope, not started here.
+`MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`TeachingMaterialAdapter`/
+`QuizCenter.js`/`Dashboard.js`/`WrongBook.js`/`AITutorService.js`/`MaterialCard.js` APIs are all
+byte-identical to before every EO/Sprint in this track — only `js/pages/AppMaterials.js` and
+`js/pages/AppQuiz.js` gained a two-line bootstrap call, and `materials.html`/`quiz.html` gained
+two `<script>` tags each. No Mock/Demo/Placeholder data was added — `js/data/TeachingMaterialData.js`
+is generated from real Repository content only (currently `[]`, since the Repository is still
+genuinely empty). Dashboard/AI Tutor Router/Review Center reading this Repository, and the
+Practice-Mode-reachability gap above, remain future scope.
