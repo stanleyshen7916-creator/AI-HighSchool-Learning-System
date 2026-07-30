@@ -1,15 +1,18 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
 
 This directory is the Teaching Material Repository — the permanent, Git-versioned Source
 of Truth for teaching material analysis results, per EO-S1.1-001 v1.1 (established this
-Repository) and EO-S1.1-002 v1.0 (refined the exact Metadata schema, added AI/Original
-question provenance, defined the Import Rule and the per-material Git commit format). It
-exists alongside, not inside, `js/`/`css/`/the app's Runtime layer: nothing here is loaded
-by any `<script>` tag, and no existing Runtime has been modified to read it (per both EOs'
-Runtime Rule — "不得修改既有 Runtime／不得重構 Runtime"). Wiring a real loader is explicit
-future scope, not either EO's.
+Repository), EO-S1.1-002 v1.0 (refined the exact Metadata schema, added AI/Original
+question provenance, defined the Import Rule and the per-material Git commit format), and
+EO-S1.1-002A v1.0 (Question Source Rule: `questionSource`/`origin` pairing, OCR-uncertainty
+handling — **the Repository-schema part only**; its Quiz Center/Dashboard/Wrong Book/AI
+Tutor display requirements are flagged, not implemented — see the dedicated section below).
+This directory exists alongside, not inside, `js/`/`css/`/the app's Runtime layer: nothing
+here is loaded by any `<script>` tag, and no existing Runtime has been modified to read it
+(per all three EOs' Runtime Rule — "不得修改既有 Runtime／不得重構 Runtime"). Wiring a real
+loader is explicit future scope, not any of these EOs'.
 
 ## Two decisions made without an explicit answer from Project Owner (flagged, not hidden)
 
@@ -91,10 +94,29 @@ At minimum `單選題` (single choice), `是非題` (true/false), `填充題` (f
 `計算題` (calculation) and `申論題` (essay) added only when the source material's own
 content genuinely supports them (never invented to pad variety). Every question carries a
 `source` trace field (which material, which page/section) — never a bare, untraceable
-question. **EO-S1.1-002**: every question also carries `origin` — `"Original"` for a
-question copied verbatim from the source material (e.g. a real exam question), `"AI"` for a
-question Claude derived from the material's real content (still traceable via `source`,
-never invented from nothing). See `schema/QuestionBank.schema.json`.
+question, and a `questionId` (renamed from the earlier `id`, per EO-S1.1-002A's exact field
+name).
+
+**EO-S1.1-002A Question Source Rule** — every question carries both `questionSource`
+(`"ORIGINAL"` | `"AI_GENERATED"`) and `origin` (`"Uploaded Material"` | `"AI"`), which must
+pair consistently (ORIGINAL↔Uploaded Material, AI_GENERATED↔AI) — enforced by
+`scripts/ValidateMaterial.js`, since plain JSON Schema draft-07 can't express that pairing
+without more machinery than this Repository's hand-rolled validator carries.
+
+- **`ORIGINAL`**: 段考/模擬考/歷屆試題/教師試卷/作業/課本習題 — the question text **must
+  match the source material exactly**: no rewriting, simplifying, reorganizing, polishing,
+  or AI correction. If OCR/transcription confidence is insufficient to be certain the text
+  is verbatim, Claude must never guess — `needsManualReview: true` is set instead (required
+  field on every ORIGINAL question, explicit `true`/`false`, never omitted).
+- **`AI_GENERATED`**: a question Claude derived from the material's real content (single
+  choice/fill-in/true-false/calculation/essay as appropriate) — `needsManualReview` doesn't
+  apply and must not be present.
+
+(Note: EO-S1.1-002 previously defined a same-named `origin` field with different values
+(`"AI"`/`"Original"`) — EO-S1.1-002A's own Metadata list redefines `origin` with the two
+values above, which this schema now follows as the more recent LOCK.)
+
+See `schema/QuestionBank.schema.json`.
 
 ### Related Materials
 
@@ -151,7 +173,9 @@ Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/�
 - [ ] Metadata complete (every field present; unknowns `null`/`[]`, never guessed)
 - [ ] Summary complete
 - [ ] Question Bank built (≥ 單選/是非/填充; 計算/申論 only where the material supports
-      them; every question's `origin` correctly `"AI"` or `"Original"`)
+      them; every question's `questionSource`/`origin` pair set and consistent; every
+      ORIGINAL question's `needsManualReview` explicitly set, never guessed when OCR
+      confidence is low)
 - [ ] Related Materials checked (linked if genuine overlap found; never duplicated)
 - [ ] Repository updated (`index.json`, and `materials/<materialId>/*.json` — new folder for
       New Material, same folder updated in place for Existing Material)
@@ -162,11 +186,43 @@ Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/�
 - [ ] Git commit (`feat(material): import <materialId>`)
 - [ ] Git push
 
-## Explicitly out of scope for both EOs
+## EO-S1.1-002A's app-facing requirements — flagged, NOT implemented
+
+EO-S1.1-002A also specifies real, live-app behavior beyond this Repository's own schema:
+Quiz Center must display each question's source and offer a source filter (全部／上傳教材／
+AI 模擬試題), Dashboard must count Original vs. AI-Generated questions separately, Wrong
+Book must retain `questionSource` per entry, and AI Tutor must give source-aware
+explanations ("本題來自你上傳的教材" / "本題為 AI 依教材內容所產生的練習題").
+
+**None of this has been implemented.** Reasons, stated plainly rather than silently skipped:
+
+1. **No wiring exists between this Repository and the live app at all.** Both EO-S1.1-001
+   and EO-S1.1-002 explicitly kept this Repository inert — "no Runtime loader/adapter
+   reading from this Repository has been built... Wiring is future scope, not started
+   here" — repeated verbatim in each of their own reports. EO-S1.1-002A doesn't repeat that
+   constraint, but doesn't lift it either; implementing Quiz Center/Dashboard/Wrong
+   Book/AI Tutor changes would require building that wiring for the first time as an
+   unstated prerequisite, which is a materially larger change than a schema refinement.
+2. **This is real Runtime and UI surgery on an already-shipped, already-PAT-tested app**
+   (`js/components/QuizCenter.js`, `js/components/Dashboard.js`, `js/components/
+   WrongBook.js`, `js/runtime/AITutorService.js` or similar) — a different category of
+   change from anything done under the EO-S1.1-00x track so far, and squarely the kind of
+   change Sprint AI-108's still-standing "no new feature planning until v1.0.0 Release
+   Approval" gate was written to hold off on.
+3. **There is nothing real to display yet.** `materialsAnalyzed: 0` — zero real questions
+   exist anywhere in this Repository, so a Quiz Center filter or a Dashboard split-count
+   would have nothing genuine to operate on regardless.
+
+Flagged in `docs/EO/EO_S1.1-002A_Report.md` for Project Owner to confirm before any Runtime/
+UI work begins — not decided unilaterally, consistent with how the placement/gate questions
+were handled in EO-S1.1-001/002.
+
+## Explicitly out of scope, confirmed unaffected
 
 Per "目前階段：建立教材分析能力，不是建立教材內容" and the Runtime Rule ("不得修改既有
 Runtime／不得重構 Runtime／不得要求修改 UI／不得要求重新設計 Repository"): no Runtime
 loader/adapter reading from this Repository has been built. `MaterialRuntime`/
-`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime` are byte-identical to before either
-EO. Wiring — Material Center/AI Tutor Router/Dashboard/Review Center actually reading this
-Repository — is future scope, not started here.
+`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`QuizCenter.js`/`Dashboard.js`/
+`WrongBook.js`/`AITutorService.js` are all byte-identical to before every EO in this track.
+Wiring — Material Center/AI Tutor Router/Dashboard/Review Center actually reading this
+Repository — remains future scope, not started here.

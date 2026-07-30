@@ -91,21 +91,60 @@ function validateAgainstSchema(obj, schema, pathLabel) {
 function validateFile(recordName, jsonFile, schemaFile) {
   console.log("\n[" + recordName + "]");
   const schemaResult = loadJson(path.join(ROOT, "schema", schemaFile));
-  if (schemaResult.error) { check(recordName + " schema loads", false, schemaResult.error); return; }
+  if (schemaResult.error) { check(recordName + " schema loads", false, schemaResult.error); return null; }
   const dataResult = loadJson(path.join(ROOT, "materials", materialId, jsonFile));
-  if (dataResult.error) { check(recordName + " (" + jsonFile + ") present and valid JSON", false, dataResult.error); return; }
+  if (dataResult.error) { check(recordName + " (" + jsonFile + ") present and valid JSON", false, dataResult.error); return null; }
   const errors = validateAgainstSchema(dataResult.value, schemaResult.value, recordName);
   if (errors.length === 0) {
     check(recordName + " conforms to " + schemaFile, true);
   } else {
     errors.forEach((e) => check(recordName + " conforms to " + schemaFile, false, e));
   }
+  return dataResult.value;
+}
+
+/* EO-S1.1-002A Question Source Rule — pairing/consistency checks plain JSON
+   Schema draft-07 (as hand-rolled above) can't express. Not optional:
+   "不得混用。不得省略。" */
+function validateQuestionSourceRule(questionBank) {
+  console.log("\n[Question Source Rule — EO-S1.1-002A]");
+  if (!questionBank || !Array.isArray(questionBank.questions)) {
+    check("Question Source Rule checkable", false, "no questions[] to check");
+    return;
+  }
+  const PAIRING = { ORIGINAL: "Uploaded Material", AI_GENERATED: "AI" };
+  const seenIds = {};
+  questionBank.questions.forEach((q, i) => {
+    const label = "questions[" + i + "] (" + (q.questionId || "?") + ")";
+    if (q.questionSource && q.origin) {
+      check(label + ": questionSource/origin pair consistent",
+        PAIRING[q.questionSource] === q.origin,
+        "questionSource=" + q.questionSource + " origin=" + q.origin + " (expected " + PAIRING[q.questionSource] + ")");
+    }
+    if (q.questionSource === "AI_GENERATED") {
+      check(label + ": AI_GENERATED does not carry needsManualReview (ORIGINAL-only concept)",
+        !("needsManualReview" in q), "found needsManualReview on an AI_GENERATED question");
+    }
+    if (q.questionSource === "ORIGINAL" && q.needsManualReview === undefined) {
+      check(label + ": ORIGINAL question declares needsManualReview explicitly (true or false, never omitted)", false);
+    }
+    if (q.materialId && questionBank.materialId) {
+      check(label + ": question-level materialId matches record materialId",
+        q.materialId === questionBank.materialId,
+        q.materialId + " != " + questionBank.materialId);
+    }
+    if (q.questionId) {
+      check(label + ": questionId unique within this material", !seenIds[q.questionId], "duplicate questionId " + q.questionId);
+      seenIds[q.questionId] = true;
+    }
+  });
 }
 
 console.log("Validating " + materialId + " against docs/TeachingMaterials/schema/*.schema.json");
 validateFile("Metadata", "metadata.json", "Metadata.schema.json");
 validateFile("Summary", "summary.json", "Summary.schema.json");
-validateFile("QuestionBank", "questions.json", "QuestionBank.schema.json");
+const questionBank = validateFile("QuestionBank", "questions.json", "QuestionBank.schema.json");
+validateQuestionSourceRule(questionBank);
 validateFile("RelatedMaterials", "related.json", "RelatedMaterials.schema.json");
 
 console.log("\n" + pass + " PASS / " + fail + " FAIL");

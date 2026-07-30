@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "TeachingMaterials/QuestionBank.schema.json",
   "title": "Teaching Material Question Bank",
-  "description": "Per EO-S1.1-001 v1.1, refined by EO-S1.1-002 v1.0. At minimum single_choice/true_false/fill_blank; calculation/essay added only when the source material genuinely supports them. Every question must carry a source trace — never a bare, untraceable question. EO-S1.1-002: every question must also declare origin — 'Original' for a question copied verbatim from the source material (e.g. an actual exam question), 'AI' for a question Claude derived from the material's content (never invented from nothing — still traceable via source).",
+  "description": "Per EO-S1.1-001 v1.1, refined by EO-S1.1-002 v1.0, refined again by EO-S1.1-002A v1.0 (Question Source Rule). At minimum single_choice/true_false/fill_blank; calculation/essay added only when the source material genuinely supports them. Every question must carry a source trace — never a bare, untraceable question. EO-S1.1-002A: questionSource (ORIGINAL | AI_GENERATED) and origin ('Uploaded Material' | 'AI') together are mandatory and must pair consistently — enforced by scripts/ValidateMaterial.js, not just this schema (plain JSON Schema draft-07 can't express the pairing rule without an if/then this hand-rolled Repository intentionally keeps simple). 'id' is renamed 'questionId' to match EO-S1.1-002A's exact field name.",
   "type": "object",
   "required": ["materialId", "questions"],
   "properties": {
@@ -11,15 +11,32 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "type", "question", "answer", "origin", "source"],
+        "required": [
+          "questionId", "materialId", "type", "questionSource", "origin",
+          "question", "answer", "version", "createdDate", "source"
+        ],
         "properties": {
-          "id": { "type": "string" },
+          "questionId": { "type": "string" },
+          "materialId": { "type": "string", "pattern": "^tm_[0-9]+$", "description": "Mirrors the parent record's materialId — EO-S1.1-002A lists it as its own per-question Metadata field" },
           "type": { "type": "string", "enum": ["single_choice", "true_false", "fill_blank", "calculation", "essay"] },
-          "origin": { "type": "string", "enum": ["AI", "Original"], "description": "EO-S1.1-002: 'Original' = copied verbatim from the source material; 'AI' = derived by Claude from the material's real content" },
+          "questionSource": {
+            "type": "string", "enum": ["ORIGINAL", "AI_GENERATED"],
+            "description": "ORIGINAL: 段考/模擬考/歷屆試題/教師試卷/作業/課本習題 — copied verbatim, never rewritten/simplified/reorganized/polished/AI-corrected. AI_GENERATED: Claude-derived from the material's real content."
+          },
+          "origin": {
+            "type": "string", "enum": ["Uploaded Material", "AI"],
+            "description": "Must pair with questionSource: ORIGINAL -> 'Uploaded Material', AI_GENERATED -> 'AI'. (Note: a differently-valued 'origin' field existed under EO-S1.1-002 ('AI'/'Original') — EO-S1.1-002A's own Metadata list redefines it with these exact two values, which this schema follows as the more recent LOCK.)"
+          },
+          "needsManualReview": {
+            "type": "boolean",
+            "description": "ORIGINAL only. EO-S1.1-002A: '若 OCR 信心不足，不得猜測，必須標記需人工確認' — true when OCR/transcription confidence was insufficient to be certain the question text is verbatim; Claude must never guess in that case. Defaults to false; omitted entirely for AI_GENERATED questions (the concept doesn't apply)."
+          },
           "question": { "type": "string" },
           "options": { "type": "array", "items": { "type": "string" }, "description": "single_choice only" },
           "answer": { "type": "string" },
           "explanation": { "type": ["string", "null"] },
+          "version": { "type": "string", "description": "Starts \"1\"; incremented if this specific question is later corrected/re-transcribed" },
+          "createdDate": { "type": "string", "format": "date-time" },
           "source": {
             "type": "object",
             "required": ["materialId", "page", "section"],

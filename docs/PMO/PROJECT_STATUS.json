@@ -59,19 +59,20 @@
     "docs/TeachingMaterials/ (EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0) is schema/workflow only — zero real material analyzed, zero Runtime reads from it yet. Not wired into Material Center/AI Tutor Router/Dashboard/Review Center; that wiring is explicit future scope, not started."
   ],
   "teachingMaterialRepository": {
-    "status": "EO-S1.1-002 v1.0 — schema refined, validator built, genuinely empty",
+    "status": "EO-S1.1-002A v1.0 — Repository schema part complete, genuinely empty; app-facing part (Quiz Center/Dashboard/WrongBook/AI Tutor) PAUSED, flagged for Project Owner confirmation",
     "location": "docs/TeachingMaterials/ (nested under docs/, not a new top-level folder — a judgment call flagged in docs/EO/EO_S1.1-001_Report.md, not explicitly confirmed by Project Owner)",
     "metadataSchema": "11 camelCase fields per EO-S1.1-002 (materialId/subject/grade/publisher/chapter/unit/keywords/difficulty/source/uploadDate/version) — supersedes EO-S1.1-001's initial PascalCase reuse",
-    "questionProvenance": "every question tagged origin: \"AI\" | \"Original\" per EO-S1.1-002",
-    "validator": "docs/TeachingMaterials/scripts/ValidateMaterial.js — dependency-free, self-tested against scratch/never-committed data",
+    "questionProvenance": "every question tagged questionSource (ORIGINAL/AI_GENERATED) + origin (Uploaded Material/AI), must pair consistently, enforced by ValidateMaterial.js; ORIGINAL questions require explicit needsManualReview per EO-S1.1-002A's OCR-uncertainty rule",
+    "validator": "docs/TeachingMaterials/scripts/ValidateMaterial.js — dependency-free, self-tested against scratch/never-committed data, now includes the questionSource/origin pairing check",
     "materialsAnalyzed": 0,
-    "runtimeWiring": "none — MaterialRuntime/SummaryRuntime/QuestionRuntime/WrongBookRuntime unmodified, per both EOs' Runtime Rule",
+    "runtimeWiring": "none — MaterialRuntime/SummaryRuntime/QuestionRuntime/WrongBookRuntime/QuizCenter.js/Dashboard.js/AITutorService.js unmodified, per all three EOs' Runtime Rule",
+    "flaggedOpenQuestion": "EO-S1.1-002A also asked for Quiz Center source display+filter, Dashboard split statistics, Wrong Book questionSource retention, and AI Tutor source-aware prompts — real Runtime/UI changes to the live app, not this Repository's schema. Paused, not implemented, pending Project Owner confirmation (docs/EO/EO_S1.1-002A_Report.md).",
     "readyFor": "real material upload from Project Owner (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/課本/教師補充資料)"
   },
   "nextSprint": {
-    "id": "EO-S1.1-002 v1.0 (next: real material from Project Owner) — Sprint AI-109 (or PMO-assigned) remains separately queued",
-    "name": "EO-S1.1-002 v1.0 in progress; Sprint AI-109 TBD — awaiting PMO Release Approval of v1.0.0-rc1",
-    "status": "EO-S1.1-002 v1.0 IN PROGRESS (schema/validator complete, awaiting real material); no other new feature planning until v1.0.0 Release Approval is granted, per Sprint AI-108's own closing instruction"
+    "id": "Project Owner confirmation on EO-S1.1-002A's app-facing part, OR next material batch, OR PMO-assigned",
+    "name": "Awaiting Project Owner direction on two independent tracks; Sprint AI-109 TBD — awaiting PMO Release Approval of v1.0.0-rc1",
+    "status": "EO-S1.1-002A's Repository-schema part complete; its app-facing part PAUSED pending confirmation; no other new feature planning until v1.0.0 Release Approval is granted, per Sprint AI-108's own closing instruction"
   },
   "consoleErrors": 0,
   "runtimeErrors": 0
