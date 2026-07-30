@@ -1,4 +1,4 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
 
@@ -61,6 +61,9 @@ docs/TeachingMaterials/
   scripts/
     ValidateMaterial.js  — EO-S1.1-002 QA's "JSON Schema 合法" check, made runnable:
                             node docs/TeachingMaterials/scripts/ValidateMaterial.js <materialId>
+    TeachingMaterialAdapter.js  — NEW, EO-S1.2-001 (Revision): pure data-shape converter,
+                            Package -> MaterialRuntime/SummaryRuntime/QuestionRuntime-accepted
+                            objects. See dedicated section below.
   materials/
     <materialId>/         — one self-contained Package per material, materialId = tm_<seq>
       source/              — the ORIGINAL uploaded file(s), byte-identical, original filenames,
@@ -276,11 +279,37 @@ Repository's schema now carries every field this contract needs (`questionSource
 `materialType`), so whenever Runtime wiring is authorized, no further schema work should be
 required first.
 
+## Teaching Material Adapter (EO-S1.2-001 Revision v1.0) — data conversion only, still not wired in
+
+`scripts/TeachingMaterialAdapter.js` is a pure, stateless converter: `convertMaterial()` /
+`convertSummary()` / `convertQuestions()` / `convertRelated()` turn already-loaded Package
+JSON into the exact shapes `AHS.MaterialRuntime.add()`, `AHS.SummaryRuntime.add()`, and
+`AHS.QuestionRuntime.importQuestions()` already accept, unmodified — plus `validatePackage()`,
+which reuses `ValidateMaterial.js` as a subprocess rather than re-implementing any check. It
+holds no state, calls no Runtime itself, and never touches `save`/`update`/`delete`. Every
+mapping decision (title derivation, `category`/`unit`, which Question Runtime is targeted and
+why, which Summary/Question fields have no honest target and are dropped, and the
+`materialRuntimeId` threading needed because `MaterialRuntime.add()` assigns its own `id`) is
+documented in the file's own header comment and in `docs/EO/EO_S1.2-001_Report.md` — flagged,
+not silently decided. Self-tested against scratch, never-committed Package data (clean
+conversion, then fed through the real `MaterialRuntime.add()`/`SummaryRuntime.add()`/
+`QuestionRuntime.importQuestions()` in an isolated Node context to confirm every field is
+genuinely accepted, not just shaped correctly on paper) before being documented as working.
+
+Architecture (per this EO): Repository → Adapter → MaterialRuntime → Material Center. This
+file is called by nothing today — it is a library/CLI utility only (`node
+docs/TeachingMaterials/scripts/TeachingMaterialAdapter.js <materialId>` prints a read-only
+preview), never `<script>`-tagged, never invoked by any Runtime or page. Actually wiring
+Material Center (or any other page) to call it remains explicit future scope, same as every
+other EO in this track — this EO's own constraints ("不得建立新 Runtime／不得修改
+MaterialRuntime／不得修改 Material Center") forbid that wiring here.
+
 ## Explicitly out of scope, confirmed unaffected
 
 Per "目前階段：建立教材分析能力，不是建立教材內容" and every EO's Runtime Rule ("不得修改
 既有 Runtime／不得重構 Runtime／不得要求修改 UI／不得要求重新設計 Repository"): no Runtime
-loader/adapter reading from this Repository has been built. `MaterialRuntime`/
+loader/adapter **wired into the running app** has been built (the Adapter above is a
+standalone conversion utility, not app wiring — see its own section). `MaterialRuntime`/
 `SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`QuizCenter.js`/`Dashboard.js`/
 `WrongBook.js`/`AITutorService.js` are all byte-identical to before every EO in this track.
 Wiring — Material Center/AI Tutor Router/Dashboard/Review Center actually reading this
