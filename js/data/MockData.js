@@ -60,7 +60,7 @@ AHS.Mock = {
     subjectCounts: [
       { subject: "chinese", count: 128 },
       { subject: "english", count: 156 },
-      { subject: "math", count: 142 },
+      { subject: "math", count: 143 },
       { subject: "physics", count: 98 },
       { subject: "chemistry", count: 87 },
       { subject: "biology", count: 74 },
@@ -80,9 +80,120 @@ AHS.Mock = {
       { id: 5, subject: "biology", title: "細胞構造與功能", chapter: "第 1-2 節", grade: "高一", date: "2024/06/16", views: "1.1k", content: "本教材介紹動植物細胞的基本構造與各胞器功能，並比較兩者的差異。", progress: 0 },
       { id: 6, subject: "history", title: "中國古代史總整理", chapter: "第二章", grade: "高一", date: "2024/06/15", views: "645", content: "本教材整理中國古代重要朝代的政治制度與社會變遷重點。", progress: 100 },
       { id: 7, subject: "geography", title: "臺灣的地形與氣候", chapter: "第二章", grade: "高一", date: "2024/06/14", views: "701", content: "本教材說明臺灣主要地形分布與氣候特徵，並分析其對產業發展的影響。", progress: 30 },
-      { id: 8, subject: "civics", title: "憲法基本原則", chapter: "第一章", grade: "高一", date: "2024/06/13", views: "589", content: "本教材介紹憲法的基本原則與立憲精神，並說明其在國家治理中的角色。", progress: 0 }
+      { id: 8, subject: "civics", title: "憲法基本原則", chapter: "第一章", grade: "高一", date: "2024/06/13", views: "589", content: "本教材介紹憲法的基本原則與立憲精神，並說明其在國家治理中的角色。", progress: 0 },
+      /* Sprint MAT-CONTENT-001：依長榮高中 114 學年度下學期高一第三次段考數學科
+         試題卷（命題範圍 第二冊 4-1~4-3）分析整理之重點整理與模擬試題，
+         每題均含完整詳解。keyPoints／practiceQuestions 為既有 Material 項目
+         schema（id/subject/title/chapter/grade/date/views/content/progress）
+         之附加欄位，供教材中心未來擴充「重點整理」「模擬試題」顯示使用；
+         不影響任何既有欄位或現有渲染邏輯。 */
+      { id: 9, subject: "math", title: "三角函數的應用：正弦定理、餘弦定理與圓內接四邊形",
+        chapter: "第二冊 第四章 4-1~4-3", grade: "高一", date: "2026/07/30", views: "0",
+        content: "本教材彙整高一數學第二冊第四章（4-1~4-3）三角函數的應用重點，涵蓋直角三角形邊角關係、正弦定理與餘弦定理、圓內接四邊形對角互補性質、三角形面積公式（含海龍公式）、角平分線長度計算，以及單位圓與象限角三角函數值的判斷，並附 14 題模擬試題與完整詳解，適合段考前複習與自我檢測。",
+        progress: 0,
+        keyPoints: [
+          "直角三角形複合角表示：利用共用斜邊（如 AD）拆解成兩個直角三角形，再以和差角公式合併，例如 CD = a sinθ − b cosθ。",
+          "正弦定理：a/sinA = b/sinB = c/sinC = 2R（R 為外接圓半徑），可由已知兩角一邊求第三邊，或由弦長與其所對圓周角求外接圓半徑。",
+          "圓周角定理：同弧所對的圓周角相等，是連結「圓內接四邊形」與「正弦定理」的關鍵橋樑。",
+          "餘弦定理：c² = a² + b² − 2ab cosC，可由三邊長求角，或由兩邊夾角求第三邊；正負號可用來判斷銳角、直角、鈍角三角形。",
+          "圓內接四邊形對角互補：∠A + ∠C = 180°、∠B + ∠D = 180°，故 cosA = −cosC，是用餘弦定理解圓內接四邊形對角線的核心技巧。",
+          "三角形面積公式：(1) 兩邊夾角 Area = (1/2)ab sinC；(2) 海龍公式 Area = √(s(s−a)(s−b)(s−c))，s 為半周長。",
+          "角平分線長度：可用「面積分割法」，即 △ABC 面積 = △ABD 面積 + △ADC 面積，兩側都以 (1/2)×邊長×邊長×sin(半角) 展開求解。",
+          "單位圓定義：終邊與單位圓交於 C(cosθ, sinθ)；C 到 x 軸的投影長 = cosθ，投影點到 C 的垂直距離 = sinθ，且恆滿足 sin²θ + cos²θ = 1。",
+          "象限角正負判斷：第一象限 sinθ、cosθ、tanθ 皆正；第二象限僅 sinθ 正；第三象限僅 tanθ 正；第四象限僅 cosθ 正。",
+          "點 P(x, y) 在終邊上時，r = √(x²+y²)，sinθ = y/r、cosθ = x/r、tanθ = y/x，可由任一已知量反推坐標與其餘三角函數值。",
+          "和差角應用：已知終邊所在直線可直接求得 tanθ 再代入化簡；已知 sinθ + cosθ 可平方展開求 sinθcosθ（(sinθ+cosθ)² = 1 + 2sinθcosθ）。",
+          "極值問題：當兩正數乘積為定值時，其和的最小值可用算幾不等式（AM-GM）求得，常見於「面積平分求最短線段」類型的題目。"
+        ],
+        practiceQuestions: [
+          { type: "單選", knowledgePoint: "直角三角形複合角表示",
+            question: "如圖，∠BAC = θ，∠ABD = ∠ACD = 90°，AB = a，BD = b（AD 介於 AB、AC 之間）。下列何者可表示 CD？",
+            options: [
+              { key: "A", text: "a sinθ + b cosθ" },
+              { key: "B", text: "a cosθ + b sinθ" },
+              { key: "C", text: "a sinθ + b tanθ" },
+              { key: "D", text: "a sinθ − b cosθ" }
+            ],
+            correctAnswer: "D",
+            explanation: "設 ∠BAD = φ。在 Rt△ABD 中，∠ABD = 90°，AB = a、BD = b，故 AD = √(a²+b²)，且 tanφ = b/a、sinφ = b/AD、cosφ = a/AD。由圖形知 AD 介於 AB、AC 之間，故 ∠DAC = ∠BAC − ∠BAD = θ − φ。在 Rt△ACD 中，∠ACD = 90°，CD 為角 ∠DAC 的對邊，故 CD = AD·sin(θ − φ) = AD(sinθcosφ − cosθsinφ) = AD·sinθ·(a/AD) − AD·cosθ·(b/AD) = a sinθ − b cosθ。故選 (D)。" },
+          { type: "單選", knowledgePoint: "等腰直角三角形與正切",
+            question: "△ABC 為等腰直角三角形，∠C = 90°，AC = BC，D 為 BC 中點，求 tan∠DAB。",
+            options: [
+              { key: "A", text: "1/2" }, { key: "B", text: "1/3" }, { key: "C", text: "1/4" }, { key: "D", text: "1/5" }
+            ],
+            correctAnswer: "B",
+            explanation: "以 C 為原點建立坐標，設 AC = BC = 2，A(0,2)、B(2,0)、C(0,0)，則 D 為 BC 中點 D(1,0)。向量 AD=(1,−2)、AB=(2,−2)。tan∠DAB = |AD×AB| / (AD·AB) = |1×(−2) − (−2)×2| / (1×2+(−2)×(−2)) = |−2+4| / (2+4) = 2/6 = 1/3（此比值與邊長無關）。故選 (B)。" },
+          { type: "單選", knowledgePoint: "圓內接四邊形與正弦定理",
+            question: "圓內接四邊形 ABCD 中，∠CAD = 30°，∠ACB = 60°，CD = 2，求 AB。",
+            options: [
+              { key: "A", text: "2" }, { key: "B", text: "2√2" }, { key: "C", text: "2√3" }, { key: "D", text: "4" }
+            ],
+            correctAnswer: "C",
+            explanation: "設外接圓半徑為 R。∠CAD 為圓周角，所對弦為 CD，弦長 = 2R sin(圓周角)，故 2 = 2R sin30° = R，R = 2。∠ACB 所對弦為 AB，AB = 2R sin∠ACB = 2×2×sin60° = 4×(√3/2) = 2√3。故選 (C)。" },
+          { type: "單選", knowledgePoint: "象限角三角函數值",
+            question: "若角θ終邊上一點為 P(−4, 3)，求 sinθ + cosθ 之值。",
+            options: [
+              { key: "A", text: "1/5" }, { key: "B", text: "−1/5" }, { key: "C", text: "7/5" }, { key: "D", text: "−7/5" }
+            ],
+            correctAnswer: "B",
+            explanation: "r = √((−4)²+3²) = √25 = 5，sinθ = y/r = 3/5，cosθ = x/r = −4/5。sinθ+cosθ = 3/5 + (−4/5) = −1/5。故選 (B)。" },
+          { type: "多選", knowledgePoint: "象限角三角函數值",
+            question: "若有向角θ的始邊為 x 軸正向，終邊上一點 P 的坐標為 P(x, −5√2)，且 tanθ = √2，則下列何者正確？",
+            options: [
+              { key: "A", text: "x = 5" }, { key: "B", text: "x = −5" }, { key: "C", text: "sinθ = √6/3" },
+              { key: "D", text: "sinθ = −√6/3" }, { key: "E", text: "cosθ = −√3/3" }
+            ],
+            correctAnswer: "B、D、E",
+            explanation: "tanθ = y/x = −5√2/x = √2，解得 x = −5，故 (A)錯、(B)對。r = √(x²+y²) = √(25+50) = √75 = 5√3。sinθ = y/r = −5√2/(5√3) = −√2/√3 = −√6/3，故 (C)錯、(D)對。cosθ = x/r = −5/(5√3) = −1/√3 = −√3/3，故 (E)對。正確選項為 (B)(D)(E)。" },
+          { type: "多選", knowledgePoint: "圓內接四邊形（餘弦定理＋面積＋外接圓）",
+            question: "圓內接四邊形 ABCD，已知 AB=8、BC=5、CD=3、DA=5，試問下列各選項何者正確？",
+            options: [
+              { key: "A", text: "BD = √55" }, { key: "B", text: "sin∠BCD = √3/4" }, { key: "C", text: "△BCD 面積 = 15√3/4" },
+              { key: "D", text: "四邊形 ABCD 面積 = 55√3/4" }, { key: "E", text: "外接圓半徑 = 7√3/3" }
+            ],
+            correctAnswer: "C、D、E",
+            explanation: "設 BD=x。∠A、∠C 為圓內接四邊形之對角，∠A+∠C=180°，故 cosC=−cosA。在△ABD：cosA=(AB²+AD²−x²)/(2·AB·AD)=(89−x²)/80。在△CBD：cosC=(CB²+CD²−x²)/(2·CB·CD)=(34−x²)/30。由 cosC=−cosA 得 (34−x²)/30=−(89−x²)/80，整理得 80(34−x²)=−30(89−x²)，2720−80x²=−2670+30x²，110x²=5390，x²=49，x=7，故 BD=7，(A)錯。代回 cosA=(89−49)/80=0.5，∠A=60°、∠C=120°，sin∠BCD=sin120°=√3/2，故 (B)錯。△BCD 面積=(1/2)(5)(3)sin120°=15√3/4，(C)對。△ABD 面積=(1/2)(8)(5)sin60°=10√3=40√3/4，四邊形總面積=40√3/4+15√3/4=55√3/4，(D)對。外接圓半徑由正弦定理 BD/sin∠A=2R：7/sin60°=14/√3=14√3/3=2R，R=7√3/3，(E)對。正確選項為 (C)(D)(E)。" },
+          { type: "多選", knowledgePoint: "單位圓與三角函數定義",
+            question: "設角θ的終邊與單位圓（圓心 O、半徑 1）交於點 C(cosθ, sinθ)，C 在 x 軸上的投影點為 D；過點 B(1,0) 且垂直 x 軸的直線與θ終邊（或其反向延長線）交於點 F。下列敘述何者正確？",
+            options: [
+              { key: "A", text: "OD = cosθ" }, { key: "B", text: "CD = sinθ" }, { key: "C", text: "BF = tanθ" },
+              { key: "D", text: "CD² + OD² = 1" }, { key: "E", text: "BF = OD × CD" }
+            ],
+            correctAnswer: "A、B、C、D",
+            explanation: "C=(cosθ, sinθ) 在 x 軸的投影為 D=(cosθ, 0)，故（帶方向的）OD=cosθ，(A)對；CD 為 C 到 D 的垂直距離＝sinθ，(B)對。過 B(1,0) 的鉛垂線為 x=1，終邊參數式為 (t·cosθ, t·sinθ)，令 t·cosθ=1 得 t=1/cosθ，代入得 F=(1, tanθ)，故 BF=tanθ，(C)對。C 在單位圓上 OC=1，OD、CD 為直角三角形的兩股，故 CD²+OD²=OC²=1，(D)對。BF=tanθ=sinθ/cosθ，而 OD×CD=cosθ×sinθ，兩者一般不相等，故 (E)錯。正確選項為 (A)(B)(C)(D)。" },
+          { type: "計算", knowledgePoint: "正弦定理（圓周角）",
+            question: "BC 為直徑 3 之圓內的一弦，BC=1，P 為圓上動點（P、B、C 相異），求 sin∠BPC。",
+            options: null, correctAnswer: "1/3",
+            explanation: "∠BPC 為圓周角，所對弦為 BC，由正弦定理 BC = 2R sin∠BPC，其中 2R = 直徑 = 3。代入 1 = 3·sin∠BPC，得 sin∠BPC = 1/3。" },
+          { type: "計算", knowledgePoint: "餘弦定理（鄰補角）",
+            question: "△ABC 中，D 為 BC 上一點，AB=7、BD=4、AD=5、CD=6，求 AC。",
+            options: null, correctAnswer: "7",
+            explanation: "∠ADB 與 ∠ADC 為一直線上的鄰補角，互補，故 cos∠ADC=−cos∠ADB。在△ABD 用餘弦定理：cos∠ADB=(AD²+BD²−AB²)/(2·AD·BD)=(25+16−49)/40=−1/5。故 cos∠ADC=1/5。在△ADC 用餘弦定理：AC²=AD²+CD²−2·AD·CD·cos∠ADC=25+36−2(5)(6)(1/5)=61−12=49，AC=7。" },
+          { type: "計算", knowledgePoint: "角平分線長度（面積分割法）",
+            question: "△ABC 中，AB=6、AC=3，AD 為 ∠BAC 的角平分線，∠BAD=∠CAD=60°，求 AD。",
+            options: null, correctAnswer: "2",
+            explanation: "∠BAC=∠BAD+∠CAD=120°。由面積分割：△ABC面積=△ABD面積+△ACD面積。(1/2)(6)(3)sin120° = (1/2)(6)(AD)sin60° + (1/2)(3)(AD)sin60°。左式=9√3/2，右式=(9√3/4)AD。解得 AD=(9√3/2)/(9√3/4)=2。" },
+          { type: "計算", knowledgePoint: "三角形面積（海龍公式）",
+            question: "△ABC 三邊長分別為 5、6、7，求 △ABC 的面積。",
+            options: null, correctAnswer: "6√6",
+            explanation: "由海龍公式，半周長 s=(5+6+7)/2=9。面積=√(s(s−a)(s−b)(s−c))=√(9×4×3×2)=√216=√(36×6)=6√6。" },
+          { type: "計算", knowledgePoint: "和差角恆等式（平方展開）",
+            question: "已知θ為銳角，且 sinθ+cosθ=√5/2，求 sinθcosθ 之值。",
+            options: null, correctAnswer: "1/8",
+            explanation: "將等式平方：(sinθ+cosθ)²=sin²θ+2sinθcosθ+cos²θ=1+2sinθcosθ=(√5/2)²=5/4。故 2sinθcosθ=5/4−1=1/4，sinθcosθ=1/8。" },
+          { type: "計算", knowledgePoint: "面積平分最小值（算幾不等式）",
+            question: "△ABC 中，AB=5、BC=3、CA=4，在 AB 上取一點 P，在 AC 上取一點 Q，使線段 PQ 將 △ABC 的面積平分，求線段 PQ 的最小值。",
+            options: null, correctAnswer: "2",
+            explanation: "因 3²+4²=5²，△ABC 為直角三角形，∠C=90°，面積=(1/2)(3)(4)=6。由餘弦定理 cosA=(AB²+AC²−BC²)/(2·AB·AC)=(25+16−9)/40=4/5，sinA=3/5。設 AP=m、AQ=n，△APQ 面積=(1/2)mn·sinA=3，得 mn=10。由餘弦定理 PQ²=m²+n²−2mn·cosA=m²+n²−16。由算幾不等式 m²+n²≥2mn=20（等號成立於 m=n=√10，符合 m≤5、n≤4），故 PQ²≥4，PQ 最小值為 2。" },
+          { type: "計算", knowledgePoint: "終邊在直線上求三角函數式",
+            question: "若θ角的終邊在直線 2x+y=0 上，求 (2cosθ−sinθ)/(3sinθ−cosθ) 之值。",
+            options: null, correctAnswer: "−4/7",
+            explanation: "終邊在 2x+y=0（即 y=−2x）上，故 tanθ=y/x=−2，即 sinθ=−2cosθ（cosθ≠0）。代入：分子=2cosθ−sinθ=2cosθ−(−2cosθ)=4cosθ；分母=3sinθ−cosθ=3(−2cosθ)−cosθ=−7cosθ。故原式=4cosθ/(−7cosθ)=−4/7。" }
+        ]
+      }
     ],
     recentFiles: [
+      { name: "三角函數的應用重點整理與模擬試題.pdf", type: "PDF", size: "1.6 MB", date: "2026/07/30" },
       { name: "二次函數重點整理.pdf", type: "PDF", size: "2.4 MB", date: "2024/06/20" },
       { name: "牛頓定律講義.pptx", type: "PPT", size: "5.6 MB", date: "2024/06/18" },
       { name: "英文單字筆記.docx", type: "DOCX", size: "1.8 MB", date: "2024/06/17" },
