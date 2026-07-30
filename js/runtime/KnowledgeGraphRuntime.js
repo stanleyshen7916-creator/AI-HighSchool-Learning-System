@@ -21,8 +21,11 @@
 
    EO-S8.0-004: content nodes (knowledge_point / definition / formula /
    keyword / concept) are now accepted, but ONLY with a complete trace —
-   folderId + sourceFileId + documentType required, sourcePage /
-   sourceParagraph present (null allowed, never guessed).
+   folderId + sourceFileId + documentType present, sourcePage /
+   sourceParagraph present (null allowed, never guessed). AI107-01:
+   folderId's presence is required, its VALUE may honestly be null for
+   a material with no Folder assigned (a valid unscoped Study Scope) —
+   never omitted, same treatment as sourcePage/sourceParagraph.
 
    Honesty (hard): buildFromMaterial() creates ONLY what is truly known
    from real metadata — source_file, document_type, subject, chapter.
@@ -91,7 +94,7 @@ AHS.KnowledgeGraphRuntime = (function () {
        Study Scope (folderId) as well as its file trace — 任一缺漏拒絕寫入，
        不得猜測。Skeleton nodes keep their original contract. */
     if (CONTENT_TYPES.indexOf(node.type) !== -1) {
-      if (!node.folderId) { errors.push("內容節點缺少 folderId（Folder Scope 必要，不得跨 Folder 建立）"); }
+      if (!("folderId" in node)) { errors.push("內容節點缺少 folderId 欄位（無 Folder 時須為 null，不得省略）"); }
       if (!node.documentType) { errors.push("內容節點缺少 documentType"); }
     }
     if (!String(node.label || "").trim()) { errors.push("label 不得為空"); }

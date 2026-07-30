@@ -34,8 +34,10 @@
 
    Traceability (EO-S8.0-004, six fields): knowledgeId (assigned by the
    graph on store), folderId (the material's Study Scope — read from
-   the real material record; a material outside any Folder is REFUSED,
-   so no cross-folder node can exist), sourceFileId, sourcePage,
+   the real material record; AI107-01: a material outside any Folder
+   gets folderId: null, a valid unscoped Study Scope — the field is
+   always present, never omitted, so no cross-folder node can ever be
+   confused with a real Folder's own scope), sourceFileId, sourcePage,
    sourceParagraph, documentType (from DocumentClassifierRuntime —
    never guessed). Any missing field ⇒ validate() rejects.
 
@@ -136,16 +138,14 @@ AHS.KnowledgeExtractionRuntime = (function () {
       return result;
     }
 
-    /* Folder Scope (EO-S8.0-004): every node belongs to exactly one
-       Study Scope. A material outside any Folder cannot be analyzed —
-       不得跨 Folder 建立節點。 */
+    /* Folder Scope (EO-S8.0-004, relaxed by AI107-01): every node still
+       carries its Study Scope (folderId) — but a material with no
+       Folder assigned yields folderId: null, a valid, deliberate
+       "unscoped" scope rather than a hard failure. Mirrors
+       sourcePage/sourceParagraph elsewhere in this file: the field is
+       always present on every node below, its value may honestly be
+       null. */
     var folderId = folderIdFor(materialId);
-    if (!folderId) {
-      result.status = "pending";
-      result.reason = "教材未歸屬任何 Folder（Study Scope）—— 依 Folder Scope 規則不得建立 Knowledge Node。";
-      recordRun(materialId, result.status, { reason: result.reason });
-      return result;
-    }
 
     /* Real content path (reachable once the Analysis Pipeline EO ships):
        every candidate is copied verbatim from an analysis item, with
@@ -187,7 +187,7 @@ AHS.KnowledgeExtractionRuntime = (function () {
     if (!String(node.label || "").trim() && !String(node.content || "").trim()) {
       errors.push("label／content 不得同時為空");
     }
-    if (!node.folderId) { errors.push("缺少 folderId（Folder Scope 必要，不得跨 Folder 建立）"); }
+    if (!("folderId" in node)) { errors.push("缺少 folderId 欄位（無 Folder 時須為 null，不得省略）"); }
     if (!node.sourceFileId) { errors.push("缺少 sourceFileId（來源追溯必要）"); }
     if (!("sourcePage" in node)) { errors.push("缺少 sourcePage 欄位（無資料時須為 null，不得省略）"); }
     if (!("sourceParagraph" in node)) { errors.push("缺少 sourceParagraph 欄位（無資料時須為 null，不得省略）"); }
