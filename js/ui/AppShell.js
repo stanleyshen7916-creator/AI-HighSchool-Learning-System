@@ -135,7 +135,10 @@ AHS.AppShell = (function () {
     });
 
     var profMenu = profilePanel(function (actionId) {
-      console.log("Profile Menu：" + actionId);
+      /* Sprint AI-107 RC-01: profile menu actions (Settings/Logout/...) are
+         still Mock/prototype — no real destination exists yet. Removed a
+         leftover console.log debug statement here (Release Candidate
+         cleanup); menu still closes on any action pick. */
       closeMenus();
     });
 

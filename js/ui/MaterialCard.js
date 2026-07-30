@@ -219,11 +219,12 @@ AHS.MaterialCard = (function () {
       continueBtn
     ]);
 
-    /* MAT-F001 acceptance: clicking a material logs its id.
-       RC-003-006: clicking a card opens PREVIEW (view only, no progress
-       update). Learning is started explicitly via the bottom button. */
+    /* RC-003-006: clicking a card opens PREVIEW (view only, no progress
+       update). Learning is started explicitly via the bottom button.
+       Sprint AI-107 RC-01: removed a leftover console.log(item.id) debug
+       statement (originally added to satisfy MAT-F001's early acceptance
+       check, long since superseded by the real click behavior below). */
     card.addEventListener("click", function () {
-      console.log(item.id);
       previewMaterial();
     });
 

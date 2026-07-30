@@ -30,10 +30,15 @@ functionality, not something already built elsewhere under a different name.
 | `ContinueLearning`, `HeroCard`, `LearningTime`, `MyLearning`, `StudyPlan`, `StudyStats`, `TodayMission`, `AchievementBadges` | index.html/learning.html | mixed real Runtime reads + honest Empty States where no Runtime exists |
 | `QiaoqiaoGallery` | qiaoqiao-gallery.html | static assets only |
 
-## UI Widgets (`js/ui/`, 21 files — reusable/context-independent)
+## UI Widgets (`js/ui/`, 22 files — reusable/context-independent)
 
-Material-specific widget cluster (14): `MaterialCard`, `MaterialGrid`, `MaterialFilter`, `MaterialSort`,
-`MaterialHeader`, `MaterialSearchBar`, `MaterialSubjectTabs`, `MaterialCategoryTabs`,
+AI107-01 note: `MaterialSubjectTabs` was removed (Sprint AI-107 Repository Audit) —
+script-tagged in `materials.html` but never instantiated anywhere; superseded by
+`MaterialCategoryTabs`, which `MaterialCenter.js` actually wires. `MaterialContentView`
+(Sprint AI-105) added since this document's original count.
+
+Material-specific widget cluster (17): `MaterialCard`, `MaterialGrid`, `MaterialFilter`, `MaterialSort`,
+`MaterialHeader`, `MaterialSearchBar`, `MaterialCategoryTabs`, `MaterialContentView`,
 `MaterialEmptyState`, `MaterialLoadingState`, `MaterialFileStore`, `MaterialFolder`,
 `MaterialUploadDialog`, `BulkUploadDialog`, `MaterialPreview`, `MaterialSummaryCard`,
 `MaterialQuestionCard` (17 total material-related).
