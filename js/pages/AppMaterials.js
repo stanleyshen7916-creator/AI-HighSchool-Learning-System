@@ -14,6 +14,12 @@ window.AHS = window.AHS || {};
     var app = document.getElementById("app");
     if (!app) { return; }
 
+    /* HOTFIX-001 Repository Loader Integration: load Repository content
+       into MaterialRuntime before Material Center reads it. */
+    if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.load === "function") {
+      AHS.TeachingMaterialLoader.load();
+    }
+
     var materialCenterRoot = AHS.MaterialCenter.create();
 
     var shell = AHS.AppShell.create(AHS.AppConfig, {
