@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TeachingMaterials/Manifest.schema.json",
+  "title": "Teaching Material Package Manifest",
+  "description": "Per EO-S1.1-003 v1.0. Package-level bookkeeping, distinct from metadata.json's subject-matter fields. 'status' values and 'analysisEngine' being a fixed single value are Claude's own judgment calls — this EO names the manifest's fields but not their exact allowed values; flagged in README.md rather than decided silently.",
+  "type": "object",
+  "required": ["materialId", "packageVersion", "createdDate", "updatedDate", "repositoryVersion", "analysisEngine", "status"],
+  "properties": {
+    "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+    "packageVersion": { "type": "string", "description": "Mirrors metadata.json's own version — starts \"1\", increments on each Existing Material update" },
+    "createdDate": { "type": "string", "format": "date-time" },
+    "updatedDate": { "type": "string", "format": "date-time" },
+    "repositoryVersion": { "type": "string", "description": "Which EO-S1.1-00x schema generation this package was built against, e.g. \"EO-S1.1-003\"" },
+    "analysisEngine": { "type": "string", "enum": ["Claude"], "description": "Per every EO in this track's 'Role: Claude（Teaching Material Analysis Engine）' and 'no AI API' constraint, the only value this can honestly be today" },
+    "status": {
+      "type": "string", "enum": ["draft", "pending_review", "complete"],
+      "description": "draft: Claude is still analyzing. pending_review: at least one question has needsReview=true (OCR confidence < 0.90) — per the OCR Rule, this package is NOT yet the official Repository entry until resolved. complete: every question resolved, no outstanding review flags."
+    }
+  },
+  "additionalProperties": false
+}

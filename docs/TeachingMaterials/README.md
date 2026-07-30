@@ -1,18 +1,25 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
 
 This directory is the Teaching Material Repository — the permanent, Git-versioned Source
 of Truth for teaching material analysis results, per EO-S1.1-001 v1.1 (established this
-Repository), EO-S1.1-002 v1.0 (refined the exact Metadata schema, added AI/Original
-question provenance, defined the Import Rule and the per-material Git commit format), and
-EO-S1.1-002A v1.0 (Question Source Rule: `questionSource`/`origin` pairing, OCR-uncertainty
-handling — **the Repository-schema part only**; its Quiz Center/Dashboard/Wrong Book/AI
-Tutor display requirements are flagged, not implemented — see the dedicated section below).
-This directory exists alongside, not inside, `js/`/`css/`/the app's Runtime layer: nothing
-here is loaded by any `<script>` tag, and no existing Runtime has been modified to read it
-(per all three EOs' Runtime Rule — "不得修改既有 Runtime／不得重構 Runtime"). Wiring a real
-loader is explicit future scope, not any of these EOs'.
+Repository), EO-S1.1-002 v1.0 (exact Metadata schema, question provenance, Import Rule,
+per-material Git commit format), EO-S1.1-002A v1.0 (Question Source Rule refinement:
+`questionSource`/`origin` pairing, OCR-uncertainty handling), and EO-S1.1-003 v1.0
+(**Teaching Material Package Standard** — formalizes each material's folder as a self-
+contained Package: adds `source/` (the original uploaded files) and `manifest.json`,
+`materialType`, a third question source `TEACHER_CREATED`, page-accurate `questionNumber`/
+`page`, `ocrConfidence`, and the Original Question Rule for exam materials). EO-S1.1-003's
+own explicit Runtime Rule — "本 EO：不得修改 Material/Quiz/WrongBook/Dashboard/AI Tutor
+Runtime。僅建立 Material Package Standard" — and its Acceptance clause's own wording
+("所有 Runtime **後續**直接讀取 Package", i.e. *subsequently*) settle a question EO-S1.1-002A
+had left ambiguous: its Quiz Center/AI Tutor display rules are a **Display Contract for a
+future Runtime to implement**, not a build-it-now instruction. See the dedicated section
+below. This directory exists alongside, not inside, `js/`/`css/`/the app's Runtime layer:
+nothing here is loaded by any `<script>` tag, and no existing Runtime has been modified to
+read it (per all four EOs' Runtime Rule). Wiring a real loader is explicit future scope, not
+any of these EOs'.
 
 ## Two decisions made without an explicit answer from Project Owner (flagged, not hidden)
 
@@ -39,14 +46,15 @@ explicit prohibitions ("不得建立 MockData／不得建立 Demo Data／不得�
 不得未經提供即分析不存在之教材"). The schema below is ready to receive real material the
 moment Project Owner uploads it.
 
-## Directory layout (per material, once real material arrives)
+## Directory layout (per material, once real material arrives) — EO-S1.1-003 Package Standard
 
 ```
 docs/TeachingMaterials/
   README.md              — this file
   index.json             — Knowledge Index: manifest of every material (empty for now)
-  schema/                — JSON Schema definitions for the four record types below
+  schema/                — JSON Schema definitions for the five record types below
     Metadata.schema.json
+    Manifest.schema.json
     Summary.schema.json
     QuestionBank.schema.json
     RelatedMaterials.schema.json
@@ -54,12 +62,20 @@ docs/TeachingMaterials/
     ValidateMaterial.js  — EO-S1.1-002 QA's "JSON Schema 合法" check, made runnable:
                             node docs/TeachingMaterials/scripts/ValidateMaterial.js <materialId>
   materials/
-    <materialId>/         — one folder per analyzed material, materialId = tm_<seq>
+    <materialId>/         — one self-contained Package per material, materialId = tm_<seq>
+      source/              — the ORIGINAL uploaded file(s), byte-identical, original filenames,
+                              never modified/recompressed/renamed (EO-S1.1-003 Package Structure)
       metadata.json
+      manifest.json         — NEW, EO-S1.1-003: package bookkeeping, distinct from metadata.json
       summary.json
       questions.json
       related.json
 ```
+
+Per EO-S1.1-003's own Objective: this Package (not `js/data/MockData.js`, not any other
+format) is meant to become the single, common data source for Material Center, Quiz Center,
+Wrong Book, Dashboard, and AI Tutor once wired — "不得建立其他教材格式" (no other teaching
+material format may be created).
 
 ## Record schemas
 
@@ -67,10 +83,10 @@ docs/TeachingMaterials/
 
 **EO-S1.1-002's exact 11-field list** (camelCase, supersedes EO-S1.1-001's initial reuse of
 `MetadataParser.js`'s PascalCase field names — that set described a different context, the
-raw `Metadata.json` import file, not this Repository's own schema): `materialId`, `subject`,
-`grade`, `publisher`, `chapter`, `unit`, `keywords`, `difficulty`, `source`, `uploadDate`,
-`version`. Every field always present; unknown values `null`/`[]`, never guessed. See
-`schema/Metadata.schema.json`.
+raw `Metadata.json` import file, not this Repository's own schema), **plus EO-S1.1-003's
+`materialType`**: `materialId`, `subject`, `grade`, `publisher`, `chapter`, `unit`,
+`keywords`, `difficulty`, `source`, `uploadDate`, `version`, `materialType`. Every field
+always present; unknown values `null`/`[]`, never guessed. See `schema/Metadata.schema.json`.
 
 | Field | Notes |
 |---|---|
@@ -80,7 +96,32 @@ raw `Metadata.json` import file, not this Repository's own schema): `materialId`
 | `source` | e.g. `教師補充教材`/`教科書`/`考卷`/`講義` — the material's real origin, never guessed |
 | `uploadDate` | when Project Owner provided it, not when it was originally published |
 | `version` | starts `"1"`; incremented when Existing Material is updated (see Import Rule) |
+| `materialType` | **EO-S1.1-003**: `TEXTBOOK` \| `HANDOUT` \| `EXAM` \| `HOMEWORK` \| `PPT` \| `REFERENCE`. `EXAM` triggers the Original Question Rule below. |
 | `publisher`, `chapter`, `unit`, `difficulty` | defensive defaults (`null`), never fabricated |
+
+### Manifest (EO-S1.1-003, new)
+
+Package-level bookkeeping, separate from `metadata.json`'s subject-matter fields:
+`packageVersion`, `createdDate`, `updatedDate`, `repositoryVersion`, `analysisEngine`,
+`status`. See `schema/Manifest.schema.json`.
+
+**Two judgment calls — this EO names the fields but not their exact allowed values, flagged
+here rather than decided silently:**
+
+- `status` enum (`draft` | `pending_review` | `complete`): `draft` while Claude is still
+  analyzing; `pending_review` when at least one question has `needsReview: true` (OCR
+  confidence below threshold) — per the OCR Rule, such a package is **not yet the official
+  Repository entry** until resolved; `complete` once every question is resolved.
+- `analysisEngine` is a fixed single allowed value, `"Claude"` — the only honest value given
+  every EO in this track's "no AI API" constraint and Claude's own "Analysis Engine" role.
+
+### Source Files (EO-S1.1-003, new)
+
+`materials/<materialId>/source/` holds Project Owner's original uploaded file(s) exactly as
+provided — PDF/PPT/DOCX/JPG/PNG/scanned files. **不得修改原始教材／不得重新壓縮／不得重新
+命名內容**: never edited, never recompressed, original filenames kept. This is the actual
+source of truth a human (or a future OCR/verification step) can always check any transcribed
+`questions.json` entry against.
 
 ### Summary
 
@@ -93,28 +134,36 @@ material is analyzed. See `schema/Summary.schema.json`.
 At minimum `單選題` (single choice), `是非題` (true/false), `填充題` (fill-in-the-blank);
 `計算題` (calculation) and `申論題` (essay) added only when the source material's own
 content genuinely supports them (never invented to pad variety). Every question carries a
-`source` trace field (which material, which page/section) — never a bare, untraceable
-question, and a `questionId` (renamed from the earlier `id`, per EO-S1.1-002A's exact field
-name).
+`questionId` (renamed from the earlier `id`), `materialId`, and **EO-S1.1-003**'s
+`questionNumber` (the question's real number/label in the source material, e.g. `"1"` or
+`"3-b"` — never renumbered) and flat `page` (replacing the earlier nested `source` object,
+which only ever carried `materialId`/`page` — both now flat, avoiding duplication;
+`section` survives as an optional, non-required continuity field for extra traceability).
 
-**EO-S1.1-002A Question Source Rule** — every question carries both `questionSource`
-(`"ORIGINAL"` | `"AI_GENERATED"`) and `origin` (`"Uploaded Material"` | `"AI"`), which must
-pair consistently (ORIGINAL↔Uploaded Material, AI_GENERATED↔AI) — enforced by
+**Question Source Rule (EO-S1.1-002A, extended by EO-S1.1-003)** — every question carries
+both `questionSource` and `origin`, which must pair consistently — enforced by
 `scripts/ValidateMaterial.js`, since plain JSON Schema draft-07 can't express that pairing
-without more machinery than this Repository's hand-rolled validator carries.
+without more machinery than this Repository's hand-rolled validator carries:
 
-- **`ORIGINAL`**: 段考/模擬考/歷屆試題/教師試卷/作業/課本習題 — the question text **must
-  match the source material exactly**: no rewriting, simplifying, reorganizing, polishing,
-  or AI correction. If OCR/transcription confidence is insufficient to be certain the text
-  is verbatim, Claude must never guess — `needsManualReview: true` is set instead (required
-  field on every ORIGINAL question, explicit `true`/`false`, never omitted).
-- **`AI_GENERATED`**: a question Claude derived from the material's real content (single
-  choice/fill-in/true-false/calculation/essay as appropriate) — `needsManualReview` doesn't
-  apply and must not be present.
+| `questionSource` | `origin` | Applies to |
+|---|---|---|
+| `ORIGINAL` | `Uploaded Material` | 段考/模擬考/歷屆試題/教師試卷/作業/課本習題 — copied verbatim, no rewriting/simplifying/reorganizing/polishing/AI correction |
+| `AI_GENERATED` | `AI` | A question Claude derived from the material's real content |
+| `TEACHER_CREATED` | `Teacher` | Authored by a teacher, provided as such by Project Owner — **the `Teacher` origin value is Claude's own judgment call**: EO-S1.1-003 names `TEACHER_CREATED` as a `questionSource` value but doesn't state its paired `origin` value; flagged here rather than decided silently |
 
-(Note: EO-S1.1-002 previously defined a same-named `origin` field with different values
-(`"AI"`/`"Original"`) — EO-S1.1-002A's own Metadata list redefines `origin` with the two
-values above, which this schema now follows as the more recent LOCK.)
+**OCR Rule (EO-S1.1-003)** — `ORIGINAL` questions additionally require `ocrConfidence`
+(0–1) and `needsReview` (explicit `true`/`false`, never omitted); both fields must be
+*absent* on `AI_GENERATED`/`TEACHER_CREATED` questions (the concept doesn't apply). If
+`ocrConfidence < 0.90`, `needsReview` must be `true` — Claude must never guess/self-complete
+uncertain transcription, and per the Manifest's own `status` field, a package with any such
+question is not `complete` until a human resolves it.
+
+**Original Question Rule (EO-S1.1-003)** — when `metadata.json`'s `materialType` is
+`EXAM`, every question in that material must be `questionSource: "ORIGINAL"` (100% content
+preservation — 題號/題幹/選項/圖片/表格/標點/版面順序 all kept exactly as in the source;
+no summarizing, rewriting, or AI optimization). Enforced cross-file by
+`scripts/ValidateMaterial.js` (checks `metadata.json`'s `materialType` against every entry
+in `questions.json`).
 
 See `schema/QuestionBank.schema.json`.
 
@@ -154,15 +203,18 @@ exact format specifically for per-material import commits; infrastructure/schema
 this Repository itself (like this README, the schemas, or the validator script) still use
 the repository's normal Sprint/EO-label commit convention.
 
-## Workflow (per EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0)
+## Workflow (per EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-003 v1.0)
 
 ```
 Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/課本/教師補充資料;
   one or several at once)
   → Claude receives it, classifies New / Existing / Related (Import Rule above)
-  → Claude analyzes it (OCR if needed — no AI API, per "不使用任何 API")
-  → Metadata / Summary / Question Bank (origin-tagged) / Related Materials built
-  → materials/<materialId>/*.json written; index.json updated
+  → source/ populated with the original file(s), byte-identical, original filenames
+  → Claude analyzes it (OCR if needed — no AI API, per "不使用任何 API"); for materialType
+    = EXAM, every question extracted as ORIGINAL with 100% content preservation
+  → Metadata (incl. materialType) / manifest.json / Summary / Question Bank (source+origin
+    tagged, ocrConfidence/needsReview set honestly) / Related Materials built
+  → materials/<materialId>/*.json + source/ written; index.json updated
   → QA checklist (below) confirmed, including node scripts/ValidateMaterial.js <materialId>
   → git commit -m "feat(material): import <materialId>"
   → git push
@@ -170,57 +222,64 @@ Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/�
 
 ## QA Checklist (run per material, once real analysis begins)
 
-- [ ] Metadata complete (every field present; unknowns `null`/`[]`, never guessed)
+- [ ] Metadata complete (every field present incl. `materialType`; unknowns `null`/`[]`,
+      never guessed)
+- [ ] `manifest.json` written (`status` accurately reflects whether any question still
+      needs review)
+- [ ] `source/` populated with the real, unmodified original file(s)
 - [ ] Summary complete
 - [ ] Question Bank built (≥ 單選/是非/填充; 計算/申論 only where the material supports
-      them; every question's `questionSource`/`origin` pair set and consistent; every
-      ORIGINAL question's `needsManualReview` explicitly set, never guessed when OCR
-      confidence is low)
+      them; every question's `questionSource`/`origin` pair set and consistent;
+      `ocrConfidence`/`needsReview` set honestly on every ORIGINAL question, absent on
+      AI_GENERATED/TEACHER_CREATED; if `materialType = EXAM`, every question is ORIGINAL)
 - [ ] Related Materials checked (linked if genuine overlap found; never duplicated)
-- [ ] Repository updated (`index.json`, and `materials/<materialId>/*.json` — new folder for
-      New Material, same folder updated in place for Existing Material)
+- [ ] Repository updated (`index.json`, and `materials/<materialId>/*` — new Package for
+      New Material, same Package updated in place for Existing Material)
 - [ ] **JSON Schema 合法**: `node docs/TeachingMaterials/scripts/ValidateMaterial.js
-      <materialId>` — all four records PASS
+      <materialId>` — all records + Question Source Rule + Original Question Rule +
+      `source/` checks PASS
 - [ ] `npm run verify` / `npm test` still PASS (this Repository is inert to the app today,
       but a regression sweep costs nothing and confirms nothing was accidentally broken)
 - [ ] Git commit (`feat(material): import <materialId>`)
 - [ ] Git push
 
-## EO-S1.1-002A's app-facing requirements — flagged, NOT implemented
+## Display Contract for a future Runtime (EO-S1.1-002A + EO-S1.1-003) — NOT implemented yet
 
-EO-S1.1-002A also specifies real, live-app behavior beyond this Repository's own schema:
-Quiz Center must display each question's source and offer a source filter (全部／上傳教材／
-AI 模擬試題), Dashboard must count Original vs. AI-Generated questions separately, Wrong
-Book must retain `questionSource` per entry, and AI Tutor must give source-aware
-explanations ("本題來自你上傳的教材" / "本題為 AI 依教材內容所產生的練習題").
+Both EO-S1.1-002A and EO-S1.1-003 specify how a question's source should eventually be
+shown across the live app. EO-S1.1-003's own explicit Runtime Rule — "不得修改 Material/
+Quiz/WrongBook/Dashboard/AI Tutor Runtime。僅建立 Material Package Standard" — and its
+Acceptance clause's "所有 Runtime **後續**直接讀取 Package" settle how to read these
+sections: as a **contract for a future Runtime to implement**, not an instruction to build
+UI/Runtime code now. (This also resolves EO-S1.1-002A's own ambiguity on this exact point,
+noted in `docs/EO/EO_S1.1-002A_Report.md` at the time — it didn't repeat the "no Runtime/UI"
+constraint the way EO-S1.1-001/002 had, and this reads that silence as an oversight EO-S1.1-
+003 corrects, not a standing request to build it after all.)
 
-**None of this has been implemented.** Reasons, stated plainly rather than silently skipped:
+**Quiz Center Display Rule**: every question shows its source badge —
+`questionSource: ORIGINAL` → 📄 上傳教材, `AI_GENERATED` → 🤖 AI 模擬試題,
+`TEACHER_CREATED` → 👨‍🏫 教師題目. Never hidden. Plus a source filter (全部／上傳教材／
+AI 模擬試題／— a fourth 教師題目 option follows naturally once `TEACHER_CREATED` exists).
 
-1. **No wiring exists between this Repository and the live app at all.** Both EO-S1.1-001
-   and EO-S1.1-002 explicitly kept this Repository inert — "no Runtime loader/adapter
-   reading from this Repository has been built... Wiring is future scope, not started
-   here" — repeated verbatim in each of their own reports. EO-S1.1-002A doesn't repeat that
-   constraint, but doesn't lift it either; implementing Quiz Center/Dashboard/Wrong
-   Book/AI Tutor changes would require building that wiring for the first time as an
-   unstated prerequisite, which is a materially larger change than a schema refinement.
-2. **This is real Runtime and UI surgery on an already-shipped, already-PAT-tested app**
-   (`js/components/QuizCenter.js`, `js/components/Dashboard.js`, `js/components/
-   WrongBook.js`, `js/runtime/AITutorService.js` or similar) — a different category of
-   change from anything done under the EO-S1.1-00x track so far, and squarely the kind of
-   change Sprint AI-108's still-standing "no new feature planning until v1.0.0 Release
-   Approval" gate was written to hold off on.
-3. **There is nothing real to display yet.** `materialsAnalyzed: 0` — zero real questions
-   exist anywhere in this Repository, so a Quiz Center filter or a Dashboard split-count
-   would have nothing genuine to operate on regardless.
+**Dashboard**: Original / AI-Generated / Teacher-Created question counts, kept separate,
+never merged into one number.
 
-Flagged in `docs/EO/EO_S1.1-002A_Report.md` for Project Owner to confirm before any Runtime/
-UI work begins — not decided unilaterally, consistent with how the placement/gate questions
-were handled in EO-S1.1-001/002.
+**Wrong Book**: retains `questionSource` per wrong-answer entry, so a student can later see
+whether a missed question was from their own material or an AI-generated one.
+
+**AI Tutor**: explanation text keyed by `questionSource` — `ORIGINAL` → "本題來自你上傳的
+教材。"; `AI_GENERATED` → "本題由 AI 根據教材延伸產生。"; `TEACHER_CREATED` → "本題由教師
+建立。"
+
+None of `MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/
+`QuizCenter.js`/`Dashboard.js`/`WrongBook.js`/`AITutorService.js` have been touched — this
+Repository's schema now carries every field this contract needs (`questionSource`, `origin`,
+`materialType`), so whenever Runtime wiring is authorized, no further schema work should be
+required first.
 
 ## Explicitly out of scope, confirmed unaffected
 
-Per "目前階段：建立教材分析能力，不是建立教材內容" and the Runtime Rule ("不得修改既有
-Runtime／不得重構 Runtime／不得要求修改 UI／不得要求重新設計 Repository"): no Runtime
+Per "目前階段：建立教材分析能力，不是建立教材內容" and every EO's Runtime Rule ("不得修改
+既有 Runtime／不得重構 Runtime／不得要求修改 UI／不得要求重新設計 Repository"): no Runtime
 loader/adapter reading from this Repository has been built. `MaterialRuntime`/
 `SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`QuizCenter.js`/`Dashboard.js`/
 `WrongBook.js`/`AITutorService.js` are all byte-identical to before every EO in this track.

@@ -1,15 +1,17 @@
 /* docs/TeachingMaterials/scripts/ValidateMaterial.js — EO-S1.1-002 QA checklist's
-   "JSON Schema 合法" item, made concrete and runnable.
+   "JSON Schema 合法" item, made concrete and runnable. Extended by EO-S1.1-002A
+   (Question Source pairing) and EO-S1.1-003 (Package Standard: manifest.json,
+   source/ folder, OCR threshold, materialType=EXAM cross-check).
 
    Hand-rolled, dependency-free structural validator (matching this repository's
    existing pattern — e.g. js/runtime/ImportValidator.js — rather than adding a
-   JSON-Schema library dependency for four small, fixed record shapes). Not part
+   JSON-Schema library dependency for five small, fixed record shapes). Not part
    of the running app: this script is never <script>-tagged, never touches
    Runtime/UI, and has zero effect unless run manually.
 
    Usage: node docs/TeachingMaterials/scripts/ValidateMaterial.js <materialId>
-   Validates materials/<materialId>/{metadata,summary,questions,related}.json
-   against schema/{Metadata,Summary,QuestionBank,RelatedMaterials}.schema.json. */
+   Validates materials/<materialId>/{metadata,manifest,summary,questions,related}.json
+   and materials/<materialId>/source/ against schema/*.schema.json. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -103,16 +105,16 @@ function validateFile(recordName, jsonFile, schemaFile) {
   return dataResult.value;
 }
 
-/* EO-S1.1-002A Question Source Rule — pairing/consistency checks plain JSON
-   Schema draft-07 (as hand-rolled above) can't express. Not optional:
-   "不得混用。不得省略。" */
+/* EO-S1.1-002A Question Source Rule, extended by EO-S1.1-003 — pairing/
+   consistency/threshold checks plain JSON Schema draft-07 (as hand-rolled
+   above) can't express. Not optional: "不得混用。不得省略。" */
 function validateQuestionSourceRule(questionBank) {
-  console.log("\n[Question Source Rule — EO-S1.1-002A]");
+  console.log("\n[Question Source Rule — EO-S1.1-002A / EO-S1.1-003]");
   if (!questionBank || !Array.isArray(questionBank.questions)) {
     check("Question Source Rule checkable", false, "no questions[] to check");
     return;
   }
-  const PAIRING = { ORIGINAL: "Uploaded Material", AI_GENERATED: "AI" };
+  const PAIRING = { ORIGINAL: "Uploaded Material", AI_GENERATED: "AI", TEACHER_CREATED: "Teacher" };
   const seenIds = {};
   questionBank.questions.forEach((q, i) => {
     const label = "questions[" + i + "] (" + (q.questionId || "?") + ")";
@@ -121,12 +123,20 @@ function validateQuestionSourceRule(questionBank) {
         PAIRING[q.questionSource] === q.origin,
         "questionSource=" + q.questionSource + " origin=" + q.origin + " (expected " + PAIRING[q.questionSource] + ")");
     }
-    if (q.questionSource === "AI_GENERATED") {
-      check(label + ": AI_GENERATED does not carry needsManualReview (ORIGINAL-only concept)",
-        !("needsManualReview" in q), "found needsManualReview on an AI_GENERATED question");
-    }
-    if (q.questionSource === "ORIGINAL" && q.needsManualReview === undefined) {
-      check(label + ": ORIGINAL question declares needsManualReview explicitly (true or false, never omitted)", false);
+    const isOriginal = q.questionSource === "ORIGINAL";
+    ["ocrConfidence", "needsReview"].forEach((field) => {
+      if (isOriginal) {
+        check(label + ": ORIGINAL question declares " + field + " explicitly", field in q);
+      } else if (q.questionSource) {
+        check(label + ": " + q.questionSource + " does not carry " + field + " (ORIGINAL-only concept)",
+          !(field in q), "found " + field + " on a " + q.questionSource + " question");
+      }
+    });
+    if (isOriginal && typeof q.ocrConfidence === "number") {
+      if (q.ocrConfidence < 0.90) {
+        check(label + ": ocrConfidence < 0.90 correctly forces needsReview=true (OCR Rule — 不得猜測)",
+          q.needsReview === true, "ocrConfidence=" + q.ocrConfidence + " but needsReview=" + q.needsReview);
+      }
     }
     if (q.materialId && questionBank.materialId) {
       check(label + ": question-level materialId matches record materialId",
@@ -140,12 +150,49 @@ function validateQuestionSourceRule(questionBank) {
   });
 }
 
+/* EO-S1.1-003 Original Question Rule (cross-file: metadata.materialType +
+   questions.questionSource): "若 materialType = EXAM，則所有 questionSource
+   = ORIGINAL"。 */
+function validateOriginalQuestionRule(metadata, questionBank) {
+  console.log("\n[Original Question Rule — EO-S1.1-003]");
+  if (!metadata || !questionBank || !Array.isArray(questionBank.questions)) {
+    check("Original Question Rule checkable", false, "metadata.json or questions.json missing/invalid");
+    return;
+  }
+  if (metadata.materialType !== "EXAM") {
+    check("materialType != EXAM, rule not applicable", true);
+    return;
+  }
+  const nonOriginal = questionBank.questions.filter((q) => q.questionSource !== "ORIGINAL");
+  check("materialType=EXAM: every question is questionSource=ORIGINAL",
+    nonOriginal.length === 0,
+    nonOriginal.length + " non-ORIGINAL question(s): " + nonOriginal.map((q) => q.questionId).join(", "));
+}
+
+/* EO-S1.1-003 Package Structure: source/ must exist as a real directory
+   (original uploaded files, byte-identical — never verified for byte-
+   identity here, since that would require the original file to diff
+   against, which this script doesn't have; existence is what's checkable). */
+function validateSourceFolder() {
+  console.log("\n[Package Structure — source/]");
+  const sourceDir = path.join(ROOT, "materials", materialId, "source");
+  const exists = fs.existsSync(sourceDir) && fs.statSync(sourceDir).isDirectory();
+  check("source/ directory exists", exists, sourceDir);
+  if (exists) {
+    const files = fs.readdirSync(sourceDir).filter((f) => f !== ".gitkeep");
+    check("source/ contains at least one original file", files.length > 0);
+  }
+}
+
 console.log("Validating " + materialId + " against docs/TeachingMaterials/schema/*.schema.json");
-validateFile("Metadata", "metadata.json", "Metadata.schema.json");
+const metadata = validateFile("Metadata", "metadata.json", "Metadata.schema.json");
+validateFile("Manifest", "manifest.json", "Manifest.schema.json");
 validateFile("Summary", "summary.json", "Summary.schema.json");
 const questionBank = validateFile("QuestionBank", "questions.json", "QuestionBank.schema.json");
 validateQuestionSourceRule(questionBank);
+validateOriginalQuestionRule(metadata, questionBank);
 validateFile("RelatedMaterials", "related.json", "RelatedMaterials.schema.json");
+validateSourceFolder();
 
 console.log("\n" + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);
