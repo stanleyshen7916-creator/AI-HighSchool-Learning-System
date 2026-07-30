@@ -34,8 +34,9 @@ window.AHS = window.AHS || {};
     var params = new URLSearchParams(window.location.search);
     var mode = params.get("mode") || undefined;
     var materialId = params.get("materialId") || undefined;
+    var examId = params.get("examId") || undefined;
 
-    shell.main.appendChild(AHS.QuizCenter.create(undefined, mode, materialId));
+    shell.main.appendChild(AHS.QuizCenter.create(undefined, mode, materialId, examId));
   }
 
   function coreReady() {

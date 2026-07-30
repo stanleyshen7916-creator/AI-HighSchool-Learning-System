@@ -821,7 +821,7 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
-  /* create(model, initialMode, initialMaterialId)
+  /* create(model, initialMode, initialMaterialId, initialExamId)
      Sprint 6.8 EO-S6.8-001 (Task 001/002, AI Learning Flow): initialMode
      ("practice" | undefined) and initialMaterialId are optional and
      additive — every existing caller (js/pages/app-quiz.js with no
@@ -831,8 +831,16 @@ AHS.QuizCenter = (function () {
      instead, optionally pre-filtered to one material's own questions —
      completing the Material → AI Summary → Practice flow. No change to
      any Exam Mode function below, no change to ExamRuntime/QuestionBank/
-     QuestionRuntime. */
-  function create(model, initialMode, initialMaterialId) {
+     QuestionRuntime.
+
+     Sprint v1.6 Module C: initialExamId is a further optional, additive
+     param — a real quiz.html?examId=teaching_material_<id> link (from
+     Material Card's new "開始練習" Navigation Action) jumps straight
+     into that already-imported QuestionRuntime exam via
+     ExamRuntime.startFromExam(), never through startExam()/
+     QuestionBank.generate(). Every existing caller (no examId) is
+     unaffected — showList() still runs first, exactly as before. */
+  function create(model, initialMode, initialMaterialId, initialExamId) {
     var data = model || AHS.AppConfig.quiz;
     var root = el("div", { class: "quiz-root" });
 
@@ -870,7 +878,19 @@ AHS.QuizCenter = (function () {
       AHS.UI.mount(root, buildReviewView(review, showList));
     }
 
-    showList();
+    /* Sprint v1.6 Module C: a real initialExamId tries direct entry into
+       an already-imported exam first; any failure (already running, no
+       question set for this id, meta unresolvable) falls back to the
+       normal Exam Mode list — never a broken/blank view. */
+    function tryDirectExamEntry() {
+      var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
+        ? AHS.TeachingMaterialLoader.resolveExamMeta(initialExamId) : null;
+      var session = AHS.ExamRuntime.startFromExam(initialExamId, meta || {});
+      if (!session) { showList(); return; }
+      showExam(session.examId);
+    }
+
+    if (initialExamId) { tryDirectExamEntry(); } else { showList(); }
 
     /* ---- Practice Mode mount (EO-S6-006) — entirely separate root,
        never touches `root` / any Exam Mode function above. ---- */

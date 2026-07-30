@@ -1,4 +1,4 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4 + Sprint v1.6
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
 
@@ -281,11 +281,14 @@ whether a missed question was from their own material or an AI-generated one.
 教材。"; `AI_GENERATED` → "本題由 AI 根據教材延伸產生。"; `TEACHER_CREATED` → "本題由教師
 建立。"
 
-None of `MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/
-`QuizCenter.js`/`Dashboard.js`/`WrongBook.js`/`AITutorService.js` have been touched — this
-Repository's schema now carries every field this contract needs (`questionSource`, `origin`,
-`materialType`), so whenever Runtime wiring is authorized, no further schema work should be
-required first.
+None of the *Display Contract* items above (source badges, filter, Dashboard split stats, AI
+Tutor prompts) have been implemented anywhere. `MaterialRuntime`/`SummaryRuntime`/
+`QuestionRuntime`/`WrongBookRuntime`/`Dashboard.js`/`WrongBook.js`/`AITutorService.js` remain
+fully unmodified. `QuizCenter.js`/`ExamRuntime.js` **did** gain a small, unrelated, purely-additive
+change in Sprint v1.6 (direct entry into an already-imported exam by `examId` — see "Runtime
+Wiring" below) — that is data plumbing, not any part of this Display Contract. This Repository's
+schema already carries every field this contract needs (`questionSource`, `origin`,
+`materialType`), so whenever it's authorized, no further schema work should be required first.
 
 ## Teaching Material Adapter (EO-S1.2-001 Revision v1.0) — data conversion only, still not wired in
 
@@ -342,30 +345,43 @@ The full chain is real and wired: **Repository → `GenerateTeachingMaterialData
   through `MaterialRuntime.list()`/`isEmpty()` and `SummaryRuntime.findByMaterialId()`/`list()`
   — once the Loader has written real records, they display through the existing, unmodified
   rendering path.
-- **Known, honestly-disclosed gap (matching `ImportRuntime.js`'s own precedent for the same
-  situation)**: this app draws a hard, pre-existing line between "練習模式" (Practice Mode —
-  reads *only* `AHS.LearningQuestionRuntime`) and "Exam Mode" (reads *only*
-  `AHS.QuestionRuntime`) — `js/components/QuizCenter.js`'s own comments call this "不得混用."
-  Teaching Material questions are imported into `QuestionRuntime` (per the Adapter's own design —
-  see `EO_S1.2-001_Report.md` judgment call 5), so they are genuinely stored and queryable
-  (`hasExam()`/`getSet()` correctly reflect them, confirmed by test) but reachable only through
-  Exam Mode's `examId`, not through the "開始練習" Practice Mode button. Exam Mode's own list is
-  driven by a fixed catalog (`ExamData.js` via `ExamRuntime.start()`), which has no dynamic entry
-  point for an externally-imported `examId` — so there is currently no live UI button a student
-  can click to reach this content. Building one is out of this Sprint's scope ("不得重新設計
-  UI"); the data-level wiring this Sprint asked for is complete and verified.
+- **UI reachability — RESOLVED for `single_choice` questions, Sprint v1.6 "Learning Experience
+  Integration"**: `MaterialCard.js` now renders a real "開始練習" `<a href="quiz.html?mode=
+  practice&examId=teaching_material_<id>">`, and `js/pages/AppQuiz.js`/`QuizCenter.js` read that
+  `examId` to call a new, additive `AHS.ExamRuntime.startFromExam(examId, meta)` — a `RUNNING`
+  session created directly from the already-imported `QuestionRuntime` set, never through
+  `ExamRuntime.start()`'s fixed-catalog/`QuestionBank.generate()` flow. This app's own
+  pre-existing "練習模式 (`LearningQuestionRuntime`) vs Exam Mode (`QuestionRuntime`) 不得混用"
+  separation is respected exactly as before — Teaching Material questions reach the student
+  through Exam Mode, not Practice Mode, matching the Adapter's own original design.
+- **A second, deeper finding fixed in the same Sprint**: `QuestionRuntime.importQuestions()`
+  accepts any object shape, but `AHS.AutoGrader.grade()` and `js/ui/QuestionCard.js` hard-code
+  `AHS.QuestionBank`'s own native field names (`text`/`correctAnswer`/`index`/`knowledgePoint`,
+  `options` as `{key,text}` objects, and an `AHS.Subjects`-keyed `subject` with **no fallback** —
+  an unmapped key would throw). The Adapter's own question shape (`question`/`answer`/plain-string
+  `options`, by design) was never actually gradable or renderable — nothing had exercised this
+  path before Sprint v1.6. Fixed inside `TeachingMaterialLoader.js` (permitted as "Wiring", not an
+  Adapter/Runtime change): only `single_choice` questions whose `answer` matches one of their own
+  `options`, on a material whose `subject` matches one of `AHS.Subjects`' 9 known Chinese names,
+  are reshaped and included. `true_false`/`fill_blank`/`calculation`/`essay` questions, and any
+  unmappable subject, are honestly skipped — never fabricated into fake multiple-choice content.
+  See `docs/EO/Sprint_v1.6_LearningExperienceIntegration_Report.md` for full detail.
 - **Material Card fields** (`出版社`/`關鍵字`/`教材來源`, requested by Sprint v1.3 but dropped
-  from v1.4's scope): still not displayable — `MaterialRuntime.add()`'s field whitelist has no
-  publisher/keywords/source, and `MaterialCard.js` renders none of them. Unresolved, not silently
-  fixed or silently dropped from tracking.
+  from v1.4/v1.6's scope): still not displayable — `MaterialRuntime.add()`'s field whitelist has
+  no publisher/keywords/source, and `MaterialCard.js` renders none of them. Unresolved, not
+  silently fixed or silently dropped from tracking.
 
 ## Explicitly out of scope, confirmed unaffected
 
-`MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`TeachingMaterialAdapter`/
-`QuizCenter.js`/`Dashboard.js`/`WrongBook.js`/`AITutorService.js`/`MaterialCard.js` APIs are all
-byte-identical to before every EO/Sprint in this track — only `js/pages/AppMaterials.js` and
-`js/pages/AppQuiz.js` gained a two-line bootstrap call, and `materials.html`/`quiz.html` gained
-two `<script>` tags each. No Mock/Demo/Placeholder data was added — `js/data/TeachingMaterialData.js`
-is generated from real Repository content only (currently `[]`, since the Repository is still
-genuinely empty). Dashboard/AI Tutor Router/Review Center reading this Repository, and the
-Practice-Mode-reachability gap above, remain future scope.
+`MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`HistoryRuntime`/
+`TeachingMaterialAdapter`/`Dashboard.js`/`WrongBook.js`/`AITutorService.js` APIs are all
+byte-identical to before every EO/Sprint in this track. `ExamRuntime.js` gained exactly one new,
+additive function (`startFromExam()`, Sprint v1.6) — every pre-existing function untouched.
+`QuizCenter.js`/`MaterialCard.js` gained small, additive changes (an optional 4th `create()`
+param; two new `<a>` Navigation Actions reusing an existing CSS class) — no redesign, no new
+Design Token. `js/pages/AppMaterials.js`/`AppQuiz.js` gained a couple of lines each;
+`materials.html`/`quiz.html` gained two `<script>` tags each. No Mock/Demo/Placeholder data was
+added — `js/data/TeachingMaterialData.js` is generated from real Repository content only
+(currently `[]`, since the Repository is still genuinely empty). Dashboard/AI Tutor Router/Review
+Center reading this Repository, the Display Contract, non-`single_choice` Exam-Mode support, and
+Material Card's `出版社`/`關鍵字`/`教材來源` fields all remain future scope.
