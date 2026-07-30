@@ -54,6 +54,25 @@ AHS.QuestionRuntime = (function () {
     delete store[examId];
   }
 
+  /* importQuestions(examId, questions) — Sprint AI-103 · Content Import
+     Runtime, Runtime Extension (proposed and applied per that Sprint's
+     own "若 API 不足：請提出 Runtime Extension，不得自行建立 Parallel
+     Runtime" rule). Purely additive: stores an already-built question
+     array directly under examId, the same store loadForExam() already
+     writes to and every existing read method (hasExam/getSet/count/
+     getQuestion/getQuestionById) already reads from — so imported
+     questions become visible through 100% existing, unmodified read
+     APIs. Does NOT call AHS.QuestionBank (that remains loadForExam()'s
+     sole route, completely untouched); this is the one gap
+     loadForExam() cannot cover, since QuestionBank.generate() has no
+     way to accept externally-supplied question content. Every
+     pre-existing method above and their behavior are unchanged. */
+  function importQuestions(examId, questions) {
+    var list = Array.isArray(questions) ? questions : [];
+    store[examId] = clone(list);
+    return clone(store[examId]);
+  }
+
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -71,6 +90,7 @@ AHS.QuestionRuntime = (function () {
     getQuestion: getQuestion,
     getQuestionById: getQuestionById,
     clear: clear,
+    importQuestions: importQuestions,
     reset: reset
   };
 })();

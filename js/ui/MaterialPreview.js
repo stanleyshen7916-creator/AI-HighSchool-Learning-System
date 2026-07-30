@@ -153,6 +153,16 @@ AHS.MaterialPreview = (function () {
     });
     footChildren.push(dlBtn);
 
+    /* Sprint AI-105 · Task AI105-06: 教材內容 section — renders the
+       material's real `content` field (Markdown/HTML), additive,
+       placed before the AI-derived sections below since it is the
+       source content those sections are derived from. No new Runtime;
+       reads the same AHS.MaterialRuntime record every other section
+       here already reads. */
+    if (AHS.MaterialContentView && typeof AHS.MaterialContentView.create === "function") {
+      bodyChildren.push(AHS.MaterialContentView.create(item).node);
+    }
+
     /* EO-S8.3.004: AI 重點整理 section. Rendered from the Summary
        capability's output; the「開始 AI 分析」button coordinates through
        AITutorService without re-parsing the material. */

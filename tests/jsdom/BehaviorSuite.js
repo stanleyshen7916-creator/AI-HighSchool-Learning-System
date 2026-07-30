@@ -654,10 +654,16 @@ console.log("\n[21] EO-S8.3.004 — AI 重點整理 UI 串接（Material Preview
 
   const overlay = A.MaterialPreview.open(mat, function () {});
   doc.body.appendChild(overlay);
-  check("預覽含「AI 重點整理」區塊", !!overlay.querySelector(".mat-summary"));
+  /* Sprint AI-105 Task AI105-06 added an additive 教材內容 section before
+     this one, reusing the same .mat-summary__heading class (same pattern
+     MaterialQuestionCard/AIGatewayPanel already use) — scope the query
+     to the real AI 重點整理 section via its aria-label rather than
+     assuming it is the first .mat-summary__heading in document order. */
+  const summarySection = overlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("預覽含「AI 重點整理」區塊", !!summarySection);
   check("區塊標題為「AI 重點整理」",
-    (overlay.querySelector(".mat-summary__heading") || {}).textContent === "AI 重點整理");
-  const btn = overlay.querySelector(".mat-summary__btn");
+    (summarySection && summarySection.querySelector(".mat-summary__heading") || {}).textContent === "AI 重點整理");
+  const btn = summarySection.querySelector(".mat-summary__btn");
   check("提供「開始 AI 分析」按鈕", !!btn && btn.textContent === "開始 AI 分析");
   check("分析前尚無 Summary（未自動產生）",
     A.KnowledgeSummaryRuntime.getSummaryByMaterial(mat.id) === null);
