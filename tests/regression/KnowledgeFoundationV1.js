@@ -49,8 +49,9 @@ check("內容節點五型已由 EO-S8.0-004 解除",
     KG.addNode({ type: t, label: "x", content: "x", folderId: "fd_1", documentType: "material",
       sourceFileId: mat.id, sourcePage: null, sourceParagraph: null }) === null);
 });
-check("內容節點缺 folderId → 拒收（Folder Scope）",
-  KG.addNode({ type: "concept", label: "x", documentType: "material", sourceFileId: mat.id, sourcePage: null, sourceParagraph: null }) === null);
+check("內容節點未指定 folderId → 正常收存，正規化為 null（AI107-01：無 Folder 為合法未分類 Study Scope）",
+  (() => { var n = KG.addNode({ type: "concept", label: "folder-less-node-2", documentType: "material", sourceFileId: mat.id, sourcePage: null, sourceParagraph: null });
+           return n !== null && n.folderId === null; })());
 check("Skeleton 建立：source_file + document_type + subject + chapter",
   (() => { const n = KG.queryByMaterial(mat.id).map(x => x.type);
            return ["source_file","document_type","subject","chapter"].every(t => n.includes(t)); })());

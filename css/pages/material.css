@@ -365,34 +365,6 @@
 .recent-file__dl { flex: 0 0 auto; color: var(--text-faint); display: flex; }
 .recent-file__dl svg { width: 18px; height: 18px; }
 
-/* ---- Subject Tabs (M003) ----------------------------------------------
-   UI only — scrollable horizontal tab list. Pill styling matches the
-   existing .chapter-filter__item visual language (same tokens), just
-   applied in a horizontal, scrollable row. */
-.mat-subject-tabs { width: 100%; }
-.mat-subject-tabs__list {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  padding-bottom: 2px;
-}
-.mat-subject-tabs__item {
-  flex: 0 0 auto;
-  padding: 8px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  background: var(--card);
-  font: inherit;
-  font-size: 14px;
-  color: var(--text);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.mat-subject-tabs__item:hover { background-color: var(--bg); }
-.mat-subject-tabs__item.is-active { background-color: var(--brand-soft); color: var(--brand); border-color: var(--brand-line); font-weight: 700; }
-
 /* ---- Favorite (M007) --------------------------------------------------
    Reuses the existing .mat-card__act icon-button pattern verbatim —
    only an "is-active" visual state is added, matching the same

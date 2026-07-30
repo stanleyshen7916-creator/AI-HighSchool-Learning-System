@@ -18,8 +18,11 @@
    Summary → Question through the Knowledge Graph.
 
    Validation gates (any failure stops the run, zero nodes written):
-     Folder 存在 · Material 存在 · DocumentType 合法 · AnalysisResult
-     合法 · Source Traceability 完整.
+     Material 存在 · DocumentType 合法 · AnalysisResult 合法 ·
+     Source Traceability 完整. Folder is OPTIONAL (AI107-01): a
+     material with no folderId proceeds as a valid unscoped Study
+     Scope; a material whose folderId points at a Folder that no
+     longer exists still fails, as a real data-integrity error.
    Exam / answer-key files stop at "exam_bank": their原始題目 enter
    verbatim through AHS.ExamBankRuntime.ingest() (不得重新產題), never
    through generation.
@@ -47,15 +50,23 @@ AHS.KnowledgePipeline = (function () {
       result.errors.push("material 不存在"); return result;
     }
 
-    /* 2 · Folder 存在（Folder Scope：不得跨 Folder 建立節點） */
+    /* 2 · Folder（Folder Scope：不得跨 Folder 建立節點）
+       AI107-01: Folder is OPTIONAL. A material with no folderId is a
+       valid, deliberate "unscoped" Study Scope — it never crosses into
+       any real Folder's own scope (queryByFolder(null) only ever
+       returns other unscoped nodes). Only a material that DOES
+       reference a folderId pointing at a Folder that no longer exists
+       is a real error; materials with no Folder proceed unchanged. */
     result.stage = "folder";
     result.folderId = mat.folderId || null;
-    var folder = (result.folderId && AHS.FolderRuntime && typeof AHS.FolderRuntime.getFolder === "function")
-      ? AHS.FolderRuntime.getFolder(result.folderId) : null;
-    if (!folder) {
-      result.status = "failed";
-      result.errors.push("教材未歸屬有效的 Folder（Study Scope）—— 依 Analysis Pipeline Baseline 不得分析");
-      return result;
+    if (result.folderId) {
+      var folder = (AHS.FolderRuntime && typeof AHS.FolderRuntime.getFolder === "function")
+        ? AHS.FolderRuntime.getFolder(result.folderId) : null;
+      if (!folder) {
+        result.status = "failed";
+        result.errors.push("教材所屬 Folder（Study Scope）不存在 —— 依 Analysis Pipeline Baseline 不得分析");
+        return result;
+      }
     }
 
     /* 3 · Document Classifier（DocumentType 合法） */
