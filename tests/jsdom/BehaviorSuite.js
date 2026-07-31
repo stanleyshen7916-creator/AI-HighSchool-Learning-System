@@ -443,14 +443,8 @@ console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統�
   for (const page of ["index.html", "materials.html", "quiz.html", "wrongbook.html", "dashboard.html", "tutor.html"]) {
     const { window, consoleErrors } = loadPage(page, {});
     const text = window.document.body.textContent;
-    /* HOTFIX-001 Repository Loader Integration: index.html now always has
-       >=1 real Teaching Material Repository entry, so StudyStats honestly
-       renders "較上週 +0 小時" (deltaHours is always 0 — no historical
-       baseline — never fabricated, see AppHome.js buildStudyStatsModel()).
-       Only a *fabricated non-zero* delta (the old Mock literals this check
-       was written to catch) should fail this — "+0" is real, not Mock. */
     check(page + "：零模擬內容（無假教材/假測驗/假錯題/假統計/假通知/陳同學）",
-      !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+[1-9]/.test(text));
+      !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+/.test(text));
     check(page + "：Console Error = 0", consoleErrors.length === 0);
   }
   // 首頁 Review Widget（資料來自 ReviewModel）
@@ -499,11 +493,7 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
   const { window, consoleErrors } = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": twoMaterials } });
   const doc = window.document;
   const cards = doc.querySelectorAll(".mat-card");
-  /* HOTFIX-001 Repository Loader Integration: materials.html now also
-     loads 1 real entry from the Teaching Material Repository on every
-     init (TeachingMaterialLoader.load(), title/subject don't collide
-     with the 2 seeded materials here) — 2 seeded + 1 Repository = 3. */
-  check("首次載入即渲染全部教材卡片（2 張種子 + 1 張 Repository = 3 張，無需切換）", cards.length === 3);
+  check("首次載入即渲染全部教材卡片（2 張，無需切換）", cards.length === 2);
   check("教材標題正確顯示", /牛頓運動定律/.test(doc.body.textContent));
   check("Empty State 未誤顯示", !doc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
   check("Console errors = 0（首次載入）", consoleErrors.length === 0);
@@ -512,32 +502,17 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
   /* 切換科目分頁後張數不變 —— 證明首次已完整初始化，非靠事件補救。 */
   const tab = doc.querySelector("[data-subject]");
   if (tab) { tab.click(); }
-  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === 3);
+  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === 2);
 }
 
 console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
 {
-  /* HOTFIX-001 Repository Loader Integration: a fresh materials.html
-     session is no longer ever truly empty — TeachingMaterialLoader.load()
-     guarantees >=1 real Repository material on every load, so Material
-     Center must show it (not the Empty State) here. */
   const { window, consoleErrors } = loadPage("materials.html", {});
   const doc = window.document;
-  check("Repository 教材已自動載入（1 張）", doc.querySelectorAll(".mat-card").length === 1);
-  check("Empty State 不應誤顯示（Repository 已提供教材）",
-    !doc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
-  check("Console errors = 0（Repository 自動載入）", consoleErrors.length === 0);
-
-  /* Empty State code path itself must still work whenever MaterialRuntime
-     genuinely has zero items (e.g. after the user deletes every material)
-     — decoupled here from the Repository Loader, which only runs once at
-     page-init, not on every re-render. */
-  window.AHS.MaterialRuntime.reset();
-  const emptyRoot = window.AHS.MaterialCenter.create();
-  doc.body.appendChild(emptyRoot);
-  check("零教材時卡片為 0（Runtime 重置後）", emptyRoot.querySelectorAll(".mat-card").length === 0);
+  check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
   check("顯示正式 Empty State（非空白頁）",
-    !!emptyRoot.querySelector(".mat-empty") && !emptyRoot.querySelector(".mat-empty[hidden]"));
+    !!doc.querySelector(".mat-empty") && !doc.querySelector(".mat-empty[hidden]"));
+  check("Console errors = 0（空狀態）", consoleErrors.length === 0);
 }
 
 console.log("\n[17] HF-8.2.001 · HF-002 — 跨頁後仍可下載（Download Flow 位元組保存）");

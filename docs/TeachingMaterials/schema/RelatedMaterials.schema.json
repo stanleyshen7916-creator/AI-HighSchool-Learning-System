@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TeachingMaterials/RelatedMaterials.schema.json",
+  "title": "Teaching Material Related Materials",
+  "description": "Per EO-S1.1-001 v1.1. Links to other materialIds already in this Repository covering the same knowledge, established only on a genuine overlap found during analysis — never speculative. An existing, closely-related material is linked here, not duplicated ('不得重複建立教材').",
+  "type": "object",
+  "required": ["materialId", "related"],
+  "properties": {
+    "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+    "related": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["materialId", "reason"],
+        "properties": {
+          "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+          "reason": { "type": "string", "description": "The real, specific knowledge overlap found — never a generic placeholder" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

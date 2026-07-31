@@ -21,6 +21,7 @@
   <script src="js/core/Icons.js"></script>
   <script src="js/core/PersistenceAdapter.js"></script>
   <script src="js/data/AppConfig.js"></script>
+  <script src="js/data/TeachingMaterialData.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
   <script src="js/ui/MaterialHeader.js"></script>
@@ -35,17 +36,12 @@
   <script src="js/ui/MaterialEmptyState.js"></script>
   <script src="js/ui/MaterialLoadingState.js"></script>
   <script src="js/runtime/MaterialRuntime.js"></script>
-  <!-- HOTFIX-001 Repository Loader Integration: Repository (Source of Truth)
-       -> MaterialRuntime bridge. Must load after MaterialRuntime.js and
-       before AppMaterials.js, which calls TeachingMaterialLoader.load(). -->
-  <script src="data/materials/MaterialRepositoryIndex.js"></script>
-  <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
-  <script src="js/runtime/TeachingMaterialLoader.js"></script>
   <script src="js/parser/MaterialParser.js"></script>
   <script src="js/parser/KnowledgeBuilder.js"></script>
   <script src="js/runtime/KnowledgeRuntime.js"></script>
   <script src="js/parser/SummaryGenerator.js"></script>
   <script src="js/runtime/SummaryRuntime.js"></script>
+  <script src="js/runtime/TeachingMaterialLoader.js"></script>
   <script src="js/parser/QuestionGenerator.js"></script>
   <script src="js/runtime/LearningQuestionRuntime.js"></script>
   <!-- Sprint AI-015C: Question Provider Bridge Script Wiring — Schema v1.0

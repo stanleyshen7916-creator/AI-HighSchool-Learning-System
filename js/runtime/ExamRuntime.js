@@ -69,6 +69,55 @@ AHS.ExamRuntime = (function () {
     return clone(session);
   }
 
+  /* startFromExam(examId, meta) — Sprint v1.6 Module C, additive Runtime
+     Extension (same sanctioned pattern as Sprint AI-103's
+     QuestionRuntime.importQuestions(): "若 API 不足：請提出 Runtime
+     Extension，不得自行建立 Parallel Runtime"). Unlike start(), this
+     does NOT call buildExamId()/QuestionRuntime.loadForExam() — it never
+     touches QuestionBank.generate() at all — it creates a RUNNING
+     session directly for an examId whose question set was already
+     written to QuestionRuntime by someone else (here,
+     TeachingMaterialLoader.js via importQuestions()). meta supplies the
+     session's display fields (subject/title/chapter/grade) — the caller
+     is responsible for these being real, not fabricated. Returns null
+     (same "can't start" contract as start()) if another exam is already
+     running, or if QuestionRuntime has no question set for this examId
+     — never creates an empty/broken session. start()/goTo()/next()/
+     prev()/finish() are completely unmodified; sessions created either
+     way are indistinguishable to every other function in this file. */
+  function startFromExam(examId, meta) {
+    if (activeExamId && sessions[activeExamId] && sessions[activeExamId].status === STATES.RUNNING) {
+      return null;
+    }
+    if (!examId || !AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function" ||
+        !AHS.QuestionRuntime.hasExam(examId)) {
+      return null;
+    }
+    var m = meta || {};
+    var session = {
+      examId: examId,
+      subject: m.subject || "other",
+      title: m.title || "未命名測驗",
+      chapter: m.chapter || "",
+      grade: m.grade || "高一",
+      status: STATES.DRAFT,
+      currentIndex: 0,
+      totalQuestions: 0,
+      startedAt: null,
+      finishedAt: null
+    };
+    sessions[examId] = session;
+
+    session.status = STATES.READY;
+    session.totalQuestions = AHS.QuestionRuntime.count(examId);
+
+    session.status = STATES.RUNNING;
+    session.startedAt = new Date().toISOString();
+    activeExamId = examId;
+
+    return clone(session);
+  }
+
   function isRunning() {
     return !!(activeExamId && sessions[activeExamId] && sessions[activeExamId].status === STATES.RUNNING);
   }
@@ -127,6 +176,7 @@ AHS.ExamRuntime = (function () {
   return {
     STATES: STATES,
     start: start,
+    startFromExam: startFromExam,
     isRunning: isRunning,
     getCurrent: getCurrent,
     getById: getById,
