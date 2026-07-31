@@ -23,6 +23,12 @@
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
   <script src="js/runtime/MaterialRuntime.js"></script>
+  <!-- HOTFIX-001 Repository Loader Integration: Repository (Source of Truth)
+       -> MaterialRuntime bridge. Must load after MaterialRuntime.js and
+       before AppSummary.js, which calls TeachingMaterialLoader.load(). -->
+  <script src="data/materials/MaterialRepositoryIndex.js"></script>
+  <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
+  <script src="js/runtime/TeachingMaterialLoader.js"></script>
   <script src="js/runtime/SummaryRuntime.js"></script>
   <script src="js/components/SummaryCenter.js"></script>
   <script src="js/pages/AppSummary.js"></script>

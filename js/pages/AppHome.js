@@ -207,6 +207,12 @@ window.AHS = window.AHS || {};
     var app = document.getElementById("app");
     if (!app) { return; }
 
+    /* HOTFIX-001 Repository Loader Integration: load Repository content
+       into MaterialRuntime before buildHome() reads it. */
+    if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.load === "function") {
+      AHS.TeachingMaterialLoader.load();
+    }
+
     var shell = AHS.AppShell.create(AHS.AppConfig, {
       onNavigate: function () { /* Mock navigation — single-page prototype. */ }
     });
