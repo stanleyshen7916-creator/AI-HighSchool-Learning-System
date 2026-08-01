@@ -68,7 +68,41 @@
    here (not fabricated into fake multiple-choice content) — the
    Question Bank record still exists in full inside the Repository/
    TeachingMaterialData.js; only what QuestionRuntime.importQuestions()
-   is fed for THIS Exam-Mode path is filtered. */
+   is fed for THIS Exam-Mode path is filtered.
+
+   ---------------------------------------------------------------------
+   HOTFIX-002 (post-PAT-FAIL) — bridging a second, independently-built
+   Repository that merged into main in parallel with this one.
+
+   Evidence: `git log` shows `data/materials/MaterialRepositoryIndex.js`
+   (defines AHS.MaterialRepository, a completely separate store —
+   register()/getById()/list()/findBySubject()/findByChapter()/
+   findByKeyword() — from a different branch's own EO) and
+   `data/materials/CivicsG10Ch5to6Exam20260730.js` (one real, self-
+   registering material) were merged via PR #3/#4/#5, alongside a
+   "HOTFIX-001" commit that tried to add its OWN
+   js/runtime/TeachingMaterialLoader.js exposing `load()` — colliding at
+   the exact same file path as this one. The merge conflict resolution
+   kept this file's content (initialize()/resolveExamMeta()); the other
+   branch's actual bridging logic was lost, while its call sites
+   (js/pages/AppHome.js, AppSummary.js, AppLearning.js — each guarded by
+   `typeof AHS.TeachingMaterialLoader.load === "function"`) survived and
+   silently no-op today, matching the reported PAT-FAIL exactly:
+   AHS.MaterialRepository has real data, but nothing reads it.
+
+   Resolution: rather than removing either Repository or rewriting the
+   other branch's already-merged, real, non-fabricated content, this
+   file now bridges BOTH — `load()` is added as a full synonym of
+   initialize() (same guard, same idempotency), and both now also walk
+   AHS.MaterialRepository.list() when that global exists, converting
+   each record via a second, parallel set of functions below (kept
+   fully separate from the Package-shaped functions above — different
+   source schema, different origin vocabulary — see judgment calls in
+   loadMaterialRepositoryEntry()'s own comment). TeachingMaterialAdapter.js
+   is untouched: it remains scoped to this file's OWN docs/TeachingMaterials/
+   Package format only, per its own "不得修改 TeachingMaterialAdapter API"
+   constraint — this bridge is Loader-local Wiring, the same category of
+   change Sprint v1.6 already established as in-scope here. */
 window.AHS = window.AHS || {};
 AHS.TeachingMaterialLoader = (function () {
   "use strict";
@@ -97,19 +131,34 @@ AHS.TeachingMaterialLoader = (function () {
     return copy;
   }
 
-  /* Only runs the one time a Package is first resolved to a real
-     MaterialRuntime id — SummaryRuntime is sessionStorage-persisted just
-     like MaterialRuntime, so re-adding on every page visit would
-     duplicate it the same way. */
+  /* HOTFIX-002 fix: gated on "does a Summary already exist for this
+     MaterialRuntime id" (via findByMaterialId()), not "did THIS call just
+     create the MaterialRuntime record" — the two are NOT equivalent.
+     learning.html (one of the 3 pages HOTFIX-001 wired to call load())
+     does not <script>-tag SummaryRuntime.js at all; if a user's
+     session-first page happened to be one lacking SummaryRuntime.js
+     (materials.html always has it, but a bare AHS.MaterialRuntime.add()
+     call elsewhere would not), the old "only on first id-resolution"
+     gate would have permanently skipped the Summary for that session,
+     even after navigating to a page that DOES have SummaryRuntime.js.
+     Checking real downstream state instead of a proxy is a general
+     fix — applies to every page/entry, not just the one that surfaced
+     it in testing. */
   function loadSummary(entry, runtimeMaterialId) {
-    if (!entry.summary || !AHS.SummaryRuntime || typeof AHS.SummaryRuntime.add !== "function") { return; }
+    if (!entry.summary || !AHS.SummaryRuntime ||
+        typeof AHS.SummaryRuntime.add !== "function" ||
+        typeof AHS.SummaryRuntime.findByMaterialId !== "function") { return; }
+    if (AHS.SummaryRuntime.findByMaterialId(runtimeMaterialId).length) { return; }
     var summary = shallowClone(entry.summary);
     summary.materialId = runtimeMaterialId;
     AHS.SummaryRuntime.add(summary);
   }
 
   function resolveMaterialId(entry, idMap) {
-    if (idMap[entry.materialId]) { return idMap[entry.materialId]; }
+    if (idMap[entry.materialId]) {
+      loadSummary(entry, idMap[entry.materialId]);
+      return idMap[entry.materialId];
+    }
     if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return null; }
     var record = AHS.MaterialRuntime.add(entry.material || {});
     if (!record || !record.id) { return null; }
@@ -192,31 +241,44 @@ AHS.TeachingMaterialLoader = (function () {
   /* resolveExamMeta(examId) — Sprint v1.6 Module C: quiz.html's direct
      entry needs real subject/title/chapter/grade to pass into
      ExamRuntime.startFromExam() (never fabricated). Reverses examId ->
-     runtimeMaterialId -> (via the persisted id map) packageMaterialId ->
-     (via AHS.TeachingMaterialData, already <script>-tagged on quiz.html
-     since Sprint v1.4) the real material's own fields. Returns null if
-     any step fails — the caller falls back to the normal Exam Mode list,
-     never a fabricated session. */
+     runtimeMaterialId -> (via the persisted id map) sourceId -> the real
+     material's own fields. HOTFIX-002: sourceId may belong to either
+     source — AHS.TeachingMaterialData (this file's own Package track) or
+     AHS.MaterialRepository (the other, already-merged track) — tried in
+     that order. Returns null if any step fails — the caller falls back
+     to the normal Exam Mode list, never a fabricated session. */
   function resolveExamMeta(examId) {
     var match = /^teaching_material_(.+)$/.exec(examId || "");
     if (!match) { return null; }
     var runtimeMaterialId = match[1];
     var idMap = loadIdMap();
-    var packageMaterialId = null;
-    Object.keys(idMap).forEach(function (pkgId) {
-      if (idMap[pkgId] === runtimeMaterialId) { packageMaterialId = pkgId; }
+    var sourceId = null;
+    Object.keys(idMap).forEach(function (id) {
+      if (idMap[id] === runtimeMaterialId) { sourceId = id; }
     });
-    if (!packageMaterialId) { return null; }
+    if (!sourceId) { return null; }
+
     var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
     var entry = null;
-    entries.forEach(function (e) { if (e && e.materialId === packageMaterialId) { entry = e; } });
-    if (!entry || !entry.material) { return null; }
-    return {
-      subject: entry.material.subject,
-      title: entry.material.title,
-      chapter: entry.material.chapter,
-      grade: entry.material.grade
-    };
+    entries.forEach(function (e) { if (e && e.materialId === sourceId) { entry = e; } });
+    if (entry && entry.material) {
+      return {
+        subject: entry.material.subject,
+        title: entry.material.title,
+        chapter: entry.material.chapter,
+        grade: entry.material.grade
+      };
+    }
+
+    if (AHS.MaterialRepository && typeof AHS.MaterialRepository.getById === "function") {
+      var record = AHS.MaterialRepository.getById(sourceId);
+      if (record) {
+        var meta = record.metadata || {};
+        var summary = record.summary || {};
+        return { subject: meta.subject, title: summary.title, chapter: meta.chapter, grade: meta.grade };
+      }
+    }
+    return null;
   }
 
   function loadEntry(entry, idMap) {
@@ -226,17 +288,144 @@ AHS.TeachingMaterialLoader = (function () {
     loadQuestions(entry, runtimeMaterialId);
   }
 
-  /* initialize() — safe to call on every page, safe to call more than
-     once per page. No-ops entirely when AHS.TeachingMaterialData is
-     absent/empty (Repository genuinely empty, or this page doesn't ship
-     the generated data file) — the existing Empty State is untouched. */
-  function initialize() {
+  /* ---------------------------------------------------------------------
+     HOTFIX-002: AHS.MaterialRepository bridge (data/materials/*.js's own
+     record shape — real field names confirmed by reading
+     data/materials/CivicsG10Ch5to6Exam20260730.js, not guessed). Kept
+     fully separate from the Package-shaped functions above. */
+
+  function repoMaterialPartial(record) {
+    var meta = record.metadata || {};
+    var summary = record.summary || {};
+    var partial = { folderId: null };
+    if (meta.subject) { partial.subject = meta.subject; } /* already an AHS.Subjects key, e.g. "civics" — this Repository's own convention, unlike the Package track's Chinese-name convention */
+    if (meta.grade) { partial.grade = meta.grade; }
+    if (meta.chapter) { partial.chapter = meta.chapter; }
+    if (meta.unit) { partial.category = meta.unit; }
+    if (meta.createdAt) { partial.date = meta.createdAt; }
+    if (summary.title) { partial.title = summary.title; } /* this record shape HAS a real title field, unlike Package metadata — no derivation judgment call needed here */
+    return partial;
+  }
+
+  /* Judgment calls (flagged, not specified by either branch's own EO):
+     coreConcepts (array of {term,definition}) flattened to "term：definition"
+     strings — SummaryRuntime.coreConcepts expects plain strings, and this
+     is the only lossless flattening of two real fields, no invention.
+     summary.definitions passes straight through (already plain strings).
+     summary.keyPoints -> memorize, reusing Sprint AI-103 ImportRuntime.js's
+     own precedent for the identical "重點" concept. commonMistakes
+     (concept/misconception/...) -> pitfalls as "concept：misconception",
+     the closest real match to "易錯重點". reviewSuggestions left unset
+     (no equivalent field exists) — SummaryRuntime defaults it to []. */
+  function repoSummaryRecord(record, runtimeMaterialId) {
+    var meta = record.metadata || {};
+    var summary = record.summary || {};
+    var out = {
+      materialId: runtimeMaterialId,
+      coreConcepts: Array.isArray(record.coreConcepts)
+        ? record.coreConcepts.map(function (c) { return (c && c.term ? c.term + "：" : "") + ((c && c.definition) || ""); })
+        : [],
+      definitions: Array.isArray(summary.definitions) ? summary.definitions.slice() : [],
+      pitfalls: Array.isArray(record.commonMistakes)
+        ? record.commonMistakes.map(function (m) { return (m && m.concept ? m.concept + "：" : "") + ((m && m.misconception) || ""); })
+        : [],
+      memorize: Array.isArray(summary.keyPoints) ? summary.keyPoints.slice() : []
+    };
+    if (meta.subject) { out.subject = meta.subject; }
+    if (meta.grade) { out.grade = meta.grade; }
+    if (meta.chapter) { out.chapter = meta.chapter; }
+    if (meta.unit) { out.section = meta.unit; }
+    if (summary.title) { out.title = summary.title; }
+    return out;
+  }
+
+  /* This Repository's own questionBank.singleChoice entries already carry
+     options as {key,text} and correctAnswer as a key — the exact shape
+     AutoGrader.grade()/QuestionCard.js need, no reshaping required (this
+     branch's own EO apparently built directly against that shape).
+     fillIn/trueFalse are excluded here for the same honest reason as the
+     Package track: js/ui/QuestionCard.js only renders multiple-choice —
+     not fabricated into fake options. subject still validated against
+     AHS.Subjects defensively (never trust an upstream file blindly, even
+     a real, human-reviewed one) — QuestionCard.js has no fallback and
+     would throw on an unmapped key. */
+  function repoExamCompatibleQuestions(record, runtimeMaterialId) {
+    var meta = record.metadata || {};
+    var subjectKey = (AHS.Subjects && meta.subject && AHS.Subjects[meta.subject]) ? meta.subject : null;
+    if (!subjectKey) { return []; }
+    var bank = record.questionBank || {};
+    var singleChoice = Array.isArray(bank.singleChoice) ? bank.singleChoice : [];
+    var compatible = [];
+    singleChoice.forEach(function (q) {
+      if (!q || !Array.isArray(q.options) || !q.options.length || !q.correctAnswer) { return; }
+      compatible.push({
+        id: q.id,
+        index: compatible.length + 1,
+        subject: subjectKey,
+        text: q.text,
+        type: "single_choice",
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        knowledgePoint: q.knowledgePoint || meta.chapter || "",
+        explanation: q.explanation || "",
+        materialId: runtimeMaterialId,
+        questionSource: q.origin === "exam-transcript-verified" ? "ORIGINAL" : "AI_GENERATED",
+        origin: q.origin === "exam-transcript-verified" ? "Uploaded Material" : "AI"
+      });
+    });
+    return compatible;
+  }
+
+  /* Same fix as loadSummary() above: gated on real downstream state
+     (findByMaterialId()), not on "did this call just create the
+     MaterialRuntime record" — index.html/summary.html/learning.html
+     each independently call load(), and not all of them ship
+     SummaryRuntime.js (learning.html doesn't). */
+  function loadRepoSummary(record, runtimeMaterialId) {
+    if (!AHS.SummaryRuntime || typeof AHS.SummaryRuntime.add !== "function" ||
+        typeof AHS.SummaryRuntime.findByMaterialId !== "function") { return; }
+    if (AHS.SummaryRuntime.findByMaterialId(runtimeMaterialId).length) { return; }
+    AHS.SummaryRuntime.add(repoSummaryRecord(record, runtimeMaterialId));
+  }
+
+  function loadMaterialRepositoryEntry(record, idMap) {
+    if (!record || !record.id) { return; }
+    var runtimeMaterialId = idMap[record.id];
+    if (!runtimeMaterialId) {
+      if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return; }
+      var added = AHS.MaterialRuntime.add(repoMaterialPartial(record));
+      if (!added || !added.id) { return; }
+      runtimeMaterialId = added.id;
+      idMap[record.id] = runtimeMaterialId;
+      saveIdMap(idMap);
+    }
+    loadRepoSummary(record, runtimeMaterialId);
+    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
+    var examId = examIdFor(runtimeMaterialId);
+    if (typeof AHS.QuestionRuntime.hasExam === "function" && AHS.QuestionRuntime.hasExam(examId)) { return; }
+    var questions = repoExamCompatibleQuestions(record, runtimeMaterialId);
+    if (!questions.length) { return; }
+    AHS.QuestionRuntime.importQuestions(examId, questions);
+  }
+
+  function loadMaterialRepository(idMap) {
+    if (!AHS.MaterialRepository || typeof AHS.MaterialRepository.list !== "function") { return; }
+    AHS.MaterialRepository.list().forEach(function (record) { loadMaterialRepositoryEntry(record, idMap); });
+  }
+
+  /* load() / initialize() — safe to call on every page, safe to call
+     more than once per page (both HOTFIX-001's call sites and this
+     file's own use `load`/`initialize` respectively — both names now do
+     the same full work). No-ops entirely when neither
+     AHS.TeachingMaterialData nor AHS.MaterialRepository has anything —
+     the existing Empty State is untouched either way. */
+  function load() {
     if (initialized) { return; }
     initialized = true;
-    var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
-    if (!entries.length) { return; }
     var idMap = loadIdMap();
+    var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
     entries.forEach(function (entry) { loadEntry(entry, idMap); });
+    loadMaterialRepository(idMap);
   }
 
   /* reset() — test helper only; mirrors every Runtime's own reset(),
@@ -245,5 +434,5 @@ AHS.TeachingMaterialLoader = (function () {
     initialized = false;
   }
 
-  return { initialize: initialize, resolveExamMeta: resolveExamMeta, reset: reset };
+  return { initialize: load, load: load, resolveExamMeta: resolveExamMeta, reset: reset };
 })();

@@ -19,7 +19,19 @@ function check(name, cond) {
   else { fail++; failures.push(name); console.log("  FAIL  " + name); }
 }
 
-function loadPage(htmlFile, { seedSession } = {}) {
+/* excludeScripts (HOTFIX-002): substrings matched against each page's own
+   <script src> list — any match is skipped entirely. Added specifically
+   so tests that assert an exact, isolated MaterialRuntime/SummaryRuntime
+   state (an exact seeded card count, a true empty state, absence of any
+   rendered content) can opt out of data/materials/*.js's now-real,
+   permanently-committed Repository content (HOTFIX-002 finally wired
+   AHS.MaterialRepository into MaterialRuntime — see
+   js/runtime/TeachingMaterialLoader.js). That real content is exactly
+   what production should show; these specific tests were never about
+   it and would otherwise become fragile to every future real material
+   added to data/materials/ — excluding it here keeps their original,
+   already-correct assertions intact rather than loosening any of them. */
+function loadPage(htmlFile, { seedSession, excludeScripts } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const consoleErrors = [];
   const vconsole = new (require("jsdom").VirtualConsole)();
@@ -45,7 +57,8 @@ function loadPage(htmlFile, { seedSession } = {}) {
   // Execute the page's ordered scripts manually (runScripts outside-only
   // keeps subresource loading deterministic).
   const scripts = [...dom.window.document.querySelectorAll("script[src]")]
-    .map(s => s.getAttribute("src"));
+    .map(s => s.getAttribute("src"))
+    .filter(src => !(excludeScripts && excludeScripts.some(x => src.includes(x))));
   for (const src of scripts) {
     const code = fs.readFileSync(path.join(REPO, src), "utf8");
     window.eval(code);
@@ -229,6 +242,7 @@ console.log("\n[4] summary.html — Task 003: mandated pending copy (empty-conte
     coreConcepts: [], definitions: [], pitfalls: [], memorize: [], reviewSuggestions: []
   })], seq: 1 };
   const { window, consoleErrors } = loadPage("summary.html", {
+    excludeScripts: ["data/materials/"],
     seedSession: { "ahs:materialRuntime": materialSeed, "ahs:summaryRuntime": emptySummary }
   });
   const doc = window.document;
@@ -441,14 +455,14 @@ console.log("\n[9] EO-S6.9-002 — empty-content summary -> mandated Empty State
 console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統（零 Mock/Seed/Demo）");
 {
   for (const page of ["index.html", "materials.html", "quiz.html", "wrongbook.html", "dashboard.html", "tutor.html"]) {
-    const { window, consoleErrors } = loadPage(page, {});
+    const { window, consoleErrors } = loadPage(page, { excludeScripts: ["data/materials/"] });
     const text = window.document.body.textContent;
     check(page + "：零模擬內容（無假教材/假測驗/假錯題/假統計/假通知/陳同學）",
       !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+/.test(text));
     check(page + "：Console Error = 0", consoleErrors.length === 0);
   }
   // 首頁 Review Widget（資料來自 ReviewModel）
-  const { window } = loadPage("index.html", {});
+  const { window } = loadPage("index.html", { excludeScripts: ["data/materials/"] });
   const w = window.document.querySelector(".review-widget");
   check("首頁 Review Widget 渲染（今日待複習/已完成/總錯題）",
     !!w && /今日待複習/.test(w.textContent) && /已完成/.test(w.textContent) && /總錯題/.test(w.textContent));
@@ -490,7 +504,10 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
       fileType: "PDF", fileSize: "2.0 MB", folderId: null, file: null }
   ], folders: [], seq: 2, folderSeq: 0 };
 
-  const { window, consoleErrors } = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": twoMaterials } });
+  const { window, consoleErrors } = loadPage("materials.html", {
+    excludeScripts: ["data/materials/"],
+    seedSession: { "ahs:materialRuntime": twoMaterials }
+  });
   const doc = window.document;
   const cards = doc.querySelectorAll(".mat-card");
   check("首次載入即渲染全部教材卡片（2 張，無需切換）", cards.length === 2);
@@ -507,7 +524,7 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
 
 console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
 {
-  const { window, consoleErrors } = loadPage("materials.html", {});
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["data/materials/"] });
   const doc = window.document;
   check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
   check("顯示正式 Empty State（非空白頁）",
@@ -840,6 +857,46 @@ console.log("\n[23] EO-AI-012E — AI 重點整理 UI 串接（New Runtime，Sum
 
   check("AI Engine New Runtime UI 全流程 Console errors = 0", consoleErrors.length === 0);
   if (consoleErrors.length) { console.log("   errors:", consoleErrors.slice(0, 3)); }
+}
+
+console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialRepository 真實內容確實載入 MaterialRuntime（PAT FAIL 修正回歸測試）");
+{
+  /* Reproduces exactly what the reported PAT FAIL found broken:
+     window.AHS.TeachingMaterialData => [] / MaterialRuntime.list() => []
+     even though data/materials/CivicsG10Ch5to6Exam20260730.js is real,
+     committed content. Cross-page id-continuity (materials.html's
+     resolved id surviving into quiz.html) is NOT re-tested here — each
+     loadPage() call gets an isolated jsdom session/sessionStorage by
+     design, so that scenario can only be verified the way it already
+     was: a Node vm simulation sharing one sessionStorage mock across
+     simulated page loads (see docs/EO/HOTFIX-002 report). */
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  check("data/materials/*.js 已 register 真實教材", window.AHS.MaterialRepository.list().length === 1);
+  check("MaterialRuntime 確實載入該教材（非空陣列，對應 PAT FAIL 的核心症狀）", window.AHS.MaterialRuntime.list().length === 1);
+  check("Material Card 確實渲染真實教材標題", /公民與社會｜所有權、勞動三權與夫妻財產制、繼承 重點整理/.test(doc.body.textContent));
+  check("Console errors = 0（HOTFIX-002，materials.html）", consoleErrors.length === 0);
+  const rt = window.AHS.MaterialRuntime.list()[0];
+
+  /* quiz.html doesn't <script>-tag MaterialRuntime.js at all — by real
+     design (see quiz.html's own script list), so on its own it cannot
+     resolve a MaterialRuntime id. The real, intended user journey is
+     materials.html (or any MaterialRuntime.js-loading page) visited
+     first in the same browser tab, persisting the id via
+     PersistenceAdapter/sessionStorage, with quiz.html inheriting that
+     session afterward — exactly what carrying materials.html's real
+     sessionStorage forward here simulates. */
+  const carried = {};
+  for (let i = 0; i < window.sessionStorage.length; i++) {
+    const k = window.sessionStorage.key(i);
+    carried[k] = JSON.parse(window.sessionStorage.getItem(k));
+  }
+  const { window: quizWindow, consoleErrors: quizErrors } = loadPage("quiz.html", { seedSession: carried });
+  quizWindow.AHS.TeachingMaterialLoader.initialize();
+  const examId = "teaching_material_" + rt.id;
+  check("quiz.html 沿用同一 Session 也能將真實單選題匯入 QuestionRuntime", quizWindow.AHS.QuestionRuntime.hasExam(examId));
+  check("匯入題數與來源資料一致（6 題 singleChoice）", quizWindow.AHS.QuestionRuntime.getSet(examId).length === 6);
+  check("Console errors = 0（HOTFIX-002，quiz.html）", quizErrors.length === 0);
 }
 
 console.log("\n==============================");

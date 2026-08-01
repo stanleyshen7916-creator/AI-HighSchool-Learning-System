@@ -1,6 +1,15 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4 + Sprint v1.6
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4 + Sprint v1.6 + HOTFIX-002
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
+
+> **HOTFIX-002 note**: `origin/main` also contains a second, independently-built Teaching
+> Material Repository at `data/materials/` (`AHS.MaterialRepository`, defined in
+> `MaterialRepositoryIndex.js`) from a different branch, holding one real material
+> (`CivicsG10Ch5to6Exam20260730.js`). It uses a different schema and predates no coordination
+> with this directory. `js/runtime/TeachingMaterialLoader.js` now bridges **both** — this
+> directory's own Package format (below) and that one — into the same Runtimes side by side.
+> See `docs/EO/HOTFIX-002_PAT_FAIL_Repository_Reconciliation_Report.md` for the full story.
+> Nothing below this note describes that other Repository; it describes only this one.
 
 This directory is the Teaching Material Repository — the permanent, Git-versioned Source
 of Truth for teaching material analysis results, per EO-S1.1-001 v1.1 (established this
