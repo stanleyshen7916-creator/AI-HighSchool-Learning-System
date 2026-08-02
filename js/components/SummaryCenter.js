@@ -116,13 +116,37 @@ AHS.SummaryCenter = (function () {
     ]);
   }
 
+  /* 重點關鍵字標示: every section item is already either a plain sentence
+     or a Repository-derived "關鍵字：說明" string (see
+     js/runtime/TeachingMaterialLoader.js's own coreConcepts/commonMistakes
+     flattening) — when the full-width colon separator is present, the
+     part before it IS the real keyword the record itself identified, not
+     an invented one. Splitting it out to render in red only makes an
+     already-real distinction visible; sentences with no such separator
+     render exactly as before. */
+  function splitKeyword(text) {
+    var s = String(text || "");
+    var idx = s.indexOf("：");
+    if (idx <= 0 || idx > 24) { return null; }
+    return { keyword: s.slice(0, idx), rest: s.slice(idx) };
+  }
+
+  function keywordText(text) {
+    var parts = splitKeyword(text);
+    if (!parts) { return [el("span", { text: String(text) })]; }
+    return [
+      el("span", { class: "sum-kp__keyword", text: parts.keyword }),
+      el("span", { text: parts.rest })
+    ];
+  }
+
   function sectionList(sectionKey, icon, title, items) {
     var badge = sectionBadge(sectionKey);
     var body = (items && items.length)
       ? el("ol", { class: "sum-kp__list" }, items.map(function (text, i) {
           return el("li", { class: "sum-kp__item" }, [
             el("span", { class: "sum-kp__num", text: String(i + 1) }),
-            el("span", { class: "sum-kp__text", text: String(text) })
+            el("span", { class: "sum-kp__text" }, keywordText(text))
           ]);
         }))
       : el("p", { class: "sum-section__empty", text: "尚無資料" });
