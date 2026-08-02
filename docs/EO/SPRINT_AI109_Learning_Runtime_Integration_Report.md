@@ -192,7 +192,10 @@ verify`: PASS.
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR: #12, merged into `main`.
+- Merge commit: `62551f7530ca37f7d7168d992a454aaac5996c6f`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit (queued at merge
+  time); completes automatically, no further action needed.
 
 ## Acceptance (against this report's actual scope)
 
