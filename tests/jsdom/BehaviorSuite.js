@@ -1066,6 +1066,21 @@ console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示�
   check("五個區塊皆有真實資料，無任何空白／尚未建立文案", allHaveData);
 }
 
+console.log("\n[28] 學習總結 — 重點關鍵字紅色標示");
+{
+  const p1 = loadPage("materials.html", {});
+  const rt3 = p1.window.AHS.MaterialRuntime.list()[0];
+  const carried3 = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried3[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+  const { window } = loadPage("summary.html", { seedSession: carried3 });
+  const coreSection = window.document.querySelector('section[aria-label="① 核心概念"]');
+  const keywordSpans = coreSection ? coreSection.querySelectorAll(".sum-kp__keyword") : [];
+  check("核心概念：關鍵字（冒號前）以 .sum-kp__keyword 標示", keywordSpans.length > 0);
+  check("關鍵字文字為真實資料（非虛構），例：所有權的排他性", [...keywordSpans].some(s => s.textContent.includes("排他性")));
+  const firstItem = coreSection.querySelector(".sum-kp__text");
+  check("標示後完整文字內容不變（僅拆分顯示，未遺漏任何字）", firstItem.textContent.includes("："));
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

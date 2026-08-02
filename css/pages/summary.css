@@ -86,6 +86,7 @@
   display: flex; align-items: center; justify-content: center; margin-top: 1px;
 }
 .sum-kp__text { flex: 1 1 auto; font-size: 14px; line-height: 1.6; }
+.sum-kp__keyword { color: var(--danger, #e03131); font-weight: 700; }
 
 .sum-status { margin: 0; padding: 8px 12px; border-radius: 10px; background-color: var(--brand-soft); color: var(--brand-ink); font-size: 13px; font-weight: 600; }
 
