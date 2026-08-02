@@ -9,11 +9,12 @@
    — the repository's existing real completion-history Runtime — and
    passes the derived numbers in here as `stats`. This component does no
    Runtime access itself and creates no data of its own.
-   「今日待複習」has no due-date concept anywhere in the repository (same
-   acknowledged gap as Wrong Book's 今日待複習) and is fixed at 0 per PMO
-   ruling, not derived. If HistoryRuntime has no records yet (session
-   just started), 今日已完成/本週完成 legitimately show 0 — expected
-   behavior, not a bug.
+   Sprint AI-111 AI-609: 「今日待複習」is no longer fixed at 0 — AppReview.js
+   now passes AHS.StatisticsRuntime.dueForReview().length, a real count of
+   WrongBookRuntime entries not yet 已精熟 (AI-610's real correctStreak
+   field). If HistoryRuntime/WrongBookRuntime have no records yet (session
+   just started), all three legitimately show 0 — expected behavior, not
+   a bug.
    PascalCase component under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.ReviewHomeCard = (function () {
@@ -23,7 +24,11 @@ AHS.ReviewHomeCard = (function () {
   var STAT_DEFS = [
     { key: "dueToday", icon: "clock", label: "今日待複習", unit: "題" },
     { key: "doneToday", icon: "check", label: "今日已完成", unit: "題" },
-    { key: "doneWeek", icon: "fire", label: "本週完成", unit: "次" }
+    { key: "doneWeek", icon: "fire", label: "本週完成", unit: "次" },
+    /* Sprint AI-111 AI-609: real count of WrongBookRuntime entries that
+       have reached 已精熟 (AI-610's correctStreak >= 3) — same STAT_DEFS
+       pattern as the three existing entries above, no new markup. */
+    { key: "masteredReview", icon: "award", label: "已完成複習", unit: "題" }
   ];
 
   function hero() {

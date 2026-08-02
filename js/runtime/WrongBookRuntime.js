@@ -77,6 +77,11 @@ AHS.WrongBookRuntime = (function () {
         existing.errorCount += 1;
         existing.lastError = formatDate(now);
         existing.yourAnswer = w.yourAnswer;
+        /* AI-610 (Sprint AI-111): missing it again for real resets real
+           progress toward 已精熟 — same rule recordRetry() applies below,
+           kept consistent here so sync() and recordRetry() never disagree
+           on what "wrong again" means. */
+        existing.correctStreak = 0;
         touched.push(existing);
       } else {
         store.seq += 1;
@@ -101,7 +106,10 @@ AHS.WrongBookRuntime = (function () {
           explanation: w.explanation,
           errorCount: 1,
           lastError: formatDate(now),
-          bookmarked: false
+          bookmarked: false,
+          /* AI-610: real, persisted retry progress — see recordRetry()
+             below. 0 = never retried correctly since the last miss. */
+          correctStreak: 0
         };
         store.items.push(record);
         touched.push(record);
@@ -109,6 +117,29 @@ AHS.WrongBookRuntime = (function () {
     });
     persist();
     return clone(touched);
+  }
+
+  /* recordRetry(id, wasCorrect) — Sprint AI-111 AI-610: real, persisted
+     retry lifecycle. WrongBook.js's 立即重做 (re-answer) flow previously
+     only advanced a session-scoped, in-memory-only `masteryTracker` local
+     to that one file — invisible to any other page/Runtime and lost on
+     reload, so "答對 → 更新 WrongBookRuntime → 同步 Review/Statistics"
+     never actually happened. A correct retry now advances the record's
+     own real correctStreak (persisted); a wrong retry (sync() already
+     bumped errorCount/lastError above) resets it to 0 here too, so both
+     entry points agree. AHS.StatisticsRuntime derives 已完成複習/今日待
+     複習 straight from this real field — no second, parallel "mastery"
+     store anywhere. Additive function; sync/toggleBookmark/reset/etc. are
+     unchanged. */
+  function recordRetry(id, wasCorrect) {
+    for (var i = 0; i < store.items.length; i++) {
+      if (store.items[i].id === id) {
+        store.items[i].correctStreak = wasCorrect ? (store.items[i].correctStreak || 0) + 1 : 0;
+        persist();
+        return clone(store.items[i]);
+      }
+    }
+    return null;
   }
 
   function toggleBookmark(id) {
@@ -142,6 +173,7 @@ AHS.WrongBookRuntime = (function () {
     isEmpty: isEmpty,
     getById: getById,
     sync: sync,
+    recordRetry: recordRetry,
     toggleBookmark: toggleBookmark,
     reset: reset
   };

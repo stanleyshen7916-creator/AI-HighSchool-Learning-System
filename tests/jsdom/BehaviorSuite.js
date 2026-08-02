@@ -1358,6 +1358,111 @@ console.log("\n[33] Sprint AI-109 — Learning Runtime Integration（AI-601/602/
   check("Console errors = 0（Sprint AI-109 跨頁流程）", p1.consoleErrors.length === 0 && p2.consoleErrors.length === 0 && p3.consoleErrors.length === 0);
 }
 
+console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/611/612/613）");
+{
+  /* Full real cross-page loop, mirroring AI-613's own required flow:
+     教材 -> 開始測驗 -> 批改 -> 錯題 -> 複習(重新作答直到精熟) -> 首頁同步
+     -> AI Tutor 更新 -> 複習中心同步 -> 測驗中心同步. Every step loads a
+     FRESH page and carries only sessionStorage forward, exactly like a
+     real browser tab — the same technique [33] introduced, extended
+     across every page this Sprint touches. */
+  const p1 = loadPage("quiz.html", {});
+  const A1 = p1.window.AHS;
+  const materialId = A1.MaterialRuntime.list()[0].id;
+  const examId = "teaching_material_" + materialId;
+  const meta = A1.TeachingMaterialLoader.resolveExamMeta(examId) || {};
+  A1.ExamRuntime.startFromExam(examId, meta);
+  const qs = A1.QuestionRuntime.getSet(examId);
+  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
+  const finished = A1.ExamRuntime.finish(examId);
+  const graded = A1.AutoGrader.grade(finished);
+  A1.WrongBookRuntime.sync(graded);
+  A1.HistoryRuntime.record(graded);
+  const wrongId = A1.WrongBookRuntime.list()[0].id;
+
+  function carry(win) {
+    const out = {};
+    for (let i = 0; i < win.sessionStorage.length; i++) { const k = win.sessionStorage.key(i); out[k] = JSON.parse(win.sessionStorage.getItem(k)); }
+    return out;
+  }
+
+  /* AI-610: 重新作答 -> 答對 三次直到「已精熟」，透過真實 DOM 互動（點擊
+     立即重做 -> 選正確答案 -> 提交答案），非直接呼叫內部函式 —— 驗證的是
+     使用者實際看到、點擊的畫面，不是 Runtime 私有 API。 */
+  let carried = carry(p1.window);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const pw = loadPage("wrongbook.html", { seedSession: carried });
+    pw.window.document.body.appendChild(pw.window.AHS.WrongBook.create());
+    const item = pw.window.AHS.WrongBookRuntime.getById(wrongId);
+    pw.window.document.querySelector(".wb-row").click();
+    const redoBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("立即重做"));
+    redoBtn.click();
+    const correctOpt = [...pw.window.document.querySelectorAll(".wb-detail__option")].find(li => li.querySelector(".wb-detail__option-key").textContent === item.correctAnswer);
+    correctOpt.click();
+    const submitBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("提交答案"));
+    submitBtn.click();
+    if (attempt === 0) {
+      check("AI-610: 重新作答答對後，WrongBookRuntime 的 correctStreak 真實更新（非僅畫面局部狀態）",
+        pw.window.AHS.WrongBookRuntime.getById(wrongId).correctStreak === 1);
+      check("AI-610: 畫面狀態同步顯示「複習中」（來自真實 correctStreak，非 session-local tracker）",
+        pw.window.document.querySelector(".wb-detail__status").textContent === "複習中");
+    }
+    carried = carry(pw.window);
+  }
+  check("AI-610: 連續三次答對後 correctStreak >= 3，Runtime 真實記錄已精熟", (() => {
+    const final = loadPage("wrongbook.html", { seedSession: carried });
+    return final.window.AHS.WrongBookRuntime.getById(wrongId).correctStreak >= 3;
+  })());
+
+  /* AI-609: 複習中心同步 — 今日待複習歸零（唯一錯題已精熟）、已完成複習 = 1，
+     皆直接來自 WrongBookRuntime，非重新計算的第二份統計。 */
+  const pReview = loadPage("review.html", { seedSession: carried });
+  pReview.window.document.body.appendChild(pReview.window.AHS.ReviewHomeCard.create({
+    dueToday: pReview.window.AHS.StatisticsRuntime.dueForReview().length,
+    doneToday: 0, doneWeek: 0,
+    masteredReview: pReview.window.AHS.StatisticsRuntime.masteredReviewItems().length
+  }));
+  check("AI-609: 今日待複習歸零（唯一錯題已精熟，非固定 0）", pReview.window.AHS.StatisticsRuntime.dueForReview().length === 0);
+  check("AI-609: 已完成複習 = 1（真實來自 WrongBookRuntime.correctStreak）", pReview.window.AHS.StatisticsRuntime.masteredReviewItems().length === 1);
+  check("AI-609: 複習中心頁面真的渲染出「已完成複習」統計", pReview.window.document.body.textContent.includes("已完成複習"));
+
+  /* AI-611: 首頁同步 — AiTutorHomeCard 現在收到真實 model（非 Empty State），
+     內容包含真實已完成複習數字／建議文字，非 Mock／非固定文字。 */
+  const pHome = loadPage("index.html", { seedSession: carried });
+  pHome.window.document.body.appendChild(pHome.window.AHS.AiTutorHomeCard.create(
+    pHome.window.AHS.TutorMessage.build(pHome.window.AHS.StatisticsRuntime.learningContext())
+  ));
+  check("AI-611: 首頁 AI 巧巧老師卡片不再是空狀態（真實 Runtime 資料已產生建議）",
+    !pHome.window.document.body.textContent.includes("AI 老師尚無建議"));
+  check("AI-611: 建議內容提及真實已精熟題數", pHome.window.document.body.textContent.includes("已有 1 題錯題達到精熟"));
+
+  /* AI-612: AI Tutor（tutor.html）真實建議訊息，透過完整頁面 bootstrap
+     （AppTutor.js）而非手動組 model —— 驗證的是頁面真的會顯示，不只是
+     TutorMessage.build() 本身正確。 */
+  const pTutor = loadPage("tutor.html", { seedSession: carried });
+  pTutor.window.document.body.appendChild(pTutor.window.AHS.AiTutor.create());
+  check("AI-612: tutor.html 的訊息串真的包含真實建議文字（非僅罐頭回覆）",
+    pTutor.window.document.body.textContent.includes("已有 1 題錯題達到精熟"));
+
+  /* AI-602/608: 測驗中心同步 — 完成/精熟後，正式測驗與練習模式列表仍
+     一致反映真實資料，全流程走完未出現 Runtime 孤島。 */
+  const pQuiz = loadPage("quiz.html", { seedSession: carried });
+  pQuiz.window.document.body.appendChild(pQuiz.window.AHS.QuizCenter.create());
+  const finalRow = pQuiz.window.document.querySelector(".quiz-row");
+  check("AI-608: 測驗中心同步 — 完成/精熟後正式測驗列表仍正確反映真實完成狀態",
+    !!finalRow && finalRow.classList.contains("is-done"));
+
+  check("AI-613: 全流程無 Console errors（教材->測驗->批改->錯題->複習->首頁->AI Tutor->複習中心->測驗中心）",
+    p1.consoleErrors.length === 0 && pReview.consoleErrors.length === 0 &&
+    pHome.consoleErrors.length === 0 && pTutor.consoleErrors.length === 0 && pQuiz.consoleErrors.length === 0);
+
+  /* AI-613: 不得出現不一致資料 — 同一筆錯題在 WrongBookRuntime／複習中心／
+     測驗中心三處讀到的 correctStreak/mastered 狀態必須完全一致。 */
+  const wbFinal = pQuiz.window.AHS.WrongBookRuntime.getById(wrongId);
+  check("AI-613: 跨頁資料一致（WrongBookRuntime 為唯一真實來源，無重複/不一致資料）",
+    wbFinal.correctStreak >= 3 && pReview.window.AHS.StatisticsRuntime.masteredReviewItems()[0].id === wrongId);
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
