@@ -11,7 +11,10 @@
     "definitions": { "type": "array", "items": { "type": "string" }, "description": "重要定義" },
     "keywords": { "type": "array", "items": { "type": "string" }, "description": "關鍵字" },
     "keyPoints": { "type": "array", "items": { "type": "string" }, "description": "重點整理" },
-    "pitfalls": { "type": "array", "items": { "type": "string" }, "description": "易錯觀念" }
+    "pitfalls": { "type": "array", "items": { "type": "string" }, "description": "易錯觀念" },
+    "reviewSuggestions": {
+      "type": "array", "items": { "type": "string" }, "description": "複習建議 — 選填。Sprint AI-112 AI-702: formalizes a field this Repository's own downstream consumers (js/components/SummaryCenter.js) already needed and, until now, could only derive at render time when a Package genuinely had none. When the source material supports real review guidance, it belongs here, traceable to the material like every other array in this schema; omitted (not an empty-array placeholder) when the material doesn't support it."
+    }
   },
   "additionalProperties": false
 }

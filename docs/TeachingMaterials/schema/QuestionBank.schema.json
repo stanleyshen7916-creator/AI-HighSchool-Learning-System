@@ -43,7 +43,15 @@
           "page": { "type": ["integer", "null"], "description": "Real page number in the source material; null only when the material genuinely has none (e.g. a single-page handout)" },
           "section": { "type": ["string", "null"], "description": "Optional continuity field carried from EO-S1.1-001's original source-trace object — not in EO-S1.1-003's own field list, kept for extra traceability, never required" },
           "version": { "type": "string", "description": "Starts \"1\"; incremented if this specific question is later corrected/re-transcribed" },
-          "createdDate": { "type": "string", "format": "date-time" }
+          "createdDate": { "type": "string", "format": "date-time" },
+          "knowledgePoint": {
+            "type": "string",
+            "description": "選填。Sprint AI-112 AI-702: this question's own real knowledge point/concept, when the source material identifies one at question granularity (distinct from chapter-level metadata.chapter). Formalizes a field the data/materials/ track's own real material (CivicsG10Ch5to6Exam20260730.js) already carries per question — this schema previously had no equivalent, a real gap closed here, not invented."
+          },
+          "difficulty": {
+            "type": "string",
+            "description": "選填，此題本身的難度（區別於 metadata.json 的教材整體 difficulty）。同上，格式化既有真實用法，未新增資料。"
+          }
         },
         "additionalProperties": false
       }
