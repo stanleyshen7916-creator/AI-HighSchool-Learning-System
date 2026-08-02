@@ -157,4 +157,7 @@ regression group `[34]` (introduced Sprint AI-111, re-verified here) plus the ne
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR: #17, merged into `main`.
+- Merge commit: `7259053ec22b5ee9777fbc56dbdabb27da4004aa`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit; completes
+  automatically, no further action needed.
