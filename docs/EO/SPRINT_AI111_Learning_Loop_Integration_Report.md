@@ -203,7 +203,10 @@ actual user-facing flow. `PipelineRegression`: **6/6 PASS**. `npm run verify`: P
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR: #15, merged into `main`.
+- Merge commit: `35aacc16e2c21190a8942c8ab84f87f7fa6a077e`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit (queued at merge
+  time); completes automatically, no further action needed.
 
 ## Acceptance
 
