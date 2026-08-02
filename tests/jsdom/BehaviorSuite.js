@@ -899,6 +899,50 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
   check("Console errors = 0（HOTFIX-002，quiz.html）", quizErrors.length === 0);
 }
 
+console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個區塊皆正確 Render（PAT FAIL 修正回歸測試）");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  const A = window.AHS;
+  const item = A.MaterialRuntime.list()[0];
+
+  const overlay = A.MaterialPreview.open(item, function () {});
+  doc.body.appendChild(overlay);
+
+  const contentSection = overlay.querySelector('.mat-content[aria-label="教材內容"]');
+  check("① 教材內容：不再顯示「尚無可顯示的內容」", !!contentSection && !/此教材目前尚無可顯示的內容/.test(contentSection.textContent));
+  check("① 教材內容：顯示真實教材標題", !!contentSection && /所有權、勞動三權與夫妻財產制、繼承/.test(contentSection.textContent));
+
+  const summarySection = overlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("② AI 重點整理：直接顯示真實內容（無需點擊「開始 AI 分析」）", !!summarySection && !summarySection.querySelector(".mat-summary__btn"));
+  check("② AI 重點整理：內容為真實核心概念", !!summarySection && /所有權的排他性/.test(summarySection.textContent));
+
+  const questionSection = overlay.querySelector('.mat-question[aria-label="AI 練習題"]');
+  check("③ AI 練習題：直接顯示真實題目（無需點擊「產生 AI 題目」）", !!questionSection && !/^產生 AI 題目$/m.test([...questionSection.querySelectorAll(".mat-summary__btn")].map(b => b.textContent).join("\n")));
+  check("③ AI 練習題：顯示題數", !!questionSection && /共 6 題/.test(questionSection.textContent));
+  check("③ AI 練習題：顯示難度／考點", !!questionSection && /難度：/.test(questionSection.textContent) && /考點：/.test(questionSection.textContent));
+
+  const gwSummarySection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 重點整理"]');
+  check("④ AI Gateway 重點整理：誠實顯示「尚未建立」文案＋按鈕（Gateway 未部署，非造假）",
+    !!gwSummarySection && /尚未建立 Gateway 重點整理/.test(gwSummarySection.textContent) && !!gwSummarySection.querySelector(".mat-summary__btn"));
+
+  const gwQuizSection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 練習題"]');
+  check("⑤ AI Gateway 練習題：誠實顯示「尚未建立」文案＋按鈕（Gateway 未部署，非造假）",
+    !!gwQuizSection && /尚未建立 Gateway 練習題/.test(gwQuizSection.textContent) && !!gwQuizSection.querySelector(".mat-summary__btn"));
+
+  check("Console errors = 0（HOTFIX-003）", consoleErrors.length === 0);
+
+  /* 一般上傳教材（無 Repository 來源）行為完全不變 — 既有 AITutorService
+     流程／honest empty state 皆未受影響。 */
+  const regular = A.MaterialRuntime.add({ subject: "math", title: "一般上傳教材", chapter: "測試章節" });
+  const regularOverlay = A.MaterialPreview.open(regular, function () {});
+  doc.body.appendChild(regularOverlay);
+  const regularContent = regularOverlay.querySelector('.mat-content[aria-label="教材內容"]');
+  check("一般上傳教材（無內容）：仍誠實顯示空狀態，未受影響", !!regularContent && /此教材目前尚無可顯示的內容/.test(regularContent.textContent));
+  const regularSummary = regularOverlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("一般上傳教材：AI 重點整理仍保留「開始 AI 分析」按鈕，未受影響", !!regularSummary && !!regularSummary.querySelector(".mat-summary__btn"));
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

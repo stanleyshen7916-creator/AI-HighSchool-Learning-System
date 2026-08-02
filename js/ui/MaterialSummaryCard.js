@@ -114,6 +114,22 @@ AHS.MaterialSummaryCard = (function () {
       section.appendChild(analyseBtn);
     }
 
+    /* HOTFIX-003 AI-303: a Repository-sourced material (either Teaching
+       Material Repository track — see
+       js/ui/MaterialDetailRepositorySource.js) already has a real,
+       human/Claude-analyzed summary — render it directly, no "開始 AI
+       分析" click needed, per this Hotfix's own "若已存在，直接 Render"
+       instruction. Checked before the existing AITutorService path so a
+       Repository-sourced material's real analysis always wins over an
+       empty in-memory Knowledge-Graph-derived one; falls through to the
+       original, unmodified behavior for every other material. */
+    var repo = (AHS.MaterialDetailRepositorySource && typeof AHS.MaterialDetailRepositorySource.resolve === "function")
+      ? AHS.MaterialDetailRepositorySource.resolve(item.id) : null;
+    if (repo && hasSummaryContent(repo.summary)) {
+      render("ready", repo.summary);
+      return { node: section, render: render };
+    }
+
     /* Initial state: show an existing summary if one is already in
        memory, otherwise offer the button. Reading is pure. */
     var service = AHS.AITutorService;

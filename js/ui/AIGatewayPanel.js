@@ -118,7 +118,14 @@ AHS.AIGatewayPanel = (function () {
         return;
       }
 
-      /* idle */
+      /* idle — HOTFIX-003 AI-305/AI-306: explicit "尚未建立" notice text
+         alongside the existing (unmodified) button; the button's own
+         behavior (calls the real Gateway adapter, surfaces a genuine
+         error if the Gateway isn't deployed — see this file's own
+         header) is untouched. */
+      if (spec.idleNotice) {
+        section.appendChild(el("p", { class: "mat-summary__notice", text: spec.idleNotice }));
+      }
       var genBtn = el("button", { type: "button", class: "mat-summary__btn", text: spec.buttonLabel });
       genBtn.addEventListener("click", generate);
       section.appendChild(genBtn);
@@ -144,6 +151,7 @@ AHS.AIGatewayPanel = (function () {
       operation: "summary",
       heading: "AI Gateway 重點整理",
       buttonLabel: "透過 AI Gateway 產生重點整理",
+      idleNotice: "尚未建立 Gateway 重點整理。",
       adapter: AHS.SummaryAdapter,
       renderContent: summaryContent
     });
@@ -154,6 +162,7 @@ AHS.AIGatewayPanel = (function () {
       operation: "question",
       heading: "AI Gateway 練習題",
       buttonLabel: "透過 AI Gateway 產生練習題",
+      idleNotice: "尚未建立 Gateway 練習題。",
       adapter: AHS.QuestionAdapter,
       renderContent: questionContent
     });
