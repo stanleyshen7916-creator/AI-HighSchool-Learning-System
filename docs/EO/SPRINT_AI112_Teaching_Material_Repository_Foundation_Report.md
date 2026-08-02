@@ -152,7 +152,10 @@ New `tests/regression/RepositoryFoundation.js`, wired into `npm test` (`package.
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR: #19, merged into `main`.
+- Merge commit: `a069bbec2202ecd6019126798efadd1708474c91`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit; completes
+  automatically, no further action needed.
 
 ## Acceptance
 
