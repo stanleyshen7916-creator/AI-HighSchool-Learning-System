@@ -163,8 +163,25 @@ AHS.MaterialDetailRepositorySource = (function () {
   /* resolve(runtimeMaterialId) -> { sections, summary, quiz } | null.
      null when this material didn't come from either Repository (e.g. a
      regular upload) — callers must keep their existing behavior in that
-     case, never fabricate. */
+     case, never fabricate.
+
+     HOTFIX-004 (Material Detail 資料未顯示，第二階段): before this fix,
+     resolve() silently trusted that AHS.TeachingMaterialLoader had
+     already finished initialize()/load() on whatever page opened
+     Material Detail — true on materials.html's own bootstrap order
+     (js/pages/AppMaterials.js calls it before AHS.MaterialCenter.create()),
+     but resolve() had no way to self-correct if that assumption ever
+     didn't hold, and would return null (indistinguishable from "not a
+     Repository material") instead of surfacing real data. load() is
+     idempotent (js/runtime/TeachingMaterialLoader.js's own `initialized`
+     guard) and side-effect-free to call again, so resolve() now always
+     ensures it has run immediately before looking up the id map —
+     closing that gap unconditionally rather than assuming it's already
+     closed. */
   function resolve(runtimeMaterialId) {
+    if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.load === "function") {
+      AHS.TeachingMaterialLoader.load();
+    }
     var sourceId = findSourceId(runtimeMaterialId);
     if (!sourceId) { return null; }
 
