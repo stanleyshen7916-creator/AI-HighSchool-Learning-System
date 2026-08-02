@@ -326,6 +326,94 @@ AHS.QuizCenter = (function () {
     return arr;
   }
 
+  /* ---- HOTFIX-005 AI-501: Repository → Quiz Center auto-sync ------------
+     Repository-sourced materials (data/materials/ track, bridged into
+     AHS.QuestionRuntime by js/runtime/TeachingMaterialLoader.js since
+     HOTFIX-002) previously only became reachable in Quiz Center via a
+     direct link carrying materialId/examId (Material Card's「開始練習」,
+     Summary Detail's「開始 AI 練習」). This surfaces the SAME already-
+     imported, already-real QuestionRuntime data directly in Quiz
+     Center's own default list (正式測驗) and practice list (練習模式) —
+     no new Runtime, no Mock Data, no modification to MaterialRuntime/
+     SummaryRuntime/QuestionRuntime's own APIs or Repository Schema.
+     Read-only: mirrors the established resolver pattern
+     (js/ui/MaterialDetailRepositorySource.js, HOTFIX-003/004) — reads the
+     same persisted teachingMaterialLoaderIdMap TeachingMaterialLoader.js
+     already writes, never writes to it itself. */
+  function subjectKeyFromChineseName(name) {
+    if (!AHS.Subjects || !name) { return null; }
+    var found = null;
+    Object.keys(AHS.Subjects).forEach(function (key) {
+      if (AHS.Subjects[key] && AHS.Subjects[key].name === name) { found = key; }
+    });
+    return found;
+  }
+
+  /* Real, computed aggregate (most frequent value among this material's
+     own questions) — never a fabricated/default difficulty label; "" when
+     the source questions carry none (e.g. the Package track's own
+     questions.json schema, which HOTFIX-004 already found has no
+     difficulty field at all). */
+  function modeDifficulty(questions) {
+    var counts = {}, best = "", bestCount = 0;
+    (questions || []).forEach(function (q) {
+      if (!q || !q.difficulty) { return; }
+      counts[q.difficulty] = (counts[q.difficulty] || 0) + 1;
+      if (counts[q.difficulty] > bestCount) { best = q.difficulty; bestCount = counts[q.difficulty]; }
+    });
+    return best;
+  }
+
+  function repositoryExamCatalog() {
+    var idMap = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function")
+      ? (AHS.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {}) : {};
+    var entries = [];
+
+    function addEntry(sourceId, meta, questionsForDifficulty) {
+      var runtimeId = idMap[sourceId];
+      if (!runtimeId) { return; }
+      var examId = "teaching_material_" + runtimeId;
+      if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function" ||
+          !AHS.QuestionRuntime.hasExam(examId)) { return; }
+      var set = (typeof AHS.QuestionRuntime.getSet === "function") ? AHS.QuestionRuntime.getSet(examId) : [];
+      entries.push({
+        _repoExamId: examId,
+        subject: meta.subjectKey || "",
+        title: meta.title || "教材",
+        grade: meta.grade || "",
+        chapter: meta.chapter || "",
+        difficulty: modeDifficulty(questionsForDifficulty),
+        type: "單選題",
+        count: set.length,
+        progress: 0,
+        accuracy: 0,
+        best: 0,
+        done: false
+      });
+    }
+
+    (Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : []).forEach(function (entry) {
+      if (!entry || !entry.materialId || !entry.material) { return; }
+      addEntry(entry.materialId, {
+        subjectKey: subjectKeyFromChineseName(entry.material.subject) || entry.material.subject,
+        title: entry.material.title, chapter: entry.material.chapter, grade: entry.material.grade
+      }, null);
+    });
+
+    if (AHS.MaterialRepository && typeof AHS.MaterialRepository.list === "function") {
+      AHS.MaterialRepository.list().forEach(function (record) {
+        var meta = record.metadata || {};
+        var summary = record.summary || {};
+        var bank = record.questionBank || {};
+        addEntry(record.id, {
+          subjectKey: meta.subject, title: summary.title, chapter: meta.chapter, grade: meta.grade
+        }, bank.singleChoice);
+      });
+    }
+
+    return entries;
+  }
+
   /* ---- List view (Exam List) -------------------------------------------
      data: AHS.AppConfig.quiz. onStart(item): begins the real exam flow.
      Sprint 4.1: 科目/年級/章節/難易度/題型/只看未完成/排序 all drive a real
@@ -597,7 +685,11 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
-  function buildPracticeListView(onPractice, filterMaterialId) {
+  /* onRepoExam(examId) — HOTFIX-005 AI-501, optional/additive: when given
+     (and this isn't a single-material filtered view), Repository-derived
+     rows are shown alongside the real LearningQuestionRuntime list below,
+     each routing to the already-real, already-imported Exam-Mode flow. */
+  function buildPracticeListView(onPractice, filterMaterialId, onRepoExam) {
     var runtime = AHS.LearningQuestionRuntime;
     var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
     var items = filterMaterialId
@@ -614,32 +706,59 @@ AHS.QuizCenter = (function () {
        WrongBookGenerator correctly via wrongBookQuestionId()'s identity
        mapping, above. */
 
-    if (!items.length) {
+    var repoEntries = (!filterMaterialId && typeof onRepoExam === "function") ? repositoryExamCatalog() : [];
+
+    if (!items.length && !repoEntries.length) {
       return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
     }
 
-    var rows = items.map(function (record) {
-      var subj = AHS.Subjects[record.subject] || { name: record.subject || "未分類", hex: "#6b7280" };
-      var row = el("button", { type: "button", class: "quiz-practice__row" }, [
-        el("span", {
-          class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
-        }, [el("span", { text: subj.name })]),
-        el("span", { class: "quiz-practice__row-q", text: record.question || "（尚無題目）" }),
-        el("span", { class: "quiz-practice__row-meta", text: record.knowledgePoint || record.chapter || "" }),
-        el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
-      ]);
-      row.addEventListener("click", function () { onPractice(record); });
-      return row;
-    });
+    var sections = [];
 
-    return el("div", { class: "quiz-practice" }, [
-      el("section", { class: "card quiz-practice__list", "aria-label": "練習題列表" }, [
+    if (repoEntries.length) {
+      var repoRows = repoEntries.map(function (entry) {
+        var subj = AHS.Subjects[entry.subject] || { name: entry.subject || "未分類", hex: "#6b7280" };
+        var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+          el("span", {
+            class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
+          }, [el("span", { text: subj.name })]),
+          el("span", { class: "quiz-practice__row-q", text: entry.title }),
+          el("span", { class: "quiz-practice__row-meta", text: (entry.chapter || "") + "（共 " + entry.count + " 題）" }),
+          el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
+        ]);
+        row.addEventListener("click", function () { onRepoExam(entry._repoExamId); });
+        return row;
+      });
+      sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "Repository 教材" }, [
+        el("div", { class: "card__head" }, [
+          el("h2", { class: "card__title", text: "Repository 教材（" + repoEntries.length + "）" })
+        ]),
+        el("div", { class: "quiz-practice__rows" }, repoRows)
+      ]));
+    }
+
+    if (items.length) {
+      var rows = items.map(function (record) {
+        var subj = AHS.Subjects[record.subject] || { name: record.subject || "未分類", hex: "#6b7280" };
+        var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+          el("span", {
+            class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
+          }, [el("span", { text: subj.name })]),
+          el("span", { class: "quiz-practice__row-q", text: record.question || "（尚無題目）" }),
+          el("span", { class: "quiz-practice__row-meta", text: record.knowledgePoint || record.chapter || "" }),
+          el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
+        ]);
+        row.addEventListener("click", function () { onPractice(record); });
+        return row;
+      });
+      sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "練習題列表" }, [
         el("div", { class: "card__head" }, [
           el("h2", { class: "card__title", text: "練習題（" + items.length + "）" })
         ]),
         el("div", { class: "quiz-practice__rows" }, rows)
-      ])
-    ]);
+      ]));
+    }
+
+    return el("div", { class: "quiz-practice" }, sections);
   }
 
   /* EO-S7.0-002 · Wrong Book Runtime Integration hook — the ONLY new
@@ -844,8 +963,30 @@ AHS.QuizCenter = (function () {
     var data = model || AHS.AppConfig.quiz;
     var root = el("div", { class: "quiz-root" });
 
+    /* HOTFIX-005 AI-501: the default list additively includes real
+       Repository-derived rows alongside data.items (Mock catalog, starts
+       empty by design). A Repository row's onStart is routed to the
+       already-existing tryDirectExamEntry()/ExamRuntime.startFromExam()
+       path (below) — never AHS.ExamRuntime.start()/QuestionBank.generate()
+       — since its questions are already real and already imported, not
+       something to (re)generate. Falls back to plain `data` (unchanged
+       behavior) when no Repository material has been imported yet. */
+    function mergedListData() {
+      var repoItems = repositoryExamCatalog();
+      if (!repoItems.length) { return data; }
+      var merged = {};
+      Object.keys(data).forEach(function (k) { merged[k] = data[k]; });
+      merged.items = (data.items || []).concat(repoItems);
+      return merged;
+    }
+
+    function unifiedStart(item) {
+      if (item && item._repoExamId) { tryDirectExamEntry(item._repoExamId); return; }
+      startExam(item);
+    }
+
     function showList() {
-      AHS.UI.mount(root, buildListView(data, startExam));
+      AHS.UI.mount(root, buildListView(mergedListData(), unifiedStart));
     }
 
     function startExam(item) {
@@ -926,8 +1067,22 @@ AHS.QuizCenter = (function () {
     var startOnPractice = (initialMode === "practice") && !directExamId;
     if (!startOnPractice) { practiceRoot.setAttribute("hidden", "hidden"); }
 
+    /* HOTFIX-005 AI-501: a Repository row surfaced in the 練習模式 list
+       (below) still starts the same real Exam-Mode flow as 正式測驗 —
+       Practice Mode's own LearningQuestionRuntime is untouched, "兩者不得
+       混用" still holds (no data crosses between the two Runtimes); this
+       only switches which root is visible, exactly like examTab's own
+       click handler further below. */
+    function startRepoExamFromPractice(examId) {
+      tryDirectExamEntry(examId);
+      root.removeAttribute("hidden");
+      practiceRoot.setAttribute("hidden", "hidden");
+      examTab.classList.add("is-active");
+      practiceTab.classList.remove("is-active");
+    }
+
     function showPracticeList() {
-      AHS.UI.mount(practiceRoot, buildPracticeListView(showPracticeQuestion, initialMaterialId));
+      AHS.UI.mount(practiceRoot, buildPracticeListView(showPracticeQuestion, initialMaterialId, startRepoExamFromPractice));
     }
     function showPracticeQuestion(record) {
       AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, showPracticeList));

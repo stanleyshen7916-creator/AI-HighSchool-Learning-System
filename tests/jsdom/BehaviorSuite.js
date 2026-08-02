@@ -67,6 +67,41 @@ function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
   return { window, dom, consoleErrors };
 }
 
+/* Minimal ZIP reader (Node Buffer-based) — independent of
+   js/core/DocumentExport.js's own writer, so this genuinely round-trips
+   the hand-rolled .docx it produces rather than trusting the same code
+   that wrote it. Reads the End-Of-Central-Directory record, walks the
+   central directory, and extracts one named entry's real bytes via its
+   local file header (STORED/uncompressed, per DocumentExport.js). */
+function readZipEntryText(uint8Bytes, entryName) {
+  const buf = Buffer.from(uint8Bytes);
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= 0; i--) {
+    if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd === -1) { return null; }
+  const totalEntries = buf.readUInt16LE(eocd + 10);
+  const centralOffset = buf.readUInt32LE(eocd + 16);
+  let ptr = centralOffset;
+  for (let i = 0; i < totalEntries; i++) {
+    if (buf.readUInt32LE(ptr) !== 0x02014b50) { return null; }
+    const uncompSize = buf.readUInt32LE(ptr + 24);
+    const nameLen = buf.readUInt16LE(ptr + 28);
+    const extraLen = buf.readUInt16LE(ptr + 30);
+    const commentLen = buf.readUInt16LE(ptr + 32);
+    const localOffset = buf.readUInt32LE(ptr + 42);
+    const name = buf.toString("utf8", ptr + 46, ptr + 46 + nameLen);
+    if (name === entryName) {
+      const lNameLen = buf.readUInt16LE(localOffset + 26);
+      const lExtraLen = buf.readUInt16LE(localOffset + 28);
+      const dataStart = localOffset + 30 + lNameLen + lExtraLen;
+      return buf.slice(dataStart, dataStart + uncompSize).toString("utf8");
+    }
+    ptr += 46 + nameLen + extraLen + commentLen;
+  }
+  return null;
+}
+
 /* Sprint AI-015E (Option A, PMO-approved, EO-AI-015E-002) — the single
    Production Question Pipeline now runs on materials.html: real text ->
    AITutorService.ensureQuestionSet() (Knowledge Graph generation) ->
@@ -212,10 +247,18 @@ console.log("\n[2] quiz.html — Task 001: guide with REAL summary + real questi
   check("Practice list shows exactly the 1 real question", rows.length === 1 && /sinθ/.test(rows[0].textContent));
 }
 
-console.log("\n[3] quiz.html — regression: default entry (no params) unchanged");
+console.log("\n[3] quiz.html — regression: default entry (no params) unchanged, no Repository data");
 {
+  /* Isolated from data/materials/*.js's real, committed content (see
+     excludeScripts's own header comment) — this specifically tests the
+     genuine "no Repository material imported at all" state, still a
+     real, reachable state (e.g. before any real material is ever added
+     to either Repository track). HOTFIX-005 AI-501's own "Repository
+     row surfaces automatically" behavior is covered separately in [29]
+     below, with the real Repository content intact. */
   const { window, consoleErrors } = loadPage("quiz.html", {
-    seedSession: { "ahs:learningQuestionRuntime": { items: [stubQuestion], seq: 1 } }
+    seedSession: { "ahs:learningQuestionRuntime": { items: [stubQuestion], seq: 1 } },
+    excludeScripts: ["data/materials/"]
   });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
@@ -225,15 +268,14 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
   check("Practice root hidden by default", practiceRoot && practiceRoot.hasAttribute("hidden"));
   check("No guide rendered without materialId deep link", !doc.querySelector(".qguide"));
   /* EO-S7.0-003 Production Cleanup: 預設題庫已移除 — Exam Mode 首次
-     開啟為正式 Empty State。 */
-  check("Exam Mode 正式 Empty State（預設題庫已移除）",
+     開啟為正式 Empty State when genuinely no Repository material exists. */
+  check("Exam Mode 正式 Empty State（無 Repository 資料時，預設題庫已移除）",
     doc.querySelectorAll(".quiz-row").length === 0 && /目前沒有可用的測驗/.test(doc.body.textContent));
-  // Task 004 also inside default practice tab:
   const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
   practiceTab.click();
-  check("Practice tab (no materialId) skips guide, stub filtered → Empty State",
+  check("Practice tab (no materialId, no Repository data) skips guide, stub filtered → Empty State",
     !doc.querySelector(".qguide") && !!doc.querySelector(".quiz-practice__empty"));
-  check("Console errors = 0 (quiz.html default)", consoleErrors.length === 0);
+  check("Console errors = 0 (quiz.html default, no Repository data)", consoleErrors.length === 0);
 }
 
 console.log("\n[4] summary.html — Task 003: mandated pending copy (empty-content record)");
@@ -572,10 +614,28 @@ console.log("\n[18] HF-8.2.001 · HF-002 — 無檔案來源／檔案過大：�
 {
   const base = { materials: [Object.assign({}, materialSeed.materials[0], { id: "rt_1", fileName: "trig.pdf", file: null })],
     folders: [], seq: 1, folderSeq: 0 };
+  /* HOTFIX-005 AI-502: state==="none" (no original file at all) no longer
+     dead-ends on a message — a real .docx is generated on the spot from
+     whatever this Runtime chain has (here: honest 教材資訊 only, since
+     this fixture's content/AI output are genuinely empty — verifies the
+     "（無資料）" fallback renders instead of a fabricated section, not
+     just the "real Repository data" happy path already covered by [30]). */
   const noFile = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base } });
+  let noFileBlob = null, noFileName = null;
+  noFile.window.URL.createObjectURL = function (blob) { noFileBlob = blob; return "blob:ahs/test-docx"; };
+  noFile.window.URL.revokeObjectURL = function () {};
+  const origCreateNoFile = noFile.window.document.createElement.bind(noFile.window.document);
+  noFile.window.document.createElement = function (tag) {
+    const node = origCreateNoFile(tag);
+    if (String(tag).toLowerCase() === "a") {
+      node.click = function () { noFileName = node.getAttribute("download"); };
+    }
+    return node;
+  };
   noFile.window.document.querySelector(".mat-card__dl").click();
-  check("無任何檔案來源 → 明確訊息",
-    /沒有可下載的原始檔案/.test(noFile.window.document.querySelector(".mat-status, [role='status']").textContent));
+  check("無原始檔案 → 不再顯示「沒有可下載的原始檔案」，改為真實產生 .docx",
+    !/沒有可下載的原始檔案/.test(noFile.window.document.querySelector(".mat-status, [role='status']").textContent) &&
+    !!noFileBlob && noFileBlob.size > 0 && noFileName === "三角函數講義.docx");
 
   const oversize = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base,
     "ahs:materialFileIndex": { entries: { rt_1: { name: "big.pdf", type: "application/pdf", state: "oversize" } } } } });
@@ -1079,6 +1139,169 @@ console.log("\n[28] 學習總結 — 重點關鍵字紅色標示");
   check("關鍵字文字為真實資料（非虛構），例：所有權的排他性", [...keywordSpans].some(s => s.textContent.includes("排他性")));
   const firstItem = coreSection.querySelector(".sum-kp__text");
   check("標示後完整文字內容不變（僅拆分顯示，未遺漏任何字）", firstItem.textContent.includes("："));
+}
+
+console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步（直接進入，無需先經教材中心）");
+{
+  /* Cold entry: quiz.html loaded directly, real data/materials/*.js
+     content intact, WITHOUT visiting materials.html first in this
+     session — proves js/runtime/MaterialRuntime.js now being <script>
+     -tagged on quiz.html lets TeachingMaterialLoader.load() fully
+     bootstrap the Repository material on quiz.html itself, not just on
+     materials.html. */
+  const { window, consoleErrors } = loadPage("quiz.html", {});
+  const doc = window.document;
+  doc.body.appendChild(window.AHS.QuizCenter.create());
+
+  check("正式測驗：Repository 教材直接出現在預設列表（無需先經教材中心）",
+    /私有財產權|所有權/.test(doc.body.textContent) && doc.querySelectorAll(".quiz-row").length > 0);
+  const examRow = doc.querySelector(".quiz-row");
+  check("正式測驗：可直接點擊開始（走既有 tryDirectExamEntry／startFromExam，非重新產生）", !!examRow);
+  if (examRow) {
+    examRow.querySelector(".quiz-row__start").click();
+    check("點擊後直接進入真實測驗畫面（真實題目，非 Mock）", /私有財產權|所有權/.test(doc.body.textContent) &&
+      !!doc.querySelector(".qcard, .quiz-exam, [class*='exam']"));
+  }
+
+  const p2 = loadPage("quiz.html", {});
+  const doc2 = p2.window.document;
+  doc2.body.appendChild(p2.window.AHS.QuizCenter.create());
+  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
+  practiceTab.click();
+  check("練習模式：Repository 教材也直接出現（不需 materialId 帶入）",
+    /Repository 教材/.test(doc2.body.textContent) && (/私有財產權|所有權/.test(doc2.body.textContent)));
+  const repoRow = doc2.querySelector(".quiz-practice__row");
+  if (repoRow) { repoRow.click(); }
+  check("點擊練習模式中的 Repository 教材：切換到真實測驗畫面（Runtime 未混用，僅切換顯示）",
+    !doc2.querySelector(".quiz-practice-root:not([hidden])") || /私有財產權|所有權/.test(doc2.body.textContent));
+  check("Console errors = 0（quiz.html 直接進入，AI-501）", consoleErrors.length === 0);
+}
+
+console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時產生真實 .docx");
+{
+  const { window } = loadPage("materials.html", {});
+  const A = window.AHS;
+  const item = A.MaterialRuntime.list()[0];
+
+  let captured = null;
+  const origBuildDocxBlob = A.DocumentExport.buildDocxBlob;
+  A.DocumentExport.buildDocxBlob = function (title, blocks) {
+    captured = { title: title, blocks: blocks };
+    return origBuildDocxBlob(title, blocks);
+  };
+  let downloadedName = null;
+  A.DocumentExport.downloadBlob = function (blob, filename) { downloadedName = filename; };
+
+  window.document.querySelector('[data-id="' + item.id + '"] .mat-card__dl').click();
+
+  check("下載教材：不再顯示「沒有可下載的原始檔案」", !window.document.querySelector(".mat-status, [role='status']").textContent.includes("沒有可下載的原始檔案"));
+  check("下載教材：狀態訊息確認已產生 .docx", /已下載教材（依現有 Repository／AI 資料產生 \.docx）/.test(window.document.querySelector(".mat-status, [role='status']").textContent));
+  check("下載教材：檔名為 <教材名稱>.docx", downloadedName === item.title + ".docx");
+  check("下載教材：確實呼叫 buildDocxBlob 並帶入區塊", !!captured && Array.isArray(captured.blocks) && captured.blocks.length > 0);
+
+  const infoBlock = captured.blocks.find(b => b.heading === "教材資訊");
+  check("教材資訊區塊含真實科目／年級／章節", !!infoBlock && infoBlock.lines.some(l => l.includes("公民")) );
+  const contentBlock = captured.blocks.find(b => b.heading === "教材內容");
+  check("教材內容區塊含真實 Repository 內容（非空、非虛構）", !!contentBlock && contentBlock.lines.length > 0);
+  const summaryBlock = captured.blocks.find(b => b.heading === "AI 重點整理");
+  check("AI 重點整理區塊含真實核心概念", !!summaryBlock && summaryBlock.lines.some(l => l.includes("排他性")));
+  const quizBlock = captured.blocks.find(b => b.heading === "AI 練習題");
+  check("AI 練習題區塊含真實題目", !!quizBlock && quizBlock.lines.some(l => l.includes("私有財產權")));
+
+  /* Full-pipeline round trip: the REAL captured blocks -> real .docx
+     bytes -> real ZIP parse -> real XML text — not just "a function was
+     called", the actual generated file genuinely contains this content. */
+  const zipBytes = A.DocumentExport._internal.buildDocxBytes(captured.title, captured.blocks);
+  const documentXml = readZipEntryText(zipBytes, "word/document.xml");
+  check(".docx word/document.xml 可被獨立 ZIP reader 正確解析", typeof documentXml === "string" && documentXml.length > 0);
+  check(".docx 內文包含真實教材標題", documentXml.includes(item.title));
+  check(".docx 內文包含真實核心概念文字", documentXml.includes("排他性"));
+  check(".docx 內文包含真實練習題文字", documentXml.includes("私有財產權"));
+
+  /* Regular material WITH a real uploaded file is completely unaffected
+     — the .docx path only runs for state==="none", never overrides a
+     real file's own download. */
+  const regularSeed = { materials: [{ id: "rt_x", order: 1, subject: "math", title: "一般教材", chapter: "測試",
+    grade: "高一", category: "講義", date: "2026/08/02", views: "0", content: "text",
+    progress: 0, lastOpenedAt: null, lastLearningAt: null, learningTime: 0, learningCount: 0,
+    favorite: false, fileName: "a.pdf", fileType: "PDF", fileSize: "10 KB", folderId: null, file: null }],
+    folders: [], seq: 1, folderSeq: 0 };
+  const p2 = loadPage("materials.html", { seedSession: {
+    "ahs:materialRuntime": regularSeed,
+    "ahs:materialFileIndex": { entries: { rt_x: { name: "a.pdf", type: "application/pdf", state: "stored" } } },
+    "ahs:materialFile:rt_x": { name: "a.pdf", type: "application/pdf", dataUrl: "data:application/pdf;base64,QUhT" }
+  } });
+  let regularDocxCalled = false;
+  p2.window.AHS.DocumentExport.buildDocxBlob = function () { regularDocxCalled = true; return origBuildDocxBlob.apply(this, arguments); };
+  p2.window.URL.createObjectURL = function () { return "blob:ahs/regular"; };
+  p2.window.URL.revokeObjectURL = function () {};
+  p2.window.document.querySelector(".mat-card__dl").click();
+  check("一般教材（有真實檔案）：下載流程未受影響，未觸發 .docx 產生", !regularDocxCalled);
+}
+
+console.log("\n[31] HOTFIX-005 AI-503 — 下載總結：直接產生列印內容（真實 PDF，透過瀏覽器另存為）");
+{
+  const p1 = loadPage("materials.html", {});
+  const rt = p1.window.AHS.MaterialRuntime.list()[0];
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+  const { window, consoleErrors } = loadPage("summary.html", { seedSession: carried });
+  const A = window.AHS;
+
+  let printedTitle = null, printedBlocks = null;
+  const origPrintBlocks = A.DocumentExport.printBlocks;
+  A.DocumentExport.printBlocks = function (title, blocks) { printedTitle = title; printedBlocks = blocks; return origPrintBlocks(title, blocks); };
+
+  const btn = [...window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("下載總結"));
+  btn.click();
+
+  check("下載總結：確實呼叫 printBlocks（非 UI Stub）", printedTitle === "學習總結" && Array.isArray(printedBlocks));
+  check("下載總結：狀態訊息確認已產生內容並提示另存為 PDF", /已產生學習總結內容.*另存為 PDF/.test(window.document.querySelector(".sum-status").textContent));
+  const coreBlock = printedBlocks.find(b => b.heading === "① 核心概念");
+  check("列印內容含真實①核心概念資料", !!coreBlock && coreBlock.lines.some(l => l.includes("排他性")));
+  const reviewBlock = printedBlocks.find(b => b.heading === "⑤ 複習建議");
+  check("列印內容含真實⑤複習建議（HOTFIX-004 derive 邏輯）", !!reviewBlock && reviewBlock.lines.length > 0);
+
+  /* printBlocks() really did build a real, content-filled printable
+     document and hand it to a hidden iframe (the browser's own "另存為
+     PDF" is triggered from iframe.contentWindow.print() on load — see
+     js/core/DocumentExport.js's own header for why this, not a hand-
+     rolled PDF byte generator, is the honest way to get real Chinese
+     text into a real PDF with no backend/library). */
+  const iframe = window.document.querySelector("iframe");
+  check("已建立隱藏 iframe 準備真實列印內容", !!iframe && iframe.hasAttribute("srcdoc"));
+  check("iframe 內容包含真實教材標題與核心概念", iframe.getAttribute("srcdoc").includes("排他性"));
+  check("Console errors = 0（下載總結）", consoleErrors.length === 0);
+
+  const emptyPage = loadPage("summary.html", { excludeScripts: ["data/materials/"] });
+  const emptyBtn = [...emptyPage.window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("下載總結"));
+  emptyBtn.click();
+  check("完全沒有學習總結時：明確提示，不產生空白 PDF", /目前沒有可匯出的學習總結/.test(emptyPage.window.document.querySelector(".sum-status").textContent));
+}
+
+console.log("\n[32] HOTFIX-005 AI-504 — 匯出筆記：直接產生真實 Markdown");
+{
+  const p1 = loadPage("materials.html", {});
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+  const { window, consoleErrors } = loadPage("summary.html", { seedSession: carried });
+  const A = window.AHS;
+
+  let mdText = null, downloadedBlob = null, downloadedName = null;
+  A.DocumentExport.downloadBlob = function (blob, filename) { downloadedBlob = blob; downloadedName = filename; };
+
+  const btn = [...window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("匯出筆記"));
+  btn.click();
+
+  check("匯出筆記：確實觸發真實檔案下載（非 UI Stub）", !!downloadedBlob && downloadedName === "學習總結.md");
+  check("匯出筆記：Blob 型別為 Markdown", downloadedBlob.type.includes("markdown"));
+  check("匯出筆記：狀態訊息確認完成", /已匯出筆記（Markdown）/.test(window.document.querySelector(".sum-status").textContent));
+
+  mdText = A.DocumentExport.buildMarkdownText("學習總結", [
+    { heading: "① 核心概念", lines: ["所有權的排他性：測試"] }
+  ]);
+  check("buildMarkdownText 產生正確 Markdown 結構", mdText.startsWith("# 學習總結") && mdText.includes("### ① 核心概念") && mdText.includes("- 所有權的排他性：測試"));
+  check("Console errors = 0（匯出筆記）", consoleErrors.length === 0);
 }
 
 console.log("\n==============================");
