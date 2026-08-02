@@ -146,4 +146,13 @@ not decreased.
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge (this Hotfix's own instruction: merge directly, do not wait for PAT).
+- PR: #10, merged into `main`.
+- Merge commit: `82d36b80dfa1d6c2649cedf9975cd56866bb389e`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit (queued at merge
+  time); completes automatically, no further action needed.
+
+## Ready state
+
+Merged directly to `main` per this Hotfix's own instruction (item 1 of Deliverables — do not wait
+for Project Owner PAT approval to merge). Awaiting Project Owner's live PAT re-verification against
+the Acceptance checklist (measuring 測驗中心/下載教材/下載總結/匯出筆記 against the deployed site).
