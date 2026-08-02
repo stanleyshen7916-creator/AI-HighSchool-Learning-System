@@ -23,15 +23,30 @@ AHS.SummaryCenter = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* HOTFIX-005 AI-503/AI-504: sections a real Summary Runtime record
+     already has, reshaped into AHS.DocumentExport's block model — real
+     content only, "（無資料）" (never fabricated) when a section is
+     genuinely empty. Shared by both 下載總結 (PDF, via browser print) and
+     匯出筆記 (Markdown) so their output always matches exactly. */
+  function summaryExportBlocks(records) {
+    var blocks = [];
+    (records || []).forEach(function (record) {
+      blocks.push({ heading: "《" + (record.title || record.materialId || "教材") + "》", kind: "title" });
+      blocks.push({ heading: "① 核心概念", lines: record.coreConcepts || [] });
+      blocks.push({ heading: "② 重要定義／公式／關鍵字", lines: record.definitions || [] });
+      blocks.push({ heading: "③ 易錯與常考題型", lines: record.pitfalls || [] });
+      blocks.push({ heading: "④ 必背重點", lines: record.memorize || [] });
+      blocks.push({ heading: "⑤ 複習建議", lines: deriveReviewSuggestions(record) });
+    });
+    return blocks;
+  }
+
   /* ---- Banner ------------------------------------------------------------
-     Static copy only now (no per-summary Mock title/subtitle to read).
-     Export buttons keep the existing Mock-feedback convention used
-     throughout the repo for not-yet-implemented actions (AppShell.js
-     profilePanel, Review Center, etc.) — this is a UI-action stub, not
-     fabricated content data, so it doesn't conflict with "不得自建
-     資料". */
-  function banner(status) {
-    function exportBtn(cls, icon, label, sub) {
+     getRecords(): returns whatever summary record(s) are CURRENTLY shown
+     below (respecting the 篩選教材 filter) — export always matches what
+     the user is actually looking at, never a hidden/different set. */
+  function banner(status, getRecords) {
+    function exportBtn(cls, icon, label, sub, onExport) {
       var b = el("button", { type: "button", class: "sum-export " + cls }, [
         el("span", { class: "sum-export__icon", html: AHS.Icons[icon]() }),
         el("span", { class: "sum-export__text" }, [
@@ -40,8 +55,13 @@ AHS.SummaryCenter = (function () {
         ])
       ]);
       b.addEventListener("click", function () {
-        status.textContent = "" + label + "（" + sub + "）";
-        status.removeAttribute("hidden");
+        var records = (typeof getRecords === "function" ? getRecords() : []) || [];
+        if (!records.length) {
+          status.textContent = "目前沒有可匯出的學習總結，請先上傳教材並產生總結。";
+          status.removeAttribute("hidden");
+          return;
+        }
+        onExport(records);
       });
       return b;
     }
@@ -51,8 +71,20 @@ AHS.SummaryCenter = (function () {
         el("p", { class: "sum-banner__subtitle", text: "依教材自動整理的核心概念、定義與複習重點" })
       ]),
       el("div", { class: "sum-banner__actions" }, [
-        exportBtn("sum-export--primary", "download", "下載總結", "PDF / DOCX / PPT"),
-        exportBtn("sum-export--ghost", "bookmark", "匯出筆記", "Notion / Evernote")
+        exportBtn("sum-export--primary", "download", "下載總結", "PDF", function (records) {
+          if (!AHS.DocumentExport || typeof AHS.DocumentExport.printBlocks !== "function") { return; }
+          AHS.DocumentExport.printBlocks("學習總結", summaryExportBlocks(records));
+          status.textContent = "已產生學習總結內容，請於列印視窗選擇「另存為 PDF」完成下載。";
+          status.removeAttribute("hidden");
+        }),
+        exportBtn("sum-export--ghost", "bookmark", "匯出筆記", "Markdown", function (records) {
+          if (!AHS.DocumentExport || typeof AHS.DocumentExport.buildMarkdownText !== "function") { return; }
+          var text = AHS.DocumentExport.buildMarkdownText("學習總結", summaryExportBlocks(records));
+          var blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+          AHS.DocumentExport.downloadBlob(blob, "學習總結.md");
+          status.textContent = "已匯出筆記（Markdown）。";
+          status.removeAttribute("hidden");
+        })
       ])
     ]);
   }
@@ -456,8 +488,13 @@ AHS.SummaryCenter = (function () {
 
     var body = el("div", { class: "sum-body" });
     var filterSlot = el("div", { class: "sum-filter-slot" });
+    /* HOTFIX-005 AI-503/AI-504: whatever is CURRENTLY rendered in `body`
+       (respecting 篩選教材) is exactly what 下載總結／匯出筆記 export —
+       kept in sync by renderRecords(), the single place `body` changes. */
+    var currentRecords = [];
 
     function renderRecords(records, forMaterialId) {
+      currentRecords = records || [];
       body.innerHTML = "";
       if (!records || !records.length) {
         body.appendChild(forMaterialId ? noSummaryForMaterialState(forMaterialId) : emptyState());
@@ -500,7 +537,7 @@ AHS.SummaryCenter = (function () {
     renderAll();
 
     return el("div", { class: "sum-page" }, [
-      banner(status),
+      banner(status, function () { return currentRecords; }),
       filterSlot,
       body,
       status

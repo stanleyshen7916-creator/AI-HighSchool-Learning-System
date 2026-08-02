@@ -1,6 +1,6 @@
 {
-  "currentSprint": "HOTFIX-004 第二階段 — Material Detail 資料未顯示修正 (v1.0)",
-  "status": "MERGED — PAT after HOTFIX-003/004 (PR #7) found Material Detail's five sections still blank live. Root cause (found by code trace, not browser cache): AIGatewayPanel.js's AI Gateway 重點整理/練習題 sections never consulted MaterialDetailRepositorySource, always requiring a live call to a Gateway backend that does not exist in this static prototype; fixed by rendering real Repository data immediately when present (reusing HOTFIX-003's resolver), same idle/Gateway-call fallback preserved for non-Repository materials. MaterialDetailRepositorySource.resolve() also hardened to call TeachingMaterialLoader.load() itself (idempotent) before every lookup, removing any dependency on call-site bootstrap ordering. Zero protected Runtime/Repository-schema files touched. See docs/EO/HOTFIX-004_Stage2_MaterialDetail_Blank_Report.md.",
+  "currentSprint": "HOTFIX-005 — MVP Function Completion (v1.0)",
+  "status": "MERGED — Project Owner PAT required four clickable actions to produce real results instead of a UI Stub/limitation message. AI-501: quiz.html now bootstraps Repository materials into Quiz Center's default Exam Mode and Practice Mode lists directly (no need to visit Material Center first) via a new read-only repositoryExamCatalog() resolver routing through the existing real ExamRuntime.startFromExam() path. AI-502: Material 下載教材 now generates a real .docx from existing Repository/AI data (new js/core/DocumentExport.js, dependency-free ZIP/OOXML writer) whenever a material has no original file, instead of the old dead-end message. AI-503/504: Summary Center's 下載總結/匯出筆記 now produce real content via the browser's native print flow (real PDF) and a real downloaded Markdown file respectively. Zero Repository Schema/MaterialRuntime API/SummaryRuntime API/UI Baseline changes; no Mock Data added. See docs/EO/HOTFIX-005_MVP_Function_Completion_Report.md.",
   "note": "Sprint AI-108 (v1.0.0-rc1) remains awaiting PMO Release Approval — unchanged, not superseded. EO-S1.1-00x / EO-S1.2-001 / Sprint v1.3-v1.6 / HOTFIX-002 / HOTFIX-003 / HOTFIX-004 LOCKs are a separate track, explicitly Project-Owner-authorized to proceed despite AI-108's own 'no new feature planning until Release Approval' gate; see docs/EO/EO_S1.1-001_Report.md and EO_S1.1-002_Report.md for the full reasoning. IMPORTANT: origin/main also includes a second, independently-built Teaching Material Repository track (data/materials/, PR #3/#4/#5, claude/teaching-material-analysis-aphirk / claude/teaching-materials-summary-ylvt12) merged in parallel with this branch's own PRs — this branch is reset to origin/main after each merge per the 'merged PR -> restart from default branch' workflow rule; HOTFIX-004 stayed on the same branch as HOTFIX-003 since that PR (#7) is not yet merged. See docs/Architecture/Architecture_Repository_Structure_vNext.md, RuntimeInventory.md, ComponentInventory.md, DataFlow.md, ExtensionPoints.md for the still-governing Baseline. This file is documentation only — not read by any script or test.",
   "history": [
     {
@@ -178,6 +178,12 @@
       "name": "Material Detail 資料未顯示修正",
       "date": "2026-08-02",
       "summary": "AIGatewayPanel.js now renders real Repository summary/quiz data instead of always-idle Gateway placeholders; MaterialDetailRepositorySource.resolve() self-initializes TeachingMaterialLoader before every lookup."
+    },
+    {
+      "id": "HOTFIX-005",
+      "name": "MVP Function Completion (PAT Required Features)",
+      "date": "2026-08-02",
+      "summary": "Quiz Center Repository auto-sync (AI-501), real .docx material download (AI-502), real PDF summary download via browser print (AI-503), real Markdown notes export (AI-504)."
     }
   ],
   "realRepositoryPosition": {

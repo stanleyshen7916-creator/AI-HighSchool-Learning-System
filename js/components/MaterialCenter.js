@@ -734,6 +734,76 @@ AHS.MaterialCenter = (function () {
       return { state: "none" };
     }
 
+    /* HOTFIX-005 AI-502: when a material genuinely has no original file
+       (state === "none" — every Repository-sourced material, since it
+       was synthesized directly into MaterialRuntime, never uploaded as
+       bytes; see js/runtime/TeachingMaterialLoader.js), a real .docx is
+       generated on the spot from data this Runtime chain already has —
+       never a fabricated file, never the old "沒有原始檔案" dead end.
+       Reuses the exact same resolved content Material Detail's own
+       sections already show (js/ui/MaterialDetailRepositorySource.js,
+       HOTFIX-003/004; falls back to AHS.AITutorService's already-computed
+       AI Summary/Question output for a regular material that has real AI
+       content but never had an original file either — e.g. text pasted
+       directly). A material with real uploaded bytes is completely
+       unaffected — this path only runs when no bytes ever existed. */
+    function materialExportBlocks(item) {
+      var subj = AHS.Subjects[item.subject] || { name: item.subject || "未分類" };
+      var blocks = [{ heading: item.title || "教材", kind: "title" }];
+      blocks.push({
+        heading: "教材資訊",
+        lines: [
+          "科目：" + subj.name,
+          "年級：" + (item.grade || "—"),
+          "章節：" + (item.chapter || "—"),
+          "產生日期：" + new Date().toLocaleDateString("zh-TW")
+        ]
+      });
+
+      var repo = (AHS.MaterialDetailRepositorySource && typeof AHS.MaterialDetailRepositorySource.resolve === "function")
+        ? AHS.MaterialDetailRepositorySource.resolve(item.id) : null;
+
+      var contentLines = [];
+      if (typeof item.content === "string" && item.content.trim()) {
+        contentLines = item.content.trim().split(/\r?\n/).filter(function (l) { return l.trim(); });
+      } else if (repo && Array.isArray(repo.sections) && repo.sections.length) {
+        contentLines = repo.sections;
+      }
+      blocks.push({ heading: "教材內容", lines: contentLines });
+
+      var summaryData = repo && repo.summary && repo.summary.summary;
+      if (!summaryData && AHS.AITutorService && typeof AHS.AITutorService.getLearningSummary === "function") {
+        var existingSummary = AHS.AITutorService.getLearningSummary(item.id);
+        if (existingSummary && existingSummary.summary) { summaryData = existingSummary.summary; }
+      }
+      var summaryLines = [];
+      if (summaryData) {
+        ["coreConcepts", "definitions", "importantPoints", "formulas", "keywords"].forEach(function (key) {
+          (summaryData[key] || []).forEach(function (t) {
+            var text = (t && typeof t === "object") ? t.text : t;
+            if (text) { summaryLines.push(String(text)); }
+          });
+        });
+      }
+      blocks.push({ heading: "AI 重點整理", lines: summaryLines });
+
+      var questions = repo && repo.quiz && Array.isArray(repo.quiz.questions) ? repo.quiz.questions : null;
+      if (!questions && AHS.AITutorService && typeof AHS.AITutorService.getPracticeQuestions === "function") {
+        questions = AHS.AITutorService.getPracticeQuestions(item.id);
+      }
+      var quizLines = [];
+      (questions || []).forEach(function (q, i) {
+        quizLines.push("第 " + (i + 1) + " 題：" + (q.question || ""));
+        (q.options || []).forEach(function (opt, oi) {
+          quizLines.push("　" + String.fromCharCode(65 + oi) + ". " + opt);
+        });
+        if (q.answer) { quizLines.push("正確答案：" + q.answer); }
+      });
+      blocks.push({ heading: "AI 練習題", lines: quizLines });
+
+      return blocks;
+    }
+
     /* Low-level download (explicit user action only). */
     /* Sprint 6.7 Hotfix-002 (PAT-003, Issue 001/002): root cause of
        "點擊下載無反應" — revokeObjectURL() was called synchronously
@@ -751,6 +821,19 @@ AHS.MaterialCenter = (function () {
          files can neither overwrite nor starve one another. */
       var src = downloadSourceFor(item);
       if (!src.blob && !src.dataUrl) {
+        /* HOTFIX-005 AI-502: state "none" means this material never had
+           original bytes at all (real upload failures — "oversize" /
+           "failed" — are a different, genuine problem and keep their own
+           honest messages below, unchanged). Generate a real .docx from
+           whatever this Runtime chain already has instead of a dead end. */
+        if (src.state === "none" && AHS.DocumentExport && typeof AHS.DocumentExport.buildDocxBlob === "function") {
+          var blocks = materialExportBlocks(item);
+          var docxBlob = AHS.DocumentExport.buildDocxBlob(item.title || "教材", blocks);
+          AHS.DocumentExport.downloadBlob(docxBlob, (item.title || "教材") + ".docx");
+          status.textContent = "已下載教材（依現有 Repository／AI 資料產生 .docx）：" + (item.title || "教材");
+          status.removeAttribute("hidden");
+          return;
+        }
         /* Never a silent fail — each cause gets its own precise message. */
         if (src.state === "oversize") {
           status.textContent = "此教材檔案過大，超出瀏覽器暫存空間，僅能於上傳的同一次瀏覽階段下載。";
