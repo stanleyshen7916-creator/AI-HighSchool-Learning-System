@@ -1463,6 +1463,37 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
     wbFinal.correctStreak >= 3 && pReview.window.AHS.StatisticsRuntime.masteredReviewItems()[0].id === wrongId);
 }
 
+console.log("\n[35] Platform Sync Check — Statistics 單一資料來源一致性（我的學習 vs 測驗中心）");
+{
+  /* Finding: js/components/MyLearning.js used to compute its own
+     totalCorrect/totalQuestions weighted-average "正確率" independently
+     from AHS.StatisticsRuntime.overview()'s avgAccuracy (average of each
+     exam's own accuracy%) — same real AHS.HistoryRuntime data, two
+     different formulas, two different displayed numbers. Two crafted
+     real-shaped history records with deliberately different per-exam
+     accuracy make the two formulas diverge (weighted 4/14=28.6% vs
+     unweighted mean of 75%/10%=42.5%→43%) if the bug still existed. */
+  const history = {
+    items: [
+      { id: "hist_1", order: 1, examId: "e1", subject: "math", title: "考試一", chapter: "",
+        score: 75, accuracy: 75, correctCount: 3, totalCount: 4, when: "2026/08/02 09:00" },
+      { id: "hist_2", order: 2, examId: "e2", subject: "math", title: "考試二", chapter: "",
+        score: 10, accuracy: 10, correctCount: 1, totalCount: 10, when: "2026/08/02 10:00" }
+    ], seq: 2
+  };
+  const { window, consoleErrors } = loadPage("learning.html", { seedSession: { "ahs:historyRuntime": history } });
+  const A = window.AHS;
+  const expected = A.StatisticsRuntime.overview().avgAccuracy;
+  window.document.body.appendChild(A.MyLearning.create());
+  const statValue = [...window.document.querySelectorAll(".ml-overview__stat")]
+    .find(s => s.textContent.includes("正確率"));
+  check("我的學習「正確率」與 AHS.StatisticsRuntime.overview().avgAccuracy 完全一致（單一資料來源，非重新計算）",
+    !!statValue && statValue.textContent.includes(String(expected)) && statValue.textContent.includes("%"));
+  check("非退化案例：兩公式在此組資料下真的會分歧（確認測試本身有效，不是巧合通過）",
+    expected !== Math.round((3 + 1) / (4 + 10) * 1000) / 10);
+  check("Console errors = 0（我的學習 Statistics 一致性）", consoleErrors.length === 0);
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
