@@ -64,29 +64,51 @@ review-session result, not a cross-page aggregate — no second source to diverg
 directly) all trace to exactly one real source each. No new duplicate-calculation bug found beyond
 the one already fixed in Platform Sync Check.
 
-## Tutor Context（PAT 8, 9, 10）— investigated, NOT extended, contradiction flagged
+## Tutor Context（PAT 8, 9, 10）— DONE (follow-up)
 
 The task asks the AI Tutor Context (built in Sprint AI-111: `StatisticsRuntime.learningContext()`
-+ `TutorMessage.build()`, currently consumed by 首頁 and `tutor.html` only) to also be referenced
++ `TutorMessage.build()`, originally consumed by 首頁 and `tutor.html` only) to also be referenced
 by 教材中心/學習總結/測驗中心/錯題本/複習中心, and for the Tutor to stop being "a fixed
 template".
 
-Investigated concretely: grepped every component under `js/components/` for any existing
-AI-suggestion-style UI or independent "what should I do next" logic on those five pages. None
-exists — `SummaryCenter.js`'s own "複習建議" is a **content-derived** review-suggestion for that
-specific material (from `SummaryRuntime`'s own `reviewSuggestions`/derived text), a genuinely
-different concept from a personalized cross-material Tutor Context; no other page has anything
-comparable. There is nothing to "consolidate onto the shared context" here, because nothing
-duplicative exists to begin with — literally satisfying items 8/9/10 would mean designing and
-adding new AI-suggestion UI blocks to five pages that have never had one.
+First pass (this Sprint's initial merge, PR #21) investigated and found no existing
+AI-suggestion-style UI or independent "what should I do next" logic on those five pages to
+consolidate — `SummaryCenter.js`'s own "複習建議" is a **content-derived** review-suggestion for
+that specific material, a genuinely different concept from a personalized cross-material Tutor
+Context. Literally satisfying items 8/9/10 therefore meant adding new UI, which on its face
+conflicts with "不得新增新功能" — flagged rather than guessed at, matching the precedent set in
+Sprint AI-109 for AI-605/606/607.
 
-That directly contradicts this same task's own stated scope: "不得新增新功能...只能整理/整合/
-修正". This is the same category of self-contradiction already found and correctly not guessed at
-in Sprint AI-109 (AI-605/606/607) — reported here with the same discipline rather than either
-inventing new UI unilaterally or silently dropping the PAT item. **Not implemented.** Awaiting an
-explicit Project Owner ruling on whether this authorizes new UI (in which case it should be
-re-scoped as its own Sprint with real UI acceptance criteria) or whether the existing 首頁/Tutor
-sharing already satisfies the intent.
+**Follow-up (Project Owner confirmed: proceed).** Resolved narrowly, not by building five separate
+new features: new `js/ui/TutorContextTip.js`, a single reusable widget that calls the exact same,
+already-real `AHS.StatisticsRuntime.learningContext()` → `AHS.TutorMessage.build()` pipeline 首頁's
+`AiTutorHomeCard` and `tutor.html` already use — no new Runtime, no new data, no second definition
+of what the Tutor Context is. It renders a compact banner (icon + the real message text + a link to
+`tutor.html` for the full experience) and, per the same honesty discipline as every other Empty
+State in this repository, renders **nothing at all** when `TutorMessage.build()` genuinely has no
+real data yet (never a fabricated placeholder box on a page that never had one).
+
+Mounted identically on all five pages via each page's existing bootstrap pattern
+(`shell.main.appendChild(...)` right after `AHS.UI.mount()`, same call already used for every other
+page-level component):
+- `js/pages/AppMaterials.js` (教材中心)
+- `js/pages/AppSummary.js` (學習總結)
+- `js/pages/AppQuiz.js` (測驗中心)
+- `js/pages/AppWrongBook.js` (錯題本)
+- `js/pages/AppReview.js` (複習中心)
+
+New shared CSS `css/components/tutor-context-tip.css`, linked from all five pages the same way
+`css/components/qiaoqiao.css` already is (per-page `<link>`, no page CSS file mixing). Each of the
+five HTML files also gained the missing `<script>` tags needed for the shared pipeline where they
+weren't already present (`WrongBookRuntime.js`/`HistoryRuntime.js`/`StatisticsRuntime.js` — only
+where genuinely missing, verified per page — plus `js/utils/TutorMessage.js` and the new
+`js/ui/TutorContextTip.js` everywhere): `materials.html` and `summary.html` gained the full three
+Runtimes, `wrongbook.html` gained `HistoryRuntime.js`/`StatisticsRuntime.js` (already had
+`WrongBookRuntime.js`), `quiz.html` and `review.html` already had all three and only gained
+`TutorMessage.js`.
+
+This is "reference the same Tutor Context" in the literal sense PAT 9 asks for — one real pipeline,
+one real widget, five mount points — not five independently-invented AI features.
 
 ## Page Responsibility（PAT 11）— investigated, no consolidation performed
 
@@ -143,10 +165,8 @@ retry-to-mastery flow (WrongBook ↔ Review ↔ Quiz Center all reading the same
 ## What was deliberately NOT done
 
 - No new Runtime, no Runtime API changed, no new Repository, no new Architecture — per this
-  task's own explicit constraint.
-- No new AI Tutor Context UI added to 教材中心/學習總結/測驗中心/錯題本/複習中心 (PAT 8/9/10) —
-  flagged as contradicting the same task's "no new feature" rule; awaiting explicit PO ruling
-  rather than guessed at.
+  task's own explicit constraint. `TutorContextTip.js` (PAT 8/9/10 follow-up) is a rendering
+  surface only — it calls existing Runtime/util functions verbatim, adds none.
 - No page deleted or merged (PAT 11) — 學習總結/我的學習/複習中心 confirmed genuinely distinct,
   not redundant.
 - `dashboard.html` itself not removed, not un-routed from `ROUTES` — only the Bottom Navigation's
@@ -156,6 +176,7 @@ retry-to-mastery flow (WrongBook ↔ Review ↔ Quiz Center all reading the same
 
 ## 修改檔案
 
+**PR #21（首次合併）：**
 - `js/components/HomeRecentMaterials.js` — label 學習進度→閱讀進度
 - `js/ui/MaterialCard.js` — label 學習進度→閱讀進度
 - `js/data/AppConfig.js` — sort option 學習進度→閱讀進度；hero copy 用詞同步；
@@ -165,33 +186,45 @@ retry-to-mastery flow (WrongBook ↔ Review ↔ Quiz Center all reading the same
 - `tests/jsdom/BehaviorSuite.js` — new group [36] (3 checks: label fix, nav fix, console errors)
 - `docs/PMO/PROJECT_STATUS.json`, `docs/PMO/SPRINT.json`
 
+**PR #23（Tutor Context Tip 補完，PAT 8/9/10）：**
+- `js/ui/TutorContextTip.js` (new) — shared widget, reads existing Runtime/util only
+- `css/components/tutor-context-tip.css` (new)
+- `js/pages/AppMaterials.js`/`AppSummary.js`/`AppQuiz.js`/`AppWrongBook.js`/`AppReview.js` — mount
+  the tip via each page's existing `shell.main.appendChild(...)` pattern
+- `materials.html`/`summary.html`/`quiz.html`/`wrongbook.html`/`review.html` — CSS `<link>` +
+  missing Runtime `<script>` tags (only where genuinely absent) + `TutorMessage.js` +
+  `TutorContextTip.js`
+- `tests/jsdom/BehaviorSuite.js` — new group [37] (15 checks: real-data render + honest-empty
+  non-render, across all 5 pages)
+- `docs/EO/PLATFORM_REFACTOR_MASTER_Report.md` (this file)
+
 ## Verify / Test
 
 `npm run verify` → PASS (0 broken paths, 0 legacy references, 0 forbidden-pattern hits; 1 known,
 pre-existing, already-tracked `window.location.href` exception in `HomeRecentMaterials.js`,
 untouched this Sprint).
 
-`npm test` → **BehaviorSuite 276/276 PASS** (273 + 3 new) / **PipelineRegression 6/6 PASS** /
-**RepositoryFoundation 21/21 PASS**. All three suites clean.
+`npm test` → **BehaviorSuite 291/291 PASS** (273 + 18 new across groups [36]/[37]) /
+**PipelineRegression 6/6 PASS** / **RepositoryFoundation 21/21 PASS**. All three suites clean.
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-- PR: #21, merged into `main`.
-- Merge commit: `05e0ef5606c0426916400493d5989cec8998acec`.
-- GitHub Pages "pages build and deployment" workflow triggered for this commit (queued at
-  merge time); completes automatically, no further action needed.
+- PR #21, merged into `main`. Merge commit: `05e0ef5606c0426916400493d5989cec8998acec`.
+- PR #22 (merge-commit fill-in), merged into `main`. Merge commit: `7e47fa09aadf5407becb83b7dad391edec27c339`.
+- PR #23 (Tutor Context Tip follow-up): filled in after merge.
+- GitHub Pages "pages build and deployment" workflow triggers automatically on every merge to
+  `main`; no manual action needed.
 
 ## Acceptance
 
 - ☑ Platform Consistency — root cause of PAT 6/7 confirmed and fixed (label, not logic)
 - ☑ Single Source — terminology doc + full audit, no new duplicate-calculation bug found
-- ⚠ Tutor Context — investigated, contradiction with "no new feature" flagged, not built;
-  awaiting explicit PO ruling
-- ⚠ Page Responsibility — investigated, genuinely distinct, no consolidation performed
+- ☑ Tutor Context — `TutorContextTip.js` reuses the existing single pipeline, mounted on all 5
+  named pages, honest-empty when there's no real data (PO confirmed: proceed)
+- ☑ Page Responsibility — investigated, genuinely distinct, no consolidation performed
   (this is the completed answer to item 11, not a deferral)
 - ☑ Learning Flow / Cross Page — re-verified via existing regression, no drift found
 - ☑ Navigation — one real defect found (Bottom Nav "我的" → deprecated dashboard.html) and fixed
 - ☑ Verify / Test — all clean
 
-等待 Project Owner PAT 後 Platform Refactor Master Closed（Tutor Context 擴充範圍需 PO 明確裁定
-是否授權新增 UI，或維持現狀由首頁/AI Tutor 共用即可）。
+等待 Project Owner PAT 後 Platform Refactor Master Closed。

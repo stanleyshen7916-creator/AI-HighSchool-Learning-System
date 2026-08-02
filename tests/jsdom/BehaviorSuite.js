@@ -1524,6 +1524,43 @@ console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/
     !!bottomMe && bottomMe.getAttribute("href") === "learning.html");
 }
 
+console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10：教材/學習總結/測驗中心/錯題本/複習中心共用同一 Tutor Context）");
+{
+  /* Same real WrongBookRuntime record shape AI-111's own groups use.
+     correctStreak: 0 (< 3) makes it a real "due for review" item, so
+     AHS.TutorMessage.build() (the exact same function 首頁/tutor.html
+     already call) produces a real, non-null message — proving these 5
+     pages now read from the identical single source, not a re-derived
+     or fabricated one. */
+  const wrongBookSeed = {
+    items: [{
+      id: "wb_1", questionId: "q1", subject: "math", title: "測試教材",
+      chapter: "第一章", materialId: "rt_1", knowledgePoint: "二次函數",
+      question: "1+1=?", options: ["1", "2"], yourAnswer: "1", correctAnswer: "2",
+      explanation: "", errorCount: 1, lastError: "2026/08/02 10:00",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1
+  };
+  const pages = ["materials.html", "summary.html", "quiz.html", "wrongbook.html", "review.html"];
+
+  pages.forEach(function (page) {
+    const { window, consoleErrors } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+    const tip = window.document.querySelector(".tutor-tip");
+    check(page + "：Tutor Context Tip 渲染真實建議（與首頁/AI Tutor 同一組真實資料來源）",
+      !!tip && tip.textContent.includes("錯題本中有") && tip.getAttribute("href") === "tutor.html");
+    check(page + "：Console errors = 0（Tutor Context Tip）", consoleErrors.length === 0);
+  });
+
+  /* Honesty check: with genuinely no real data anywhere, the tip must
+     render nothing at all — never an Empty State placeholder box added
+     to a page that never had one, and never fabricated filler text. */
+  pages.forEach(function (page) {
+    const { window } = loadPage(page, { excludeScripts: ["data/materials/"] });
+    check(page + "：無真實資料時 Tutor Context Tip 不渲染（誠實，非假建議）",
+      !window.document.querySelector(".tutor-tip"));
+  });
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

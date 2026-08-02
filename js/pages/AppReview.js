@@ -132,6 +132,13 @@ window.AHS = window.AHS || {};
 
     var page = document.createElement("div");
     page.className = "rv-page";
+
+    /* Platform Refactor Master (PAT 8/9/10): same real Tutor Context
+       首頁/AI Tutor already share (Sprint AI-111), reused verbatim —
+       renders nothing when there is no real data yet. */
+    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create();
+    if (tip) { page.appendChild(tip); }
+
     page.appendChild(AHS.ReviewHomeCard.create(stats));
 
     var row = document.createElement("div");
