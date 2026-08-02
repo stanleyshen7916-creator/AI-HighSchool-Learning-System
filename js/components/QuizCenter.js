@@ -369,6 +369,21 @@ AHS.QuizCenter = (function () {
       ? (AHS.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {}) : {};
     var entries = [];
 
+    /* Sprint AI-109 AI-602: real per-material stats from AHS.HistoryRuntime
+       (now PersistenceAdapter-backed — AI-601/602's own persistence fix —
+       so these survive page navigation, not just a same-page session),
+       filtered by this material's own examId. No fabricated numbers: a
+       material never attempted keeps progress/accuracy/best at a real,
+       honest 0/false, exactly like a Mock item that's never been taken. */
+    function realStatsFor(examId) {
+      var history = (AHS.HistoryRuntime && typeof AHS.HistoryRuntime.list === "function")
+        ? AHS.HistoryRuntime.list() : [];
+      var attempts = history.filter(function (h) { return h.examId === examId; });
+      if (!attempts.length) { return { progress: 0, accuracy: 0, best: 0, done: false, attempts: 0 }; }
+      var best = attempts.reduce(function (max, h) { return Math.max(max, h.score || 0); }, 0);
+      return { progress: 100, accuracy: attempts[0].accuracy || 0, best: best, done: true, attempts: attempts.length };
+    }
+
     function addEntry(sourceId, meta, questionsForDifficulty) {
       var runtimeId = idMap[sourceId];
       if (!runtimeId) { return; }
@@ -376,6 +391,7 @@ AHS.QuizCenter = (function () {
       if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function" ||
           !AHS.QuestionRuntime.hasExam(examId)) { return; }
       var set = (typeof AHS.QuestionRuntime.getSet === "function") ? AHS.QuestionRuntime.getSet(examId) : [];
+      var stats = realStatsFor(examId);
       entries.push({
         _repoExamId: examId,
         subject: meta.subjectKey || "",
@@ -385,10 +401,10 @@ AHS.QuizCenter = (function () {
         difficulty: modeDifficulty(questionsForDifficulty),
         type: "單選題",
         count: set.length,
-        progress: 0,
-        accuracy: 0,
-        best: 0,
-        done: false
+        progress: stats.progress,
+        accuracy: stats.accuracy,
+        best: stats.best,
+        done: stats.done
       });
     }
 
@@ -971,12 +987,29 @@ AHS.QuizCenter = (function () {
        — since its questions are already real and already imported, not
        something to (re)generate. Falls back to plain `data` (unchanged
        behavior) when no Repository material has been imported yet. */
+    /* Sprint AI-109 AI-604: 科目篩選 chips no longer stop at
+       AHS.AppConfig.quiz.subjects's own fixed Mock list — any real
+       subject a Repository material actually has (e.g. "civics", not in
+       that fixed list at all) is appended so filtering/chips genuinely
+       reflect what's in the Repository. AHS.AppConfig.quiz.subjects
+       itself is never modified — this only extends the LOCAL data object
+       passed into buildListView() for this one render. Only real,
+       AHS.Subjects-valid keys are added (never an unmapped id, which
+       filterBar()'s chip rendering has no fallback for). */
     function mergedListData() {
       var repoItems = repositoryExamCatalog();
       if (!repoItems.length) { return data; }
       var merged = {};
       Object.keys(data).forEach(function (k) { merged[k] = data[k]; });
       merged.items = (data.items || []).concat(repoItems);
+
+      var subjects = (data.subjects || []).slice();
+      repoItems.forEach(function (it) {
+        if (it.subject && AHS.Subjects[it.subject] && subjects.indexOf(it.subject) === -1) {
+          subjects.push(it.subject);
+        }
+      });
+      merged.subjects = subjects;
       return merged;
     }
 
