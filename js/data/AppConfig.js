@@ -32,7 +32,7 @@ AHS.AppConfig = {
     startLabel: "開始今日學習",
     continueLabel: "繼續昨天進度",
     startFeedback: "從上傳教材開始今天的學習吧！",
-    continueFeedback: "回到教材中心繼續你的學習進度。"
+    continueFeedback: "回到教材中心繼續你的閱讀進度。"
   },
 
   materials: {
@@ -40,7 +40,7 @@ AHS.AppConfig = {
     subtitle: "探索、學習與下載各科教材資源",
     categories: ["全部分類", "課本", "講義", "考卷", "筆記", "補充資料", "影片", "其他"],
     grades: ["高一", "高二", "高三"],
-    sorts: ["最新上傳", "最多觀看", "學習進度"],
+    sorts: ["最新上傳", "最多觀看", "閱讀進度"],
     formats: ["全部格式", "PDF", "PPT", "PPTX", "DOC", "DOCX", "XLS", "XLSX", "TXT", "MP4", "MP3", "JPG", "JPEG", "PNG", "GIF", "WEBP", "其他"],
     /* subjectCounts is a template of the nine fixed subjects; the REAL
        per-subject counts are computed from AHS.MaterialRuntime at page
@@ -117,12 +117,23 @@ AHS.AppConfig = {
       { id: "learning", label: "我的學習", icon: "learning" },
       { id: "tutor", label: "AI Tutor", icon: "tutor" }
     ],
+    /* Platform Refactor Master (Platform Integration): "我的" previously
+       routed to id "dashboard" (dashboard.html) — a page already dropped
+       from the Sidebar by EO-S5-002 (comment above the old Sidebar items
+       list explains: 新 IA 未列出「儀表板」) because 我的學習 (learning.html)
+       is the real, Runtime-backed replacement. The Sidebar was updated at
+       the time; this Bottom Navigation entry was missed, so mobile users'
+       only "my stats" destination stayed on the deprioritized page while
+       desktop users already got the fuller, real one. Fixed to match the
+       Sidebar's own already-established precedent — no new destination
+       introduced, dashboard.html itself is untouched and still reachable
+       by direct URL. */
     bottomItems: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材", icon: "book" },
       { id: "quiz", label: "測驗", icon: "quiz" },
       { id: "review", label: "複習", icon: "clock" },
-      { id: "dashboard", label: "我的", icon: "tutor" }
+      { id: "learning", label: "我的", icon: "learning" }
     ]
   },
 
