@@ -31,6 +31,12 @@ window.AHS = window.AHS || {};
 
     AHS.UI.mount(app, shell.root);
 
+    /* Platform Refactor Master (PAT 8/9/10): same real Tutor Context
+       首頁/AI Tutor already share (Sprint AI-111), reused verbatim —
+       renders nothing when there is no real data yet. */
+    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create();
+    if (tip) { shell.main.appendChild(tip); }
+
     var params = new URLSearchParams(window.location.search);
     var mode = params.get("mode") || undefined;
     var materialId = params.get("materialId") || undefined;
