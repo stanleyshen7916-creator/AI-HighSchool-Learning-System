@@ -72,10 +72,102 @@ AHS.StatisticsRuntime = (function () {
     };
   }
 
+  /* ---- Sprint AI-111 additions (AI-609/611/612) --------------------------
+     Still purely computed — every function below reads only
+     AHS.WrongBookRuntime.list() / AHS.HistoryRuntime.list() fresh on each
+     call, stores nothing of its own, and is additive to this file's
+     existing Public API (overview/accuracyBySubject/getSubject/refresh
+     are all unchanged). This is the single, real source both 複習中心
+     (AppReview.js), 首頁 (AppHome.js) and AI Tutor (AiTutor.js /
+     AiTutorHomeCard) read from — "不得建立第二份統計". */
+
+  function wrongItems() {
+    return (AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.list === "function")
+      ? AHS.WrongBookRuntime.list() : [];
+  }
+
+  /* dueForReview() — real WrongBookRuntime entries not yet 已精熟 (AI-610's
+     own real correctStreak field, persisted). This is the same, single,
+     deterministic "three consecutive correct reviews" rule WrongBook.js's
+     own getMasteryStatus() already uses — not a second definition, not an
+     AI-inferred schedule ("不得自動排程" is respected: no date/time
+     reasoning here, just "has this real wrong item been mastered yet"). */
+  function dueForReview() {
+    return wrongItems().filter(function (w) { return (w.correctStreak || 0) < 3; });
+  }
+
+  function masteredReviewItems() {
+    return wrongItems().filter(function (w) { return (w.correctStreak || 0) >= 3; });
+  }
+
+  /* recentWrongItems(limit) — most recently missed real entries. */
+  function recentWrongItems(limit) {
+    var items = wrongItems().slice().sort(function (a, b) {
+      return (b.lastError || "").localeCompare(a.lastError || "");
+    });
+    return typeof limit === "number" ? items.slice(0, limit) : items;
+  }
+
+  /* weakestSubject() — the real subject with the lowest average accuracy
+     among exams actually taken; null when there's no history yet (never
+     a fabricated "weakness"). */
+  function weakestSubject() {
+    var all = accuracyBySubject();
+    if (!all.length) { return null; }
+    return all.slice().sort(function (a, b) { return a.percent - b.percent; })[0];
+  }
+
+  /* recommendedRetest() — the real, already-taken exam with the lowest
+     accuracy, worth retaking; null with no history. Deterministic
+     (lowest-accuracy-first), not an AI/opaque ranking. */
+  function recommendedRetest() {
+    var items = AHS.HistoryRuntime.list();
+    if (!items.length) { return null; }
+    return items.slice().sort(function (a, b) { return (a.accuracy || 0) - (b.accuracy || 0); })[0];
+  }
+
+  /* recommendedChapters(limit) — real chapters with the most outstanding
+     (not-yet-mastered) wrong items, most first. */
+  function recommendedChapters(limit) {
+    var bucket = {};
+    dueForReview().forEach(function (w) {
+      var key = w.chapter || "";
+      if (!key) { return; }
+      bucket[key] = (bucket[key] || 0) + 1;
+    });
+    var chapters = Object.keys(bucket).map(function (chapter) {
+      return { chapter: chapter, count: bucket[chapter] };
+    }).sort(function (a, b) { return b.count - a.count; });
+    return typeof limit === "number" ? chapters.slice(0, limit) : chapters;
+  }
+
+  /* learningContext() — the single real view-model both 首頁 (AiTutorHomeCard)
+     and AI Tutor (tutor.html) build their message text from. Every field
+     is real, derived fresh; a genuinely-empty repository/session yields
+     empty arrays/nulls (callers must show an honest empty state, never
+     invent text — see AiTutorHomeCard.js's own existing Empty State). */
+  function learningContext() {
+    return {
+      weakestSubject: weakestSubject(),
+      dueForReview: dueForReview(),
+      masteredCount: masteredReviewItems().length,
+      recentWrongItems: recentWrongItems(3),
+      recommendedRetest: recommendedRetest(),
+      recommendedChapters: recommendedChapters(3)
+    };
+  }
+
   return {
     overview: overview,
     accuracyBySubject: accuracyBySubject,
     getSubject: getSubject,
-    refresh: refresh
+    refresh: refresh,
+    dueForReview: dueForReview,
+    masteredReviewItems: masteredReviewItems,
+    recentWrongItems: recentWrongItems,
+    weakestSubject: weakestSubject,
+    recommendedRetest: recommendedRetest,
+    recommendedChapters: recommendedChapters,
+    learningContext: learningContext
   };
 })();

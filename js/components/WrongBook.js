@@ -22,20 +22,15 @@ AHS.WrongBook = (function () {
   }
 
   /* WS-001: Mastered Rule — three consecutive correct reviews -> 已精熟.
-     No field for this exists on WrongBookRuntime, and adding one is a
-     Runtime schema change (forbidden this Work Order); persisting via
-     localStorage is also forbidden. Implemented as session-scoped,
-     in-memory state — the same durability class WrongBookRuntime itself
-     already has (it also starts empty every reload, per earlier PMO
-     ruling R2 — "this is EXPECTED behavior"). Fully automatic, no manual
-     setting; resets on page reload along with everything else. */
-  var masteryTracker = {}; // { [itemId]: consecutiveCorrectCount }
-
-  function recordReviewResult(itemId, wasCorrect) {
-    masteryTracker[itemId] = wasCorrect ? (masteryTracker[itemId] || 0) + 1 : 0;
-  }
-  function getMasteryStatus(itemId) {
-    var count = masteryTracker[itemId] || 0;
+     Sprint AI-111 AI-610: now backed by WrongBookRuntime's own real,
+     persisted `correctStreak` field (see that file's recordRetry(),
+     additive) instead of a session-scoped, in-memory-only local tracker —
+     the previous version was invisible to any other page/Runtime and
+     lost on reload, so a real "答對" never actually reached
+     WrongBookRuntime/Review/Statistics as this Sprint requires. Pure
+     derivation, no local state of its own anymore. */
+  function getMasteryStatus(correctStreak) {
+    var count = correctStreak || 0;
     if (count >= 3) { return "已精熟"; }
     if (count > 0) { return "複習中"; }
     return "待複習";
@@ -224,7 +219,7 @@ AHS.WrongBook = (function () {
     return {
       total: items.length,
       dueToday: 0,
-      mastered: items.filter(function (i) { return getMasteryStatus(i.id) === "已精熟"; }).length,
+      mastered: items.filter(function (i) { return getMasteryStatus(i.correctStreak) === "已精熟"; }).length,
       favorite: items.filter(function (i) { return i.bookmarked; }).length
     };
   }
@@ -444,7 +439,7 @@ AHS.WrongBook = (function () {
       el("div", { class: "wb-row__info" }, [
         el("h3", { class: "wb-row__title", text: item.title }),
         el("p", { class: "wb-row__meta", text: item.chapter }),
-        el("div", { class: "wb-row__status" }, [statusTag(getMasteryStatus(item.id))]),
+        el("div", { class: "wb-row__status" }, [statusTag(getMasteryStatus(item.correctStreak))]),
         favBadge
       ]),
       el("div", { class: "wb-row__col wb-row__col--diff" }, [diffTag(deriveDifficulty(item))]),
@@ -635,7 +630,7 @@ AHS.WrongBook = (function () {
         chip(item.subject),
         el("span", { class: "wb-detail__chapter", text: item.chapter }),
         diffTag(deriveDifficulty(item)),
-        el("span", { class: "wb-detail__status" }, [statusTag(getMasteryStatus(item.id))])
+        el("span", { class: "wb-detail__status" }, [statusTag(getMasteryStatus(item.correctStreak))])
       ]),
       el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
       options,
@@ -714,18 +709,20 @@ AHS.WrongBook = (function () {
       var statusSlot = pair.row.querySelector(".wb-row__status");
       if (statusSlot) {
         statusSlot.innerHTML = "";
-        statusSlot.appendChild(statusTag(getMasteryStatus(pair.item.id)));
+        statusSlot.appendChild(statusTag(getMasteryStatus(pair.item.correctStreak)));
       }
     }
 
     /* WB-004 core: Answer Again -> Auto Grade -> Update Wrong Count ->
-       (mastery tracking, WS-001) -> row chips refresh -> Summary refresh.
-       Wrong re-answers use runtime.sync() (existing API) with the SAME
-       questionId, which bumps errorCount/lastError in place rather than
-       creating a duplicate record. Correct re-answers have no Runtime
-       concept to update (Runtime only ever tracks wrong answers) — only
-       the session-scoped mastery tracker advances. Shared by both the
-       single-question flow and the batch Review Mode (WB-008). */
+       real mastery tracking (AI-610) -> row chips refresh -> Summary
+       refresh. Wrong re-answers use runtime.sync() (existing API) with
+       the SAME questionId, which bumps errorCount/lastError in place
+       rather than creating a duplicate record. Correct re-answers now
+       call runtime.recordRetry() (Sprint AI-111 AI-610, additive) so
+       progress toward 已精熟 is real and persisted, not session-local —
+       AHS.StatisticsRuntime and 複習中心 read this same real field.
+       Shared by both the single-question flow and the batch Review Mode
+       (WB-008). */
     function applyReviewResult(itemId, wasCorrect, selectedKey) {
       var pair = getPairById(itemId);
       if (!pair) { return null; }
@@ -746,7 +743,10 @@ AHS.WrongBook = (function () {
       } else {
         pair.item.yourAnswer = selectedKey;
       }
-      recordReviewResult(itemId, wasCorrect);
+      if (typeof runtime.recordRetry === "function") {
+        var retried = runtime.recordRetry(itemId, wasCorrect);
+        if (retried) { Object.keys(retried).forEach(function (k) { pair.item[k] = retried[k]; }); }
+      }
       refreshRowChips(pair);
       if (summary && summary.refresh) { summary.refresh(runtime.list()); }
       return pair;
@@ -818,11 +818,11 @@ AHS.WrongBook = (function () {
       function renderStep() {
         var item = queue[index];
         var interaction = buildReviewInteraction(item, function (wasCorrect, selectedKey) {
-          var wasMasteredBefore = getMasteryStatus(item.id) === "已精熟";
+          var wasMasteredBefore = getMasteryStatus(item.correctStreak) === "已精熟";
           applyReviewResult(item.id, wasCorrect, selectedKey);
           syncV1OnReviewResult(item, wasCorrect, selectedKey);
           if (wasCorrect) { results.correct += 1; } else { results.wrong += 1; }
-          if (!wasMasteredBefore && getMasteryStatus(item.id) === "已精熟") { results.newlyMastered += 1; }
+          if (!wasMasteredBefore && getMasteryStatus(item.correctStreak) === "已精熟") { results.newlyMastered += 1; }
           index += 1;
           if (index < queue.length) { renderStep(); } else { renderResult(); }
         });
@@ -978,7 +978,7 @@ AHS.WrongBook = (function () {
         // above), so these compare against the derived value, not a
         // nonexistent item.difficulty/item.status field.
         var difficultyMatch = difficultyFilter === "all" || deriveDifficulty(p.item) === difficultyFilter;
-        var statusMatch = statusFilter === "all" || getMasteryStatus(p.item.id) === statusFilter;
+        var statusMatch = statusFilter === "all" || getMasteryStatus(p.item.correctStreak) === statusFilter;
         var searchMatch = !searchText || searchable(p.item).indexOf(searchText) !== -1;
         var favoriteMatch = !favoriteOnly || p.item.bookmarked;
         return subjectMatch && knowledgeMatch && difficultyMatch && statusMatch && searchMatch && favoriteMatch;

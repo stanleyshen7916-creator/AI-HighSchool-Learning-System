@@ -7,13 +7,15 @@
    longer share the same navigation.
 
    開始今日複習 → checks model.dueToday (real number, computed for real in
-   ReviewHome.js from the same source Statistics uses). If > 0 it would
-   create a Today's Review Session and enter it — but dueToday is fixed
-   at 0 across the whole repository (no due-date concept exists anywhere;
-   the same acknowledged gap as Wrong Book's 今日待複習, and this EO
-   forbids new Architecture/features), so that branch is real code but
-   currently unreachable. The reachable branch — dueToday === 0 — shows
-   the exact Empty State copy specified in EO-S5-003.
+   AppReview.js from AHS.StatisticsRuntime.dueForReview()). Sprint AI-111
+   AI-609/AI-610 gave dueToday a real, non-fixed value (WrongBookRuntime's
+   own persisted correctStreak field — "not yet 已精熟"), so this branch
+   is reachable now. Rather than inventing a new "Review Session" screen
+   (still out of scope — "不得新增功能入口"/"不得重新設計 UI" this Sprint
+   too), the same real destination 錯題複習 already links to
+   (wrongbook.html) is reused: dueToday's own items ARE WrongBookRuntime
+   entries, so this is the same content, not a fabricated new one. The
+   dueToday === 0 branch keeps the exact existing Empty State copy.
 
    錯題複習 → checks model.hasWrongItems, a real read of the existing
    AHS.WrongBookRuntime.list() (done once in ReviewHome.js, not created
@@ -53,21 +55,29 @@ AHS.ReviewQuickAction = (function () {
       status.removeAttribute("hidden");
     }
 
-    /* ---- 開始今日複習 ---------------------------------------------------- */
-    var startBtn = el("button", {
-      type: "button", class: "rv-quick__btn rv-quick__btn--primary"
-    }, iconLabel("play", "開始今日複習"));
-    startBtn.addEventListener("click", function () {
-      if (handlers.onStartToday) { handlers.onStartToday(); }
-      if (model.dueToday > 0) {
-        /* Real branch, currently unreachable — see file header note.
-           Kept honest rather than building a Review Session destination
-           (new Architecture/feature, out of scope this EO). */
-        feedback("Review Session 尚未實作");
-      } else {
+    /* ---- 開始今日複習 ----------------------------------------------------
+       Sprint AI-111: dueToday > 0 now renders as a real link to
+       wrongbook.html — the exact same destination/pattern 錯題複習 below
+       already uses, since dueToday's items ARE the real WrongBookRuntime
+       entries not yet 已精熟. dueToday === 0 keeps the existing button +
+       Empty State copy, unchanged. */
+    var startBtn;
+    if (model.dueToday > 0) {
+      startBtn = el("a", {
+        class: "rv-quick__btn rv-quick__btn--primary", href: "wrongbook.html"
+      }, iconLabel("play", "開始今日複習"));
+      startBtn.addEventListener("click", function () {
+        if (handlers.onStartToday) { handlers.onStartToday(); }
+      });
+    } else {
+      startBtn = el("button", {
+        type: "button", class: "rv-quick__btn rv-quick__btn--primary"
+      }, iconLabel("play", "開始今日複習"));
+      startBtn.addEventListener("click", function () {
+        if (handlers.onStartToday) { handlers.onStartToday(); }
         feedback("今天沒有待複習內容。可先完成新的測驗或前往錯題本。");
-      }
-    });
+      });
+    }
 
     /* ---- 錯題複習 ---------------------------------------------------------
        Real check, decided once at render time (same pattern AppShell.js
