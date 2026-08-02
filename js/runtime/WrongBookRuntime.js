@@ -1,17 +1,45 @@
 /* js/runtime/WrongBookRuntime.js — Sprint 4 · Quiz Runtime Foundation.
    WrongBookRuntime is the Quiz-Runtime-driven 錯題 store, following the
-   same pattern already locked by AHS.MaterialRuntime: a plain in-memory
-   store under window.AHS, starting EMPTY (no seed). It grows only via
+   same pattern already locked by AHS.MaterialRuntime: a store under
+   window.AHS, starting EMPTY (no seed). It grows only via
    sync(gradedResult) — called after AutoGrader.grade() — never by
    reading AHS.Mock.wrongBook. AHS.Mock.wrongBook is left untouched as
    Developer Seed Data / static UI reference for the existing
    WrongBook.js page and is not read by this Runtime.
-   PascalCase component under window.AHS. */
+
+   Sprint AI-109 AI-601 (Runtime Integration, root cause fix): this store
+   was plain in-memory only, with no AHS.PersistenceAdapter hydrate/
+   persist calls anywhere in this file — every other page-navigation in
+   this multi-page app re-evaluates this IIFE from scratch, so a real
+   wrong answer recorded via sync() on quiz.html was silently lost the
+   moment the user navigated to wrongbook.html (a genuine "Runtime
+   island" at the page-navigation boundary, not just a same-page
+   nice-to-have). Fixed with the exact same hydrate()/persist() pattern
+   AHS.MaterialRuntime/AHS.SummaryRuntime already use — same Public API
+   (list/isEmpty/getById/sync/toggleBookmark/reset), same field shape,
+   nothing renamed or removed; only real state now survives navigation
+   within the same browser session, exactly like every other Runtime
+   this app already trusts sessionStorage for. */
 window.AHS = window.AHS || {};
 AHS.WrongBookRuntime = (function () {
   "use strict";
 
-  var store = { items: [], seq: 0 };
+  var STORAGE_KEY = "wrongBookRuntime";
+
+  function hydrate() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function") {
+      var loaded = AHS.PersistenceAdapter.load(STORAGE_KEY);
+      if (loaded && Array.isArray(loaded.items)) { return loaded; }
+    }
+    return null;
+  }
+
+  function persist() {
+    if (!AHS.PersistenceAdapter || typeof AHS.PersistenceAdapter.save !== "function") { return; }
+    AHS.PersistenceAdapter.save(STORAGE_KEY, store);
+  }
+
+  var store = hydrate() || { items: [], seq: 0 };
 
   function list() {
     return clone(store.items);
@@ -58,6 +86,13 @@ AHS.WrongBookRuntime = (function () {
           subject: gradedResult.subject,
           title: gradedResult.title,
           chapter: gradedResult.chapter,
+          /* AI-601: real material-source link — w.materialId comes
+             straight from the question record's own, already-real
+             materialId field (see AutoGrader.js's own additive change),
+             never fabricated; "" when the source question genuinely has
+             none (e.g. a Mock/QuestionBank-generated Exam Mode question
+             with no material behind it). */
+          materialId: w.materialId || "",
           knowledgePoint: w.knowledgePoint,
           question: w.text,
           options: w.options,
@@ -72,6 +107,7 @@ AHS.WrongBookRuntime = (function () {
         touched.push(record);
       }
     });
+    persist();
     return clone(touched);
   }
 
@@ -79,6 +115,7 @@ AHS.WrongBookRuntime = (function () {
     for (var i = 0; i < store.items.length; i++) {
       if (store.items[i].id === id) {
         store.items[i].bookmarked = !store.items[i].bookmarked;
+        persist();
         return store.items[i].bookmarked;
       }
     }
@@ -97,6 +134,7 @@ AHS.WrongBookRuntime = (function () {
   /* reset() — test helper; clears back to first-open state. */
   function reset() {
     store = { items: [], seq: 0 };
+    persist();
   }
 
   return {

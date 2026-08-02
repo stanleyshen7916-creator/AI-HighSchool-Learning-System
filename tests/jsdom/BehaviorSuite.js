@@ -1304,6 +1304,60 @@ console.log("\n[32] HOTFIX-005 AI-504 — 匯出筆記：直接產生真實 Mark
   check("Console errors = 0（匯出筆記）", consoleErrors.length === 0);
 }
 
+console.log("\n[33] Sprint AI-109 — Learning Runtime Integration（AI-601/602/604）");
+{
+  /* AI-601/602 root cause: WrongBookRuntime/HistoryRuntime were plain
+     in-memory stores with no AHS.PersistenceAdapter hydrate/persist
+     calls anywhere — a real wrong answer recorded on quiz.html was lost
+     the instant the browser navigated to a different page (a genuine
+     multi-page-app "Runtime island", not caught by earlier PATs since
+     those all stayed within one simulated jsdom `window`). This
+     reproduces a REAL cross-page journey: quiz.html (real Civics exam,
+     answer wrong on purpose) -> carry sessionStorage forward exactly like
+     a real browser tab does -> a FRESH page load of wrongbook.html and
+     quiz.html, proving the data survived the navigation. */
+  const p1 = loadPage("quiz.html", {});
+  const A1 = p1.window.AHS;
+  const examId = "teaching_material_" + A1.MaterialRuntime.list()[0].id;
+  const meta = A1.TeachingMaterialLoader.resolveExamMeta(examId) || {};
+  const session = A1.ExamRuntime.startFromExam(examId, meta);
+  const qs = A1.QuestionRuntime.getSet(examId);
+  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
+  const finished = A1.ExamRuntime.finish(examId);
+  const graded = A1.AutoGrader.grade(finished);
+  A1.WrongBookRuntime.sync(graded);
+  A1.HistoryRuntime.record(graded);
+
+  check("AI-601: AutoGrader.grade() 的 wrong[] 帶有真實 materialId（來自題目本身）", graded.wrong[0].materialId === A1.MaterialRuntime.list()[0].id);
+
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+
+  const p2 = loadPage("wrongbook.html", { seedSession: carried });
+  const wbList = p2.window.AHS.WrongBookRuntime.list();
+  check("AI-601: 錯題跨頁存活（WrongBookRuntime 現在有 PersistenceAdapter 持久化）", wbList.length === 1);
+  const wb = wbList[0];
+  check("AI-601: 錯題本紀錄包含全部必要欄位", wb.question && wb.correctAnswer && wb.yourAnswer &&
+    wb.errorCount === 1 && wb.lastError && wb.subject && wb.chapter && wb.materialId);
+  check("AI-601: 教材來源為真實 materialId（非空、非虛構）", wb.materialId === A1.MaterialRuntime.list()[0].id);
+
+  p2.window.document.body.appendChild(p2.window.AHS.WrongBook.create());
+  check("AI-601: 錯題本頁面（非僅 Runtime）真的渲染出這筆真實錯題", p2.window.document.body.textContent.includes(wb.question.slice(0, 6)));
+
+  const p3 = loadPage("quiz.html", { seedSession: carried });
+  p3.window.document.body.appendChild(p3.window.AHS.QuizCenter.create());
+  const repoRow3 = p3.window.document.querySelector(".quiz-row");
+  check("AI-602: 測驗中心的真實統計跨頁存活（不需重新整理同一頁面才看到）",
+    !!repoRow3 && repoRow3.classList.contains("is-done") &&
+    /100%/.test(repoRow3.querySelector(".quiz-row__metric-val").textContent) &&
+    repoRow3.querySelector(".quiz-row__metric-strong").textContent !== "0%");
+
+  check("AI-604: 科目篩選 chips 依 Repository 動態新增「公民」，不再固定寫死清單",
+    [...p3.window.document.querySelectorAll(".quiz-filter__subject")].some(b => b.textContent === "公民"));
+
+  check("Console errors = 0（Sprint AI-109 跨頁流程）", p1.consoleErrors.length === 0 && p2.consoleErrors.length === 0 && p3.consoleErrors.length === 0);
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
