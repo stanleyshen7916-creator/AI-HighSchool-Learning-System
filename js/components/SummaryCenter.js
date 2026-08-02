@@ -266,6 +266,46 @@ AHS.SummaryCenter = (function () {
     return el("div", { class: "sum-footer" }, [readBtn, practiceLink, examLink, aiGenerateEntry]);
   }
 
+  /* HOTFIX-004 Issue 001: ⑤ 複習建議 derivation, used only when
+     record.reviewSuggestions (SummaryRuntime's own, real field — never
+     modified here) is genuinely empty. Never calls an AI, never re-
+     analyses the material, never waits for a button — reads only fields
+     record ALREADY has (coreConcepts/memorize/pitfalls/chapter/section),
+     which themselves already came from the Teaching Material Repository
+     (via TeachingMaterialLoader.js, HOTFIX-002) — no new Repository
+     lookup, no new file, no fabricated content. If reviewSuggestions is
+     already real (any future Repository/EO populates it directly), that
+     wins unconditionally; if the record has no underlying data at all
+     either (the honest Stub-pipeline pending state), this returns []
+     and the existing "尚無資料" rendering is untouched. */
+  function deriveReviewSuggestions(record) {
+    if (Array.isArray(record.reviewSuggestions) && record.reviewSuggestions.length) {
+      return record.reviewSuggestions;
+    }
+    var suggestions = [];
+
+    var order = [record.chapter, record.section].filter(Boolean).join("→");
+    if (order) {
+      suggestions.push("建議閱讀順序：先複習「" + order + "」的內容，再依序進行後續章節。");
+    }
+
+    var coreCount = Array.isArray(record.coreConcepts) ? record.coreConcepts.length : 0;
+    var memorizeCount = Array.isArray(record.memorize) ? record.memorize.length : 0;
+    if (coreCount || memorizeCount) {
+      var parts = [];
+      if (coreCount) { parts.push(coreCount + " 個核心概念"); }
+      if (memorizeCount) { parts.push(memorizeCount + " 項必背重點"); }
+      suggestions.push("建議複習方式：本教材整理了" + parts.join("、") +
+        "，建議先閱讀重點整理，再搭配練習題確認理解程度。");
+    }
+
+    if (Array.isArray(record.pitfalls) && record.pitfalls.length) {
+      suggestions.push("建議注意事項：" + record.pitfalls.slice(0, 3).join("；"));
+    }
+
+    return suggestions;
+  }
+
   /* ---- One Summary Runtime record ---------------------------------------- */
   function summaryRecordCard(record) {
     var subj = AHS.Subjects[record.subject] || { name: record.subject || "未分類", hex: "#6b7280" };
@@ -308,10 +348,15 @@ AHS.SummaryCenter = (function () {
       return Array.isArray(record[s.key]) && record[s.key].length;
     });
 
+    var effectiveReviewSuggestions = deriveReviewSuggestions(record);
+
     var sections;
     if (anyContent) {
       sections = el("div", { class: "sum-section-grid" },
-        fiveSections.map(function (s) { return sectionList(s.key, s.icon, s.title, record[s.key]); }));
+        fiveSections.map(function (s) {
+          var content = s.key === "reviewSuggestions" ? effectiveReviewSuggestions : record[s.key];
+          return sectionList(s.key, s.icon, s.title, content);
+        }));
     } else {
       /* Sprint 6.8 EO-S6.8-002 Task 003 (PAT Critical, PMO ruling):
          Parser 尚未完成解析時的 Pending State 固定顯示這三句 —— 不得

@@ -31,7 +31,7 @@ function check(name, cond) {
    it and would otherwise become fragile to every future real material
    added to data/materials/ — excluding it here keeps their original,
    already-correct assertions intact rather than loosening any of them. */
-function loadPage(htmlFile, { seedSession, excludeScripts } = {}) {
+function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const consoleErrors = [];
   const vconsole = new (require("jsdom").VirtualConsole)();
@@ -43,7 +43,7 @@ function loadPage(htmlFile, { seedSession, excludeScripts } = {}) {
     consoleErrors.push(s);
   });
   const dom = new JSDOM(html, {
-    url: "https://ahs.test/" + htmlFile,
+    url: "https://ahs.test/" + (url || htmlFile),
     runScripts: "outside-only",
     pretendToBeVisual: true,
     virtualConsole: vconsole
@@ -897,6 +897,128 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
   check("quiz.html 沿用同一 Session 也能將真實單選題匯入 QuestionRuntime", quizWindow.AHS.QuestionRuntime.hasExam(examId));
   check("匯入題數與來源資料一致（6 題 singleChoice）", quizWindow.AHS.QuestionRuntime.getSet(examId).length === 6);
   check("Console errors = 0（HOTFIX-002，quiz.html）", quizErrors.length === 0);
+}
+
+console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個區塊皆正確 Render（PAT FAIL 修正回歸測試）");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  const A = window.AHS;
+  const item = A.MaterialRuntime.list()[0];
+
+  const overlay = A.MaterialPreview.open(item, function () {});
+  doc.body.appendChild(overlay);
+
+  const contentSection = overlay.querySelector('.mat-content[aria-label="教材內容"]');
+  check("① 教材內容：不再顯示「尚無可顯示的內容」", !!contentSection && !/此教材目前尚無可顯示的內容/.test(contentSection.textContent));
+  check("① 教材內容：顯示真實教材標題", !!contentSection && /所有權、勞動三權與夫妻財產制、繼承/.test(contentSection.textContent));
+
+  const summarySection = overlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("② AI 重點整理：直接顯示真實內容（無需點擊「開始 AI 分析」）", !!summarySection && !summarySection.querySelector(".mat-summary__btn"));
+  check("② AI 重點整理：內容為真實核心概念", !!summarySection && /所有權的排他性/.test(summarySection.textContent));
+
+  const questionSection = overlay.querySelector('.mat-question[aria-label="AI 練習題"]');
+  check("③ AI 練習題：直接顯示真實題目（無需點擊「產生 AI 題目」）", !!questionSection && !/^產生 AI 題目$/m.test([...questionSection.querySelectorAll(".mat-summary__btn")].map(b => b.textContent).join("\n")));
+  check("③ AI 練習題：顯示題數", !!questionSection && /共 6 題/.test(questionSection.textContent));
+  check("③ AI 練習題：顯示難度／考點", !!questionSection && /難度：/.test(questionSection.textContent) && /考點：/.test(questionSection.textContent));
+
+  const gwSummarySection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 重點整理"]');
+  check("④ AI Gateway 重點整理：誠實顯示「尚未建立」文案＋按鈕（Gateway 未部署，非造假）",
+    !!gwSummarySection && /尚未建立 Gateway 重點整理/.test(gwSummarySection.textContent) && !!gwSummarySection.querySelector(".mat-summary__btn"));
+
+  const gwQuizSection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 練習題"]');
+  check("⑤ AI Gateway 練習題：誠實顯示「尚未建立」文案＋按鈕（Gateway 未部署，非造假）",
+    !!gwQuizSection && /尚未建立 Gateway 練習題/.test(gwQuizSection.textContent) && !!gwQuizSection.querySelector(".mat-summary__btn"));
+
+  check("Console errors = 0（HOTFIX-003）", consoleErrors.length === 0);
+
+  /* 一般上傳教材（無 Repository 來源）行為完全不變 — 既有 AITutorService
+     流程／honest empty state 皆未受影響。 */
+  const regular = A.MaterialRuntime.add({ subject: "math", title: "一般上傳教材", chapter: "測試章節" });
+  const regularOverlay = A.MaterialPreview.open(regular, function () {});
+  doc.body.appendChild(regularOverlay);
+  const regularContent = regularOverlay.querySelector('.mat-content[aria-label="教材內容"]');
+  check("一般上傳教材（無內容）：仍誠實顯示空狀態，未受影響", !!regularContent && /此教材目前尚無可顯示的內容/.test(regularContent.textContent));
+  const regularSummary = regularOverlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("一般上傳教材：AI 重點整理仍保留「開始 AI 分析」按鈕，未受影響", !!regularSummary && !!regularSummary.querySelector(".mat-summary__btn"));
+}
+
+console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration（PAT 修正回歸測試）");
+{
+  /* Issue 001: summary.html's ⑤ 複習建議 must show real, derived content
+     for a Repository-sourced material — never "尚無資料", never
+     fabricated, never requiring a click. */
+  const p1 = loadPage("materials.html", {});
+  const rt = p1.window.AHS.MaterialRuntime.list()[0];
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) {
+    const k = p1.window.sessionStorage.key(i);
+    carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k));
+  }
+
+  const p2 = loadPage("summary.html", { seedSession: carried });
+  const reviewSection = p2.window.document.querySelector('section[aria-label="⑤ 複習建議"]');
+  check("① 複習建議：不再顯示「尚無資料」", !!reviewSection && !/尚無資料/.test(reviewSection.textContent));
+  check("① 複習建議：顯示建議閱讀順序（真實 chapter/section 組成）", !!reviewSection && /建議閱讀順序/.test(reviewSection.textContent) && /第5～6課/.test(reviewSection.textContent));
+  check("① 複習建議：顯示建議複習方式（真實統計數字，非虛構）", !!reviewSection && /建議複習方式/.test(reviewSection.textContent) && /個核心概念/.test(reviewSection.textContent));
+  check("① 複習建議：顯示建議注意事項（來自真實 commonMistakes／pitfalls）", !!reviewSection && /建議注意事項/.test(reviewSection.textContent));
+  check("Console errors = 0（summary.html HOTFIX-004）", p2.consoleErrors.length === 0);
+
+  /* Regular (non-Repository) material's honest empty state (Stub pending
+     — record's five sections are ALL genuinely empty) must be unaffected. */
+  p1.window.AHS.SummaryRuntime.add({ materialId: "rt_regular_test", subject: "math", title: "一般教材" });
+  const p3 = loadPage("summary.html", { seedSession: (() => {
+    const c = {};
+    for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); c[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+    return c;
+  })() });
+  check("一般教材（五段皆空）：仍誠實顯示分析中狀態，未受影響", /AI 正在分析教材/.test(p3.window.document.body.textContent));
+
+  /* Issue 002: quiz.html must show real Repository questions immediately
+     via BOTH entry points — the new examId link (Sprint v1.6) and the
+     pre-existing materialId-only link (Summary Detail's「開始 AI
+     練習」, unchanged since Sprint 6.8) — with 難度/考點 shown, and
+     without a second, empty Practice-Mode section rendering alongside
+     the real content. */
+  const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id });
+  const bodyM = qByMaterialId.window.document.body.textContent;
+  check("② Quiz Center（materialId-only 連結）：不再顯示「尚無 AI 練習題」", !bodyM.includes("尚無 AI 練習題"));
+  check("② Quiz Center（materialId-only 連結）：立即顯示真實題目", bodyM.includes("私有財產權"));
+  check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊正確隱藏（不與 Exam 內容同時顯示）",
+    !!qByMaterialId.window.document.querySelector(".quiz-practice-root[hidden]"));
+  const qcardMeta = qByMaterialId.window.document.querySelector(".qcard__meta");
+  check("② Quiz Center：顯示難度／考點（Repository 實際擁有的欄位）", !!qcardMeta && /難度：/.test(qcardMeta.textContent) && /考點：/.test(qcardMeta.textContent));
+  check("Console errors = 0（quiz.html materialId-only，HOTFIX-004）", qByMaterialId.consoleErrors.length === 0);
+
+  const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id });
+  check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響", qByExamId.window.document.body.textContent.includes("私有財產權"));
+  check("② Quiz Center（examId 連結）：Practice Mode 區塊仍正確隱藏", !!qByExamId.window.document.querySelector(".quiz-practice-root[hidden]"));
+
+  /* PAT: 開始測驗 -> AutoGrader -> WrongBook -> History 全部正常. */
+  const AQ = qByMaterialId.window.AHS;
+  const examId = "teaching_material_" + rt.id;
+  const qs = AQ.QuestionRuntime.getSet(examId);
+  qs.forEach(q => { AQ.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG" : q.correctAnswer); });
+  const finished = AQ.ExamRuntime.finish(examId);
+  const graded = AQ.AutoGrader.grade(finished);
+  check("PAT：AutoGrader 正常評分", graded.totalCount === qs.length && graded.wrong.length === 1);
+  const touched = AQ.WrongBookRuntime.sync(graded);
+  check("PAT：WrongBook 正常寫入", touched.length === 1 && AQ.WrongBookRuntime.list().length === 1);
+  const hist = AQ.HistoryRuntime.record(graded);
+  check("PAT：History 正常寫入", !!hist && AQ.HistoryRuntime.count() === 1);
+
+  /* Regular material's Practice/Guide flow (LearningQuestionRuntime-based,
+     unrelated to any Repository) must be completely unaffected. A fresh,
+     isolated page load (not reusing `carried`/`p1`'s idMap) avoids any
+     stale-id collision between this new regular material and the real
+     Civics material's own already-resolved id. */
+  const p4 = loadPage("materials.html", {});
+  const regRecord = p4.window.AHS.MaterialRuntime.add({ subject: "math", title: "一般練習教材" });
+  const regularCarried = {};
+  for (let i = 0; i < p4.window.sessionStorage.length; i++) { const k = p4.window.sessionStorage.key(i); regularCarried[k] = JSON.parse(p4.window.sessionStorage.getItem(k)); }
+  const qRegular = loadPage("quiz.html", { seedSession: regularCarried, url: "quiz.html?mode=practice&materialId=" + regRecord.id });
+  check("一般教材：巧巧老師出題引導仍誠實顯示「尚無 AI 練習題」，未受影響",
+    qRegular.window.document.body.textContent.includes("尚無 AI 練習題"));
 }
 
 console.log("\n==============================");

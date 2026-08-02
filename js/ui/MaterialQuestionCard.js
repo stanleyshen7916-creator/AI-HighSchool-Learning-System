@@ -26,13 +26,21 @@ AHS.MaterialQuestionCard = (function () {
   }
 
   /* One question card: 題號 + 題目 + 四個選項 + 查看答案. All content is
-     read from the question record; nothing is generated here. */
+     read from the question record; nothing is generated here.
+     HOTFIX-003 AI-304: 難度/考點 shown when the record actually has them
+     (Repository-sourced questions may; AI-generated ones may not) —
+     never fabricated when absent. */
   function questionCard(question, index) {
     var card = el("div", { class: "mat-question__card" });
 
+    var metaBits = [];
+    if (question.difficulty) { metaBits.push("難度：" + question.difficulty); }
+    if (question.knowledgePoint) { metaBits.push("考點：" + question.knowledgePoint); }
+
     card.appendChild(el("div", { class: "mat-question__q" }, [
       el("span", { class: "mat-question__num", text: "第 " + (index + 1) + " 題" }),
-      el("p", { class: "mat-question__text", text: String(question.question || "") })
+      el("p", { class: "mat-question__text", text: String(question.question || "") }),
+      metaBits.length ? el("p", { class: "mat-question__meta", text: metaBits.join("　") }) : null
     ]));
 
     var options = Array.isArray(question.options) ? question.options : [];
@@ -91,6 +99,9 @@ AHS.MaterialQuestionCard = (function () {
       }
 
       if (state === "ready" && hasQuestions(set)) {
+        /* HOTFIX-003 AI-304: "至少顯示：題數" — a real, computed count,
+           never a hardcoded/fabricated number. */
+        section.appendChild(el("p", { class: "mat-question__count", text: "共 " + set.questions.length + " 題" }));
         section.appendChild(el("div", { class: "mat-question__list" },
           set.questions.map(function (q, i) { return questionCard(q, i); })));
         /* 重新產生題目 — regenerates from the same graph, no re-analysis. */
@@ -115,7 +126,20 @@ AHS.MaterialQuestionCard = (function () {
       section.appendChild(genBtn);
     }
 
+    /* HOTFIX-003 AI-304: resolves this material's Repository-sourced
+       quiz, if any — checked first by both the initial render and
+       generate() itself, so a Repository-sourced material's real
+       question bank is never overwritten/blanked by the AI-generation
+       pipeline (which would legitimately find nothing, since these
+       materials have no item.content for it to analyse). */
+    function repoQuiz() {
+      return (AHS.MaterialDetailRepositorySource && typeof AHS.MaterialDetailRepositorySource.resolve === "function")
+        ? AHS.MaterialDetailRepositorySource.resolve(item.id) : null;
+    }
+
     function generate(force) {
+      var repo = repoQuiz();
+      if (repo && hasQuestions(repo.quiz)) { render("ready", repo.quiz); return; }
       render("loading");
       /* Defer so the loading state paints before the synchronous,
          in-memory generation runs. */
@@ -154,12 +178,17 @@ AHS.MaterialQuestionCard = (function () {
       }, 0);
     }
 
-    /* Initial state: show an existing set if one is already in memory,
-       otherwise offer the generate button. Reading is pure. */
+    /* Initial state: a Repository-sourced material's real question bank
+       (HOTFIX-003 AI-304) wins first — otherwise, show an existing
+       AI-generated set if one is already in memory, otherwise offer the
+       generate button. Reading is pure either way. */
+    var initialRepo = repoQuiz();
     var service = AHS.AITutorService;
     var existing = (service && typeof service.getPracticeQuestions === "function")
       ? service.getPracticeQuestions(item.id) : [];
-    if (Array.isArray(existing) && existing.length &&
+    if (initialRepo && hasQuestions(initialRepo.quiz)) {
+      render("ready", initialRepo.quiz);
+    } else if (Array.isArray(existing) && existing.length &&
         service && typeof service.getTutorSession === "function") {
       render("ready", { questions: existing });
     } else {

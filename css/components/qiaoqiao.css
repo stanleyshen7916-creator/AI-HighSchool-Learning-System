@@ -180,6 +180,20 @@
   font-size: 0.95rem;
   line-height: 1.5;
 }
+/* HOTFIX-003 AI-304: 難度/考點 (per question) and 題數 (section-level
+   count) — reuses the same muted small-text treatment as
+   .mat-question__num, no new Design Token. */
+.mat-question__meta {
+  margin: 0;
+  color: var(--text-muted, var(--brand-ink));
+  font-size: 0.78rem;
+}
+.mat-question__count {
+  margin: 0 0 10px;
+  color: var(--text-muted, var(--brand-ink));
+  font-size: 0.85rem;
+  font-weight: 600;
+}
 .mat-question__options {
   list-style: none;
   margin: 0 0 12px;
