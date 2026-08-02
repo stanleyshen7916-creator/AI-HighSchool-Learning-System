@@ -211,9 +211,10 @@ untouched this Sprint).
 
 - PR #21, merged into `main`. Merge commit: `05e0ef5606c0426916400493d5989cec8998acec`.
 - PR #22 (merge-commit fill-in), merged into `main`. Merge commit: `7e47fa09aadf5407becb83b7dad391edec27c339`.
-- PR #23 (Tutor Context Tip follow-up): filled in after merge.
-- GitHub Pages "pages build and deployment" workflow triggers automatically on every merge to
-  `main`; no manual action needed.
+- PR #23 (Tutor Context Tip follow-up, PAT 8/9/10), merged into `main`. Merge commit:
+  `fd92bc492fd8177926cf656249860f79d98897a0`.
+- GitHub Pages "pages build and deployment" workflow triggered for each of the above (confirmed
+  via workflow run list); triggers automatically on every merge to `main`, no manual action needed.
 
 ## Acceptance
 
