@@ -19,7 +19,7 @@ function check(name, cond) {
   else { fail++; failures.push(name); console.log("  FAIL  " + name); }
 }
 
-function loadPage(htmlFile, { seedSession } = {}) {
+function loadPage(htmlFile, { seedSession, skipScripts } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const consoleErrors = [];
   const vconsole = new (require("jsdom").VirtualConsole)();
@@ -44,8 +44,11 @@ function loadPage(htmlFile, { seedSession } = {}) {
   }
   // Execute the page's ordered scripts manually (runScripts outside-only
   // keeps subresource loading deterministic).
-  const scripts = [...dom.window.document.querySelectorAll("script[src]")]
+  let scripts = [...dom.window.document.querySelectorAll("script[src]")]
     .map(s => s.getAttribute("src"));
+  if (Array.isArray(skipScripts) && skipScripts.length) {
+    scripts = scripts.filter(src => !skipScripts.some(needle => src.indexOf(needle) !== -1));
+  }
   for (const src of scripts) {
     const code = fs.readFileSync(path.join(REPO, src), "utf8");
     window.eval(code);
@@ -480,7 +483,18 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
 }
 
 
-console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯示教材（不需再次切換）");
+/* Sprint MAT-CONTENT-003 · PMO Decision (Teaching Material Upload v1.0):
+   Sprint 6.6's "Material Center 預設為 Empty State" LOCK is rescinded.
+   Material Center's default data source is no longer Upload-only — the
+   Teaching Material Repository (js/data/TeachingMaterialPackage*.js,
+   bridged in by js/runtime/TeachingMaterialRepositoryBridge.js) now
+   seeds real materials on every materials.html load. New baseline,
+   verified by tests [15]/[16] below:
+     Repository 為空 → Empty State (unchanged for that case)
+     Repository 有教材 → Material Center 立即顯示，不需先 Upload
+   The old assertion "first load is always Empty State regardless of
+   Repository content" no longer holds and is replaced. */
+console.log("\n[15] HF-8.2.001 · HF-001 → PMO Decision (Teaching Material Upload v1.0) — Material Center 首次進入即顯示教材（含 Repository baseline，不需再次切換）");
 {
   const twoMaterials = { materials: [
     Object.assign({}, materialSeed.materials[0], { id: "rt_1", order: 1 }),
@@ -492,8 +506,10 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
 
   const { window, consoleErrors } = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": twoMaterials } });
   const doc = window.document;
+  const repoCount = (window.AHS.TeachingMaterialLoader && window.AHS.TeachingMaterialLoader.list().length) || 0;
+  const expectedCount = 2 + repoCount;
   const cards = doc.querySelectorAll(".mat-card");
-  check("首次載入即渲染全部教材卡片（2 張，無需切換）", cards.length === 2);
+  check("首次載入即渲染全部教材卡片（已上傳 2 張 + Repository " + repoCount + " 張，無需切換）", cards.length === expectedCount);
   check("教材標題正確顯示", /牛頓運動定律/.test(doc.body.textContent));
   check("Empty State 未誤顯示", !doc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
   check("Console errors = 0（首次載入）", consoleErrors.length === 0);
@@ -502,17 +518,32 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
   /* 切換科目分頁後張數不變 —— 證明首次已完整初始化，非靠事件補救。 */
   const tab = doc.querySelector("[data-subject]");
   if (tab) { tab.click(); }
-  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === 2);
+  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === expectedCount);
 }
 
-console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
+console.log("\n[16] HF-8.2.001 · HF-001 → PMO Decision (Teaching Material Upload v1.0) — Repository 為空顯示 Empty State／Repository 有教材立即載入");
 {
-  const { window, consoleErrors } = loadPage("materials.html", {});
-  const doc = window.document;
-  check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
-  check("顯示正式 Empty State（非空白頁）",
-    !!doc.querySelector(".mat-empty") && !doc.querySelector(".mat-empty[hidden]"));
-  check("Console errors = 0（空狀態）", consoleErrors.length === 0);
+  /* Repository 為空（略過 Package/Index 三個 script，模擬 Repository
+     尚未建立任何教材，且無任何上傳）→ 仍應顯示正式 Empty State。 */
+  const empty = loadPage("materials.html", {
+    skipScripts: ["TeachingMaterialPackageMathTrigonometry", "TeachingMaterialPackageChemistryFinalReview", "TeachingMaterialRepositoryIndex"]
+  });
+  const emptyDoc = empty.window.document;
+  check("Repository 為空且無上傳：卡片為 0", emptyDoc.querySelectorAll(".mat-card").length === 0);
+  check("Repository 為空且無上傳：顯示正式 Empty State（非空白頁）",
+    !!emptyDoc.querySelector(".mat-empty") && !emptyDoc.querySelector(".mat-empty[hidden]"));
+  check("Console errors = 0（Repository 為空）", empty.consoleErrors.length === 0);
+
+  /* Repository 有教材（正常載入，不 skip 任何 script）→ 不需 Upload，
+     Material Center 自動顯示 Repository 教材。 */
+  const seeded = loadPage("materials.html", {});
+  const seededDoc = seeded.window.document;
+  const repoCount = (seeded.window.AHS.TeachingMaterialLoader && seeded.window.AHS.TeachingMaterialLoader.list().length) || 0;
+  check("Repository 有教材：卡片數等於 Repository 教材數（" + repoCount + "），不需先 Upload",
+    repoCount > 0 && seededDoc.querySelectorAll(".mat-card").length === repoCount);
+  check("Repository 有教材：Empty State 未誤顯示",
+    !seededDoc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
+  check("Console errors = 0（Repository 有教材）", seeded.consoleErrors.length === 0);
 }
 
 console.log("\n[17] HF-8.2.001 · HF-002 — 跨頁後仍可下載（Download Flow 位元組保存）");
