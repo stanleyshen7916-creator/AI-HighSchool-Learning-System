@@ -882,20 +882,48 @@ AHS.QuizCenter = (function () {
        an already-imported exam first; any failure (already running, no
        question set for this id, meta unresolvable) falls back to the
        normal Exam Mode list — never a broken/blank view. */
-    function tryDirectExamEntry() {
+    function tryDirectExamEntry(examId) {
       var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
-        ? AHS.TeachingMaterialLoader.resolveExamMeta(initialExamId) : null;
-      var session = AHS.ExamRuntime.startFromExam(initialExamId, meta || {});
-      if (!session) { showList(); return; }
+        ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
+      var session = AHS.ExamRuntime.startFromExam(examId, meta || {});
+      if (!session) { showList(); return null; }
       showExam(session.examId);
+      return session.examId;
     }
 
-    if (initialExamId) { tryDirectExamEntry(); } else { showList(); }
+    /* HOTFIX-004 Issue 002: a real initialMaterialId alone (no explicit
+       examId — e.g. Summary Detail's pre-existing "開始 AI 練習" link,
+       quiz.html?mode=practice&materialId=..., unchanged since Sprint
+       6.8) previously always landed on Practice Mode/巧巧老師出題引導,
+       which reads only AHS.LearningQuestionRuntime — honestly empty for
+       every Repository-sourced material, since that Runtime's
+       completeness gate needs a knowledgeId/learningObjective no
+       Repository record has (Sprint v1.6's own documented reasoning,
+       unchanged — still not fabricated here either). Resolving the same
+       "teaching_material_<id>" examId convention here too means BOTH
+       entry points land on the same, real, already-working Exam-Mode
+       display — pure additive routing, no new data, no re-analysis. */
+    function resolveDirectExamId() {
+      if (initialExamId) { return initialExamId; }
+      if (initialMaterialId && AHS.QuestionRuntime && typeof AHS.QuestionRuntime.hasExam === "function") {
+        var candidate = "teaching_material_" + initialMaterialId;
+        if (AHS.QuestionRuntime.hasExam(candidate)) { return candidate; }
+      }
+      return null;
+    }
+
+    var directExamId = resolveDirectExamId();
+    if (directExamId) { tryDirectExamEntry(directExamId); } else { showList(); }
 
     /* ---- Practice Mode mount (EO-S6-006) — entirely separate root,
-       never touches `root` / any Exam Mode function above. ---- */
+       never touches `root` / any Exam Mode function above.
+       HOTFIX-004: when directExamId resolved, the real content for this
+       material is already fully shown in `root` (Exam Mode) — keep
+       practiceRoot hidden regardless of `mode=practice`, so a Repository
+       -sourced material never shows a real exam view and an unrelated
+       empty Practice-Mode section at the same time. */
     var practiceRoot = el("div", { class: "quiz-practice-root" });
-    var startOnPractice = (initialMode === "practice");
+    var startOnPractice = (initialMode === "practice") && !directExamId;
     if (!startOnPractice) { practiceRoot.setAttribute("hidden", "hidden"); }
 
     function showPracticeList() {

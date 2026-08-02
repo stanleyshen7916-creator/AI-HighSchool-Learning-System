@@ -105,6 +105,11 @@ AHS.MaterialDetailRepositorySource = (function () {
       var options = Array.isArray(q.options) ? q.options : [];
       var matched = options.filter(function (o) { return o && o.key === q.correctAnswer; })[0];
       return {
+        id: q.id, /* HOTFIX-004: exposed so other real pages (e.g. quiz.html's
+          Exam Mode QuestionCard) can match a stored QuestionRuntime question
+          back to its own difficulty/knowledgePoint without duplicating this
+          Repository-record lookup — purely additive, doesn't change anything
+          Material Detail's own components already read from this object. */
         question: q.text || "",
         options: options.map(function (o) { return o && o.text; }),
         answer: matched ? matched.text : "",
@@ -142,6 +147,7 @@ AHS.MaterialDetailRepositorySource = (function () {
 
     var questions = (Array.isArray(entry.questions) ? entry.questions : []).map(function (q) {
       return {
+        id: q.id, /* HOTFIX-004: see fromRepositoryRecord()'s own note above */
         question: q.question || "",
         options: Array.isArray(q.options) ? q.options.slice() : [],
         answer: q.answer || "",
