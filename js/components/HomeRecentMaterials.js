@@ -81,7 +81,7 @@ AHS.HomeRecentMaterials = (function () {
         : null,
       el("div", { class: "recent-card__progress" }, [
         el("div", { class: "recent-card__progress-head" }, [
-          el("span", { text: "學習進度" }),
+          el("span", { text: "閱讀進度" }),
           el("span", { class: "recent-card__pct", text: pct + "%" })
         ]),
         el("div", {

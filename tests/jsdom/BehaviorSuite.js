@@ -1494,6 +1494,36 @@ console.log("\n[35] Platform Sync Check — Statistics 單一資料來源一致�
   check("Console errors = 0（我的學習 Statistics 一致性）", consoleErrors.length === 0);
 }
 
+console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/12 名詞與導覽修正）");
+{
+  /* PAT 6/7: 首頁「最近教材」顯示的是 MaterialRuntime.progress（閱讀進度），
+     曾被誤標為「學習進度」，讓使用者誤以為等同正確率／精熟度。修正為誠實的
+     「閱讀進度」標籤，資料來源與數值本身完全不變（非邏輯變更）。 */
+  const materialSeed = {
+    materials: [{
+      id: "rt_1", order: 1, subject: "math", title: "測試教材", chapter: "第一章",
+      grade: "高一", category: "課本", date: "2026/08/01", views: "1", content: "",
+      progress: 42, lastOpenedAt: "2026/08/01 10:00", lastLearningAt: "2026/08/01 10:00",
+      learningTime: 10, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
+      fileSize: "", folderId: null
+    }],
+    folders: [], seq: 1, folderSeq: 0
+  };
+  const { window, consoleErrors } = loadPage("index.html", { seedSession: { "ahs:materialRuntime": materialSeed } });
+  const doc = window.document;
+  const recentCard = doc.querySelector(".recent-card, [class*='recent-card']");
+  check("首頁最近教材卡片標籤為「閱讀進度」（非「學習進度」，避免與正確率/精熟度混淆）",
+    !!recentCard && recentCard.textContent.includes("閱讀進度") && !recentCard.textContent.includes("學習進度"));
+  check("Console errors = 0（首頁最近教材）", consoleErrors.length === 0);
+
+  /* PAT 12: Bottom Navigation「我的」過去指向 dashboard.html（已於 EO-S5-002
+     被 Sidebar 淘汰的頁面），Sidebar 當時已改連到 learning.html（我的學習），
+     但 Bottom Navigation 沒有同步更新。修正為與 Sidebar 一致的真實目的地。 */
+  const bottomMe = [...doc.querySelectorAll(".bottom-nav__item")].find(n => n.textContent.includes("我的"));
+  check("Bottom Navigation「我的」導向 learning.html（與 Sidebar 一致，非已淘汰的 dashboard.html）",
+    !!bottomMe && bottomMe.getAttribute("href") === "learning.html");
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
