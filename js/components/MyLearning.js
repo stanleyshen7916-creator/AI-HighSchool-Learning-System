@@ -61,12 +61,23 @@ AHS.MyLearning = (function () {
     });
 
     var hist = history();
-    var totalQuestions = 0, totalCorrect = 0;
+    var totalQuestions = 0;
     hist.forEach(function (h) {
       totalQuestions += (typeof h.totalCount === "number" ? h.totalCount : 0);
-      totalCorrect += (typeof h.correctCount === "number" ? h.correctCount : 0);
     });
-    var accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 1000) / 10 : 0;
+    /* Platform Sync Check finding: this used to compute its own
+       totalCorrect/totalQuestions weighted-average accuracy, a different
+       formula than AHS.StatisticsRuntime.overview()'s avgAccuracy
+       (average of each exam's own accuracy%) — same real HistoryRuntime
+       data, two different numbers for "正確率" depending which page you
+       were on. Now reads the single, already-established source
+       (AHS.StatisticsRuntime.overview(), the same value Quiz Center's
+       own stat card already shows) instead of a second, independent
+       calculation. 完成題數 (totalQuestions) has no equivalent metric on
+       StatisticsRuntime — it stays a real, local sum of the same
+       HistoryRuntime records, not a duplicate of anything. */
+    var accuracy = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.overview === "function")
+      ? AHS.StatisticsRuntime.overview().avgAccuracy : 0;
 
     return {
       title: "學習總覽",
