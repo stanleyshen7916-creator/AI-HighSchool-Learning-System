@@ -176,7 +176,10 @@ untouched this Sprint).
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR: #21, merged into `main`.
+- Merge commit: `05e0ef5606c0426916400493d5989cec8998acec`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit (queued at
+  merge time); completes automatically, no further action needed.
 
 ## Acceptance
 
