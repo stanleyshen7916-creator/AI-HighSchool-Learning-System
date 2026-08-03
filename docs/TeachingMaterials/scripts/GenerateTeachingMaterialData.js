@@ -58,6 +58,14 @@ function buildEntry(materialId) {
     console.warn("SKIP " + materialId + ": metadata.json missing or invalid JSON");
     return null;
   }
+  /* Sprint AI-115 AI-115-01: an ARCHIVED Package (manifest.archived ===
+     true) is never (re-)included — a material once archived stops being
+     an active Runtime-imported material, regardless of whether it was
+     IMPORTED before. */
+  if (pkg.manifest && pkg.manifest.archived === true) {
+    console.warn("SKIP " + materialId + ": archived (manifest.archived === true)");
+    return null;
+  }
   var validation = adapter.validatePackage(materialId);
   if (!validation.valid) {
     console.warn("SKIP " + materialId + ": ValidateMaterial.js reported " + validation.fail + " FAIL(s) — not included");
@@ -161,8 +169,19 @@ function writeKnowledgeAndReport(entries) {
   });
 }
 
-function generate() {
-  var ids = listMaterialIds();
+/* generate(options) — options.skipIds (Sprint AI-115 AI-115-06,
+   additive, backward compatible: every existing call with no arguments
+   behaves exactly as before). ImportManager.js's own duplicate-detection
+   gate is the only real caller — a Package flagged as a duplicate of
+   another (same content hash, or same subject+chapter+derived title) is
+   excluded from this run so generate() never bakes two "same real
+   material" entries into TeachingMaterialData.js/index.json, even though
+   both individually pass ValidateMaterial.js. */
+function generate(options) {
+  options = options || {};
+  var skipIds = {};
+  (options.skipIds || []).forEach(function (id) { skipIds[id] = true; });
+  var ids = listMaterialIds().filter(function (id) { return !skipIds[id]; });
   var entries = [];
   ids.forEach(function (id) {
     var entry = buildEntry(id);
@@ -191,7 +210,40 @@ function generate() {
 
   writeIndex(entries);
   writeKnowledgeAndReport(entries);
+  writeRepositoryStatus();
   return entries.length;
+}
+
+/* writeRepositoryStatus() — Sprint AI-115 AI-115-07 (Repository
+   Dashboard). The browser (this is a static, no-backend, no-fetch app —
+   see CLAUDE.md) can only ever see whatever a Node script bakes into a
+   static js/data/*.js file; it has no way to ask the filesystem "how
+   many Packages are RAW right now" on its own. This writes
+   js/data/RepositoryStatus.js, the exact same "offline-generate a
+   static data file" pattern TeachingMaterialData.js/index.json already
+   use, so js/ui/SettingsPanel.js's Repository section can show real
+   per-stage counts (AHS.RepositoryStatus.counts) without inventing a
+   second architecture. Scans EVERY Package (via MaterialLifecycle.js),
+   not just the ones this run successfully included — RAW/ANALYZING/
+   CLAUDE_READY/READY_FOR_IMPORT Packages are real too, just not yet
+   Runtime-visible; the Dashboard's whole point is showing they exist. */
+function writeRepositoryStatus() {
+  var counts = lifecycle.countByStage();
+  var outFile = path.join(REPO_ROOT, "js", "data", "RepositoryStatus.js");
+  var header = [
+    "/* js/data/RepositoryStatus.js — GENERATED FILE, do not hand-edit.",
+    "   Produced by docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js",
+    "   (Sprint AI-115 AI-115-07 Repository Dashboard). Real per-lifecycle-stage",
+    "   Package counts (docs/TeachingMaterials/scripts/MaterialLifecycle.js),",
+    "   scanned at generation time — re-run the generator after any Repository",
+    "   change for this to stay current. Plain static data, <script>-tagged like",
+    "   every other js/data/*.js file — no fetch/XHR/require. */",
+    ""
+  ].join("\n");
+  var body = "window.AHS = window.AHS || {};\n" +
+    "AHS.RepositoryStatus = " + JSON.stringify({ counts: counts, generatedAt: new Date().toISOString() }, null, 2) + ";\n";
+  fs.writeFileSync(outFile, header + body, "utf8");
+  console.log("Generated " + path.relative(REPO_ROOT, outFile) + " — " + JSON.stringify(counts));
 }
 
 /* AI-703: index.json — one real, auto-generated record per included
@@ -211,12 +263,12 @@ function writeIndex(entries) {
         chapter: meta.chapter || null,
         materialType: meta.materialType || null,
         version: meta.version || null,
-        /* Sprint AI-113 AI-806: tautologically RUNTIME_READY — being
+        /* Sprint AI-115 AI-115-01: tautologically IMPORTED — being
            listed in this generated index IS what that stage means (see
-           MaterialLifecycle.js). Earlier stages (RAW/WAITING_ANALYSIS/
-           CLAUDE_READY_WAITING_IMPORT) only apply to Packages NOT yet
+           MaterialLifecycle.js). Earlier stages (RAW/ANALYZING/
+           CLAUDE_READY/READY_FOR_IMPORT) only apply to Packages NOT yet
            here — check those with MaterialLifecycle.js directly. */
-        lifecycleStage: "RUNTIME_READY"
+        lifecycleStage: "IMPORTED"
       };
     })
   };
@@ -228,4 +280,17 @@ if (require.main === module) {
   generate();
 }
 
-module.exports = { generate: generate, listMaterialIds: listMaterialIds, buildEntry: buildEntry };
+module.exports = {
+  generate: generate,
+  listMaterialIds: listMaterialIds,
+  buildEntry: buildEntry,
+  writeRepositoryStatus: writeRepositoryStatus,
+  /* Sprint AI-115 AI-115-03: exported so RepositoryManager.js's prepare()
+     can derive a single Package's knowledge.json/report.md ahead of
+     import (CLAUDE_READY -> READY_FOR_IMPORT) without a second,
+     duplicate implementation ("不得建立第二套"). */
+  buildKnowledgeIndex: buildKnowledgeIndex,
+  buildReportMarkdown: buildReportMarkdown,
+  OUTPUT_FILE: OUTPUT_FILE,
+  INDEX_FILE: INDEX_FILE
+};

@@ -109,14 +109,43 @@ AHS.SettingsPanel = (function () {
   }
 
   /* ---- Repository ------------------------------------------------------ */
+  /* Sprint AI-115 AI-115-07: Repository Status (Dashboard) — real
+     per-lifecycle-stage Package counts from AHS.RepositoryStatus
+     (js/data/RepositoryStatus.js, generated offline by
+     GenerateTeachingMaterialData.js from docs/TeachingMaterials/
+     scripts/MaterialLifecycle.js's own countByStage() — this static
+     prototype has no fetch/backend, so this is the only honest way the
+     browser can ever see RAW/ANALYZING/CLAUDE_READY/READY_FOR_IMPORT
+     counts at all, since those Packages are, by definition, not yet in
+     the Runtime-visible js/data/TeachingMaterialData.js). Degrades to a
+     hidden section (never a fabricated "0 everything") when the data
+     file isn't loaded on a given page. */
+  var STAGE_LABELS = [
+    ["RAW", "RAW"], ["ANALYZING", "分析中"], ["CLAUDE_READY", "Claude 已完成"],
+    ["READY_FOR_IMPORT", "待匯入"], ["IMPORTED", "已匯入"], ["ARCHIVED", "已封存"]
+  ];
+
+  function repositoryStatusLine() {
+    if (!AHS.RepositoryStatus || !AHS.RepositoryStatus.counts) { return null; }
+    var counts = AHS.RepositoryStatus.counts;
+    var text = STAGE_LABELS.map(function (pair) {
+      return pair[1] + "：" + (counts[pair[0]] || 0);
+    }).join("｜");
+    return el("p", { class: "settings-panel__info", text: "Repository Status — " + text });
+  }
+
   function repositorySection() {
     var countLine = el("p", { class: "settings-panel__info" });
+    var statusBlock = el("div", { class: "settings-panel__repo-status" });
     var status = statusLine("");
     function refreshCounts() {
       var repoCount = (AHS.MaterialRepository && typeof AHS.MaterialRepository.list === "function")
         ? AHS.MaterialRepository.list().length : 0;
       var packageCount = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData.length : 0;
       countLine.textContent = "Repository 教材：" + repoCount + " 筆｜Package 教材：" + packageCount + " 筆";
+      statusBlock.innerHTML = "";
+      var line = repositoryStatusLine();
+      if (line) { statusBlock.appendChild(line); }
     }
     refreshCounts();
 
@@ -132,6 +161,7 @@ AHS.SettingsPanel = (function () {
     return el("section", { class: "settings-panel__section", "aria-label": "Repository" }, [
       el("h3", { class: "settings-panel__title", text: "Repository" }),
       countLine,
+      statusBlock,
       el("div", { class: "settings-panel__actions" }, [reloadBtn]),
       status
     ]);

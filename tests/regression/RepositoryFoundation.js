@@ -160,7 +160,18 @@ console.log("\n[10] Tutor");
   check("Console errors = 0（AI Tutor）", consoleErrors.length === 0);
 }
 
-/* ---- 11. Material Lifecycle + Package Standard (Sprint AI-113 AI-806/807)
+/* ---- 11. Material Lifecycle + Package Standard (Sprint AI-113 AI-806/807,
+   stage names + file names updated Sprint AI-115 AI-115-01/02: RAW/
+   WAITING_ANALYSIS/CLAUDE_READY_WAITING_IMPORT/RUNTIME_READY renamed
+   RAW/ANALYZING/CLAUDE_READY/READY_FOR_IMPORT/IMPORTED (+ new ARCHIVED),
+   questions.json renamed questionbank.json, material.md added as a
+   required Package Standard file. This section intentionally still
+   exercises only the low-level generator.generate() path directly (not
+   RepositoryManager.prepare()/ImportManager.importAll()) — the new,
+   more thorough gated-pipeline flow (CLAUDE_READY -> prepare() ->
+   READY_FOR_IMPORT -> ImportManager -> IMPORTED, plus duplicate/
+   rollback/import-log) is tests/regression/MaterialPipelineRegression.js
+   (AI-115-10), not duplicated here.
    Real end-to-end run against a scratch, never-committed Package
    (tm_999998, an id unlikely to collide with any real material), same
    discipline Sprint AI-112 used to verify the schema gaps it closed:
@@ -184,19 +195,20 @@ console.log("\n[11] Material Lifecycle + Package Standard");
       source: "教科書", uploadDate: "2026-08-03T00:00:00Z", version: "1", materialType: "HANDOUT"
     }, null, 2));
 
-    check("RAW：只有 metadata.json 時，Lifecycle Stage 正確為 WAITING_ANALYSIS",
-      lifecycle.resolveStage(scratchId) === "WAITING_ANALYSIS");
+    check("RAW：只有 metadata.json 時，Lifecycle Stage 正確為 ANALYZING",
+      lifecycle.resolveStage(scratchId) === "ANALYZING");
 
     fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify({
       materialId: scratchId, packageVersion: "1", createdDate: "2026-08-03T00:00:00Z",
       updatedDate: "2026-08-03T00:00:00Z", repositoryVersion: "EO-S1.1-003",
       analysisEngine: "Claude", status: "complete"
     }, null, 2));
+    fs.writeFileSync(path.join(dir, "material.md"), "# 測試章\n\n測試 Package 內容。\n");
     fs.writeFileSync(path.join(dir, "summary.json"), JSON.stringify({
       materialId: scratchId, coreConcepts: ["測試核心概念"], definitions: [],
       keywords: [], keyPoints: [], pitfalls: []
     }, null, 2));
-    fs.writeFileSync(path.join(dir, "questions.json"), JSON.stringify({
+    fs.writeFileSync(path.join(dir, "questionbank.json"), JSON.stringify({
       materialId: scratchId, questions: [{
         questionId: scratchId + "_q1", materialId: scratchId, questionNumber: "1",
         type: "single_choice", questionSource: "ORIGINAL", origin: "Uploaded Material",
@@ -207,8 +219,8 @@ console.log("\n[11] Material Lifecycle + Package Standard");
     }, null, 2));
     fs.writeFileSync(path.join(dir, "related.json"), JSON.stringify({ materialId: scratchId, related: [] }, null, 2));
 
-    check("CLAUDE_READY_WAITING_IMPORT：Package 完整且 manifest.status=complete，但尚未進 index.json",
-      lifecycle.resolveStage(scratchId) === "CLAUDE_READY_WAITING_IMPORT");
+    check("CLAUDE_READY：Package 完整且 manifest.status=complete，但 knowledge.json/report.md 尚未產生",
+      lifecycle.resolveStage(scratchId) === "CLAUDE_READY");
 
     const validateOut = execFileSync(process.execPath, [
       path.join(REPO, "docs/TeachingMaterials/scripts/ValidateMaterial.js"), scratchId
@@ -218,21 +230,21 @@ console.log("\n[11] Material Lifecycle + Package Standard");
 
     generator.generate();
 
-    check("RUNTIME_READY：generate() 後 Lifecycle Stage 正確反映已進入 index.json",
-      lifecycle.resolveStage(scratchId) === "RUNTIME_READY");
+    check("IMPORTED：generate() 後 Lifecycle Stage 正確反映已進入 index.json",
+      lifecycle.resolveStage(scratchId) === "IMPORTED");
 
     const knowledge = JSON.parse(fs.readFileSync(path.join(dir, "knowledge.json"), "utf8"));
-    check("knowledge.json 真實由 summary/questions 衍生（非人工維護）",
+    check("knowledge.json 真實由 summary/questionbank 衍生（非人工維護）",
       knowledge.knowledgePoints.length === 1 && knowledge.knowledgePoints[0].name === "測試核心概念" &&
       knowledge.knowledgePoints[0].source === "both");
 
     const report = fs.readFileSync(path.join(dir, "report.md"), "utf8");
     check("report.md 真實包含該教材的 Metadata 與 Lifecycle Stage",
-      report.includes(scratchId) && report.includes("RUNTIME_READY") && report.includes("測試章"));
+      report.includes(scratchId) && report.includes("IMPORTED") && report.includes("測試章"));
 
     const index = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/index.json"), "utf8"));
     const indexed = index.materials.find((m) => m.materialId === scratchId);
-    check("index.json 該筆 lifecycleStage 為 RUNTIME_READY", !!indexed && indexed.lifecycleStage === "RUNTIME_READY");
+    check("index.json 該筆 lifecycleStage 為 IMPORTED", !!indexed && indexed.lifecycleStage === "IMPORTED");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
     const finalCount = generator.generate();

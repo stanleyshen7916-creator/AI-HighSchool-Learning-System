@@ -1,50 +1,60 @@
 /* docs/TeachingMaterials/scripts/MaterialLifecycle.js — Sprint AI-113
-   AI-806 (Platform Hardening — Teaching Material Pipeline).
+   AI-806, re-defined to Sprint AI-115 AI-115-01's exact 6-stage list.
 
-   Real, deterministic 6-stage lifecycle for a Package, computed purely
-   from files that already exist on disk plus the already-generated
-   index.json — nothing here is a new stored field a human has to keep
-   in sync by hand, and nothing is inferred/guessed. This is what lets
-   "平台可以直接辨識教材目前狀態" (AI-806's own wording) be true: any
-   tool in this Repository's offline pipeline (ValidateMaterial.js,
-   GenerateTeachingMaterialData.js, or a human) can call resolveStage()
-   and get the real, current answer.
+   Real, deterministic lifecycle for a Package, computed purely from
+   files that already exist on disk plus the already-generated
+   index.json — nothing here is a stored field a human keeps in sync by
+   hand, and nothing is inferred/guessed. resolveStage() is a pure
+   function returning exactly ONE of STAGES — by construction (a single
+   if/else chain, never two conditions both able to hold), a Package can
+   never appear to be "in" two lifecycle stages at once, which is what
+   AI-115-01's "所有教材必須只有一個生命週期。不得：同時存在多個生命週期"
+   actually requires: not a rule to enforce elsewhere, but a property
+   this resolver's own shape guarantees.
 
-   RAW               — Package folder exists, metadata.json missing.
-   WAITING_ANALYSIS  — metadata.json exists, but summary.json/
-                       questions.json are missing, OR manifest.json is
-                       missing/status != "complete" (per Manifest.
-                       schema.json's own description: "draft" = Claude
-                       still analyzing, "pending_review" = analysis
-                       produced but at least one question still needs
-                       human review before this is the official
-                       Repository entry — both real reasons a Package
-                       isn't ready yet, not two different stages this
-                       Sprint's 6-state list asks for).
-   CLAUDE_READY      — manifest.status === "complete": Claude's analysis
-                       is done and internally consistent, but this
-                       Package is not (yet, as of the moment this is
-                       checked) reflected in the generated index.json.
-   WAITING_IMPORT    — same as CLAUDE_READY in this implementation:
-                       "ready but not yet in the generated output" IS
-                       what Waiting Import means for an offline,
-                       run-on-demand generator (there is no background
-                       queue to be separately "waiting" in) — reported
-                       as CLAUDE_READY_WAITING_IMPORT so both real facts
-                       stay visible instead of picking one arbitrarily.
-   RUNTIME_READY     — present in the current docs/TeachingMaterials/
-                       index.json (i.e. GenerateTeachingMaterialData.js
+   RAW              — Package folder exists, metadata.json missing.
+   ANALYZING        — metadata.json exists, but manifest.json is
+                       missing/status="draft" (Claude still analyzing),
+                       OR summary.json / questionbank.json / material.md
+                       are missing, OR manifest.status is neither
+                       "complete" nor "pending_review" (defensive; the
+                       schema enum should prevent this).
+   CLAUDE_READY      — manifest.status is "complete" or "pending_review"
+                       (per the OCR Rule, "pending_review" already means
+                       Claude's own analysis pass is done, only human
+                       review of a low-confidence OCR question remains —
+                       still real analysis completion, not "still
+                       analyzing") and every Package Standard input file
+                       (AI-115-02) is present, but knowledge.json/
+                       report.md have not been derived yet.
+   READY_FOR_IMPORT  — knowledge.json/report.md exist (derived by
+                       RepositoryManager.prepare(), Sprint AI-115
+                       AI-115-03 — validated, ready), but this Package is
+                       not yet in the generated root index.json.
+   IMPORTED          — present in the current docs/TeachingMaterials/
+                       index.json (i.e. ImportManager.js's importAll()
                        has included it — js/data/TeachingMaterialData.js
-                       carries the same real data).
-   COMPLETED         — NOT decidable from Node/offline tooling: whether
-                       a Package is actually bridged into the live
-                       browser Runtime (AHS.MaterialRuntime via
+                       carries the same real data). Whether it is also
+                       genuinely bridged into the live browser Runtime
+                       (AHS.MaterialRuntime via
                        js/runtime/TeachingMaterialLoader.js) can only be
                        observed in a browser — tests/regression/
-                       RepositoryFoundation.js's own [1]/[3-5] checks
-                       are that confirmation. This function honestly
-                       reports RUNTIME_READY as its own maximum and
-                       never fabricates a COMPLETED it can't verify. */
+                       RepositoryFoundation.js's own checks are that
+                       confirmation; this function honestly reports
+                       IMPORTED as its own maximum for offline/Node
+                       tooling and never fabricates a further state it
+                       can't verify.
+   ARCHIVED          — manifest.json's own `archived: true` flag is set
+                       (Sprint AI-115 addition to Manifest.schema.json).
+                       The only real, explicit signal used — never
+                       inferred from age or usage. Checked after
+                       confirming the Package reached at least
+                       CLAUDE_READY, since archiving an incomplete
+                       analysis has no real meaning. ImportManager.js
+                       never imports/re-imports an ARCHIVED Package;
+                       GenerateTeachingMaterialData.js excludes it from
+                       js/data/TeachingMaterialData.js / index.json even
+                       if it was previously IMPORTED. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -55,9 +65,11 @@ const INDEX_FILE = path.join(ROOT, "index.json");
 
 const STAGES = [
   "RAW",
-  "WAITING_ANALYSIS",
-  "CLAUDE_READY_WAITING_IMPORT",
-  "RUNTIME_READY"
+  "ANALYZING",
+  "CLAUDE_READY",
+  "READY_FOR_IMPORT",
+  "IMPORTED",
+  "ARCHIVED"
 ];
 
 function loadJson(p) {
@@ -80,13 +92,17 @@ function resolveStage(materialId) {
 
   const has = function (f) { return fs.existsSync(path.join(dir, f)); };
   if (!has("metadata.json")) { return "RAW"; }
-  if (!has("summary.json") || !has("questions.json")) { return "WAITING_ANALYSIS"; }
 
   const manifest = loadJson(path.join(dir, "manifest.json"));
-  if (!manifest || manifest.status !== "complete") { return "WAITING_ANALYSIS"; }
+  if (!manifest || manifest.status === "draft") { return "ANALYZING"; }
+  if (!has("summary.json") || !has("questionbank.json") || !has("material.md")) { return "ANALYZING"; }
+  if (manifest.status !== "complete" && manifest.status !== "pending_review") { return "ANALYZING"; }
 
-  if (isIndexed(materialId)) { return "RUNTIME_READY"; }
-  return "CLAUDE_READY_WAITING_IMPORT";
+  if (manifest.archived === true) { return "ARCHIVED"; }
+
+  if (isIndexed(materialId)) { return "IMPORTED"; }
+  if (!has("knowledge.json") || !has("report.md")) { return "CLAUDE_READY"; }
+  return "READY_FOR_IMPORT";
 }
 
 function listMaterialIds() {
@@ -102,6 +118,16 @@ function listStages() {
   return listMaterialIds().map(function (id) { return { materialId: id, stage: resolveStage(id) }; });
 }
 
+/* countByStage() — Sprint AI-115 AI-115-07 (Repository Dashboard): real
+   tally used by both the CLI output below and
+   GenerateTeachingMaterialData.js's writeRepositoryStatus(). */
+function countByStage() {
+  const counts = {};
+  STAGES.forEach(function (s) { counts[s] = 0; });
+  listStages().forEach(function (s) { if (s.stage && counts[s.stage] !== undefined) { counts[s.stage] += 1; } });
+  return counts;
+}
+
 if (require.main === module) {
   const target = process.argv[2];
   if (target) {
@@ -111,4 +137,10 @@ if (require.main === module) {
   }
 }
 
-module.exports = { resolveStage: resolveStage, listStages: listStages, listMaterialIds: listMaterialIds, STAGES: STAGES };
+module.exports = {
+  resolveStage: resolveStage,
+  listStages: listStages,
+  listMaterialIds: listMaterialIds,
+  countByStage: countByStage,
+  STAGES: STAGES
+};

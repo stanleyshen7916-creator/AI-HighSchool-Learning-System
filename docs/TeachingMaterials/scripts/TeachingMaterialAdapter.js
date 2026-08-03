@@ -256,7 +256,14 @@ function validatePackage(materialId) {
 /* loadPackage(materialId) — convenience only (not one of this EO's 5
    named Adapter functions), mirrors ValidateMaterial.js's own file
    loading so a caller/CLI can get parsed Package objects without
-   duplicating that logic. Missing files load as null, never throw. */
+   duplicating that logic. Missing files load as null, never throw.
+   Sprint AI-115 AI-115-02: questions.json renamed questionbank.json
+   (aligning the actual file name with the schema file's own name,
+   QuestionBank.schema.json, which already used this name — Repository
+   was still genuinely empty at the time of this rename, so no real
+   Package data needed migration); material.md added (raw text, not
+   JSON — the Claude-authored, human-readable rendering of the Package,
+   required by AI-115-02's Package Standard). */
 function loadPackage(materialId) {
   function loadJson(file) {
     var p = path.join(ROOT, "materials", materialId, file);
@@ -264,11 +271,18 @@ function loadPackage(materialId) {
     try { return JSON.parse(fs.readFileSync(p, "utf8")); }
     catch (e) { return null; }
   }
+  function loadText(file) {
+    var p = path.join(ROOT, "materials", materialId, file);
+    if (!fs.existsSync(p)) { return null; }
+    try { return fs.readFileSync(p, "utf8"); }
+    catch (e) { return null; }
+  }
   return {
     metadata: loadJson("metadata.json"),
     manifest: loadJson("manifest.json"),
+    materialMd: loadText("material.md"),
     summary: loadJson("summary.json"),
-    questionBank: loadJson("questions.json"),
+    questionBank: loadJson("questionbank.json"),
     related: loadJson("related.json")
   };
 }
@@ -279,7 +293,11 @@ module.exports = {
   convertQuestions: convertQuestions,
   convertRelated: convertRelated,
   validatePackage: validatePackage,
-  loadPackage: loadPackage
+  loadPackage: loadPackage,
+  /* Sprint AI-115 AI-115-06: exported (previously module-private) so
+     RepositoryManager.js's duplicate-detection can reuse the exact same
+     title derivation instead of re-implementing it — "不得建立第二套". */
+  deriveTitle: deriveTitle
 };
 
 /* CLI preview (read-only — loads a Package and prints every conversion
