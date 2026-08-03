@@ -31,9 +31,9 @@ created anywhere.
 | QA Dashboard | PASS |
 | Verify | PASS |
 | Test | PASS |
-| GitHub Actions | Filled in after merge. |
-| Deployment | Filled in after merge. |
-| Merge Commit | Filled in after merge. |
+| GitHub Actions | PASS（`QA Automation Framework` run [30795108927](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30795108927)，commit `9158db2`） |
+| Deployment | PASS（GitHub Pages `pages build and deployment` run [30795107835](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30795107835)，commit `9158db2`） |
+| Merge Commit | `9158db202e7c7091a1f25ab0d80121143d6a3df4`（PR #39，merged into `main`） |
 
 ## Detail per item
 
@@ -184,7 +184,9 @@ RepositoryFoundation 29/29, MaterialPipelineRegression 37/37, **AnalyticsRegress
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- **Merge Commit**：`9158db202e7c7091a1f25ab0d80121143d6a3df4`（PR #39 → `main`）
+- **GitHub Actions（QA Automation Framework）**：run [30795108927](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30795108927)，針對合併後的 `main`（commit `9158db2`）觸發，全部真實步驟（`npm run verify`／`npm test`／Playwright 安裝／`npm run test:e2e`／`npm run qa:dashboard`／artifact 上傳）皆 `conclusion: success`，總耗時約 68 秒（07:50:32–07:51:40）。
+- **GitHub Pages Deployment**：`pages build and deployment` run [30795107835](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30795107835)，同樣針對 commit `9158db2` 觸發，`build`／`deploy`／`report-build-status` 三個 job 皆 `conclusion: success`。
 
 ## 修改檔案
 
