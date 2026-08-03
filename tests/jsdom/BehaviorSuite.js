@@ -1794,6 +1794,34 @@ console.log("\n[43] Sprint AI-114 PAT — 複習中心不再顯示衝突的第�
     !!homeWin.document.querySelector(".review-widget"));
 }
 
+console.log("\n[44] HOTFIX-008 — Topbar 顯示名稱/年級跨頁與重新整理後仍與 Settings 同步");
+{
+  /* PAT report: 在 Settings 儲存顯示名稱後，換頁或重新整理，Topbar 又變回
+     預設的「同學」。Root cause：js/ui/AppShell.js 的 topbar() 一直是直接讀
+     AHS.AppConfig.user/student（Mock 預設值），SettingsPanel.js 的儲存
+     只在當下那次點擊時手動 patch 一次 DOM 節點文字 —
+     AppShell 重新 build（換頁、重新整理）時完全沒有讀真正的 Single Source
+     AHS.SettingsRuntime，於是又顯示回 Mock 預設。修正：topbar() 改為優先讀
+     AHS.SettingsRuntime.get().profile，AppConfig 僅作為它未載入時的備援。 */
+  const settingsSeed = { profile: { name: "小小兵", grade: "高中生" }, showTutorSuggestions: true, aiGatewayEnabled: false };
+
+  const { window: homeWin } = loadPage("index.html", { seedSession: { "ahs:settings": settingsSeed } });
+  const homeName = homeWin.document.querySelector(".topbar__user-meta strong");
+  check("首頁初次載入即顯示 Settings 儲存過的名稱（不需先手動觸發儲存）",
+    !!homeName && homeName.textContent === "小小兵");
+
+  const { window: reviewWin, consoleErrors } = loadPage("review.html", { seedSession: { "ahs:settings": settingsSeed } });
+  const reviewName = reviewWin.document.querySelector(".topbar__user-meta strong");
+  check("換到另一頁（複習中心）Topbar 名稱仍與 Settings 一致（不會變回「同學」）",
+    !!reviewName && reviewName.textContent === "小小兵");
+  check("Console errors = 0（Topbar 讀 SettingsRuntime）", consoleErrors.length === 0);
+
+  const { window: guestWin } = loadPage("index.html", {});
+  const guestName = guestWin.document.querySelector(".topbar__user-meta strong");
+  check("從未存過 Settings 時 Topbar 仍正常顯示預設名稱（備援未壞）",
+    !!guestName && guestName.textContent === "同學");
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

@@ -105,6 +105,17 @@ AHS.AppShell = (function () {
     var notifications = (model && model.notifications) || [];
     var user = (model && model.user) || null; // Guest fallback below.
 
+    /* HOTFIX-008: AHS.SettingsRuntime (persisted, real) is the actual
+       Single Source for the display name/grade a user sets via the
+       Settings panel's Profile section — AHS.AppConfig.user/student are
+       only the first-run mock defaults. Reading AppConfig directly here
+       (as before) meant a saved name only ever showed on the page it was
+       saved on (SettingsPanel.js patches the live DOM node at save time)
+       and reverted to "同學"/"高中生" on every other page and on reload,
+       since this function always rebuilt from AppConfig. */
+    var profile = (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function")
+      ? AHS.SettingsRuntime.get().profile : null;
+
     var badge = el("span", { class: "topbar__badge" });
     function unreadCount() {
       var n = 0;
@@ -158,7 +169,8 @@ AHS.AppShell = (function () {
       if (typeof openSettings === "function") { openSettings(); }
     });
 
-    var userName = user && user.name ? user.name : "Guest";
+    var userName = (profile && profile.name) || (user && user.name) || "Guest";
+    var userGrade = (profile && profile.grade) || (model && model.student && model.student.grade) || "";
     var userBtn = el("div", {
       class: "topbar__user", role: "button", tabindex: "0", "aria-haspopup": "true",
       "aria-label": userName
@@ -169,7 +181,7 @@ AHS.AppShell = (function () {
       }),
       el("span", { class: "topbar__user-meta" }, [
         el("strong", { text: userName }),
-        el("small", { text: model.student.grade })
+        el("small", { text: userGrade })
       ])
     ]);
     function toggleProfileMenu() {
