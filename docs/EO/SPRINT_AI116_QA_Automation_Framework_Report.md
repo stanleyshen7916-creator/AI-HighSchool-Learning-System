@@ -22,7 +22,7 @@ connected. Every changed/added file this Sprint is under `playwright/`,
 | Dashboard | PASS |
 | Verify | PASS |
 | Test | PASS |
-| Deployment | Filled in after merge. |
+| Deployment | PASS |
 
 ## Detail per item
 
@@ -124,7 +124,14 @@ Snapshot). `npm run qa:dashboard`: overall PASS, `docs/QA/QaDashboard.json` writ
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR #37，已合併至 `main`。Merge commit：`34cdb5e644bdc7827e4c6fc159940e02d71bf68f`。
+- GitHub Pages "pages build and deployment" workflow 已針對此 commit 觸發並成功完成部署。
+- **本 Sprint 新增的「QA Automation Framework」workflow（`.github/workflows/playwright.yml`）
+  也已針對此 commit 觸發並成功完成**（run id `30787270646`，`completed` / `success`）——這是
+  該 workflow 在真實 GitHub Actions 環境的第一次執行，包含全新安裝 Playwright 瀏覽器與完整
+  Snapshot 截圖比對。本報告先前揭露的「截圖基準圖在本機沙盒瀏覽器版本與 CI 實際安裝版本
+  不同，可能導致 CI 上比對失敗」風險，這次真實執行**並未發生**——所有 15 項 Playwright 測試
+  （含 7 項 Screenshot Regression）在 CI 上皆一次通過，本機產生的基準圖無需重新產生。
 
 ## 修改檔案
 
