@@ -174,11 +174,12 @@ PASS（1 個既有、已追蹤的 `window.location.href` 例外，`HomeRecentMat
 
 ## Merge Commit：
 
-填於合併後。
+- PR #25，已合併至 `main`。Merge commit：`400c670e0182d44c15aed9254f6a0af630e80fff`。
 
 ## GitHub Pages：
 
-填於合併後。
+- "pages build and deployment" workflow 已針對此 commit 觸發（合併當下即為 queued 狀態），
+  自動完成部署，無需額外動作。
 
 ## Root Cause
 
