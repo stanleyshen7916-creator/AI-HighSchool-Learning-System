@@ -1,0 +1,14 @@
+{
+  "materialId": "tm_1",
+  "subject": "數學",
+  "grade": "高一",
+  "publisher": null,
+  "chapter": "第二冊 第4章 4-1~4-3（三角函數的性質：正弦定理、餘弦定理、三角形面積公式）",
+  "unit": "114學年度下學期 高一第三次段考",
+  "keywords": ["正弦定理", "餘弦定理", "圓內接四邊形", "三角形面積公式", "海龍公式", "和角公式", "方位角", "單位圓"],
+  "difficulty": null,
+  "source": "考卷",
+  "uploadDate": "2026-08-03T00:00:00Z",
+  "version": "1",
+  "materialType": "EXAM"
+}
