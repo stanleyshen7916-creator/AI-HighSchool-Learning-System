@@ -37,14 +37,16 @@
   <script src="js/runtime/LearningStateRuntime.js"></script>
   <script src="js/utils/TutorMessage.js"></script>
   <script src="js/ui/TutorContextTip.js"></script>
-  <!-- Sprint AI-018: Review Production Integration — the real, already-
-       Production-validated WrongBook -> ReviewQueue -> ReviewModel chain
-       (Sprint AI-015F/G), wired here so review.html can display it
-       alongside its existing Exam Mode history/cards, additive only. -->
-  <script src="js/runtime/WrongBookSession.js"></script>
-  <script src="js/runtime/ReviewQueue.js"></script>
-  <script src="js/runtime/ReviewModel.js"></script>
-  <script src="js/components/ReviewWidget.js"></script>
+  <!-- Sprint AI-114 PAT fix: js/components/ReviewWidget.js (Sprint AI-018,
+       Practice Mode's WrongBookSession -> ReviewQueue -> ReviewModel chain)
+       removed from this page — it showed a second, always-different
+       "複習進度" panel next to this page's own real Exam Mode stats
+       (ReviewHomeCard below + the real Review Session, AI-901), since
+       Practice Mode and Exam Mode are two deliberately separate LOCKed
+       pipelines that legitimately never share data. ReviewWidget's own
+       file header already describes it as "首頁 Review Widget" — it
+       remains exactly as before on index.html, its real intended home;
+       only this page's redundant, confusing second mount is removed. -->
   <script src="js/components/ReviewHomeCard.js"></script>
   <script src="js/components/ReviewQuickAction.js"></script>
   <script src="js/components/ReviewRecentSession.js"></script>
