@@ -1,0 +1,181 @@
+{
+  "materialId": "tm_2",
+  "knowledgePoints": [
+    {
+      "name": "SARS-CoV-2 病毒特性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三域六界系統與五界系統比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三域物種特性比較表",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三域系統親緣關係",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "五界分類法依據",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "人擇與天擇的區分",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分子演化證據",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分類系統界域比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "古菌與真細菌的差異",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "同源器官證據判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "同源構造判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "同源構造與同功構造",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "單系群、並系群判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天擇與人擇的區別",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天擇與演化的作用單位",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "抗藥性演化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "支序分類學的證據",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "斑馬條紋演化假說（實驗數據判讀）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "演化學說比較",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "生物分類特徵判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "生物分類系統演變原因",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "生物分類系統發展史",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "病毒套膜的形成",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "病毒核酸水解產物（非洲豬瘟）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "病毒的一般特性",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "病毒的核酸與構造",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "痕跡器官與演化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "突變與天擇",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "脊椎動物胚胎學證據",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "達爾文天擇說核心概念",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "達爾文天擇說的形成背景",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "非洲豬瘟病毒的宿主特性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "顳窩與羊膜動物親緣關係",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "鳥類與爬蟲類親緣關係重建",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "麗魚體色與棲地天擇",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-08-03T13:23:04.145Z"
+}
