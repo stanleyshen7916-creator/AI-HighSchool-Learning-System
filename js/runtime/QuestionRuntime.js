@@ -73,6 +73,33 @@ AHS.QuestionRuntime = (function () {
     return clone(store[examId]);
   }
 
+  /* shuffleOrder(examId) — Sprint AI-117 AI-117-09 Random Exam Session,
+     additive Runtime Extension (same sanctioned pattern importQuestions()/
+     startFromExam() already used — "不得修改既有 Runtime API": every
+     function above is untouched). Re-orders the STORED array in place
+     with a real Fisher-Yates shuffle; each question object itself
+     (its own real `id`/`index`/content) is never mutated, only the
+     array's position order changes. "Question ID 永遠不變" holds
+     structurally: getQuestionById() searches every item regardless of
+     position, AutoGrader.grade()/WrongBookRuntime.sync() key everything
+     by each question's own `id`, never by array index — so grading,
+     Wrong Book, Review, and Statistics are provably unaffected by this
+     reorder; only which question getQuestion(examId, N)/getSet(examId)
+     returns at position N (i.e. what js/components/QuizCenter.js renders
+     next) changes. Returns the shuffled clone, or [] if this examId has
+     no stored set. */
+  function shuffleOrder(examId) {
+    if (!hasExam(examId)) { return []; }
+    var arr = store[examId];
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
+    return clone(arr);
+  }
+
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -91,6 +118,7 @@ AHS.QuestionRuntime = (function () {
     getQuestionById: getQuestionById,
     clear: clear,
     importQuestions: importQuestions,
+    shuffleOrder: shuffleOrder,
     reset: reset
   };
 })();

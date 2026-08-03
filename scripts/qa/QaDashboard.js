@@ -3,8 +3,9 @@
    Single-command aggregator: `npm run qa:dashboard`. Runs (or reads the
    already-fresh result of) every real suite this repository's QA
    discipline requires — BehaviorSuite / PipelineRegression /
-   RepositoryFoundation / MaterialPipelineRegression / Playwright — and
-   writes one real PASS/FAIL summary to docs/QA/QaDashboard.json. Never
+   RepositoryFoundation / MaterialPipelineRegression / AnalyticsRegression
+   (Sprint AI-117) / Playwright — and writes one real PASS/FAIL summary
+   to docs/QA/QaDashboard.json. Never
    re-implements any suite's own pass/fail logic: each Node suite's exit
    code is the source of truth (0 = PASS, matching every suite's own
    `process.exit(fail === 0 ? 0 : 1)` convention already in this repo),
@@ -31,7 +32,8 @@ const NODE_SUITES = [
   { name: "BehaviorSuite", script: "tests/jsdom/BehaviorSuite.js", countPattern: /PASS:\s*(\d+)\s+FAIL:\s*(\d+)/ },
   { name: "PipelineRegression", script: "tests/regression/PipelineRegression.js", countPattern: /PipelineRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "RepositoryFoundation", script: "tests/regression/RepositoryFoundation.js", countPattern: /RepositoryFoundation:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
-  { name: "MaterialPipelineRegression", script: "tests/regression/MaterialPipelineRegression.js", countPattern: /MaterialPipelineRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
+  { name: "MaterialPipelineRegression", script: "tests/regression/MaterialPipelineRegression.js", countPattern: /MaterialPipelineRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "AnalyticsRegression", script: "tests/regression/AnalyticsRegression.js", countPattern: /AnalyticsRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
 ];
 
 function runNodeSuite(suite) {

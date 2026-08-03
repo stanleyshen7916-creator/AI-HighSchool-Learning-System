@@ -12,7 +12,14 @@ AHS.HomeRecentMaterials = (function () {
 
   function card(item, status) {
     var subj = AHS.Subjects[item.subject];
-    var pct = Math.max(0, Math.min(100, item.progress));
+    /* Sprint AI-117 AI-117-01/AI-117-10: same Material Completion single
+       source as js/ui/MaterialCard.js — see that file's own comment for
+       the full rationale. Falls back to raw reading progress only when
+       StatisticsRuntime isn't loaded on this page. */
+    var completion = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialCompletion === "function")
+      ? AHS.StatisticsRuntime.materialCompletion(item.id) : null;
+    var pct = completion ? completion.percent : Math.max(0, Math.min(100, item.progress));
+    var completionLabel = completion ? completion.label + "（" + completion.percent + "%）" : (pct + "%");
 
     var canAccessFile = !!item.file;
     var docBtn = el("button", {
@@ -81,8 +88,8 @@ AHS.HomeRecentMaterials = (function () {
         : null,
       el("div", { class: "recent-card__progress" }, [
         el("div", { class: "recent-card__progress-head" }, [
-          el("span", { text: "閱讀進度" }),
-          el("span", { class: "recent-card__pct", text: pct + "%" })
+          el("span", { text: "教材完成度" }),
+          el("span", { class: "recent-card__pct", text: completionLabel })
         ]),
         el("div", {
           class: "progressbar",

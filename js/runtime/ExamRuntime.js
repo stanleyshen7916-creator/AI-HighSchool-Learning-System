@@ -62,6 +62,14 @@ AHS.ExamRuntime = (function () {
     });
     session.totalQuestions = questions.length;
 
+    /* Sprint AI-117 AI-117-09 Random Exam Session: real display-order
+       shuffle on every session start, additive (QuestionRuntime.
+       shuffleOrder() is new this Sprint; every other line above/below is
+       unchanged). Question IDs/content are untouched — see that
+       function's own header for why grading/Wrong Book/Statistics are
+       provably unaffected. */
+    if (typeof AHS.QuestionRuntime.shuffleOrder === "function") { AHS.QuestionRuntime.shuffleOrder(examId); }
+
     session.status = STATES.RUNNING;
     session.startedAt = new Date().toISOString();
     activeExamId = examId;
@@ -110,6 +118,14 @@ AHS.ExamRuntime = (function () {
 
     session.status = STATES.READY;
     session.totalQuestions = AHS.QuestionRuntime.count(examId);
+
+    /* Sprint AI-117 AI-117-09 Random Exam Session: this is the exact
+       "重複練習" path AI-117-09 names — examId is stable across attempts
+       here (unlike start()'s own per-call buildExamId()), so re-entering
+       the SAME real exam (e.g. a Teaching-Material-sourced exam,
+       Assessment Mode) now genuinely reshuffles display order each time
+       while every question's own real id/content stays identical. */
+    if (typeof AHS.QuestionRuntime.shuffleOrder === "function") { AHS.QuestionRuntime.shuffleOrder(examId); }
 
     session.status = STATES.RUNNING;
     session.startedAt = new Date().toISOString();
@@ -162,6 +178,22 @@ AHS.ExamRuntime = (function () {
     return clone(session);
   }
 
+  /* abandon(examId) — Sprint AI-117 AI-117-08 Assessment Mode, additive
+     Runtime Extension. Distinct from finish(): finish() is "the student
+     submitted this exam", which js/components/QuizCenter.js's own
+     finishExam() then grades (AutoGrader/WrongBookRuntime/HistoryRuntime)
+     — switching 原始試卷/AI 練習 mid-session is not a submission, and
+     must never grade/record a partial attempt. abandon() simply frees
+     the "one running exam" slot and discards the session record so a
+     new startFromExam() for the other mode can begin — no grading, no
+     WrongBook/History write, nothing else in this file changed. */
+  function abandon(examId) {
+    if (!sessions[examId]) { return null; }
+    if (activeExamId === examId) { activeExamId = null; }
+    delete sessions[examId];
+    return null;
+  }
+
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -184,6 +216,7 @@ AHS.ExamRuntime = (function () {
     next: next,
     prev: prev,
     finish: finish,
+    abandon: abandon,
     reset: reset
   };
 })();
