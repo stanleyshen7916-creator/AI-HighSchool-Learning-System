@@ -1,1 +1,13 @@
 node_modules/
+
+# Sprint AI-116 QA Automation Framework: Playwright's own run output
+# (HTML report, test-results, ad-hoc screenshots) is ephemeral CI
+# artifact, regenerated every run and uploaded by
+# .github/workflows/playwright.yml — never committed. The baseline
+# images under playwright/tests/*-snapshots/ (AI-116-06 Screenshot
+# Regression) ARE committed — this ignore is scoped to /playwright/report/
+# only, not the whole playwright/ directory.
+/playwright/report/html/
+/playwright/report/test-results/
+/playwright/report/screenshots/
+/playwright/report/results.json

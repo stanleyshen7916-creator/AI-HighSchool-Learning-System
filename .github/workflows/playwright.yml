@@ -1,0 +1,85 @@
+name: QA Automation Framework
+
+# Sprint AI-116 AI-116-02/AI-116-05. Runs fully automatically on every
+# push and every pull_request — "不得：人工執行" — no manual dispatch
+# trigger is added. Runs, in order, every gate this repository's own
+# QA discipline requires (npm run verify -> npm test -> Playwright):
+# any step failing stops the job (job status = failure), so a red
+# status check appears on the PR before anyone merges. This workflow
+# itself cannot force GitHub to BLOCK a merge on that red check — that
+# requires a repository Branch Protection Rule (Settings -> Branches ->
+# Require status checks to pass) enabling this workflow's job as a
+# required check, a repo-admin setting outside what a workflow file (or
+# this Sprint's own code changes) can configure — flagged in
+# docs/EO/SPRINT_AI116_QA_Automation_Framework_Report.md, not silently
+# assumed to already be enforced.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  qa:
+    name: Verify + Test + Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm run verify (VerifyPaths + VerifyForbiddenPatterns)
+        run: npm run verify
+
+      - name: npm test (BehaviorSuite + PipelineRegression + RepositoryFoundation + MaterialPipelineRegression)
+        run: npm test
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright (Smoke + Learning Loop E2E + UI Snapshot)
+        run: npm run test:e2e
+
+      - name: QA Dashboard (aggregate PASS/FAIL across every suite)
+        if: always()
+        run: npm run qa:dashboard
+
+      # AI-116-07/AI-116-08: the HTML report (PASS/FAIL/duration/
+      # screenshot/video/trace) and, on failure, the raw test-results
+      # (screenshot/trace/video/console — AI-116-08's own Failure
+      # Artifact list; this static app makes no network calls, so
+      # there is honestly never a Network Log to attach) are uploaded
+      # as workflow artifacts either way, so Claude/GPT PMO can always
+      # download and inspect them from a failed run without needing
+      # local reproduction first.
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright/report/html
+          retention-days: 30
+
+      - name: Upload failure artifacts (screenshot/trace/video)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-artifacts
+          path: playwright/report/test-results
+          retention-days: 30
+
+      - name: Upload QA Dashboard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-dashboard
+          path: docs/QA/QaDashboard.json
+          retention-days: 30
