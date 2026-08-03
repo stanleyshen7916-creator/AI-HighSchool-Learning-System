@@ -258,7 +258,7 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
      below, with the real Repository content intact. */
   const { window, consoleErrors } = loadPage("quiz.html", {
     seedSession: { "ahs:learningQuestionRuntime": { items: [stubQuestion], seq: 1 } },
-    excludeScripts: ["data/materials/"]
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"]
   });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
@@ -547,7 +547,7 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
   ], folders: [], seq: 2, folderSeq: 0 };
 
   const { window, consoleErrors } = loadPage("materials.html", {
-    excludeScripts: ["data/materials/"],
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"],
     seedSession: { "ahs:materialRuntime": twoMaterials }
   });
   const doc = window.document;
@@ -566,7 +566,7 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
 
 console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
 {
-  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["data/materials/"] });
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
   check("顯示正式 Empty State（非空白頁）",
@@ -930,7 +930,7 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
      design, so that scenario can only be verified the way it already
      was: a Node vm simulation sharing one sessionStorage mock across
      simulated page loads (see docs/EO/HOTFIX-002 report). */
-  const { window, consoleErrors } = loadPage("materials.html", {});
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   check("data/materials/*.js 已 register 真實教材", window.AHS.MaterialRepository.list().length === 1);
   check("MaterialRuntime 確實載入該教材（非空陣列，對應 PAT FAIL 的核心症狀）", window.AHS.MaterialRuntime.list().length === 1);
@@ -951,7 +951,7 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
     const k = window.sessionStorage.key(i);
     carried[k] = JSON.parse(window.sessionStorage.getItem(k));
   }
-  const { window: quizWindow, consoleErrors: quizErrors } = loadPage("quiz.html", { seedSession: carried });
+  const { window: quizWindow, consoleErrors: quizErrors } = loadPage("quiz.html", { seedSession: carried, excludeScripts: ["js/data/TeachingMaterialData.js"] });
   quizWindow.AHS.TeachingMaterialLoader.initialize();
   const examId = "teaching_material_" + rt.id;
   check("quiz.html 沿用同一 Session 也能將真實單選題匯入 QuestionRuntime", quizWindow.AHS.QuestionRuntime.hasExam(examId));
@@ -961,7 +961,7 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
 
 console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個區塊皆正確 Render（PAT FAIL 修正回歸測試）");
 {
-  const { window, consoleErrors } = loadPage("materials.html", {});
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   const A = window.AHS;
   const item = A.MaterialRuntime.list()[0];
@@ -1018,7 +1018,7 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   /* Issue 001: summary.html's ⑤ 複習建議 must show real, derived content
      for a Repository-sourced material — never "尚無資料", never
      fabricated, never requiring a click. */
-  const p1 = loadPage("materials.html", {});
+  const p1 = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const rt = p1.window.AHS.MaterialRuntime.list()[0];
   const carried = {};
   for (let i = 0; i < p1.window.sessionStorage.length; i++) {
@@ -1050,7 +1050,7 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
      練習」, unchanged since Sprint 6.8) — with 難度/考點 shown, and
      without a second, empty Practice-Mode section rendering alongside
      the real content. */
-  const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id });
+  const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const bodyM = qByMaterialId.window.document.body.textContent;
   check("② Quiz Center（materialId-only 連結）：不再顯示「尚無 AI 練習題」", !bodyM.includes("尚無 AI 練習題"));
   /* Sprint AI-117 AI-117-09 Random Exam Session: display order is now
@@ -1068,7 +1068,7 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   check("② Quiz Center：顯示難度／考點（Repository 實際擁有的欄位）", !!qcardMeta && /難度：/.test(qcardMeta.textContent) && /考點：/.test(qcardMeta.textContent));
   check("Console errors = 0（quiz.html materialId-only，HOTFIX-004）", qByMaterialId.consoleErrors.length === 0);
 
-  const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id });
+  const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const qs0ExamId = qByExamId.window.AHS.QuestionRuntime.getSet("teaching_material_" + rt.id)[0];
   check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響",
     !!qs0ExamId && qByExamId.window.document.body.textContent.includes(qs0ExamId.text));
@@ -1113,7 +1113,7 @@ console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示�
      confirm resolve() still returns real data purely by calling it cold,
      immediately after page load, before anything else has touched
      AHS.TeachingMaterialLoader. */
-  const { window } = loadPage("materials.html", {});
+  const { window } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const A = window.AHS;
   // Reset the Loader's own idempotency flag to simulate "not yet initialized",
   // without touching MaterialRuntime/idMap state already persisted from the
@@ -1138,7 +1138,7 @@ console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示�
 
 console.log("\n[28] 學習總結 — 重點關鍵字紅色標示");
 {
-  const p1 = loadPage("materials.html", {});
+  const p1 = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const rt3 = p1.window.AHS.MaterialRuntime.list()[0];
   const carried3 = {};
   for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried3[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
@@ -1159,7 +1159,7 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
      -tagged on quiz.html lets TeachingMaterialLoader.load() fully
      bootstrap the Repository material on quiz.html itself, not just on
      materials.html. */
-  const { window, consoleErrors } = loadPage("quiz.html", {});
+  const { window, consoleErrors } = loadPage("quiz.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
 
@@ -1173,7 +1173,7 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
       !!doc.querySelector(".qcard, .quiz-exam, [class*='exam']"));
   }
 
-  const p2 = loadPage("quiz.html", {});
+  const p2 = loadPage("quiz.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc2 = p2.window.document;
   doc2.body.appendChild(p2.window.AHS.QuizCenter.create());
   const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
@@ -1189,7 +1189,7 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
 
 console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時產生真實 .docx");
 {
-  const { window } = loadPage("materials.html", {});
+  const { window } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const A = window.AHS;
   const item = A.MaterialRuntime.list()[0];
 
@@ -1251,7 +1251,7 @@ console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時
 
 console.log("\n[31] HOTFIX-005 AI-503 — 下載總結：直接產生列印內容（真實 PDF，透過瀏覽器另存為）");
 {
-  const p1 = loadPage("materials.html", {});
+  const p1 = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const rt = p1.window.AHS.MaterialRuntime.list()[0];
   const carried = {};
   for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }

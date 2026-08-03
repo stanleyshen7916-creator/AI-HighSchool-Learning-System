@@ -160,7 +160,17 @@ AHS.TeachingMaterialLoader = (function () {
       return idMap[entry.materialId];
     }
     if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return null; }
-    var record = AHS.MaterialRuntime.add(entry.material || {});
+    /* Bug fix (first real Package-track material, tm_1): Package metadata's
+       subject is a Chinese display name ("數學"), but MaterialCard.js/
+       WrongBook.js/etc. all do AHS.Subjects[record.subject] expecting a real
+       key ("math") — some with no fallback, which throws. Remap through the
+       same subjectKeyFromChineseName() already used by
+       buildExamCompatibleQuestions() below, on a clone so entry.material
+       itself (read elsewhere by its own Chinese-name convention) is untouched. */
+    var materialForRuntime = shallowClone(entry.material || {});
+    var runtimeSubjectKey = subjectKeyFromChineseName(materialForRuntime.subject);
+    if (runtimeSubjectKey) { materialForRuntime.subject = runtimeSubjectKey; }
+    var record = AHS.MaterialRuntime.add(materialForRuntime);
     if (!record || !record.id) { return null; }
     idMap[entry.materialId] = record.id;
     saveIdMap(idMap);
@@ -283,7 +293,14 @@ AHS.TeachingMaterialLoader = (function () {
     entries.forEach(function (e) { if (e && e.materialId === sourceId) { entry = e; } });
     if (entry && entry.material) {
       return {
-        subject: entry.material.subject,
+        /* Same fix as resolveMaterialId() above: ExamRuntime.startFromExam()
+           stores this straight into the exam session's own `subject` field,
+           which flows into AutoGrader.grade()/WrongBookRuntime.sync() and
+           eventually WrongBook.js's chip() (no fallback) — must be a real
+           AHS.Subjects key, not the Package's Chinese display name. Falls
+           back to the raw name only if unmappable (pre-existing gap for an
+           unknown subject, not newly introduced here). */
+        subject: subjectKeyFromChineseName(entry.material.subject) || entry.material.subject,
         title: entry.material.title,
         chapter: entry.material.chapter,
         grade: entry.material.grade

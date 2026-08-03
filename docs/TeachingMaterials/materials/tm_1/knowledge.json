@@ -1,0 +1,76 @@
+{
+  "materialId": "tm_1",
+  "knowledgePoints": [
+    {
+      "name": "三角函數定義、坐標法",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三角函數定義、坐標法求角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "同角三角函數關係（化為tanθ）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "同角三角函數關係（平方展開）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "和角公式的幾何證明",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "單位圓上的三角函數定義",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "正弦定理、圓內接四邊形",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正弦定理（圓內弦與圓周角）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "海龍公式",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "角平分線與三角形面積",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理、AM-GM不等式、面積平分",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理、圓內接四邊形、海龍公式、正弦定理",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理（方位角應用）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理（鄰補角）",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-08-03T13:57:36.342Z"
+}
