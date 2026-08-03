@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-08-03T05:25:44.583Z",
+  "overall": "PASS",
+  "suites": [
+    {
+      "name": "BehaviorSuite",
+      "result": "PASS",
+      "pass": 329,
+      "fail": 0,
+      "durationMs": 5807
+    },
+    {
+      "name": "PipelineRegression",
+      "result": "PASS",
+      "pass": 6,
+      "fail": 0,
+      "durationMs": 39
+    },
+    {
+      "name": "RepositoryFoundation",
+      "result": "PASS",
+      "pass": 29,
+      "fail": 0,
+      "durationMs": 989
+    },
+    {
+      "name": "MaterialPipelineRegression",
+      "result": "PASS",
+      "pass": 37,
+      "fail": 0,
+      "durationMs": 1276
+    },
+    {
+      "name": "Playwright",
+      "result": "PASS",
+      "pass": 15,
+      "fail": 0,
+      "durationMs": 10728.242
+    }
+  ]
+}

@@ -6,9 +6,12 @@
   "scripts": {
     "test": "node tests/jsdom/BehaviorSuite.js && node tests/regression/PipelineRegression.js && node tests/regression/RepositoryFoundation.js && node tests/regression/MaterialPipelineRegression.js",
     "verify": "node scripts/verify/VerifyPaths.js && node scripts/verify/VerifyForbiddenPatterns.js",
-    "validate:html": "node tests/validator/HtmlValidator.js"
+    "validate:html": "node tests/validator/HtmlValidator.js",
+    "test:e2e": "playwright test --config=playwright/config/playwright.config.js",
+    "qa:dashboard": "node scripts/qa/QaDashboard.js"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "jsdom": "^24.0.0"
   }
 }
