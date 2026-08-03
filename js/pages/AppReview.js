@@ -136,7 +136,7 @@ window.AHS = window.AHS || {};
     /* Platform Refactor Master (PAT 8/9/10): same real Tutor Context
        首頁/AI Tutor already share (Sprint AI-111), reused verbatim —
        renders nothing when there is no real data yet. */
-    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create();
+    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create({ page: "review" });
     if (tip) { page.appendChild(tip); }
 
     page.appendChild(AHS.ReviewHomeCard.create(stats));

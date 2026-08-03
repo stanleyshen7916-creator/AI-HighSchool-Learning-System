@@ -80,5 +80,27 @@ AHS.HistoryRuntime = (function () {
     persist();
   }
 
-  return { record: record, list: list, count: count, reset: reset };
+  /* importRecords(records) — Sprint AI-113 AI-804 (Settings: Export/
+     Import 學習紀錄). Real, additive merge (see WrongBookRuntime's own
+     importRecords() for the identical rationale): appends each valid
+     record (must have an examId) with a freshly assigned id/order.
+     Never replaces existing history. Returns the count imported. */
+  function importRecords(records) {
+    if (!Array.isArray(records)) { return 0; }
+    var count = 0;
+    records.forEach(function (r) {
+      if (!r || !r.examId) { return; }
+      store.seq += 1;
+      var copy = {};
+      for (var k in r) { if (Object.prototype.hasOwnProperty.call(r, k)) { copy[k] = r[k]; } }
+      copy.id = "hist_" + store.seq;
+      copy.order = store.seq;
+      store.items.push(copy);
+      count += 1;
+    });
+    if (count) { persist(); }
+    return count;
+  }
+
+  return { record: record, list: list, count: count, reset: reset, importRecords: importRecords };
 })();

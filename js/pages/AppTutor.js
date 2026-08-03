@@ -15,10 +15,24 @@ window.AHS = window.AHS || {};
 (function () {
   "use strict";
 
+  /* Sprint AI-113 AI-808: optional real ?materialId=/?examId= — no
+     existing page links here with these params yet (disclosed, not
+     hidden — same "build the real capability, UI consumer follows
+     later" precedent as Sprint AI-103's ImportRuntime.js), but any
+     future "問 AI 巧巧老師" link from a specific material/quiz can reach
+     tutor.html?materialId=... and immediately get a context-specific
+     message via the same shared AHS.TutorMessage.build() every other
+     page already uses — never a second definition. */
   function buildRealTutorMessage() {
     if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function" ||
         !AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return null; }
-    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext());
+    var params = new URLSearchParams(window.location.search);
+    var pageContext = {
+      page: "tutor",
+      materialId: params.get("materialId") || undefined,
+      examId: params.get("examId") || undefined
+    };
+    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), pageContext);
     return built ? { role: "assistant", time: "剛剛", text: built.message } : null;
   }
 

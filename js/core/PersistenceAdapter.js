@@ -94,11 +94,47 @@ AHS.PersistenceAdapter = (function () {
     } catch (e) { /* no-op */ }
   }
 
+  /* exportAll() — Sprint AI-113 AI-804 (Settings: Backup/Export). Real
+     snapshot of every AHS-namespaced key, prefix stripped, values
+     already-parsed (so a caller can JSON.stringify the whole object for
+     a downloadable file). Read-only, never mutates storage. */
+  function exportAll() {
+    var out = {};
+    if (!isAvailable()) { return out; }
+    try {
+      for (var i = 0; i < window.sessionStorage.length; i += 1) {
+        var k = window.sessionStorage.key(i);
+        if (k && k.indexOf(PREFIX) === 0) {
+          var shortKey = k.slice(PREFIX.length);
+          try { out[shortKey] = JSON.parse(window.sessionStorage.getItem(k)); }
+          catch (e) { /* skip one corrupt entry, keep the rest */ }
+        }
+      }
+    } catch (e) { /* no-op */ }
+    return out;
+  }
+
+  /* importAll(data) — Sprint AI-113 AI-804 (Settings: Restore/Import).
+     Writes each key back through save() (same validation/serialization
+     path as every other write). Returns the count actually written.
+     Never clears first — caller decides clear()-then-import (replace)
+     vs. import-only (merge on top of existing keys). */
+  function importAll(data) {
+    if (!data || typeof data !== "object") { return 0; }
+    var count = 0;
+    Object.keys(data).forEach(function (k) {
+      if (save(k, data[k])) { count += 1; }
+    });
+    return count;
+  }
+
   return {
     save: save,
     load: load,
     remove: remove,
     clear: clear,
-    isAvailable: isAvailable
+    isAvailable: isAvailable,
+    exportAll: exportAll,
+    importAll: importAll
   };
 })();

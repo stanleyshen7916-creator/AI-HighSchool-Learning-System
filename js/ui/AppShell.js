@@ -51,6 +51,19 @@ AHS.AppShell = (function () {
     ]);
   }
 
+  /* Sprint AI-113 AI-805: real logout — clears every AHS-namespaced
+     sessionStorage key (the same clear() every Runtime's own reset()
+     already uses) and returns to 首頁, a fresh first-open session. Not
+     a fabricated auth system (this app has none) — for a
+     sessionStorage-persisted static prototype, this genuinely IS what
+     "logging out" means: end the current session's accumulated state. */
+  function doLogout() {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.clear === "function") {
+      AHS.PersistenceAdapter.clear();
+    }
+    window.location.assign("index.html");
+  }
+
   /* ---- Profile menu (HOME-F010) ------------------------------------------
      Extends the existing .topbar__user block with a dropdown. Guest
      fallback when AHS.AppConfig.user is missing — never throws. */
@@ -71,7 +84,7 @@ AHS.AppShell = (function () {
     return el("div", { class: "profile-menu", role: "menu", "aria-label": "使用者選單", hidden: "hidden" }, [list]);
   }
 
-  function topbar(model, onGlobalSearch) {
+  function topbar(model, onGlobalSearch, openSettings) {
     var searchInput = el("input", {
       class: "topbar__search-input",
       type: "search",
@@ -135,11 +148,14 @@ AHS.AppShell = (function () {
     });
 
     var profMenu = profilePanel(function (actionId) {
-      /* Sprint AI-107 RC-01: profile menu actions (Settings/Logout/...) are
-         still Mock/prototype — no real destination exists yet. Removed a
-         leftover console.log debug statement here (Release Candidate
-         cleanup); menu still closes on any action pick. */
+      /* Sprint AI-113 AI-805: Profile/Settings both open the real
+         Settings panel (Profile section is its first section); Logout
+         performs the real logout above. Previously (Sprint AI-107
+         RC-01) these were Mock/no-op — this is the fix, not a redesign
+         of the menu itself. */
       closeMenus();
+      if (actionId === "logout") { doLogout(); return; }
+      if (typeof openSettings === "function") { openSettings(); }
     });
 
     var userName = user && user.name ? user.name : "Guest";
@@ -194,7 +210,7 @@ AHS.AppShell = (function () {
     ]);
   }
 
-  function sidebar(nav, active, onNavigate) {
+  function sidebar(nav, active, onNavigate, openSettings) {
     var list = el("ul", { class: "sidebar__list" });
     nav.items.forEach(function (item) {
       var isActive = item.id === active;
@@ -220,21 +236,26 @@ AHS.AppShell = (function () {
       list.appendChild(el("li", {}, [node]));
     });
 
+    /* Sprint AI-113 AI-804/AI-805: both real now (previously no click
+       handler at all — a true Stub, not just Mock-labeled). */
+    var settingsBtn = el("button", { type: "button", class: "sidebar__item" }, [
+      el("span", { class: "sidebar__icon", html: AHS.Icons.settings() }),
+      el("span", { class: "sidebar__label", text: "設定" })
+    ]);
+    settingsBtn.addEventListener("click", function () {
+      if (typeof openSettings === "function") { openSettings(); }
+    });
+    var logoutBtn = el("button", { type: "button", class: "sidebar__item" }, [
+      el("span", { class: "sidebar__icon", html: AHS.Icons.logout() }),
+      el("span", { class: "sidebar__label", text: "登出" })
+    ]);
+    logoutBtn.addEventListener("click", doLogout);
+
     return el("aside", { class: "sidebar", "aria-label": "主要導覽" }, [
       list,
       el("div", { class: "sidebar__foot" }, [
-        el("button", {
-          type: "button", class: "sidebar__item"
-        }, [
-          el("span", { class: "sidebar__icon", html: AHS.Icons.settings() }),
-          el("span", { class: "sidebar__label", text: "設定" })
-        ]),
-        el("button", {
-          type: "button", class: "sidebar__item"
-        }, [
-          el("span", { class: "sidebar__icon", html: AHS.Icons.logout() }),
-          el("span", { class: "sidebar__label", text: "登出" })
-        ])
+        settingsBtn,
+        logoutBtn
       ])
     ]);
   }
@@ -285,14 +306,26 @@ AHS.AppShell = (function () {
 
     var main = el("main", { class: "shell__main", id: "shell-main" });
 
+    /* Sprint AI-113 AI-804: one real Settings panel per page, same
+       instance the Sidebar's 設定 button and the Profile menu's
+       Settings/Profile items both open — single source, not two
+       separately-built panels. Degrades to a no-op opener if
+       AHS.SettingsRuntime/AHS.SettingsPanel aren't loaded on a given
+       page (defensive, same "never throw at load time" discipline as
+       the rest of this file). */
+    var settingsPanel = (AHS.SettingsPanel && typeof AHS.SettingsPanel.create === "function" &&
+      AHS.SettingsRuntime) ? AHS.SettingsPanel.create() : null;
+    var openSettings = settingsPanel ? settingsPanel.open : function () {};
+
     var root = el("div", { class: "shell" }, [
-      topbar(model, options.onGlobalSearch),
+      topbar(model, options.onGlobalSearch, openSettings),
       el("div", { class: "shell__body" }, [
-        sidebar(nav, active, onNavigate),
+        sidebar(nav, active, onNavigate, openSettings),
         main
       ]),
-      bottomNav(nav, active, onNavigate)
-    ]);
+      bottomNav(nav, active, onNavigate),
+      settingsPanel ? settingsPanel.root : null
+    ].filter(Boolean));
 
     return { root: root, main: main };
   }

@@ -143,9 +143,15 @@ window.AHS = window.AHS || {};
      Returns undefined (renders the existing Empty State) when there is
      genuinely no real learning data yet — never fabricated. */
   function buildAiTutorModel() {
+    /* Sprint AI-113 AI-804: real Settings > Learning > "顯示 AI 巧巧老師
+       建議卡片" toggle. Off means the same honest Empty State the card
+       already shows when there's no real data — never a different,
+       second behavior invented for "hidden". */
+    if (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function" &&
+        AHS.SettingsRuntime.get().showTutorSuggestions === false) { return undefined; }
     if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function" ||
         !AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return undefined; }
-    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext());
+    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), { page: "home" });
     return built || undefined;
   }
 

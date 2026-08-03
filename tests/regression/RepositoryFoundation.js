@@ -160,5 +160,85 @@ console.log("\n[10] Tutor");
   check("Console errors = 0（AI Tutor）", consoleErrors.length === 0);
 }
 
+/* ---- 11. Material Lifecycle + Package Standard (Sprint AI-113 AI-806/807)
+   Real end-to-end run against a scratch, never-committed Package
+   (tm_999998, an id unlikely to collide with any real material), same
+   discipline Sprint AI-112 used to verify the schema gaps it closed:
+   build -> validate -> generate -> assert real output -> delete ->
+   regenerate to confirm the Repository returns to its genuine empty
+   state, every time this suite runs, not just once by hand. */
+console.log("\n[11] Material Lifecycle + Package Standard");
+{
+  const lifecycle = require(path.join(REPO, "docs/TeachingMaterials/scripts/MaterialLifecycle.js"));
+  const generator = require(path.join(REPO, "docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js"));
+  const { execFileSync } = require("child_process");
+  const scratchId = "tm_999998";
+  const dir = path.join(REPO, "docs/TeachingMaterials/materials", scratchId);
+
+  try {
+    fs.mkdirSync(path.join(dir, "source"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "source", "original.txt"), "scratch\n");
+    fs.writeFileSync(path.join(dir, "metadata.json"), JSON.stringify({
+      materialId: scratchId, subject: "math", grade: "高一", publisher: "測試",
+      chapter: "測試章", unit: "1-1", keywords: ["測試"], difficulty: "中等",
+      source: "教科書", uploadDate: "2026-08-03T00:00:00Z", version: "1", materialType: "HANDOUT"
+    }, null, 2));
+
+    check("RAW：只有 metadata.json 時，Lifecycle Stage 正確為 WAITING_ANALYSIS",
+      lifecycle.resolveStage(scratchId) === "WAITING_ANALYSIS");
+
+    fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify({
+      materialId: scratchId, packageVersion: "1", createdDate: "2026-08-03T00:00:00Z",
+      updatedDate: "2026-08-03T00:00:00Z", repositoryVersion: "EO-S1.1-003",
+      analysisEngine: "Claude", status: "complete"
+    }, null, 2));
+    fs.writeFileSync(path.join(dir, "summary.json"), JSON.stringify({
+      materialId: scratchId, coreConcepts: ["測試核心概念"], definitions: [],
+      keywords: [], keyPoints: [], pitfalls: []
+    }, null, 2));
+    fs.writeFileSync(path.join(dir, "questions.json"), JSON.stringify({
+      materialId: scratchId, questions: [{
+        questionId: scratchId + "_q1", materialId: scratchId, questionNumber: "1",
+        type: "single_choice", questionSource: "ORIGINAL", origin: "Uploaded Material",
+        ocrConfidence: 0.95, needsReview: false, question: "測試題目？",
+        options: ["A", "B"], answer: "A", explanation: null, page: 1,
+        version: "1", createdDate: "2026-08-03T00:00:00Z", knowledgePoint: "測試核心概念"
+      }]
+    }, null, 2));
+    fs.writeFileSync(path.join(dir, "related.json"), JSON.stringify({ materialId: scratchId, related: [] }, null, 2));
+
+    check("CLAUDE_READY_WAITING_IMPORT：Package 完整且 manifest.status=complete，但尚未進 index.json",
+      lifecycle.resolveStage(scratchId) === "CLAUDE_READY_WAITING_IMPORT");
+
+    const validateOut = execFileSync(process.execPath, [
+      path.join(REPO, "docs/TeachingMaterials/scripts/ValidateMaterial.js"), scratchId
+    ], { encoding: "utf8" });
+    check("ValidateMaterial.js 對 scratch Package 全數 PASS（Package Standard 結構正確）",
+      /\d+ PASS \/ 0 FAIL/.test(validateOut));
+
+    generator.generate();
+
+    check("RUNTIME_READY：generate() 後 Lifecycle Stage 正確反映已進入 index.json",
+      lifecycle.resolveStage(scratchId) === "RUNTIME_READY");
+
+    const knowledge = JSON.parse(fs.readFileSync(path.join(dir, "knowledge.json"), "utf8"));
+    check("knowledge.json 真實由 summary/questions 衍生（非人工維護）",
+      knowledge.knowledgePoints.length === 1 && knowledge.knowledgePoints[0].name === "測試核心概念" &&
+      knowledge.knowledgePoints[0].source === "both");
+
+    const report = fs.readFileSync(path.join(dir, "report.md"), "utf8");
+    check("report.md 真實包含該教材的 Metadata 與 Lifecycle Stage",
+      report.includes(scratchId) && report.includes("RUNTIME_READY") && report.includes("測試章"));
+
+    const index = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/index.json"), "utf8"));
+    const indexed = index.materials.find((m) => m.materialId === scratchId);
+    check("index.json 該筆 lifecycleStage 為 RUNTIME_READY", !!indexed && indexed.lifecycleStage === "RUNTIME_READY");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+    const finalCount = generator.generate();
+    check("清除 scratch Package 後，Repository 回到真實的空狀態（非殘留測試資料）", finalCount === 0);
+  }
+}
+
 console.log("\nRepositoryFoundation: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);
