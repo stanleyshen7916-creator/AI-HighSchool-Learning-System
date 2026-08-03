@@ -525,26 +525,21 @@ AHS.MyLearning = (function () {
   }
 
   /* ---- Progress -------------------------------------------------------
-     Real per-subject average of AHS.MaterialRuntime's own `progress`
-     field (existing, per-material Schema field — not a new one). Empty
-     State when there are no materials at all. */
-  /* Sprint AI-113 AI-803: status now comes from AHS.LearningStateRuntime
-     (real reading progress AND real mastery, not reading alone — see
-     that file's own header for the exact rule). percent stays the pure
-     reading-progress bar it always was; only "status" changes source. */
+     Sprint AI-117 AI-117-02/AI-117-10: this section previously averaged
+     AHS.MaterialRuntime's own raw `progress` field itself — a real
+     Single-Source violation ("不得自行計算" — this page had its own
+     completion-rate calculation, distinct from every other page's own).
+     Now reads AHS.StatisticsRuntime.subjectAnalytics() only:
+     materialCompletionRate is the real % of this subject's materials at
+     Material Completion stage 3 (AI-117-01 — reading + quiz + review),
+     not a raw reading-progress average. Empty State when there are no
+     materials at all. */
   function computeSubjectProgress() {
-    var bySubject = {};
-    materials().forEach(function (m) {
-      if (!bySubject[m.subject]) { bySubject[m.subject] = { total: 0, count: 0 }; }
-      bySubject[m.subject].total += (typeof m.progress === "number" ? m.progress : 0);
-      bySubject[m.subject].count += 1;
-    });
-    return Object.keys(bySubject).map(function (s) {
-      var avg = Math.round(bySubject[s].total / bySubject[s].count);
-      var state = (AHS.LearningStateRuntime && typeof AHS.LearningStateRuntime.subjectState === "function")
-        ? AHS.LearningStateRuntime.subjectState(s) : null;
-      var status = state ? state.status : (avg >= 100 ? "已完成" : avg > 0 ? "進行中" : "尚未開始");
-      return { subject: s, percent: avg, status: status };
+    var analytics = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.subjectAnalytics === "function")
+      ? AHS.StatisticsRuntime.subjectAnalytics() : [];
+    return analytics.map(function (a) {
+      var status = a.materialCompletionRate >= 100 ? "已完成" : a.materialCompletionRate > 0 ? "進行中" : "尚未開始";
+      return { subject: a.subject, percent: a.materialCompletionRate, status: status };
     });
   }
 

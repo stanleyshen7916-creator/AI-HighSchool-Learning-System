@@ -193,9 +193,18 @@
 
 /* ---- Exam-taking view (qexam / QuestionCard / QuestionNavigator) ----- */
 .qexam { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
-.qexam__head { display: flex; align-items: center; gap: 10px; }
+.qexam__head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .qexam__subject { font-size: 12px; font-weight: 700; border-radius: var(--radius-pill); padding: 4px 10px; }
 .qexam__title { margin: 0; font-size: 18px; font-weight: 800; }
+
+/* Sprint AI-117 AI-117-08 Assessment Mode toggle (原始試卷／AI 練習). */
+.qexam__mode-toggle { display: flex; gap: 8px; margin-left: auto; }
+.qexam__mode-btn {
+  font-size: 12px; font-weight: 700; border-radius: var(--radius-pill);
+  padding: 4px 12px; border: 1px solid var(--line);
+  background: transparent; color: var(--text-muted); cursor: pointer;
+}
+.qexam__mode-btn.is-active { background: var(--brand-soft); color: var(--brand); border-color: transparent; }
 
 .qcard { display: flex; flex-direction: column; gap: 16px; }
 .qcard__head { display: flex; align-items: center; gap: 10px; }

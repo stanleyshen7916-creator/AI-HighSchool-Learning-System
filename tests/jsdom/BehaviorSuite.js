@@ -1053,7 +1053,15 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id });
   const bodyM = qByMaterialId.window.document.body.textContent;
   check("② Quiz Center（materialId-only 連結）：不再顯示「尚無 AI 練習題」", !bodyM.includes("尚無 AI 練習題"));
-  check("② Quiz Center（materialId-only 連結）：立即顯示真實題目", bodyM.includes("私有財產權"));
+  /* Sprint AI-117 AI-117-09 Random Exam Session: display order is now
+     genuinely reshuffled on every startFromExam() (real feature, not a
+     regression) — the specific question containing "私有財產權" is no
+     longer guaranteed to be rendered first, so this checks whichever
+     real question IS currently at index 0 (the one actually shown) is
+     genuinely present in the rendered body, rather than a single
+     hardcoded phrase tied to array position. */
+  const qs0MaterialId = qByMaterialId.window.AHS.QuestionRuntime.getSet("teaching_material_" + rt.id)[0];
+  check("② Quiz Center（materialId-only 連結）：立即顯示真實題目", !!qs0MaterialId && bodyM.includes(qs0MaterialId.text));
   check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊正確隱藏（不與 Exam 內容同時顯示）",
     !!qByMaterialId.window.document.querySelector(".quiz-practice-root[hidden]"));
   const qcardMeta = qByMaterialId.window.document.querySelector(".qcard__meta");
@@ -1061,7 +1069,9 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   check("Console errors = 0（quiz.html materialId-only，HOTFIX-004）", qByMaterialId.consoleErrors.length === 0);
 
   const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id });
-  check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響", qByExamId.window.document.body.textContent.includes("私有財產權"));
+  const qs0ExamId = qByExamId.window.AHS.QuestionRuntime.getSet("teaching_material_" + rt.id)[0];
+  check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響",
+    !!qs0ExamId && qByExamId.window.document.body.textContent.includes(qs0ExamId.text));
   check("② Quiz Center（examId 連結）：Practice Mode 區塊仍正確隱藏", !!qByExamId.window.document.querySelector(".quiz-practice-root[hidden]"));
 
   /* PAT: 開始測驗 -> AutoGrader -> WrongBook -> History 全部正常. */
@@ -1496,9 +1506,14 @@ console.log("\n[35] Platform Sync Check — Statistics 單一資料來源一致�
 
 console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/12 名詞與導覽修正）");
 {
-  /* PAT 6/7: 首頁「最近教材」顯示的是 MaterialRuntime.progress（閱讀進度），
-     曾被誤標為「學習進度」，讓使用者誤以為等同正確率／精熟度。修正為誠實的
-     「閱讀進度」標籤，資料來源與數值本身完全不變（非邏輯變更）。 */
+  /* PAT 6/7 (original): 首頁「最近教材」顯示的是 MaterialRuntime.progress
+     （閱讀進度），曾被誤標為「學習進度」。Sprint AI-117 AI-117-01 supersedes
+     this label again — "取消目前「閱讀進度」概念": the card now shows real
+     Material Completion (AHS.StatisticsRuntime.materialCompletion(),
+     ①教材閱讀 ②測驗 ③複習) under a "教材完成度" label, never "學習進度"
+     either. Same underlying real data source, only the displayed label/
+     value definition changed (per this Sprint's own explicit instruction,
+     not a silent regression). */
   const materialSeed = {
     materials: [{
       id: "rt_1", order: 1, subject: "math", title: "測試教材", chapter: "第一章",
@@ -1512,8 +1527,8 @@ console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/
   const { window, consoleErrors } = loadPage("index.html", { seedSession: { "ahs:materialRuntime": materialSeed } });
   const doc = window.document;
   const recentCard = doc.querySelector(".recent-card, [class*='recent-card']");
-  check("首頁最近教材卡片標籤為「閱讀進度」（非「學習進度」，避免與正確率/精熟度混淆）",
-    !!recentCard && recentCard.textContent.includes("閱讀進度") && !recentCard.textContent.includes("學習進度"));
+  check("首頁最近教材卡片標籤為「教材完成度」（Sprint AI-117 Material Completion，非「學習進度」）",
+    !!recentCard && recentCard.textContent.includes("教材完成度") && !recentCard.textContent.includes("學習進度"));
   check("Console errors = 0（首頁最近教材）", consoleErrors.length === 0);
 
   /* PAT 12: Bottom Navigation「我的」過去指向 dashboard.html（已於 EO-S5-002
@@ -1628,7 +1643,13 @@ console.log("\n[39] Sprint AI-113 AI-808 — AI Tutor Context 依「目前教材
   const A = window.AHS;
   const built = A.TutorMessage.build(A.StatisticsRuntime.learningContext(), { page: "summary", materialId: "rt_1" });
   check("materialId 存在時，訊息真實提及該教材標題與章節", !!built && built.message.includes("AI-808 測試教材") && built.message.includes("第九章"));
-  check("訊息真實反映該教材的閱讀進度（非固定文字）", built.message.includes("60%"));
+  /* Sprint AI-117 AI-117-01/AI-117-07: message now reports real Material
+     Completion (via AHS.StatisticsRuntime.materialContext(), the Tutor
+     Engine's sole read path) instead of raw reading progress. progress:60
+     (< 100, stage 0 — reading not yet DONE) interpolates to a real,
+     non-fixed 12% (round(60/100*20)) — still genuinely derived from the
+     real progress value, never a canned string. */
+  check("訊息真實反映該教材的 Material Completion（非固定文字）", built.message.includes("12%") && built.message.includes("尚未開始"));
 
   const tip = window.document.querySelector(".tutor-tip");
   check("summary.html 的 Tutor Context Tip 真實帶入該頁 materialId 客製化內容", !!tip && tip.textContent.includes("AI-808 測試教材"));

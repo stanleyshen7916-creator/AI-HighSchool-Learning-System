@@ -60,6 +60,22 @@ AHS.MaterialCard = (function () {
 
     var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };
     var pct = clampProgress(item.progress);
+    /* Sprint AI-117 AI-117-01/AI-117-10: 取消「閱讀進度」作為完成度的顯示
+       依據 — displayed completion now comes solely from
+       AHS.StatisticsRuntime.materialCompletion() (① 教材閱讀 ② 完成測驗
+       ③ 完成複習), this card never computes its own completion number
+       again. `pct` (raw AHS.MaterialRuntime.progress) is kept only for
+       the 開始學習/繼續學習 button label decision below (a real, distinct
+       "has reading started at all" check, not a completion % shown to
+       the user) — the Runtime field itself is unmodified, only what this
+       card displays as "完成度" changed. Falls back to the old raw-
+       progress display when StatisticsRuntime isn't loaded on a given
+       page (defensive, matches this file's own "never throw at load
+       time" convention). */
+    var completion = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialCompletion === "function")
+      ? AHS.StatisticsRuntime.materialCompletion(item.id) : null;
+    var completionPct = completion ? completion.percent : pct;
+    var completionLabel = completion ? completion.label + "（" + completion.percent + "%）" : progressLabel(pct);
 
     function announce(msg) {
       status.textContent = msg; status.removeAttribute("hidden");
@@ -203,9 +219,9 @@ AHS.MaterialCard = (function () {
     var progressBar = el("div", {
       class: "progressbar",
       role: "progressbar",
-      "aria-valuenow": String(pct), "aria-valuemin": "0", "aria-valuemax": "100"
+      "aria-valuenow": String(completionPct), "aria-valuemin": "0", "aria-valuemax": "100"
     }, [
-      el("div", { class: "progressbar__fill", style: "width:" + pct + "%;background-color:" + subj.hex })
+      el("div", { class: "progressbar__fill", style: "width:" + completionPct + "%;background-color:" + subj.hex })
     ]);
 
     /* File info line — only for uploaded runtime materials (have a
@@ -235,8 +251,8 @@ AHS.MaterialCard = (function () {
       el("p", { class: "mat-card__intro", text: item.content || "" }),
       el("div", { class: "mat-card__progress-block" }, [
         el("div", { class: "mat-card__progress-head" }, [
-          el("span", { text: "閱讀進度" }),
-          el("span", { class: "mat-card__pct", text: progressLabel(pct) })
+          el("span", { text: "教材完成度" }),
+          el("span", { class: "mat-card__pct", text: completionLabel })
         ]),
         progressBar
       ]),

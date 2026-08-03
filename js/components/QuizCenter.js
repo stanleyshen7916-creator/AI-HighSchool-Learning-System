@@ -520,11 +520,63 @@ AHS.QuizCenter = (function () {
     return el("div", { class: "quiz-layout" }, [main, rail]);
   }
 
+  /* baseAssessmentExamId(examId) — Sprint AI-117 AI-117-08: strips the
+     "__original"/"__ai" Assessment Mode suffix (see
+     js/runtime/TeachingMaterialLoader.js's importAssessmentModeVariants())
+     to recover the underlying teaching_material_<id> examId both mode
+     variants share. */
+  function baseAssessmentExamId(examId) {
+    return String(examId || "").replace(/__original$|__ai$/, "");
+  }
+
+  /* assessmentModeToggle(session, onSwitchMode) — Sprint AI-117 AI-117-08
+     Assessment Mode. Renders "□ 原始試卷 □ AI 練習" ONLY when this exam's
+     base id genuinely has both real variants loaded (AHS.QuestionRuntime.
+     hasExam() — never a fake/forced choice when a material only ever had
+     one source of questions). "不得混用": each click abandons the
+     currently-running session (never grades/records it — see
+     ExamRuntime.abandon()'s own header) and starts a brand-new session
+     scoped to exactly one mode's question set; the two modes' questions
+     are never in QuestionRuntime under the same running examId at once. */
+  function assessmentModeToggle(session, onSwitchMode) {
+    if (typeof onSwitchMode !== "function") { return null; }
+    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function") { return null; }
+    var base = baseAssessmentExamId(session.examId);
+    if (!/^teaching_material_/.test(base)) { return null; }
+    var hasOriginal = AHS.QuestionRuntime.hasExam(base + "__original");
+    var hasAi = AHS.QuestionRuntime.hasExam(base + "__ai");
+    if (!hasOriginal || !hasAi) { return null; }
+    var currentMode = session.examId === base + "__original" ? "original"
+      : session.examId === base + "__ai" ? "ai" : null;
+
+    function modeBtn(mode, label) {
+      var btn = el("button", {
+        type: "button",
+        class: "qexam__mode-btn" + (currentMode === mode ? " is-active" : ""),
+        "aria-pressed": currentMode === mode ? "true" : "false",
+        text: (currentMode === mode ? "☑ " : "□ ") + label
+      });
+      btn.addEventListener("click", function () {
+        if (currentMode !== mode) { onSwitchMode(base, mode); }
+      });
+      return btn;
+    }
+
+    return el("div", { class: "qexam__mode-toggle", role: "group", "aria-label": "Assessment Mode" }, [
+      modeBtn("original", "原始試卷"),
+      modeBtn("ai", "AI 練習")
+    ]);
+  }
+
   /* ---- Exam-taking view --------------------------------------------------
      session: ExamRuntime session record. rerender(): callback so the
      navigator/card can trigger a full re-render of this view after each
-     interaction (selecting an answer, moving between questions). */
-  function buildExamView(session, rerender, onFinish) {
+     interaction (selecting an answer, moving between questions).
+     onSwitchMode(baseExamId, mode) — Sprint AI-117 AI-117-08, optional/
+     additive: every existing caller that omits it keeps this view's
+     exact prior behavior (assessmentModeToggle() returns null without
+     it). */
+  function buildExamView(session, rerender, onFinish, onSwitchMode) {
     var questions = AHS.QuestionRuntime.getSet(session.examId);
     var currentQuestion = questions[session.currentIndex];
     var answers = AHS.AnswerRuntime.getAnswers(session.examId);
@@ -553,8 +605,9 @@ AHS.QuizCenter = (function () {
         style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a",
         text: subj.name
       }),
-      el("h1", { class: "qexam__title", text: session.title })
-    ]);
+      el("h1", { class: "qexam__title", text: session.title }),
+      assessmentModeToggle(session, onSwitchMode)
+    ].filter(Boolean));
 
     return el("div", { class: "qexam" }, [header, card, nav]);
   }
@@ -1025,12 +1078,21 @@ AHS.QuizCenter = (function () {
       showExam(session.examId);
     }
 
+    /* switchAssessmentMode(baseExamId, mode) — Sprint AI-117 AI-117-08.
+       Abandons (never grades) the currently-running session, then starts
+       a fresh one scoped to exactly the chosen mode's question set. */
+    function switchAssessmentMode(baseExamId, mode) {
+      var current = AHS.ExamRuntime.getCurrent();
+      if (current && typeof AHS.ExamRuntime.abandon === "function") { AHS.ExamRuntime.abandon(current.examId); }
+      tryDirectExamEntry(baseExamId + (mode === "original" ? "__original" : "__ai"));
+    }
+
     function showExam(examId) {
       var session = AHS.ExamRuntime.getCurrent();
       if (!session || session.examId !== examId) { showList(); return; }
       AHS.UI.mount(root, buildExamView(session, function () { showExam(examId); }, function () {
         finishExam(examId);
-      }));
+      }, switchAssessmentMode));
     }
 
     function finishExam(examId) {

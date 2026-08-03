@@ -147,5 +147,29 @@ test("Learning Loop E2E：首頁 -> 教材 -> Summary -> Quiz -> WrongBook -> Re
     await expect(page.locator(".shell__main")).toBeVisible();
   });
 
+  /* Sprint AI-117 AI-117-12: "Learning Analytics -> 首頁 -> 確認所有資料
+     一致" — after the full real loop above (including a real Review
+     Session answer that just changed WrongBookRuntime), 首頁 must reflect
+     the exact same real Learning Analytics numbers as
+     AHS.StatisticsRuntime itself, never a stale or independently-
+     recomputed value. */
+  await test.step("Learning Analytics -> 首頁：資料一致", async () => {
+    await page.goto(fileUrl("home"));
+    const consistency = await page.evaluate((materialId) => {
+      const A = window.AHS;
+      return {
+        renderedCompletionText: (document.querySelector('[data-href*="' + materialId + '"] .recent-card__pct') || {}).textContent || null,
+        analyticsCompletion: A.StatisticsRuntime.materialCompletion(materialId),
+        dueForReview: A.StatisticsRuntime.dueForReview().length
+      };
+    }, MATERIAL_ID);
+    expect(consistency.renderedCompletionText).toContain(String(consistency.analyticsCompletion.percent) + "%");
+    /* correctStreak just advanced 0 -> 1 in the Review step above — real
+       progress, but mastery requires correctStreak >= 3 (the same
+       existing rule this whole codebase already uses), so this one real
+       item honestly still counts as due, not yet mastered. */
+    expect(consistency.dueForReview).toBe(1);
+  });
+
   expect(errors, "Console errors across the Learning Loop: " + errors.join(" | ")).toEqual([]);
 });

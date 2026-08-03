@@ -1,4 +1,6 @@
-/* js/utils/TutorMessage.js — Sprint AI-111 · AI-611/AI-612.
+/* js/utils/TutorMessage.js — Sprint AI-111 · AI-611/AI-612, re-scoped
+   Sprint AI-117 AI-117-07 as the Platform Tutor Engine's own Rule-Based
+   message builder.
 
    Stateless text builder shared by 首頁's AiTutorHomeCard model and
    AI Tutor's (tutor.html) real chat message — both need the exact same
@@ -8,6 +10,18 @@
    texts for the same underlying data ("不得建立第二份統計"). Pure
    function, no Runtime, no store, no persistence — matches js/utils/'s
    own "small stateless helpers" role.
+
+   Sprint AI-117 AI-117-07: "Tutor 只能讀取 Learning Analytics。不得直接
+   存取各 Runtime。" build() previously called AHS.MaterialRuntime.
+   getById()/AHS.LearningStateRuntime.materialState() directly for its
+   pageContext.materialId branch — a real, pre-existing gap this Sprint's
+   own rule now closes: it calls AHS.StatisticsRuntime.materialContext()
+   instead (new this Sprint, itself the only place that wraps those two
+   Runtimes), so every branch in this file reads exclusively through
+   AHS.StatisticsRuntime — no exception. No LLM/AI API is called anywhere
+   in this file (never has been) — every sentence is template text over
+   real numbers, which is what "Rule-Based Tutor" / "完全不需 LLM API"
+   means in practice.
 
    build(context) -> { message, actions } | null. Returns null when
    context has genuinely nothing real yet — callers must render their own
@@ -27,10 +41,11 @@ AHS.TutorMessage = (function () {
      AI-808, optional, additive — every existing caller that omits it
      keeps its exact prior behavior): { page, materialId, examId } —
      real signals about what the user is currently looking at. When a
-     real materialId resolves to a real AHS.MaterialRuntime record, that
-     specific material's own reading progress / mastery (via
-     AHS.LearningStateRuntime, Sprint AI-113 AI-803 — same single
-     source, not a second calculation) is mentioned FIRST, before the
+     real materialId resolves to a real material (via
+     AHS.StatisticsRuntime.materialContext(), Sprint AI-117 AI-117-07 —
+     the Tutor Engine's sole read path, never MaterialRuntime/
+     LearningStateRuntime directly), that specific material's own
+     Material Completion stage/percent is mentioned FIRST, before the
      generic cross-material stats below — "目前教材/目前章節/目前測驗"
      context, never fabricated when no real materialId is given or it
      doesn't resolve to a real record. Builds each sentence only when
@@ -42,16 +57,14 @@ AHS.TutorMessage = (function () {
     var sentences = [];
     var actions = [];
 
-    if (pageContext.materialId && AHS.MaterialRuntime && typeof AHS.MaterialRuntime.getById === "function") {
-      var material = AHS.MaterialRuntime.getById(pageContext.materialId);
-      if (material) {
-        var state = (AHS.LearningStateRuntime && typeof AHS.LearningStateRuntime.materialState === "function")
-          ? AHS.LearningStateRuntime.materialState(pageContext.materialId) : null;
-        var line = "你目前在「" + material.title + "」" + (material.chapter ? "（" + material.chapter + "）" : "") +
-          "，閱讀進度 " + Math.max(0, Math.min(100, material.progress || 0)) + "%";
-        if (state && state.quizAttempted) {
-          line += state.dueCount > 0
-            ? "，這份教材還有 " + state.dueCount + " 題尚待複習到精熟"
+    if (pageContext.materialId && AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialContext === "function") {
+      var materialCtx = AHS.StatisticsRuntime.materialContext(pageContext.materialId);
+      if (materialCtx) {
+        var line = "你目前在「" + materialCtx.title + "」" + (materialCtx.chapter ? "（" + materialCtx.chapter + "）" : "") +
+          "，" + materialCtx.completion.label + "（" + materialCtx.completion.percent + "%）";
+        if (materialCtx.completion.quizDone) {
+          line += materialCtx.dueCount > 0
+            ? "，這份教材還有 " + materialCtx.dueCount + " 題尚待複習到精熟"
             : "，這份教材的錯題已全部精熟";
         }
         sentences.push(line + "。");

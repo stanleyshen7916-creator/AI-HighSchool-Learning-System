@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T05:25:44.583Z",
+  "generatedAt": "2026-08-03T07:37:50.524Z",
   "overall": "PASS",
   "suites": [
     {
@@ -7,35 +7,42 @@
       "result": "PASS",
       "pass": 329,
       "fail": 0,
-      "durationMs": 5807
+      "durationMs": 5833
     },
     {
       "name": "PipelineRegression",
       "result": "PASS",
       "pass": 6,
       "fail": 0,
-      "durationMs": 39
+      "durationMs": 45
     },
     {
       "name": "RepositoryFoundation",
       "result": "PASS",
       "pass": 29,
       "fail": 0,
-      "durationMs": 989
+      "durationMs": 1084
     },
     {
       "name": "MaterialPipelineRegression",
       "result": "PASS",
       "pass": 37,
       "fail": 0,
-      "durationMs": 1276
+      "durationMs": 1382
+    },
+    {
+      "name": "AnalyticsRegression",
+      "result": "PASS",
+      "pass": 35,
+      "fail": 0,
+      "durationMs": 1049
     },
     {
       "name": "Playwright",
       "result": "PASS",
-      "pass": 15,
+      "pass": 20,
       "fail": 0,
-      "durationMs": 10728.242
+      "durationMs": 13946.204
     }
   ]
 }

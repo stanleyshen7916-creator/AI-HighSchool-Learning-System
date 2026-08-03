@@ -223,6 +223,25 @@ AHS.TeachingMaterialLoader = (function () {
     return compatible;
   }
 
+  /* Sprint AI-117 AI-117-08 Assessment Mode: "原始試卷"（真實上傳教材，
+     questionSource=ORIGINAL）與"AI 題庫"（questionSource=AI_GENERATED）
+     "不得混用" — imported here as two ADDITIONAL, separate examIds
+     alongside the existing combined one (examId itself, kept 100%
+     unchanged for every existing caller/link — no existing behavior
+     removed), so a caller that explicitly wants one mode can load only
+     that mode's questions, never both under one running exam. Skips a
+     variant entirely (never importQuestions() with an empty array,
+     matching this file's own existing "no-op when nothing real exists"
+     rule) when this material genuinely has no question of that source —
+     most materials will only ever have one real variant. */
+  function importAssessmentModeVariants(examId, questions) {
+    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
+    var original = questions.filter(function (q) { return q.questionSource === "ORIGINAL"; });
+    var aiGenerated = questions.filter(function (q) { return q.questionSource === "AI_GENERATED"; });
+    if (original.length) { AHS.QuestionRuntime.importQuestions(examId + "__original", original); }
+    if (aiGenerated.length) { AHS.QuestionRuntime.importQuestions(examId + "__ai", aiGenerated); }
+  }
+
   /* Re-run on every page load where AHS.QuestionRuntime is present —
      that Runtime is intentionally memory-only, so its store is always
      empty on a fresh page load regardless of what an earlier page
@@ -236,6 +255,7 @@ AHS.TeachingMaterialLoader = (function () {
     var questions = buildExamCompatibleQuestions(entry, runtimeMaterialId);
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
+    importAssessmentModeVariants(examId, questions);
   }
 
   /* resolveExamMeta(examId) — Sprint v1.6 Module C: quiz.html's direct
@@ -406,6 +426,7 @@ AHS.TeachingMaterialLoader = (function () {
     var questions = repoExamCompatibleQuestions(record, runtimeMaterialId);
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
+    importAssessmentModeVariants(examId, questions);
   }
 
   function loadMaterialRepository(idMap) {
@@ -434,5 +455,16 @@ AHS.TeachingMaterialLoader = (function () {
     initialized = false;
   }
 
-  return { initialize: load, load: load, resolveExamMeta: resolveExamMeta, reset: reset };
+  return {
+    initialize: load,
+    load: load,
+    resolveExamMeta: resolveExamMeta,
+    reset: reset,
+    /* Sprint AI-117 AI-117-08: exposed so
+       tests/regression/AnalyticsRegression.js can exercise the real
+       Assessment Mode split directly (same function loadQuestions()/
+       loadMaterialRepositoryEntry() already call internally above — not
+       a second implementation for tests to drift from). */
+    importAssessmentModeVariants: importAssessmentModeVariants
+  };
 })();
