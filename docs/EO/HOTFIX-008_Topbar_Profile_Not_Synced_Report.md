@@ -43,7 +43,9 @@ strong/small")` 手動 patch 一次當下的 DOM 文字，讓「儲存的當下�
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR #33，已合併至 `main`。Merge commit：`8040803ca6ca78cb93d5b2c46168ac0c5df50a68`。
+- GitHub Pages "pages build and deployment" workflow 已針對此 commit 觸發（合併當下即為
+  queued 狀態），自動完成部署，無需額外動作。
 
 ## 修改檔案
 
