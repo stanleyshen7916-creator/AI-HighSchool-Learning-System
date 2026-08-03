@@ -23,7 +23,7 @@ never-committed Package data, same discipline every prior Sprint in this track u
 | Regression (AI-115-10) | PASS |
 | Verify | PASS |
 | Test | PASS |
-| Deployment | Filled in after merge. |
+| Deployment | PASS |
 
 ## Detail per item
 
@@ -160,7 +160,9 @@ never accumulates scratch-test noise into a file real imports are meant to be tr
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR #35，已合併至 `main`。Merge commit：`c9a23ceaf9b49f729bba6eff37361db442ce55c2`。
+- GitHub Pages "pages build and deployment" workflow 已針對此 commit 觸發（合併當下即為
+  queued 狀態），自動完成部署，無需額外動作。
 
 ## 修改檔案
 
