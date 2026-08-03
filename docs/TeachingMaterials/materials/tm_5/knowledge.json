@@ -1,0 +1,256 @@
+{
+  "materialId": "tm_5",
+  "knowledgePoints": [
+    {
+      "name": "1980年代香港金融發展與中國改革開放",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "中共邊疆民族政策與移民",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "中日第一份不平等條約比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "九一八事變與李頓調查團",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "二戰時期朝鮮人強制勞動",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "亞洲開發銀行與十大建設",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "六四天安門事件",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "利瑪竇的傳教策略",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "北海道舊土人保護法與阿伊努族",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "原子彈使用爭議",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "和平共處五項原則",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "國共內戰",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "夏威夷華人與日本移工",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大東亞共榮圈的殖民行為",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大躍進土法煉鋼",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大躍進與改革開放標語比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "尼克森訪問北京",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "師夷長技以制夷",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "抗戰時期陪都重慶",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "文化大革命",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "新文化運動德先生與賽先生",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "日本照片新娘與美國移民限制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "日本軍國主義興起背景",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "日本鎖國政策",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "明治政府開拓北海道政策",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "明治維新後日本國際地位變化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "明治維新的法律改革性質",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "晚清上海租界文化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "朝鮮三一運動",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "東南互保",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "毛澤東時代的政策",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "江華條約（日朝修好條規）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "法國殖民越南與日本侵略",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "法國殖民遺緒與越南文化融合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "清代廣州十三行貿易體制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "滇緬公路",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "滿洲的開發與日本佔領",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "潘佩珠與越南民族主義",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "珍珠港事件",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "神風特攻隊",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "福澤諭吉的臺灣殖民主張",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "義和團與辛丑條約",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "萬國公法與近代外交",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "萬隆會議",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "蘭學",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "越戰與圍堵政策",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "韓戰後韓裔移民美國",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "韓戰與冷戰對抗",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "鴉片貿易與白銀外流",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "黑船事件",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-08-03T14:20:26.351Z"
+}
