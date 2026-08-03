@@ -3,10 +3,13 @@
    real Repository -> Loader -> Bridge -> Runtime -> Platform chain
    (documented in docs/Architecture/Architecture_TeachingMaterialRepository_
    Foundation_v1.0.md) still holds across every page it feeds, using the
-   one real material this platform has (data/materials/
-   CivicsG10Ch5to6Exam20260730.js) plus the Package track's own generator/
-   validator/adapter (verified with scratch, never-committed data — see
-   this Sprint's own EO report for the exact scratch-package steps).
+   data/materials/ track's real material (CivicsG10Ch5to6Exam20260730.js)
+   plus the Package track's own generator/validator/adapter (verified with
+   scratch, never-committed data — see this Sprint's own EO report for the
+   exact scratch-package steps). The Package track itself also carries
+   real, permanently-committed content as of tm_1 (see
+   docs/TeachingMaterials/materials/tm_1/) — this suite's own [1]-[10]
+   below still exercise it via data/materials/ only, unaffected.
    Run: node tests/regression/RepositoryFoundation.js */
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
@@ -61,7 +64,11 @@ console.log("\n[1] Repository 建立");
   check("AHS.MaterialRepository 存在且唯一", typeof A.MaterialRepository === "object" && typeof A.MaterialRepository.list === "function");
   const repoList = A.MaterialRepository.list();
   check("Repository 至少一筆真實教材（公民與社會）", repoList.length >= 1 && repoList.some((r) => r.id && r.id.indexOf("civics") !== -1));
-  check("AHS.TeachingMaterialData（Package track）存在，誠實為空（尚無真實 Package 教材）", Array.isArray(A.TeachingMaterialData) && A.TeachingMaterialData.length === 0);
+  /* Package track carries real, permanently-committed content as of tm_1
+     (docs/TeachingMaterials/materials/tm_1/) — this array is no longer
+     honestly empty; it must reflect that real Package, not a stale "still
+     empty" assumption from before any Package track material existed. */
+  check("AHS.TeachingMaterialData（Package track）存在，含真實 Package 教材（tm_1）", Array.isArray(A.TeachingMaterialData) && A.TeachingMaterialData.some((m) => m.materialId === "tm_1"));
 }
 
 /* ---- 2. Index 更新 ---------------------------------------------------
@@ -176,8 +183,10 @@ console.log("\n[10] Tutor");
    (tm_999998, an id unlikely to collide with any real material), same
    discipline Sprint AI-112 used to verify the schema gaps it closed:
    build -> validate -> generate -> assert real output -> delete ->
-   regenerate to confirm the Repository returns to its genuine empty
-   state, every time this suite runs, not just once by hand. */
+   regenerate to confirm the Repository returns to its real baseline
+   state (whatever real, permanently-committed Packages exist — tm_1
+   onward, once any are imported; genuinely 0 before that), every time
+   this suite runs, not just once by hand. */
 console.log("\n[11] Material Lifecycle + Package Standard");
 {
   const lifecycle = require(path.join(REPO, "docs/TeachingMaterials/scripts/MaterialLifecycle.js"));
@@ -185,6 +194,7 @@ console.log("\n[11] Material Lifecycle + Package Standard");
   const { execFileSync } = require("child_process");
   const scratchId = "tm_999998";
   const dir = path.join(REPO, "docs/TeachingMaterials/materials", scratchId);
+  const baselineCount = generator.generate();
 
   try {
     fs.mkdirSync(path.join(dir, "source"), { recursive: true });
@@ -248,7 +258,7 @@ console.log("\n[11] Material Lifecycle + Package Standard");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
     const finalCount = generator.generate();
-    check("清除 scratch Package 後，Repository 回到真實的空狀態（非殘留測試資料）", finalCount === 0);
+    check("清除 scratch Package 後，Repository 回到真實的原始狀態（非殘留測試資料）", finalCount === baselineCount);
   }
 }
 
