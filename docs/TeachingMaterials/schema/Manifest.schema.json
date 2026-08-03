@@ -15,6 +15,10 @@
     "status": {
       "type": "string", "enum": ["draft", "pending_review", "complete"],
       "description": "draft: Claude is still analyzing. pending_review: at least one question has needsReview=true (OCR confidence < 0.90) — per the OCR Rule, this package is NOT yet the official Repository entry until resolved. complete: every question resolved, no outstanding review flags."
+    },
+    "archived": {
+      "type": "boolean",
+      "description": "Sprint AI-115 AI-115-01: optional, defaults to absent/false. The only real signal MaterialLifecycle.js's resolveStage() uses for the ARCHIVED stage — never inferred from age/usage, only this explicit, human/Claude-set flag."
     }
   },
   "additionalProperties": false

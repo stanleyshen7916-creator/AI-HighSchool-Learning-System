@@ -1,4 +1,4 @@
-# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4 + Sprint v1.6 + HOTFIX-002
+# Teaching Material Repository — EO-S1.1-001 v1.1 + EO-S1.1-002 v1.0 + EO-S1.1-002A v1.0 + EO-S1.1-003 v1.0 + EO-S1.2-001 (Revision) v1.0 + Sprint v1.4 + Sprint v1.6 + HOTFIX-002 + Sprint AI-113 AI-806/807 + Sprint AI-115
 
 Status: **LOCKED** (schema/workflow) ｜ Owner: Project Owner ｜ Analysis Engine: Claude
 
@@ -60,10 +60,18 @@ moment Project Owner uploads it.
 ```
 docs/TeachingMaterials/
   README.md              — this file
-  index.json             — Knowledge Index: manifest of every material (empty for now)
+  index.json             — the single, auto-generated Knowledge Index: one real entry per
+                            IMPORTED material (empty for now). "建立唯一 Index" (AI-115-03) —
+                            never a second index, never hand-edited (only ever written by
+                            GenerateTeachingMaterialData.js's writeIndex()).
+  import-log.json        — NEW, Sprint AI-115 AI-115-08: git-tracked Import History, one
+                            entry per Package ImportManager.js has ever attempted to import
+                            ({time, materialId, version, result, error}). Absent until the
+                            first real import.
   schema/                — JSON Schema definitions for the five record types below
     Metadata.schema.json
-    Manifest.schema.json
+    Manifest.schema.json  — Sprint AI-115: gained an optional `archived` boolean (the
+                            ARCHIVED Lifecycle Stage's only real signal)
     Summary.schema.json
     QuestionBank.schema.json
     RelatedMaterials.schema.json
@@ -73,49 +81,73 @@ docs/TeachingMaterials/
     TeachingMaterialAdapter.js  — NEW, EO-S1.2-001 (Revision): pure data-shape converter,
                             Package -> MaterialRuntime/SummaryRuntime/QuestionRuntime-accepted
                             objects. See dedicated section below.
-    GenerateTeachingMaterialData.js  — NEW, Sprint v1.4: offline generator, Repository ->
+    GenerateTeachingMaterialData.js  — Sprint v1.4: offline generator, Repository ->
                             js/data/TeachingMaterialData.js. See "Runtime Wiring" below.
-    MaterialLifecycle.js  — NEW, Sprint AI-113 AI-806: real 4-stage Lifecycle Stage resolver
-                            (RAW / WAITING_ANALYSIS / CLAUDE_READY_WAITING_IMPORT /
-                            RUNTIME_READY), computed from real files on disk + index.json,
-                            never a hand-maintained field. See "Material Lifecycle" below.
+    MaterialLifecycle.js  — Sprint AI-113 AI-806, re-defined Sprint AI-115 AI-115-01: real
+                            6-stage Lifecycle Stage resolver (RAW / ANALYZING / CLAUDE_READY /
+                            READY_FOR_IMPORT / IMPORTED / ARCHIVED), computed from real files
+                            on disk + index.json, never a hand-maintained field. See "Material
+                            Lifecycle" below.
+    RepositoryManager.js  — NEW, Sprint AI-115 AI-115-03: scans every Package, checks
+                            duplicates/versions/statuses, and is the only path that advances
+                            CLAUDE_READY -> READY_FOR_IMPORT (prepare(), deriving
+                            knowledge.json/report.md) or rebuilds index.json (rebuildIndex(),
+                            delegates to GenerateTeachingMaterialData.js — no second writer).
+    ImportManager.js      — NEW, Sprint AI-115 AI-115-04/05/06/08/09: the sole Import Flow.
+                            Validates (AI-115-05) and duplicate-checks (AI-115-06) every
+                            READY_FOR_IMPORT Package before letting it become IMPORTED, logs
+                            every attempt to import-log.json (AI-115-08), and rolls back
+                            (AI-115-09) every generated file to its pre-import content if the
+                            write fails partway.
   materials/
     <materialId>/         — one self-contained Package per material, materialId = tm_<seq>
       source/              — the ORIGINAL uploaded file(s), byte-identical, original filenames,
                               never modified/recompressed/renamed (EO-S1.1-003 Package Structure)
       metadata.json
-      manifest.json         — NEW, EO-S1.1-003: package bookkeeping, distinct from metadata.json
+      manifest.json         — EO-S1.1-003: package bookkeeping, distinct from metadata.json
+      material.md            — NEW, Sprint AI-115 AI-115-02: Claude-authored, human-readable
+                              rendering of this Package's content. A real authored input, like
+                              metadata.json — never generated, its absence/emptiness is a real
+                              ValidateMaterial.js FAIL.
       summary.json
-      questions.json
+      questionbank.json      — Sprint AI-115 AI-115-02: renamed from `questions.json`, aligning
+                              the file name with its own schema file's name
+                              (QuestionBank.schema.json), which already used this name. Renamed
+                              while the Repository was still genuinely empty — no real Package
+                              data needed migration.
       related.json
-      knowledge.json        — NEW, Sprint AI-113 AI-807: auto-generated by
-                              GenerateTeachingMaterialData.js from this Package's own
-                              summary.json/questions.json — never hand-authored, never a
-                              second source of truth. Not present until the generator has
-                              run at least once against this Package.
-      report.md              — NEW, Sprint AI-113 AI-807: auto-generated human-readable
-                              status report (metadata/manifest status/Lifecycle Stage/
-                              content counts). Same "generated, not authored" rule as
+      knowledge.json        — Sprint AI-113 AI-807, now derived by RepositoryManager.js's
+                              prepare() (previously GenerateTeachingMaterialData.js directly)
+                              from this Package's own summary.json/questionbank.json — never
+                              hand-authored, never a second source of truth. Present once this
+                              Package has reached READY_FOR_IMPORT or later.
+      report.md              — Sprint AI-113 AI-807, same "generated, not authored" rule and
+                              same AI-115 mover (RepositoryManager.js's prepare()) as
                               knowledge.json.
 ```
 
-## Material Lifecycle (Sprint AI-113 AI-806)
+## Material Lifecycle (Sprint AI-113 AI-806, re-defined Sprint AI-115 AI-115-01)
 
 `AHS.平台可以直接辨識教材目前狀態` — every Package is always in exactly one of these real,
-computable stages (`scripts/MaterialLifecycle.js`'s `resolveStage(materialId)`):
+computable stages (`scripts/MaterialLifecycle.js`'s `resolveStage(materialId)`, a single
+if/else chain — structurally incapable of reporting two stages for the same Package at once,
+which is what AI-115-01's "所有教材必須只有一個生命週期" actually requires):
 
 | Stage | Real, checkable condition |
 |---|---|
 | `RAW` | Package folder exists, `metadata.json` missing |
-| `WAITING_ANALYSIS` | `metadata.json` exists, but `summary.json`/`questions.json` are missing, or `manifest.json` is missing/its `status` isn't `"complete"` |
-| `CLAUDE_READY_WAITING_IMPORT` | `manifest.status === "complete"`, but this Package isn't in the current `index.json` yet |
-| `RUNTIME_READY` | Present in the current, auto-generated `index.json` (same real data `js/data/TeachingMaterialData.js` carries) |
+| `ANALYZING` | `metadata.json` exists, but `manifest.json` is missing/`status === "draft"`, or `summary.json`/`questionbank.json`/`material.md` are missing |
+| `CLAUDE_READY` | `manifest.status` is `"complete"` or `"pending_review"` and every Package Standard input file (AI-115-02) is present, but `knowledge.json`/`report.md` haven't been derived yet |
+| `READY_FOR_IMPORT` | `knowledge.json`/`report.md` exist (`RepositoryManager.js`'s `prepare()` has run), but this Package isn't in the current `index.json` yet |
+| `IMPORTED` | Present in the current, auto-generated `index.json` (same real data `js/data/TeachingMaterialData.js` carries) — `ImportManager.js`'s `importAll()` has included it |
+| `ARCHIVED` | `manifest.json`'s own `archived: true` flag is set — the only real signal used, never inferred from age/usage |
 
-A fifth, requested stage — `Completed` (genuinely bridged into the live browser
-`AHS.MaterialRuntime`) — is **not decidable from this offline Node tooling**; it can only be
-observed in a browser. `tests/regression/RepositoryFoundation.js`'s own checks are that
-confirmation (Loader → Runtime → Material Center/Summary/Quiz/WrongBook/Tutor, all real).
-`RUNTIME_READY` is this tooling's own honest maximum — never a fabricated `Completed`.
+Whether an `IMPORTED` Package is also genuinely bridged into the live browser
+`AHS.MaterialRuntime` is **not decidable from this offline Node tooling**; it can only be
+observed in a browser. `tests/regression/RepositoryFoundation.js`'s own checks, and Sprint
+AI-115's own `tests/regression/MaterialPipelineRegression.js`, are that confirmation (Loader →
+Runtime → Material Center/Summary/Quiz/WrongBook/Review/Tutor, all real). `IMPORTED` is this
+tooling's own honest maximum — never a fabricated further state.
 
 Per EO-S1.1-003's own Objective: this Package (not `js/data/MockData.js`, not any other
 format) is meant to become the single, common data source for Material Center, Quiz Center,
@@ -135,7 +167,7 @@ always present; unknown values `null`/`[]`, never guessed. See `schema/Metadata.
 
 | Field | Notes |
 |---|---|
-| `subject` | e.g. `math`/`chinese` — aligns with `AHS.Subjects` keys used elsewhere in the app |
+| `subject` | the real Chinese display name, e.g. `數學`/`國文` (matches `AHS.Subjects[key].name` — this Package track's own convention, confirmed and corrected by Sprint AI-115's `tests/regression/MaterialPipelineRegression.js`; **not** the internal key like `math`, which is the *other*, separate `data/materials/` Repository track's own different convention — see `js/runtime/TeachingMaterialLoader.js`'s `subjectKeyFromChineseName()`) |
 | `grade` | `高一`/`高二`/`高三` |
 | `keywords` | array of strings |
 | `source` | e.g. `教師補充教材`/`教科書`/`考卷`/`講義` — the material's real origin, never guessed |
@@ -166,7 +198,7 @@ here rather than decided silently:**
 provided — PDF/PPT/DOCX/JPG/PNG/scanned files. **不得修改原始教材／不得重新壓縮／不得重新
 命名內容**: never edited, never recompressed, original filenames kept. This is the actual
 source of truth a human (or a future OCR/verification step) can always check any transcribed
-`questions.json` entry against.
+`questionbank.json` entry against.
 
 ### Summary
 
@@ -208,7 +240,7 @@ question is not `complete` until a human resolves it.
 preservation — 題號/題幹/選項/圖片/表格/標點/版面順序 all kept exactly as in the source;
 no summarizing, rewriting, or AI optimization). Enforced cross-file by
 `scripts/ValidateMaterial.js` (checks `metadata.json`'s `materialType` against every entry
-in `questions.json`).
+in `questionbank.json`).
 
 See `schema/QuestionBank.schema.json`.
 
@@ -257,13 +289,19 @@ Project Owner uploads real material (PDF/PPT/DOCX/JPG/PNG/掃描講義/考卷/�
   → source/ populated with the original file(s), byte-identical, original filenames
   → Claude analyzes it (OCR if needed — no AI API, per "不使用任何 API"); for materialType
     = EXAM, every question extracted as ORIGINAL with 100% content preservation
-  → Metadata (incl. materialType) / manifest.json / Summary / Question Bank (source+origin
-    tagged, ocrConfidence/needsReview set honestly) / Related Materials built
-  → materials/<materialId>/*.json + source/ written; index.json updated
+  → Metadata (incl. materialType) / manifest.json / material.md / Summary / Question Bank
+    (source+origin tagged, ocrConfidence/needsReview set honestly) / Related Materials built
+    → Package reaches CLAUDE_READY (Material Lifecycle above)
+  → materials/<materialId>/* + source/ written
   → QA checklist (below) confirmed, including node scripts/ValidateMaterial.js <materialId>
-  → node scripts/GenerateTeachingMaterialData.js  (NEW, Sprint v1.4 — regenerates
-    js/data/TeachingMaterialData.js so the running app can actually see this material;
-    see "Runtime Wiring" section below)
+  → node scripts/RepositoryManager.js  (NEW, Sprint AI-115 — prepare() derives
+    knowledge.json/report.md, Package reaches READY_FOR_IMPORT)
+  → node scripts/ImportManager.js  (NEW, Sprint AI-115 — the sole Import Flow: validates
+    (AI-115-05) + duplicate-checks (AI-115-06) this Package, then regenerates
+    js/data/TeachingMaterialData.js/index.json so the running app can actually see this
+    material — Package reaches IMPORTED; rolls back (AI-115-09) and logs the failure
+    (import-log.json, AI-115-08) instead if anything goes wrong; see "Runtime Wiring" and
+    "Repository Manager / Import Manager" sections below)
   → git commit -m "feat(material): import <materialId>"
   → git push
 ```
@@ -411,6 +449,64 @@ The full chain is real and wired: **Repository → `GenerateTeachingMaterialData
   no publisher/keywords/source, and `MaterialCard.js` renders none of them. Unresolved, not
   silently fixed or silently dropped from tracking.
 
+## Repository Manager / Import Manager (Sprint AI-115 — Material Pipeline Automation)
+
+Sprint AI-115's own Objective — "建立教材從上傳、分析、匯入到平台使用的完整流程" — formalized
+the previously-implicit "run the generator by hand" step into two real, gated Node modules:
+
+- **`scripts/RepositoryManager.js`** (AI-115-03): `scanPackages()` (Lifecycle Stage per
+  Package), `checkDuplicates()`/`checkVersions()`/`checkStatuses()` (real content-hash +
+  subject/chapter/title collision detection, version-format check, per-stage tally — the same
+  functions ImportManager.js reuses, not a second implementation), `report()` (aggregates all
+  of the above), `rebuildIndex()` (the only path that (re)writes `index.json` — delegates
+  entirely to `GenerateTeachingMaterialData.js`'s own `generate()`, so "不得人工修改 index"
+  holds structurally: there is exactly one writer, and it was never a hand-edit), and
+  `prepare()` (derives `knowledge.json`/`report.md` for every `CLAUDE_READY` Package,
+  advancing it to `READY_FOR_IMPORT` — reuses `GenerateTeachingMaterialData.js`'s own
+  `buildKnowledgeIndex()`/`buildReportMarkdown()`).
+- **`scripts/ImportManager.js`** (AI-115-04/05/06/08/09): `importAll()` is the sole Import
+  Flow — every `READY_FOR_IMPORT` Package is Import-Validated (AI-115-05: `metadata.json`/
+  `summary.json`/`questionbank.json`/`knowledge.json`/`report.md` must all exist, plus a real
+  `ValidateMaterial.js` re-check, plus confirming the root `index.json` itself still parses —
+  this Repository has exactly one `index.json`, never a per-Package file, a flagged reading of
+  AI-115-05's checklist) and Duplicate-Detected (AI-115-06: reuses
+  `RepositoryManager.checkDuplicates()`; within a duplicate group, the lexicographically
+  smallest `materialId` — i.e. the earliest-assigned — is kept, every other member is
+  rejected) before being allowed into one `generate({ skipIds })` call (a small, additive
+  parameter on `GenerateTeachingMaterialData.js`'s `generate()`, backward compatible with
+  every existing no-argument call). Every attempt — success or rejection — is appended to
+  `import-log.json` (AI-115-08: `{ time, materialId, version, result, error }`,
+  `result` ∈ `SUCCESS` / `FAIL_VALIDATION` / `FAIL_DUPLICATE` / `FAIL_ROLLBACK`). Before
+  calling `generate()`, `js/data/TeachingMaterialData.js` / `index.json` /
+  `js/data/RepositoryStatus.js` are backed up in memory; if `generate()` throws for any
+  reason, all three are restored byte-for-byte (each restore attempt independent and
+  best-effort, so one failing restore never blocks the other two or swallows the Import Log
+  entry) before the error is re-thrown — AI-115-09's "Runtime 保持一致" (the browser never
+  sees a partially-written state, since `js/runtime/TeachingMaterialLoader.js` only ever reads
+  these three files as a whole on its next page load).
+- **Runtime reality check (flagged in `ImportManager.js`'s own header, not silently
+  reinterpreted)**: AI-115-04's "不得直接寫入 Runtime。所有 Import 必須經由 Import Manager"
+  is written as if a Node script could write to `MaterialRuntime`/`SummaryRuntime`/
+  `QuestionRuntime`/`StatisticsRuntime`/`LearningStateRuntime` — all `window.AHS` browser code,
+  unreachable from Node (no server, no fetch, per `CLAUDE.md`). The only real bridge is
+  `js/runtime/TeachingMaterialLoader.js` (unmodified this Sprint), and it was already the sole
+  caller of `AHS.MaterialRuntime.add()` for this Package track before this Sprint.
+  `StatisticsRuntime`/`LearningStateRuntime` need no explicit write-through at all — this
+  codebase's own Single-Source discipline already makes them pure computed views over
+  `MaterialRuntime`/`QuestionRuntime`/`WrongBookRuntime`. So "不得直接寫入 Runtime" is honestly
+  satisfied as: **`ImportManager.js` is the sole gate deciding which Packages ever become
+  visible to that browser bridge at all** — verified end-to-end (Package → `ImportManager.js`
+  → `TeachingMaterialLoader` → `MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime` →
+  `StatisticsRuntime`/`LearningStateRuntime` → Summary/Quiz/WrongBook/Review/Tutor, all real,
+  zero fabricated) by `tests/regression/MaterialPipelineRegression.js` (AI-115-10).
+- **Repository Dashboard** (AI-115-07): `GenerateTeachingMaterialData.js` also writes
+  `js/data/RepositoryStatus.js` (`AHS.RepositoryStatus.counts`, real per-stage Package tally
+  from `MaterialLifecycle.js`'s own `countByStage()`) — the only way the browser (a static,
+  no-fetch app) can ever see RAW/ANALYZING/CLAUDE_READY/READY_FOR_IMPORT counts, since those
+  Packages are by definition not yet in the Runtime-visible `TeachingMaterialData.js`.
+  `js/ui/SettingsPanel.js`'s Repository section reads it directly, degrading to nothing shown
+  (never a fabricated all-zero) when the data file isn't loaded on a given page.
+
 ## Explicitly out of scope, confirmed unaffected
 
 `MaterialRuntime`/`SummaryRuntime`/`QuestionRuntime`/`WrongBookRuntime`/`HistoryRuntime`/
@@ -425,3 +521,13 @@ added — `js/data/TeachingMaterialData.js` is generated from real Repository co
 (currently `[]`, since the Repository is still genuinely empty). Dashboard/AI Tutor Router/Review
 Center reading this Repository, the Display Contract, non-`single_choice` Exam-Mode support, and
 Material Card's `出版社`/`關鍵字`/`教材來源` fields all remain future scope.
+
+**Sprint AI-115** (Material Pipeline Automation): no LLM/AI API connected (none of this
+Sprint's own code calls one — every check is deterministic file/schema logic), no existing
+Learning Workflow/Statistics logic/Quiz flow/Review flow modified (`StatisticsRuntime`/
+`ReviewRuntime`/`QuizCenter.js`/`WrongBook.js` are all byte-identical to before this Sprint —
+they simply see this Sprint's Repository output the same way they already saw every prior
+Sprint's). `js/runtime/TeachingMaterialLoader.js` is also untouched — the entire pipeline
+change is on the offline/Node side (`docs/TeachingMaterials/scripts/`) plus one small, additive
+Settings section (AI-115-07) and one small, additive `generate()` parameter (AI-115-06's
+`skipIds`, defaulting to none).
