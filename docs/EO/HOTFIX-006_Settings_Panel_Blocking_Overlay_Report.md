@@ -52,7 +52,9 @@ GitHub Pages redeploys).
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR #27, merged into `main`. Merge commit: `25d5b78b6ef9aa19a78522e53b16ecc905a755c8`.
+- GitHub Pages "pages build and deployment" workflow triggered for this commit (queued at
+  merge time); completes automatically, no further action needed.
 
 ## 修改檔案
 
