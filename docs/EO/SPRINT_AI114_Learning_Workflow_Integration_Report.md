@@ -137,7 +137,9 @@ Statistics→Learning，無任何資料中斷：
 
 ## Deployment：PASS
 
-Merge Commit 與 GitHub Pages 部署狀態填於合併後。
+- PR #29，已合併至 `main`。Merge commit：`a6b658d9deddb66d0c5801c2b0bb7e3632679de8`。
+- GitHub Pages "pages build and deployment" workflow 已針對此 commit 觸發（合併當下即為
+  queued 狀態），自動完成部署，無需額外動作。
 
 ## 修改檔案
 
