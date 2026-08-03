@@ -1755,6 +1755,45 @@ console.log("\n[42] Sprint AI-114 AI-903 — Daily Task Engine（首頁今日任
     !!emptyCard && emptyCard.textContent.includes("今天沒有安排學習任務"));
 }
 
+console.log("\n[43] Sprint AI-114 PAT — 複習中心不再顯示衝突的第二份「複習進度」（Practice Mode ReviewWidget 移除）");
+{
+  /* PAT report: review.html showed 3 different "複習進度"-flavored
+     panels with conflicting numbers — the real Exam Mode stats
+     (ReviewHomeCard, WrongBookRuntime-sourced) at the top, and
+     js/components/ReviewWidget.js (Practice Mode, WrongBookSession ->
+     ReviewQueue -> ReviewModel — a deliberately separate, LOCKed
+     pipeline that never shares data with Exam Mode) at the bottom,
+     honestly showing all-zero since no Practice Mode quiz was ever
+     taken in this scenario. Root cause wasn't a calculation bug —
+     both panels were individually correct for their own real, separate
+     data source — it was showing two genuinely different "複習進度"
+     concepts on the same page with no distinguishing label. Fix:
+     ReviewWidget removed from review.html (redundant now that this
+     page has its own complete real Exam Mode review flow); it remains
+     exactly as before on index.html, its own file header's documented
+     real home ("首頁 Review Widget"). */
+  const wrongBookSeed = {
+    items: [{
+      id: "wb_1", questionId: "q1", subject: "math", title: "測試教材",
+      chapter: "第一章", materialId: "rt_1", knowledgePoint: "kp1",
+      question: "Q", options: [], yourAnswer: "A", correctAnswer: "B",
+      explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1
+  };
+  const { window: reviewWin, consoleErrors } = loadPage("review.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+  check("複習中心不再掛載 Practice Mode 的 ReviewWidget（.review-widget 不存在）",
+    !reviewWin.document.querySelector(".review-widget"));
+  check("複習中心真實 Exam Mode 統計仍正常顯示（今日待複習 = 1）",
+    reviewWin.document.body.textContent.includes("今日待複習") &&
+    reviewWin.AHS.StatisticsRuntime.dueForReview().length === 1);
+  check("Console errors = 0（複習中心移除 ReviewWidget 後）", consoleErrors.length === 0);
+
+  const { window: homeWin } = loadPage("index.html", {});
+  check("首頁的 ReviewWidget 保持不變（其真正既有的掛載位置，未受影響）",
+    !!homeWin.document.querySelector(".review-widget"));
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
