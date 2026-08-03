@@ -24,14 +24,17 @@ window.AHS = window.AHS || {};
     });
     AHS.UI.mount(app, shell.root);
 
-    /* Platform Refactor Master (PAT 8/9/10): same real Tutor Context
-       首頁/AI Tutor already share (Sprint AI-111), reused verbatim —
-       renders nothing when there is no real data yet. */
-    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create();
-    if (tip) { shell.main.appendChild(tip); }
-
     var params = new URLSearchParams(window.location.search);
     var materialId = params.get("materialId") || null;
+
+    /* Platform Refactor Master (PAT 8/9/10), extended Sprint AI-113
+       AI-808: same real Tutor Context 首頁/AI Tutor already share
+       (Sprint AI-111), now also given the real materialId this page is
+       actually showing (when present) so the message can speak to that
+       specific material's own progress/mastery first. Renders nothing
+       when there is no real data yet. */
+    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create({ page: "summary", materialId: materialId });
+    if (tip) { shell.main.appendChild(tip); }
 
     shell.main.appendChild(AHS.SummaryCenter.create(undefined, materialId));
   }

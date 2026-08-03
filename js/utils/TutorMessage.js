@@ -22,14 +22,41 @@ AHS.TutorMessage = (function () {
     return (AHS.Subjects && AHS.Subjects[key]) ? AHS.Subjects[key].name : (key || "");
   }
 
-  /* build(context) — context: AHS.StatisticsRuntime.learningContext()'s
-     own return shape. Builds each sentence only when its real data is
-     present; omits it otherwise (never a placeholder for a missing
-     signal). */
-  function build(context) {
+  /* build(context, pageContext) — context: AHS.StatisticsRuntime.
+     learningContext()'s own return shape. pageContext (Sprint AI-113
+     AI-808, optional, additive — every existing caller that omits it
+     keeps its exact prior behavior): { page, materialId, examId } —
+     real signals about what the user is currently looking at. When a
+     real materialId resolves to a real AHS.MaterialRuntime record, that
+     specific material's own reading progress / mastery (via
+     AHS.LearningStateRuntime, Sprint AI-113 AI-803 — same single
+     source, not a second calculation) is mentioned FIRST, before the
+     generic cross-material stats below — "目前教材/目前章節/目前測驗"
+     context, never fabricated when no real materialId is given or it
+     doesn't resolve to a real record. Builds each sentence only when
+     its real data is present; omits it otherwise (never a placeholder
+     for a missing signal). */
+  function build(context, pageContext) {
     context = context || {};
+    pageContext = pageContext || {};
     var sentences = [];
     var actions = [];
+
+    if (pageContext.materialId && AHS.MaterialRuntime && typeof AHS.MaterialRuntime.getById === "function") {
+      var material = AHS.MaterialRuntime.getById(pageContext.materialId);
+      if (material) {
+        var state = (AHS.LearningStateRuntime && typeof AHS.LearningStateRuntime.materialState === "function")
+          ? AHS.LearningStateRuntime.materialState(pageContext.materialId) : null;
+        var line = "你目前在「" + material.title + "」" + (material.chapter ? "（" + material.chapter + "）" : "") +
+          "，閱讀進度 " + Math.max(0, Math.min(100, material.progress || 0)) + "%";
+        if (state && state.quizAttempted) {
+          line += state.dueCount > 0
+            ? "，這份教材還有 " + state.dueCount + " 題尚待複習到精熟"
+            : "，這份教材的錯題已全部精熟";
+        }
+        sentences.push(line + "。");
+      }
+    }
 
     if (context.weakestSubject) {
       sentences.push(

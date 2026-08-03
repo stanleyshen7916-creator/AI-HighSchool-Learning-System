@@ -168,6 +168,30 @@ AHS.WrongBookRuntime = (function () {
     persist();
   }
 
+  /* importRecords(records) — Sprint AI-113 AI-804 (Settings: Export/
+     Import 學習紀錄). Real, additive merge: appends each valid record
+     (must have a questionId — same minimal shape sync() already
+     produces) with a freshly assigned id so imported records never
+     collide with existing ones. Never replaces/clears existing data —
+     Restore (full-session replace) is a separate, explicit action in
+     Settings; this is always a merge. Returns the count actually
+     imported. */
+  function importRecords(records) {
+    if (!Array.isArray(records)) { return 0; }
+    var count = 0;
+    records.forEach(function (r) {
+      if (!r || !r.questionId) { return; }
+      store.seq += 1;
+      var copy = {};
+      for (var k in r) { if (Object.prototype.hasOwnProperty.call(r, k)) { copy[k] = r[k]; } }
+      copy.id = "wb_" + store.seq;
+      store.items.push(copy);
+      count += 1;
+    });
+    if (count) { persist(); }
+    return count;
+  }
+
   return {
     list: list,
     isEmpty: isEmpty,
@@ -175,6 +199,7 @@ AHS.WrongBookRuntime = (function () {
     sync: sync,
     recordRetry: recordRetry,
     toggleBookmark: toggleBookmark,
-    reset: reset
+    reset: reset,
+    importRecords: importRecords
   };
 })();

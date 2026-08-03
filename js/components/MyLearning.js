@@ -528,6 +528,10 @@ AHS.MyLearning = (function () {
      Real per-subject average of AHS.MaterialRuntime's own `progress`
      field (existing, per-material Schema field — not a new one). Empty
      State when there are no materials at all. */
+  /* Sprint AI-113 AI-803: status now comes from AHS.LearningStateRuntime
+     (real reading progress AND real mastery, not reading alone — see
+     that file's own header for the exact rule). percent stays the pure
+     reading-progress bar it always was; only "status" changes source. */
   function computeSubjectProgress() {
     var bySubject = {};
     materials().forEach(function (m) {
@@ -537,7 +541,10 @@ AHS.MyLearning = (function () {
     });
     return Object.keys(bySubject).map(function (s) {
       var avg = Math.round(bySubject[s].total / bySubject[s].count);
-      return { subject: s, percent: avg, status: avg >= 100 ? "已完成" : avg > 0 ? "進行中" : "尚未開始" };
+      var state = (AHS.LearningStateRuntime && typeof AHS.LearningStateRuntime.subjectState === "function")
+        ? AHS.LearningStateRuntime.subjectState(s) : null;
+      var status = state ? state.status : (avg >= 100 ? "已完成" : avg > 0 ? "進行中" : "尚未開始");
+      return { subject: s, percent: avg, status: status };
     });
   }
 

@@ -28,12 +28,22 @@ AHS.TutorContextTip = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
-  function create() {
+  /* create(pageContext) — pageContext (Sprint AI-113 AI-808, optional):
+     { page, materialId, examId } real signals about the page mounting
+     this tip, forwarded verbatim to AHS.TutorMessage.build() (see that
+     file's own header for exactly how a real materialId changes the
+     message). Omit it and this behaves exactly as before. */
+  function create(pageContext) {
     if (!el) { return null; }
+    /* Sprint AI-113 AI-804: same Settings > Learning toggle AppHome.js's
+       AiTutorHomeCard respects — one real preference, one real effect,
+       everywhere it applies. */
+    if (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function" &&
+        AHS.SettingsRuntime.get().showTutorSuggestions === false) { return null; }
     if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function") { return null; }
     if (!AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return null; }
 
-    var model = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext());
+    var model = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), pageContext);
     if (!model || !model.message) { return null; }
 
     return el("a", {

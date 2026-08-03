@@ -15,6 +15,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const lifecycle = require("./MaterialLifecycle.js");
 
 const ROOT = path.join(__dirname, "..");
 const materialId = process.argv[2];
@@ -193,6 +194,20 @@ validateQuestionSourceRule(questionBank);
 validateOriginalQuestionRule(metadata, questionBank);
 validateFile("RelatedMaterials", "related.json", "RelatedMaterials.schema.json");
 validateSourceFolder();
+
+/* Sprint AI-113 AI-807/AI-806: knowledge.json/report.md are OUTPUTS of
+   GenerateTeachingMaterialData.js (derived from this same Package's own
+   summary.json/questions.json — see that script's own header), not
+   author-supplied inputs, so their absence here is never a validation
+   FAIL — a freshly-authored Package that hasn't been generated yet is
+   still a valid Package. Reported informationally, plus the real
+   current Lifecycle Stage (MaterialLifecycle.js), so running this
+   script also answers "有沒有被辨識到目前狀態" without a second tool. */
+console.log("\n[Package Standard — knowledge.json / report.md (Sprint AI-113 AI-807)]");
+console.log("  " + (fs.existsSync(path.join(ROOT, "materials", materialId, "knowledge.json")) ? "PRESENT" : "not yet generated") + "  knowledge.json");
+console.log("  " + (fs.existsSync(path.join(ROOT, "materials", materialId, "report.md")) ? "PRESENT" : "not yet generated") + "  report.md");
+console.log("\n[Lifecycle Stage — Sprint AI-113 AI-806]");
+console.log("  " + materialId + ": " + lifecycle.resolveStage(materialId));
 
 console.log("\n" + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);

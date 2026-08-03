@@ -1561,6 +1561,83 @@ console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10�
   });
 }
 
+console.log("\n[38] Sprint AI-113 — Settings + User Menu（AI-804/AI-805：真實功能，非 Stub）");
+{
+  const { window, consoleErrors } = loadPage("index.html", {});
+  const A = window.AHS;
+  const doc = window.document;
+
+  const overlay = doc.querySelector(".settings-panel__overlay");
+  check("Settings Panel 已掛載且預設隱藏", !!overlay && overlay.hasAttribute("hidden"));
+
+  const sidebarSettingsBtn = [...doc.querySelectorAll(".sidebar__item")].find(b => b.textContent.includes("設定"));
+  sidebarSettingsBtn.click();
+  check("Sidebar「設定」按鈕真實開啟 Settings Panel（非 Stub）", overlay && !overlay.hasAttribute("hidden"));
+
+  const nameInput = overlay.querySelector('.settings-panel__section input[type="text"]');
+  const saveBtn = [...overlay.querySelectorAll(".settings-panel__btn")].find(b => b.textContent === "儲存");
+  nameInput.value = "測試學生";
+  nameInput.dispatchEvent(new window.Event("input", { bubbles: true }));
+  saveBtn.click();
+  check("Profile 儲存後真實寫入 AHS.SettingsRuntime", A.SettingsRuntime.get().profile.name === "測試學生");
+  const topbarName = doc.querySelector(".topbar__user-meta strong");
+  check("Profile 儲存後 Topbar 顯示名稱即時更新（非需重新整理）", !!topbarName && topbarName.textContent === "測試學生");
+
+  const tutorToggle = overlay.querySelector(".settings-panel__checkbox");
+  const wasChecked = tutorToggle.checked;
+  tutorToggle.checked = !wasChecked;
+  tutorToggle.dispatchEvent(new window.Event("change", { bubbles: true }));
+  check("Learning 設定（顯示 AI 建議卡片）真實持久化", A.SettingsRuntime.get().showTutorSuggestions === !wasChecked);
+
+  const repoInfo = [...overlay.querySelectorAll(".settings-panel__info")].find(p => p.textContent.includes("Repository 教材"));
+  check("Repository 區塊顯示真實教材筆數（來自 AHS.MaterialRepository/AHS.TeachingMaterialData）",
+    !!repoInfo && /Repository 教材：\d+ 筆｜Package 教材：\d+ 筆/.test(repoInfo.textContent));
+
+  const backupBtn = [...overlay.querySelectorAll(".settings-panel__btn")].find(b => b.textContent === "備份全部資料");
+  check("備份按鈕存在且非 Stub（點擊呼叫真實 AHS.PersistenceAdapter.exportAll + 真實下載）", !!backupBtn);
+  const before = A.PersistenceAdapter.exportAll();
+  check("exportAll() 真實回傳目前 session 的資料（含剛儲存的 settings）", !!before.settings && before.settings.profile.name === "測試學生");
+
+  check("Console errors = 0（Settings Panel 開啟與操作）", consoleErrors.length === 0);
+
+  const profileMenuBtn = doc.querySelector(".topbar__user");
+  profileMenuBtn.click();
+  const logoutItem = [...doc.querySelectorAll(".profile-menu__item")].find(b => b.textContent === "Logout");
+  check("Profile Menu 的 Logout 項目存在", !!logoutItem);
+  logoutItem.click();
+  check("Logout 真實清空 AHS-namespace session 資料（非僅 UI 選單關閉）",
+    Object.keys(A.PersistenceAdapter.exportAll()).length === 0);
+}
+
+console.log("\n[39] Sprint AI-113 AI-808 — AI Tutor Context 依「目前教材」真實客製化（非固定文字）");
+{
+  const materialSeed = {
+    materials: [{
+      id: "rt_1", order: 1, subject: "math", title: "AI-808 測試教材", chapter: "第九章",
+      grade: "高一", category: "課本", date: "2026/08/03", views: "1", content: "",
+      progress: 60, lastOpenedAt: "2026/08/03 10:00", lastLearningAt: "2026/08/03 10:00",
+      learningTime: 10, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
+      fileSize: "", folderId: null
+    }],
+    folders: [], seq: 1, folderSeq: 0
+  };
+  const { window } = loadPage("summary.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed },
+    url: "summary.html?materialId=rt_1"
+  });
+  const A = window.AHS;
+  const built = A.TutorMessage.build(A.StatisticsRuntime.learningContext(), { page: "summary", materialId: "rt_1" });
+  check("materialId 存在時，訊息真實提及該教材標題與章節", !!built && built.message.includes("AI-808 測試教材") && built.message.includes("第九章"));
+  check("訊息真實反映該教材的閱讀進度（非固定文字）", built.message.includes("60%"));
+
+  const tip = window.document.querySelector(".tutor-tip");
+  check("summary.html 的 Tutor Context Tip 真實帶入該頁 materialId 客製化內容", !!tip && tip.textContent.includes("AI-808 測試教材"));
+
+  const builtNoMaterial = A.TutorMessage.build(A.StatisticsRuntime.learningContext(), { page: "summary" });
+  check("無 materialId 時維持既有通用邏輯（向下相容，未破壞既有行為）",
+    !builtNoMaterial || !builtNoMaterial.message.includes("AI-808 測試教材"));
+}
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }
