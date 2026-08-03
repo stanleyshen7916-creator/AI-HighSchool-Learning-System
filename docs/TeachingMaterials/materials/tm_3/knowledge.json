@@ -1,0 +1,256 @@
+{
+  "materialId": "tm_3",
+  "knowledgePoints": [
+    {
+      "name": "侵權行為與損害賠償",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "個別勞動權與集體勞動權",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "公營事業工會與團體協商權",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "剩餘財產分配請求權計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "剩餘財產分配請求權計算（題組三）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞動三權",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "勞動三權（團體協商權）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞動參與率的國際比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞動基準法的最低標準性質",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞動基準法（工時）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞動安全與個別勞動權",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞動教育與工會自主",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "團體協約的效力",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "外送平臺勞動權益爭議",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "夫妻財產制聲請統計圖表判讀",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "夫妻財產制與剩餘財產分配",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "女性勞動參與率統計資料判讀",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "家務勞動的價值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "家務外包與勞動市場",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "工會代表性與協商力量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "工會自主性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "工讀生的勞動基準法保障",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "性別勞動參與率差異原因（題組二）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "所有權特性的定義配對",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "所有權的物權特性（一物一權）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "所有權的特性",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "所有權的限制（公益）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "所有權移轉的要件（交付／登記）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "改善女性勞動參與率的政策",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "改善性別勞動參與率差異之政策（題組三）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "法定夫妻財產制",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "法定繼承人與繼承順位",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "法定繼承人身分（題組一）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物上請求權三類型配對",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物上請求權（妨害除去）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物上請求權（浮覆地案例）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物權優先於債權（一物數賣）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物權與債權的區別",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "特留分與遺產繼承計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "特留分計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "特留分計算（題組一）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "產假制度與性別平等",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "約定共同財產制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "約定共同財產制之特有財產範圍（題組三）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "經濟學對勞動的定義",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "職場霸凌",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "自由處分金與夫妻財產各自獨立原則",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "跟蹤騷擾防制法",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "醫療勞權與勞動基準法",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "釋字第726號解釋（責任制核備）",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-08-03T13:39:10.407Z"
+}

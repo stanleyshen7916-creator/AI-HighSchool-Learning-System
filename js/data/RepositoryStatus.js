@@ -12,8 +12,8 @@ AHS.RepositoryStatus = {
     "ANALYZING": 0,
     "CLAUDE_READY": 0,
     "READY_FOR_IMPORT": 0,
-    "IMPORTED": 2,
+    "IMPORTED": 3,
     "ARCHIVED": 0
   },
-  "generatedAt": "2026-08-03T13:23:04.145Z"
+  "generatedAt": "2026-08-03T13:39:10.407Z"
 };
