@@ -19,7 +19,7 @@ Sprint AI-113 AI-809 要求：重新定義八個模組（首頁／教材中心�
 | **測驗中心**（quiz.html） | 正式測驗（Exam Mode）與練習模式（Practice Mode）的作答、批改、歷史紀錄。唯一能「作答並取得正確率」的介面 | `QuestionRuntime`／`ExamRuntime`／`AutoGrader`／`HistoryRuntime`／`LearningQuestionRuntime`（LOCK：Practice/Exam 分離） | 產出的錯題進入錯題本，產出的歷史進入 `HistoryRuntime`（供 `StatisticsRuntime` 使用），但測驗中心本身不做複習排程 |
 | **錯題本**（wrongbook.html） | 錯題的清單、重新作答、精熟度追蹤（`correctStreak`）。唯一能「針對單一錯題重新練習並更新精熟度」的介面 | `WrongBookRuntime` | 複習中心的「錯題複習」直接連到此頁而非重建功能；我的學習／首頁只顯示錯題「統計數字」，不重建錯題清單 UI |
 | **學習總結**（summary.html） | 單一教材的內容摘要（核心概念／重要定義／易錯重點／必背內容／複習建議）。唯一呈現「教材本身內容整理」的介面 | `SummaryRuntime` | 與我的學習／複習中心完全不同：後兩者是「跨教材的個人統計／待辦」，學習總結是「單一教材的內容」，兩者資料模型（`SummaryRuntime` vs `HistoryRuntime`/`WrongBookRuntime`）也不同 |
-| **複習中心**（review.html） | 「今日待複習」「已完成複習」等待辦導向的複習佇列，唯一的複習行動入口 | `StatisticsRuntime.dueForReview()`／`WrongBookRuntime` | 複習中心本身不重新顯示錯題內容或統計圖表全貌，只做「待辦」導向，實際複習動作導到錯題本 |
+| **複習中心**（review.html） | 「今日待複習」「已完成複習」的待辦總覽，**以及唯一擁有真實 Review Session 的介面**（Sprint AI-114 AI-901：`AHS.ReviewRuntime` 的 `startSession()`/`answerCurrent()`/`completeSession()` + `AHS.ReviewSession.create()`，不再導向錯題本） | `StatisticsRuntime.dueForReview()`／`ReviewRuntime`／`WrongBookRuntime` | 複習中心「開始今日複習」直接在本頁完成整個複習流程，不再跳轉錯題本；錯題本仍是唯一能「瀏覽全部錯題並自由挑選重做」的介面（AI-902：只複習尚未精熟，不混入今日複習），兩者職責因此更清楚地分離，而非重疊 |
 | **我的學習**（learning.html） | 個人學習儀表板：學習總覽／學習記錄／週報告／學習日曆／成就徽章／科目進度，6 個區塊皆為跨教材、跨時間的彙總視角 | `StatisticsRuntime`／`MaterialRuntime`／`LearningStateRuntime`（Sprint AI-113 新增） | 與首頁不同：首頁是「今天要做什麼」的摘要入口，我的學習是「過去累積了什麼」的完整儀表板；兩者刻意保留不同深度，非重複 |
 | **AI Tutor**（tutor.html） | 唯一的完整對話式介面（訊息串／建議操作／歷史對話）。其餘頁面透過 Tutor Context Tip（Sprint AI-113 AI-808）只顯示「摘要」並連結回這裡 | `StatisticsRuntime.learningContext()` → `TutorMessage.build()`（單一定義，見下） | 首頁的 AI 巧巧老師卡片與其餘 5 頁面的 Tutor Context Tip 都只呈現同一份訊息的「入口摘要」，完整對話能力只存在於本頁 |
 
@@ -43,3 +43,16 @@ Sprint 的結論是：**不執行模組整併**。這與 Platform Refactor Maste
   Tutor Context Tip／AI Tutor 本身）共用同一份邏輯，無任何模組自行組合建議文字。
 - 科目進度「已完成」狀態統一由 `AHS.LearningStateRuntime`（Sprint AI-113 AI-803）判定，
   不再只用單一模組（我的學習）自己的閱讀進度平均值。
+
+## Sprint AI-114 更新（AI-907 重新確認）
+
+Sprint AI-114 建立了複習中心的真實 Review Session（AI-901）後，重新核對本表：複習中心與
+錯題本的職責邊界因此變得**更清楚**，不是更模糊——複習中心負責「今日待辦導向的複習流程」，
+錯題本負責「瀏覽全部錯題、自由挑選重做」，兩者共用同一個真實資料來源
+（`WrongBookRuntime`）與同一個真實作答互動元件（`AHS.WrongBook.buildReviewInteraction()`），
+但擁有各自唯一的進入點與情境，因此**沒有功能重疊**，維持「不執行模組整併」的結論不變。
+
+另外，本 Sprint 也將以下計算集中到 `AHS.StatisticsRuntime`（AI-905），移除了原本散落在
+`js/components/QuizCenter.js`（最高分／進度／正確率）與 `js/pages/AppReview.js`（今日完成／
+本週完成）各自的重複計算，8 個模組的「資訊沒有衝突」（AI-907 自身要求）因此有更強的技術
+保證，而非僅止於人工核對。

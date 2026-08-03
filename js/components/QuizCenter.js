@@ -369,19 +369,13 @@ AHS.QuizCenter = (function () {
       ? (AHS.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {}) : {};
     var entries = [];
 
-    /* Sprint AI-109 AI-602: real per-material stats from AHS.HistoryRuntime
-       (now PersistenceAdapter-backed — AI-601/602's own persistence fix —
-       so these survive page navigation, not just a same-page session),
-       filtered by this material's own examId. No fabricated numbers: a
-       material never attempted keeps progress/accuracy/best at a real,
-       honest 0/false, exactly like a Mock item that's never been taken. */
+    /* Sprint AI-109 AI-602 (real per-material stats), moved into
+       AHS.StatisticsRuntime.examStats() by Sprint AI-114 AI-905 (Single
+       Source — no page may keep its own copy of this calculation). */
     function realStatsFor(examId) {
-      var history = (AHS.HistoryRuntime && typeof AHS.HistoryRuntime.list === "function")
-        ? AHS.HistoryRuntime.list() : [];
-      var attempts = history.filter(function (h) { return h.examId === examId; });
-      if (!attempts.length) { return { progress: 0, accuracy: 0, best: 0, done: false, attempts: 0 }; }
-      var best = attempts.reduce(function (max, h) { return Math.max(max, h.score || 0); }, 0);
-      return { progress: 100, accuracy: attempts[0].accuracy || 0, best: best, done: true, attempts: attempts.length };
+      return (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.examStats === "function")
+        ? AHS.StatisticsRuntime.examStats(examId)
+        : { progress: 0, accuracy: 0, best: 0, done: false, attempts: 0 };
     }
 
     function addEntry(sourceId, meta, questionsForDifficulty) {

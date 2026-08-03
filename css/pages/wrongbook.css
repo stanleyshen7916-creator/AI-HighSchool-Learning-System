@@ -288,6 +288,12 @@
 .wb-row__status { margin-top: 4px; }
 
 .wb-review-center { display: flex; flex-direction: column; gap: 10px; }
+/* Sprint AI-114: pre-existing gap found during the HOTFIX-006 CSS
+   specificity audit — .wb-review-center's own display:flex tied with
+   the UA [hidden]{display:none} rule (author styles win ties), so this
+   panel rendered unconditionally on every wrongbook.html load instead
+   of staying hidden until a Knowledge Point is actually tagged. */
+.wb-review-center[hidden] { display: none; }
 .wb-review-center__head { display: flex; align-items: center; gap: 8px; }
 .wb-review-center__title { margin: 0; font-size: 15px; font-weight: 700; }
 .wb-review-center__count { font-size: 13px; font-weight: 700; color: var(--brand); }

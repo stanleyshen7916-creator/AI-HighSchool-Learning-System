@@ -10,12 +10,17 @@
    AppReview.js from AHS.StatisticsRuntime.dueForReview()). Sprint AI-111
    AI-609/AI-610 gave dueToday a real, non-fixed value (WrongBookRuntime's
    own persisted correctStreak field — "not yet 已精熟"), so this branch
-   is reachable now. Rather than inventing a new "Review Session" screen
-   (still out of scope — "不得新增功能入口"/"不得重新設計 UI" this Sprint
-   too), the same real destination 錯題複習 already links to
-   (wrongbook.html) is reused: dueToday's own items ARE WrongBookRuntime
-   entries, so this is the same content, not a fabricated new one. The
-   dueToday === 0 branch keeps the exact existing Empty State copy.
+   is reachable now.
+
+   Sprint AI-114 AI-901: 複習中心 now owns a real, in-page Review Session
+   (js/components/ReviewSession.js + js/runtime/ReviewRuntime.js's own
+   session API) instead of redirecting to wrongbook.html — the earlier
+   Sprint AI-111 decision to reuse wrongbook.html as a stand-in (quoted
+   above, kept for history) is explicitly superseded by this Sprint's own
+   "不得直接跳轉 WrongBook" instruction. dueToday > 0 now renders as a
+   real <button> that calls handlers.onStartToday() (AppReview.js mounts
+   the session in place); the dueToday === 0 branch keeps the exact
+   existing Empty State copy, unchanged.
 
    錯題複習 → checks model.hasWrongItems, a real read of the existing
    AHS.WrongBookRuntime.list() (done once in ReviewHome.js, not created
@@ -56,15 +61,15 @@ AHS.ReviewQuickAction = (function () {
     }
 
     /* ---- 開始今日複習 ----------------------------------------------------
-       Sprint AI-111: dueToday > 0 now renders as a real link to
-       wrongbook.html — the exact same destination/pattern 錯題複習 below
-       already uses, since dueToday's items ARE the real WrongBookRuntime
-       entries not yet 已精熟. dueToday === 0 keeps the existing button +
-       Empty State copy, unchanged. */
+       Sprint AI-114 AI-901: dueToday > 0 now starts a real, in-page
+       Review Session (handlers.onStartToday(), which AppReview.js wires
+       to mount js/components/ReviewSession.js) instead of navigating
+       anywhere. dueToday === 0 keeps the existing button + Empty State
+       copy, unchanged. */
     var startBtn;
     if (model.dueToday > 0) {
-      startBtn = el("a", {
-        class: "rv-quick__btn rv-quick__btn--primary", href: "wrongbook.html"
+      startBtn = el("button", {
+        type: "button", class: "rv-quick__btn rv-quick__btn--primary"
       }, iconLabel("play", "開始今日複習"));
       startBtn.addEventListener("click", function () {
         if (handlers.onStartToday) { handlers.onStartToday(); }
