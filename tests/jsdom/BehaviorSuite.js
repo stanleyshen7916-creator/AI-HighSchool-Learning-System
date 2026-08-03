@@ -1547,7 +1547,7 @@ console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10�
     const { window, consoleErrors } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
     const tip = window.document.querySelector(".tutor-tip");
     check(page + "：Tutor Context Tip 渲染真實建議（與首頁/AI Tutor 同一組真實資料來源）",
-      !!tip && tip.textContent.includes("錯題本中有") && tip.getAttribute("href") === "tutor.html");
+      !!tip && tip.textContent.includes("題錯題待複習") && tip.getAttribute("href") === "tutor.html");
     check(page + "：Console errors = 0（Tutor Context Tip）", consoleErrors.length === 0);
   });
 
@@ -1636,6 +1636,123 @@ console.log("\n[39] Sprint AI-113 AI-808 — AI Tutor Context 依「目前教材
   const builtNoMaterial = A.TutorMessage.build(A.StatisticsRuntime.learningContext(), { page: "summary" });
   check("無 materialId 時維持既有通用邏輯（向下相容，未破壞既有行為）",
     !builtNoMaterial || !builtNoMaterial.message.includes("AI-808 測試教材"));
+}
+
+console.log("\n[40] Sprint AI-114 AI-901 — Review Session（複習中心真實在頁複習流程，非跳轉錯題本）");
+{
+  const wrongBookSeed = {
+    items: [{
+      id: "wb_1", questionId: "q1", subject: "math", title: "AI-901 測試教材",
+      chapter: "第一章", materialId: "rt_1", knowledgePoint: "測試知識點",
+      question: "1+1=?", options: [{ key: "A", text: "1" }, { key: "B", text: "2" }],
+      yourAnswer: "A", correctAnswer: "B",
+      explanation: "詳解", errorCount: 1, lastError: "2026/08/03 09:00",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1
+  };
+  const { window, consoleErrors } = loadPage("review.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+  const doc = window.document;
+  const A = window.AHS;
+
+  const startBtn = [...doc.querySelectorAll(".rv-quick__btn")].find(b => b.textContent.includes("開始今日複習"));
+  check("dueToday > 0 時「開始今日複習」為真實按鈕（非連結跳轉錯題本）", !!startBtn && startBtn.tagName === "BUTTON");
+  startBtn.click();
+
+  const session = doc.querySelector(".rv-session");
+  check("點擊後真實在頁掛載 Review Session（非導向 wrongbook.html）", !!session && session.textContent.includes("AI-901 測試教材"));
+  check("Review Session 重用 WrongBook 既有真實作答互動元件（同一定義，非另建一份）",
+    !!session.querySelector(".wb-detail__options") && !!session.querySelector(".wb-detail__btn--primary"));
+
+  const correctOpt = [...session.querySelectorAll(".wb-detail__option")]
+    .find(li => li.querySelector(".wb-detail__option-key").textContent === "B");
+  correctOpt.click();
+  const submitBtn = [...session.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("提交答案"));
+  submitBtn.click();
+
+  check("作答後真實更新 WrongBookRuntime.correctStreak（透過 ReviewRuntime.answerCurrent，非畫面局部狀態）",
+    A.WrongBookRuntime.getById("wb_1").correctStreak === 1);
+
+  const resultScreen = doc.querySelector(".rv-session__result");
+  check("完成唯一題目後顯示真實複習結果（總題數/答對/正確率）",
+    !!resultScreen && resultScreen.textContent.includes("答對") && resultScreen.textContent.includes("100%"));
+
+  const doneBtn = doc.querySelector(".rv-session__btn--primary");
+  doneBtn.click();
+  check("完成後真實返回複習中心（頁面以最新真實狀態重新渲染）",
+    !doc.querySelector(".rv-session") && !!doc.querySelector(".rv-quick"));
+
+  check("Console errors = 0（Review Session 全流程）", consoleErrors.length === 0);
+}
+
+console.log("\n[41] Sprint AI-114 AI-902 — WrongBook 全部重新複習只包含尚未精熟項目");
+{
+  const wrongBookSeed = {
+    items: [
+      { id: "wb_1", questionId: "q1", subject: "math", title: "已精熟教材", chapter: "第一章",
+        materialId: "", knowledgePoint: "kp1", question: "Q1", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+        yourAnswer: "A", correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+        bookmarked: false, correctStreak: 3 },
+      { id: "wb_2", questionId: "q2", subject: "math", title: "尚未精熟教材", chapter: "第二章",
+        materialId: "", knowledgePoint: "kp2", question: "Q2", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+        yourAnswer: "A", correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+        bookmarked: false, correctStreak: 0 }
+    ], seq: 2
+  };
+  const { window } = loadPage("wrongbook.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+  const doc = window.document;
+  const summaryValues = [...doc.querySelectorAll(".wb-summary__item")];
+  const notMasteredItem = summaryValues.find(n => n.textContent.includes("尚未精熟"));
+  check("錯題本統計卡顯示真實「尚未精熟」（非先前固定為 0 的「今日待複習」）",
+    !!notMasteredItem && notMasteredItem.querySelector(".wb-summary__value").textContent === "1");
+
+  const reviewAllBtn = [...doc.querySelectorAll(".wb-action")].find(b => b.textContent.includes("全部重新複習"));
+  reviewAllBtn.click();
+  const sessionBody = doc.querySelector(".wb-review-session__progress");
+  check("全部重新複習只納入尚未精熟項目（1 題，已精熟的另一題被排除）",
+    !!sessionBody && sessionBody.textContent.includes("1 / 1"));
+}
+
+console.log("\n[42] Sprint AI-114 AI-903 — Daily Task Engine（首頁今日任務真實、依優先序、非固定文字）");
+{
+  const materialSeed = {
+    materials: [
+      { id: "rt_1", order: 1, subject: "math", title: "進行中教材", chapter: "第一章",
+        grade: "高一", category: "課本", date: "2026/08/03", views: "1", content: "",
+        progress: 40, lastOpenedAt: "2026/08/03 09:00", lastLearningAt: "2026/08/03 09:00",
+        learningTime: 5, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
+        fileSize: "", folderId: null },
+      { id: "rt_2", order: 2, subject: "english", title: "尚未開始教材", chapter: "Unit 1",
+        grade: "高一", category: "課本", date: "2026/08/03", views: "0", content: "",
+        progress: 0, lastOpenedAt: null, lastLearningAt: null,
+        learningTime: 0, learningCount: 0, favorite: false, fileName: "", fileType: "FILE",
+        fileSize: "", folderId: null }
+    ], folders: [], seq: 2, folderSeq: 0
+  };
+  const wrongBookSeed = {
+    items: [{ id: "wb_1", questionId: "q1", subject: "math", title: "測試", chapter: "第一章",
+      materialId: "rt_1", knowledgePoint: "kp1", question: "Q", options: [], yourAnswer: "A",
+      correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+      bookmarked: false, correctStreak: 0 }], seq: 1
+  };
+  const { window, consoleErrors } = loadPage("index.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:wrongBookRuntime": wrongBookSeed }
+  });
+  const A = window.AHS;
+  const tasks = A.LearningStateRuntime.dailyTasks(4);
+  check("今日任務真實、非空（有真實待複習/未完成教材資料時）", tasks.length > 0);
+  check("優先序①今日 Review 排在最前（真實 dueForReview 存在）", tasks[0].kind === "review");
+  check("今日任務內容包含真實教材標題（非固定文字）",
+    tasks.some(t => t.title.includes("進行中教材")) || tasks.some(t => t.title.includes("尚未開始教材")));
+
+  const taskCard = window.document.querySelector(".today-card");
+  check("首頁今日任務卡片真實渲染任務列（非既有空狀態文案）",
+    !!taskCard && !taskCard.textContent.includes("今天沒有安排學習任務"));
+  check("Console errors = 0（Daily Task Engine）", consoleErrors.length === 0);
+
+  const { window: emptyWin } = loadPage("index.html", { excludeScripts: ["data/materials/"] });
+  const emptyCard = emptyWin.document.querySelector(".today-card");
+  check("無真實資料時今日任務誠實顯示既有空狀態（非假造任務）",
+    !!emptyCard && emptyCard.textContent.includes("今天沒有安排學習任務"));
 }
 
 console.log("\n==============================");

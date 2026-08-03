@@ -110,9 +110,77 @@ AHS.LearningStateRuntime = (function () {
     return subjects.map(subjectState);
   }
 
+  /* dailyTasks(limit) — Sprint AI-114 AI-903 Daily Task Engine. Real,
+     priority-ordered task list for 首頁's 今日任務 — never fixed text,
+     never a fabricated placeholder when there's genuinely nothing to
+     do (returns []; the caller's own existing Empty State handles
+     that). Every entry is built from a real, currently-true signal:
+
+       ① 今日 Review     — AHS.StatisticsRuntime.dueForReview() aggregate
+                            queue (same real "not yet 已精熟" set 複習
+                            中心's own Review Session (AI-901) uses).
+       ② 未完成錯題       — the subset of that same pool with
+                            correctStreak === 0 (never once answered
+                            correctly since going wrong) — a real,
+                            distinct, more urgent segment of ①'s pool
+                            (not a fabricated second definition;
+                            correctStreak already exists for this).
+       ③ 未完成教材       — real MaterialRuntime items with
+                            0 < progress < 100 (reading in progress).
+       ④ AI 推薦教材      — real MaterialRuntime items with progress = 0
+                            (never opened yet) — only shown once ①-③
+                            have nothing left to offer, so a fresh
+                            session with unread materials still gets a
+                            real, non-empty task list.
+
+     `done`/`total` match js/components/TodayMission.js's existing
+     display shape (subject chip + title + "done/total" counter). */
+  function dailyTasks(limit) {
+    var tasks = [];
+    var dueReview = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.dueForReview === "function")
+      ? AHS.StatisticsRuntime.dueForReview() : [];
+
+    if (dueReview.length) {
+      tasks.push({
+        subject: dueReview[0].subject,
+        title: "前往複習中心，完成今日待複習",
+        done: 0, total: dueReview.length, priority: 1, kind: "review"
+      });
+    }
+
+    var freshlyWrong = dueReview.filter(function (w) { return (w.correctStreak || 0) === 0; });
+    if (freshlyWrong.length) {
+      tasks.push({
+        subject: freshlyWrong[0].subject,
+        title: "前往錯題本，處理尚未複習過的錯題",
+        done: 0, total: freshlyWrong.length, priority: 2, kind: "wrongbook"
+      });
+    }
+
+    var mats = materials();
+    var inProgress = mats.filter(function (m) { return (m.progress || 0) > 0 && (m.progress || 0) < 100; });
+    inProgress.forEach(function (m) {
+      tasks.push({
+        subject: m.subject, title: "繼續閱讀《" + m.title + "》",
+        done: Math.round(m.progress || 0), total: 100, priority: 3, kind: "material"
+      });
+    });
+
+    var notStarted = mats.filter(function (m) { return !(m.progress > 0); });
+    notStarted.forEach(function (m) {
+      tasks.push({
+        subject: m.subject, title: "開始閱讀《" + m.title + "》",
+        done: 0, total: 100, priority: 4, kind: "recommend"
+      });
+    });
+
+    return typeof limit === "number" ? tasks.slice(0, limit) : tasks;
+  }
+
   return {
     materialState: materialState,
     subjectState: subjectState,
-    allSubjectStates: allSubjectStates
+    allSubjectStates: allSubjectStates,
+    dailyTasks: dailyTasks
   };
 })();

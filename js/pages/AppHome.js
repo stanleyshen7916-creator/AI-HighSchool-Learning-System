@@ -61,14 +61,18 @@ window.AHS = window.AHS || {};
     };
   }
 
-  /* Sprint 6.6 · GitHub QA Fix (WO-001): 今日任務 has no Runtime anywhere
-     in this repository (no Task/Mission Runtime was ever built, and
-     building one now would be a new feature, out of scope). Always
-     returns an explicit empty model — never AHS.AppConfig.todayTasks — so
-     TodayMission.js's own existing Empty State ("今天沒有安排學習任務")
-     renders honestly instead of Mock content. */
+  /* Sprint AI-114 AI-903 Daily Task Engine: 今日任務 now has a real
+     source — AHS.LearningStateRuntime.dailyTasks() (this Sprint's own
+     new function), built from real Review/WrongBook/Material signals,
+     recomputed on every page load (never cached, so "每日重新計算" is
+     automatically true — there is no stored state to go stale). Still
+     renders TodayMission.js's own existing Empty State honestly when
+     genuinely nothing is due (a session with zero materials and zero
+     wrong items) — never a fabricated task. */
   function buildTodayMissionModel() {
-    return { title: "今日任務", items: [] };
+    var items = (AHS.LearningStateRuntime && typeof AHS.LearningStateRuntime.dailyTasks === "function")
+      ? AHS.LearningStateRuntime.dailyTasks(4) : [];
+    return { title: "今日任務", items: items };
   }
 
   function buildStudyStatsModel() {

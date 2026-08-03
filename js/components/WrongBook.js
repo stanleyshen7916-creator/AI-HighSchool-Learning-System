@@ -201,16 +201,18 @@ AHS.WrongBook = (function () {
     downloadFile("wrongbook_export.csv", "\uFEFF" + payload.csv, "text/csv;charset=utf-8;");
   }
 
-  /* ---- Summary Card (W001-1, updated WS-001) -----------------------------
-     Reads from AHS.WrongBookRuntime plus the session-scoped mastery
-     tracker (see WS-001 above) — no Runtime schema change involved.
-     "今日待複習" (due today) still has no representation anywhere (no
-     Runtime field, no derivable concept, not addressed by any Work Order
-     to date) and remains fixed at 0. "已精熟" (mastered) is now real,
-     computed from getMasteryStatus() — automatic, session-scoped. */
+  /* ---- Summary Card (W001-1, updated WS-001, Sprint AI-114 AI-902) -------
+     Reads from AHS.WrongBookRuntime — no Runtime schema change involved.
+     "今日待複習" (Today's Review queue) is 複習中心's own concept (AI-901's
+     real Review Session), not WrongBook's — showing it here (previously
+     hard-coded to a fake 0) conflated the two per AI-902's own explicit
+     "不得混入今日複習" rule. Replaced with "尚未精熟" — WrongBook's own
+     real, relevant count (same getMasteryStatus() rule already used for
+     the per-row status tag, not a second definition). "已精熟" stays
+     real, computed from getMasteryStatus(). */
   var SUMMARY_DEFS = [
     { key: "total", icon: "wrong", label: "全部錯題" },
-    { key: "dueToday", icon: "clock", label: "今日待複習" },
+    { key: "notMastered", icon: "clock", label: "尚未精熟" },
     { key: "mastered", icon: "award", label: "已精熟" },
     { key: "favorite", icon: "heart", label: "我的收藏" }
   ];
@@ -218,7 +220,7 @@ AHS.WrongBook = (function () {
   function summaryCounts(items) {
     return {
       total: items.length,
-      dueToday: 0,
+      notMastered: items.filter(function (i) { return getMasteryStatus(i.correctStreak) !== "已精熟"; }).length,
       mastered: items.filter(function (i) { return getMasteryStatus(i.correctStreak) === "已精熟"; }).length,
       favorite: items.filter(function (i) { return i.bookmarked; }).length
     };
@@ -775,7 +777,11 @@ AHS.WrongBook = (function () {
          current filtered Question List. Filter state (WS-003) is never
          touched by this flow. */
     function startReviewSession(queue) {
-      queue = queue || getVisibleItems();
+      /* Sprint AI-114 AI-902: 全部重新複習 (no explicit queue passed) only
+         reviews 尚未精熟 items — a specific row's own 開始複習/立即重做
+         (explicit single-item queue) is a deliberate per-item choice and
+         stays untouched. */
+      queue = queue || getVisibleItems().filter(function (it) { return getMasteryStatus(it.correctStreak) !== "已精熟"; });
       if (queue.length === 0) { return; }
       var index = 0;
       var results = { total: queue.length, correct: 0, wrong: 0, newlyMastered: 0 };
@@ -1226,5 +1232,12 @@ AHS.WrongBook = (function () {
     ]);
   }
 
-  return { create: create };
+  /* Sprint AI-114 AI-901/902: buildReviewInteraction is a pure function
+     (item, onSubmit) -> DOM node — no dependency on this module's own
+     closure state (pairs/detailPanel/etc.). Exposed so js/components/
+     ReviewSession.js (複習中心's own real Review Session, AI-901) can
+     reuse the exact same real question-interaction UI instead of
+     building a second one — same rendering, same "選了才能提交" behavior,
+     one definition. */
+  return { create: create, buildReviewInteraction: buildReviewInteraction };
 })();

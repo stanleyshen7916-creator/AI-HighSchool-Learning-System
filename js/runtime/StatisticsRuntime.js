@@ -141,20 +141,148 @@ AHS.StatisticsRuntime = (function () {
     return typeof limit === "number" ? chapters.slice(0, limit) : chapters;
   }
 
+  /* completionSignals() — Sprint AI-114 AI-906: real material-completion
+     state for the AI Tutor's priority chain ("教材完成 -> 推薦下一教材",
+     "全部完成 -> 推薦挑戰測驗"). Reads AHS.LearningStateRuntime's own
+     real per-material `completed` flag (Sprint AI-113 AI-803 — reading
+     AND mastery, never reading alone) — not a second definition of
+     "completed". Honest when there's no real data: completedMaterial/
+     nextMaterial are null, allComplete is false, whenever there are no
+     materials at all (never vacuously "all complete" on an empty
+     session). */
+  function completionSignals() {
+    var mats = (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function")
+      ? AHS.MaterialRuntime.list() : [];
+    var lsr = AHS.LearningStateRuntime;
+    if (!mats.length || !lsr || typeof lsr.materialState !== "function") {
+      return { completedMaterial: null, nextMaterial: null, allComplete: false };
+    }
+    var states = mats.map(function (m) { return { material: m, state: lsr.materialState(m.id) }; });
+    var completed = states.filter(function (s) { return s.state.completed; });
+    var notStarted = mats.filter(function (m) { return !(m.progress > 0); });
+    return {
+      completedMaterial: completed.length ? completed[completed.length - 1].material : null,
+      nextMaterial: notStarted.length ? notStarted[0] : null,
+      allComplete: completed.length === mats.length
+    };
+  }
+
   /* learningContext() — the single real view-model both 首頁 (AiTutorHomeCard)
      and AI Tutor (tutor.html) build their message text from. Every field
      is real, derived fresh; a genuinely-empty repository/session yields
      empty arrays/nulls (callers must show an honest empty state, never
      invent text — see AiTutorHomeCard.js's own existing Empty State). */
   function learningContext() {
+    var completion = completionSignals();
     return {
       weakestSubject: weakestSubject(),
       dueForReview: dueForReview(),
       masteredCount: masteredReviewItems().length,
       recentWrongItems: recentWrongItems(3),
       recommendedRetest: recommendedRetest(),
-      recommendedChapters: recommendedChapters(3)
+      recommendedChapters: recommendedChapters(3),
+      completedMaterial: completion.completedMaterial,
+      nextMaterial: completion.nextMaterial,
+      allComplete: completion.allComplete
     };
+  }
+
+  /* ---- Sprint AI-114 additions (AI-905 Single Source) ---------------------
+     AI-905 names 閱讀進度/正確率/完成率/最高分/今日完成/今日待複習/錯題/
+     精熟/歷史 as values that must come from this Runtime, not be
+     recalculated per page. accuracy/dueForReview/wrong/mastered/history
+     already existed above; the functions below close the remaining real
+     gaps that were previously computed locally by individual pages
+     (js/components/QuizCenter.js's own realStatsFor(), js/pages/
+     AppReview.js's own doneToday/doneWeek date-math) — moved here
+     verbatim (same logic, same real HistoryRuntime/MaterialRuntime
+     source), those call sites now call these instead of keeping their
+     own copy. */
+
+  function materials() {
+    return (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function")
+      ? AHS.MaterialRuntime.list() : [];
+  }
+
+  /* readingProgress() — real average AHS.MaterialRuntime progress across
+     every material in this session; 0 when there are none yet (never a
+     fabricated baseline). This is 閱讀進度 (Reading Progress) per
+     Architecture_Platform_Terminology_v1.0.md — distinct from Exam Mode
+     accuracy/mastery below. */
+  function readingProgress() {
+    var mats = materials();
+    if (!mats.length) { return 0; }
+    var sum = mats.reduce(function (s, m) { return s + (typeof m.progress === "number" ? m.progress : 0); }, 0);
+    return Math.round(sum / mats.length);
+  }
+
+  /* completionRate() — real % of materials whose reading progress has
+     reached 100. */
+  function completionRate() {
+    var mats = materials();
+    if (!mats.length) { return 0; }
+    var done = mats.filter(function (m) { return (m.progress || 0) >= 100; }).length;
+    return Math.round((done / mats.length) * 100);
+  }
+
+  /* examStats(examId) — moved verbatim from js/components/QuizCenter.js's
+     own realStatsFor() (Sprint HOTFIX-005 AI-501): a material never
+     attempted keeps progress/accuracy/best at a real, honest 0/false,
+     exactly like a Mock item that's never been taken. QuizCenter.js now
+     calls this instead of keeping its own copy — same real
+     AHS.HistoryRuntime source, one definition. */
+  function examStats(examId) {
+    var attempts = AHS.HistoryRuntime.list().filter(function (h) { return h.examId === examId; });
+    if (!attempts.length) { return { progress: 0, accuracy: 0, best: 0, done: false, attempts: 0 }; }
+    var best = attempts.reduce(function (max, h) { return Math.max(max, h.score || 0); }, 0);
+    return { progress: 100, accuracy: attempts[0].accuracy || 0, best: best, done: true, attempts: attempts.length };
+  }
+
+  function parseWhen(when) {
+    if (!when) { return null; }
+    var m = /^(\d{4})\/(\d{2})\/(\d{2})(?:\s+(\d{2}):(\d{2}))?/.exec(when);
+    if (!m) { return null; }
+    return new Date(
+      parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10),
+      m[4] ? parseInt(m[4], 10) : 0, m[5] ? parseInt(m[5], 10) : 0
+    );
+  }
+
+  function isSameCalendarDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  /* Monday-start week boundary — moved verbatim from js/pages/AppReview.js
+     (no existing week-range convention is defined elsewhere in the
+     repository for this to follow, same disclosure that file's own
+     comment already made). */
+  function startOfWeek(d) {
+    var start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var offset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - offset);
+    return start;
+  }
+
+  /* doneToday() / doneThisWeek() — real counts of finished exams (real
+     AHS.HistoryRuntime records) whose `when` falls today / within the
+     current calendar week. Moved verbatim from js/pages/AppReview.js's
+     own deriveStats() — that file now calls these instead of keeping a
+     second copy of the same date math. */
+  function doneToday() {
+    var now = new Date();
+    return AHS.HistoryRuntime.list().filter(function (h) {
+      var when = parseWhen(h.when);
+      return !!when && isSameCalendarDay(when, now);
+    }).length;
+  }
+
+  function doneThisWeek() {
+    var now = new Date();
+    var weekStart = startOfWeek(now);
+    return AHS.HistoryRuntime.list().filter(function (h) {
+      var when = parseWhen(h.when);
+      return !!when && when >= weekStart;
+    }).length;
   }
 
   return {
@@ -168,6 +296,11 @@ AHS.StatisticsRuntime = (function () {
     weakestSubject: weakestSubject,
     recommendedRetest: recommendedRetest,
     recommendedChapters: recommendedChapters,
-    learningContext: learningContext
+    learningContext: learningContext,
+    readingProgress: readingProgress,
+    completionRate: completionRate,
+    examStats: examStats,
+    doneToday: doneToday,
+    doneThisWeek: doneThisWeek
   };
 })();

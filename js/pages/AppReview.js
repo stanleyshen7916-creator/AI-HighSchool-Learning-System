@@ -55,80 +55,39 @@ window.AHS = window.AHS || {};
 (function () {
   "use strict";
 
-  /* Parses HistoryRuntime's "YYYY/MM/DD HH:MM" `when` string into a Date.
-     Returns null (never throws) if the format is unexpected. */
-  function parseWhen(when) {
-    if (!when) { return null; }
-    var m = /^(\d{4})\/(\d{2})\/(\d{2})(?:\s+(\d{2}):(\d{2}))?/.exec(when);
-    if (!m) { return null; }
-    return new Date(
-      parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10),
-      m[4] ? parseInt(m[4], 10) : 0, m[5] ? parseInt(m[5], 10) : 0
-    );
-  }
-
-  function isSameCalendarDay(a, b) {
-    return a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate();
-  }
-
-  /* Monday-start week boundary (no existing week-range convention is
-     defined elsewhere in the repository for this to follow). */
-  function startOfWeek(d) {
-    var start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    var offset = (start.getDay() + 6) % 7; // Mon=0 ... Sun=6
-    start.setDate(start.getDate() - offset);
-    return start;
-  }
-
-  /* deriveStats(historyItems, dueCount) — real counts only, from real
-     records. Sprint AI-111 AI-609: dueToday was a fixed 0 by an earlier,
-     explicit PMO ruling ("no due-date concept exists anywhere"). AI-610
-     (same Sprint) gave WrongBookRuntime a real, persisted correctStreak
-     field, and AHS.StatisticsRuntime.dueForReview() (additive) derives a
-     real, deterministic count from it — "not yet 已精熟" — the exact same
-     rule js/components/WrongBook.js's own getMasteryStatus() already
-     uses, not a second definition, and not AI-inferred scheduling. */
-  function deriveStats(historyItems, dueCount, masteredCount) {
-    var now = new Date();
-    var weekStart = startOfWeek(now);
-    var doneToday = 0;
-    var doneWeek = 0;
-
-    historyItems.forEach(function (item) {
-      var when = parseWhen(item.when);
-      if (!when) { return; }
-      if (isSameCalendarDay(when, now)) { doneToday += 1; }
-      if (when >= weekStart) { doneWeek += 1; }
-    });
-
+  /* deriveStats(historyItems, dueCount, masteredCount) — real counts
+     only, from real records. Sprint AI-114 AI-905: doneToday/doneWeek
+     moved to AHS.StatisticsRuntime.doneToday()/doneThisWeek() (Single
+     Source — this file no longer keeps its own copy of the date math).
+     Sprint AI-111 AI-609/AI-610: dueToday/masteredReview real via
+     AHS.StatisticsRuntime.dueForReview()/masteredReviewItems() — the
+     exact same rule js/components/WrongBook.js's own getMasteryStatus()
+     already uses, not a second definition. */
+  function deriveStats(dueCount, masteredCount) {
     return {
       dueToday: dueCount || 0,
-      doneToday: doneToday,
-      doneWeek: doneWeek,
+      doneToday: (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.doneToday === "function")
+        ? AHS.StatisticsRuntime.doneToday() : 0,
+      doneWeek: (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.doneThisWeek === "function")
+        ? AHS.StatisticsRuntime.doneThisWeek() : 0,
       masteredReview: masteredCount || 0
     };
   }
 
-  function init() {
-    var app = document.getElementById("app");
-    if (!app) { return; }
-
+  /* buildPage() — real content only, called both on first load and again
+     after a Review Session completes (Sprint AI-114 AI-901's own flow:
+     完成 Session -> 更新 Statistics -> 更新 Review — every Runtime read
+     here is fresh, so simply rebuilding this page re-reads the real,
+     just-updated state; no separate "push" mechanism is needed). */
+  function buildPage(shell) {
     var historyItems = (AHS.HistoryRuntime ? AHS.HistoryRuntime.list() : []);
     var wrongItems = (AHS.WrongBookRuntime ? AHS.WrongBookRuntime.list() : []);
     var dueItems = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.dueForReview === "function")
       ? AHS.StatisticsRuntime.dueForReview() : wrongItems;
     var masteredItems = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.masteredReviewItems === "function")
       ? AHS.StatisticsRuntime.masteredReviewItems() : [];
-    var stats = deriveStats(historyItems, dueItems.length, masteredItems.length);
+    var stats = deriveStats(dueItems.length, masteredItems.length);
     var mostRecent = historyItems.length ? historyItems[0] : null; // list() is newest-first
-
-    var shell = AHS.AppShell.create(AHS.AppConfig, {
-      active: "review",
-      onNavigate: function () { /* Mock navigation — prototype. */ }
-    });
-    AHS.UI.mount(app, shell.root);
 
     var page = document.createElement("div");
     page.className = "rv-page";
@@ -141,11 +100,38 @@ window.AHS = window.AHS || {};
 
     page.appendChild(AHS.ReviewHomeCard.create(stats));
 
+    /* Sprint AI-114 AI-901: real Review Session mount point — 開始今日複習
+       renders js/components/ReviewSession.js here, in place, instead of
+       navigating to wrongbook.html. onComplete rebuilds the whole page
+       so every stat (Statistics/首頁/Tutor/Review — AI-901's own flow)
+       reflects the session's real results immediately. */
+    var sessionSlot = document.createElement("div");
+    page.appendChild(sessionSlot);
+
     var row = document.createElement("div");
     row.className = "rv-row2";
     row.appendChild(AHS.ReviewQuickAction.create(
       { dueToday: stats.dueToday, hasWrongItems: wrongItems.length > 0 },
-      {}
+      {
+        onStartToday: function () {
+          if (!AHS.ReviewSession || typeof AHS.ReviewSession.create !== "function") { return; }
+          var sessionEl = AHS.ReviewSession.create({
+            onComplete: function () {
+              shell.main.innerHTML = "";
+              shell.main.appendChild(buildPage(shell));
+            }
+          });
+          if (sessionEl) {
+            sessionSlot.innerHTML = "";
+            sessionSlot.appendChild(sessionEl);
+            /* Inline style (not the `hidden` attribute) — always wins
+               over any stylesheet rule regardless of CSS specificity,
+               avoiding the exact class of bug HOTFIX-006 fixed
+               (.rv-row2 already declares its own `display: grid`). */
+            row.style.display = "none";
+          }
+        }
+      }
     ));
     row.appendChild(AHS.ReviewRecentSession.create(mostRecent, {}));
     page.appendChild(row);
@@ -161,7 +147,19 @@ window.AHS = window.AHS || {};
       page.appendChild(AHS.ReviewWidget.create());
     }
 
-    shell.main.appendChild(page);
+    return page;
+  }
+
+  function init() {
+    var app = document.getElementById("app");
+    if (!app) { return; }
+
+    var shell = AHS.AppShell.create(AHS.AppConfig, {
+      active: "review",
+      onNavigate: function () { /* Mock navigation — prototype. */ }
+    });
+    AHS.UI.mount(app, shell.root);
+    shell.main.appendChild(buildPage(shell));
   }
 
   function coreReady() {
