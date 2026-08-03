@@ -41,7 +41,9 @@ Error／首頁的 ReviewWidget 完全不受影響）、PipelineRegression 6/6、
 
 ## Merge Commit / GitHub Pages Deploy Status
 
-Filled in after merge.
+- PR #31，已合併至 `main`。Merge commit：`baa86bc4da7ba3e1c3dc93bf610cde3fdd9c63f3`。
+- GitHub Pages "pages build and deployment" workflow 已針對此 commit 觸發（合併當下即為
+  queued 狀態），自動完成部署，無需額外動作。
 
 ## 修改檔案
 
