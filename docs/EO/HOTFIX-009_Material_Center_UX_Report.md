@@ -15,9 +15,9 @@ mid-turn correction to Issue 4's exact scope (also from a screenshot).
 | Verify | PASS |
 | Test | PASS |
 | Playwright | PASS (19/20 — 1 pre-existing, disclosed flake, see below) |
-| GitHub Actions | Filled in after merge. |
-| Deployment | Filled in after merge. |
-| Merge Commit | Filled in after merge. |
+| GitHub Actions | PASS（`QA Automation Framework` run [30869951293](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30869951293)，commit `8d361fd`；上一輪 run [30869764250](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30869764250) 對 `59f8eca` 因基準圖未更新而 2 項失敗，已修正並重新確認） |
+| Deployment | PASS（GitHub Pages `pages build and deployment` run [30869950654](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30869950654)，commit `8d361fd`） |
+| Merge Commit | `59f8ecabf6e4a1917bced201d33f065d695b722e`（PR #42）+ `8d361fdf3a3b477718e6e95c583004f9fc18632c`（PR #43，基準圖修正） |
 
 ## Issue 1 — 首頁選擇教材（如「數學」）未帶入教材中心的科目篩選
 
@@ -101,15 +101,28 @@ PASS: BehaviorSuite 329/329 (2 tests updated to click the card body instead of t
 6/6, RepositoryFoundation 29/29, MaterialPipelineRegression 37/37, AnalyticsRegression 35/35,
 MaterialBatchPersistence (1 test updated the same way) unaffected otherwise.
 
-`npm run test:e2e`: **19/20 PASS**. The one failure (`Snapshot：首頁`, expected 1280×1762px,
-received 1280×1794px) was verified via `git stash` to reproduce **identically on the base
-commit before any of this HOTFIX's changes** — a pre-existing flake already disclosed in the
-Sprint AI-116/117 reports (the daily quote's variable text length changes `.hero-card`'s real
-rendered height even though its own pixels are masked, shifting the full-page screenshot
-dimensions). Re-ran the Analytics Scenario test that failed once under 2-worker parallelism in
-isolation (passed in 3s) and the full suite again at `--workers=1` (19/20, same single
-pre-existing flake) — confirming that failure was resource-contention timeout in this sandboxed
-environment, not a real regression.
+`npm run test:e2e`: **19/20 PASS** locally and in CI. The one failure (`Snapshot：首頁`,
+expected 1280×1762px, received 1280×1794px) was verified via `git stash` to reproduce
+**identically on the base commit before any of this HOTFIX's changes** — a pre-existing flake
+already disclosed in the Sprint AI-116/117 reports (the daily quote's variable text length
+changes `.hero-card`'s real rendered height even though its own pixels are masked, shifting the
+full-page screenshot dimensions). Re-ran the Analytics Scenario test that failed once under
+2-worker parallelism in isolation (passed in 3s) and the full suite again at `--workers=1`
+(19/20, same single pre-existing flake) — confirming that failure was resource-contention
+timeout in this sandboxed environment, not a real regression.
+
+**CI caught one real, genuine consequence of HOTFIX-009-3 this local run missed**: the first
+GitHub Actions run (commit `59f8eca`) failed 2 Playwright tests, not 1 — `Snapshot：首頁`
+(the same pre-existing flake above) *and* `Snapshot：教材中心` (expected 1280×2904px, received
+1280×2944px, 3% pixels different). The `.mat-card__act` enlargement genuinely increased every
+material card's real rendered height, growing the seeded materials page's total height — an
+intended, authorized consequence of this HOTFIX, not a bug, but it meant the existing
+`materials-chromium-linux.png` baseline (captured before this HOTFIX) was legitimately stale.
+Regenerated it via `npx playwright test -g "Snapshot：教材中心" --update-snapshots` (matching
+this repo's own established pattern for baseline updates after an authorized visual change —
+see the `tm_2`~`tm_4` baseline-update commits in `git log`), committed as a follow-up
+(`23c229e`, merged as commit `8d361fd`), and re-confirmed via a second GitHub Actions run
+(30869951293): back to 19/20, only the pre-existing Home flake remaining.
 
 ## Judgment calls (flagged, not silently decided)
 
@@ -133,3 +146,5 @@ environment, not a real regression.
   added
 - `tests/jsdom/BehaviorSuite.js`, `tests/regression/MaterialBatchPersistence.js` — updated to
   trigger preview via the card body instead of the removed icon button
+- `playwright/tests/snapshot.spec.js-snapshots/materials-chromium-linux.png` — regenerated
+  baseline (real, authorized height change from the icon enlargement above)
