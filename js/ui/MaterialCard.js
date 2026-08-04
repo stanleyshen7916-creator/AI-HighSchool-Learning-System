@@ -127,17 +127,14 @@ AHS.MaterialCard = (function () {
       applyFav(nowFav);
     });
 
-    /* 預覽 / 下載 standalone icon buttons — hover shows only a tooltip
-       (WO-006); the action fires on click, never on hover. Preview does
-       NOT update progress/learning (RC-003-006). */
-    var previewBtn = el("button", {
-      type: "button", class: "mat-card__act mat-card__preview",
-      "aria-label": "預覽教材", "data-tip": "預覽教材", html: AHS.Icons.book()
-    });
-    previewBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      previewMaterial();
-    });
+    /* 下載 standalone icon button — hover shows only a tooltip (WO-006);
+       the action fires on click, never on hover. HOTFIX-009-2: the
+       separate "預覽教材" icon button was removed — it opened the exact
+       same AHS.MaterialPreview.open() dialog as clicking the card body
+       (line ~275 below) and as 開始學習/繼續學習 (learnMaterial(), which
+       also opens it plus starts the Learning Session), so it was a pure
+       duplicate action, not a distinct feature. previewMaterial() itself
+       is kept — the card body click still uses it. */
     var dlBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__dl",
       "aria-label": "下載教材", "data-tip": "下載教材", html: AHS.Icons.download()
@@ -179,9 +176,10 @@ AHS.MaterialCard = (function () {
     });
     practiceLink.addEventListener("click", function (e) { e.stopPropagation(); });
 
-    /* RC-003-007: card icons are 收藏 / 預覽教材 / 下載教材 / 刪除教材.
-       No 開啟教材 icon. */
-    var acts = [favBtn, previewBtn, dlBtn, summaryLink, practiceLink];
+    /* RC-003-007, updated HOTFIX-009-2: card icons are 收藏 / 下載教材 /
+       查看摘要 / 開始練習 / 刪除教材. No 開啟教材 icon, and no separate
+       預覽教材 icon (duplicated the card-click/繼續學習 preview action). */
+    var acts = [favBtn, dlBtn, summaryLink, practiceLink];
     if (typeof onDelete === "function") {
       /* Trash icon defined locally (the shared Icons.js is out of this
          WO's modify scope); matches the spec's 垃圾桶 glyph. */

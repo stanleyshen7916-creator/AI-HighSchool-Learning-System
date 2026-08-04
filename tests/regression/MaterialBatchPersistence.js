@@ -142,7 +142,9 @@ function clickDownload(ctx, card) {
   let previewOk = 0, downloadOk = 0;
   const downloadedNames = [];
   cards.forEach((card) => {
-    card.querySelector(".mat-card__preview").click();
+    /* HOTFIX-009-2: 預覽教材 icon removed (duplicated card-click preview);
+       click the card body, the sole remaining preview trigger. */
+    card.click();
     const overlay = b.doc.querySelector(".mat-preview__overlay, .mat-preview");
     const img = overlay && overlay.querySelector("img.mat-preview__media");
     if (img && img.getAttribute("src")) { previewOk += 1; }
