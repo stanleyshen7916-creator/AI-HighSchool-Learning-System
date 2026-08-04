@@ -215,20 +215,32 @@
 .mat-card__progress { font-weight: 700; color: var(--brand); }
 .mat-card__views { display: inline-flex; align-items: center; gap: 4px; }
 .mat-card__views svg { width: 14px; height: 14px; }
-.mat-card__acts { display: flex; gap: 8px; }
+/* HOTFIX-009-3: 加大並強化辨識度 — 高度/圖示由 34px/16px 提升到 44px/20px，
+   邊框加粗、hover 對比加強，並補上原本完全沒有的 :focus-visible 樣式
+   （鍵盤操作先前完全看不出目前焦點在哪個按鈕上）。 */
+.mat-card__acts { display: flex; gap: 10px; }
 .mat-card__act {
   flex: 1 1 auto;
-  height: 34px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
   background-color: var(--card);
   color: var(--text-muted);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.mat-card__act svg { width: 16px; height: 16px; }
-.mat-card__act:hover { background-color: var(--brand-soft); color: var(--brand); }
-.mat-card__fav.is-active { background-color: var(--brand-soft); color: var(--brand); }
+.mat-card__act svg { width: 20px; height: 20px; }
+.mat-card__act:hover {
+  background-color: var(--brand-soft);
+  color: var(--brand);
+  border-color: var(--brand);
+}
+.mat-card__act:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.mat-card__fav.is-active { background-color: var(--brand-soft); color: var(--brand); border-color: var(--brand); }
 .mat-card__delete:hover { background-color: #fdecec; color: #d9534f; border-color: #f3c9c9; }
 
 /* File info line (Module Completion: uploaded materials) */
@@ -267,7 +279,7 @@
 .mat-grid[data-view="list"] .mat-card__meta,
 .mat-grid[data-view="list"] .mat-card__foot { flex: 1 1 auto; }
 .mat-grid[data-view="list"] .mat-card__acts { flex: 0 0 auto; }
-.mat-grid[data-view="list"] .mat-card__act { width: 40px; flex: 0 0 auto; }
+.mat-grid[data-view="list"] .mat-card__act { width: 48px; flex: 0 0 auto; }
 .mat-grid[data-view="list"] .mat-card__intro,
 .mat-grid[data-view="list"] .mat-card__progress-block { flex: 1 1 100%; }
 .mat-grid[data-view="list"] .mat-card__continue { flex: 0 0 auto; width: auto; }
@@ -520,9 +532,9 @@
   gap: 6px;
   width: auto;
   color: #d9534f;
-  border: 1px solid #f3c9c9;
+  border: 1.5px solid #f3c9c9;
   background-color: #fff5f5;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 .mat-card__delete-btn:hover {
@@ -530,8 +542,12 @@
   color: #c9302c;
   border-color: #e6a9a9;
 }
+.mat-card__delete-btn:focus-visible {
+  outline: 2px solid #d9534f;
+  outline-offset: 2px;
+}
 .mat-card__delete-icon { display: inline-flex; }
-.mat-card__delete-icon svg { width: 16px; height: 16px; }
+.mat-card__delete-icon svg { width: 20px; height: 20px; }
 .mat-card__delete-text { line-height: 1; }
 
 /* ---- Tooltip (WO-006) — CSS-only tip driven by [data-tip]. Shows after

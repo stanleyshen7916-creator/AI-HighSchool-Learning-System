@@ -667,7 +667,10 @@ console.log("\n[19] HF-8.2.003 — 跨頁預覽改由位元組還原（先前必
   const doc = window.document;
   window.URL.createObjectURL = function (blob) { return "blob:ahs/" + (blob && blob.size); };
   window.URL.revokeObjectURL = function () {};
-  doc.querySelector(".mat-card__preview").click();
+  /* HOTFIX-009-2: the standalone 預覽教材 icon button was removed
+     (duplicated the card-click preview action) — click the card body,
+     the sole remaining preview trigger, instead. */
+  doc.querySelector(".mat-card").click();
   const overlay = doc.querySelector(".mat-preview__overlay, .mat-preview");
   const img = overlay && overlay.querySelector("img.mat-preview__media");
   check("跨頁圖片預覽渲染 img 且有 src（file 為 null 亦可）", !!img && !!img.getAttribute("src"));

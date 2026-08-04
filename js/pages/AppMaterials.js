@@ -22,7 +22,20 @@ window.AHS = window.AHS || {};
       AHS.TeachingMaterialLoader.initialize();
     }
 
-    var materialCenterRoot = AHS.MaterialCenter.create();
+    /* HOTFIX-009-1: arriving here with ?id=<materialId> (e.g. a Home
+       material card click) should land already filtered to that
+       material's own subject, not the unfiltered "全部科目" view the
+       user then had to manually reselect. Derived from the real
+       MaterialRuntime record — never a second, separate subject param
+       to keep in sync with the link. */
+    var initialSubject = null;
+    var materialId = new URLSearchParams(window.location.search).get("id");
+    if (materialId && AHS.MaterialRuntime && typeof AHS.MaterialRuntime.getById === "function") {
+      var target = AHS.MaterialRuntime.getById(materialId);
+      if (target) { initialSubject = target.subject; }
+    }
+
+    var materialCenterRoot = AHS.MaterialCenter.create({ initialSubject: initialSubject });
 
     var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "materials",

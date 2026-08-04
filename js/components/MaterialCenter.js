@@ -30,13 +30,18 @@ AHS.MaterialCenter = (function () {
   }
 
   /* ---- Subject filter panel ------------------------------------------- */
-  function subjectPanel(data, onPick) {
+  /* initialSubject (HOTFIX-009-1): the sidebar's own "is-active" state
+     must reflect whichever subject the page actually opened with (e.g.
+     arriving from a Home card click), not always hardcode "全部科目" as
+     active while a specific subject's items are already the ones shown. */
+  function subjectPanel(data, onPick, initialSubject) {
     var buttons = [];
     function makeBtn(id, label, count, isAll) {
       var subj = isAll ? null : AHS.Subjects[id];
+      var isActive = initialSubject ? id === initialSubject : isAll;
       var row = el("button", {
         type: "button",
-        class: "subj-filter__item" + (isAll ? " is-active" : ""),
+        class: "subj-filter__item" + (isActive ? " is-active" : ""),
         "data-id": id
       }, [
         subj
@@ -119,25 +124,50 @@ AHS.MaterialCenter = (function () {
   /* ---- Chapter filter panel (MAT-F003) --------------------------------- */
   /* Chapters shown depend on the currently selected subject; "全部章節"
      resets to showing every chapter under that subject scope. */
+  /* Returns [{ chapter, subject }], deduped by the raw chapter text
+     (first matching item's subject wins — matches this function's
+     pre-existing dedup behavior, only the return shape changed). */
   function chaptersForSubject(data, subjectId) {
     var chapters = [];
+    var seen = {};
     data.items.forEach(function (item) {
       var inScope = subjectId === "all" || item.subject === subjectId;
-      if (inScope && chapters.indexOf(item.chapter) === -1) {
-        chapters.push(item.chapter);
+      if (inScope && !seen[item.chapter]) {
+        seen[item.chapter] = true;
+        chapters.push({ chapter: item.chapter, subject: item.subject });
       }
     });
     return chapters;
   }
 
+  /* HOTFIX-009-4: raw chapter text is often a full descriptive sentence
+     (e.g. "第二冊 第4章 4-1~4-3（三角函數的性質：正弦定理、餘弦定理、
+     三角形面積公式）") — unreadable as a sidebar filter label, and with
+     "全部科目" selected, multiple subjects' chapters were listed with no
+     indication which subject each belonged to. shortenChapterLabel()
+     only extracts real substrings already present in the chapter text
+     (head before the first parenthesis + the first "："/"、"-delimited
+     phrase inside it) — never invents wording — and callers keep the
+     full raw text as a title tooltip so nothing is actually lost. */
+  function shortenChapterLabel(raw) {
+    var text = String(raw || "");
+    var match = text.match(/^([^（(]*)[（(]([^）)]*)\)?）?/);
+    if (!match) { return cap(text, 18); }
+    var head = cap(match[1].trim(), 16);
+    var keyword = match[2].split(/[：:、]/)[0].trim();
+    return keyword ? head + "・" + cap(keyword, 12) : head;
+  }
+  function cap(s, max) { return s.length > max ? s.slice(0, max) + "…" : s; }
+
   function chapterPanel(data, subjectId, onPick) {
     var buttons = [];
-    function makeBtn(id, label, isAll) {
+    function makeBtn(id, label, isAll, fullText) {
       var btn = el("button", {
         type: "button",
         class: "chapter-filter__item" + (isAll ? " is-active" : ""),
         "data-chapter-id": id
       }, [el("span", { text: label })]);
+      if (fullText && fullText !== label) { btn.setAttribute("title", fullText); }
       btn.addEventListener("click", function () {
         buttons.forEach(function (b) { b.classList.remove("is-active"); });
         btn.classList.add("is-active");
@@ -149,7 +179,14 @@ AHS.MaterialCenter = (function () {
 
     var list = el("div", { class: "chapter-filter__list" }, [makeBtn("all", "全部章節", true)]);
     chaptersForSubject(data, subjectId).forEach(function (c) {
-      list.appendChild(makeBtn(c, c, false));
+      /* Subject prefix only makes sense in the mixed "全部科目" view —
+         once a single subject is already selected, every chapter shown
+         already belongs to it, so the prefix would be redundant. */
+      var short = shortenChapterLabel(c.chapter);
+      var label = subjectId === "all" && AHS.Subjects[c.subject]
+        ? AHS.Subjects[c.subject].name + "｜" + short
+        : short;
+      list.appendChild(makeBtn(c.chapter, label, false, c.chapter));
     });
 
     return el("div", { class: "chapter-filter", "aria-label": "章節篩選" }, [
@@ -266,7 +303,14 @@ AHS.MaterialCenter = (function () {
      kept only as Developer Seed Data for other modules. `data` below is
      used ONLY for static config still sourced from seed (title/subtitle,
      subjectCounts labels, grades, sorts) — never for the item list. */
-  function create() {
+  /* opts.initialSubject (HOTFIX-009-1): pre-select a subject on open —
+     e.g. arriving here via a Home material card so the page lands on
+     that subject instead of forcing a manual reselect. Only honored
+     when it's a real, known subject key; anything else falls back to
+     "all", same as before this option existed. */
+  function create(opts) {
+    opts = opts || {};
+    var initialSubject = (opts.initialSubject && AHS.Subjects[opts.initialSubject]) ? opts.initialSubject : "all";
     var seed = AHS.AppConfig.materials; /* 正式 UI config：標籤/選項，零模擬資料。 */
     /* EO-S7.0-003: per-subject counts are REAL — derived live from
        MaterialRuntime, never faked (the old Mock 128/156… numbers are
@@ -297,7 +341,7 @@ AHS.MaterialCenter = (function () {
     var theGrid = AHS.MaterialGrid.create([], status, {});
     var emptyState = el("div", { class: "mat-grid__empty-slot", hidden: "hidden" });
 
-    var currentSubject = "all";
+    var currentSubject = initialSubject;
     var currentChapter = "all";
     var currentFilter = { subject: "all", grade: "all", status: "all" };
     var currentSort = "newest";
@@ -1017,7 +1061,7 @@ AHS.MaterialCenter = (function () {
 
     function setView(mode) { theGrid.setAttribute("data-view", mode); }
 
-    var subjPanelEl = subjectPanel(seed, onSubjectPick);
+    var subjPanelEl = subjectPanel(seed, onSubjectPick, currentSubject);
     renderChapterPanel();
     subjPanelEl.appendChild(chapterSlot);
     renderFolders();
