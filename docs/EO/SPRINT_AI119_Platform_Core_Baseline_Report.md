@@ -34,9 +34,9 @@ LOCK。
 | 既有 5 個 jsdom/Node 迴歸套件（Sprint AI-118 前既存） | PASS（330/6/29/37/35/42，零個別測試改寫） |
 | Verify | PASS |
 | QA Dashboard | PASS |
-| GitHub Actions | _(填入合併後之 run)_ |
-| Deployment | _(填入合併後之 run)_ |
-| Merge Commit | _(填入合併後之 commit)_ |
+| GitHub Actions | PASS（`QA Automation Framework` run [31002075489](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31002075489)，commit `7ceb2cdb`） |
+| Deployment | PASS（GitHub Pages `pages build and deployment` run [31002075012](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31002075012)，commit `7ceb2cdb`） |
+| Merge Commit | `7ceb2cdb921cb12abc7ea9255df7b2785f1e3b85`（PR #49，merged into `main`） |
 
 ## Detail per item
 
