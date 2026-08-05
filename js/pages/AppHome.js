@@ -75,68 +75,6 @@ window.AHS = window.AHS || {};
     return { title: "今日任務", items: items };
   }
 
-  function buildStudyStatsModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return undefined; }
-    var items = AHS.MaterialRuntime.list();
-    if (!items.length) { return undefined; }
-
-    var bySubject = {};
-    var totalMinutes = 0;
-    items.forEach(function (m) {
-      var minutes = typeof m.learningTime === "number" ? m.learningTime : 0;
-      totalMinutes += minutes;
-      bySubject[m.subject] = (bySubject[m.subject] || 0) + minutes;
-    });
-    var bars = Object.keys(bySubject).map(function (subj) {
-      return { subject: subj, hours: Math.round((bySubject[subj] / 60) * 10) / 10 };
-    });
-    if (!bars.length) { bars = [{ subject: items[0].subject, hours: 0 }]; }
-
-    return {
-      title: "學習統計",
-      rangeLabel: "本次 Session",
-      totalHours: Math.round((totalMinutes / 60) * 10) / 10,
-      deltaHours: 0, /* no historical baseline exists to compare against — honestly 0, never fabricated */
-      bars: bars
-    };
-  }
-
-  /* Sprint 6.6 · GitHub QA Fix (WO-001) 今日學習: real computation from
-     AHS.MaterialRuntime — sums learningTime (minutes) for materials
-     whose lastLearningAt falls on today's calendar date. Honestly 0
-     whenever nothing has called MaterialRuntime.startLearning() yet
-     (currently always, since no page wires that call — see Known
-     Issues), never fabricated. */
-  function buildTodayMinutesModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return { todayMinutes: 0 }; }
-    var now = new Date();
-    var minutes = 0;
-    AHS.MaterialRuntime.list().forEach(function (m) {
-      if (!m.lastLearningAt) { return; }
-      var d = new Date(m.lastLearningAt);
-      if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()) {
-        minutes += (typeof m.learningTime === "number" ? m.learningTime : 0);
-      }
-    });
-    return { todayMinutes: minutes };
-  }
-
-  function buildContinueLearningModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return {}; }
-    var items = AHS.MaterialRuntime.list().filter(function (m) { return !!m.lastLearningAt; });
-    if (!items.length) { return {}; } /* nothing has called startLearning() yet — honest empty, ContinueLearning.js shows "尚無學習紀錄" */
-
-    var latest = items.sort(function (a, b) { return new Date(b.lastLearningAt) - new Date(a.lastLearningAt); })[0];
-    var subj = AHS.Subjects[latest.subject];
-    return {
-      subject: subj ? subj.name : latest.subject,
-      chapter: latest.chapter,
-      lesson: latest.title,
-      progress: latest.progress,
-      materialId: latest.id
-    };
-  }
-
   /* Sprint AI-111 AI-611/AI-612: AiTutorHomeCard.create(model) already
      had a real-data path (see that file's own header — "requires a real
      model... with none supplied it shows the mandated Empty State") that
@@ -202,28 +140,31 @@ window.AHS = window.AHS || {};
 
     var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
-    /* Main column (left): hero, recent materials, then 學習統計 | 學習計畫
-       side by side. Right rail: 今日任務, AI 巧巧老師, 成就勳章.
-       Two independent vertical stacks — matches the approved mockup and
-       keeps card heights from coupling across columns. */
+    /* Sprint AI-118 AI-118-10 · Home 重新整理: "今天要做什麼" — exactly 5
+       content widgets, no duplicate info/stats/materials. Main column:
+       hero (page chrome/greeting, not a content widget — kept), 最近教材,
+       教材完成度 (folded in from 我的學習's 科目進度, AI-118-02). Right
+       rail: 今日任務, 待複習 (ReviewWidget, unchanged name/source), AI
+       Tutor. Removed from Home this Sprint: 學習統計/學習計畫/成就勳章/
+       今日學習時間/繼續學習 — each either duplicated 最近教材/今日任務's
+       own information in a different framing, or (成就勳章) was already
+       an Empty-State-only stub. Not deleted from the codebase (still
+       real files, still loaded on no other page than the one that used
+       them) — a conservative choice per the Sprint AI-118 report, since
+       deleting source files is outside "僅重構：使用流程/Navigation/UX/
+       Page Responsibility/CTA" scope. */
     var main = el("div", { class: "home__main" }, [
       hero,
       AHS.HomeRecentMaterials.create(buildRecentMaterialsModel()),
-      el("div", { class: "home__statsplan" }, [
-        AHS.StudyStats.create(buildStudyStatsModel()),
-        AHS.StudyPlan.create()
-      ])
-    ]);
+      (AHS.MaterialCompletionOverview ? AHS.MaterialCompletionOverview.create() : null)
+    ].filter(Boolean));
 
     var rail = el("div", { class: "home__rail" }, [
       AHS.TodayMission.create(buildTodayMissionModel()),
       /* EO-S7.0-003 · Review Widget：今日待複習/已完成/總錯題/Mastery
          Progress，資料全部來自 AHS.ReviewModel（唯讀查詢層）。 */
       (AHS.ReviewWidget ? AHS.ReviewWidget.create() : null),
-      AHS.AiTutorHomeCard.create(buildAiTutorModel()),
-      AHS.AchievementBadges.create(),
-      AHS.LearningTime.create(buildTodayMinutesModel()),
-      AHS.ContinueLearning.create(buildContinueLearningModel())
+      AHS.AiTutorHomeCard.create(buildAiTutorModel())
     ].filter(Boolean));
 
     return el("div", { class: "home" }, [main, rail]);

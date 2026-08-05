@@ -105,35 +105,44 @@ AHS.AppConfig = {
     resources: []       /* 假檔案清單已移除 */
   },
 
+  /* Sprint AI-118 AI-118-01/AI-118-09 · Learning Experience (LX) Refactor:
+     Navigation reordered to match the real Learning Loop —
+     首頁→教材中心→學習總結→測驗中心→錯題本→首頁 — with AI Tutor/設定/登出
+     after it (設定/登出 are rendered as separate Sidebar buttons in
+     AppShell.js's sidebar(), not part of this items array — this list
+     only covers the Loop + AI Tutor).
+     "複習中心"/"我的學習" removed from Navigation per AI-118-02/AI-118-03:
+     - review.html itself, its Runtime, and its Review Session flow are
+       all still fully intact and reachable by direct URL — only the Nav
+       entry is gone, and every entry point into "review" now goes
+       through 錯題本 instead (AI-118-03's "所有入口整併：錯題本").
+     - learning.html (我的學習) is also still intact and reachable by
+       direct URL; its real, non-duplicate content (科目進度／教材完成度)
+       was folded into Home (AI-118-02/AI-118-10) instead of deleting the
+       page outright — a conservative choice flagged in the Sprint AI-118
+       report, since the spec's own explicit "Page 保留" carve-out is
+       stated only for 複習中心 (AI-118-03), not learning.html. */
   nav: {
     active: "home",
     items: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材中心", icon: "book" },
+      { id: "summary", label: "學習總結", icon: "summary" },
       { id: "quiz", label: "測驗中心", icon: "quiz" },
       { id: "wrongbook", label: "錯題本", icon: "wrong" },
-      { id: "summary", label: "學習總結", icon: "summary" },
-      { id: "review", label: "複習中心", icon: "clock" },
-      { id: "learning", label: "我的學習", icon: "learning" },
       { id: "tutor", label: "AI Tutor", icon: "tutor" }
     ],
-    /* Platform Refactor Master (Platform Integration): "我的" previously
-       routed to id "dashboard" (dashboard.html) — a page already dropped
-       from the Sidebar by EO-S5-002 (comment above the old Sidebar items
-       list explains: 新 IA 未列出「儀表板」) because 我的學習 (learning.html)
-       is the real, Runtime-backed replacement. The Sidebar was updated at
-       the time; this Bottom Navigation entry was missed, so mobile users'
-       only "my stats" destination stayed on the deprioritized page while
-       desktop users already got the fuller, real one. Fixed to match the
-       Sidebar's own already-established precedent — no new destination
-       introduced, dashboard.html itself is untouched and still reachable
-       by direct URL. */
+    /* Bottom Navigation stays capped at 5 slots (this repo's own existing
+       mobile-nav convention, unchanged by this Sprint) — AI Tutor is
+       reachable from the Sidebar/every page's own real entry points
+       (TutorContextTip) even though it doesn't get one of the 5 bottom
+       slots; a judgment call, flagged rather than silently decided. */
     bottomItems: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材", icon: "book" },
+      { id: "summary", label: "總結", icon: "summary" },
       { id: "quiz", label: "測驗", icon: "quiz" },
-      { id: "review", label: "複習", icon: "clock" },
-      { id: "learning", label: "我的", icon: "learning" }
+      { id: "wrongbook", label: "錯題", icon: "wrong" }
     ]
   },
 

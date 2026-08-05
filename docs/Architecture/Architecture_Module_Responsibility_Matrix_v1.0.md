@@ -56,3 +56,48 @@ Sprint AI-114 建立了複習中心的真實 Review Session（AI-901）後，重
 `js/components/QuizCenter.js`（最高分／進度／正確率）與 `js/pages/AppReview.js`（今日完成／
 本週完成）各自的重複計算，8 個模組的「資訊沒有衝突」（AI-907 自身要求）因此有更強的技術
 保證，而非僅止於人工核對。
+
+## Sprint AI-118 更新 — Learning Experience (LX) Refactor（Platform UX Baseline v2.0）
+
+Sprint AI-118 的 Objective 明確排除「模組整併」的討論範圍（LOCK：不修改 Runtime／
+Repository／Learning Analytics），本次調整的是**使用流程與 Navigation**，因此上表 8 個模組
+「彼此無功能完全重疊」的結論本身不變；改變的是使用者「從哪裡進入」與「用什麼順序走過」
+這些模組。逐項更新如下：
+
+- **新 Learning Flow（AI-118-01）**：首頁 → 教材中心 → 學習總結 → 測驗中心 → 錯題本 →
+  首頁，形成一個完整 Loop（取代舊版「首頁→教材中心→學習總結→複習中心→測驗中心→
+  錯題本」）。
+- **我的學習（learning.html）— 移出 Navigation（AI-118-02）**：頁面與其 Runtime 讀取
+  （`StatisticsRuntime`／`MaterialRuntime`／`LearningStateRuntime`）維持不變（LOCK），但不再是
+  獨立導覽入口；其「今天要做什麼」相關內容（最近教材／今日任務／學習統計／教材完成度／
+  AI Tutor 建議）整併進首頁本身的區塊組成，首頁因此從「摘要入口」變成「唯一的每日入口」。
+  上表「我的學習 vs 首頁」欄位描述的「兩者刻意保留不同深度」在 Navigation 層級不再適用 ——
+  但這是**入口精簡**，不是**模組整併**：`learning.html` 本身、其 Runtime 讀取邏輯、其 6 大區塊
+  一律保留，只是不再出現在 Sidebar／Bottom Nav。
+- **複習中心（review.html）— 移出 Navigation（AI-118-03）**：同上，頁面與
+  `AHS.ReviewRuntime`／`AHS.ReviewSession`（Sprint AI-114 建立的真實 Session）依 LOCK 完整
+  保留，僅移除導覽入口；上表原本「複習中心負責今日待辦導向的複習流程，錯題本負責瀏覽
+  全部錯題」的職責切分，其入口現在唯一整併到**錯題本**（AI-118-07：錯題本新增「今日待複習」
+  單一統計，直接讀 `AHS.StatisticsRuntime.dueForReview()`，取代原本複習中心自算的待辦計數）。
+- **學習總結（summary.html）CTA 收斂（AI-118-04/05）**：教材中心卡片的「查看摘要」改稱
+  「前往學習總結」且不得直接展開內容（維持「唯一呈現教材內容整理」的職責不變，只是不能
+  被繞過）；學習總結頁移除「前往正式測驗」CTA，改為「前往考前練習」／「前往錯題本」，
+  使其在 Loop 中的位置更明確地夾在教材中心與測驗中心之間。
+- **測驗中心兩種模式重新標籤（AI-118-06）**：`quiz.html` 原有的 Practice/Exam 分離（LOCK，見
+  上表第 3 列）UI 標籤改為「考前練習」／「正式測驗」，資料模型與批改邏輯不變。**已知的
+  Loop 純度落差（供 Project Owner 判斷）**：教材卡片自身的「前往考前練習」CTA 因既有實作
+  （`directExamId` 優先於 `mode=practice`）實際仍會經由 `AHS.ExamRuntime.startFromExam()`
+  這條「正式測驗」批改管線，而非 `AHS.LearningQuestionRuntime` 的真練習管線 —— 詳見對應
+  EO Report 的「判斷與取捨」章節，本次未依 LOCK 動 Runtime 修正，僅誠實揭露。
+- **AI Tutor 推薦流程（AI-118-08）**：`AHS.TutorMessage.build()`（本表原文所述「單一定義」）
+  的每個 `actions` 項目新增真實 `href`，固定指向 教材中心→學習總結→考前練習→正式測驗→
+  錯題本→（再次）教材中心 這條路徑上的實際頁面，不再是無連結的純文字建議 —— 沿用、未
+  新增新的訊息產生邏輯，僅補上導向。
+- **Navigation 順序（AI-118-09）**：`AHS.AppConfig.nav.items` 改為
+  首頁／教材中心／學習總結／測驗中心／錯題本／AI Tutor／設定／登出（6 個功能入口 + 設定
+  + 登出），`nav.bottomItems` 改為首頁／教材／總結／測驗／錯題（5 項）——「我的學習」
+  「複習中心」兩個入口從兩處導覽同時移除，其餘 6 個模組彼此的職責邊界（上表主體）不受影響。
+
+**結論延續**：8 個模組「無功能完全重疊」的判定標準與結果不變；本次是 Navigation／Loop／CTA
+層級的入口精簡，不是模組整併，`learning.html`／`review.html` 兩頁與其 Runtime 依 Sprint AI-118
+的 LOCK 條款完整保留，僅導覽入口收斂。

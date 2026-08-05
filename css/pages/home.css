@@ -16,12 +16,25 @@
   gap: 18px;
   min-width: 0;
 }
-.home__statsplan {
+/* ---- Material Completion Overview (Sprint AI-118 AI-118-02/AI-118-10)
+   教材完成度 — same visual pattern as learning.html's own 科目進度
+   (css/pages/learning.css's .ml-progress__*), redeclared here rather
+   than reused across pages per this repo's own CSS architecture rule
+   ("pages/ 一頁一檔，不得跨頁混用"). No new Design Token — reuses
+   .progressbar/.progressbar__fill (already shared) plus existing
+   tokens only. */
+.home-completion__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 18px;
-  align-items: start;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
+.home-completion__item { display: flex; flex-direction: column; gap: 6px; }
+.home-completion__top { display: flex; align-items: center; gap: 6px; }
+.home-completion__dot { width: 10px; height: 10px; border-radius: var(--radius-pill); flex: 0 0 auto; }
+.home-completion__name { flex: 1 1 auto; font-size: 14px; font-weight: 700; }
+.home-completion__pct { font-size: 14px; font-weight: 800; }
+.home-completion__status { font-size: 11px; color: var(--text-faint); }
+.home-completion__empty { margin: 0; font-size: 13px; color: var(--text-faint); }
 
 /* ---- Hero ------------------------------------------------------------ */
 .hero-card {
@@ -314,6 +327,11 @@
   cursor: pointer;
   text-align: center;
   font: inherit;
+  /* Sprint AI-118 AI-118-08: this tile can now be a real <a href> —
+     neutralize the browser's default anchor color/underline so it keeps
+     looking exactly like the existing button-styled tile. */
+  color: inherit;
+  text-decoration: none;
 }
 .tutor-card__tile:hover { background-color: var(--bg); }
 .tutor-card__tile-icon { color: var(--brand); }

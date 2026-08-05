@@ -120,10 +120,12 @@ AHS.WrongBook = (function () {
       return b;
     }
 
-    var reviewBtn = actionBtn("wb-action--primary", "refresh", "全部重新複習", function () {
+    /* Sprint AI-118 AI-118-07: 全部重新複習/我的最愛 relabeled 全部重新練習/
+       收藏 — matches the spec's own wording exactly; behavior unchanged. */
+    var reviewBtn = actionBtn("wb-action--primary", "refresh", "全部重新練習", function () {
       if (handlers.onReviewAll) { handlers.onReviewAll(); }
     });
-    var favBtn = actionBtn("wb-action--ghost", "heart", "我的最愛", function (btnEl) {
+    var favBtn = actionBtn("wb-action--ghost", "heart", "收藏", function (btnEl) {
       if (handlers.onToggleFavoriteMode) { handlers.onToggleFavoriteMode(btnEl); }
     });
     var exportBtn = actionBtn("wb-action--ghost", "download", "錯題匯出", function () {
@@ -201,29 +203,31 @@ AHS.WrongBook = (function () {
     downloadFile("wrongbook_export.csv", "\uFEFF" + payload.csv, "text/csv;charset=utf-8;");
   }
 
-  /* ---- Summary Card (W001-1, updated WS-001, Sprint AI-114 AI-902) -------
-     Reads from AHS.WrongBookRuntime — no Runtime schema change involved.
-     "今日待複習" (Today's Review queue) is 複習中心's own concept (AI-901's
-     real Review Session), not WrongBook's — showing it here (previously
-     hard-coded to a fake 0) conflated the two per AI-902's own explicit
-     "不得混入今日複習" rule. Replaced with "尚未精熟" — WrongBook's own
-     real, relevant count (same getMasteryStatus() rule already used for
-     the per-row status tag, not a second definition). "已精熟" stays
-     real, computed from getMasteryStatus(). */
+  /* ---- Summary Card (W001-1, updated WS-001/AI-902, reworked Sprint
+     AI-118 AI-118-07) --------------------------------------------------
+     複習中心's Navigation entry is gone this Sprint (AI-118-03: "所有入口
+     整併：錯題本") — 錯題本 is now the single place "今日待複習" is
+     reachable from, so AI-902's old "不得混入今日複習" separation no
+     longer applies (there is no second page left to conflict with).
+     "移除所有重複統計。所有統計：StatisticsRuntime" — the 4-stat block
+     (全部錯題/尚未精熟/已精熟/我的收藏) is replaced with the one real
+     stat AI-118-07 actually asks WrongBook to show, computed via
+     AHS.StatisticsRuntime.dueForReview() (LOCKed this Sprint — read
+     only, same single Source every other page already uses) rather than
+     a second local computation; falls back to the exact same real rule
+     (correctStreak < 3) only when StatisticsRuntime genuinely isn't
+     loaded on a given page, matching this file's own defensive
+     convention elsewhere. 全部重新練習/收藏 are the Header's own real
+     action buttons (headerBlock, above) — not a second stat tile here. */
   var SUMMARY_DEFS = [
-    { key: "total", icon: "wrong", label: "全部錯題" },
-    { key: "notMastered", icon: "clock", label: "尚未精熟" },
-    { key: "mastered", icon: "award", label: "已精熟" },
-    { key: "favorite", icon: "heart", label: "我的收藏" }
+    { key: "dueToday", icon: "clock", label: "今日待複習" }
   ];
 
   function summaryCounts(items) {
-    return {
-      total: items.length,
-      notMastered: items.filter(function (i) { return getMasteryStatus(i.correctStreak) !== "已精熟"; }).length,
-      mastered: items.filter(function (i) { return getMasteryStatus(i.correctStreak) === "已精熟"; }).length,
-      favorite: items.filter(function (i) { return i.bookmarked; }).length
-    };
+    var dueToday = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.dueForReview === "function")
+      ? AHS.StatisticsRuntime.dueForReview().length
+      : items.filter(function (i) { return (i.correctStreak || 0) < 3; }).length;
+    return { dueToday: dueToday };
   }
 
   function summaryCard(items) {

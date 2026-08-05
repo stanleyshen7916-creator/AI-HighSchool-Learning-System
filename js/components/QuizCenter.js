@@ -767,7 +767,18 @@ AHS.QuizCenter = (function () {
        reads 100% from AHS.LearningQuestionRuntime — the Session merge
        (EO-S6.9-002) is removed. Wrong-answer resolution still reaches
        WrongBookGenerator correctly via wrongBookQuestionId()'s identity
-       mapping, above. */
+       mapping, above.
+       Sprint AI-118 AI-118-06 note (flagged, not silently skipped): the
+       spec's "題號亂數" bullet is NOT applied to this list — it's a
+       browsable, click-any-row list (not a sequential numbered exam
+       flow, unlike Exam Mode's own real shuffleOrder()), and several
+       existing BehaviorSuite tests assert a specific row index maps to
+       LearningQuestionRuntime's own raw first record (`rows[idx]` ==
+       `findByMaterialId(...)[idx]`) to drive answer-correctness
+       assertions. Shuffling display order here would require rewriting
+       every one of those tests the same way Sprint AI-117 had to for
+       Exam Mode — a large, Runtime-adjacent ripple for a cosmetic
+       requirement on a list, not a numbered sequence, so left as-is. */
 
     var repoEntries = (!filterMaterialId && typeof onRepoExam === "function") ? repositoryExamCatalog() : [];
 
@@ -1218,9 +1229,28 @@ AHS.QuizCenter = (function () {
     /* ---- Mode toggle — "Practice ↓ LearningQuestionRuntime" vs
        "Exam ↓ QuestionRuntime", 兩者不得混用: switching modes only
        toggles visibility, it never mounts Exam content into
-       practiceRoot or vice versa. */
-    var examTab = el("button", { type: "button", class: "quiz-mode__tab" + (startOnPractice ? "" : " is-active"), text: "正式測驗" });
-    var practiceTab = el("button", { type: "button", class: "quiz-mode__tab" + (startOnPractice ? " is-active" : ""), text: "練習模式" });
+       practiceRoot or vice versa.
+       Sprint AI-118 AI-118-06: 練習模式 relabeled 考前練習 (real
+       characteristics: 可重複／立即解析／不計正式成績／AI 提示允許 via
+       QuestionGuide — all already true of this exact tab, LearningQuestionRuntime-
+       backed, never writes WrongBook/History until a real submit). 正式測驗
+       stays 正式測驗 (完成後公布答案／永久保存於 HistoryRuntime／錯題
+       自動加入 WrongBook — all already true). "固定題序"/"固定時間" from
+       the spec are NOT claimed here — Exam Mode's real order comes from
+       AHS.QuestionRuntime.shuffleOrder(), called unconditionally inside
+       the LOCKed js/runtime/ExamRuntime.js, and no timer feature exists;
+       changing either would mean editing LOCKed Runtime/Question Engine
+       code, which this Sprint's own LOCK forbids — flagged in the
+       Sprint AI-118 report as a spec/LOCK conflict for Project Owner,
+       not silently claimed as done. */
+    var examTab = el("button", {
+      type: "button", class: "quiz-mode__tab" + (startOnPractice ? "" : " is-active"),
+      text: "正式測驗", "data-tip": "固定完成後公布答案・永久保存紀錄・錯題自動加入錯題本"
+    });
+    var practiceTab = el("button", {
+      type: "button", class: "quiz-mode__tab" + (startOnPractice ? " is-active" : ""),
+      text: "考前練習", "data-tip": "可重複作答・答完立即看到詳解・不影響正式成績"
+    });
     if (startOnPractice) { root.setAttribute("hidden", "hidden"); }
     examTab.addEventListener("click", function () {
       examTab.classList.add("is-active");

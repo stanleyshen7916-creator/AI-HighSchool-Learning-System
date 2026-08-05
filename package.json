@@ -4,7 +4,7 @@
   "private": true,
   "description": "AI High School Learning System - static prototype (HTML/CSS/JS, Mock Data, no backend)",
   "scripts": {
-    "test": "node tests/jsdom/BehaviorSuite.js && node tests/regression/PipelineRegression.js && node tests/regression/RepositoryFoundation.js && node tests/regression/MaterialPipelineRegression.js && node tests/regression/AnalyticsRegression.js",
+    "test": "node tests/jsdom/BehaviorSuite.js && node tests/regression/PipelineRegression.js && node tests/regression/RepositoryFoundation.js && node tests/regression/MaterialPipelineRegression.js && node tests/regression/AnalyticsRegression.js && node tests/regression/LearningFlowRegression.js",
     "verify": "node scripts/verify/VerifyPaths.js && node scripts/verify/VerifyForbiddenPatterns.js",
     "validate:html": "node tests/validator/HtmlValidator.js",
     "test:e2e": "playwright test --config=playwright/config/playwright.config.js",

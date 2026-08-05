@@ -271,7 +271,7 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
      開啟為正式 Empty State when genuinely no Repository material exists. */
   check("Exam Mode 正式 Empty State（無 Repository 資料時，預設題庫已移除）",
     doc.querySelectorAll(".quiz-row").length === 0 && /目前沒有可用的測驗/.test(doc.body.textContent));
-  const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
+  const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前練習");
   practiceTab.click();
   check("Practice tab (no materialId, no Repository data) skips guide, stub filtered → Empty State",
     !doc.querySelector(".qguide") && !!doc.querySelector(".quiz-practice__empty"));
@@ -1179,7 +1179,7 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
   const p2 = loadPage("quiz.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc2 = p2.window.document;
   doc2.body.appendChild(p2.window.AHS.QuizCenter.create());
-  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
+  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前練習");
   practiceTab.click();
   check("練習模式：Repository 教材也直接出現（不需 materialId 帶入）",
     /Repository 教材/.test(doc2.body.textContent) && (/私有財產權|所有權/.test(doc2.body.textContent)));
@@ -1534,12 +1534,19 @@ console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/
     !!recentCard && recentCard.textContent.includes("教材完成度") && !recentCard.textContent.includes("學習進度"));
   check("Console errors = 0（首頁最近教材）", consoleErrors.length === 0);
 
-  /* PAT 12: Bottom Navigation「我的」過去指向 dashboard.html（已於 EO-S5-002
-     被 Sidebar 淘汰的頁面），Sidebar 當時已改連到 learning.html（我的學習），
-     但 Bottom Navigation 沒有同步更新。修正為與 Sidebar 一致的真實目的地。 */
-  const bottomMe = [...doc.querySelectorAll(".bottom-nav__item")].find(n => n.textContent.includes("我的"));
-  check("Bottom Navigation「我的」導向 learning.html（與 Sidebar 一致，非已淘汰的 dashboard.html）",
-    !!bottomMe && bottomMe.getAttribute("href") === "learning.html");
+  /* Sprint AI-118 AI-118-09: Bottom Navigation reordered/trimmed to match
+     the new Sidebar (首頁/教材中心/學習總結/測驗中心/錯題本) — "我的"/
+     "複習" (learning.html/review.html) removed from both Nav lists;
+     those pages themselves still exist and are reachable by direct URL
+     (AI-118-02/AI-118-03), only the Nav entry is gone. Supersedes the
+     old PAT 12 check above (Bottom Nav「我的」→ learning.html), which no
+     longer applies since there is no "我的" Bottom Nav item at all. */
+  const bottomLabels = [...doc.querySelectorAll(".bottom-nav__item")].map(n => n.textContent.trim());
+  check("Bottom Navigation 不再有「我的」／「複習」項目",
+    !bottomLabels.some(t => t.includes("我的")) && !bottomLabels.some(t => t.includes("複習") && t !== "錯題"));
+  const bottomHrefs = [...doc.querySelectorAll(".bottom-nav__item")].map(n => n.getAttribute("href")).filter(Boolean);
+  check("Bottom Navigation 不再連向 learning.html／review.html",
+    !bottomHrefs.includes("learning.html") && !bottomHrefs.includes("review.html"));
 }
 
 console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10：教材/學習總結/測驗中心/錯題本/複習中心共用同一 Tutor Context）");
@@ -1724,12 +1731,15 @@ console.log("\n[41] Sprint AI-114 AI-902 — WrongBook 全部重新複習只包�
   };
   const { window } = loadPage("wrongbook.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
   const doc = window.document;
+  /* Sprint AI-118 AI-118-07: 複習中心 Navigation 移除後「今日待複習」改由
+     錯題本自己顯示（同一條 correctStreak < 3 規則，經
+     AHS.StatisticsRuntime.dueForReview() 讀取，非第二套計算）。 */
   const summaryValues = [...doc.querySelectorAll(".wb-summary__item")];
-  const notMasteredItem = summaryValues.find(n => n.textContent.includes("尚未精熟"));
-  check("錯題本統計卡顯示真實「尚未精熟」（非先前固定為 0 的「今日待複習」）",
-    !!notMasteredItem && notMasteredItem.querySelector(".wb-summary__value").textContent === "1");
+  const dueTodayItem = summaryValues.find(n => n.textContent.includes("今日待複習"));
+  check("錯題本統計卡顯示真實「今日待複習」（經 StatisticsRuntime.dueForReview()）",
+    !!dueTodayItem && dueTodayItem.querySelector(".wb-summary__value").textContent === "1");
 
-  const reviewAllBtn = [...doc.querySelectorAll(".wb-action")].find(b => b.textContent.includes("全部重新複習"));
+  const reviewAllBtn = [...doc.querySelectorAll(".wb-action")].find(b => b.textContent.includes("全部重新練習"));
   reviewAllBtn.click();
   const sessionBody = doc.querySelector(".wb-review-session__progress");
   check("全部重新複習只納入尚未精熟項目（1 題，已精熟的另一題被排除）",
