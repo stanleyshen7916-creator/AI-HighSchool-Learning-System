@@ -41,9 +41,9 @@ Sprint 後續 LOCK。
 | 既有 12 個 Node 迴歸套件 | PASS（2 個測試因「教材完成度→學習成效總覽」「錯題本→知識弱點」更名同步更新，非回歸） |
 | Verify | PASS |
 | QA Dashboard | PASS（14 個 Node 套件 + Playwright，Overall PASS） |
-| GitHub Actions | 待補（merge 後回填，見下方 Acceptance） |
-| Deployment | 待補（merge 後回填） |
-| Merge Commit | 待補（merge 後回填） |
+| GitHub Actions | PASS（`QA Automation Framework` run [31018566490](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31018566490)，commit `4895cdcc`） |
+| Deployment | PASS（GitHub Pages `pages build and deployment` run [31018561637](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31018561637)，commit `4895cdcc`） |
+| Merge Commit | `4895cdcc9d1197344c4f2a662e6a1c45765078dd`（PR #53，merged into `main`） |
 
 ## Home KPI 欄位對照（AI-121-19）
 
@@ -243,8 +243,8 @@ Analytics` 的既有規則（Sprint AI-117 AI-117-07 LOCK）持續遵守：
 - [x] `npm test`：PASS（13 個 Node 套件全綠，含新增 KnowledgeEngineRegression 44/44）
 - [x] `npx playwright test`：PASS（37/37，含新增 knowledge-engine.spec.js 5/5，重複執行 6+ 次穩定不 flaky）
 - [x] `npm run qa:dashboard --run-playwright`：Overall PASS
-- [ ] GitHub Actions（`QA Automation Framework`）：待 merge 後回填
-- [ ] GitHub Pages Deployment：待 merge 後回填
-- [ ] Merge Commit：待 merge 後回填
+- [x] GitHub Actions（`QA Automation Framework`）：PASS — run [31018566490](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31018566490)
+- [x] GitHub Pages Deployment：PASS — run [31018561637](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31018561637)
+- [x] Merge Commit：`4895cdcc9d1197344c4f2a662e6a1c45765078dd`（PR #53，merged into `main`）
 
 等待 Project Owner PAT。
