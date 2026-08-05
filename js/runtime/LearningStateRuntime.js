@@ -152,7 +152,7 @@ AHS.LearningStateRuntime = (function () {
     if (freshlyWrong.length) {
       tasks.push({
         subject: freshlyWrong[0].subject,
-        title: "前往錯題本，處理尚未複習過的錯題",
+        title: "前往知識弱點，處理尚未複習過的錯題",
         done: 0, total: freshlyWrong.length, priority: 2, kind: "wrongbook"
       });
     }

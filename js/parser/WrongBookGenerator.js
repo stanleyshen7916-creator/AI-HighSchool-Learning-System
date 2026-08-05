@@ -86,7 +86,7 @@ AHS.WrongBookGenerator = (function () {
 
     if (answerKey(record.userAnswer) !== "" &&
         answerKey(record.userAnswer) === answerKey(record.correctAnswer)) {
-      errors.push("答對不得加入錯題本（userAnswer 與 correctAnswer 相同）");
+      errors.push("答對不得加入知識弱點（userAnswer 與 correctAnswer 相同）");
     }
 
     var g = AHS.LearningQuestionGenerator;

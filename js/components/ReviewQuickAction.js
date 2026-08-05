@@ -66,21 +66,39 @@ AHS.ReviewQuickAction = (function () {
        to mount js/components/ReviewSession.js) instead of navigating
        anywhere. dueToday === 0 keeps the existing button + Empty State
        copy, unchanged. */
+    /* Sprint AI-121 AI-121-06: Review Mode — a real, student-selectable
+       question count (10/20/30/50), additive to the existing "全部"
+       (undefined -> AHS.ReviewRuntime.startSession()'s own unchanged
+       full-queue default). Selecting a count never fabricates extra
+       items — AHS.ReviewRuntime.startSession(count) below only ever
+       slices the real due-review queue, so a genuinely smaller real
+       queue still honestly returns fewer than `count` items. */
+    var countSelect = el("select", {
+      class: "rv-quick__count", "aria-label": "複習題數"
+    }, ["全部", "10", "20", "30", "50"].map(function (label) {
+      return el("option", { text: label === "全部" ? "全部" : label + " 題", value: label === "全部" ? "" : label });
+    }));
+
+    function selectedCount() {
+      var raw = countSelect.value;
+      return raw ? parseInt(raw, 10) : undefined;
+    }
+
     var startBtn;
     if (model.dueToday > 0) {
       startBtn = el("button", {
         type: "button", class: "rv-quick__btn rv-quick__btn--primary"
       }, iconLabel("play", "開始今日複習"));
       startBtn.addEventListener("click", function () {
-        if (handlers.onStartToday) { handlers.onStartToday(); }
+        if (handlers.onStartToday) { handlers.onStartToday(selectedCount()); }
       });
     } else {
       startBtn = el("button", {
         type: "button", class: "rv-quick__btn rv-quick__btn--primary"
       }, iconLabel("play", "開始今日複習"));
       startBtn.addEventListener("click", function () {
-        if (handlers.onStartToday) { handlers.onStartToday(); }
-        feedback("今天沒有待複習內容。可先完成新的測驗或前往錯題本。");
+        if (handlers.onStartToday) { handlers.onStartToday(selectedCount()); }
+        feedback("今天沒有待複習內容。可先完成新的測驗或前往知識弱點。");
       });
     }
 
@@ -116,6 +134,10 @@ AHS.ReviewQuickAction = (function () {
 
     return el("section", { class: "card rv-quick", "aria-label": "快速操作" }, [
       el("h2", { class: "card__title", text: "快速操作" }),
+      el("label", { class: "rv-quick__count-label" }, [
+        el("span", { text: "複習模式題數" }),
+        countSelect
+      ]),
       el("div", { class: "rv-quick__list" }, [startBtn, wrongBtn, continueBtn]),
       status
     ]);

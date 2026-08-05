@@ -90,7 +90,7 @@ AHS.SettingsPanel = (function () {
     return el("section", { class: "settings-panel__section", "aria-label": "Learning" }, [
       el("h3", { class: "settings-panel__title", text: "Learning" }),
       el("label", { class: "settings-panel__field settings-panel__field--row" }, [
-        toggle, el("span", { text: "顯示 AI 巧巧老師建議卡片（首頁／教材中心／學習總結／測驗中心／錯題本／複習中心）" })
+        toggle, el("span", { text: "顯示 AI 巧巧老師建議卡片（首頁／教材中心／學習總結／測驗中心／知識弱點／複習中心）" })
       ]),
       status
     ]);
@@ -302,7 +302,7 @@ AHS.SettingsPanel = (function () {
 
     return el("section", { class: "settings-panel__section", "aria-label": "Backup / Restore / Export / Import" }, [
       el("h3", { class: "settings-panel__title", text: "Backup / Restore / Export / Import" }),
-      el("p", { class: "settings-panel__hint", text: "備份／還原：完整工作階段資料。匯出／匯入：僅學習紀錄（錯題本＋測驗歷史）。" }),
+      el("p", { class: "settings-panel__hint", text: "備份／還原：完整工作階段資料。匯出／匯入：僅學習紀錄（知識弱點＋測驗歷史）。" }),
       el("div", { class: "settings-panel__actions" }, [backupBtn, restoreBtn, exportBtn, importBtn]),
       restoreInput, importInput,
       status

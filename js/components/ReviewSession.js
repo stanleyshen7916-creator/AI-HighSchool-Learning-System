@@ -20,13 +20,16 @@ AHS.ReviewSession = (function () {
     ]);
   }
 
-  /* create(options) — options: { onComplete(results) }. Starts a real
-     session via AHS.ReviewRuntime.startSession() the moment this is
-     mounted (matching the AI-901 flow: 開始今日複習 -> ReviewRuntime
-     produces + starts the session immediately, no separate "confirm"
-     step this Sprint asks for). Returns null (mounts nothing) when
-     there's genuinely nothing due — caller keeps its own existing Empty
-     State/feedback message, never a fabricated session. */
+  /* create(options) — options: { onComplete(results), count }. Starts a
+     real session via AHS.ReviewRuntime.startSession(count) the moment
+     this is mounted (matching the AI-901 flow: 開始今日複習 ->
+     ReviewRuntime produces + starts the session immediately, no separate
+     "confirm" step this Sprint asks for). count (Sprint AI-121 AI-121-06
+     Review Mode, optional, additive) is passed straight through — every
+     existing caller omitting it keeps the exact prior full-queue
+     behavior. Returns null (mounts nothing) when there's genuinely
+     nothing due — caller keeps its own existing Empty State/feedback
+     message, never a fabricated session. */
   function create(options) {
     if (!el) { return null; }
     var runtime = AHS.ReviewRuntime;
@@ -34,7 +37,7 @@ AHS.ReviewSession = (function () {
     options = options || {};
 
     var container = el("div", { class: "rv-session" });
-    var initial = runtime.startSession();
+    var initial = runtime.startSession(options.count);
     if (!initial) { return null; }
 
     function renderStep(state) {

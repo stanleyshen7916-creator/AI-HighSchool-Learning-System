@@ -107,8 +107,8 @@ console.log("\n[1] Navigation — 固定順序，複習中心／我的學習已�
   const { window, consoleErrors } = loadPage("index.html", {});
   const doc = window.document;
   const sidebarLabels = [...doc.querySelectorAll(".sidebar__item")].map((n) => n.textContent.trim());
-  check("Sidebar 依序為 首頁/教材中心/學習總結/測驗中心/錯題本/AI Tutor（+設定/登出）",
-    ["首頁", "教材中心", "學習總結", "測驗中心", "錯題本", "AI Tutor"].every((label) =>
+  check("Sidebar 依序為 首頁/教材中心/學習總結/測驗中心/知識弱點/AI Tutor（+設定/登出，AI-121-08 錯題本更名）",
+    ["首頁", "教材中心", "學習總結", "測驗中心", "知識弱點", "AI Tutor"].every((label) =>
       sidebarLabels.some((t) => t.includes(label))));
   check("Sidebar 不再有「複習中心」", !sidebarLabels.some((t) => t.includes("複習中心")));
   check("Sidebar 不再有「我的學習」", !sidebarLabels.some((t) => t.includes("我的學習")));
@@ -176,8 +176,8 @@ console.log("\n[4] 學習總結 CTA — 前往考前練習／前往錯題本，�
   check("「前往考前練習」CTA 存在（原「開始 AI 練習」，連結不變）",
     !!practiceLink && practiceLink.textContent.includes("前往考前練習") &&
     practiceLink.getAttribute("href").indexOf("quiz.html?mode=practice") === 0);
-  check("「前往錯題本」CTA 存在且連向 wrongbook.html",
-    !!wrongBookLink && wrongBookLink.textContent.includes("前往錯題本") &&
+  check("「前往知識弱點」CTA 存在且連向 wrongbook.html（AI-121-08 錯題本更名）",
+    !!wrongBookLink && wrongBookLink.textContent.includes("前往知識弱點") &&
     wrongBookLink.getAttribute("href") === "wrongbook.html");
   check("不再有「前往正式測驗」CTA", !doc.body.textContent.includes("前往正式測驗"));
   check("重點整理／易錯觀念／AI Tutor 建議齊全（AI-118-05 明確要求保留）",
@@ -229,20 +229,21 @@ console.log("\n[7] AI Tutor — 首頁建議卡片的每個動作皆連向真實
   check("AI Tutor 卡片至少有一個真實建議動作（今日待複習 > 0）", tiles.length > 0);
   const hrefs = tiles.map((t) => t.getAttribute("href")).filter(Boolean);
   check("每個動作皆為真實連結，非 # 佔位符", hrefs.length > 0 && hrefs.every((h) => h && h !== "#"));
-  check("「前往錯題本」動作存在且連向 wrongbook.html（複習中心 Nav 移除後的整併入口，AI-118-03）",
-    tiles.some((t) => t.textContent.includes("前往錯題本") && t.getAttribute("href") === "wrongbook.html"));
+  check("「前往知識弱點」動作存在且連向 wrongbook.html（複習中心 Nav 移除後的整併入口，AI-118-03；AI-121-08 更名）",
+    tiles.some((t) => t.textContent.includes("前往知識弱點") && t.getAttribute("href") === "wrongbook.html"));
   check("Console errors = 0（首頁 AI Tutor）", consoleErrors.length === 0);
 }
 
 /* ---- 8. 首頁重新整理（AI-118-10）— 僅 5 個內容元件，無重複資訊 ---- */
-console.log("\n[8] 首頁重新整理 — 僅今日任務／最近教材／教材完成度／待複習／AI Tutor，無重複統計");
+console.log("\n[8] 首頁重新整理 — 僅今日任務／最近教材／學習成效總覽／待複習／AI Tutor，無重複統計");
 {
   const { window, consoleErrors } = loadPage("index.html", {
     seedSession: { "ahs:materialRuntime": materialSeed }
   });
   const doc = window.document;
   check("最近教材存在", !!doc.querySelector(".recent-card, [class*='recent-card']"));
-  check("教材完成度存在（AI-118-02：我的學習科目進度併入首頁）", !!doc.querySelector(".home-completion"));
+  check("學習成效總覽存在（AI-121-01/19：教材完成度 KPI 已由 Knowledge Mastery 等真實 Learning Outcome 指標取代）",
+    !!doc.querySelector(".home-kpi"));
   check("今日任務存在", !!doc.querySelector(".today-mission, [class*='today-mission'], [aria-label='今日任務']") ||
     doc.body.textContent.includes("今日任務"));
   check("待複習（ReviewWidget）存在", !!doc.querySelector(".review-widget"));

@@ -1,6 +1,6 @@
 /* js/ui/TutorContextTip.js — Platform Refactor Master · Platform
    Integration (PAT 8/9/10): a single, compact, read-only widget so
-   教材中心/學習總結/測驗中心/錯題本/複習中心 (not just 首頁/AI Tutor)
+   教材中心/學習總結/測驗中心/知識弱點/複習中心 (not just 首頁/AI Tutor)
    reference the exact same real Tutor Context, instead of each page
    deciding independently (or not referencing it at all).
 

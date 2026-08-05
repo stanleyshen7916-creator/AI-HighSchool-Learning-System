@@ -72,6 +72,39 @@
 .workspace-folder__link:hover { background-color: var(--brand-line); }
 .workspace-folder__empty { margin: 0; font-size: 13px; color: var(--text-faint); }
 
+/* Sprint AI-121 AI-121-01/02: per-material Learning State badge. */
+.workspace-folder__state {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  color: var(--text-faint);
+  background-color: var(--bg-muted, var(--bg));
+}
+.workspace-folder__state--READY_FOR_RETEST { color: #b45309; }
+.workspace-folder__state--MASTERED { color: #15803d; }
+
+/* Sprint AI-121 AI-121-01/19: 學習成效總覽 (Home KPI board). */
+.home-kpi__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.home-kpi__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg);
+}
+.home-kpi__label { font-size: 12px; color: var(--text-faint); }
+.home-kpi__value { font-size: 20px; font-weight: 800; }
+.home-kpi__sub { font-size: 11px; color: var(--text-faint); }
+.home-kpi__item--warn .home-kpi__value { color: #b45309; }
+.home-kpi__item--up .home-kpi__value { color: #15803d; }
+.home-kpi__item--down .home-kpi__value { color: #dc2626; }
+
 /* ---- Hero ------------------------------------------------------------ */
 .hero-card {
   display: flex;

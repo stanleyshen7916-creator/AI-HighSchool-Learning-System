@@ -113,9 +113,10 @@ window.AHS = window.AHS || {};
     row.appendChild(AHS.ReviewQuickAction.create(
       { dueToday: stats.dueToday, hasWrongItems: wrongItems.length > 0 },
       {
-        onStartToday: function () {
+        onStartToday: function (count) {
           if (!AHS.ReviewSession || typeof AHS.ReviewSession.create !== "function") { return; }
           var sessionEl = AHS.ReviewSession.create({
+            count: count,
             onComplete: function () {
               shell.main.innerHTML = "";
               shell.main.appendChild(buildPage(shell));

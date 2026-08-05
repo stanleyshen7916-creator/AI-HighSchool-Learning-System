@@ -70,6 +70,16 @@
 }
 
 /* ---- Quick Actions ------------------------------------------------------ */
+/* Sprint AI-121 AI-121-06: Review Mode question-count selector. */
+.rv-quick__count-label {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-top: 12px; font-size: 13px; color: var(--text-faint);
+}
+.rv-quick__count {
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 4px 8px; background-color: var(--card);
+}
 .rv-quick__list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
 .rv-quick__btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;

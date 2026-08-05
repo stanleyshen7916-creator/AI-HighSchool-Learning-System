@@ -39,12 +39,18 @@ AHS.ReviewRuntime = (function () {
     };
   }
 
-  /* startSession() — snapshots a real, current queue (generateTodayQueue())
-     at the moment the user actually starts, so answering one item doesn't
-     shift indices under a mid-session user. Returns the new session state
-     (clone), or null if there's genuinely nothing due right now. */
-  function startSession() {
+  /* startSession(count) — snapshots a real, current queue
+     (generateTodayQueue()) at the moment the user actually starts, so
+     answering one item doesn't shift indices under a mid-session user.
+     count (Sprint AI-121 AI-121-06 Review Mode, optional, additive —
+     every existing caller with no arg keeps the exact prior full-queue
+     behavior) caps the real queue to its first `count` items; a
+     genuinely smaller real queue is never padded to reach it. Returns
+     the new session state (clone), or null if there's genuinely nothing
+     due right now. */
+  function startSession(count) {
     var queue = generateTodayQueue();
+    if (typeof count === "number" && count > 0) { queue = queue.slice(0, count); }
     if (!queue.length) { session = null; return null; }
     session = { queue: queue, index: 0, results: { correct: 0, wrong: 0, newlyMastered: 0 }, active: true };
     return cloneSession();
@@ -86,6 +92,13 @@ AHS.ReviewRuntime = (function () {
     if (runtime && typeof runtime.recordRetry === "function") {
       var retried = runtime.recordRetry(item.id, wasCorrect);
       if (retried) { Object.keys(retried).forEach(function (k) { item[k] = retried[k]; }); }
+    }
+    /* Sprint AI-121: a Review-session retry is a real correct/wrong
+       signal for this item's own real knowledgePoint too — same single
+       real source (AHS.KnowledgeMasteryRuntime) the fresh-exam grading
+       path in js/components/QuizCenter.js already feeds. */
+    if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
+      AHS.KnowledgeMasteryRuntime.recordAttempt(item.knowledgePoint, wasCorrect, item.subject);
     }
 
     if (wasCorrect) { session.results.correct += 1; } else { session.results.wrong += 1; }

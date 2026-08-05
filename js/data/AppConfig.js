@@ -71,13 +71,13 @@ AHS.AppConfig = {
   },
 
   wrongBook: {
-    title: "錯題本",
+    title: "知識弱點",
     subtitle: "整理錯題，釐清觀念，強化弱點！",
     bannerTip: "每一次錯誤，都是進步的線索！再試一次，你一定可以更好！",
     subjectOptions: ["全部科目", "國文", "英文", "數學", "物理", "化學", "生物", "歷史", "地理", "公民"],
     knowledgeOptions: ["全部知識點"],
     difficultyOptions: ["全部難易度", "簡單", "中等", "困難"],
-    statusOptions: ["全部狀態", "待複習", "複習中", "已精熟"],
+    statusOptions: ["全部狀態", "待複習", "複習中", "已精熟", "已封存"],
     perPage: 6
   },
 
@@ -107,7 +107,7 @@ AHS.AppConfig = {
 
   /* Sprint AI-118 AI-118-01/AI-118-09 · Learning Experience (LX) Refactor:
      Navigation reordered to match the real Learning Loop —
-     首頁→教材中心→學習總結→測驗中心→錯題本→首頁 — with AI Tutor/設定/登出
+     首頁→教材中心→學習總結→測驗中心→知識弱點→首頁 — with AI Tutor/設定/登出
      after it (設定/登出 are rendered as separate Sidebar buttons in
      AppShell.js's sidebar(), not part of this items array — this list
      only covers the Loop + AI Tutor).
@@ -115,7 +115,7 @@ AHS.AppConfig = {
      - review.html itself, its Runtime, and its Review Session flow are
        all still fully intact and reachable by direct URL — only the Nav
        entry is gone, and every entry point into "review" now goes
-       through 錯題本 instead (AI-118-03's "所有入口整併：錯題本").
+       through 知識弱點 instead (AI-118-03's "所有入口整併：知識弱點").
      - learning.html (我的學習) is also still intact and reachable by
        direct URL; its real, non-duplicate content (科目進度／教材完成度)
        was folded into Home (AI-118-02/AI-118-10) instead of deleting the
@@ -129,7 +129,7 @@ AHS.AppConfig = {
       { id: "materials", label: "教材中心", icon: "book" },
       { id: "summary", label: "學習總結", icon: "summary" },
       { id: "quiz", label: "測驗中心", icon: "quiz" },
-      { id: "wrongbook", label: "錯題本", icon: "wrong" },
+      { id: "wrongbook", label: "知識弱點", icon: "wrong" },
       { id: "tutor", label: "AI Tutor", icon: "tutor" }
     ],
     /* Bottom Navigation stays capped at 5 slots (this repo's own existing

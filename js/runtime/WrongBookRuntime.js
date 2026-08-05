@@ -41,8 +41,31 @@ AHS.WrongBookRuntime = (function () {
 
   var store = hydrate() || { items: [], seq: 0 };
 
+  /* weaknessState(item) — Sprint AI-121 (Learning Knowledge Engine)
+     AI-121-08: 錯題本 page renamed 知識弱點 (Knowledge Weakness) with a
+     real state — NEW -> LEARNING -> MASTERED -> ARCHIVED, "不得真的刪除，
+     History 永久保留". Purely derived from this record's own already-real
+     fields (errorCount/correctStreak/archived) — no second store, no
+     drift: archived is the only NEW persisted bit this Sprint adds
+     (below); the other three states are exactly the same real
+     correctStreak-based rule js/components/WrongBook.js's own
+     getMasteryStatus() and every existing Statistics function already
+     use (never a second, conflicting mastery definition). */
+  function weaknessState(item) {
+    if (item.archived) { return "ARCHIVED"; }
+    if ((item.correctStreak || 0) >= 3) { return "MASTERED"; }
+    if ((item.correctStreak || 0) > 0) { return "LEARNING"; }
+    return "NEW";
+  }
+
+  function withWeaknessState(item) {
+    var copy = clone(item);
+    copy.weaknessState = weaknessState(item);
+    return copy;
+  }
+
   function list() {
-    return clone(store.items);
+    return store.items.map(withWeaknessState);
   }
 
   function isEmpty() {
@@ -51,7 +74,7 @@ AHS.WrongBookRuntime = (function () {
 
   function getById(id) {
     for (var i = 0; i < store.items.length; i++) {
-      if (store.items[i].id === id) { return clone(store.items[i]); }
+      if (store.items[i].id === id) { return withWeaknessState(store.items[i]); }
     }
     return null;
   }
@@ -82,6 +105,18 @@ AHS.WrongBookRuntime = (function () {
            kept consistent here so sync() and recordRetry() never disagree
            on what "wrong again" means. */
         existing.correctStreak = 0;
+        /* AI-121-12/19: a real wrong answer un-resolves a previously
+           已精熟 item — its old masteredAt date would otherwise keep
+           counting toward a stale, no-longer-true "resolved" day. */
+        existing.masteredAt = null;
+        /* AI-121-08 judgment call: a genuinely new real wrong answer on
+           an already-archived item is real evidence the weakness is
+           active again — auto-unarchiving keeps `archived` an honest
+           reflection of "currently a resolved/dismissed weakness", never
+           a stale label that hides a recurring real mistake. The
+           record itself was never deleted either way — History (every
+           past errorCount/lastError) is untouched. */
+        existing.archived = false;
         touched.push(existing);
       } else {
         store.seq += 1;
@@ -106,7 +141,18 @@ AHS.WrongBookRuntime = (function () {
           explanation: w.explanation,
           errorCount: 1,
           lastError: formatDate(now),
+          /* AI-121-12/19: real, immutable creation date — never updated
+             by later mistakes (lastError already covers "most recent"),
+             the honest source for Home's real "今日新增弱點" KPI. */
+          firstError: formatDate(now),
+          /* AI-121-12/19: real, set once by recordRetry() below the
+             moment correctStreak first reaches 3 — the honest source for
+             Home's real "今日解除弱點" KPI. null until then. */
+          masteredAt: null,
           bookmarked: false,
+          /* AI-121-08: real, persisted, explicit-action-only flag —
+             never set true except via archive() below. */
+          archived: false,
           /* AI-610: real, persisted retry progress — see recordRetry()
              below. 0 = never retried correctly since the last miss. */
           correctStreak: 0
@@ -134,9 +180,47 @@ AHS.WrongBookRuntime = (function () {
   function recordRetry(id, wasCorrect) {
     for (var i = 0; i < store.items.length; i++) {
       if (store.items[i].id === id) {
+        var wasMasteredBefore = (store.items[i].correctStreak || 0) >= 3;
         store.items[i].correctStreak = wasCorrect ? (store.items[i].correctStreak || 0) + 1 : 0;
+        /* AI-121-12/19: real, set exactly once — the calendar day this
+           item FIRST reached 已精熟 (3 consecutive correct). A retry that
+           keeps an already-mastered item mastered doesn't touch it again
+           (never overwritten to "today" on every later correct retry). */
+        if (!wasMasteredBefore && store.items[i].correctStreak >= 3) {
+          store.items[i].masteredAt = formatDate(new Date());
+        } else if (!wasCorrect) {
+          store.items[i].masteredAt = null;
+        }
         persist();
         return clone(store.items[i]);
+      }
+    }
+    return null;
+  }
+
+  /* archive(id) / unarchive(id) — AI-121-08: the ONLY way `archived`
+     ever changes by explicit student action (sync() above may also
+     auto-unarchive on a real recurring mistake). Never removes the
+     record from store.items — "不得真的刪除" holds structurally: list()/
+     getById() still return it (with weaknessState "ARCHIVED"), only a
+     caller's own UI filter decides whether to hide it by default. */
+  function archive(id) {
+    for (var i = 0; i < store.items.length; i++) {
+      if (store.items[i].id === id) {
+        store.items[i].archived = true;
+        persist();
+        return withWeaknessState(store.items[i]);
+      }
+    }
+    return null;
+  }
+
+  function unarchive(id) {
+    for (var i = 0; i < store.items.length; i++) {
+      if (store.items[i].id === id) {
+        store.items[i].archived = false;
+        persist();
+        return withWeaknessState(store.items[i]);
       }
     }
     return null;
@@ -199,6 +283,9 @@ AHS.WrongBookRuntime = (function () {
     sync: sync,
     recordRetry: recordRetry,
     toggleBookmark: toggleBookmark,
+    archive: archive,
+    unarchive: unarchive,
+    weaknessState: weaknessState,
     reset: reset,
     importRecords: importRecords
   };

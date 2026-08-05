@@ -210,7 +210,7 @@ try {
 
   const reviewPage = loadPage("review.html", { seedSession: seed });
   check("StatisticsRuntime/LearningStateRuntime 為此教材提供真實計算視圖（不需另外寫入）",
-    typeof reviewPage.window.AHS.StatisticsRuntime.readingProgress() === "number" &&
+    typeof reviewPage.window.AHS.StatisticsRuntime.materialCompletion(scratchRuntimeId).percent === "number" &&
     typeof reviewPage.window.AHS.LearningStateRuntime.materialState === "function" &&
     !!reviewPage.window.AHS.LearningStateRuntime.materialState(scratchRuntimeId));
   check("Console errors = 0（Review）", reviewPage.consoleErrors.length === 0);
