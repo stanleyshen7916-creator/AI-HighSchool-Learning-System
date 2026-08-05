@@ -30,9 +30,9 @@ Framework／GitHub Actions 皆逐一確認未修改。本 Sprint 是 Sprint AI-1
 | 既有 12 個 Node 迴歸套件（含 Sprint AI-119 新增） | PASS（零個別測試改寫） |
 | Verify | PASS |
 | QA Dashboard | PASS |
-| GitHub Actions | _(填入合併後之 run)_ |
-| Deployment | _(填入合併後之 run)_ |
-| Merge Commit | _(填入合併後之 commit)_ |
+| GitHub Actions | PASS（`QA Automation Framework` run [31010590974](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31010590974)，commit `de30fb41`） |
+| Deployment | PASS（GitHub Pages `pages build and deployment` run [31010589784](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31010589784)，commit `de30fb41`） |
+| Merge Commit | `de30fb41ca70e9b0fea0a051317652f7f40679b1`（PR #51，merged into `main`） |
 
 ## Detail per item
 
