@@ -280,8 +280,8 @@ AHS.SummaryCenter = (function () {
      AHS.LearningQuestionRuntime-backed, never writes WrongBook/History
      — confirmed by reading js/components/QuizCenter.js's own
      buildPracticeQuestionView(), untouched here). 前往正式測驗 removed
-     and replaced with 前往錯題本 (AI-118-05: Summary's own CTA set is
-     now 前往考前練習/前往錯題本 only — 正式測驗 is reached from Quiz
+     and replaced with 前往知識弱點 (AI-118-05: Summary's own CTA set is
+     now 前往考前練習/前往知識弱點 only — 正式測驗 is reached from Quiz
      Center itself, matching AI-118-01's Learning Loop where Summary's
      only forward step is practice, not a second formal-exam entry
      point). AI 自動出題 — still explicitly Disabled + Coming Soon,
@@ -311,12 +311,12 @@ AHS.SummaryCenter = (function () {
       el("span", { html: AHS.Icons.chevronRight() })
     ]);
 
-    /* AI-118-05: 前往錯題本 replaces 前往正式測驗 — no materialId filter
+    /* AI-118-05: 前往知識弱點 replaces 前往正式測驗 — no materialId filter
        param exists on wrongbook.html (confirmed: AppWrongBook.js reads
        no query params), so this links to the page itself; its own
        filter bar already lets a student narrow by 科目/知識點 if needed. */
     var wrongBookLink = el("a", { class: "sum-footer__wrongbook", href: "wrongbook.html" }, [
-      el("span", { text: "前往錯題本" })
+      el("span", { text: "前往知識弱點" })
     ]);
 
     /* On-demand AI question GENERATION (as opposed to navigating to see

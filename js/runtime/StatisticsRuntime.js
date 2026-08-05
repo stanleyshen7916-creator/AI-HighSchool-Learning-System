@@ -86,14 +86,40 @@ AHS.StatisticsRuntime = (function () {
       ? AHS.WrongBookRuntime.list() : [];
   }
 
+  /* reviewPriority(item) — Sprint AI-121 AI-121-13: real, deterministic
+     priority score for the Daily/Weekly Review queue — "priority-sorted，
+     非隨機". Every term is a real, already-tracked field (no new store,
+     no AI-inferred schedule — "不得自動排程" still respected: this only
+     orders what's already due, it invents no new due date):
+       urgency tier   — correctStreak 0/1/2 (further from 已精熟 first)
+       real errorCount — missed more times, more urgent
+       Knowledge Mastery — real AHS.KnowledgeMasteryRuntime %, lower first
+                           (unknown/never-graded-via-exam points get a
+                           real neutral 50, never assumed either way)
+       Knowledge Trend  — "falling" real mastery bumps priority further */
+  function reviewPriority(item) {
+    var tier = (3 - Math.min(3, item.correctStreak || 0)) * 100;
+    var errorWeight = (item.errorCount || 0) * 10;
+    var kmr = AHS.KnowledgeMasteryRuntime;
+    var kp = (kmr && item.knowledgePoint && typeof kmr.get === "function") ? kmr.get(item.knowledgePoint) : null;
+    var masteryWeight = kp && typeof kp.mastery === "number" ? (100 - kp.mastery) : 50;
+    var trendWeight = kp && kp.trend === "falling" ? 20 : 0;
+    return tier + errorWeight + masteryWeight + trendWeight;
+  }
+
   /* dueForReview() — real WrongBookRuntime entries not yet 已精熟 (AI-610's
-     own real correctStreak field, persisted). This is the same, single,
-     deterministic "three consecutive correct reviews" rule WrongBook.js's
-     own getMasteryStatus() already uses — not a second definition, not an
-     AI-inferred schedule ("不得自動排程" is respected: no date/time
-     reasoning here, just "has this real wrong item been mastered yet"). */
+     own real correctStreak field, persisted), excluding AI-121-08's real
+     archived state (a dismissed weakness is never "due"). This is the
+     same, single, deterministic "three consecutive correct reviews" rule
+     WrongBook.js's own getMasteryStatus() already uses — not a second
+     definition. Sprint AI-121 AI-121-13: now real-priority-sorted (see
+     reviewPriority() above, highest first) instead of insertion order —
+     "不得隨機排序，需依優先序" — still zero AI/date-inference, purely a
+     deterministic function of already-real fields. */
   function dueForReview() {
-    return wrongItems().filter(function (w) { return (w.correctStreak || 0) < 3; });
+    return wrongItems()
+      .filter(function (w) { return (w.correctStreak || 0) < 3 && !w.archived; })
+      .sort(function (a, b) { return reviewPriority(b) - reviewPriority(a); });
   }
 
   function masteredReviewItems() {
@@ -175,6 +201,13 @@ AHS.StatisticsRuntime = (function () {
   function learningContext() {
     var completion = completionSignals();
     return {
+      /* Sprint AI-121 AI-121-15/16: the single real, lowest-Mastery
+         knowledge point (AHS.KnowledgeMasteryRuntime, via
+         knowledgeWeakPoints() below) — the Tutor's own highest-priority,
+         Knowledge-only signal, "不得推薦模糊建議" traceable straight to a
+         real % and (when a real source material is known) a real
+         summary.html link. null when nothing has been graded yet. */
+      weakestKnowledgePoint: knowledgeWeakPoints(60)[0] || null,
       weakestSubject: weakestSubject(),
       dueForReview: dueForReview(),
       masteredCount: masteredReviewItems().length,
@@ -202,27 +235,6 @@ AHS.StatisticsRuntime = (function () {
   function materials() {
     return (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function")
       ? AHS.MaterialRuntime.list() : [];
-  }
-
-  /* readingProgress() — real average AHS.MaterialRuntime progress across
-     every material in this session; 0 when there are none yet (never a
-     fabricated baseline). This is 閱讀進度 (Reading Progress) per
-     Architecture_Platform_Terminology_v1.0.md — distinct from Exam Mode
-     accuracy/mastery below. */
-  function readingProgress() {
-    var mats = materials();
-    if (!mats.length) { return 0; }
-    var sum = mats.reduce(function (s, m) { return s + (typeof m.progress === "number" ? m.progress : 0); }, 0);
-    return Math.round(sum / mats.length);
-  }
-
-  /* completionRate() — real % of materials whose reading progress has
-     reached 100. */
-  function completionRate() {
-    var mats = materials();
-    if (!mats.length) { return 0; }
-    var done = mats.filter(function (m) { return (m.progress || 0) >= 100; }).length;
-    return Math.round((done / mats.length) * 100);
   }
 
   /* examStats(examId) — moved verbatim from js/components/QuizCenter.js's
@@ -428,19 +440,26 @@ AHS.StatisticsRuntime = (function () {
     return materials().map(function (m) { return materialAnalytics(m.id); });
   }
 
-  /* knowledgeAnalytics() — AI-117-04. Real per-knowledge-point rollup
-     from AHS.WrongBookRuntime's own `knowledgePoint` field (already
-     real, already used by js/components/WrongBook.js's own grouping —
-     not a new field). Honest data-availability judgment call, flagged
-     not hidden: this repository tracks WRONG answers (WrongBookRuntime)
-     but never a per-knowledge-point count of every CORRECT first
-     attempt, so a true first-attempt "正確率/錯誤率" per knowledge point
-     isn't derivable from any real source. `masteryRate` (real: mastered
-     ÷ total real wrong items at that point) is used for both
-     `masteryRate` and `correctRate` — the most honest real proxy this
-     data supports ("of everything ever missed here, how much has since
-     been correctly re-answered to mastery") — never a fabricated
-     separate number. */
+  /* knowledgeAnalytics() — AI-117-04, redefined by Sprint AI-121
+     (Learning Knowledge Engine) AI-121-10/17: real per-knowledge-point
+     rollup, still keyed by the same real `knowledgePoint` field every
+     question already carries, still grouped over AHS.WrongBookRuntime's
+     own real records for errorCount/dueCount/lastSeen (unchanged shape,
+     no existing consumer breaks). masteryRate/correctRate now prefer a
+     genuinely richer real source where one exists:
+     AHS.KnowledgeMasteryRuntime tracks every real graded attempt
+     (correct AND wrong, fed at the moment js/components/QuizCenter.js's
+     finishExam() grades an exam — see that Runtime's own header) instead
+     of only "wrong items later resolved to 已精熟", closing the honest
+     gap this function's AI-117-04 comment originally disclosed. A
+     knowledge point with real KnowledgeMasteryRuntime attempts uses that
+     real accuracy; one with only WrongBookRuntime activity (e.g. a
+     session seeded directly, or Sprint-AI-117-era data) falls back to
+     the original "mastered ÷ total wrong items" proxy — never a silently
+     different number for the exact same real inputs that already passed
+     regression before this Sprint. trend/growth/attemptCount are new,
+     additive fields — null/0 when no real KnowledgeMasteryRuntime data
+     exists yet for that point (never fabricated). */
   function knowledgeAnalytics() {
     var bucket = {};
     wrongItems().forEach(function (w) {
@@ -449,15 +468,22 @@ AHS.StatisticsRuntime = (function () {
       bucket[kp] = bucket[kp] || [];
       bucket[kp].push(w);
     });
+    var kmr = AHS.KnowledgeMasteryRuntime;
+    var realPoints = {};
+    if (kmr && typeof kmr.list === "function") {
+      kmr.list().forEach(function (p) { realPoints[p.knowledgePoint] = p; bucket[p.knowledgePoint] = bucket[p.knowledgePoint] || []; });
+    }
     return Object.keys(bucket).sort().map(function (kp) {
       var items = bucket[kp];
       var mastered = items.filter(function (w) { return (w.correctStreak || 0) >= 3; });
       var due = items.filter(function (w) { return (w.correctStreak || 0) < 3; });
-      var masteryRate = items.length ? Math.round(mastered.length / items.length * 100) : 0;
+      var proxyRate = items.length ? Math.round(mastered.length / items.length * 100) : 0;
       var errorCount = items.reduce(function (s, w) { return s + (w.errorCount || 0); }, 0);
       var lastSeen = items.reduce(function (latest, w) {
         return (!latest || (w.lastError || "") > latest) ? (w.lastError || latest) : latest;
       }, null);
+      var real = realPoints[kp] || null;
+      var masteryRate = real ? real.mastery : proxyRate;
       return {
         knowledgePoint: kp,
         errorCount: errorCount,
@@ -465,9 +491,42 @@ AHS.StatisticsRuntime = (function () {
         masteryRate: masteryRate,
         correctRate: masteryRate,
         errorRate: 100 - masteryRate,
-        lastSeen: lastSeen
+        lastSeen: real ? real.lastSeen : lastSeen,
+        attemptCount: real ? real.attemptCount : 0,
+        trend: real ? real.trend : null,
+        growth: real ? real.growth : null
       };
     });
+  }
+
+  /* knowledgeMastery() — AI-121-10/17: the single, real, Analytics-layer
+     view of every knowledge point ever attempted — "Tutor 只能讀取
+     Learning Analytics。不得直接存取各 Runtime" (AI-117-07's own rule,
+     still honored: this is the one function that reads
+     AHS.KnowledgeMasteryRuntime directly, everything else — Tutor
+     included — reads through this Runtime). Empty array, honestly, when
+     nothing has been attempted yet. */
+  function knowledgeMastery() {
+    return (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.list === "function")
+      ? AHS.KnowledgeMasteryRuntime.list() : [];
+  }
+
+  /* knowledgeWeakPoints(threshold) — AI-121-16: real knowledge points at
+     or under `threshold` (default 60) Mastery, lowest first — the Tutor's
+     honest input for "below-threshold summary reuse" (re-surfacing the
+     material's existing real knowledge.json/summary content, never
+     regenerating). */
+  function knowledgeWeakPoints(threshold) {
+    return (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.weakPoints === "function")
+      ? AHS.KnowledgeMasteryRuntime.weakPoints(threshold) : [];
+  }
+
+  /* knowledgeGrowthToday(limit) — AI-121-12: real knowledge point(s)
+     with the day's biggest genuine positive Mastery delta, for the
+     Tutor's "今日最大進步" highlight and the Home KPI of the same name. */
+  function knowledgeGrowthToday(limit) {
+    return (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.topGrowthToday === "function")
+      ? AHS.KnowledgeMasteryRuntime.topGrowthToday(limit) : [];
   }
 
   /* trendWindow(days) / learningTrend() — AI-117-05. days=0 means "today"
@@ -574,6 +633,106 @@ AHS.StatisticsRuntime = (function () {
     };
   }
 
+  /* ---- Sprint AI-121 additions — Home KPI redefinition (AI-121-01/19) ----
+     "平台從 Learning Progress 轉為 Learning Outcome". Every function below
+     is purely computed, real-or-null (never a fabricated 0/placeholder
+     when there's genuinely no data yet), reading only Runtimes this file
+     already reads elsewhere (HistoryRuntime/WrongBookRuntime/
+     KnowledgeMasteryRuntime/LearningStateRuntime) — no new store. */
+
+  function accuracyOnOrAfter(cutoffCheck) {
+    var items = AHS.HistoryRuntime.list().filter(function (h) {
+      var when = parseWhen(h.when);
+      return !!when && cutoffCheck(when);
+    });
+    if (!items.length) { return null; }
+    return Math.round(items.reduce(function (s, h) { return s + (h.accuracy || 0); }, 0) / items.length);
+  }
+
+  /* accuracyToday() / accuracyThisWeek() — real average accuracy over
+     today's / this calendar week's real HistoryRuntime attempts; null
+     (not 0) when nothing was attempted yet. */
+  function accuracyToday() {
+    var now = new Date();
+    return accuracyOnOrAfter(function (when) { return isSameCalendarDay(when, now); });
+  }
+
+  function accuracyThisWeek() {
+    var weekStart = startOfWeek(new Date());
+    return accuracyOnOrAfter(function (when) { return when >= weekStart; });
+  }
+
+  /* newWeaknessesToday() / resolvedWeaknessesToday() — AI-121-12/19: real
+     counts from AHS.WrongBookRuntime's own real firstError/masteredAt
+     fields (this Sprint's additions to that Runtime — see its own
+     header). "今日新增弱點" / "今日解除弱點". */
+  function newWeaknessesToday() {
+    var today = formatTodayLikeWrongBook();
+    return wrongItems().filter(function (w) { return w.firstError === today; }).length;
+  }
+
+  function resolvedWeaknessesToday() {
+    var today = formatTodayLikeWrongBook();
+    return wrongItems().filter(function (w) { return w.masteredAt === today; }).length;
+  }
+
+  /* formatTodayLikeWrongBook() — same "YYYY/MM/DD" convention
+     AHS.WrongBookRuntime's own formatDate()/firstError/masteredAt use —
+     duplicated here only as date-string formatting (not a second
+     Runtime/store), matching every other file in this repo's own
+     established "no shared date-format util exists" precedent. */
+  function formatTodayLikeWrongBook() {
+    var d = new Date();
+    function pad(n) { return n < 10 ? "0" + n : String(n); }
+    return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+  }
+
+  /* knowledgeMasteryAvg() — real average Mastery % across every real
+     knowledge point ever attempted (AHS.KnowledgeMasteryRuntime); null
+     when nothing has been attempted yet. */
+  function knowledgeMasteryAvg() {
+    var points = knowledgeMastery();
+    if (!points.length) { return null; }
+    return Math.round(points.reduce(function (s, p) { return s + p.mastery; }, 0) / points.length);
+  }
+
+  /* knowledgeGrowthAvgToday() — AI-121-12: real average day-over-day
+     Mastery delta across every real knowledge point with both a real
+     today AND a real prior-day attempt; null when none qualify yet
+     (never averaged against a fabricated 0 for points with no signal). */
+  function knowledgeGrowthAvgToday() {
+    var withDelta = knowledgeMastery().filter(function (p) {
+      return p.growth && typeof p.growth.delta === "number";
+    });
+    if (!withDelta.length) { return null; }
+    return Math.round(withDelta.reduce(function (s, p) { return s + p.growth.delta; }, 0) / withDelta.length);
+  }
+
+  /* outstandingTaskCount() — real count of AHS.LearningStateRuntime's own
+     dailyTasks() (AI-114 AI-903) still outstanding right now — "未完成
+     追蹤事項", reusing the existing Daily Task Engine's real priority
+     list rather than inventing a second "what's left to do" definition. */
+  function outstandingTaskCount() {
+    var lsr = AHS.LearningStateRuntime;
+    return (lsr && typeof lsr.dailyTasks === "function") ? lsr.dailyTasks().length : 0;
+  }
+
+  /* homeKpis() — AI-121-19: the single real view-model Home's KPI board
+     renders from. Every field above, assembled once so the UI component
+     never has to call more than one function. */
+  function homeKpis() {
+    return {
+      outstandingTasks: outstandingTaskCount(),
+      accuracyToday: accuracyToday(),
+      accuracyThisWeek: accuracyThisWeek(),
+      knowledgeMasteryAvg: knowledgeMasteryAvg(),
+      knowledgeGrowthToday: knowledgeGrowthAvgToday(),
+      topGrowthPoint: knowledgeGrowthToday(1)[0] || null,
+      newWeaknessesToday: newWeaknessesToday(),
+      resolvedWeaknessesToday: resolvedWeaknessesToday()
+    };
+  }
+
   return {
     overview: overview,
     accuracyBySubject: accuracyBySubject,
@@ -586,8 +745,6 @@ AHS.StatisticsRuntime = (function () {
     recommendedRetest: recommendedRetest,
     recommendedChapters: recommendedChapters,
     learningContext: learningContext,
-    readingProgress: readingProgress,
-    completionRate: completionRate,
     examStats: examStats,
     doneToday: doneToday,
     doneThisWeek: doneThisWeek,
@@ -596,6 +753,10 @@ AHS.StatisticsRuntime = (function () {
     materialAnalytics: materialAnalytics,
     materialAnalyticsAll: materialAnalyticsAll,
     knowledgeAnalytics: knowledgeAnalytics,
+    knowledgeMastery: knowledgeMastery,
+    knowledgeWeakPoints: knowledgeWeakPoints,
+    knowledgeGrowthToday: knowledgeGrowthToday,
+    homeKpis: homeKpis,
     learningTrend: learningTrend,
     wrongBookAnalytics: wrongBookAnalytics,
     materialContext: materialContext

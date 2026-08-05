@@ -1,4 +1,4 @@
-/* js/pages/AppWrongBook.js — bootstraps 錯題本 inside the shared AppShell.
+/* js/pages/AppWrongBook.js — bootstraps 知識弱點 inside the shared AppShell.
 
    EO-S7.0-002 · Wrong Book Runtime Integration: the Sprint-4 W004B
    Developer Seed block that used to live here has been REMOVED exactly

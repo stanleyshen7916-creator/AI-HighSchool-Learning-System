@@ -928,7 +928,7 @@ AHS.QuizCenter = (function () {
     function finishSubmit(isCorrect, userAnswer) {
       if (submitted) { return; }
       submitted = true;
-      resultBanner.textContent = isCorrect ? "答對了！" : "答錯了，已加入錯題本。";
+      resultBanner.textContent = isCorrect ? "答對了！" : "答錯了，已加入知識弱點。";
       resultBanner.classList.add(isCorrect ? "is-correct" : "is-wrong");
       resultBanner.removeAttribute("hidden");
       renderAnswer();
@@ -1113,6 +1113,13 @@ AHS.QuizCenter = (function () {
       if (graded) {
         AHS.WrongBookRuntime.sync(graded);
         AHS.HistoryRuntime.record(graded);
+        /* Sprint AI-121: real per-knowledge-point correct+wrong signal —
+           AutoGrader's own `results` (unlike `wrong`) carries every
+           question of this attempt, the one real moment Knowledge
+           Mastery/Accuracy/Trend/Growth can be fed honestly. */
+        if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordGraded === "function") {
+          AHS.KnowledgeMasteryRuntime.recordGraded(graded);
+        }
       }
       var review = AHS.ReviewRuntime.build(examId);
       if (!review) { showList(); return; }
@@ -1130,6 +1137,64 @@ AHS.QuizCenter = (function () {
       if (!session) { showList(); return null; }
       showExam(session.examId);
       return session.examId;
+    }
+
+    /* startDrawnSession(baseExamId, suffix) — Sprint AI-121 (Learning
+       Knowledge Engine) AI-121-05/AI-121-07: a real random redraw of 10
+       questions from baseExamId's already-built, permanent QuestionBank
+       (AHS.QuestionBankRuntime.drawRandom() — never fabricated; an
+       honestly small bank returns fewer than 10). Imported under a
+       derived examId (same additive-variant convention
+       importAssessmentModeVariants() above already established with
+       "__original"/"__ai") so the entire existing ExamRuntime/
+       QuestionRuntime/AutoGrader/WrongBook/History/KnowledgeMastery chain
+       runs completely unmodified — this is real "Wiring", not a new
+       grading path. meta is resolved from the REAL baseExamId (not the
+       derived one, which resolveExamMeta()'s own regex can't match) so
+       subject/title/chapter are never lost. Returns the derived examId on
+       success, or null (caller falls back to the normal list). */
+    function startDrawnSession(baseExamId, suffix) {
+      if (!AHS.QuestionBankRuntime || typeof AHS.QuestionBankRuntime.drawRandom !== "function") { return null; }
+      var drawn = AHS.QuestionBankRuntime.drawRandom(baseExamId, 10);
+      if (!drawn.length) { return null; }
+      var derivedExamId = baseExamId + suffix;
+      AHS.QuestionRuntime.importQuestions(derivedExamId, drawn);
+      var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
+        ? AHS.TeachingMaterialLoader.resolveExamMeta(baseExamId) : null;
+      /* Real, defensive fallback (never fabricated): if the loader can't
+         reverse-resolve baseExamId (e.g. a Repository entry that never
+         went through TeachingMaterialLoader's own idMap), fall back to
+         the drawn bank's own real per-question subject — still a real
+         AHS.Subjects key, unlike meta's own eventual "other" default,
+         which downstream chip-rendering has no fallback for. */
+      if (!meta && drawn[0] && drawn[0].subject) {
+        meta = { subject: drawn[0].subject, title: suffix === "__daily" ? "每日 AI 練習" : "再次測試" };
+      }
+      var session = AHS.ExamRuntime.startFromExam(derivedExamId, meta || {});
+      if (!session) { return null; }
+      showExam(session.examId);
+      return session.examId;
+    }
+
+    /* tryDailyPracticeEntry(examId) — AI-121-05: 每日 AI 練習, a fresh
+       random 10-question draw every time (not cached — each call
+       re-imports a fresh drawRandom() result under the same derived
+       examId, matching "每日" — daily — literally: every entry redraws). */
+    function tryDailyPracticeEntry(examId) {
+      var started = startDrawnSession(examId, "__daily");
+      if (!started) { showList(); }
+      return started;
+    }
+
+    /* tryRetestEntry(examId) — AI-121-07: 再次測試 (renamed from 重新測試)
+       — random 10 from the same permanent QuestionBank, purpose is
+       verifying mastery is real (not chasing a higher score), so it
+       intentionally reuses the exact same mechanism as Daily Practice
+       rather than a third, parallel one. */
+    function tryRetestEntry(examId) {
+      var started = startDrawnSession(examId, "__retest");
+      if (!started) { showList(); }
+      return started;
     }
 
     /* HOTFIX-004 Issue 002: a real initialMaterialId alone (no explicit
@@ -1154,7 +1219,19 @@ AHS.QuizCenter = (function () {
     }
 
     var directExamId = resolveDirectExamId();
-    if (directExamId) { tryDirectExamEntry(directExamId); } else { showList(); }
+    /* Sprint AI-121 AI-121-05/07: mode=daily / mode=retest are additive
+       branches — every existing caller (mode undefined/"practice") is
+       completely unaffected, still routed through tryDirectExamEntry()
+       exactly as before. */
+    if (directExamId && initialMode === "daily") {
+      tryDailyPracticeEntry(directExamId);
+    } else if (directExamId && initialMode === "retest") {
+      tryRetestEntry(directExamId);
+    } else if (directExamId) {
+      tryDirectExamEntry(directExamId);
+    } else {
+      showList();
+    }
 
     /* ---- Practice Mode mount (EO-S6-006) — entirely separate root,
        never touches `root` / any Exam Mode function above.
@@ -1245,7 +1322,7 @@ AHS.QuizCenter = (function () {
        not silently claimed as done. */
     var examTab = el("button", {
       type: "button", class: "quiz-mode__tab" + (startOnPractice ? "" : " is-active"),
-      text: "正式測驗", "data-tip": "固定完成後公布答案・永久保存紀錄・錯題自動加入錯題本"
+      text: "正式測驗", "data-tip": "固定完成後公布答案・永久保存紀錄・錯題自動加入知識弱點"
     });
     var practiceTab = el("button", {
       type: "button", class: "quiz-mode__tab" + (startOnPractice ? " is-active" : ""),

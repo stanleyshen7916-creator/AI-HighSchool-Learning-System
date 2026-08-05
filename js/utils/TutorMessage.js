@@ -71,6 +71,31 @@ AHS.TutorMessage = (function () {
       }
     }
 
+    /* Sprint AI-121 AI-121-15/16: AI Tutor now analyzes ONLY Knowledge
+       (never Question) — this is the Tutor's real, highest-priority
+       signal, ahead of every branch below: the single real lowest-
+       Mastery knowledge point (AHS.KnowledgeMasteryRuntime, via
+       AHS.StatisticsRuntime.learningContext()'s weakestKnowledgePoint).
+       Wording matches the Sprint's own literal worked example
+       ("DNA 聚合酶 Mastery 42% -> 重新閱讀 DNA 聚合酶摘要") — always a
+       real knowledge point name + real % + a real next action, never a
+       vague "多加練習". Honestly reuses the real material's existing
+       summary (never regenerates/fabricates a new one) when a real
+       materialId is known for this point; omits the action (sentence
+       still shown) when it isn't. */
+    if (context.weakestKnowledgePoint) {
+      var kp = context.weakestKnowledgePoint;
+      sentences.push(
+        "「" + kp.knowledgePoint + "」Mastery " + kp.mastery + "%，建議重新閱讀「" + kp.knowledgePoint + "」相關摘要。"
+      );
+      if (kp.materialId) {
+        actions.push({
+          icon: "book", label: "重新閱讀摘要", desc: kp.knowledgePoint,
+          href: "summary.html?materialId=" + encodeURIComponent(kp.materialId)
+        });
+      }
+    }
+
     /* Sprint AI-114 AI-906: priority-driven primary suggestion — picks
        exactly one real, most-relevant "what to do next" for the current
        real state, in this fixed priority order (never fixed text: every
@@ -91,8 +116,8 @@ AHS.TutorMessage = (function () {
        carries a real `href` into the correct next step (previously these
        tiles set only a status-text stub, no real navigation existed to
        stay "inside" or "jump outside" of in the first place). 前往複習
-       中心 renamed 前往錯題本 (複習中心's Nav entry is gone this Sprint,
-       AI-118-03: "所有入口整併：錯題本" — dueForReview's own real items
+       中心 renamed 前往知識弱點 (複習中心's Nav entry is gone this Sprint,
+       AI-118-03: "所有入口整併：知識弱點" — dueForReview's own real items
        live in WrongBookRuntime either way, so wrongbook.html is the
        correct, not a substitute, destination). */
     if (context.dueForReview && context.dueForReview.length) {
@@ -102,7 +127,7 @@ AHS.TutorMessage = (function () {
       }
       sentences.push(reviewLine);
       actions.push({
-        icon: "clock", label: "前往錯題本", desc: context.dueForReview.length + " 題待複習",
+        icon: "clock", label: "前往知識弱點", desc: context.dueForReview.length + " 題待複習",
         href: "wrongbook.html"
       });
     } else if (context.completedMaterial && context.nextMaterial) {
@@ -137,13 +162,17 @@ AHS.TutorMessage = (function () {
     }
 
     if (context.recommendedRetest) {
+      /* Sprint AI-121 AI-121-07: 重新測驗 renamed 再次測試 — purpose is
+         real, honest mastery verification (a fresh random 10 from the
+         same material's permanent QuestionBank, via QuizCenter's
+         mode=retest branch), not chasing a higher score. */
       sentences.push(
         "「" + (context.recommendedRetest.title || "上次測驗") + "」上次正確率 " +
-        (context.recommendedRetest.accuracy || 0) + "%，建議重新測驗加強。"
+        (context.recommendedRetest.accuracy || 0) + "%，建議再次測試以驗證是否已精熟。"
       );
       actions.push({
-        icon: "refresh", label: "重新測驗", desc: context.recommendedRetest.title || "",
-        href: context.recommendedRetest.examId ? "quiz.html?examId=" + encodeURIComponent(context.recommendedRetest.examId) : "quiz.html"
+        icon: "refresh", label: "再次測試", desc: context.recommendedRetest.title || "",
+        href: context.recommendedRetest.examId ? "quiz.html?mode=retest&examId=" + encodeURIComponent(context.recommendedRetest.examId) : "quiz.html"
       });
     }
 

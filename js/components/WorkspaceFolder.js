@@ -31,9 +31,22 @@ AHS.WorkspaceFolder = (function () {
     return order.map(function (key) { return { subject: key, materials: bySubject[key] }; });
   }
 
+  /* Sprint AI-121 AI-121-01/02: real per-material Learning State
+     (NOT_STARTED/READING/READY_FOR_PRACTICE/READY_FOR_RETEST/MASTERED),
+     replacing the retired 教材完成度 percentage as the honest "what stage
+     is this material at" signal shown on Home. Renders nothing when the
+     Runtime genuinely isn't available (never a fabricated label). */
+  function stateBadge(materialId) {
+    var lsr = AHS.MaterialLearningStateRuntime;
+    var state = (lsr && typeof lsr.state === "function") ? lsr.state(materialId) : null;
+    if (!state) { return null; }
+    return el("span", { class: "workspace-folder__state workspace-folder__state--" + state.state, text: state.label });
+  }
+
   function materialRow(m) {
     return el("li", { class: "workspace-folder__material" }, [
       el("span", { class: "workspace-folder__material-title", text: m.title || "（未命名教材）" }),
+      stateBadge(m.id),
       el("div", { class: "workspace-folder__material-links" }, [
         el("a", {
           class: "workspace-folder__link",
@@ -44,6 +57,14 @@ AHS.WorkspaceFolder = (function () {
           class: "workspace-folder__link",
           href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + m.id),
           text: "前往考前練習"
+        }),
+        /* Sprint AI-121 AI-121-05: 每日 AI 練習 — real entry into
+           QuizCenter's mode=daily branch (random 10 from this material's
+           real, permanent QuestionBank, redrawn fresh each visit). */
+        el("a", {
+          class: "workspace-folder__link",
+          href: "quiz.html?mode=daily&examId=" + encodeURIComponent("teaching_material_" + m.id),
+          text: "每日 AI 練習"
         })
       ])
     ]);

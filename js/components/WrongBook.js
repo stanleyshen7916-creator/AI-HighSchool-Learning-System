@@ -1,4 +1,4 @@
-/* components/WrongBook.js — 錯題本 (Wrong Book) page.
+/* components/WrongBook.js — 知識弱點 (Wrong Book) page.
    Master-detail layout: banner + filter bar + wrong-question list (with
    pagination) on the left, question detail panel on the right. Selecting a
    row updates the detail panel. All Mock. PascalCase under window.AHS. */
@@ -206,7 +206,7 @@ AHS.WrongBook = (function () {
   /* ---- Summary Card (W001-1, updated WS-001/AI-902, reworked Sprint
      AI-118 AI-118-07) --------------------------------------------------
      複習中心's Navigation entry is gone this Sprint (AI-118-03: "所有入口
-     整併：錯題本") — 錯題本 is now the single place "今日待複習" is
+     整併：知識弱點") — 知識弱點 is now the single place "今日待複習" is
      reachable from, so AI-902's old "不得混入今日複習" separation no
      longer applies (there is no second page left to conflict with).
      "移除所有重複統計。所有統計：StatisticsRuntime" — the 4-stat block
@@ -232,7 +232,7 @@ AHS.WrongBook = (function () {
 
   function summaryCard(items) {
     var valueEls = {};
-    var wrap = el("section", { class: "card wb-summary", "aria-label": "錯題本統計" },
+    var wrap = el("section", { class: "card wb-summary", "aria-label": "知識弱點統計" },
       SUMMARY_DEFS.map(function (d) {
         var valueEl = el("strong", { class: "wb-summary__value", text: "0" });
         valueEls[d.key] = valueEl;
@@ -358,8 +358,16 @@ AHS.WrongBook = (function () {
     var reviewBtn = el("button", {
       type: "button", class: "wb-row__menu-item", role: "menuitem", text: "開始複習"
     });
+    /* AI-121-08: 知識弱點 Archive — real, persisted, never-delete state
+       change (AHS.WrongBookRuntime.archive()/unarchive()). Label toggles
+       per-row (set by toggle() below, since this one DOM node is shared
+       across every row). */
+    var archiveBtn = el("button", {
+      type: "button", class: "wb-row__menu-item", role: "menuitem", text: "封存"
+    });
     var panel = el("div", { class: "wb-row__menu", role: "menu", hidden: "hidden" },
-      [viewBtn, reviewBtn]);
+      [viewBtn, reviewBtn, archiveBtn]);
+    var onArchiveHandler = null;
 
     function close() {
       panel.setAttribute("hidden", "hidden");
@@ -367,6 +375,7 @@ AHS.WrongBook = (function () {
       activeMenuId = null;
       onViewHandler = null;
       onReviewHandler = null;
+      onArchiveHandler = null;
     }
 
     viewBtn.addEventListener("click", function (ev) {
@@ -381,18 +390,28 @@ AHS.WrongBook = (function () {
       close();
       if (handler) { handler(); }
     });
+    archiveBtn.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      var handler = onArchiveHandler;
+      close();
+      if (handler) { handler(); }
+    });
     document.addEventListener("click", close);
 
-    /* toggle(wrapEl, id, onView, onReview) — called by the row whose (...)
-       button was clicked. Same id clicked again -> toggle closed. A
-       different id -> close whichever row currently owns the menu, then
-       reparent + open it on this row. */
-    function toggle(wrapEl, id, onView, onReview) {
+    /* toggle(wrapEl, id, onView, onReview, archived, onArchive) — called
+       by the row whose (...) button was clicked. Same id clicked again ->
+       toggle closed. A different id -> close whichever row currently owns
+       the menu, then reparent + open it on this row. archived (real,
+       current AHS.WrongBookRuntime state for this row) drives the
+       archiveBtn's own label — 封存 / 取消封存. */
+    function toggle(wrapEl, id, onView, onReview, archived, onArchive) {
       var wasOpenHere = activeMenuId === id;
       close();
       if (wasOpenHere) { return; }
       onViewHandler = onView;
       onReviewHandler = onReview;
+      onArchiveHandler = onArchive;
+      archiveBtn.textContent = archived ? "取消封存" : "封存";
       wrapEl.appendChild(panel);
       panel.removeAttribute("hidden");
       activeMenuId = id;
@@ -402,7 +421,7 @@ AHS.WrongBook = (function () {
   }
 
   /* ---- Question row ---------------------------------------------------- */
-  function questionRow(item, index, onSelect, status, toggleFavorite, moreMenuController, startReviewSession) {
+  function questionRow(item, index, onSelect, status, toggleFavorite, moreMenuController, startReviewSession, toggleArchive) {
     var favBadge = el("span", {
       class: "wb-row__favbadge" + (item.bookmarked ? "" : " is-hidden")
     }, [
@@ -433,6 +452,8 @@ AHS.WrongBook = (function () {
         onSelect(item, row); // WB-006: 查看詳情 selects only, no review
       }, function () {
         startReviewSession([item]); // WB-007/WS-003: distinct Review Session, single-item queue
+      }, item.archived, function () {
+        toggleArchive(item.id); // AI-121-08: 封存／取消封存，真實持久化，永不刪除
       });
     });
 
@@ -753,6 +774,14 @@ AHS.WrongBook = (function () {
         var retried = runtime.recordRetry(itemId, wasCorrect);
         if (retried) { Object.keys(retried).forEach(function (k) { pair.item[k] = retried[k]; }); }
       }
+      /* Sprint AI-121: same real correct/wrong knowledge-point signal
+         AHS.ReviewRuntime.answerCurrent() records — this file has its
+         own, separate WrongBook-page retry flow (WB-004/WB-008), not a
+         call through ReviewRuntime, so it must feed
+         AHS.KnowledgeMasteryRuntime itself too. */
+      if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
+        AHS.KnowledgeMasteryRuntime.recordAttempt(pair.item.knowledgePoint, wasCorrect, pair.item.subject);
+      }
       refreshRowChips(pair);
       if (summary && summary.refresh) { summary.refresh(runtime.list()); }
       return pair;
@@ -848,7 +877,7 @@ AHS.WrongBook = (function () {
       function renderResult() {
         var accuracy = results.total > 0 ? Math.round((results.correct / results.total) * 100) : 0;
         var returnBtn = el("button", { type: "button", class: "wb-detail__btn wb-detail__btn--primary" }, [
-          el("span", { text: "返回錯題本" })
+          el("span", { text: "返回知識弱點" })
         ]);
         returnBtn.addEventListener("click", function () {
           // Return Wrong Book automatically; filter state was never
@@ -906,13 +935,35 @@ AHS.WrongBook = (function () {
       return nowOn;
     }
 
+    /* AI-121-08: 封存／取消封存 — real, persisted Runtime call, never a
+       delete. Re-renders this row's status tag + re-applies the current
+       view (封存 by default drops out of every non-已封存 filter, same
+       as toggleFavorite() above keeps every other real surface in sync). */
+    function toggleArchive(id) {
+      var current = runtime.getById(id);
+      if (!current) { return; }
+      var updated = current.archived ? runtime.unarchive(id) : runtime.archive(id);
+      if (!updated) { return; }
+      var pair = pairs.filter(function (p) { return p.item.id === id; })[0];
+      if (pair) {
+        pair.item.archived = updated.archived;
+        pair.item.weaknessState = updated.weaknessState;
+        var statusSlot = pair.row.querySelector(".wb-row__status");
+        if (statusSlot) {
+          statusSlot.innerHTML = "";
+          statusSlot.appendChild(statusTag(getMasteryStatus(pair.item.correctStreak)));
+        }
+      }
+      applyView();
+    }
+
     var moreMenuController = createMoreMenuController();
 
     var pairs = runtimeItems.map(function (it, i) {
       return {
         item: it,
         order: i,
-        row: questionRow(it, i, selectItem, status, toggleFavorite, moreMenuController, startReviewSession)
+        row: questionRow(it, i, selectItem, status, toggleFavorite, moreMenuController, startReviewSession, toggleArchive)
       };
     });
     var rows = pairs.map(function (p) { return p.row; });
@@ -988,10 +1039,17 @@ AHS.WrongBook = (function () {
         // above), so these compare against the derived value, not a
         // nonexistent item.difficulty/item.status field.
         var difficultyMatch = difficultyFilter === "all" || deriveDifficulty(p.item) === difficultyFilter;
-        var statusMatch = statusFilter === "all" || getMasteryStatus(p.item.correctStreak) === statusFilter;
+        /* AI-121-08: 已封存 is its own explicit filter value — selecting
+           it shows ONLY archived items (real History, never deleted);
+           every other 狀態 value (including 全部狀態) honestly excludes
+           archived items by default, since 封存 means "dismissed from
+           the active Knowledge Weakness view", not "gone". */
+        var isArchivedFilter = statusFilter === "已封存";
+        var archivedMatch = isArchivedFilter ? !!p.item.archived : !p.item.archived;
+        var statusMatch = isArchivedFilter || statusFilter === "all" || getMasteryStatus(p.item.correctStreak) === statusFilter;
         var searchMatch = !searchText || searchable(p.item).indexOf(searchText) !== -1;
         var favoriteMatch = !favoriteOnly || p.item.bookmarked;
-        return subjectMatch && knowledgeMatch && difficultyMatch && statusMatch && searchMatch && favoriteMatch;
+        return subjectMatch && knowledgeMatch && difficultyMatch && statusMatch && archivedMatch && searchMatch && favoriteMatch;
       });
 
       // WB-013: Pagination — slice the matching set to the current page.

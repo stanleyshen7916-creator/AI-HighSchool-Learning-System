@@ -86,14 +86,17 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習
   }, MATERIAL_ID);
   let carry = await dumpSession(page);
 
-  await test.step("首頁 — Nav 不再有複習中心／我的學習，教材完成度/最近教材/AI Tutor 皆為真實資料", async () => {
+  await test.step("首頁 — Nav 不再有複習中心／我的學習，學習成效總覽/最近教材/AI Tutor 皆為真實資料", async () => {
     await seedAll(page, carry);
     await page.goto(fileUrl("home"));
     const sidebarLabels = await page.locator(".sidebar__item").allTextContents();
     expect(sidebarLabels.some((t) => t.includes("複習中心"))).toBe(false);
     expect(sidebarLabels.some((t) => t.includes("我的學習"))).toBe(false);
     await expect(page.locator("body")).toContainText(MATERIAL_TITLE);
-    await expect(page.locator(".home-completion")).toBeVisible();
+    // Sprint AI-121 AI-121-01/19: 教材完成度 retired as a Home KPI —
+    // replaced by 學習成效總覽 (.home-kpi), driven by real Learning
+    // Outcome (Knowledge Mastery/Growth/Weakness).
+    await expect(page.locator(".home-kpi")).toBeVisible();
   });
 
   await test.step("教材中心 -> 前往學習總結（真實點擊）", async () => {
@@ -172,14 +175,15 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習
     carry = await dumpSession(page);
   });
 
-  await test.step("首頁：資料一致 — AI Tutor 建議連向真實下一步，教材完成度與 StatisticsRuntime 相符", async () => {
+  await test.step("首頁：資料一致 — AI Tutor 建議連向真實下一步，學習成效總覽與 StatisticsRuntime 相符", async () => {
     await seedAll(page, carry);
     await page.goto(fileUrl("home"));
     const consistency = await page.evaluate(() => {
       const A = window.AHS;
       return {
         dueForReview: A.StatisticsRuntime.dueForReview().length,
-        subjectAnalytics: A.StatisticsRuntime.subjectAnalytics()
+        subjectAnalytics: A.StatisticsRuntime.subjectAnalytics(),
+        homeKpis: A.StatisticsRuntime.homeKpis()
       };
     });
     expect(consistency.dueForReview).toBeGreaterThan(0);
@@ -192,11 +196,13 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習
       expect(href).toBeTruthy();
       expect(href).not.toBe("#");
     }
-    if (consistency.subjectAnalytics.length) {
-      const homePct = await page.locator(".home-completion__pct").first().textContent();
-      const runtimePct = consistency.subjectAnalytics[0].materialCompletionRate + "%";
-      expect(homePct).toBe(runtimePct);
-    }
+    // Sprint AI-121 AI-121-01/19: 教材完成度 consistency check replaced by
+    // 未完成追蹤事項 (outstandingTasks) — the same real single source
+    // (AHS.StatisticsRuntime.homeKpis()) the .home-kpi board itself reads.
+    const outstandingFromDom = await page
+      .locator('.home-kpi__item[data-kpi="outstandingTasks"] .home-kpi__value')
+      .first().textContent();
+    expect(Number(outstandingFromDom)).toBe(consistency.homeKpis.outstandingTasks);
   });
 
   expect(errors, "Console errors across the Learning Flow: " + errors.join(" | ")).toEqual([]);

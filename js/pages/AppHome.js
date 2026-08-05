@@ -156,7 +156,15 @@ window.AHS = window.AHS || {};
     var main = el("div", { class: "home__main" }, [
       hero,
       AHS.HomeRecentMaterials.create(buildRecentMaterialsModel()),
-      (AHS.MaterialCompletionOverview ? AHS.MaterialCompletionOverview.create() : null),
+      /* Sprint AI-121 AI-121-01/19: 教材完成度 (reading-progress-driven)
+         retired as a Home KPI — replaced by 學習成效總覽, driven by real
+         Learning Outcome (Knowledge Mastery/Growth/Weakness), never
+         reading completion. AHS.MaterialCompletionOverview.js itself is
+         kept as a real, unused-on-Home file (same conservative "don't
+         delete source files outside this Sprint's scope" precedent
+         AI-118's own report already established), still loaded above in
+         case a future Sprint restores it elsewhere. */
+      (AHS.HomeKpiBoard ? AHS.HomeKpiBoard.create() : null),
       /* Sprint AI-120 AI-120-02/03: 教材資料夾 — real Current-Workspace
          materials grouped by Subject (School/Semester already fixed by
          the Workspace itself), each linking straight into 學習總結/

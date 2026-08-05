@@ -147,7 +147,7 @@ AHS.MaterialCard = (function () {
     /* Sprint v1.6 Module A — Material Card Navigation Action, relabeled
        Sprint AI-118 AI-118-04: 前往學習總結 / 前往考前練習 (was 查看摘要 /
        開始練習) — matches the Learning Loop's own terminology (AI-118-01:
-       首頁→教材中心→學習總結→測驗中心→錯題本→首頁) and AI-118-06's
+       首頁→教材中心→學習總結→測驗中心→知識弱點→首頁) and AI-118-06's
        考前練習/正式測驗 naming, so a student never sees two different
        names for the same next step. Href/behavior unchanged — AI-118-04
        only requires the label to route into 學習總結, never expand

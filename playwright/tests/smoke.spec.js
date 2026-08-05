@@ -25,7 +25,7 @@ const PAGES = [
   { key: "materials", label: "教材中心", titleIncludes: "教材中心" },
   { key: "summary", label: "學習總結", titleIncludes: "學習總結" },
   { key: "quiz", label: "測驗中心", titleIncludes: "測驗中心" },
-  { key: "wrongbook", label: "錯題本", titleIncludes: "錯題本" },
+  { key: "wrongbook", label: "知識弱點", titleIncludes: "知識弱點" },
   { key: "review", label: "複習中心", titleIncludes: "複習中心" },
   { key: "learning", label: "我的學習", titleIncludes: "我的學習" },
   { key: "tutor", label: "AI Tutor", titleIncludes: "AI Tutor" }

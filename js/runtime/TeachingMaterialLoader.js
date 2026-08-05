@@ -222,7 +222,14 @@ AHS.TeachingMaterialLoader = (function () {
           return { key: OPTION_KEYS[i] || String(i), text: text };
         }),
         correctAnswer: OPTION_KEYS[answerIndex],
-        knowledgePoint: chapter,
+        /* Sprint AI-121 AI-121-09 fix: Package-track questions already
+           carry a real, richer per-question knowledgePoint string (see
+           js/data/TeachingMaterialData.js) — prefer it over the
+           chapter-level fallback so Knowledge Analytics operates on the
+           real per-question signal, matching repoExamCompatibleQuestions()
+           below which never had this collapse bug. chapter remains the
+           fallback for the rare question with no real knowledgePoint. */
+        knowledgePoint: q.knowledgePoint || chapter,
         explanation: q.explanation || "",
         materialId: runtimeMaterialId,
         questionSource: q.questionSource,
@@ -266,6 +273,15 @@ AHS.TeachingMaterialLoader = (function () {
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
     importAssessmentModeVariants(examId, questions);
+    /* Sprint AI-121 AI-121-03: build-once QuestionBank, real content
+       only. hasExam() already guarded this call site to "first time
+       this examId's questions are known this session" above, so this
+       is exactly the one real moment ensureBank() should be offered
+       this material's real questions — ensureBank() itself is still
+       the one enforcing "never regenerate" across sessions/reloads. */
+    if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.ensureBank === "function") {
+      AHS.QuestionBankRuntime.ensureBank(examId, questions);
+    }
   }
 
   /* resolveExamMeta(examId) — Sprint v1.6 Module C: quiz.html's direct
@@ -474,6 +490,9 @@ AHS.TeachingMaterialLoader = (function () {
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
     importAssessmentModeVariants(examId, questions);
+    if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.ensureBank === "function") {
+      AHS.QuestionBankRuntime.ensureBank(examId, questions);
+    }
   }
 
   function loadMaterialRepository(idMap) {

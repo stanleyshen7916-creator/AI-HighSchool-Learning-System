@@ -7,7 +7,8 @@
    (Sprint AI-117) / LearningFlowRegression (Sprint AI-118) /
    WorkspaceRegression (Sprint AI-119) / MaterialCenterRegression /
    FolderRegression / AnalyticsFilterRegression / TutorRegression /
-   WorkspaceUIRegression (Sprint AI-120) / Playwright
+   WorkspaceUIRegression (Sprint AI-120) / KnowledgeEngineRegression
+   (Sprint AI-121) / Playwright
    — and writes one real PASS/FAIL summary
    to docs/QA/QaDashboard.json. Never
    re-implements any suite's own pass/fail logic: each Node suite's exit
@@ -44,7 +45,8 @@ const NODE_SUITES = [
   { name: "FolderRegression", script: "tests/regression/FolderRegression.js", countPattern: /FolderRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "AnalyticsFilterRegression", script: "tests/regression/AnalyticsFilterRegression.js", countPattern: /AnalyticsFilterRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "TutorRegression", script: "tests/regression/TutorRegression.js", countPattern: /TutorRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
-  { name: "WorkspaceUIRegression", script: "tests/regression/WorkspaceUIRegression.js", countPattern: /WorkspaceUIRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
+  { name: "WorkspaceUIRegression", script: "tests/regression/WorkspaceUIRegression.js", countPattern: /WorkspaceUIRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "KnowledgeEngineRegression", script: "tests/regression/KnowledgeEngineRegression.js", countPattern: /KnowledgeEngineRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
 ];
 
 function runNodeSuite(suite) {
