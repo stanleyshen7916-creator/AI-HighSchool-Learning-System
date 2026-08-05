@@ -1,0 +1,89 @@
+/* js/components/WorkspaceFolder.js — Sprint AI-120 (Workspace Repository
+   Integration) AI-120-02/AI-120-03 「教材資料夾」— Home widget showing
+   Current Workspace's own real materials grouped by Subject (School／
+   Semester are already fixed by the Workspace itself — see
+   AHS.WorkspaceRuntime.label() — so Subject is the one real grouping
+   axis left to show: School → Semester → Subject → Material).
+
+   Reads AHS.MaterialRuntime.list() only — the exact same Single Source
+   every other Material-listing UI already reads (MaterialCard/Material
+   Center), already Workspace-scoped automatically since Sprint AI-119's
+   PersistenceAdapter namespacing plus this Sprint's own
+   TeachingMaterialLoader Workspace filter (AI-120-01) — no second
+   filtering logic invented here, no Runtime touched. "立即同步" (real-
+   time sync with Repository) is automatic: this renders fresh from
+   MaterialRuntime's current state on every page load, the same way
+   every other Home widget already does in this static multi-page app —
+   no polling/live-update mechanism needed or added. */
+window.AHS = window.AHS || {};
+AHS.WorkspaceFolder = (function () {
+  "use strict";
+  var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
+
+  function groupBySubject(materials) {
+    var order = [];
+    var bySubject = {};
+    materials.forEach(function (m) {
+      var key = m.subject || "unknown";
+      if (!bySubject[key]) { bySubject[key] = []; order.push(key); }
+      bySubject[key].push(m);
+    });
+    return order.map(function (key) { return { subject: key, materials: bySubject[key] }; });
+  }
+
+  function materialRow(m) {
+    return el("li", { class: "workspace-folder__material" }, [
+      el("span", { class: "workspace-folder__material-title", text: m.title || "（未命名教材）" }),
+      el("div", { class: "workspace-folder__material-links" }, [
+        el("a", {
+          class: "workspace-folder__link",
+          href: "summary.html?materialId=" + encodeURIComponent(m.id),
+          text: "前往學習總結"
+        }),
+        el("a", {
+          class: "workspace-folder__link",
+          href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + m.id),
+          text: "前往考前練習"
+        })
+      ])
+    ]);
+  }
+
+  function subjectGroup(group) {
+    var subj = (AHS.Subjects && AHS.Subjects[group.subject]) || { name: group.subject, hex: "#6b7280" };
+    return el("div", { class: "workspace-folder__group" }, [
+      el("div", { class: "workspace-folder__group-head" }, [
+        el("span", { class: "workspace-folder__group-dot", style: "background-color:" + subj.hex }),
+        el("strong", { class: "workspace-folder__group-name", text: subj.name }),
+        el("span", { class: "workspace-folder__group-count", text: group.materials.length + " 筆" })
+      ]),
+      el("ul", { class: "workspace-folder__material-list" }, group.materials.map(materialRow))
+    ]);
+  }
+
+  function create() {
+    var ws = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.label === "function")
+      ? AHS.WorkspaceRuntime.label() : null;
+    var materials = (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function")
+      ? AHS.MaterialRuntime.list() : [];
+    var groups = groupBySubject(materials);
+
+    var subtitle = ws
+      ? ws.schoolName + "・" + ws.semesterNames.join("、")
+      : null;
+
+    var body = groups.length
+      ? el("div", { class: "workspace-folder__groups" }, groups.map(subjectGroup))
+      : el("p", { class: "workspace-folder__empty", text: "目前 Workspace 尚無教材。" });
+
+    return el("section", { class: "card workspace-folder", "aria-label": "教材資料夾" }, [
+      el("div", { class: "card__head" }, [
+        el("h2", { class: "card__title", text: "教材資料夾" }),
+        subtitle ? el("span", { class: "workspace-folder__subtitle", text: subtitle }) : null
+      ].filter(Boolean)),
+      body
+    ]);
+  }
+
+  return { create: create };
+})();

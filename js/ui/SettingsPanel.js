@@ -134,8 +134,59 @@ AHS.SettingsPanel = (function () {
     return el("p", { class: "settings-panel__info", text: "Repository Status — " + text });
   }
 
+  /* workspaceRepositoryLine() — Sprint AI-120 (Workspace Repository
+     Integration) AI-120-07: real School／Semester／Subject／Material
+     Count／Question Count for the Current Workspace, so Settings ->
+     Repository doubles as a real per-Workspace management view
+     ("方便管理教材"). Question Count reuses the exact
+     "teaching_material_" + materialId examId convention MaterialCard.js's
+     own 前往考前練習 link and TeachingMaterialLoader.js already build —
+     not a second, invented id scheme. 最近教材時間 is the real max
+     material.date across Current Workspace's own materials (never a
+     fabricated "import" timestamp — no such event is actually recorded
+     anywhere in this static, no-backend app). */
+  function questionCountForCurrentWorkspace(materials) {
+    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.getSet !== "function") { return 0; }
+    var total = 0;
+    materials.forEach(function (m) {
+      var examId = "teaching_material_" + m.id;
+      if (typeof AHS.QuestionRuntime.hasExam === "function" && AHS.QuestionRuntime.hasExam(examId)) {
+        total += AHS.QuestionRuntime.getSet(examId).length;
+      }
+    });
+    return total;
+  }
+
+  function workspaceRepositoryLine() {
+    if (!AHS.WorkspaceRuntime || typeof AHS.WorkspaceRuntime.label !== "function") { return null; }
+    var ws = AHS.WorkspaceRuntime.label();
+    if (!ws) { return null; }
+    var materials = (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.list === "function")
+      ? AHS.MaterialRuntime.list() : [];
+    var bySubject = {};
+    materials.forEach(function (m) {
+      var key = m.subject || "unknown";
+      bySubject[key] = (bySubject[key] || 0) + 1;
+    });
+    var subjectText = Object.keys(bySubject).map(function (key) {
+      var subj = (AHS.Subjects && AHS.Subjects[key]) || { name: key };
+      return subj.name + " " + bySubject[key];
+    }).join("、") || "（尚無教材）";
+    var latestDate = materials.reduce(function (max, m) { return (m.date && m.date > max) ? m.date : max; }, "");
+    var lines = [
+      "School：" + ws.schoolName,
+      "Semester：" + ws.semesterNames.join("、"),
+      "Subject：" + subjectText,
+      "Material Count：" + materials.length,
+      "Question Count：" + questionCountForCurrentWorkspace(materials)
+    ];
+    if (latestDate) { lines.push("最近教材時間：" + latestDate); }
+    return el("p", { class: "settings-panel__info", text: lines.join("｜") });
+  }
+
   function repositorySection() {
     var countLine = el("p", { class: "settings-panel__info" });
+    var workspaceLine = el("div", { class: "settings-panel__repo-workspace" });
     var statusBlock = el("div", { class: "settings-panel__repo-status" });
     var status = statusLine("");
     function refreshCounts() {
@@ -143,6 +194,9 @@ AHS.SettingsPanel = (function () {
         ? AHS.MaterialRepository.list().length : 0;
       var packageCount = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData.length : 0;
       countLine.textContent = "Repository 教材：" + repoCount + " 筆｜Package 教材：" + packageCount + " 筆";
+      workspaceLine.innerHTML = "";
+      var wsLine = workspaceRepositoryLine();
+      if (wsLine) { workspaceLine.appendChild(wsLine); }
       statusBlock.innerHTML = "";
       var line = repositoryStatusLine();
       if (line) { statusBlock.appendChild(line); }
@@ -161,6 +215,7 @@ AHS.SettingsPanel = (function () {
     return el("section", { class: "settings-panel__section", "aria-label": "Repository" }, [
       el("h3", { class: "settings-panel__title", text: "Repository" }),
       countLine,
+      workspaceLine,
       statusBlock,
       el("div", { class: "settings-panel__actions" }, [reloadBtn]),
       status

@@ -5,7 +5,9 @@
    discipline requires — BehaviorSuite / PipelineRegression /
    RepositoryFoundation / MaterialPipelineRegression / AnalyticsRegression
    (Sprint AI-117) / LearningFlowRegression (Sprint AI-118) /
-   WorkspaceRegression (Sprint AI-119) / Playwright
+   WorkspaceRegression (Sprint AI-119) / MaterialCenterRegression /
+   FolderRegression / AnalyticsFilterRegression / TutorRegression /
+   WorkspaceUIRegression (Sprint AI-120) / Playwright
    — and writes one real PASS/FAIL summary
    to docs/QA/QaDashboard.json. Never
    re-implements any suite's own pass/fail logic: each Node suite's exit
@@ -37,7 +39,12 @@ const NODE_SUITES = [
   { name: "MaterialPipelineRegression", script: "tests/regression/MaterialPipelineRegression.js", countPattern: /MaterialPipelineRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "AnalyticsRegression", script: "tests/regression/AnalyticsRegression.js", countPattern: /AnalyticsRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "LearningFlowRegression", script: "tests/regression/LearningFlowRegression.js", countPattern: /LearningFlowRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
-  { name: "WorkspaceRegression", script: "tests/regression/WorkspaceRegression.js", countPattern: /WorkspaceRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
+  { name: "WorkspaceRegression", script: "tests/regression/WorkspaceRegression.js", countPattern: /WorkspaceRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "MaterialCenterRegression", script: "tests/regression/MaterialCenterRegression.js", countPattern: /MaterialCenterRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "FolderRegression", script: "tests/regression/FolderRegression.js", countPattern: /FolderRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "AnalyticsFilterRegression", script: "tests/regression/AnalyticsFilterRegression.js", countPattern: /AnalyticsFilterRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "TutorRegression", script: "tests/regression/TutorRegression.js", countPattern: /TutorRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "WorkspaceUIRegression", script: "tests/regression/WorkspaceUIRegression.js", countPattern: /WorkspaceUIRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
 ];
 
 function runNodeSuite(suite) {
