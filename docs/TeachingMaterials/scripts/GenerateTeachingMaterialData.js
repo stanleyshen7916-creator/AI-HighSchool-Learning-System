@@ -258,6 +258,14 @@ function writeIndex(entries) {
       var meta = e.rawMetadata || {};
       return {
         materialId: e.materialId,
+        /* school/semester — Sprint AI-119 (Platform Core Baseline) §8/§9:
+           metadata-level Repository classification (School -> Semester
+           -> Subject -> Material), added to metadata.json's own schema
+           without re-Importing or changing any materialId. Optional
+           (null when a Package predates this field and hasn't been
+           migrated) — never fabricated when absent. */
+        school: meta.school || null,
+        semester: meta.semester || null,
         subject: meta.subject || null,
         grade: meta.grade || null,
         chapter: meta.chapter || null,

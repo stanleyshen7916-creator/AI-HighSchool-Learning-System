@@ -176,6 +176,64 @@
 }
 .profile-menu__item:hover { background-color: var(--bg); }
 
+/* ---- Current Workspace chip + quick-switch (Sprint AI-119 §7) -------- */
+.topbar__workspace-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px 0 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background-color: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.topbar__workspace-chip:hover { border-color: var(--brand-line); background-color: var(--brand-soft); }
+.topbar__workspace-chip-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background-color: var(--brand-soft);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.topbar__workspace-chip-icon svg { width: 13px; height: 13px; }
+.topbar__workspace-chip-text { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+.topbar__workspace-chip-text strong { font-size: 12px; }
+.topbar__workspace-chip-text small { font-size: 10px; color: var(--text-faint); }
+
+.workspace-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 200px;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 12px;
+}
+.workspace-menu__head { margin: 0 0 8px; padding: 0 4px; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.workspace-menu__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.workspace-menu__item {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+.workspace-menu__item:hover { background-color: var(--bg); }
+.workspace-menu__item.is-active { background-color: var(--brand-soft); color: var(--brand-ink); font-weight: 700; }
+
 /* ---- Body: sidebar + main ------------------------------------------- */
 .shell__body {
   flex: 1 1 auto;
@@ -342,6 +400,7 @@
   .topbar__brand-text { display: none; }
   .topbar__search-kbd { display: none; }
   .topbar__user-meta { display: none; }
+  .topbar__workspace-chip-text { display: none; }
   .notif-menu,
   .profile-menu { min-width: 220px; right: -8px; }
 }

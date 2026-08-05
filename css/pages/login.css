@@ -1,0 +1,142 @@
+/* css/pages/login.css — Sprint AI-119 (Platform Core Baseline) §2 Login
+   Flow page. Standalone (no shared shell/topbar — user isn't logged in
+   yet), one-file-per-page per CLAUDE.md's css/pages/ rule. */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background-color: var(--bg);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+.login-card__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-3);
+}
+.login-card__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background-color: var(--brand-soft);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card__logo svg { width: 20px; height: 20px; }
+.login-card__brand strong { font-size: 16px; }
+
+.login-steps {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: flex;
+  gap: var(--space-2);
+}
+.login-steps__item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-faint);
+}
+.login-steps__num {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-pill);
+  background-color: var(--bg);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.login-steps__label { font-size: 11px; }
+.login-steps__item.is-active { color: var(--brand); }
+.login-steps__item.is-active .login-steps__num { background-color: var(--brand); border-color: var(--brand); color: #ffffff; }
+.login-steps__item.is-done { color: var(--text-muted); }
+.login-steps__item.is-done .login-steps__num { background-color: var(--brand-soft); border-color: var(--brand-line); color: var(--brand-ink); }
+
+.login-step__title { margin: 0 0 var(--space-3); font-size: 18px; }
+
+.login-back {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 0 var(--space-2);
+}
+.login-back:hover { color: var(--brand); }
+
+.login-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.login-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--card);
+  font: inherit;
+  cursor: pointer;
+}
+.login-option:hover { border-color: var(--brand-line); background-color: var(--brand-soft); }
+.login-option__label { font-size: 14px; font-weight: 700; }
+.login-option__sub { font-size: 12px; color: var(--text-faint); }
+
+.login-option--check { gap: 10px; justify-content: flex-start; }
+.login-option__check {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  border: 2px solid var(--line-strong);
+  background-color: var(--card);
+}
+.login-option--check.is-checked .login-option__check { background-color: var(--brand); border-color: var(--brand); }
+.login-option--check.is-checked { border-color: var(--brand); background-color: var(--brand-soft); }
+
+.login-empty { font-size: 13px; color: var(--text-faint); }
+
+.login-enter-btn {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background-color: var(--brand);
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+}
+.login-enter-btn:disabled { background-color: var(--line-strong); color: var(--text-faint); box-shadow: none; cursor: not-allowed; }
+
+.login-error { margin-top: var(--space-2); font-size: 13px; color: #ef4444; }

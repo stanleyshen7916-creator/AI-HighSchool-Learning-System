@@ -45,6 +45,7 @@ window.AHS = window.AHS || {};
       }
     });
 
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
 
     /* Platform Refactor Master (PAT 8/9/10): same real Tutor Context

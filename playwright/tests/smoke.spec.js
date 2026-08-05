@@ -10,7 +10,7 @@
    real file), no blank page (.shell/.shell__main always visible), no
    console error — AI-117-11's own three "不得" rules. */
 "use strict";
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 
 function collectErrors(page) {
