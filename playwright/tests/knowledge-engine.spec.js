@@ -102,10 +102,15 @@ test("AI-121：每日 AI 練習 — 從真實 QuestionBank 隨機抽 10 題開�
     AHS.QuestionBankRuntime.ensureBank("teaching_material_daily_test", questions);
   });
   await page.goto(fileUrl("quiz") + "?mode=daily&examId=" + encodeURIComponent("teaching_material_daily_test"));
+  // Wait for the real exam view to actually render before reading Runtime
+  // state — under parallel-worker CPU contention, page.goto()'s own load
+  // event can resolve a beat before this page's many synchronous <script>
+  // tags finish executing AppQuiz.js's init(); the rendered .qcard is the
+  // one honest, definitive "initialization actually finished" signal.
+  await expect(page.locator(".qcard").first()).toBeVisible();
   const session = await page.evaluate(() => window.AHS.ExamRuntime.getCurrent());
   expect(session).toBeTruthy();
   expect(session.status).toBe("running");
   expect(session.totalQuestions).toBe(10); // Bank 有 15 題，每日練習真實抽 10 題
-  await expect(page.locator(".qcard").first()).toBeVisible();
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
