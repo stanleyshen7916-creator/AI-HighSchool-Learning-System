@@ -199,8 +199,23 @@ function generate(options) {
     "   Usage: node docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js */",
     ""
   ].join("\n");
+  /* school/semester passthrough — Sprint AI-120 (Workspace Repository
+     Integration) AI-120-01. TeachingMaterialAdapter.convertMaterial()'s
+     own output shape is untouched (still "不得修改
+     TeachingMaterialAdapter API") — this only clones its result and
+     copies 2 already-present, optional rawMetadata fields onto it so
+     js/runtime/TeachingMaterialLoader.js (browser side) has something
+     real to filter Repository bridging by. No generation/validation
+     logic changed, no new required field, no schema touched. */
   var dataEntries = entries.map(function (e) {
-    return { materialId: e.materialId, material: e.material, summary: e.summary, questions: e.questions, related: e.related };
+    var material = e.material;
+    var meta = e.rawMetadata || {};
+    if (meta.school || meta.semester) {
+      material = Object.assign({}, e.material);
+      if (meta.school) { material.school = meta.school; }
+      if (meta.semester) { material.semester = meta.semester; }
+    }
+    return { materialId: e.materialId, material: material, summary: e.summary, questions: e.questions, related: e.related };
   });
   var body = "window.AHS = window.AHS || {};\n" +
     "AHS.TeachingMaterialData = " + JSON.stringify(dataEntries, null, 2) + ";\n";

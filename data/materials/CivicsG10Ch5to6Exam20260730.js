@@ -33,6 +33,16 @@ window.AHS = window.AHS || {};
       subjectLabel: "公民與社會",
       grade: "高一",
       semester: "第二學期",
+      /* workspaceSchool/workspaceSemester — Sprint AI-120 (Workspace
+         Repository Integration) AI-120-01: distinct field names from the
+         pre-existing `semester` above ("第二學期", a real display string
+         from the source exam paper's own school year, never read by any
+         code today — confirmed via repo-wide grep) to avoid conflating
+         it with AHS.WorkspaceData.semesters[].id ("g1s2"). Migrated to
+         長榮中學／高一下學期, same target as the Package track's tm_1~4
+         (Sprint AI-119 §9), same rule: no id/content change. */
+      workspaceSchool: "cjsh",
+      workspaceSemester: "g1s2",
       chapter: "第5～6課",
       unit: "所有權與物上請求權／勞動三權與勞動基準法／夫妻財產制與法定繼承",
       materialType: "考卷",

@@ -156,7 +156,12 @@ window.AHS = window.AHS || {};
     var main = el("div", { class: "home__main" }, [
       hero,
       AHS.HomeRecentMaterials.create(buildRecentMaterialsModel()),
-      (AHS.MaterialCompletionOverview ? AHS.MaterialCompletionOverview.create() : null)
+      (AHS.MaterialCompletionOverview ? AHS.MaterialCompletionOverview.create() : null),
+      /* Sprint AI-120 AI-120-02/03: 教材資料夾 — real Current-Workspace
+         materials grouped by Subject (School/Semester already fixed by
+         the Workspace itself), each linking straight into 學習總結/
+         考前練習. */
+      (AHS.WorkspaceFolder ? AHS.WorkspaceFolder.create() : null)
     ].filter(Boolean));
 
     var rail = el("div", { class: "home__rail" }, [

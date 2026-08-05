@@ -160,3 +160,102 @@ Playwright 的 `test.extend` 對 `page` fixture 做相同的事，
 149 + 21 個既有 Playwright）**全部維持原本的斷言、零修改地繼續通過**，
 同時新增的 Workspace 相關測試是全新、獨立的檔案，真實驗證這個 Sprint
 真正的新行為，而不是被既有測試「意外掩蓋」掉。
+
+## 10. Sprint AI-120 更新 — Workspace ↔ Repository 真正串接
+
+Sprint AI-119 自己的報告明確揭露了兩個未完成項目：「school/semester 尚未接進
+Material Center 篩選 UI」、「Repository 分類只做到 metadata 層」。Sprint
+AI-120（PLATFORM_CORE_BASELINE_v1.0 的直接後續）正是處理這兩點，LOCK 條款
+明確排除 WorkspaceRuntime／PersistenceAdapter／Repository Core／Material
+Pipeline／Learning Flow／Assessment Architecture／Analytics Architecture／
+Playwright Framework／GitHub Actions——本節記錄在這些限制下實際採用的整合
+方式。
+
+### 10.1 Material Center Workspace 篩選（AI-120-01）
+
+**問題**：`js/runtime/TeachingMaterialLoader.js` 原本無條件把 Repository
+的每一筆內容（Package track 的 `AHS.TeachingMaterialData`、Repository
+track 的 `AHS.MaterialRepository`）都橋接進 `MaterialRuntime`——由於
+Sprint AI-119 已讓 `MaterialRuntime` 依 Workspace 命名空間隔離，這代表
+**每一個** Workspace 第一次造訪 materials.html 時，都會把全部 Repository
+內容各自複製一份到自己的命名空間，完全沒有依 School/Semester 篩選。
+
+**做法**：`TeachingMaterialLoader.js` 新增 `workspaceAllows(school,
+semester)`——橋接每一筆之前，比對其 `school`/`semester` 是否符合
+`AHS.WorkspaceRuntime.getCurrent()`（School 需完全相符，Semester 需與目前
+選取的 Semester 集合有交集）；不符合就整個跳過（連 idempotency map 都不
+寫入，確保之後真正符合的 Workspace 造訪時仍能正確橋接）。未標記
+school/semester 的內容（尚未分類）維持對所有人可見，向下相容、不會無故
+消失。
+
+這個 School/Semester 標記怎麼從 Repository（Node 端）傳到瀏覽器：
+`docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js` 的
+`generate()` 在寫出 `js/data/TeachingMaterialData.js` 時，把
+`rawMetadata.school`/`.semester`（Sprint AI-119 已加進
+`Metadata.schema.json` 的選填欄位）複製到瀏覽器可讀的 `material` 物件上
+——**未改動 `TeachingMaterialAdapter.convertMaterial()` 本身**（其 API 依然
+不變），只是在產生最終資料時多帶兩個既有欄位過去，不算重新設計
+Repository Core 的生成/驗證邏輯。`data/materials/
+CivicsG10Ch5to6Exam20260730.js`（Repository track 的唯一真實記錄）同樣
+標記為長榮中學／高一下學期——但用 `workspaceSchool`/`workspaceSemester`
+這組新欄位名，刻意避開它自己既有、語意完全不同的 `semester`
+欄位（"第二學期"，一個從未被任何程式碼讀取的純顯示字串，全repo
+grep 確認）。
+
+### 10.2 首頁「教材資料夾」（AI-120-02/03）
+
+新增 `js/components/WorkspaceFolder.js`，唯一讀取
+`AHS.MaterialRuntime.list()`（AI-120-01 的篩選已經讓它自動只含 Current
+Workspace 自己的教材，這裡不重複判斷一次），依 `subject` 分組——
+School／Semester 已經是整個 Workspace 固定的上下文（Topbar 已顯示），
+不需要在 Folder 裡再分一層。每筆教材附上真實的「前往學習總結」／
+「前往考前練習」連結（沿用 `MaterialCard.js` 既有的 href 慣例，不是
+另一組連結規則）。「立即同步」不需要輪詢機制——這是多頁面的靜態 App，
+本來就是每次真正換頁/重新整理才重新渲染，`WorkspaceFolder.create()`
+每次都是全新讀取 `MaterialRuntime.list()` 當下的狀態。
+
+### 10.3 Settings Repository Status Workspace 資訊（AI-120-07）
+
+`js/ui/SettingsPanel.js` 的 `repositorySection()` 新增
+`workspaceRepositoryLine()`：School／Semester（取自
+`AHS.WorkspaceRuntime.label()`）、Subject 分佈、Material Count、
+Question Count（用既有的 `"teaching_material_" + materialId` examId
+慣例逐一查 `AHS.QuestionRuntime.getSet()`，不是發明新的 id 規則）。
+「Import Time」刻意沒有做成一個假造的「匯入時間」欄位——這個
+App 沒有任何真實記錄「Repository 何時被匯入」的事件，改為誠實顯示
+Current Workspace 教材當中最新的真實 `date`（上傳/建立時間）欄位。
+
+### 10.4 Navigation／Analytics／Tutor 的 Workspace 一致性（AI-120-04/05/06）
+
+這三項在程式碼層級**幾乎不需要新增邏輯**——全部是 Sprint AI-119
+`PersistenceAdapter` 命名空間機制與本 Sprint AI-120-01 篩選機制的自然結果：
+
+- Navigation：Workspace 存在 sessionStorage，換頁本來就會保留，
+  Topbar chip 每次都從 `AHS.WorkspaceRuntime.label()` 即時讀取——沒有
+  任何「頁面之間傳遞 Workspace」的額外程式碼要寫。
+- Analytics：`AHS.StatisticsRuntime`（本 Sprint 完全未修改，尊重
+  Analytics Architecture LOCK）只讀 `HistoryRuntime`/`WrongBookRuntime`/
+  `MaterialRuntime`，這些全部已經是 Workspace 命名空間化的 Runtime，
+  切換 Workspace 自然只看得到新命名空間的資料。
+- Tutor：`AHS.TutorMessage.build()`（同樣完全未修改）只讀
+  `StatisticsRuntime`/`MaterialRuntime`，同理自動只會提及 Current
+  Workspace 真正擁有的教材——AI-120-01 的篩選讓「其他 Semester 的教材
+  根本不存在於這個 Workspace 的 MaterialRuntime 裡」，Tutor 自然無從
+  推薦起。
+
+這三項因此以**測試驗證**為主要交付物（`WorkspaceUIRegression.js`／
+`AnalyticsFilterRegression.js`／`TutorRegression.js`／
+`playwright/tests/workspace-repository.spec.js` 的 PAT③⑤⑥），而非新的
+應用邏輯——誠實反映「這是既有機制的自然延伸，不是重新發明」。
+
+### 10.5 已知、誠實揭露的限制（延續自 Sprint AI-119，本 Sprint 未解決）
+
+**複選 Semester 的 Analytics 並非真正合併分析**：規格 AI-120-05 提到
+「複選：高一下＋高二上，Analytics 重新分析」——但 `WorkspaceRuntime.
+storageNamespace()`（LOCK，本 Sprint 不得修改）把「高一下」「高二上」
+「高一下+高二上」視為三個各自獨立的命名空間，而非把兩個 Semester的
+資料在讀取時合併。這代表複選兩個 Semester 登入時，看到的是**該特定
+組合自己的、從零開始的**資料，不是兩個 Semester 個別資料的聯集——
+這需要修改 `WorkspaceRuntime`／`PersistenceAdapter`（兩者皆 LOCK）才能
+真正做到跨命名空間查詢，本 Sprint 依 LOCK 未處理，留待下一個明確排除
+此 LOCK 的 Sprint。

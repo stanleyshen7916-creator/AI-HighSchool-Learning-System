@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T11:32:18.438Z",
+  "generatedAt": "2026-08-05T13:28:18.269Z",
   "overall": "PASS",
   "suites": [
     {
@@ -7,56 +7,91 @@
       "result": "PASS",
       "pass": 330,
       "fail": 0,
-      "durationMs": 10368
+      "durationMs": 7748
     },
     {
       "name": "PipelineRegression",
       "result": "PASS",
       "pass": 6,
       "fail": 0,
-      "durationMs": 54
+      "durationMs": 46
     },
     {
       "name": "RepositoryFoundation",
       "result": "PASS",
       "pass": 29,
       "fail": 0,
-      "durationMs": 2765
+      "durationMs": 2120
     },
     {
       "name": "MaterialPipelineRegression",
       "result": "PASS",
       "pass": 37,
       "fail": 0,
-      "durationMs": 3768
+      "durationMs": 3000
     },
     {
       "name": "AnalyticsRegression",
       "result": "PASS",
       "pass": 35,
       "fail": 0,
-      "durationMs": 1343
+      "durationMs": 1145
     },
     {
       "name": "LearningFlowRegression",
       "result": "PASS",
       "pass": 42,
       "fail": 0,
-      "durationMs": 1657
+      "durationMs": 1280
     },
     {
       "name": "WorkspaceRegression",
       "result": "PASS",
       "pass": 36,
       "fail": 0,
-      "durationMs": 829
+      "durationMs": 666
+    },
+    {
+      "name": "MaterialCenterRegression",
+      "result": "PASS",
+      "pass": 12,
+      "fail": 0,
+      "durationMs": 820
+    },
+    {
+      "name": "FolderRegression",
+      "result": "PASS",
+      "pass": 11,
+      "fail": 0,
+      "durationMs": 644
+    },
+    {
+      "name": "AnalyticsFilterRegression",
+      "result": "PASS",
+      "pass": 6,
+      "fail": 0,
+      "durationMs": 837
+    },
+    {
+      "name": "TutorRegression",
+      "result": "PASS",
+      "pass": 8,
+      "fail": 0,
+      "durationMs": 722
+    },
+    {
+      "name": "WorkspaceUIRegression",
+      "result": "PASS",
+      "pass": 28,
+      "fail": 0,
+      "durationMs": 1041
     },
     {
       "name": "Playwright",
       "result": "PASS",
-      "pass": 25,
+      "pass": 32,
       "fail": 0,
-      "durationMs": 28358.578
+      "durationMs": 28309.135
     }
   ]
 }

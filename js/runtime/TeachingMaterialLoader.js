@@ -318,8 +318,32 @@ AHS.TeachingMaterialLoader = (function () {
     return null;
   }
 
+  /* workspaceAllows(school, semester) — Sprint AI-120 (Workspace
+     Repository Integration) AI-120-01: a Repository entry tagged with a
+     real school/semester (Sprint AI-119 §9's migration + this Sprint's
+     own generator passthrough) only bridges into MaterialRuntime for a
+     Workspace whose own School matches AND whose selected Semester(s)
+     intersect it — "Student A → 長榮中學 → 高二上 只能看到高二上教材,
+     不得出現高一下". An entry with NEITHER field set (not yet migrated)
+     stays visible everywhere, unchanged from pre-Sprint-AI-120 behavior
+     — never silently disappears for content nobody has classified yet.
+     No active Workspace (AHS.WorkspaceRuntime not loaded, or every
+     pre-Sprint-AI-119 test that never establishes one) also stays
+     unfiltered — same backward-compatibility discipline as
+     PersistenceAdapter's own namespace() fallback. */
+  function workspaceAllows(school, semester) {
+    if (!school && !semester) { return true; }
+    if (!AHS.WorkspaceRuntime || typeof AHS.WorkspaceRuntime.getCurrent !== "function") { return true; }
+    var ws = AHS.WorkspaceRuntime.getCurrent();
+    if (!ws) { return true; }
+    if (school && ws.schoolId !== school) { return false; }
+    if (semester && ws.semesterIds.indexOf(semester) === -1) { return false; }
+    return true;
+  }
+
   function loadEntry(entry, idMap) {
     if (!entry || !entry.materialId || !entry.material) { return; }
+    if (!workspaceAllows(entry.material.school, entry.material.semester)) { return; }
     var runtimeMaterialId = resolveMaterialId(entry, idMap);
     if (!runtimeMaterialId) { return; }
     loadQuestions(entry, runtimeMaterialId);
@@ -427,6 +451,12 @@ AHS.TeachingMaterialLoader = (function () {
 
   function loadMaterialRepositoryEntry(record, idMap) {
     if (!record || !record.id) { return; }
+    var meta = record.metadata || {};
+    /* workspaceSchool/workspaceSemester, not meta.school/meta.semester —
+       this Repository track's own metadata already has an unrelated,
+       pre-existing display-string `semester` field (e.g. "第二學期");
+       see data/materials/CivicsG10Ch5to6Exam20260730.js's own comment. */
+    if (!workspaceAllows(meta.workspaceSchool, meta.workspaceSemester)) { return; }
     var runtimeMaterialId = idMap[record.id];
     if (!runtimeMaterialId) {
       if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return; }
