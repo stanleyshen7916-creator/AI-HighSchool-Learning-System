@@ -33,9 +33,9 @@ Runtime 層，詳見下方「判斷與取捨」。
 | Verify | PASS |
 | Test（含 LearningFlowRegression） | PASS |
 | QA Dashboard | PASS |
-| GitHub Actions | _(填入合併後之 run)_ |
-| Deployment | _(填入合併後之 run)_ |
-| Merge Commit | _(填入合併後之 commit)_ |
+| GitHub Actions | PASS（`QA Automation Framework` run [30988800426](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30988800426)，commit `6f01b8f8`） |
+| Deployment | PASS（GitHub Pages `pages build and deployment` run [30988799838](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/30988799838)，commit `6f01b8f8`） |
+| Merge Commit | `6f01b8f815fd96f6a3c79b29c56a9b3f3b01a7ce`（PR #47，merged into `main`） |
 
 ## Detail per item
 
