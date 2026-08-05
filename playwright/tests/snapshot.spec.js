@@ -62,12 +62,17 @@ async function stabilize(page) {
   await page.evaluate(() => { if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); } });
 }
 
+/* Sprint AI-118 AI-118-13: Snapshot QA baseline set rebuilt to match the
+   new Learning Loop (AI-118-01) — Summary added (now a core stop in the
+   Loop), Review dropped (still a real page, AI-118-03's own "Page 保留"
+   — just no longer part of the primary snapshot set now that its Nav
+   entry and central role are gone). */
 const PAGES = [
   { key: "home", label: "首頁" },
   { key: "materials", label: "教材中心" },
+  { key: "summary", label: "Summary" },
   { key: "quiz", label: "Quiz" },
   { key: "wrongbook", label: "WrongBook" },
-  { key: "review", label: "Review" },
   { key: "tutor", label: "Tutor" }
 ];
 

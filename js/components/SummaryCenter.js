@@ -271,12 +271,21 @@ AHS.SummaryCenter = (function () {
     ]);
   }
 
-  /* ---- Summary Footer (Sprint 6.7-1) --------------------------------------
+  /* ---- Summary Footer (Sprint 6.7-1, reworked Sprint AI-118 AI-118-05)
      已閱讀完成 — a real, working UI toggle scoped to this render only
      (no new Runtime/Storage; SummaryRuntime's Schema/API is untouched,
-     per this task's explicit "不得新增 Runtime"). 前往測驗 — a real
-     link into the existing Practice Mode (quiz.html), not fabricated.
-     AI 練習入口 — explicitly required to be Disabled + Coming Soon. */
+     per this task's explicit "不得新增 Runtime"). 前往考前練習 (renamed
+     from 開始 AI 練習, href unchanged) — a real link into the existing
+     non-graded Practice Mode (quiz.html?mode=practice&materialId=...,
+     AHS.LearningQuestionRuntime-backed, never writes WrongBook/History
+     — confirmed by reading js/components/QuizCenter.js's own
+     buildPracticeQuestionView(), untouched here). 前往正式測驗 removed
+     and replaced with 前往錯題本 (AI-118-05: Summary's own CTA set is
+     now 前往考前練習/前往錯題本 only — 正式測驗 is reached from Quiz
+     Center itself, matching AI-118-01's Learning Loop where Summary's
+     only forward step is practice, not a second formal-exam entry
+     point). AI 自動出題 — still explicitly Disabled + Coming Soon,
+     unaffected by this Sprint (not named in AI-118-05's removal list). */
   function summaryFooter(record) {
     var readBtn = el("button", { type: "button", class: "sum-footer__read" }, [
       el("span", { html: AHS.Icons.check() }),
@@ -298,12 +307,16 @@ AHS.SummaryCenter = (function () {
       class: "sum-footer__quiz",
       href: "quiz.html?mode=practice&materialId=" + encodeURIComponent(record.materialId || "")
     }, [
-      el("span", { text: "開始 AI 練習" }),
+      el("span", { text: "前往考前練習" }),
       el("span", { html: AHS.Icons.chevronRight() })
     ]);
 
-    var examLink = el("a", { class: "sum-footer__exam", href: "quiz.html" }, [
-      el("span", { text: "前往正式測驗" })
+    /* AI-118-05: 前往錯題本 replaces 前往正式測驗 — no materialId filter
+       param exists on wrongbook.html (confirmed: AppWrongBook.js reads
+       no query params), so this links to the page itself; its own
+       filter bar already lets a student narrow by 科目/知識點 if needed. */
+    var wrongBookLink = el("a", { class: "sum-footer__wrongbook", href: "wrongbook.html" }, [
+      el("span", { text: "前往錯題本" })
     ]);
 
     /* On-demand AI question GENERATION (as opposed to navigating to see
@@ -319,7 +332,7 @@ AHS.SummaryCenter = (function () {
       el("span", { class: "ml-tab__soon", text: "Coming Soon" })
     ]);
 
-    return el("div", { class: "sum-footer" }, [readBtn, practiceLink, examLink, aiGenerateEntry]);
+    return el("div", { class: "sum-footer" }, [readBtn, practiceLink, wrongBookLink, aiGenerateEntry]);
   }
 
   /* HOTFIX-004 Issue 001: ⑤ 複習建議 derivation, used only when

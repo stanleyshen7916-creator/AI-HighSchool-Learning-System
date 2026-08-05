@@ -39,10 +39,13 @@
 .wb-action--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .wb-action--ghost:hover { background-color: var(--bg); }
 
-/* ---- Summary Card (W001-1) --------------------------------------------- */
+/* ---- Summary Card (W001-1, reworked Sprint AI-118 AI-118-07) -----------
+   grid-template-columns changed from a fixed repeat(4, ...) to
+   auto-fit/minmax: SUMMARY_DEFS now has 1 real item (今日待複習) instead
+   of 4, and a fixed 4-column grid would leave 3 empty stretched columns. */
 .wb-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 240px));
   gap: 16px;
 }
 .wb-summary__item { display: flex; align-items: center; gap: 12px; min-width: 0; }

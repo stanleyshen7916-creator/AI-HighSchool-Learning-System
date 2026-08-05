@@ -144,22 +144,24 @@ AHS.MaterialCard = (function () {
       downloadMaterial();
     });
 
-    /* Sprint v1.6 Module A — Material Card Navigation Action: 查看摘要 /
-       開始練習. Plain <a href> elements (never window.location.href=,
-       per this repo's forbidden-pattern rule), reusing the existing
-       .mat-card__act icon-button class verbatim — no new CSS, no Layout
-       change, matching "僅新增 Navigation Action". Rendered on every
-       card unconditionally (Material Card has no way to know in advance
-       whether a Summary/Exam record exists — summary.html/quiz.html
-       already show their own honest Empty State / fall back to the
-       normal Exam Mode list when there's nothing real to show, exactly
-       like every other real-content-dependent link in this app). The
-       "teaching_material_" + id examId convention matches
+    /* Sprint v1.6 Module A — Material Card Navigation Action, relabeled
+       Sprint AI-118 AI-118-04: 前往學習總結 / 前往考前練習 (was 查看摘要 /
+       開始練習) — matches the Learning Loop's own terminology (AI-118-01:
+       首頁→教材中心→學習總結→測驗中心→錯題本→首頁) and AI-118-06's
+       考前練習/正式測驗 naming, so a student never sees two different
+       names for the same next step. Href/behavior unchanged — AI-118-04
+       only requires the label to route into 學習總結, never expand
+       Summary inline, which was already true (plain <a href>, never
+       window.location.href=, per this repo's forbidden-pattern rule).
+       Rendered on every card unconditionally — summary.html/quiz.html
+       already show their own honest Empty State when there's nothing
+       real yet, exactly like every other real-content-dependent link in
+       this app. The "teaching_material_" + id examId convention matches
        js/runtime/TeachingMaterialLoader.js's own examIdFor(). */
     var summaryLink = el("a", {
       class: "mat-card__act mat-card__summary-link",
       href: "summary.html?materialId=" + encodeURIComponent(item.id),
-      "aria-label": "查看摘要", "data-tip": "查看摘要",
+      "aria-label": "前往學習總結", "data-tip": "前往學習總結",
       html: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
         'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<path d="M6 4h9l3 3v13H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>'
@@ -169,16 +171,17 @@ AHS.MaterialCard = (function () {
     var practiceLink = el("a", {
       class: "mat-card__act mat-card__practice-link",
       href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + item.id),
-      "aria-label": "開始練習", "data-tip": "開始練習",
+      "aria-label": "前往考前練習", "data-tip": "前往考前練習",
       html: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
         'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'
     });
     practiceLink.addEventListener("click", function (e) { e.stopPropagation(); });
 
-    /* RC-003-007, updated HOTFIX-009-2: card icons are 收藏 / 下載教材 /
-       查看摘要 / 開始練習 / 刪除教材. No 開啟教材 icon, and no separate
-       預覽教材 icon (duplicated the card-click/繼續學習 preview action). */
+    /* RC-003-007, updated HOTFIX-009-2/AI-118-04: card icons are 收藏 /
+       下載教材 / 前往學習總結 / 前往考前練習 / 刪除教材. No 開啟教材 icon,
+       and no separate 預覽教材 icon (duplicated the card-click/繼續學習
+       preview action). */
     var acts = [favBtn, dlBtn, summaryLink, practiceLink];
     if (typeof onDelete === "function") {
       /* Trash icon defined locally (the shared Icons.js is out of this

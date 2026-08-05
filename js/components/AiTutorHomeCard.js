@@ -17,12 +17,29 @@ AHS.AiTutorHomeCard = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* Sprint AI-118 AI-118-08: each real action from AHS.TutorMessage.build()
+     now carries a real `href` into the correct Learning Loop next step
+     (教材→學習總結→考前練習→正式測驗→錯題→再次推薦教材) — rendered as a
+     real <a href> (plain navigation, never window.location.href=, per
+     this repo's forbidden-pattern rule) instead of the previous
+     status-text-only stub. Falls back to the old button-only behavior
+     when an action genuinely has no href (defensive, keeps this
+     component working even if a future caller omits it). */
   function actionTile(action, status) {
-    var btn = el("button", { type: "button", class: "tutor-card__tile" }, [
+    var children = [
       el("span", { class: "tutor-card__tile-icon", html: AHS.Icons[action.icon]() }),
       el("span", { class: "tutor-card__tile-label", text: action.label }),
       el("span", { class: "tutor-card__tile-desc", text: action.desc })
-    ]);
+    ];
+    if (action.href) {
+      var link = el("a", { class: "tutor-card__tile", href: action.href }, children);
+      link.addEventListener("click", function () {
+        status.textContent = "前往：" + action.label;
+        status.removeAttribute("hidden");
+      });
+      return link;
+    }
+    var btn = el("button", { type: "button", class: "tutor-card__tile" }, children);
     btn.addEventListener("click", function () {
       status.textContent = "啟動：" + action.label;
       status.removeAttribute("hidden");

@@ -1,48 +1,55 @@
 {
-  "generatedAt": "2026-08-03T07:37:50.524Z",
+  "generatedAt": "2026-08-05T08:18:51.558Z",
   "overall": "PASS",
   "suites": [
     {
       "name": "BehaviorSuite",
       "result": "PASS",
-      "pass": 329,
+      "pass": 330,
       "fail": 0,
-      "durationMs": 5833
+      "durationMs": 5613
     },
     {
       "name": "PipelineRegression",
       "result": "PASS",
       "pass": 6,
       "fail": 0,
-      "durationMs": 45
+      "durationMs": 40
     },
     {
       "name": "RepositoryFoundation",
       "result": "PASS",
       "pass": 29,
       "fail": 0,
-      "durationMs": 1084
+      "durationMs": 1855
     },
     {
       "name": "MaterialPipelineRegression",
       "result": "PASS",
       "pass": 37,
       "fail": 0,
-      "durationMs": 1382
+      "durationMs": 2619
     },
     {
       "name": "AnalyticsRegression",
       "result": "PASS",
       "pass": 35,
       "fail": 0,
-      "durationMs": 1049
+      "durationMs": 979
+    },
+    {
+      "name": "LearningFlowRegression",
+      "result": "PASS",
+      "pass": 42,
+      "fail": 0,
+      "durationMs": 1159
     },
     {
       "name": "Playwright",
       "result": "PASS",
-      "pass": 20,
+      "pass": 21,
       "fail": 0,
-      "durationMs": 13946.204
+      "durationMs": 14847.466
     }
   ]
 }

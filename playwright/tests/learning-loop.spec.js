@@ -98,7 +98,9 @@ test("Learning Loop E2E：首頁 -> 教材 -> Summary -> Quiz -> WrongBook -> Re
   await test.step("WrongBook（錯題本）", async () => {
     await page.goto(fileUrl("wrongbook"));
     await expect(page.locator("body")).toContainText(MATERIAL_TITLE);
-    await expect(page.locator("body")).toContainText("尚未精熟");
+    /* Sprint AI-118 AI-118-07: 錯題本統計卡改為顯示「今日待複習」
+       （AHS.StatisticsRuntime.dueForReview()，取代先前的「尚未精熟」）。 */
+    await expect(page.locator("body")).toContainText("今日待複習");
   });
 
   await test.step("Review（複習中心）— 真實作答互動", async () => {

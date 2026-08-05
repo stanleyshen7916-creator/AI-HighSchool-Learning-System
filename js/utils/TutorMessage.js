@@ -86,21 +86,36 @@ AHS.TutorMessage = (function () {
        既有行為，不因新增優先序而消失。 */
     var freshlyWrong = (context.dueForReview || []).filter(function (w) { return (w.correctStreak || 0) === 0; });
 
+    /* Sprint AI-118 AI-118-08: 所有推薦流程固定為 教材→學習總結→考前練習→
+       正式測驗→錯題→再次推薦教材，不得跳脫此流程 — each action below now
+       carries a real `href` into the correct next step (previously these
+       tiles set only a status-text stub, no real navigation existed to
+       stay "inside" or "jump outside" of in the first place). 前往複習
+       中心 renamed 前往錯題本 (複習中心's Nav entry is gone this Sprint,
+       AI-118-03: "所有入口整併：錯題本" — dueForReview's own real items
+       live in WrongBookRuntime either way, so wrongbook.html is the
+       correct, not a substitute, destination). */
     if (context.dueForReview && context.dueForReview.length) {
       var reviewLine = "你今天有 " + context.dueForReview.length + " 題錯題待複習，建議先完成今日複習。";
       if (freshlyWrong.length) {
         reviewLine += "其中 " + freshlyWrong.length + " 題是尚未複習過的新錯題。";
       }
       sentences.push(reviewLine);
-      actions.push({ icon: "clock", label: "前往複習中心", desc: context.dueForReview.length + " 題待複習" });
+      actions.push({
+        icon: "clock", label: "前往錯題本", desc: context.dueForReview.length + " 題待複習",
+        href: "wrongbook.html"
+      });
     } else if (context.completedMaterial && context.nextMaterial) {
       sentences.push(
         "你已經完成「" + context.completedMaterial.title + "」，建議接著閱讀「" + context.nextMaterial.title + "」。"
       );
-      actions.push({ icon: "book", label: "前往教材中心", desc: context.nextMaterial.title });
+      actions.push({
+        icon: "book", label: "前往教材中心", desc: context.nextMaterial.title,
+        href: "materials.html?id=" + encodeURIComponent(context.nextMaterial.id)
+      });
     } else if (context.allComplete) {
-      sentences.push("太棒了！目前的教材與錯題都已完成，建議挑戰新的測驗鞏固實力。");
-      actions.push({ icon: "quiz", label: "前往測驗中心", desc: "挑戰測驗" });
+      sentences.push("太棒了！目前的教材與錯題都已完成，建議挑戰正式測驗鞏固實力。");
+      actions.push({ icon: "quiz", label: "前往正式測驗", desc: "挑戰測驗", href: "quiz.html" });
     }
 
     if (context.weakestSubject) {
@@ -108,7 +123,10 @@ AHS.TutorMessage = (function () {
         "你在「" + subjectName(context.weakestSubject.subject) + "」的平均正確率是 " +
         context.weakestSubject.percent + "%，是目前較弱的科目。"
       );
-      actions.push({ icon: "quiz", label: "加強練習", desc: subjectName(context.weakestSubject.subject) });
+      actions.push({
+        icon: "quiz", label: "前往考前練習", desc: subjectName(context.weakestSubject.subject),
+        href: "quiz.html?mode=practice"
+      });
     }
 
     if (context.recommendedChapters && context.recommendedChapters.length) {
@@ -123,7 +141,10 @@ AHS.TutorMessage = (function () {
         "「" + (context.recommendedRetest.title || "上次測驗") + "」上次正確率 " +
         (context.recommendedRetest.accuracy || 0) + "%，建議重新測驗加強。"
       );
-      actions.push({ icon: "refresh", label: "重新測驗", desc: context.recommendedRetest.title || "" });
+      actions.push({
+        icon: "refresh", label: "重新測驗", desc: context.recommendedRetest.title || "",
+        href: context.recommendedRetest.examId ? "quiz.html?examId=" + encodeURIComponent(context.recommendedRetest.examId) : "quiz.html"
+      });
     }
 
     if (context.masteredCount) {
