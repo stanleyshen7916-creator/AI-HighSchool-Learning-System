@@ -4,7 +4,8 @@
    already-fresh result of) every real suite this repository's QA
    discipline requires — BehaviorSuite / PipelineRegression /
    RepositoryFoundation / MaterialPipelineRegression / AnalyticsRegression
-   (Sprint AI-117) / LearningFlowRegression (Sprint AI-118) / Playwright
+   (Sprint AI-117) / LearningFlowRegression (Sprint AI-118) /
+   WorkspaceRegression (Sprint AI-119) / Playwright
    — and writes one real PASS/FAIL summary
    to docs/QA/QaDashboard.json. Never
    re-implements any suite's own pass/fail logic: each Node suite's exit
@@ -35,7 +36,8 @@ const NODE_SUITES = [
   { name: "RepositoryFoundation", script: "tests/regression/RepositoryFoundation.js", countPattern: /RepositoryFoundation:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "MaterialPipelineRegression", script: "tests/regression/MaterialPipelineRegression.js", countPattern: /MaterialPipelineRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
   { name: "AnalyticsRegression", script: "tests/regression/AnalyticsRegression.js", countPattern: /AnalyticsRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
-  { name: "LearningFlowRegression", script: "tests/regression/LearningFlowRegression.js", countPattern: /LearningFlowRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
+  { name: "LearningFlowRegression", script: "tests/regression/LearningFlowRegression.js", countPattern: /LearningFlowRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ },
+  { name: "WorkspaceRegression", script: "tests/regression/WorkspaceRegression.js", countPattern: /WorkspaceRegression:\s*(\d+)\s*PASS\s*\/\s*(\d+)\s*FAIL/ }
 ];
 
 function runNodeSuite(suite) {

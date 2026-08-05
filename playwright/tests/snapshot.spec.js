@@ -21,7 +21,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 
 const SCREENSHOT_DIR = path.join(__dirname, "..", "report", "screenshots");

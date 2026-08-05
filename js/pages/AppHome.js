@@ -184,6 +184,7 @@ window.AHS = window.AHS || {};
       onNavigate: function () { /* Mock navigation — single-page prototype. */ }
     });
 
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
     shell.main.appendChild(buildHome());
   }

@@ -25,7 +25,7 @@
    contain one real wrong answer, the same "a quiz was already taken"
    starting state Sprint AI-114's own Review Session test used). */
 "use strict";
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 const { seedSession } = require("../helpers/seed.js");
 
@@ -126,8 +126,7 @@ test("Learning Loop E2E：首頁 -> 教材 -> Summary -> Quiz -> WrongBook -> Re
     await expect(page.locator(".rv-session")).toHaveCount(0);
 
     const correctStreak = await page.evaluate(() => {
-      const raw = window.sessionStorage.getItem("ahs:wrongBookRuntime");
-      const data = raw ? JSON.parse(raw) : null;
+      const data = window.AHS.PersistenceAdapter.load("wrongBookRuntime");
       const item = data && data.items && data.items.find((it) => it.id === "wb_1");
       return item ? item.correctStreak : null;
     });

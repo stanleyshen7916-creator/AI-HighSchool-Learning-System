@@ -8,7 +8,7 @@
    (AI-117-10 Single Source, verified here from the browser side; the
    Node-side proof is tests/regression/AnalyticsRegression.js). */
 "use strict";
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 const { seedSession } = require("../helpers/seed.js");
 
@@ -31,9 +31,7 @@ function baseSeed(progress) {
 }
 
 async function completionTextOn(page, url, seed) {
-  await page.addInitScript((seedData) => {
-    Object.keys(seedData).forEach((k) => window.sessionStorage.setItem(k, JSON.stringify(seedData[k])));
-  }, seed);
+  await seedSession(page, seed);
   await page.goto(url);
   /* Both pages also bridge the repository's own real Civics material
      (data/materials/MaterialRepositoryIndex.js, loaded on every page) —

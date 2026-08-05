@@ -24,7 +24,24 @@
    exactly as before this Architecture Evolution, so nothing regresses
    even in environments where sessionStorage can't be used.
    PascalCase module under window.AHS, consistent with every existing
-   module in this repo. */
+   module in this repo.
+
+   Sprint AI-119 (Platform Core Baseline) §11 "Learning State：依
+   Workspace 完全隔離": save()/load()/remove() now insert the active
+   Workspace's storage namespace (AHS.WorkspaceRuntime.storageNamespace())
+   between the fixed "ahs:" prefix and the caller's own key — with ZERO
+   code change required in any of this repo's Runtime files, since they
+   already only ever call save(key, ...)/load(key)/remove(key) with
+   their own fixed short key name. When no Workspace is active yet
+   (AHS.WorkspaceRuntime not loaded on a given page, or no real Login has
+   happened — e.g. every pre-Sprint-AI-119 automated test, which never
+   establishes a Workspace) the namespace is simply "", so the exact
+   legacy unprefixed key is used — 100% backward compatible, not an
+   approximation: hundreds of pre-existing jsdom/regression/Playwright
+   checks that seed sessionStorage with literal keys like
+   "ahs:materialRuntime" keep passing unmodified. Once a real Login sets
+   a Workspace, every subsequent read/write for every Runtime becomes
+   isolated per Workspace automatically. */
 window.AHS = window.AHS || {};
 AHS.PersistenceAdapter = (function () {
   "use strict";
@@ -45,6 +62,22 @@ AHS.PersistenceAdapter = (function () {
     return availableCache;
   }
 
+  /* namespace() — the active Workspace's storage namespace, or "" when
+     none is active. Never throws even if AHS.WorkspaceRuntime isn't
+     loaded on a given page (this file loads before it in every page's
+     own script order, per CLAUDE.md's core -> data/utils -> runtime
+     convention, so this lazy runtime-time lookup — not a load-time
+     dependency — is required, not just defensive). */
+  function namespace() {
+    if (!AHS.WorkspaceRuntime || typeof AHS.WorkspaceRuntime.storageNamespace !== "function") { return ""; }
+    try { return AHS.WorkspaceRuntime.storageNamespace() || ""; } catch (e) { return ""; }
+  }
+
+  function effectiveKey(key) {
+    var ns = namespace();
+    return ns ? PREFIX + ns + ":" + key : PREFIX + key;
+  }
+
   /* save(key, value) — JSON-serializes `value` and stores it under a
      namespaced key. Returns true on success, false on any failure
      (unavailable storage, quota exceeded, non-serializable value) —
@@ -52,7 +85,7 @@ AHS.PersistenceAdapter = (function () {
   function save(key, value) {
     if (!key || !isAvailable()) { return false; }
     try {
-      window.sessionStorage.setItem(PREFIX + key, JSON.stringify(value));
+      window.sessionStorage.setItem(effectiveKey(key), JSON.stringify(value));
       return true;
     } catch (e) {
       return false;
@@ -66,7 +99,7 @@ AHS.PersistenceAdapter = (function () {
   function load(key) {
     if (!key || !isAvailable()) { return null; }
     try {
-      var raw = window.sessionStorage.getItem(PREFIX + key);
+      var raw = window.sessionStorage.getItem(effectiveKey(key));
       if (raw === null) { return null; }
       return JSON.parse(raw);
     } catch (e) {
@@ -75,6 +108,41 @@ AHS.PersistenceAdapter = (function () {
   }
 
   function remove(key) {
+    if (!key || !isAvailable()) { return; }
+    try { window.sessionStorage.removeItem(effectiveKey(key)); } catch (e) { /* no-op */ }
+  }
+
+  /* saveGlobal/loadGlobal/removeGlobal — bypass Workspace namespacing
+     entirely. Reserved for exactly one caller: the Workspace pointer
+     itself (AHS.WorkspaceRuntime) — namespacing the key that DEFINES the
+     namespace would be circular. Everything else, including
+     AHS.SettingsRuntime's own preferences, still goes through the
+     regular save()/load()/remove() and is namespaced per-Workspace like
+     any other Runtime — simpler than carving out a second "which state
+     counts as Learning State" list, and arguably more correct (a
+     display name/grade is plausibly per-Student anyway). */
+  function saveGlobal(key, value) {
+    if (!key || !isAvailable()) { return false; }
+    try {
+      window.sessionStorage.setItem(PREFIX + key, JSON.stringify(value));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function loadGlobal(key) {
+    if (!key || !isAvailable()) { return null; }
+    try {
+      var raw = window.sessionStorage.getItem(PREFIX + key);
+      if (raw === null) { return null; }
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function removeGlobal(key) {
     if (!key || !isAvailable()) { return; }
     try { window.sessionStorage.removeItem(PREFIX + key); } catch (e) { /* no-op */ }
   }
@@ -94,19 +162,44 @@ AHS.PersistenceAdapter = (function () {
     } catch (e) { /* no-op */ }
   }
 
+  /* splitKey(fullKey) — fullKey always starts with PREFIX (caller already
+     checked). Every real STORAGE_KEY constant in this repo is a single
+     camelCase word (no colons), so "does the remainder after PREFIX
+     contain a colon" reliably tells a namespaced key
+     ("ns:shortKey") apart from a *Global one ("shortKey") without
+     needing a second marker. */
+  function splitKey(fullKey) {
+    var remainder = fullKey.slice(PREFIX.length);
+    var idx = remainder.indexOf(":");
+    if (idx === -1) { return { ns: "", shortKey: remainder }; }
+    return { ns: remainder.slice(0, idx), shortKey: remainder.slice(idx + 1) };
+  }
+
   /* exportAll() — Sprint AI-113 AI-804 (Settings: Backup/Export). Real
      snapshot of every AHS-namespaced key, prefix stripped, values
      already-parsed (so a caller can JSON.stringify the whole object for
-     a downloadable file). Read-only, never mutates storage. */
+     a downloadable file). Read-only, never mutates storage.
+
+     Sprint AI-119: scoped to the CURRENTLY ACTIVE Workspace's own keys
+     only (plus the *Global keys when no Workspace is active) — exporting
+     every Workspace's data indiscriminately, then blindly replaying it
+     through save() on import (which re-applies whatever Workspace is
+     active AT IMPORT TIME), would either leak one Workspace's data into
+     another or double-namespace an already-namespaced key. Scoping both
+     sides to "current Workspace only" keeps Export/Import exactly as
+     correct as it was pre-Sprint-AI-119 (when there was only ever one
+     implicit, global Workspace). */
   function exportAll() {
     var out = {};
     if (!isAvailable()) { return out; }
+    var ns = namespace();
     try {
       for (var i = 0; i < window.sessionStorage.length; i += 1) {
         var k = window.sessionStorage.key(i);
         if (k && k.indexOf(PREFIX) === 0) {
-          var shortKey = k.slice(PREFIX.length);
-          try { out[shortKey] = JSON.parse(window.sessionStorage.getItem(k)); }
+          var parsed = splitKey(k);
+          if (parsed.ns !== ns) { continue; }
+          try { out[parsed.shortKey] = JSON.parse(window.sessionStorage.getItem(k)); }
           catch (e) { /* skip one corrupt entry, keep the rest */ }
         }
       }
@@ -135,6 +228,9 @@ AHS.PersistenceAdapter = (function () {
     clear: clear,
     isAvailable: isAvailable,
     exportAll: exportAll,
-    importAll: importAll
+    importAll: importAll,
+    saveGlobal: saveGlobal,
+    loadGlobal: loadGlobal,
+    removeGlobal: removeGlobal
   };
 })();

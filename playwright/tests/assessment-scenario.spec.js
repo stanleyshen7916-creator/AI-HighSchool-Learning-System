@@ -24,7 +24,7 @@
    "一致" (consistent) requirement is checked exactly as a user would
    see it, not just via a second evaluate() call. */
 "use strict";
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 
 test("Assessment Scenario：原始試卷／AI 練習分流 -> Random Exam -> Statistics/WrongBook/Review 全部一致", async ({ page }) => {

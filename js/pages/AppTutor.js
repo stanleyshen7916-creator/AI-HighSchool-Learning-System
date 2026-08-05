@@ -62,6 +62,7 @@ window.AHS = window.AHS || {};
       active: "tutor",
       onNavigate: function () { /* Mock navigation — prototype. */ }
     });
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
     shell.main.appendChild(AHS.AiTutor.create(buildModel()));
   }

@@ -20,7 +20,27 @@ function check(name, cond) {
   else { fail++; console.log("  FAIL  " + name); }
 }
 
-function loadPage(htmlFile, { seedSession, url } = {}) {
+/* Sprint AI-119 (Platform Core Baseline): AHS.PersistenceAdapter now
+   namespaces every save()/load()/remove() under the active Workspace's
+   storage namespace, and AHS.AppShell.create() redirects to login.html
+   (rendering nothing) unless a Workspace is active. This suite predates
+   Login/Workspace entirely and isn't about testing either — rather than
+   rewrite every individual seedSession literal in this file, loadPage()
+   auto-establishes ONE fixed default test Workspace (unless the caller
+   passes skipLogin) and transparently namespaces each bare "ahs:<key>"
+   seed entry to match — idempotent (an already-namespaced entry, e.g.
+   from carry(), passes through unchanged). */
+const AHS_TEST_WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] };
+const AHS_TEST_NS = "student_a__cjsh__g1s2";
+function namespacedKey(k) {
+  if (k === "ahs:workspace") { return k; }
+  const nsPrefix = "ahs:" + AHS_TEST_NS + ":";
+  if (k.indexOf(nsPrefix) === 0) { return k; }
+  if (k.indexOf("ahs:") === 0) { return "ahs:" + AHS_TEST_NS + ":" + k.slice(4); }
+  return k;
+}
+
+function loadPage(htmlFile, { seedSession, url, skipLogin } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const vconsole = new (require("jsdom").VirtualConsole)();
   const consoleErrors = [];
@@ -37,8 +57,11 @@ function loadPage(htmlFile, { seedSession, url } = {}) {
     virtualConsole: vconsole
   });
   const { window } = dom;
+  if (!skipLogin) {
+    window.sessionStorage.setItem("ahs:workspace", JSON.stringify(AHS_TEST_WORKSPACE));
+  }
   if (seedSession) {
-    Object.entries(seedSession).forEach(([k, v]) => window.sessionStorage.setItem(k, JSON.stringify(v)));
+    Object.entries(seedSession).forEach(([k, v]) => window.sessionStorage.setItem(skipLogin ? k : namespacedKey(k), JSON.stringify(v)));
   }
   const scripts = [...dom.window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
   scripts.forEach((src) => window.eval(fs.readFileSync(path.join(REPO, src), "utf8")));

@@ -17,8 +17,9 @@
    dual-mode Package exists to click a catalog-exam entry through, same
    scoping note as that file's own header). */
 "use strict";
-const { test, expect } = require("@playwright/test");
+const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
+const { seedSession } = require("../helpers/seed.js");
 
 const MATERIAL_ID = "rt_1";
 const MATERIAL_TITLE = "AI-118 學習迴圈教材";
@@ -52,11 +53,12 @@ function collectErrors(page) {
   return errors;
 }
 
-async function seedAll(page, data) {
-  await page.addInitScript((seedData) => {
-    Object.keys(seedData).forEach((k) => window.sessionStorage.setItem(k, JSON.stringify(seedData[k])));
-  }, data);
-}
+/* Sprint AI-119: this file's own seedAll() has been folded into the
+   shared playwright/helpers/seed.js's seedSession() (used elsewhere in
+   this suite already) — it namespaces bare "ahs:<key>" seed entries to
+   match the fixture's default test Workspace, idempotently, so an
+   already-namespaced dumpSession() capture round-trips unchanged. */
+const seedAll = seedSession;
 
 async function dumpSession(page) {
   return page.evaluate(() => {

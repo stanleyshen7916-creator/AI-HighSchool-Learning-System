@@ -31,7 +31,27 @@ function check(name, cond) {
    it and would otherwise become fragile to every future real material
    added to data/materials/ — excluding it here keeps their original,
    already-correct assertions intact rather than loosening any of them. */
-function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
+/* Sprint AI-119 (Platform Core Baseline): AHS.PersistenceAdapter now
+   namespaces every save()/load()/remove() under the active Workspace's
+   storage namespace, and AHS.AppShell.create() redirects to login.html
+   (rendering nothing) unless a Workspace is active. This suite predates
+   Login/Workspace entirely and isn't about testing either — rather than
+   rewrite every individual seedSession literal across this file's 79
+   loadPage() call sites, loadPage() itself auto-establishes ONE fixed
+   default test Workspace (unless the caller passes skipLogin) and
+   transparently namespaces each bare "ahs:<key>" seed entry to match —
+   idempotent (an already-namespaced entry passes through unchanged). */
+const AHS_TEST_WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] };
+const AHS_TEST_NS = "student_a__cjsh__g1s2";
+function namespacedKey(k) {
+  if (k === "ahs:workspace") { return k; }
+  const nsPrefix = "ahs:" + AHS_TEST_NS + ":";
+  if (k.indexOf(nsPrefix) === 0) { return k; }
+  if (k.indexOf("ahs:") === 0) { return "ahs:" + AHS_TEST_NS + ":" + k.slice(4); }
+  return k;
+}
+
+function loadPage(htmlFile, { seedSession, excludeScripts, url, skipLogin } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const consoleErrors = [];
   const vconsole = new (require("jsdom").VirtualConsole)();
@@ -49,9 +69,12 @@ function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
     virtualConsole: vconsole
   });
   const { window } = dom;
+  if (!skipLogin) {
+    window.sessionStorage.setItem("ahs:workspace", JSON.stringify(AHS_TEST_WORKSPACE));
+  }
   if (seedSession) {
     for (const [k, v] of Object.entries(seedSession)) {
-      window.sessionStorage.setItem(k, JSON.stringify(v));
+      window.sessionStorage.setItem(skipLogin ? k : namespacedKey(k), JSON.stringify(v));
     }
   }
   // Execute the page's ordered scripts manually (runScripts outside-only
@@ -126,10 +149,19 @@ function seedProductionQuestions(title) {
   A.AITutorService.ensureQuestionSet(mat.id);
   const genRecord = A.QuestionGenerationRuntime.getQuestionsByMaterial(mat.id);
   A.QuestionProviderBridge.bridge(mat.id);
+  /* Sprint AI-119: read back via AHS.PersistenceAdapter (short key), not
+     a raw sessionStorage.getItem("ahs:materialRuntime") — materials.html
+     was itself loaded through loadPage()'s own auto-seeded default test
+     Workspace, so its real writes landed under that Workspace's
+     namespaced key, not the bare legacy one. PersistenceAdapter.load()
+     already knows how to resolve that; carried stays bare-keyed
+     ("ahs:materialRuntime", not namespaced) so the next loadPage() call
+     re-namespaces it consistently, exactly like every other seedSession
+     object in this file. */
   const carried = {};
-  ["ahs:materialRuntime", "ahs:learningQuestionRuntime", "ahs:learningQuestionSession"].forEach(function (k) {
-    const v = matPage.window.sessionStorage.getItem(k);
-    if (v) { carried[k] = JSON.parse(v); }
+  ["materialRuntime", "learningQuestionRuntime", "learningQuestionSession"].forEach(function (shortKey) {
+    const v = A.PersistenceAdapter.load(shortKey);
+    if (v) { carried["ahs:" + shortKey] = v; }
   });
   return { materialId: mat.id, genRecord: genRecord, carried: carried };
 }
@@ -446,9 +478,9 @@ console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
   [...preMount.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {
-    "ahs:learningQuestionSession": JSON.parse(pre.window.sessionStorage.getItem("ahs:learningQuestionSession")),
-    "ahs:wrongBookSession": JSON.parse(pre.window.sessionStorage.getItem("ahs:wrongBookSession")),
-    "ahs:reviewQueue": JSON.parse(pre.window.sessionStorage.getItem("ahs:reviewQueue"))
+    "ahs:learningQuestionSession": pre.window.AHS.PersistenceAdapter.load("learningQuestionSession"),
+    "ahs:wrongBookSession": pre.window.AHS.PersistenceAdapter.load("wrongBookSession"),
+    "ahs:reviewQueue": pre.window.AHS.PersistenceAdapter.load("reviewQueue")
   };
   check("前置：quiz 頁答錯已持久化", carried["ahs:wrongBookSession"].items.length === 1);
 
@@ -526,7 +558,7 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
   [...m.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {};
-  for (const k of ["ahs:wrongBookSession", "ahs:reviewQueue"]) carried[k] = JSON.parse(pre.window.sessionStorage.getItem(k));
+  for (const shortKey of ["wrongBookSession", "reviewQueue"]) carried["ahs:" + shortKey] = pre.window.AHS.PersistenceAdapter.load(shortKey);
   const { window } = loadPage("index.html", { seedSession: carried });
   const w = window.document.querySelector(".review-widget");
   check("總錯題 = 1、今日待複習 = 0（nextReviewAt=null 排除，等待 Scheduler）",

@@ -51,17 +51,58 @@ AHS.AppShell = (function () {
     ]);
   }
 
-  /* Sprint AI-113 AI-805: real logout — clears every AHS-namespaced
-     sessionStorage key (the same clear() every Runtime's own reset()
-     already uses) and returns to 首頁, a fresh first-open session. Not
-     a fabricated auth system (this app has none) — for a
-     sessionStorage-persisted static prototype, this genuinely IS what
-     "logging out" means: end the current session's accumulated state. */
+  /* Sprint AI-119 (Platform Core Baseline) §1/§2: logout now clears only
+     the active Workspace pointer (AHS.WorkspaceRuntime.logout()) and
+     returns to login.html — NOT AHS.PersistenceAdapter.clear(). Each
+     Workspace's Learning State is already isolated by its own storage
+     namespace (§11), so wiping every Workspace's data on logout would
+     destroy other Workspaces' real progress for no reason; this is a
+     deliberate behavior change from Sprint AI-113 AI-805's original
+     "logout = full sessionStorage wipe" (documented in the Sprint AI-119
+     EO Report). Falls back to the pre-Sprint-AI-119 behavior only if
+     AHS.WorkspaceRuntime somehow isn't loaded on a given page. */
   function doLogout() {
+    if (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.logout === "function") {
+      AHS.WorkspaceRuntime.logout();
+      window.location.assign("login.html");
+      return;
+    }
     if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.clear === "function") {
       AHS.PersistenceAdapter.clear();
     }
     window.location.assign("index.html");
+  }
+
+  /* ---- Current Workspace indicator + quick-switch (Sprint AI-119 §7) ---
+     §7 "登入完成後，右上角固定顯示 Student／School／Semester...點擊：快速
+     切換。不得重新登入。" Quick-switch here means picking a DIFFERENT
+     single already-authorized Semester for the same Student/School —
+     multi-select ("複選") itself only happens once, explicitly, in the
+     Login flow's own Step 3; this topbar control is a fast one-tap
+     switch between already-authorized semesters, not a second place to
+     build a multi-select set. Switching calls
+     AHS.WorkspaceRuntime.setCurrent (no Login flow, no re-auth) then
+     reloads the current page so it re-hydrates every Runtime under the
+     newly-active storage namespace. */
+  function workspaceSwitchPanel(currentWs, onPick) {
+    var options = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.semestersFor === "function")
+      ? AHS.WorkspaceRuntime.semestersFor(currentWs.studentId) : [];
+    var list = el("ul", { class: "workspace-menu__list" });
+    options.forEach(function (sem) {
+      var isActive = currentWs.semesterIds.indexOf(sem.id) !== -1;
+      var btn = el("button", {
+        type: "button",
+        class: "workspace-menu__item" + (isActive ? " is-active" : ""),
+        role: "menuitem",
+        text: sem.name
+      });
+      btn.addEventListener("click", function () { onPick(sem.id); });
+      list.appendChild(el("li", {}, [btn]));
+    });
+    return el("div", { class: "workspace-menu", role: "menu", "aria-label": "切換學期", hidden: "hidden" }, [
+      el("div", { class: "workspace-menu__head" }, [el("strong", { text: "切換學期" })]),
+      list
+    ]);
   }
 
   /* ---- Profile menu (HOME-F010) ------------------------------------------
@@ -136,6 +177,41 @@ AHS.AppShell = (function () {
     function closeMenus() {
       notifPanel.setAttribute("hidden", "hidden");
       profMenu.setAttribute("hidden", "hidden");
+      if (wsPanel) { wsPanel.setAttribute("hidden", "hidden"); }
+    }
+
+    /* Sprint AI-119 §7: Current Workspace chip + quick-switch panel.
+       Built before notifPanel/profMenu only so `closeMenus` above (which
+       captures it by closure) already has a real value by the time any
+       click handler actually runs — declaration order doesn't matter for
+       `var` + closures, but this keeps the read path obvious. */
+    var wsLabel = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.label === "function")
+      ? AHS.WorkspaceRuntime.label() : null;
+    var wsPanel = null;
+    var wsChip = null;
+    if (wsLabel) {
+      wsPanel = workspaceSwitchPanel(wsLabel, function (semesterId) {
+        AHS.WorkspaceRuntime.setCurrent({
+          studentId: wsLabel.studentId, schoolId: wsLabel.schoolId, semesterIds: [semesterId]
+        });
+        window.location.reload();
+      });
+      wsChip = el("button", {
+        type: "button", class: "topbar__workspace-chip", "aria-haspopup": "true",
+        "aria-label": "目前 Workspace：" + wsLabel.studentName + "・" + wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、")
+      }, [
+        el("span", { class: "topbar__workspace-chip-icon", html: AHS.Icons.book ? AHS.Icons.book() : "" }),
+        el("span", { class: "topbar__workspace-chip-text" }, [
+          el("strong", { text: wsLabel.studentName }),
+          el("small", { text: wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、") })
+        ])
+      ]);
+      wsChip.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var willOpen = wsPanel.hasAttribute("hidden");
+        closeMenus();
+        if (willOpen) { wsPanel.removeAttribute("hidden"); }
+      });
     }
 
     var notifPanel = notificationPanel(notifications, function (id, itemEl) {
@@ -212,13 +288,14 @@ AHS.AppShell = (function () {
       ]),
       search,
       el("div", { class: "topbar__tools" }, [
+        wsChip ? el("div", { class: "topbar__menu-slot" }, [wsChip, wsPanel]) : null,
         el("div", { class: "topbar__menu-slot" }, [bellBtn, notifPanel]),
         el("button", {
           type: "button", class: "topbar__icon-btn",
           "aria-label": "訊息", html: AHS.Icons.chat()
         }),
         el("div", { class: "topbar__menu-slot" }, [userBtn, profMenu])
-      ])
+      ].filter(Boolean))
     ]);
   }
 
@@ -312,6 +389,22 @@ AHS.AppShell = (function () {
      Returns { root, main } — caller mounts page content into `main`. */
   function create(model, options) {
     options = options || {};
+
+    /* Sprint AI-119 §1/§2: single Login gate. Every page already calls
+       AHS.AppShell.create() as its first shell-mounting step, so this is
+       the one place a redirect-if-not-logged-in check needs to live,
+       not one gate copy-pasted into 9 separate page bootstrap files.
+       Returns null so each page's own init() can bail out before
+       building any page-specific content against a Workspace that
+       doesn't exist yet (see js/pages/App*.js's guardedInit()).
+       login.html itself never calls AppShell.create (it has no shared
+       shell) — this can never loop back into itself. */
+    if (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.isLoggedIn === "function" &&
+        !AHS.WorkspaceRuntime.isLoggedIn()) {
+      window.location.assign("login.html");
+      return null;
+    }
+
     var onNavigate = options.onNavigate || function () {};
     var active = options.active || model.nav.active;
     var nav = model.nav;

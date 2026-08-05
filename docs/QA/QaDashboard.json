@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-05T08:18:51.558Z",
+  "generatedAt": "2026-08-05T11:32:18.438Z",
   "overall": "PASS",
   "suites": [
     {
@@ -7,49 +7,56 @@
       "result": "PASS",
       "pass": 330,
       "fail": 0,
-      "durationMs": 5613
+      "durationMs": 10368
     },
     {
       "name": "PipelineRegression",
       "result": "PASS",
       "pass": 6,
       "fail": 0,
-      "durationMs": 40
+      "durationMs": 54
     },
     {
       "name": "RepositoryFoundation",
       "result": "PASS",
       "pass": 29,
       "fail": 0,
-      "durationMs": 1855
+      "durationMs": 2765
     },
     {
       "name": "MaterialPipelineRegression",
       "result": "PASS",
       "pass": 37,
       "fail": 0,
-      "durationMs": 2619
+      "durationMs": 3768
     },
     {
       "name": "AnalyticsRegression",
       "result": "PASS",
       "pass": 35,
       "fail": 0,
-      "durationMs": 979
+      "durationMs": 1343
     },
     {
       "name": "LearningFlowRegression",
       "result": "PASS",
       "pass": 42,
       "fail": 0,
-      "durationMs": 1159
+      "durationMs": 1657
+    },
+    {
+      "name": "WorkspaceRegression",
+      "result": "PASS",
+      "pass": 36,
+      "fail": 0,
+      "durationMs": 829
     },
     {
       "name": "Playwright",
       "result": "PASS",
-      "pass": 21,
+      "pass": 25,
       "fail": 0,
-      "durationMs": 14847.466
+      "durationMs": 28358.578
     }
   ]
 }
