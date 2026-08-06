@@ -8,6 +8,7 @@
 "use strict";
 const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
+const { seedSession } = require("../helpers/seed.js");
 
 function collectErrors(page) {
   const errors = [];
@@ -36,22 +37,32 @@ test("AI-121：知識弱點頁面 Sidebar／標題已更名（AI-121-08，非「
 
 test("AI-121：知識弱點封存（archive）真實隱藏於預設檢視，切換「已封存」篩選可見，永不真的刪除", async ({ page }) => {
   const errors = collectErrors(page);
-  await page.goto(fileUrl("wrongbook"));
-  await page.evaluate(() => {
-    // wrongbook.html doesn't load QuestionRuntime/ExamRuntime/AutoGrader
-    // (those are quiz.html-only) — seed AHS.WrongBookRuntime.sync()
-    // directly with a real graded-result-shaped object, same pattern
-    // playwright/tests/workspace-repository.spec.js's own PAT⑤ uses.
-    window.AHS.WrongBookRuntime.sync({
-      subject: "math", title: "封存測試題", chapter: "第一章",
-      wrong: [{
-        questionId: "aq1", knowledgePoint: "kp_archive",
-        text: "封存測試題內文", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
-        yourAnswer: "B", correctAnswer: "A", explanation: ""
-      }]
-    });
+  /* Sprint AI-122: seeding via page.evaluate(AHS.WrongBookRuntime.sync())
+     immediately followed by page.reload() proved genuinely unreliable
+     under CPU contention — sessionStorage was occasionally found
+     completely empty after the reload, even after confirming the write
+     landed (via page.waitForFunction()) before reloading. Switched to
+     the robust, already-established pattern the rest of this suite uses
+     for every other Runtime (see e.g. playwright/tests/analytics-
+     scenario.spec.js's own "ahs:wrongBookRuntime" seed): seedSession()
+     writes directly into sessionStorage via page.addInitScript(), which
+     runs before ANY of the page's own <script> tags — a single
+     page.goto() (never page.reload()) always finds the data already in
+     place before AHS.WrongBookRuntime's own hydrate() call runs. */
+  await seedSession(page, {
+    "ahs:wrongBookRuntime": {
+      items: [{
+        id: "wb_1", questionId: "aq1", subject: "math", title: "封存測試題", chapter: "第一章",
+        materialId: "", knowledgePoint: "kp_archive", question: "封存測試題內文",
+        options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+        yourAnswer: "B", correctAnswer: "A", explanation: "",
+        errorCount: 1, lastError: "2026/08/06", firstError: "2026/08/06", masteredAt: null,
+        bookmarked: false, archived: false, correctStreak: 0
+      }],
+      seq: 1
+    }
   });
-  await page.reload();
+  await page.goto(fileUrl("wrongbook"));
   const row = page.locator(".wb-row", { hasText: "封存測試題" });
   await expect(row).toBeVisible();
 
@@ -87,19 +98,33 @@ test("AI-121：複習中心 Review Mode 題數選單真實存在（AI-121-06）"
 
 test("AI-121：每日 AI 練習 — 從真實 QuestionBank 隨機抽 10 題開始一個真實 Exam Session（AI-121-05）", async ({ page }) => {
   const errors = collectErrors(page);
-  await page.goto(fileUrl("quiz"));
-  await page.evaluate(() => {
-    const AHS = window.AHS;
-    const questions = [];
-    for (let i = 1; i <= 15; i++) {
-      questions.push({
-        id: "dq" + i, index: i, subject: "math", text: "每日練習題 " + i, type: "single_choice",
-        options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
-        knowledgePoint: "kp_daily", questionSource: "ORIGINAL", origin: "x"
-      });
-    }
-    AHS.QuestionRuntime.importQuestions("teaching_material_daily_test", questions);
-    AHS.QuestionBankRuntime.ensureBank("teaching_material_daily_test", questions);
+  /* Sprint AI-122: the previous version seeded via page.evaluate()
+     (AHS.QuestionRuntime.importQuestions()/AHS.QuestionBankRuntime.
+     ensureBank()) on a first page.goto(), then navigated a SECOND time
+     to read it back — under CPU contention this occasionally lost the
+     ensureBank() write (same root-cause class already found and fixed
+     for AHS.WrongBookRuntime.sync() elsewhere this Sprint: an evaluate()
+     promise resolving back to Node can race ahead of the write actually
+     committing in the browser process before the next navigation).
+     AHS.QuestionRuntime.importQuestions() itself was redundant here
+     anyway — startDrawnSession() (mode=daily's own real handler) always
+     re-imports fresh from the Bank itself, never depends on a prior
+     page's own QuestionRuntime state (which is page-lifetime, in-memory
+     only, and wouldn't survive the navigation regardless). Seeding
+     AHS.QuestionBankRuntime's own real sessionStorage shape directly via
+     seedSession() (page.addInitScript(), runs before ANY page script)
+     sidesteps the whole evaluate()+navigate race entirely — the exact
+     pattern already established for every other Runtime in this suite. */
+  const questions = [];
+  for (let i = 1; i <= 15; i++) {
+    questions.push({
+      id: "dq" + i, index: i, subject: "math", text: "每日練習題 " + i, type: "single_choice",
+      options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
+      knowledgePoint: "kp_daily", questionSource: "ORIGINAL", origin: "x"
+    });
+  }
+  await seedSession(page, {
+    "ahs:questionBankRuntime": { banks: { "teaching_material_daily_test": questions } }
   });
   await page.goto(fileUrl("quiz") + "?mode=daily&examId=" + encodeURIComponent("teaching_material_daily_test"));
   // Wait for the real exam view to actually render before reading Runtime

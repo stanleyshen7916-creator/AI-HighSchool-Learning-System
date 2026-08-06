@@ -69,10 +69,13 @@
 .wb-empty__description { margin: 0 0 8px; font-size: 14px; color: var(--text-muted); max-width: 360px; }
 .wb-empty__btn { text-decoration: none; }
 
-/* ---- Layout ---------------------------------------------------------- */
+/* ---- Layout ------------------------------------------------------------
+   Sprint AI-122 AI-122-05: Question List 30% / Detail Panel 70% — Detail
+   Panel becomes the main reading area (previously a fixed 400px sidebar,
+   too small once it also carries 詳解/選項/知識點 reading content). */
 .wb-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
+  grid-template-columns: minmax(260px, 3fr) minmax(0, 7fr);
   gap: 18px;
   align-items: start;
 }
@@ -130,8 +133,6 @@
 }
 .wb-list__title { margin: 0; font-size: 16px; font-weight: 700; color: var(--brand); }
 .wb-list__count { font-size: 13px; color: var(--text-muted); }
-.wb-list__cols { margin-left: auto; display: flex; gap: 24px; font-size: 12px; color: var(--text-faint); }
-.wb-list__cols span:nth-child(3) { width: 78px; text-align: right; }
 
 .wb-list__no-match {
   display: none; flex-direction: column; align-items: center; gap: 10px;
@@ -143,7 +144,7 @@
 .wb-list__rows { display: flex; flex-direction: column; }
 
 .wb-row {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;
   padding: 14px 10px;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
@@ -154,8 +155,16 @@
 .wb-row.is-active { background-color: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
 .wb-row:focus-visible { outline: 2px solid var(--brand-line); outline-offset: 1px; }
 .wb-row__info { flex: 1 1 160px; min-width: 120px; }
-.wb-row__title { margin: 0; font-size: 14px; font-weight: 700; }
-.wb-row__meta { margin: 2px 0 0; font-size: 12px; color: var(--text-faint); }
+/* Sprint AI-122 AI-122-04: 題號→題目（第一行）→Knowledge Point→難度→
+   錯誤次數→最近錯誤日期，narrow 30%-width column now stacks this
+   vertically instead of the old single-line 教材標題 + horizontal table
+   columns (no longer fits once the panel shrank to make room for the
+   70% Detail Panel — AI-122-05). */
+.wb-row__title { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.5; }
+.wb-row__index { color: var(--text-faint); font-weight: 700; margin-right: 6px; white-space: nowrap; }
+.wb-row__question { }
+.wb-row__meta { margin: 4px 0 0; font-size: 12px; color: var(--brand); font-weight: 600; }
+.wb-row__stats { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
 .wb-row__favbadge {
   display: inline-flex; align-items: center; gap: 4px;
   margin-top: 6px; padding: 2px 8px; border-radius: 8px;
@@ -164,9 +173,7 @@
 }
 .wb-row__favbadge svg { width: 12px; height: 12px; }
 .wb-row__favbadge.is-hidden { display: none; }
-.wb-row__col { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
-.wb-row__col--diff { width: 56px; }
-.wb-row__col--date { width: 78px; justify-content: flex-end; }
+.wb-row__col { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-start; }
 .wb-row__count { font-size: 13px; font-weight: 700; }
 .wb-row__date { font-size: 12px; color: var(--text-muted); }
 .wb-tag { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
@@ -244,9 +251,12 @@
 .wb-detail__tag-btn.is-on { background-color: var(--brand); color: #ffffff; border-color: var(--brand); }
 
 .wb-detail__tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+/* Sprint AI-122 AI-122-04: 教材資訊（item.title）唯一顯示位置 — 不再重複
+   於左側題目列表（questionRow）。 */
+.wb-detail__material { font-size: 12px; font-weight: 700; color: var(--text); }
 .wb-detail__chapter { font-size: 12px; color: var(--text-muted); }
 
-.wb-detail__question { margin: 0 0 14px; font-size: 15px; font-weight: 600; line-height: 1.7; }
+.wb-detail__question { margin: 0 0 14px; font-size: 17px; font-weight: 600; line-height: 1.8; }
 
 .wb-detail__options { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .wb-detail__option {
@@ -307,6 +317,16 @@
   display: flex; gap: 10px; margin-bottom: 14px;
   padding: 12px; border-radius: 12px; background-color: var(--bg);
 }
+/* Sprint AI-122 AI-122-01: this class's own unconditional `display: flex`
+   has higher precedence than the browser's native [hidden] UA rule
+   (author stylesheet always wins over UA stylesheet at equal
+   specificity, regardless of source order) — so setting the `hidden`
+   attribute alone (startReview()'s own real fix, js/components/
+   WrongBook.js) silently failed to actually hide this block in a real
+   browser, even though it correctly reported hidden="hidden" in the DOM
+   (which is all jsdom's own BehaviorSuite.js checks — a real-browser-
+   only bug a real click in Playwright caught). */
+.wb-detail__answers[hidden] { display: none; }
 .wb-detail__answer { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .wb-detail__answer-label { font-size: 12px; color: var(--text-muted); }
 .wb-detail__answer-badge {
@@ -353,7 +373,6 @@
 @media (max-width: 720px) {
   .wb-header__actions { width: 100%; }
   .wb-header__actions .wb-action { flex: 1 1 auto; justify-content: center; }
-  .wb-list__cols { display: none; }
   .wb-row__col--diff { width: auto; }
   .wb-row__col--date { display: none; }
   .wb-select { flex: 1 1 46%; }

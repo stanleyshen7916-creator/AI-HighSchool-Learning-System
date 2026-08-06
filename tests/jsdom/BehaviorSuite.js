@@ -19,6 +19,16 @@ function check(name, cond) {
   else { fail++; failures.push(name); console.log("  FAIL  " + name); }
 }
 
+/* Sprint AI-122 AI-122-06: 最近教材 now filters on real createdAt (>=
+   today-3days) — any seedSession material meant to show up there needs a
+   real, always-current createdAt (never a hardcoded past date that would
+   silently age out of the 3-day window). */
+function todayStr() {
+  var d = new Date();
+  var pad = function (n) { return n < 10 ? "0" + n : String(n); };
+  return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+}
+
 /* excludeScripts (HOTFIX-002): substrings matched against each page's own
    <script src> list — any match is skipped entirely. Added specifically
    so tests that assert an exact, isolated MaterialRuntime/SummaryRuntime
@@ -535,10 +545,17 @@ console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統�
       !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+/.test(text));
     check(page + "：Console Error = 0", consoleErrors.length === 0);
   }
-  // 首頁 Review Widget（資料來自 ReviewModel）
+  /* Sprint AI-122 AI-122-08: ReviewWidget.js is no longer mounted on
+     Home (js/pages/AppHome.js's own comment explains why — not in the
+     PO's explicit 6-section 首頁資訊排序 list, and its own info overlaps
+     學習成效總覽/今日任務). Not deleted from the codebase (still real,
+     still <script>-tagged on index.html per the same "don't delete
+     source files outside this Sprint's scope" precedent AI-118 already
+     established) — so its own real behavior is still exercised here
+     directly, decoupled from Home's own composition. */
   const { window } = loadPage("index.html", { excludeScripts: ["data/materials/"] });
-  const w = window.document.querySelector(".review-widget");
-  check("首頁 Review Widget 渲染（今日待複習/已完成/總錯題）",
+  const w = window.AHS.ReviewWidget.create();
+  check("ReviewWidget 渲染（今日待複習/已完成/總錯題，AI-122-08：不再掛載於首頁本身）",
     !!w && /今日待複習/.test(w.textContent) && /已完成/.test(w.textContent) && /總錯題/.test(w.textContent));
   check("空系統 Widget 全 0 + 正式空狀態文案",
     [...w.querySelectorAll(".review-widget__value")].every(n => n.textContent === "0") && /目前沒有錯題紀錄/.test(w.textContent));
@@ -560,7 +577,9 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
   const carried = {};
   for (const shortKey of ["wrongBookSession", "reviewQueue"]) carried["ahs:" + shortKey] = pre.window.AHS.PersistenceAdapter.load(shortKey);
   const { window } = loadPage("index.html", { seedSession: carried });
-  const w = window.document.querySelector(".review-widget");
+  /* Sprint AI-122 AI-122-08: same as [13] above — ReviewWidget.js kept
+     real, just no longer auto-mounted by AppHome.js's own composition. */
+  const w = window.AHS.ReviewWidget.create();
   check("總錯題 = 1、今日待複習 = 0（nextReviewAt=null 排除，等待 Scheduler）",
     (() => { const v = [...w.querySelectorAll(".review-widget__value")].map(n => n.textContent);
              return v[0] === "0" && v[1] === "0" && v[2] === "1"; })());
@@ -1079,48 +1098,61 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   })() });
   check("一般教材（五段皆空）：仍誠實顯示分析中狀態，未受影響", /AI 正在分析教材/.test(p3.window.document.body.textContent));
 
-  /* Issue 002: quiz.html must show real Repository questions immediately
-     via BOTH entry points — the new examId link (Sprint v1.6) and the
-     pre-existing materialId-only link (Summary Detail's「開始 AI
-     練習」, unchanged since Sprint 6.8) — with 難度/考點 shown, and
-     without a second, empty Practice-Mode section rendering alongside
-     the real content. */
+  /* Sprint AI-122 AI-122-02/03 (再次修正 HOTFIX-004 Issue 002): a real
+     materialId/examId link with mode=practice must now ALWAYS land on
+     Practice Mode — never Formal Exam — reversing HOTFIX-004's own
+     workaround (quoted in QuizCenter.js) from when Practice Mode had no
+     real content for a Repository material. AI-121's real QuestionBank/
+     QuestionRuntime now gives it real content, so both entry points land
+     on the pre-existing 巧巧老師出題引導 (Sprint 6.8 flow, previously
+     bypassed only because it used to be genuinely empty for these
+     materials) scoped to THIS material only; picking a difficulty and
+     starting reveals a real, scoped practice question list — never the
+     unfiltered full catalog (AI-122-03). */
   const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
-  const bodyM = qByMaterialId.window.document.body.textContent;
-  check("② Quiz Center（materialId-only 連結）：不再顯示「尚無 AI 練習題」", !bodyM.includes("尚無 AI 練習題"));
-  /* Sprint AI-117 AI-117-09 Random Exam Session: display order is now
-     genuinely reshuffled on every startFromExam() (real feature, not a
-     regression) — the specific question containing "私有財產權" is no
-     longer guaranteed to be rendered first, so this checks whichever
-     real question IS currently at index 0 (the one actually shown) is
-     genuinely present in the rendered body, rather than a single
-     hardcoded phrase tied to array position. */
+  const docM = qByMaterialId.window.document;
+  check("② Quiz Center（materialId-only 連結）：進入巧巧老師出題引導（Practice Mode，不再導向正式測驗）",
+    !!docM.querySelector('.qguide[aria-label="巧巧老師出題引導"]') && !docM.querySelector(".qcard"));
+  check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊未被隱藏（AI-122-02）",
+    !docM.querySelector(".quiz-practice-root[hidden]"));
+  docM.querySelector('.qguide__diff[data-difficulty="medium"]').click();
+  docM.querySelector(".qguide__start").click();
   const qs0MaterialId = qByMaterialId.window.AHS.QuestionRuntime.getSet("teaching_material_" + rt.id)[0];
-  check("② Quiz Center（materialId-only 連結）：立即顯示真實題目", !!qs0MaterialId && bodyM.includes(qs0MaterialId.text));
-  check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊正確隱藏（不與 Exam 內容同時顯示）",
-    !!qByMaterialId.window.document.querySelector(".quiz-practice-root[hidden]"));
-  const qcardMeta = qByMaterialId.window.document.querySelector(".qcard__meta");
-  check("② Quiz Center：顯示難度／考點（Repository 實際擁有的欄位）", !!qcardMeta && /難度：/.test(qcardMeta.textContent) && /考點：/.test(qcardMeta.textContent));
-  check("Console errors = 0（quiz.html materialId-only，HOTFIX-004）", qByMaterialId.consoleErrors.length === 0);
+  check("② Quiz Center（materialId-only 連結）：開始練習後顯示此教材真實題目（AI-122-03：僅此教材，非全部教材）",
+    !!qs0MaterialId && docM.body.textContent.includes(qs0MaterialId.text) && !docM.querySelector('[aria-label="Repository 教材"]'));
+  const realRow = docM.querySelector(".quiz-practice__row");
+  check("② Quiz Center：真實題目可點擊進入單題作答", !!realRow);
+  if (realRow) { realRow.click(); }
+  const realMeta = docM.querySelector(".quiz-practice__meta");
+  check("② Quiz Center：作答畫面顯示難度／考點（Repository 實際擁有的欄位）",
+    !!realMeta && /難度：/.test(realMeta.textContent) && /考點：/.test(realMeta.textContent));
+  check("Console errors = 0（quiz.html materialId-only，AI-122-02）", qByMaterialId.consoleErrors.length === 0);
 
   const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
-  const qs0ExamId = qByExamId.window.AHS.QuestionRuntime.getSet("teaching_material_" + rt.id)[0];
-  check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響",
-    !!qs0ExamId && qByExamId.window.document.body.textContent.includes(qs0ExamId.text));
-  check("② Quiz Center（examId 連結）：Practice Mode 區塊仍正確隱藏", !!qByExamId.window.document.querySelector(".quiz-practice-root[hidden]"));
+  const docE = qByExamId.window.document;
+  check("② Quiz Center（examId 連結）：同樣進入巧巧老師出題引導（Practice Mode，不再導向正式測驗）",
+    !!docE.querySelector('.qguide[aria-label="巧巧老師出題引導"]') && !docE.querySelector(".qcard"));
+  check("② Quiz Center（examId 連結）：Practice Mode 區塊未被隱藏", !docE.querySelector(".quiz-practice-root[hidden]"));
 
-  /* PAT: 開始測驗 -> AutoGrader -> WrongBook -> History 全部正常. */
-  const AQ = qByMaterialId.window.AHS;
+  /* PAT：真實練習作答 -> 直接透過 WrongBookRuntime／KnowledgeMasteryRuntime
+     真實 Knowledge Engine（AI-121）寫入，而非 Formal Exam 的 AutoGrader／
+     HistoryRuntime 路徑（那條路徑僅屬於正式測驗，Practice Mode 不應誤觸，
+     覆蓋範圍已由本檔其餘 AutoGrader／WrongBook／History PAT 涵蓋）。 */
+  docE.querySelector('.qguide__diff[data-difficulty="medium"]').click();
+  docE.querySelector(".qguide__start").click();
+  const AQ = qByExamId.window.AHS;
   const examId = "teaching_material_" + rt.id;
   const qs = AQ.QuestionRuntime.getSet(examId);
-  qs.forEach(q => { AQ.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG" : q.correctAnswer); });
-  const finished = AQ.ExamRuntime.finish(examId);
-  const graded = AQ.AutoGrader.grade(finished);
-  check("PAT：AutoGrader 正常評分", graded.totalCount === qs.length && graded.wrong.length === 1);
-  const touched = AQ.WrongBookRuntime.sync(graded);
-  check("PAT：WrongBook 正常寫入", touched.length === 1 && AQ.WrongBookRuntime.list().length === 1);
-  const hist = AQ.HistoryRuntime.record(graded);
-  check("PAT：History 正常寫入", !!hist && AQ.HistoryRuntime.count() === 1);
+  const wrongBefore = AQ.WrongBookRuntime.list().length;
+  docE.querySelector(".quiz-practice__row").click();
+  const wrongOption = [...docE.querySelectorAll(".quiz-practice__option")]
+    .find(b => b.dataset.key !== qs[0].correctAnswer) || docE.querySelector(".quiz-practice__option");
+  wrongOption.click();
+  check("PAT：真實練習答錯 -> 直接寫入知識弱點（AHS.WrongBookRuntime，AI-121 Knowledge Engine）",
+    AQ.WrongBookRuntime.list().length === wrongBefore + 1);
+  const masteryAfter = AQ.KnowledgeMasteryRuntime.get(qs[0].knowledgePoint);
+  check("PAT：真實練習作答 -> 直接寫入 KnowledgeMasteryRuntime（同一 Knowledge Engine，非 Formal Exam 路徑）",
+    !!masteryAfter && masteryAfter.attemptCount >= 1);
 
   /* Regular material's Practice/Guide flow (LearningQuestionRuntime-based,
      unrelated to any Repository) must be completely unaffected. A fresh,
@@ -1216,10 +1248,21 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
   check("練習模式：Repository 教材也直接出現（不需 materialId 帶入）",
     /Repository 教材/.test(doc2.body.textContent) && (/私有財產權|所有權/.test(doc2.body.textContent)));
   const repoRow = doc2.querySelector(".quiz-practice__row");
+  const ownRoot = repoRow && repoRow.closest(".quiz-practice-root");
   if (repoRow) { repoRow.click(); }
-  check("點擊練習模式中的 Repository 教材：切換到真實測驗畫面（Runtime 未混用，僅切換顯示）",
-    !doc2.querySelector(".quiz-practice-root:not([hidden])") || /私有財產權|所有權/.test(doc2.body.textContent));
-  check("Console errors = 0（quiz.html 直接進入，AI-501）", consoleErrors.length === 0);
+  /* Sprint AI-122 AI-122-02/10 (CTA 一致化): 點擊練習模式自己列表中的
+     Repository 列，drill 進入該教材真實題目列表 — 仍停留在 Practice
+     Mode，不再切換到正式測驗（HOTFIX-005 當時因 Practice Mode 尚無真實
+     內容才切去 Exam，AI-121 之後已不誠實）。 Scoped to THIS row's own
+     practiceRoot — QuizCenter.create() is mounted twice on this page
+     (once by AppQuiz.js's real bootstrap, once by this test's own manual
+     doc2.body.appendChild above), so a document-wide .quiz-practice-root
+     query would false-fail on the OTHER instance's own untouched, still
+     hidden practiceRoot. */
+  check("點擊練習模式中的 Repository 教材：drill 進入該教材真實練習題（仍在 Practice Mode，不再切換到正式測驗）",
+    !!ownRoot && !ownRoot.hasAttribute("hidden") && !ownRoot.querySelector(".qcard") &&
+    /私有財產權|所有權/.test(ownRoot.textContent));
+  check("Console errors = 0（quiz.html 直接進入，AI-501／AI-122）", consoleErrors.length === 0);
 }
 
 console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時產生真實 .docx");
@@ -1553,6 +1596,7 @@ console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/
     materials: [{
       id: "rt_1", order: 1, subject: "math", title: "測試教材", chapter: "第一章",
       grade: "高一", category: "課本", date: "2026/08/01", views: "1", content: "",
+      createdAt: todayStr(),
       progress: 42, lastOpenedAt: "2026/08/01 10:00", lastLearningAt: "2026/08/01 10:00",
       learningTime: 10, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
       fileSize: "", folderId: null
@@ -1855,9 +1899,16 @@ console.log("\n[43] Sprint AI-114 PAT — 複習中心不再顯示衝突的第�
     reviewWin.AHS.StatisticsRuntime.dueForReview().length === 1);
   check("Console errors = 0（複習中心移除 ReviewWidget 後）", consoleErrors.length === 0);
 
+  /* Sprint AI-122 AI-122-08: Home's own composition changed this Sprint
+     — ReviewWidget is no longer auto-mounted there (see js/pages/
+     AppHome.js's own comment: not part of the PO's explicit 6-section
+     首頁資訊排序 list, overlaps 學習成效總覽/今日任務's own real signals).
+     The component itself is still real and unchanged (proved directly
+     in [13]/[14] above) — this check now honestly reflects "not
+     auto-mounted on Home" instead of the stale "首頁保持不變" claim. */
   const { window: homeWin } = loadPage("index.html", {});
-  check("首頁的 ReviewWidget 保持不變（其真正既有的掛載位置，未受影響）",
-    !!homeWin.document.querySelector(".review-widget"));
+  check("首頁不再自動掛載 ReviewWidget（AI-122-08：其資訊已併入學習成效總覽／今日任務，不重複顯示）",
+    !homeWin.document.querySelector(".review-widget"));
 }
 
 console.log("\n[44] HOTFIX-008 — Topbar 顯示名稱/年級跨頁與重新整理後仍與 Settings 同步");

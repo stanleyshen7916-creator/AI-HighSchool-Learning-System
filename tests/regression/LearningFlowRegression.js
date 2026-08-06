@@ -71,10 +71,22 @@ function loadPage(htmlFile, { seedSession, url, skipLogin } = {}) {
 
 console.log("Learning Experience (LX) Refactor Regression — Sprint AI-118");
 
+/* Sprint AI-122 AI-122-06: 最近教材 now filters on real createdAt (>=
+   today-3days) — this seed's own materialSeed.materials[0] needs a real,
+   always-current createdAt (not a hardcoded past date that would age out
+   of the 3-day window the day after it's written) to keep exercising
+   "最近教材存在" honestly regardless of when this suite actually runs. */
+function todayStr() {
+  var d = new Date();
+  var pad = function (n) { return n < 10 ? "0" + n : String(n); };
+  return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+}
+
 const materialSeed = {
   materials: [{
     id: "rt_1", order: 1, subject: "math", title: "AI-118 迴歸測試教材", chapter: "第一章",
     grade: "高一", category: "課本", date: "2026/08/05", views: "1", content: "",
+    createdAt: todayStr(),
     progress: 100, lastOpenedAt: "2026/08/05", lastLearningAt: "2026/08/05", learningTime: 10,
     learningCount: 1, favorite: false, fileName: "", fileType: "FILE", fileSize: "", folderId: null
   }],
@@ -234,20 +246,42 @@ console.log("\n[7] AI Tutor — 首頁建議卡片的每個動作皆連向真實
   check("Console errors = 0（首頁 AI Tutor）", consoleErrors.length === 0);
 }
 
-/* ---- 8. 首頁重新整理（AI-118-10）— 僅 5 個內容元件，無重複資訊 ---- */
-console.log("\n[8] 首頁重新整理 — 僅今日任務／最近教材／學習成效總覽／待複習／AI Tutor，無重複統計");
+/* ---- 8. 首頁重新整理（Sprint AI-122 AI-122-08）— 單一直向順序：
+   Hero→今日任務→學習成果總覽→最近新增教材→教材資料夾→AI Tutor，
+   無重複資訊。取代 Sprint AI-118-10 的 main/rail 雙欄版本 — 雙欄無法
+   誠實表示 PO 明定的單一線性順序（今日任務過去在右側 rail，與最近
+   教材/學習成效總覽並排而非接續其後）。 */
+console.log("\n[8] 首頁重新整理（AI-122-08）— Hero→今日任務→學習成果總覽→最近新增教材→教材資料夾→AI Tutor，單一直向順序，無重複資訊");
 {
   const { window, consoleErrors } = loadPage("index.html", {
     seedSession: { "ahs:materialRuntime": materialSeed }
   });
   const doc = window.document;
+  const main = doc.querySelector(".home__main");
+  check("首頁改為單一直向欄位（.home__main，不再有 .home__rail）",
+    !!main && !doc.querySelector(".home__rail"));
+
+  function indexOf(selector) {
+    const nodes = [...main.querySelectorAll("*")];
+    return nodes.findIndex((n) => n.matches && n.matches(selector));
+  }
+  const heroIdx = indexOf(".hero-card");
+  const todayIdx = indexOf("[aria-label='今日任務']");
+  const kpiIdx = indexOf(".home-kpi");
+  const recentIdx = indexOf(".recent-materials");
+  const folderIdx = indexOf(".workspace-folder");
+  const tutorIdx = indexOf(".tutor-card");
   check("最近教材存在", !!doc.querySelector(".recent-card, [class*='recent-card']"));
   check("學習成效總覽存在（AI-121-01/19：教材完成度 KPI 已由 Knowledge Mastery 等真實 Learning Outcome 指標取代）",
-    !!doc.querySelector(".home-kpi"));
-  check("今日任務存在", !!doc.querySelector(".today-mission, [class*='today-mission'], [aria-label='今日任務']") ||
-    doc.body.textContent.includes("今日任務"));
-  check("待複習（ReviewWidget）存在", !!doc.querySelector(".review-widget"));
-  check("AI Tutor 卡片存在", !!doc.querySelector(".tutor-card"));
+    kpiIdx !== -1);
+  check("今日任務存在", todayIdx !== -1 || doc.body.textContent.includes("今日任務"));
+  check("教材資料夾存在（AI-122-07：唯一教材入口）", folderIdx !== -1);
+  check("AI Tutor 卡片存在", tutorIdx !== -1);
+  check("首頁區塊順序符合 PO 明定：Hero→今日任務→學習成果總覽→最近新增教材→教材資料夾→AI Tutor",
+    heroIdx !== -1 && heroIdx < todayIdx && todayIdx < kpiIdx && kpiIdx < recentIdx &&
+    recentIdx < folderIdx && folderIdx < tutorIdx);
+  check("首頁不再自動掛載 ReviewWidget（AI-122-08：與學習成效總覽/今日任務資訊重複，已移除，元件本身仍保留於程式碼）",
+    !doc.querySelector(".review-widget"));
   check("不再有「學習統計」區塊（移至他處/移除，避免與最近教材重複）",
     !doc.body.textContent.includes("學習統計"));
   check("不再有「學習計畫」區塊", !doc.body.textContent.includes("學習計畫"));

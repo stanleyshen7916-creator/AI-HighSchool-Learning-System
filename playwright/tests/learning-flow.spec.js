@@ -19,7 +19,7 @@
 "use strict";
 const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
-const { seedSession } = require("../helpers/seed.js");
+const { seedSession, todayStr } = require("../helpers/seed.js");
 
 const MATERIAL_ID = "rt_1";
 const MATERIAL_TITLE = "AI-118 學習迴圈教材";
@@ -29,6 +29,7 @@ const BASE_SEED = {
     materials: [{
       id: MATERIAL_ID, order: 1, subject: "math", title: MATERIAL_TITLE, chapter: "第一章",
       grade: "高一", category: "課本", date: "2026/08/05", views: "1", content: "三角函數的基本定義與應用。",
+      createdAt: todayStr(),
       progress: 100, lastOpenedAt: "2026/08/05 09:00", lastLearningAt: "2026/08/05 09:00",
       learningTime: 20, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
       fileSize: "", folderId: null
@@ -97,6 +98,11 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習
     // replaced by 學習成效總覽 (.home-kpi), driven by real Learning
     // Outcome (Knowledge Mastery/Growth/Weakness).
     await expect(page.locator(".home-kpi")).toBeVisible();
+    // Sprint AI-122 AI-122-06: 最近教材 itself (not just 教材資料夾, which
+    // also renders every Workspace material unconditionally) genuinely
+    // shows this material — its real createdAt (seeded via todayStr())
+    // is within the 3-day window.
+    await expect(page.locator(".recent-card").first()).toContainText(MATERIAL_TITLE);
   });
 
   await test.step("教材中心 -> 前往學習總結（真實點擊）", async () => {

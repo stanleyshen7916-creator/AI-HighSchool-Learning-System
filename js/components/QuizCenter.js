@@ -695,6 +695,34 @@ AHS.QuizCenter = (function () {
      Architecture is Do-NOT-Modify this EO); once real AI content
      replaces the stubs, these same records surface with zero further
      change here. */
+  /* materialIdFromExamId(examId) — Sprint AI-122 AI-122-02/03: reverses
+     the "teaching_material_<id>" convention TeachingMaterialLoader.js
+     already establishes, so a link that only carries examId= (e.g.
+     WorkspaceFolder.js's own 前往考前練習) can still resolve a real
+     materialId for Practice Mode's own filterMaterialId scoping —
+     without this, mode=practice&examId=... had no materialId to filter
+     by at all. Pure string parsing, no Runtime touched. */
+  function materialIdFromExamId(examId) {
+    var m = /^teaching_material_(.+)$/.exec(examId || "");
+    return m ? m[1] : null;
+  }
+
+  /* realExamQuestionsFor(materialId) — Sprint AI-122 AI-122-02/03: the
+     real, already-imported Exam-compatible question set for one real
+     material (AHS.QuestionRuntime — read-only, this Sprint's own LOCK
+     forbids modifying Learning Engine/QuestionBank Runtime, not reading
+     their existing public API, same as every other file in this repo
+     already does). This is Practice Mode's real content source for a
+     Repository-sourced material, closing the gap that used to force
+     這類教材 into Formal Exam instead (see startDrawnSession()'s own
+     header for the sibling AI-121 precedent of reading, never writing,
+     these same Runtimes from Quiz Center). */
+  function realExamQuestionsFor(materialId) {
+    if (!materialId || !AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function") { return []; }
+    var examId = "teaching_material_" + materialId;
+    return AHS.QuestionRuntime.hasExam(examId) ? AHS.QuestionRuntime.getSet(examId) : [];
+  }
+
   function isRealLearningQuestion(record) {
     var q = String((record && record.question) || "");
     var a = (record && record.answer !== undefined && record.answer !== null)
@@ -748,11 +776,24 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
-  /* onRepoExam(examId) — HOTFIX-005 AI-501, optional/additive: when given
-     (and this isn't a single-material filtered view), Repository-derived
-     rows are shown alongside the real LearningQuestionRuntime list below,
-     each routing to the already-real, already-imported Exam-Mode flow. */
-  function buildPracticeListView(onPractice, filterMaterialId, onRepoExam) {
+  /* onRepoDrillDown(materialId) — Sprint AI-122 AI-122-02/03/10 (renamed
+     from HOTFIX-005 AI-501's own onRepoExam): a Repository row, clicked
+     from the unfiltered practice list, now drills into THAT material's
+     own real question rows (below, via onRealPractice) — still inside
+     Practice Mode — instead of switching to Formal Exam. "所有前往考前
+     練習皆須進入 Practice Mode，不得再導向 Formal Exam" is read literally:
+     this in-tab click is functionally the same CTA, so it gets the same
+     fix, not just the external links.
+     onRealPractice(question) — Sprint AI-122 AI-122-02/03: real,
+     already-imported Exam-compatible questions (AHS.QuestionRuntime) for
+     filterMaterialId, rendered as real practice rows alongside (in
+     practice, instead of — LearningQuestionRuntime is honestly empty for
+     every real Repository material) the LearningQuestionRuntime list
+     below. This is the real content path AI-122 restores: a Repository-
+     sourced material now has a genuine, inline, immediate-feedback
+     Practice experience instead of being silently rerouted to Formal
+     Exam. */
+  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice) {
     var runtime = AHS.LearningQuestionRuntime;
     var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
     var items = filterMaterialId
@@ -780,9 +821,11 @@ AHS.QuizCenter = (function () {
        Exam Mode — a large, Runtime-adjacent ripple for a cosmetic
        requirement on a list, not a numbered sequence, so left as-is. */
 
-    var repoEntries = (!filterMaterialId && typeof onRepoExam === "function") ? repositoryExamCatalog() : [];
+    var repoEntries = (!filterMaterialId && typeof onRepoDrillDown === "function") ? repositoryExamCatalog() : [];
+    var realQuestions = (filterMaterialId && typeof onRealPractice === "function")
+      ? realExamQuestionsFor(filterMaterialId) : [];
 
-    if (!items.length && !repoEntries.length) {
+    if (!items.length && !repoEntries.length && !realQuestions.length) {
       return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
     }
 
@@ -799,7 +842,7 @@ AHS.QuizCenter = (function () {
           el("span", { class: "quiz-practice__row-meta", text: (entry.chapter || "") + "（共 " + entry.count + " 題）" }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
         ]);
-        row.addEventListener("click", function () { onRepoExam(entry._repoExamId); });
+        row.addEventListener("click", function () { onRepoDrillDown(materialIdFromExamId(entry._repoExamId)); });
         return row;
       });
       sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "Repository 教材" }, [
@@ -807,6 +850,28 @@ AHS.QuizCenter = (function () {
           el("h2", { class: "card__title", text: "Repository 教材（" + repoEntries.length + "）" })
         ]),
         el("div", { class: "quiz-practice__rows" }, repoRows)
+      ]));
+    }
+
+    if (realQuestions.length) {
+      var realRows = realQuestions.map(function (q) {
+        var subj = AHS.Subjects[q.subject] || { name: q.subject || "未分類", hex: "#6b7280" };
+        var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+          el("span", {
+            class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
+          }, [el("span", { text: subj.name })]),
+          el("span", { class: "quiz-practice__row-q", text: q.text }),
+          el("span", { class: "quiz-practice__row-meta", text: q.knowledgePoint || "" }),
+          el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
+        ]);
+        row.addEventListener("click", function () { onRealPractice(q); });
+        return row;
+      });
+      sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "練習題列表" }, [
+        el("div", { class: "card__head" }, [
+          el("h2", { class: "card__title", text: "練習題（" + realQuestions.length + "）" })
+        ]),
+        el("div", { class: "quiz-practice__rows" }, realRows)
       ]));
     }
 
@@ -1014,6 +1079,117 @@ AHS.QuizCenter = (function () {
     ]);
   }
 
+  /* buildRealPracticeQuestionView(q, onBack) — Sprint AI-122 AI-122-02/03:
+     the real-content sibling of buildPracticeQuestionView() above, for a
+     question read straight from AHS.QuestionRuntime (options as
+     {key,text}, correctAnswer as a real key) rather than
+     LearningQuestionRuntime's own plain-string shape — kept as a
+     separate function instead of reshaping into the legacy shape so
+     grading stays keyed by the question's own real correctAnswer (no
+     lossy text-matching), and so a wrong answer is synced through the
+     SAME real Knowledge Engine every other real grading path in this app
+     already uses (AHS.WrongBookRuntime.sync() / AHS.KnowledgeMasteryRuntime.
+     recordAttempt() — both read-only calls to their already-existing
+     public API, not a modification of either Runtime, honoring this
+     Sprint's own LOCK). Matches practiceTab's own real tooltip promise:
+     可重複作答・答完立即看到詳解・不影響正式成績 — no ExamRuntime session,
+     no HistoryRuntime record, immediate inline feedback. */
+  function buildRealPracticeQuestionView(q, onBack) {
+    var backBtn = el("button", { type: "button", class: "quiz-practice__back", text: "← 返回列表" });
+    backBtn.addEventListener("click", onBack);
+
+    var resultBanner = el("p", { class: "quiz-practice__result", "aria-live": "polite", hidden: "hidden" });
+    var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
+    var submitted = false;
+    var optionBtns;
+
+    function renderAnswer() {
+      answerSlot.innerHTML = "";
+      answerSlot.appendChild(el("div", { class: "quiz-practice__answer-block" }, [
+        el("strong", { text: "標準答案：" }),
+        el("span", { text: q.correctAnswer })
+      ]));
+      if (q.explanation) {
+        answerSlot.appendChild(el("div", { class: "quiz-practice__exp-block" }, [
+          el("strong", { class: "quiz-practice__exp-title", text: "詳解" }),
+          el("p", { text: q.explanation })
+        ]));
+      }
+      answerSlot.removeAttribute("hidden");
+    }
+
+    function syncRealPracticeAnswer(isCorrect, pickedKey) {
+      if (!isCorrect && AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.sync === "function") {
+        AHS.WrongBookRuntime.sync({
+          subject: q.subject, title: q.text, chapter: q.knowledgePoint || "",
+          wrong: [{
+            questionId: q.id, knowledgePoint: q.knowledgePoint,
+            text: q.text, options: q.options,
+            yourAnswer: pickedKey, correctAnswer: q.correctAnswer,
+            explanation: q.explanation, materialId: q.materialId
+          }]
+        });
+      }
+      if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
+        AHS.KnowledgeMasteryRuntime.recordAttempt(q.knowledgePoint, isCorrect, q.subject, q.materialId);
+      }
+    }
+
+    function finishSubmit(pickedKey) {
+      if (submitted) { return; }
+      submitted = true;
+      var isCorrect = pickedKey === q.correctAnswer;
+      resultBanner.textContent = isCorrect ? "答對了！" : "答錯了，已加入知識弱點。";
+      resultBanner.classList.add(isCorrect ? "is-correct" : "is-wrong");
+      resultBanner.removeAttribute("hidden");
+      optionBtns.forEach(function (b) {
+        if (b.dataset.key === q.correctAnswer) { b.classList.add("is-correct"); }
+        if (b.dataset.key === pickedKey && pickedKey !== q.correctAnswer) { b.classList.add("is-wrong"); }
+      });
+      renderAnswer();
+      syncRealPracticeAnswer(isCorrect, pickedKey);
+    }
+
+    optionBtns = (q.options || []).map(function (o) {
+      var b = el("button", {
+        type: "button", class: "quiz-practice__option quiz-practice__option--btn", "data-key": o.key
+      }, [el("span", { text: o.key + "、" + o.text })]);
+      b.addEventListener("click", function () { finishSubmit(o.key); });
+      return b;
+    });
+
+    /* Sprint AI-122 AI-122-02: 難度／考點 always visible (not gated behind
+       submit), matching Exam Mode's own .qcard__meta convention exactly —
+       including its HOTFIX-004 resolveDifficulty() fallback (js/ui/
+       QuestionCard.js): 難度 never survived into QuestionRuntime's own
+       stored shape (TeachingMaterialLoader.js's Loader is explicitly
+       protected, this Sprint's LOCK forbids touching it too), so it's
+       resolved the same read-only way — via the real Repository record,
+       matched by this question's own real id. */
+    var metaBits = [];
+    var difficulty = q.difficulty || "";
+    if (!difficulty && q.materialId && AHS.MaterialDetailRepositorySource &&
+        typeof AHS.MaterialDetailRepositorySource.resolve === "function") {
+      var repo = AHS.MaterialDetailRepositorySource.resolve(q.materialId);
+      var match = (repo && repo.quiz && Array.isArray(repo.quiz.questions))
+        ? repo.quiz.questions.filter(function (rq) { return rq.id === q.id; })[0] : null;
+      difficulty = match ? (match.difficulty || "") : "";
+    }
+    if (difficulty) { metaBits.push("難度：" + difficulty); }
+    if (q.knowledgePoint) { metaBits.push("考點：" + q.knowledgePoint); }
+
+    return el("div", { class: "quiz-practice" }, [
+      backBtn,
+      el("section", { class: "card quiz-practice__question", "aria-label": "練習題" }, [
+        el("p", { class: "quiz-practice__q-text", text: q.text }),
+        metaBits.length ? el("p", { class: "quiz-practice__meta", text: metaBits.join("　") }) : null,
+        el("div", { class: "quiz-practice__options" }, optionBtns),
+        resultBanner,
+        answerSlot
+      ])
+    ]);
+  }
+
   /* create(model, initialMode, initialMaterialId, initialExamId)
      Sprint 6.8 EO-S6.8-001 (Task 001/002, AI Learning Flow): initialMode
      ("practice" | undefined) and initialMaterialId are optional and
@@ -1218,16 +1394,27 @@ AHS.QuizCenter = (function () {
       return null;
     }
 
+    /* Sprint AI-122 AI-122-02/03: reverse-derived from initialExamId when
+       only an examId (not materialId) was passed — e.g. WorkspaceFolder.
+       js's own 前往考前練習 link — so Practice Mode still has a real
+       material to scope to either way. */
+    var practiceMaterialId = initialMaterialId || materialIdFromExamId(initialExamId);
+
     var directExamId = resolveDirectExamId();
-    /* Sprint AI-121 AI-121-05/07: mode=daily / mode=retest are additive
-       branches — every existing caller (mode undefined/"practice") is
-       completely unaffected, still routed through tryDirectExamEntry()
-       exactly as before. */
+    /* Sprint AI-122 AI-122-02: "所有前往考前練習皆須進入 Practice Mode，
+       不得再導向 Formal Exam" — mode=practice now always wins over
+       directExamId, reversing HOTFIX-004's own workaround (quoted below)
+       from when Practice Mode had no real content for a Repository
+       material to show. AI-121's real QuestionBank/QuestionRuntime now
+       gives it real content (see buildPracticeListView's own
+       realQuestions below), so that workaround is no longer honest to
+       keep. mode=daily/retest (AI-121-05/07) are unaffected — those are
+       real, separate, already-working entry points. */
     if (directExamId && initialMode === "daily") {
       tryDailyPracticeEntry(directExamId);
     } else if (directExamId && initialMode === "retest") {
       tryRetestEntry(directExamId);
-    } else if (directExamId) {
+    } else if (directExamId && initialMode !== "practice") {
       tryDirectExamEntry(directExamId);
     } else {
       showList();
@@ -1235,34 +1422,31 @@ AHS.QuizCenter = (function () {
 
     /* ---- Practice Mode mount (EO-S6-006) — entirely separate root,
        never touches `root` / any Exam Mode function above.
-       HOTFIX-004: when directExamId resolved, the real content for this
-       material is already fully shown in `root` (Exam Mode) — keep
-       practiceRoot hidden regardless of `mode=practice`, so a Repository
-       -sourced material never shows a real exam view and an unrelated
-       empty Practice-Mode section at the same time. */
+       Sprint AI-122 AI-122-02: startOnPractice now depends only on
+       mode=practice, never on whether a directExamId happened to
+       resolve — see the routing comment above for why that coupling
+       (HOTFIX-004's own workaround) is removed this Sprint. */
     var practiceRoot = el("div", { class: "quiz-practice-root" });
-    var startOnPractice = (initialMode === "practice") && !directExamId;
+    var startOnPractice = (initialMode === "practice");
     if (!startOnPractice) { practiceRoot.setAttribute("hidden", "hidden"); }
 
-    /* HOTFIX-005 AI-501: a Repository row surfaced in the 練習模式 list
-       (below) still starts the same real Exam-Mode flow as 正式測驗 —
-       Practice Mode's own LearningQuestionRuntime is untouched, "兩者不得
-       混用" still holds (no data crosses between the two Runtimes); this
-       only switches which root is visible, exactly like examTab's own
-       click handler further below. */
-    function startRepoExamFromPractice(examId) {
-      tryDirectExamEntry(examId);
-      root.removeAttribute("hidden");
-      practiceRoot.setAttribute("hidden", "hidden");
-      examTab.classList.add("is-active");
-      practiceTab.classList.remove("is-active");
-    }
-
-    function showPracticeList() {
-      AHS.UI.mount(practiceRoot, buildPracticeListView(showPracticeQuestion, initialMaterialId, startRepoExamFromPractice));
+    function showPracticeList(materialId) {
+      var scopedMaterialId = materialId !== undefined ? materialId : practiceMaterialId;
+      AHS.UI.mount(practiceRoot, buildPracticeListView(
+        showPracticeQuestion, scopedMaterialId,
+        function (drillMaterialId) { showPracticeList(drillMaterialId); },
+        showRealPracticeQuestion
+      ));
     }
     function showPracticeQuestion(record) {
-      AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, showPracticeList));
+      AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, function () { showPracticeList(practiceMaterialId); }));
+    }
+    /* showRealPracticeQuestion(q) — Sprint AI-122 AI-122-02/03: opens one
+       real AHS.QuestionRuntime question inline, "返回列表" comes back to
+       the SAME real material's own row list (never the unfiltered
+       catalog — context is never lost mid-practice). */
+    function showRealPracticeQuestion(q) {
+      AHS.UI.mount(practiceRoot, buildRealPracticeQuestionView(q, function () { showPracticeList(q.materialId || practiceMaterialId); }));
     }
 
     /* Sprint 6.8 EO-S6.8-002 Task 001 (AI Question Guide): a real deep
@@ -1287,9 +1471,9 @@ AHS.QuizCenter = (function () {
     function showQuestionGuide() {
       var runtime = AHS.LearningQuestionRuntime;
       var records = (runtime && typeof runtime.findByMaterialId === "function")
-        ? runtime.findByMaterialId(initialMaterialId) : [];
+        ? runtime.findByMaterialId(practiceMaterialId) : [];
       AHS.UI.mount(practiceRoot, AHS.QuestionGuide.create({
-        materialId: initialMaterialId,
+        materialId: practiceMaterialId,
         questions: records.filter(isRealLearningQuestion),
         onStart: function () {
           showPracticeList();
@@ -1297,7 +1481,7 @@ AHS.QuizCenter = (function () {
       }));
     }
 
-    if (startOnPractice && initialMaterialId && AHS.QuestionGuide) {
+    if (startOnPractice && practiceMaterialId && AHS.QuestionGuide) {
       showQuestionGuide();
     } else {
       showPracticeList();
