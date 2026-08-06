@@ -52,6 +52,7 @@
 .sum-filter__select {
   border: 1px solid var(--line); border-radius: var(--radius-md);
   padding: 6px 10px; font: inherit; font-size: 13px; background-color: var(--card); color: var(--text);
+  max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
 /* ---- One Summary Runtime record ---------------------------------------- */
