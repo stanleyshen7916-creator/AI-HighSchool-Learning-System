@@ -457,24 +457,34 @@ AHS.WrongBook = (function () {
       });
     });
 
+    /* Sprint AI-122 AI-122-04: 左側列表改為真正的「題目列表」— 題號→題目
+       （第一行）→Knowledge Point→難度→錯誤次數→最近錯誤日期，不得再重複
+       教材名稱（item.title，教材/測驗標題，改僅保留於右側 Detail Panel
+       Header，見 renderDetail 的 wb-detail__tags）。這樣才知道「錯哪一
+       題」，而非只看到一堆同名的教材列。 */
     var row = el("article", {
       class: "wb-row" + (index === 0 ? " is-active" : ""),
       "data-subject": item.subject, "tabindex": "0", "role": "button",
-      "aria-label": item.title
+      "aria-label": "第 " + (index + 1) + " 題：" + item.question
     }, [
       chip(item.subject),
       el("div", { class: "wb-row__info" }, [
-        el("h3", { class: "wb-row__title", text: item.title }),
-        el("p", { class: "wb-row__meta", text: item.chapter }),
+        el("h3", { class: "wb-row__title" }, [
+          el("span", { class: "wb-row__index", text: "第 " + (index + 1) + " 題" }),
+          el("span", { class: "wb-row__question", text: item.question })
+        ]),
+        el("p", { class: "wb-row__meta", text: item.knowledgePoint || "" }),
+        el("div", { class: "wb-row__stats" }, [
+          el("span", { class: "wb-row__col wb-row__col--diff" }, [diffTag(deriveDifficulty(item))]),
+          el("span", { class: "wb-row__col" }, [
+            el("span", { class: "wb-row__count", text: item.errorCount + " 次" })
+          ]),
+          el("span", { class: "wb-row__col wb-row__col--date" }, [
+            el("span", { class: "wb-row__date", text: item.lastError })
+          ])
+        ]),
         el("div", { class: "wb-row__status" }, [statusTag(getMasteryStatus(item.correctStreak))]),
         favBadge
-      ]),
-      el("div", { class: "wb-row__col wb-row__col--diff" }, [diffTag(deriveDifficulty(item))]),
-      el("div", { class: "wb-row__col" }, [
-        el("span", { class: "wb-row__count", text: item.errorCount + " 次" })
-      ]),
-      el("div", { class: "wb-row__col wb-row__col--date" }, [
-        el("span", { class: "wb-row__date", text: item.lastError })
       ]),
       bm,
       menuWrap
@@ -621,12 +631,26 @@ AHS.WrongBook = (function () {
       el("span", { html: AHS.Icons.refresh() }),
       el("span", { text: "立即重做" })
     ]);
+    /* Sprint AI-122 AI-122-01: 立即重做 must be a real, honest reset — the
+       previous attempt's own 你的答案／正確答案／詳解 (still showing the
+       real correct answer and full explanation from BEFORE this re-do)
+       stayed visible directly under the fresh interactive option list,
+       defeating the entire point of "重做" (the student could just read
+       the answer right below it). Hiding `.wb-detail__answers` and
+       `.wb-detail__explain` for the duration of the interactive attempt
+       — not deleting them, so they honestly return once
+       onReviewSubmit()'s selectItem() re-render supplies this attempt's
+       own real new answer/explanation — is the real, minimal fix. */
     function startReview() {
       var interaction = buildReviewInteraction(item, function (wasCorrect, selectedKey) {
         if (onReviewSubmit) { onReviewSubmit(item.id, wasCorrect, selectedKey); }
       });
       var optionsEl = body.querySelector(".wb-detail__options");
       if (optionsEl) { optionsEl.parentNode.replaceChild(interaction, optionsEl); }
+      var answersEl = body.querySelector(".wb-detail__answers");
+      if (answersEl) { answersEl.setAttribute("hidden", "hidden"); }
+      var explainEl = body.querySelector(".wb-detail__explain");
+      if (explainEl) { explainEl.setAttribute("hidden", "hidden"); }
       reviewBtn.setAttribute("disabled", "disabled");
     }
     reviewBtn.addEventListener("click", startReview);
@@ -653,8 +677,12 @@ AHS.WrongBook = (function () {
         el("h2", { class: "wb-detail__title", text: "題目詳解" }),
         kpTagBtn
       ]),
+      /* Sprint AI-122 AI-122-04: 教材資訊（item.title／item.chapter）不再
+         顯示於左側題目列表（避免重複，見 questionRow），改保留於此
+         Detail Panel 自己的 Header 區塊 — 唯一顯示教材資訊的位置。 */
       el("div", { class: "wb-detail__tags" }, [
         chip(item.subject),
+        el("span", { class: "wb-detail__material", text: item.title }),
         el("span", { class: "wb-detail__chapter", text: item.chapter }),
         diffTag(deriveDifficulty(item)),
         el("span", { class: "wb-detail__status" }, [statusTag(getMasteryStatus(item.correctStreak))])
@@ -1189,15 +1217,15 @@ AHS.WrongBook = (function () {
     var paginationCtrl = paginationControl(data.perPage, goToPage);
     applyView();
 
+    /* Sprint AI-122 AI-122-04: the old .wb-list__cols header (難易度/
+       錯誤次數/最後錯誤 as right-aligned table headers) assumed each row
+       was one horizontal table line — no longer true now that a row is a
+       stacked 題號/題目/Knowledge Point/難度/錯誤次數/最近錯誤 block, so
+       those floating column labels no longer align to anything real. */
     var listChildren = [
       el("div", { class: "wb-list__head" }, [
         el("h2", { class: "wb-list__title", text: "錯題列表" }),
-        el("span", { class: "wb-list__count", text: "共 " + runtimeItems.length + " 題" }),
-        el("div", { class: "wb-list__cols" }, [
-          el("span", { text: "難易度" }),
-          el("span", { text: "錯誤次數" }),
-          el("span", { text: "最後錯誤" })
-        ])
+        el("span", { class: "wb-list__count", text: "共 " + runtimeItems.length + " 題" })
       ]),
       rowsWrap,
       paginationCtrl.el

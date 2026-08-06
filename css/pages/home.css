@@ -2,15 +2,17 @@
    progressbar) + the responsive content grid + block-specific styles.
    BEM. RWD: 3-region grid on desktop, single column on mobile. */
 
-/* ---- Content grid ---------------------------------------------------- */
+/* ---- Content grid ------------------------------------------------------
+   Sprint AI-122 AI-122-08: single stacked column — see AppHome.js's own
+   comment for why the previous main/rail 2-column split couldn't honestly
+   represent the PO's one literal top-to-bottom section order. */
 .home {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
-.home__main,
-.home__rail {
+.home__main {
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -58,7 +60,14 @@
   border-radius: var(--radius-sm);
   background-color: var(--bg);
 }
-.workspace-folder__material-title { font-size: 13px; font-weight: 700; }
+/* Sprint AI-122 AI-122-07: now a real <a href> (教材資料夾→教材 step) —
+   neutralize the browser's default anchor color/underline, same pattern
+   already used by .tutor-card__tile's own comment for the same reason. */
+.workspace-folder__material-title {
+  font-size: 13px; font-weight: 700;
+  color: inherit; text-decoration: none;
+}
+.workspace-folder__material-title:hover { color: var(--brand); text-decoration: underline; }
 .workspace-folder__material-links { display: flex; gap: 8px; flex-wrap: wrap; }
 .workspace-folder__link {
   font-size: 12px;
@@ -516,9 +525,6 @@
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {
-  .home {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .hero-card { flex-direction: column; }
   .hero-card__figure { align-self: center; }
 }

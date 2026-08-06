@@ -379,7 +379,19 @@ AHS.TeachingMaterialLoader = (function () {
     if (meta.grade) { partial.grade = meta.grade; }
     if (meta.chapter) { partial.chapter = meta.chapter; }
     if (meta.unit) { partial.category = meta.unit; }
-    if (meta.createdAt) { partial.date = meta.createdAt; }
+    /* Sprint AI-122 AI-122-06: meta.createdAt was only ever copied into
+       partial.date (display-only field, js/ui/MaterialCard.js etc.) —
+       never into MaterialRuntime's own real partial.createdAt, so
+       js/runtime/MaterialRuntime.js's add() silently defaulted every
+       Repository material's createdAt to "right now" (js/runtime/
+       MaterialRuntime.js:179's own formatDate(now) fallback), on every
+       fresh session. That made 首頁「近三日新增教材」meaningless — a
+       Repository material authored months ago would always look
+       brand-new. Reading the SAME real meta.createdAt this record
+       already carries (data/materials/*.js's own real per-material
+       field) into the real createdAt too is additive — partial.date is
+       untouched for its own existing display callers. */
+    if (meta.createdAt) { partial.date = meta.createdAt; partial.createdAt = meta.createdAt; }
     if (summary.title) { partial.title = summary.title; } /* this record shape HAS a real title field, unlike Package metadata — no derivation judgment call needed here */
     return partial;
   }

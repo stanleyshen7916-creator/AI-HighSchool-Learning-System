@@ -38,4 +38,14 @@ async function seedSession(page, data) {
   }, { seedData: data, ns: AHS_TEST_NS });
 }
 
-module.exports = { seedSession };
+/* Sprint AI-122 AI-122-06: 最近教材 now filters on real createdAt (>=
+   today-3days) — any seedSession material meant to show up there needs a
+   real, always-current createdAt, not a hardcoded past date that would
+   silently age out of the 3-day window the day after it's written. */
+function todayStr() {
+  var d = new Date();
+  var pad = function (n) { return n < 10 ? "0" + n : String(n); };
+  return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+}
+
+module.exports = { seedSession, todayStr };

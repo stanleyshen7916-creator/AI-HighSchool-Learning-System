@@ -27,7 +27,7 @@
 "use strict";
 const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
-const { seedSession } = require("../helpers/seed.js");
+const { seedSession, todayStr } = require("../helpers/seed.js");
 
 const MATERIAL_ID = "rt_1";
 const MATERIAL_TITLE = "AI-116 學習迴圈教材";
@@ -37,6 +37,7 @@ const SEED = {
     materials: [{
       id: MATERIAL_ID, order: 1, subject: "math", title: MATERIAL_TITLE, chapter: "第一章",
       grade: "高一", category: "課本", date: "2026/08/03", views: "1", content: "",
+      createdAt: todayStr(),
       progress: 40, lastOpenedAt: "2026/08/03 09:00", lastLearningAt: "2026/08/03 09:00",
       learningTime: 15, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
       fileSize: "", folderId: null

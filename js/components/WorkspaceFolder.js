@@ -43,9 +43,21 @@ AHS.WorkspaceFolder = (function () {
     return el("span", { class: "workspace-folder__state workspace-folder__state--" + state.state, text: state.label });
   }
 
+  /* Sprint AI-122 AI-122-07 (教材資料夾定義為唯一教材入口): the PO's own
+     flow — 教材資料夾→教材→學習總結→考前練習→每日 AI 練習 — names 教材
+     as its own real step between the folder and 學習總結. The title used
+     to be a plain <span> (no way to open the material itself from here),
+     skipping straight to 學習總結 — a real gap given this widget is now
+     the flow's own documented starting point. materials.html?id=<id> is
+     the same already-real deep link HomeRecentMaterials.js's own card
+     uses (HOTFIX-009-1), reused here rather than inventing a second one. */
   function materialRow(m) {
     return el("li", { class: "workspace-folder__material" }, [
-      el("span", { class: "workspace-folder__material-title", text: m.title || "（未命名教材）" }),
+      el("a", {
+        class: "workspace-folder__material-title",
+        href: "materials.html?id=" + encodeURIComponent(m.id),
+        text: m.title || "（未命名教材）"
+      }),
       stateBadge(m.id),
       el("div", { class: "workspace-folder__material-links" }, [
         el("a", {

@@ -37,6 +37,16 @@ test("AI-121：知識弱點頁面 Sidebar／標題已更名（AI-121-08，非「
 test("AI-121：知識弱點封存（archive）真實隱藏於預設檢視，切換「已封存」篩選可見，永不真的刪除", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(fileUrl("wrongbook"));
+  /* Sprint AI-122: under parallel-worker CPU contention, page.goto()'s
+     own 'load' event can resolve a beat before wrongbook.html's many
+     synchronous <script> tags finish executing AppWrongBook.js's init()
+     — including the point where AHS.WorkspaceRuntime/PersistenceAdapter
+     establish the real namespaced sessionStorage key
+     AHS.WrongBookRuntime.sync() below writes to. Waiting for a
+     genuinely-rendered element first (same fix pattern already applied
+     once for knowledge-engine.spec.js's own daily-practice test, Sprint
+     AI-121) proves init() actually finished before seeding. */
+  await expect(page.locator(".wb-header__title")).toBeVisible();
   await page.evaluate(() => {
     // wrongbook.html doesn't load QuestionRuntime/ExamRuntime/AutoGrader
     // (those are quiz.html-only) — seed AHS.WrongBookRuntime.sync()
