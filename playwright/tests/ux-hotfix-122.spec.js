@@ -23,47 +23,46 @@ function daysAgoStr(n) {
   return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
 }
 
-/* Sprint AI-122: under parallel-worker CPU contention, page.goto()'s own
-   'load' event can resolve a beat before wrongbook.html's many
-   synchronous <script> tags finish executing AppWrongBook.js's init()
-   — including the point where AHS.WorkspaceRuntime/PersistenceAdapter
-   establish the real namespaced sessionStorage key AHS.WrongBookRuntime.
-   sync() writes to. Calling page.evaluate() to seed real data
-   immediately after page.goto() (with no wait) can silently write
-   before that's wired up, so the seed is lost on the next page.reload().
-   Same root cause/fix pattern already documented and fixed once for
-   knowledge-engine.spec.js's own daily-practice test (Sprint AI-121) —
-   waiting for a genuinely-rendered element (here: the page's own H1,
-   present in every real/empty state) before evaluate() proves init()
-   actually finished. */
-async function gotoWrongbookReady(page) {
+/* Sprint AI-122: seeding via page.evaluate(AHS.WrongBookRuntime.sync())
+   immediately followed by page.reload() proved genuinely unreliable
+   under CPU contention — even after confirming the write landed via
+   page.waitForFunction() (still inside the SAME page/JS context) before
+   reloading, sessionStorage was occasionally found completely empty
+   after the reload (not just a slow render — the key itself absent).
+   The robust, already-established pattern the rest of this suite uses
+   for every other Runtime (see e.g. playwright/tests/analytics-scenario.
+   spec.js's own "ahs:wrongBookRuntime" seed) sidesteps the whole
+   evaluate()+reload() choreography: seedSession() writes directly into
+   sessionStorage via page.addInitScript(), which runs before ANY of the
+   page's own <script> tags on every subsequent navigation — so a single
+   page.goto() (never page.reload()) always finds the real data already
+   in place before AHS.WrongBookRuntime's own hydrate() call runs. */
+function wrongBookItem(overrides) {
+  return Object.assign({
+    id: "wb_1", questionId: "q1", subject: "math", title: "教材", chapter: "第一章",
+    materialId: "", knowledgePoint: "kp", question: "Q",
+    options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+    yourAnswer: "B", correctAnswer: "A", explanation: "",
+    errorCount: 1, lastError: todayStr(), firstError: todayStr(), masteredAt: null,
+    bookmarked: false, archived: false, correctStreak: 0
+  }, overrides);
+}
+
+async function gotoWrongbookWithItem(page, overrides) {
+  await seedSession(page, { "ahs:wrongBookRuntime": { items: [wrongBookItem(overrides)], seq: 1 } });
   await page.goto(fileUrl("wrongbook"));
-  await expect(page.locator(".wb-header__title")).toBeVisible();
 }
 
 test("PAT-122-01：立即重做 Session Reset — 完整重置作答狀態，不留上一次答案/解析/正解", async ({ page }) => {
   const errors = collectErrors(page);
-  await gotoWrongbookReady(page);
-  await page.evaluate(() => {
-    window.AHS.WrongBookRuntime.sync({
-      subject: "math", title: "PAT-122-01 測試教材", chapter: "第一章",
-      wrong: [{
-        questionId: "pat122-01-q1", knowledgePoint: "kp_pat122_01",
-        text: "PAT-122-01 測試題目", options: [
-          { key: "A", text: "選項A" }, { key: "B", text: "選項B" }, { key: "C", text: "選項C" }
-        ],
-        yourAnswer: "B", correctAnswer: "A", explanation: "PAT-122-01 詳解內容"
-      }]
-    });
+  await gotoWrongbookWithItem(page, {
+    id: "wb_1", questionId: "pat122-01-q1", title: "PAT-122-01 測試教材", knowledgePoint: "kp_pat122_01",
+    question: "PAT-122-01 測試題目",
+    options: [{ key: "A", text: "選項A" }, { key: "B", text: "選項B" }, { key: "C", text: "選項C" }],
+    yourAnswer: "B", correctAnswer: "A", explanation: "PAT-122-01 詳解內容"
   });
-  await page.reload();
   const row = page.locator(".wb-row", { hasText: "PAT-122-01 測試題目" });
-  // Generous timeout on this first post-reload assertion only: under
-  // heavy parallel-worker CPU contention, AppWrongBook.js's own
-  // synchronous init() can occasionally take longer than the default
-  // 5s to finish rendering — same class of timing sensitivity Sprint
-  // AI-121's own knowledge-engine.spec.js documented and worked around.
-  await expect(row).toBeVisible({ timeout: 15000 });
+  await expect(row).toBeVisible();
   await row.click();
 
   // Before redo: previous answer/explanation are honestly visible.
@@ -173,23 +172,15 @@ test("PAT-122-03：Practice Mode 完整承接 Material Context，不重新回首
 
 test("PAT-122-04：知識弱點左側改為 Question List — 題號/題目/Knowledge Point/難度/錯誤次數/最近錯誤日期，不重複教材名稱", async ({ page }) => {
   const errors = collectErrors(page);
-  await gotoWrongbookReady(page);
-  await page.evaluate(() => {
-    window.AHS.WrongBookRuntime.sync({
-      subject: "math", title: "PAT-122-04 教材標題（不應出現在列表列）", chapter: "第一章",
-      wrong: [{
-        questionId: "pat122-04-q1", knowledgePoint: "kp_pat122_04",
-        text: "PAT-122-04 這是題目本身的文字", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
-        yourAnswer: "B", correctAnswer: "A", explanation: ""
-      }]
-    });
+  await gotoWrongbookWithItem(page, {
+    id: "wb_1", questionId: "pat122-04-q1", title: "PAT-122-04 教材標題（不應出現在列表列）",
+    knowledgePoint: "kp_pat122_04", question: "PAT-122-04 這是題目本身的文字",
+    options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+    yourAnswer: "B", correctAnswer: "A"
   });
-  await page.reload();
 
   const row = page.locator(".wb-row", { hasText: "PAT-122-04 這是題目本身的文字" });
-  // Generous timeout on this first post-reload assertion only — see
-  // PAT-122-01's own comment for why.
-  await expect(row).toBeVisible({ timeout: 15000 });
+  await expect(row).toBeVisible();
   // 第一行＝題目文字 (not the material title).
   await expect(row.locator(".wb-row__question")).toHaveText("PAT-122-04 這是題目本身的文字");
   await expect(row.locator(".wb-row__index")).toContainText("第");
@@ -211,24 +202,15 @@ test("PAT-122-04：知識弱點左側改為 Question List — 題號/題目/Know
 
 test("PAT-122-05：Detail Panel Layout — Question List 30% / Detail Panel 70%", async ({ page }) => {
   const errors = collectErrors(page);
-  await gotoWrongbookReady(page);
-  await page.evaluate(() => {
-    window.AHS.WrongBookRuntime.sync({
-      subject: "math", title: "PAT-122-05 教材", chapter: "第一章",
-      wrong: [{
-        questionId: "pat122-05-q1", knowledgePoint: "kp_pat122_05",
-        text: "PAT-122-05 題目", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
-        yourAnswer: "B", correctAnswer: "A", explanation: ""
-      }]
-    });
+  await gotoWrongbookWithItem(page, {
+    id: "wb_1", questionId: "pat122-05-q1", title: "PAT-122-05 教材", knowledgePoint: "kp_pat122_05",
+    question: "PAT-122-05 題目", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+    yourAnswer: "B", correctAnswer: "A"
   });
-  await page.reload();
 
   const list = page.locator(".wb-list");
   const detail = page.locator(".wb-detail");
-  // Generous timeout on this first post-reload assertion only — see
-  // PAT-122-01's own comment for why.
-  await expect(list).toBeVisible({ timeout: 15000 });
+  await expect(list).toBeVisible();
   await expect(detail).toBeVisible();
   const listBox = await list.boundingBox();
   const detailBox = await detail.boundingBox();
