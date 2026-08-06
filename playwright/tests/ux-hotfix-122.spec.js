@@ -161,9 +161,15 @@ test("PAT-122-03：Practice Mode 完整承接 Material Context，不重新回首
   await page.locator(".quiz-practice__row").click();
   await expect(page.locator(".quiz-practice__question")).toContainText("PAT-122-03 專屬練習題");
 
-  // 返回列表 keeps the SAME material context — never drops back to an
-  // unfiltered/home view.
-  await page.locator(".quiz-practice__back").click();
+  // Sprint AI-123 AI-123-01/03: clicking a row now opens the full-screen
+  // Practice View (.qpv-overlay), not an inline Detail Panel — the
+  // question itself is still real and unchanged. 返回題目列表 (AI-123-03)
+  // keeps the SAME material context — never drops back to an
+  // unfiltered/home view. This one-question set is still unanswered, so
+  // AI-123-12's real confirm prompt appears first.
+  await page.locator(".qpv__back").click();
+  await expect(page.locator(".qpv-confirm__text")).toContainText("尚有 1 題未完成");
+  await page.locator(".qpv-confirm__btn", { hasText: "返回列表" }).click();
   await expect(page.locator(".quiz-practice__row")).toHaveCount(1);
   await expect(page.locator(".quiz-practice__row")).toContainText("PAT-122-03 專屬練習題");
 

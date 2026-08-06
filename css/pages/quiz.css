@@ -463,3 +463,115 @@
 .quiz-practice__result { margin: 10px 0 0; font-size: 14px; font-weight: 700; }
 .quiz-practice__result.is-correct { color: #15803d; }
 .quiz-practice__result.is-wrong { color: #b91c1c; }
+
+/* ---- Practice list row status icon — Sprint AI-123 AI-123-05/06.
+   Prefixed before the subject chip so it's the first thing a student
+   sees scanning the list, per "學生必須一眼知道哪些完成、哪些答錯". ---- */
+.quiz-practice__row-status {
+  flex: 0 0 auto; width: 20px; text-align: center;
+  font-size: 15px; font-weight: 800; color: var(--text-faint);
+}
+.quiz-practice__row-status--correct { color: #15803d; }
+.quiz-practice__row-status--wrong { color: #b91c1c; }
+.quiz-practice__row-status--pending { color: var(--text-faint); }
+
+/* ---- Practice View (full-screen) — Sprint AI-123 Practice Flow UX
+   Refactor. Appended straight to document.body (see QuizCenter.js's own
+   openPracticeSession header) so it covers the entire viewport,
+   including AppShell's sidebar/topbar — genuinely "全畫面作答", not just
+   the main content column. Explicit top/right/bottom/left (never the
+   `inset` shorthand, forbidden per this repo's own CSS convention) at a
+   z-index above every other overlay in this app (settings-panel.css's
+   own 200 is the previous highest). ---- */
+.qpv-lock-scroll { overflow: hidden; }
+.qpv-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 300;
+  background-color: var(--bg);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.qpv {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: 20px;
+  width: 100%; max-width: 720px; margin: 0 auto;
+  padding: 20px 20px 32px;
+}
+.qpv__head { display: flex; flex-direction: column; gap: 10px; }
+.qpv__back {
+  align-self: flex-start; border: 0; background: transparent; color: var(--brand);
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 6px 0;
+}
+.qpv__title { font-size: 15px; font-weight: 700; color: var(--text-muted); }
+.qpv__body { flex: 1 1 auto; }
+.qpv__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.qpv__prev, .qpv__next {
+  font: inherit; font-size: 14px; font-weight: 700;
+  border-radius: var(--radius-pill); padding: 10px 22px; cursor: pointer;
+}
+.qpv__prev { border: 1px solid var(--line); background-color: var(--card); color: var(--text-muted); }
+.qpv__prev:hover { background-color: var(--bg); }
+.qpv__prev:disabled { opacity: 0.4; cursor: not-allowed; }
+.qpv__next { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+.qpv__next:hover { background-color: var(--brand-strong); }
+
+/* ---- Practice View exit-confirm dialog — AI-123-12. ---- */
+.qpv-confirm-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 310;
+  background-color: rgba(31, 36, 48, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.qpv-confirm-overlay[hidden] { display: none; }
+.qpv-confirm {
+  width: 100%; max-width: 340px;
+  background-color: var(--card); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card); padding: 20px;
+  display: flex; flex-direction: column; gap: 16px; text-align: center;
+}
+.qpv-confirm__text { margin: 0; font-size: 15px; font-weight: 700; color: var(--text); }
+.qpv-confirm__actions { display: flex; gap: 10px; }
+.qpv-confirm__btn {
+  flex: 1 1 auto; padding: 10px 14px; border-radius: var(--radius-pill);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+}
+.qpv-confirm__btn--primary { background-color: var(--brand); color: #ffffff; border-color: var(--brand); }
+.qpv-confirm__btn--primary:hover { background-color: var(--brand-strong); }
+
+/* ---- Score summary — AI-123-04. ---- */
+.qpv-summary { display: flex; flex-direction: column; gap: 20px; padding-top: 24px; text-align: center; }
+.qpv-summary__title { margin: 0; font-size: 20px; font-weight: 800; }
+.qpv-summary__score-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 24px; }
+.qpv-summary__score { display: flex; flex-direction: column; gap: 2px; }
+.qpv-summary__score strong { font-size: 24px; font-weight: 800; }
+.qpv-summary__score span { font-size: 12px; color: var(--text-muted); }
+.qpv-summary__extra {
+  display: flex; justify-content: center; gap: 24px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 16px 0;
+}
+.qpv-summary__extra-item { display: flex; flex-direction: column; gap: 4px; }
+.qpv-summary__extra-label { font-size: 12px; color: var(--text-muted); }
+.qpv-summary__extra-item strong { font-size: 18px; font-weight: 800; color: var(--brand-ink); }
+.qpv-summary__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.qpv-summary__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+  border-radius: var(--radius-pill); padding: 10px 22px;
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none;
+}
+.qpv-summary__btn--primary { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+.qpv-summary__btn--primary:hover { background-color: var(--brand-strong); }
+.qpv-summary__btn--link { border-color: var(--brand-line); color: var(--brand); background-color: var(--brand-soft); }
+
+@media (max-width: 560px) {
+  .qpv { padding: 16px 16px 24px; gap: 16px; }
+  .qpv__footer { flex-wrap: wrap; }
+  .qpv__prev, .qpv__next { flex: 1 1 auto; }
+  .qpv-summary__score-row { gap: 16px; }
+  .qpv-summary__extra { flex-direction: column; align-items: center; gap: 10px; }
+  .qpv-summary__actions { flex-direction: column; }
+  .qpv-summary__btn { width: 100%; }
+}
