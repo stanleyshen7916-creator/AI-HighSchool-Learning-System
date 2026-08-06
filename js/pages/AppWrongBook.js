@@ -61,29 +61,65 @@ window.AHS = window.AHS || {};
     });
   }
 
-  /* ---- Statistics（EO-S7.0-002：全部即時計算，永不儲存） -------------- */
+  /* ---- Statistics（EO-S7.0-002：全部即時計算，永不儲存） --------------
+     Sprint AI-124 PAT-03 (Project Owner PAT FAIL — "Knowledge Weakness
+     Statistics 仍為 0，但今日待複習已為 1，Result 已有資料"): real Root
+     Cause, found by tracing which Runtime each number on this page
+     actually reads. This card used to read exclusively from
+     AHS.WrongBookSession.statistics() — the legacy v1.0 Wrong Book store,
+     written only by the old WrongBookGenerator/LearningQuestionSession
+     Practice pipeline. But every REAL grading path this app now actually
+     uses — Formal Exam (AHS.ExamRuntime -> AHS.AutoGrader ->
+     AHS.WrongBookRuntime.sync()) and the AI-122+ "real Practice" flow
+     (js/components/QuizCenter.js's wrongBookHook()/syncRealPracticeAnswer(),
+     also calling AHS.WrongBookRuntime.sync() directly) — writes to
+     AHS.WrongBookRuntime instead, never AHS.WrongBookSession. So this
+     card stayed genuinely stuck at 0 for any real completion through
+     today's real pipeline, while "今日待複習" (AHS.StatisticsRuntime.
+     dueForReview(), reading AHS.WrongBookRuntime — the SAME real Runtime
+     the rest of this page's own wb-summary card already reads) correctly
+     showed real data — two disconnected stores, not a Runtime bug.
+
+     Fix scope, per this PAT's own LOCK ("不得修改 Runtime，只修正同步
+     流程"): this file is a page bootstrap/View file, not a Runtime —
+     AHS.WrongBookRuntime.js itself is untouched, only WHICH store this
+     card reads from changes, via that Runtime's own existing, unmodified
+     list()/weaknessState() public API (same one questionRow()/
+     renderDetail() in js/components/WrongBook.js already read).
+     AHS.WrongBookRuntime's own real weaknessState() has exactly 4 states
+     (NEW/LEARNING/MASTERED/ARCHIVED) — no "Reviewing" tier exists in the
+     real data, so that legacy stat is honestly dropped rather than
+     mapped to something that doesn't exist ("不得偽造"). */
   var STAT_DEFS = [
-    { key: "totalWrongCount", label: "Total Wrong", from: "root" },
-    { key: "active", label: "Active", from: "byStatus" },
-    { key: "archived", label: "Archived", from: "byStatus" },
-    { key: "new", label: "New", from: "byMastery" },
-    { key: "learning", label: "Learning", from: "byMastery" },
-    { key: "reviewing", label: "Reviewing", from: "byMastery" },
-    { key: "mastered", label: "Mastered", from: "byMastery" }
+    { key: "totalWrongCount", label: "Total Wrong" },
+    { key: "active", label: "Active" },
+    { key: "archived", label: "Archived" },
+    { key: "new", label: "New" },
+    { key: "learning", label: "Learning" },
+    { key: "mastered", label: "Mastered" }
   ];
+
+  function realWrongBookStats() {
+    var items = AHS.WrongBookRuntime.list();
+    var counts = { totalWrongCount: items.length, active: 0, archived: 0, new: 0, learning: 0, mastered: 0 };
+    items.forEach(function (i) {
+      if (i.archived) { counts.archived += 1; } else { counts.active += 1; }
+      if (i.weaknessState === "NEW") { counts.new += 1; }
+      else if (i.weaknessState === "LEARNING") { counts.learning += 1; }
+      else if (i.weaknessState === "MASTERED") { counts.mastered += 1; }
+    });
+    return counts;
+  }
 
   function buildSessionStatsCard() {
     var el = AHS.UI.el;
-    var session = AHS.WrongBookSession;
-    if (!session || typeof session.statistics !== "function") { return null; }
-    var s = session.statistics();
+    if (!AHS.WrongBookRuntime || typeof AHS.WrongBookRuntime.list !== "function") { return null; }
+    var counts = realWrongBookStats();
     return el("section", { class: "card wb-live-stats", "aria-label": "錯題即時統計" }, [
       el("h3", { class: "wb-live-stats__title", text: "錯題即時統計" }),
       el("div", { class: "wb-live-stats__grid" }, STAT_DEFS.map(function (d) {
-        var v = d.from === "root" ? (s[d.key] || 0)
-          : ((d.from === "byStatus" ? s.byStatus : s.byMastery)[d.key] || 0);
         return el("div", { class: "wb-live-stats__item" }, [
-          el("strong", { class: "wb-live-stats__value", text: String(v) }),
+          el("strong", { class: "wb-live-stats__value", text: String(counts[d.key] || 0) }),
           el("span", { class: "wb-live-stats__label", text: d.label })
         ]);
       }))

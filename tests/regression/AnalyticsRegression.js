@@ -42,7 +42,7 @@ function namespacedKey(k) {
   return k;
 }
 
-function loadPage(htmlFile, { seedSession, url, skipLogin } = {}) {
+function loadPage(htmlFile, { seedSession, url, skipLogin, excludeScripts } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const vconsole = new (require("jsdom").VirtualConsole)();
   const consoleErrors = [];
@@ -65,7 +65,9 @@ function loadPage(htmlFile, { seedSession, url, skipLogin } = {}) {
   if (seedSession) {
     Object.entries(seedSession).forEach(([k, v]) => window.sessionStorage.setItem(skipLogin ? k : namespacedKey(k), JSON.stringify(v)));
   }
-  const scripts = [...dom.window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
+  const scripts = [...dom.window.document.querySelectorAll("script[src]")]
+    .map((s) => s.getAttribute("src"))
+    .filter((src) => !(excludeScripts && excludeScripts.some((x) => src.includes(x))));
   scripts.forEach((src) => window.eval(fs.readFileSync(path.join(REPO, src), "utf8")));
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors };
@@ -193,6 +195,7 @@ console.log("\n[2/3/6] Subject / Material / WrongBook Analytics");
     ], seq: 2
   };
   const { window } = loadPage("index.html", {
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"],
     seedSession: {
       "ahs:materialRuntime": materialSeed,
       "ahs:wrongBookRuntime": wrongBookSeed,

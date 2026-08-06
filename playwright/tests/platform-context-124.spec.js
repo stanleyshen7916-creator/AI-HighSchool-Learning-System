@@ -82,6 +82,18 @@ test.describe("PAT-124-①", () => {
     await expect(page.locator(".tutor-card")).toBeVisible();      // AI Tutor
     await expect(page.locator(".home-kpi__item")).toHaveCount(8);
 
+    /* AI-124 PAT-01 (Project Owner PAT FAIL): real root cause was
+       index.html never <script>-tagging js/data/TeachingMaterialData.js
+       (the Package track — math/tm_1~4 etc.) — only materials.html/
+       quiz.html did — so AHS.TeachingMaterialLoader.load() on Home could
+       only ever bridge the Repository track (civics), leaving 教材資料夾
+       showing ONLY 公民 until a Material Center visit persisted the rest
+       into MaterialRuntime. Real proof, without ever navigating to
+       materials.html first: 教材資料夾 must show BOTH subjects real
+       Repository data covers (公民 AND 數學) on this very first render. */
+    await expect(page.locator(".workspace-folder__group-name", { hasText: "公民" })).toBeVisible();
+    await expect(page.locator(".workspace-folder__group-name", { hasText: "數學" })).toBeVisible();
+
     expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
   });
 });
@@ -298,6 +310,52 @@ test("PAT-124-⑧：首頁 KPI 全部即時由 Runtime 計算，與知識弱點�
   // real Runtime computation, not a page-local cache/mock copy.
   await page.goto(fileUrl("wrongbook"));
   await expect(page.locator(".wb-row", { hasText: "KPI 測試題目" })).toBeVisible();
+
+  expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+});
+
+test("PAT-124-PAT-03：知識弱點頁「錯題即時統計」讀取真實 AHS.WrongBookRuntime，與今日待複習/Result 同步（非停滯 0）", async ({ page }) => {
+  const errors = collectErrors(page);
+  // Real Project Owner PAT FAIL: this card used to read exclusively from
+  // the legacy AHS.WrongBookSession store, disconnected from the real
+  // AHS.WrongBookRuntime every current grading path (Formal Exam,
+  // AI-122+ real Practice) actually writes to — so it stayed stuck at 0
+  // even with real graded data present. Seeding AHS.WrongBookRuntime
+  // directly (the same real Runtime js/pages/AppWrongBook.js's
+  // dueForReview()/wb-summary card already reads) and expecting THIS
+  // card to reflect it proves the sync now reads the correct source.
+  await seedSession(page, {
+    "ahs:wrongBookRuntime": {
+      items: [
+        { id: "wb_pat03_new", questionId: "q_pat03_new", subject: "math", title: "PAT-03 測試題一", chapter: "第一章",
+          materialId: "", knowledgePoint: "kp_pat03_a", question: "PAT-03 題目一",
+          options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+          yourAnswer: "B", correctAnswer: "A", explanation: "",
+          errorCount: 1, lastError: "2026/08/06", firstError: "2026/08/06", masteredAt: null,
+          bookmarked: false, archived: false, correctStreak: 0 },
+        { id: "wb_pat03_archived", questionId: "q_pat03_archived", subject: "math", title: "PAT-03 測試題二", chapter: "第一章",
+          materialId: "", knowledgePoint: "kp_pat03_b", question: "PAT-03 題目二",
+          options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+          yourAnswer: "B", correctAnswer: "A", explanation: "",
+          errorCount: 1, lastError: "2026/08/06", firstError: "2026/08/06", masteredAt: null,
+          bookmarked: false, archived: true, correctStreak: 0 }
+      ],
+      seq: 2
+    }
+  });
+  await page.goto(fileUrl("wrongbook"));
+
+  const stats = page.locator(".wb-live-stats");
+  await expect(stats).toBeVisible();
+  const values = await stats.locator(".wb-live-stats__value").allTextContents();
+  const labels = await stats.locator(".wb-live-stats__label").allTextContents();
+  const byLabel = {};
+  labels.forEach((l, i) => { byLabel[l] = Number(values[i]); });
+
+  expect(byLabel["Total Wrong"]).toBe(2);
+  expect(byLabel["Active"]).toBe(1);
+  expect(byLabel["Archived"]).toBe(1);
+  expect(byLabel["New"]).toBe(1);
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
