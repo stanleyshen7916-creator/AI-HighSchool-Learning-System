@@ -19,6 +19,30 @@ function check(name, cond) {
   else { fail++; failures.push(name); console.log("  FAIL  " + name); }
 }
 
+/* backFromPractice(doc) — Sprint AI-123 Practice Flow UX Refactor:
+   Practice View (js/components/QuizCenter.js's buildPracticeSessionView)
+   is now a full-screen overlay appended straight to document.body, not a
+   node inside QuizCenter's own mount root — every test below that used
+   to query mountEl/preMount/m for .quiz-practice__option--btn /
+   .quiz-practice__result / .quiz-practice__answer now reads from `doc`
+   instead. Its own back button (.qpv__back, AI-123-03) may pop a real
+   "尚有 N 題未完成" confirm dialog first (AI-123-12) when this practice
+   set has more than the one question a test just answered — this helper
+   clicks Back, then (only if the dialog actually appeared) clicks its
+   own non-primary "返回列表" button to actually leave, matching how a
+   real student would dismiss it. */
+function backFromPractice(doc) {
+  var back = doc.querySelector(".qpv__back");
+  if (!back) { return; }
+  back.click();
+  var overlay = doc.querySelector(".qpv-confirm-overlay");
+  if (overlay && !overlay.hasAttribute("hidden")) {
+    var btns = [...overlay.querySelectorAll(".qpv-confirm__btn")];
+    var leave = btns.find(function (b) { return !b.classList.contains("qpv-confirm__btn--primary"); });
+    if (leave) { leave.click(); }
+  }
+}
+
 /* Sprint AI-122 AI-122-06: 最近教材 now filters on real createdAt (>=
    today-3days) — any seedSession material meant to show up there needs a
    real, always-current createdAt (never a hardcoded past date that would
@@ -422,13 +446,13 @@ console.log("\n[8] Sprint AI-015E — Production Pipeline wiring (materials.html
      now resolved via Sprint AI-015E's Identity Mapping (Runtime record
      displayed -> Session sibling looked up for WrongBookGenerator). */
   rows[0].closest(".quiz-practice__row") ? rows[0].closest(".quiz-practice__row").click() : rows[0].click();
-  const optBtns = [...mountEl.querySelectorAll(".quiz-practice__option--btn")];
+  const optBtns = [...doc.querySelectorAll(".quiz-practice__option--btn")];
   check("single_choice 呈現可作答選項", optBtns.length === 4);
   const q0 = window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const wrongOpt = optBtns.find(b => b.textContent !== String(q0.answer));
   wrongOpt.click();
-  check("Submit 後顯示批改結果（答錯）", /答錯了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
-  check("explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
+  check("Submit 後顯示批改結果（答錯）", /答錯了/.test(doc.querySelector(".quiz-practice__result").textContent));
+  check("explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(doc.querySelector(".quiz-practice__answer").textContent));
   check("答錯 → WrongBookSession 自動建立 1 筆（Identity Mapping 成功解析 Runtime→Session）", window.AHS.WrongBookSession.count() === 1);
   const wbRec = window.AHS.WrongBookSession.list()[0];
   check("錯題記錄內容解析自真實題目", wbRec.correctAnswer === q0.answer && wbRec.userAnswer === wrongOpt.textContent);
@@ -456,16 +480,16 @@ console.log("\n[10] EO-S7.0-002 / Sprint AI-015E — 答對不建立 / 重複答
   }
   // Correct answer first: no wrong-book entry
   openRow(0);
-  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click();
-  check("答對 → 不建立 Wrong Book", window.AHS.WrongBookSession.count() === 0 && /答對了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click();
+  check("答對 → 不建立 Wrong Book", window.AHS.WrongBookSession.count() === 0 && /答對了/.test(doc.querySelector(".quiz-practice__result").textContent));
   // Wrong twice: single record, wrongCount 2, firstWrongAt preserved
-  mountEl.querySelector(".quiz-practice__back").click();
+  backFromPractice(doc);
   openRow(0);
-  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const first = window.AHS.WrongBookSession.list()[0];
-  mountEl.querySelector(".quiz-practice__back").click();
+  backFromPractice(doc);
   openRow(0);
-  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const after = window.AHS.WrongBookSession.list()[0];
   check("重複答錯不重建資料（仍 1 筆）", window.AHS.WrongBookSession.count() === 1);
   check("wrongCount 正常累加 (2) 且 firstWrongAt 不覆蓋",
@@ -486,7 +510,7 @@ console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session
   const rows = [...preMount.querySelectorAll(".quiz-practice__row-q")];
   const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
-  [...preMount.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {
     "ahs:learningQuestionSession": pre.window.AHS.PersistenceAdapter.load("learningQuestionSession"),
     "ahs:wrongBookSession": pre.window.AHS.PersistenceAdapter.load("wrongBookSession"),
@@ -573,7 +597,7 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
   const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const rows = [...m.querySelectorAll(".quiz-practice__row-q")];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
-  [...m.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {};
   for (const shortKey of ["wrongBookSession", "reviewQueue"]) carried["ahs:" + shortKey] = pre.window.AHS.PersistenceAdapter.load(shortKey);
   const { window } = loadPage("index.html", { seedSession: carried });

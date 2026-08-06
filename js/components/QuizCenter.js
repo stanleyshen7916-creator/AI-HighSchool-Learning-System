@@ -793,7 +793,7 @@ AHS.QuizCenter = (function () {
      sourced material now has a genuine, inline, immediate-feedback
      Practice experience instead of being silently rerouted to Formal
      Exam. */
-  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice) {
+  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor) {
     var runtime = AHS.LearningQuestionRuntime;
     var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
     var items = filterMaterialId
@@ -854,17 +854,18 @@ AHS.QuizCenter = (function () {
     }
 
     if (realQuestions.length) {
-      var realRows = realQuestions.map(function (q) {
+      var realRows = realQuestions.map(function (q, qIndex) {
         var subj = AHS.Subjects[q.subject] || { name: q.subject || "未分類", hex: "#6b7280" };
         var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+          statusFor ? statusIcon(statusFor("real", q.id)) : null,
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
           }, [el("span", { text: subj.name })]),
           el("span", { class: "quiz-practice__row-q", text: q.text }),
           el("span", { class: "quiz-practice__row-meta", text: q.knowledgePoint || "" }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
-        ]);
-        row.addEventListener("click", function () { onRealPractice(q); });
+        ].filter(function (n) { return n; }));
+        row.addEventListener("click", function () { onRealPractice(q, realQuestions, qIndex); });
         return row;
       });
       sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "練習題列表" }, [
@@ -876,17 +877,18 @@ AHS.QuizCenter = (function () {
     }
 
     if (items.length) {
-      var rows = items.map(function (record) {
+      var rows = items.map(function (record, rIndex) {
         var subj = AHS.Subjects[record.subject] || { name: record.subject || "未分類", hex: "#6b7280" };
         var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+          statusFor ? statusIcon(statusFor("legacy", record.id)) : null,
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
           }, [el("span", { text: subj.name })]),
           el("span", { class: "quiz-practice__row-q", text: record.question || "（尚無題目）" }),
           el("span", { class: "quiz-practice__row-meta", text: record.knowledgePoint || record.chapter || "" }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
-        ]);
-        row.addEventListener("click", function () { onPractice(record); });
+        ].filter(function (n) { return n; }));
+        row.addEventListener("click", function () { onPractice(record, items, rIndex); });
         return row;
       });
       sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "練習題列表" }, [
@@ -935,10 +937,21 @@ AHS.QuizCenter = (function () {
     return key(expected) === key(given) && key(given) !== "";
   }
 
-  function buildPracticeQuestionView(record, onBack) {
-    var backBtn = el("button", { type: "button", class: "quiz-practice__back", text: "← 返回列表" });
-    backBtn.addEventListener("click", onBack);
-
+  /* renderLegacyQuestionBody(record, onAnswered) — Sprint AI-123
+     AI-123-01/08: the answering body extracted from the former
+     buildPracticeQuestionView() (which used to be mounted directly as
+     the list's own "Detail Panel" / 主要作答區, per AI-123-08's own
+     description of the pre-Sprint state). Now body-only — no back
+     button, no outer .quiz-practice wrapper — so the full-screen
+     Practice View (buildPracticeSessionView, below) is the only surface
+     that ever mounts it. onAnswered(id, isCorrect) is the one new hook:
+     lets the Practice View update its own session-scoped answered-state
+     (for the list's ✔/✘/○ status icons, AI-123-05/06) without this
+     function knowing anything about that state itself. The grading /
+     WrongBookGenerator sync logic below is byte-for-byte the same as
+     before — AI-123-13 forbids touching WrongBook Logic, only its
+     surrounding View. */
+  function renderLegacyQuestionBody(record, onAnswered) {
     var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
     var resultBanner = el("p", { class: "quiz-practice__result", "aria-live": "polite", hidden: "hidden" });
     var submitted = false;
@@ -998,6 +1011,7 @@ AHS.QuizCenter = (function () {
       resultBanner.removeAttribute("hidden");
       renderAnswer();
       if (!isCorrect) { wrongBookHook(record, userAnswer); }
+      onAnswered(record.id, isCorrect);
     }
 
     var interaction;
@@ -1067,37 +1081,26 @@ AHS.QuizCenter = (function () {
       interaction = el("div", { class: "quiz-practice__self" }, [saInput, saReveal, saAssess]);
     }
 
-    return el("div", { class: "quiz-practice" }, [
-      backBtn,
-      el("section", { class: "card quiz-practice__question", "aria-label": "練習題" },
-        [
-          el("p", { class: "quiz-practice__q-text", text: record.question }),
-          interaction,
-          resultBanner,
-          answerSlot
-        ].filter(Boolean))
-    ]);
+    return el("section", { class: "card quiz-practice__question", "aria-label": "練習題" },
+      [
+        el("p", { class: "quiz-practice__q-text", text: record.question }),
+        interaction,
+        resultBanner,
+        answerSlot
+      ].filter(Boolean));
   }
 
-  /* buildRealPracticeQuestionView(q, onBack) — Sprint AI-122 AI-122-02/03:
-     the real-content sibling of buildPracticeQuestionView() above, for a
-     question read straight from AHS.QuestionRuntime (options as
-     {key,text}, correctAnswer as a real key) rather than
-     LearningQuestionRuntime's own plain-string shape — kept as a
-     separate function instead of reshaping into the legacy shape so
-     grading stays keyed by the question's own real correctAnswer (no
-     lossy text-matching), and so a wrong answer is synced through the
-     SAME real Knowledge Engine every other real grading path in this app
-     already uses (AHS.WrongBookRuntime.sync() / AHS.KnowledgeMasteryRuntime.
-     recordAttempt() — both read-only calls to their already-existing
-     public API, not a modification of either Runtime, honoring this
-     Sprint's own LOCK). Matches practiceTab's own real tooltip promise:
-     可重複作答・答完立即看到詳解・不影響正式成績 — no ExamRuntime session,
-     no HistoryRuntime record, immediate inline feedback. */
-  function buildRealPracticeQuestionView(q, onBack) {
-    var backBtn = el("button", { type: "button", class: "quiz-practice__back", text: "← 返回列表" });
-    backBtn.addEventListener("click", onBack);
-
+  /* renderRealQuestionBody(q, onAnswered) — Sprint AI-122 AI-122-02/03's
+     buildRealPracticeQuestionView, reworked by Sprint AI-123 AI-123-01/08
+     the same way renderLegacyQuestionBody() above was: body-only (no
+     back button, no outer wrapper), mounted exclusively by the
+     full-screen Practice View now. Grading / WrongBookRuntime.sync() /
+     KnowledgeMasteryRuntime.recordAttempt() calls are byte-for-byte
+     unchanged from before — still the same real Knowledge Engine calls,
+     still read-only against their own already-existing public API, per
+     this Sprint's own LOCK (AI-123-13). onAnswered(id, isCorrect) is the
+     one new hook, same purpose as renderLegacyQuestionBody's. */
+  function renderRealQuestionBody(q, onAnswered) {
     var resultBanner = el("p", { class: "quiz-practice__result", "aria-live": "polite", hidden: "hidden" });
     var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
     var submitted = false;
@@ -1148,6 +1151,7 @@ AHS.QuizCenter = (function () {
       });
       renderAnswer();
       syncRealPracticeAnswer(isCorrect, pickedKey);
+      onAnswered(q.id, isCorrect);
     }
 
     optionBtns = (q.options || []).map(function (o) {
@@ -1178,16 +1182,245 @@ AHS.QuizCenter = (function () {
     if (difficulty) { metaBits.push("難度：" + difficulty); }
     if (q.knowledgePoint) { metaBits.push("考點：" + q.knowledgePoint); }
 
-    return el("div", { class: "quiz-practice" }, [
-      backBtn,
-      el("section", { class: "card quiz-practice__question", "aria-label": "練習題" }, [
-        el("p", { class: "quiz-practice__q-text", text: q.text }),
-        metaBits.length ? el("p", { class: "quiz-practice__meta", text: metaBits.join("　") }) : null,
-        el("div", { class: "quiz-practice__options" }, optionBtns),
-        resultBanner,
-        answerSlot
-      ])
+    return el("section", { class: "card quiz-practice__question", "aria-label": "練習題" }, [
+      el("p", { class: "quiz-practice__q-text", text: q.text }),
+      metaBits.length ? el("p", { class: "quiz-practice__meta", text: metaBits.join("　") }) : null,
+      el("div", { class: "quiz-practice__options" }, optionBtns),
+      resultBanner,
+      answerSlot
     ]);
+  }
+
+  /* ---- Practice View (full-screen) — Sprint AI-123 Practice Flow UX
+     Refactor. Replaces the old inline "click a row -> answer right where
+     you clicked, in the same list view" flow (AI-123-01: "不得停留目前
+     Detail Panel"). renderLegacyQuestionBody()/renderRealQuestionBody()
+     above are this view's only two question-rendering strategies —
+     nothing about grading/Runtime sync changed, only where they're
+     mounted (AI-123-13 LOCK: View/Navigation/Component only).
+
+     statusIcon(state) — AI-123-05/06: ✔ already correct, ✘ already
+     wrong, ○ not yet attempted. Purely presentational. */
+  function statusIcon(state) {
+    if (state === "correct") {
+      return el("span", { class: "quiz-practice__row-status quiz-practice__row-status--correct", "aria-label": "已答對", text: "✔" });
+    }
+    if (state === "wrong") {
+      return el("span", { class: "quiz-practice__row-status quiz-practice__row-status--wrong", "aria-label": "已答錯", text: "✘" });
+    }
+    return el("span", { class: "quiz-practice__row-status quiz-practice__row-status--pending", "aria-label": "尚未作答", text: "○" });
+  }
+
+  /* practiceHeaderMeta(materialId, sampleQuestion) — AI-123-02's real
+     科目／章節 source: read-only against repositoryExamCatalog() (already
+     existing, already real) when this practice set is scoped to one
+     Repository material; falls back to the sample question/record's own
+     subject/chapter field otherwise. Never fabricated — an unresolvable
+     chapter is simply omitted from the header, not guessed. */
+  function practiceHeaderMeta(materialId, sample) {
+    var subjectKey = (sample && sample.subject) || "";
+    var chapterLabel = (sample && sample.chapter) || "";
+    if (materialId) {
+      var catalog = repositoryExamCatalog();
+      for (var i = 0; i < catalog.length; i += 1) {
+        if (materialIdFromExamId(catalog[i]._repoExamId) === materialId) {
+          subjectKey = catalog[i].subject || subjectKey;
+          chapterLabel = catalog[i].chapter || chapterLabel;
+          break;
+        }
+      }
+    }
+    var subjectName = (subjectKey && AHS.Subjects[subjectKey]) ? AHS.Subjects[subjectKey].name : subjectKey;
+    return { subjectName: subjectName || "", chapterLabel: chapterLabel || "" };
+  }
+
+  /* buildScoreSummaryView(results, actions) — AI-123-04: 完成測驗 ->
+     成績摘要 -> 返回題目列表, never straight back to Home/Material Center
+     (AI-123-09 — no such buttons exist here to begin with). results:
+     { correct, total, newWrongToday, masteryPercent }. masteryPercent is
+     null (rendered as "尚無資料", never a fabricated number) when none of
+     this set's questions carry a real knowledgePoint AHS.
+     KnowledgeMasteryRuntime has ever recorded an attempt for. */
+  function buildScoreSummaryView(results, actions) {
+    var accuracy = results.total ? Math.round((results.correct / results.total) * 100) : 0;
+    var wrongCount = Math.max(0, results.total - results.correct);
+
+    var backBtn = el("button", { type: "button", class: "qpv-summary__btn qpv-summary__btn--primary", text: "返回題目列表" });
+    backBtn.addEventListener("click", function () { actions.onBackToList(); });
+    var retestBtn = el("button", { type: "button", class: "qpv-summary__btn", text: "再次測驗" });
+    retestBtn.addEventListener("click", function () { actions.onRetest(); });
+    var wrongBookLink = el("a", { class: "qpv-summary__btn qpv-summary__btn--link", href: "wrongbook.html", text: "前往錯題本" });
+
+    return el("div", { class: "qpv-summary" }, [
+      el("h2", { class: "qpv-summary__title", text: "成績摘要" }),
+      el("div", { class: "qpv-summary__score-row" }, [
+        el("div", { class: "qpv-summary__score" }, [
+          el("strong", { text: results.correct + " / " + results.total }),
+          el("span", { text: "本次" })
+        ]),
+        el("div", { class: "qpv-summary__score" }, [
+          el("strong", { text: accuracy + "%" }),
+          el("span", { text: "答對率" })
+        ]),
+        el("div", { class: "qpv-summary__score" }, [
+          el("strong", { text: String(results.correct) }),
+          el("span", { text: "答對題數" })
+        ]),
+        el("div", { class: "qpv-summary__score" }, [
+          el("strong", { text: String(wrongCount) }),
+          el("span", { text: "答錯題數" })
+        ])
+      ]),
+      el("div", { class: "qpv-summary__extra" }, [
+        el("div", { class: "qpv-summary__extra-item" }, [
+          el("span", { class: "qpv-summary__extra-label", text: "今日新增錯題" }),
+          el("strong", { text: String(results.newWrongToday) })
+        ]),
+        el("div", { class: "qpv-summary__extra-item" }, [
+          el("span", { class: "qpv-summary__extra-label", text: "Knowledge Mastery" }),
+          el("strong", { text: results.masteryPercent === null ? "尚無資料" : results.masteryPercent + "%" })
+        ])
+      ]),
+      el("div", { class: "qpv-summary__actions" }, [backBtn, retestBtn, wrongBookLink])
+    ]);
+  }
+
+  /* buildPracticeSessionView(session, actions) — the full-screen Practice
+     View itself. session: { kind: "real"|"legacy", questions, startIndex,
+     headerMeta, statusFor(kind,id), onAnswered(id,isCorrect) }.
+     actions: { onExit(), onRetest() }.
+
+     AI-123-03/09: back button top-left, always returns to the original
+     question list — never Home/Material Center (no such link exists in
+     this view). AI-123-12: leaving with unanswered questions remaining
+     shows a real confirm prompt first ("尚有 N 題未完成"); progress itself
+     (session.statusFor's own backing store, owned by create()'s closure)
+     is never cleared by opening/closing this view, only by an explicit
+     再次測驗. AI-123-07: every renderQuestion() call builds a brand new
+     renderLegacyQuestionBody()/renderRealQuestionBody() — submitted always
+     starts false, so revisiting an already-completed question always
+     restarts the answer flow; it never jumps straight to the old
+     answer. */
+  function buildPracticeSessionView(session, actions) {
+    var kind = session.kind;
+    var questions = session.questions;
+    var total = questions.length;
+    var index = session.startIndex || 0;
+
+    /* beforeState — a snapshot of this set's answered state at the
+       moment this Practice View opened, so finish() can tell "newly
+       wrong this run" (AI-123-04's 今日新增錯題) apart from a wrong
+       answer this student already had going in. */
+    var beforeState = {};
+    questions.forEach(function (q) { beforeState[q.id] = session.statusFor(kind, q.id); });
+
+    var overlay = el("div", { class: "qpv-overlay", role: "dialog", "aria-modal": "true", "aria-label": "考前練習" });
+    var shell = el("div", { class: "qpv" });
+    var confirmOverlay = el("div", { class: "qpv-confirm-overlay", hidden: "hidden" });
+
+    function unansweredCount() {
+      var n = 0;
+      questions.forEach(function (q) { if (!session.statusFor(kind, q.id)) { n += 1; } });
+      return n;
+    }
+
+    function hideConfirm() { confirmOverlay.setAttribute("hidden", "hidden"); }
+
+    function showConfirm(remaining) {
+      var continueBtn = el("button", { type: "button", class: "qpv-confirm__btn qpv-confirm__btn--primary", text: "繼續作答" });
+      continueBtn.addEventListener("click", hideConfirm);
+      var leaveBtn = el("button", { type: "button", class: "qpv-confirm__btn", text: "返回列表" });
+      leaveBtn.addEventListener("click", function () { hideConfirm(); actions.onExit(); });
+      AHS.UI.mount(confirmOverlay, el("div", { class: "qpv-confirm", role: "alertdialog", "aria-label": "尚未完成" }, [
+        el("p", { class: "qpv-confirm__text", text: "尚有 " + remaining + " 題未完成。是否返回？" }),
+        el("div", { class: "qpv-confirm__actions" }, [continueBtn, leaveBtn])
+      ]));
+      confirmOverlay.removeAttribute("hidden");
+    }
+
+    function requestExit() {
+      var remaining = unansweredCount();
+      if (remaining > 0) { showConfirm(remaining); return; }
+      actions.onExit();
+    }
+
+    var backBtn = el("button", { type: "button", class: "qpv__back", text: "← 返回題目列表" });
+    backBtn.addEventListener("click", requestExit);
+    var titleEl = el("div", { class: "qpv__title" });
+    var head = el("header", { class: "qpv__head" }, [backBtn, titleEl]);
+
+    var body = el("div", { class: "qpv__body" });
+    var prevBtn = el("button", { type: "button", class: "qpv__prev", text: "上一題" });
+    var nextBtn = el("button", { type: "button", class: "qpv__next", text: "下一題" });
+    var footer = el("div", { class: "qpv__footer" }, [prevBtn, nextBtn]);
+
+    function updateHead() {
+      titleEl.textContent = [session.headerMeta.subjectName, session.headerMeta.chapterLabel, "考前練習",
+        "第 " + (index + 1) + " / " + total + " 題"].filter(function (s) { return s; }).join("／");
+      prevBtn.disabled = index === 0;
+      nextBtn.textContent = index === total - 1 ? "完成測驗" : "下一題";
+    }
+
+    function renderQuestion() {
+      updateHead();
+      var q = questions[index];
+      var onAnswered = function (id, isCorrect) { session.onAnswered(id, isCorrect); };
+      AHS.UI.mount(body, kind === "real" ? renderRealQuestionBody(q, onAnswered) : renderLegacyQuestionBody(q, onAnswered));
+    }
+
+    prevBtn.addEventListener("click", function () {
+      if (index === 0) { return; }
+      index -= 1;
+      renderQuestion();
+    });
+    nextBtn.addEventListener("click", function () {
+      if (index < total - 1) { index += 1; renderQuestion(); return; }
+      finish();
+    });
+
+    /* finish() — AI-123-04: real, computed-only score summary. Every
+       number here is derived from session.statusFor (this Sprint's own
+       in-memory session tracker, see create()'s answerStatusFor/
+       setAnswerStatus below) or AHS.KnowledgeMasteryRuntime's own already-
+       real per-knowledge-point mastery — never fabricated. An unanswered
+       question at finish time counts toward 答錯題數 (a real, honest
+       reflection of "this exam wasn't completed", the same way a blank
+       exam answer is marked wrong — flagged in the EO report as a
+       judgment call, since the PAT spec's own example has no separate
+       "未作答" bucket). */
+    function finish() {
+      var correct = 0;
+      var newWrongToday = 0;
+      var kpSeen = {};
+      questions.forEach(function (q) {
+        var status = session.statusFor(kind, q.id);
+        if (status === "correct") { correct += 1; }
+        if (status === "wrong" && beforeState[q.id] !== "wrong") { newWrongToday += 1; }
+        if (q.knowledgePoint) { kpSeen[q.knowledgePoint] = true; }
+      });
+      var masteryPercent = null;
+      var kpList = Object.keys(kpSeen);
+      if (kpList.length && AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.get === "function") {
+        var sum = 0, n = 0;
+        kpList.forEach(function (kp) {
+          var rec = AHS.KnowledgeMasteryRuntime.get(kp);
+          if (rec && typeof rec.mastery === "number") { sum += rec.mastery; n += 1; }
+        });
+        if (n) { masteryPercent = Math.round(sum / n); }
+      }
+      AHS.UI.mount(shell, buildScoreSummaryView(
+        { correct: correct, total: total, newWrongToday: newWrongToday, masteryPercent: masteryPercent },
+        { onBackToList: actions.onExit, onRetest: actions.onRetest }
+      ));
+    }
+
+    renderQuestion();
+    shell.appendChild(head);
+    shell.appendChild(body);
+    shell.appendChild(footer);
+    overlay.appendChild(shell);
+    overlay.appendChild(confirmOverlay);
+    return overlay;
   }
 
   /* create(model, initialMode, initialMaterialId, initialExamId)
@@ -1430,23 +1663,87 @@ AHS.QuizCenter = (function () {
     var startOnPractice = (initialMode === "practice");
     if (!startOnPractice) { practiceRoot.setAttribute("hidden", "hidden"); }
 
+    /* practiceAnswerState — Sprint AI-123 AI-123-05/06/10: a purely
+       in-memory (never persisted, no new Runtime, no sessionStorage key)
+       session-scoped tracker of "has this question been answered in
+       Practice Mode this page-life, and was it correct" — exactly the
+       kind of local, view-layer-only state AI-123-13's LOCK still
+       permits (it never replaces or shadows any real Runtime; every
+       actual grading/sync call still goes straight to WrongBookRuntime/
+       KnowledgeMasteryRuntime via renderLegacyQuestionBody/
+       renderRealQuestionBody, unchanged). Keyed by "kind:id" since a
+       legacy LearningQuestionRuntime id and a real QuestionRuntime id
+       are drawn from two different id spaces and could collide. */
+    var practiceAnswerState = {};
+    function answerStatusKey(kind, id) { return kind + ":" + id; }
+    function answerStatusFor(kind, id) { return practiceAnswerState[answerStatusKey(kind, id)] || null; }
+    function setAnswerStatus(kind, id, isCorrect) { practiceAnswerState[answerStatusKey(kind, id)] = isCorrect ? "correct" : "wrong"; }
+    function clearAnswerStatus(kind, id) { delete practiceAnswerState[answerStatusKey(kind, id)]; }
+
     function showPracticeList(materialId) {
       var scopedMaterialId = materialId !== undefined ? materialId : practiceMaterialId;
       AHS.UI.mount(practiceRoot, buildPracticeListView(
         showPracticeQuestion, scopedMaterialId,
         function (drillMaterialId) { showPracticeList(drillMaterialId); },
-        showRealPracticeQuestion
+        showRealPracticeQuestion,
+        answerStatusFor
       ));
     }
-    function showPracticeQuestion(record) {
-      AHS.UI.mount(practiceRoot, buildPracticeQuestionView(record, function () { showPracticeList(practiceMaterialId); }));
+
+    /* openPracticeSession(kind, questions, startIndex, returnMaterialId) —
+       Sprint AI-123 AI-123-01: the ONLY way into an actual answering
+       surface now — appended straight to document.body as a fixed,
+       full-viewport overlay (AI-123-02: 全畫面作答), deliberately outside
+       practiceRoot/root/AppShell's own DOM so the underlying question
+       list is never rebuilt or scrolled while this is open — closing it
+       (onExit) is the only moment the list re-renders, immediately after
+       which window.scrollTo restores the exact position it was at before
+       opening (AI-123-11: "不得重新整理。不得失去目前 Scroll Position"). */
+    function openPracticeSession(kind, questions, startIndex, returnMaterialId) {
+      var savedScroll = window.scrollY;
+      document.body.classList.add("qpv-lock-scroll");
+      var overlay;
+      overlay = buildPracticeSessionView({
+        kind: kind,
+        questions: questions,
+        startIndex: startIndex,
+        headerMeta: practiceHeaderMeta(returnMaterialId, questions[startIndex]),
+        statusFor: answerStatusFor,
+        onAnswered: function (id, isCorrect) { setAnswerStatus(kind, id, isCorrect); }
+      }, {
+        onExit: function () {
+          if (overlay.parentNode) { document.body.removeChild(overlay); }
+          document.body.classList.remove("qpv-lock-scroll");
+          showPracticeList(returnMaterialId);
+          window.scrollTo(0, savedScroll);
+        },
+        onRetest: function () {
+          questions.forEach(function (q) { clearAnswerStatus(kind, q.id); });
+          if (overlay.parentNode) { document.body.removeChild(overlay); }
+          document.body.classList.remove("qpv-lock-scroll");
+          openPracticeSession(kind, questions, 0, returnMaterialId);
+        }
+      });
+      document.body.appendChild(overlay);
     }
-    /* showRealPracticeQuestion(q) — Sprint AI-122 AI-122-02/03: opens one
-       real AHS.QuestionRuntime question inline, "返回列表" comes back to
-       the SAME real material's own row list (never the unfiltered
-       catalog — context is never lost mid-practice). */
-    function showRealPracticeQuestion(q) {
-      AHS.UI.mount(practiceRoot, buildRealPracticeQuestionView(q, function () { showPracticeList(q.materialId || practiceMaterialId); }));
+
+    /* showPracticeQuestion(record, list, index) — Sprint AI-123 AI-123-01:
+       replaces the old inline "answer right where you clicked" Detail
+       Panel entirely; list/index are the EXACT array/position
+       buildPracticeListView() just rendered this row from (passed
+       straight through from the row's own click handler), so Practice
+       View's "第 N/M 題" always matches what the student was just
+       looking at — no re-querying LearningQuestionRuntime, no risk of a
+       clone()'d re-fetch losing reference/order. */
+    function showPracticeQuestion(record, list, index) {
+      openPracticeSession("legacy", list, index, practiceMaterialId);
+    }
+    /* showRealPracticeQuestion(q, list, index) — Sprint AI-122 AI-122-02/03
+       real-content sibling, updated the same way for AI-123-01. "返回
+       題目列表" (via openPracticeSession's onExit) still comes back to the
+       SAME real material's own row list — context is never lost. */
+    function showRealPracticeQuestion(q, list, index) {
+      openPracticeSession("real", list, index, q.materialId || practiceMaterialId);
     }
 
     /* Sprint 6.8 EO-S6.8-002 Task 001 (AI Question Guide): a real deep
