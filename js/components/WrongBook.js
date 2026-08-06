@@ -744,6 +744,20 @@ AHS.WrongBook = (function () {
       currentDetailFavBtn = detail.favBtn;
     }
 
+    /* clearDetail() — Sprint AI-124 AI-124-05: 左側篩選變更後若真的沒有任何
+       符合的題目，右側 Detail 過去仍停留在上一筆已被篩掉的題目資料
+       （"不得保留上一筆資料" 的真實反例）。現在誠實清空並顯示一句真實狀態
+       文字，不捏造任何題目內容。 */
+    function clearDetail() {
+      if (currentRow) { currentRow.classList.remove("is-active"); currentRow = null; }
+      currentDetailItemId = null;
+      currentDetailFavBtn = null;
+      detailPanel.innerHTML = "";
+      detailPanel.appendChild(el("div", { class: "wb-detail__empty", role: "status" }, [
+        el("p", { class: "wb-detail__empty-text", text: "目前篩選條件沒有符合的題目。" })
+      ]));
+    }
+
     function getPairById(id) {
       return pairs.filter(function (p) { return p.item.id === id; })[0];
     }
@@ -1108,6 +1122,10 @@ AHS.WrongBook = (function () {
         matching.some(function (p) { return p.item.id === currentDetailItemId; });
       if (!stillMatches && matching.length > 0) {
         selectItem(matching[0].item, matching[0].row);
+      } else if (matching.length === 0 && currentDetailItemId) {
+        /* AI-124-05: zero real matches left — clear the stale Detail
+           rather than silently keep showing the last-selected item. */
+        clearDetail();
       }
     }
 

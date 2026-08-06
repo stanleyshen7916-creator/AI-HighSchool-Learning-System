@@ -51,25 +51,95 @@ AHS.TutorMessage = (function () {
      doesn't resolve to a real record. Builds each sentence only when
      its real data is present; omits it otherwise (never a placeholder
      for a missing signal). */
-  function build(context, pageContext) {
-    context = context || {};
-    pageContext = pageContext || {};
+  /* buildMaterialScopedMessage(materialCtx, pageContext) — Sprint AI-124
+     AI-124-07/08: "AI Tutor 只能依照目前 Platform Context...不得跨教材".
+     When a real materialId context resolves, this is now the ONLY
+     source of sentences — every cross-material signal below in build()
+     (workspace-wide weakestKnowledgePoint/weakestSubject/
+     recommendedChapters/recommendedRetest/masteredCount) is skipped
+     entirely, never mixed in alongside a "you're currently in X"
+     sentence (the exact "Practice：生物，Quiz：全部教材" kind of
+     inconsistency this Sprint's PAT calls out, applied to the Tutor).
+
+     Composes from real, already-existing, unmodified public API only —
+     no new Runtime, no new field on any LOCKed Runtime:
+       - materialCtx.completion / materialCtx.dueCount — already computed
+         by AHS.StatisticsRuntime.materialContext() (existing, unchanged).
+       - AHS.KnowledgeMasteryRuntime.list() — existing, unchanged; this
+         file reads it directly (not routed through StatisticsRuntime)
+         only because StatisticsRuntime.knowledgeAnalytics()'s existing
+         return shape has no materialId field to filter by, and this
+         Sprint's LOCK forbids adding one (LOCKed: "Statistics Runtime").
+         Flagged as a disclosed, narrow exception to AI-117-07's own
+         "Tutor only reads Analytics" convention — still a read-only call
+         against an already-existing Runtime function, not a
+         modification of it.
+       - AHS.StatisticsRuntime.examStats() — existing, unchanged; the
+         real per-material Accuracy signal (AI-124-08's own "Accuracy"
+         requirement) this Sprint's spec calls out. */
+  function buildMaterialScopedMessage(materialCtx, pageContext) {
     var sentences = [];
     var actions = [];
 
-    if (pageContext.materialId && AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialContext === "function") {
-      var materialCtx = AHS.StatisticsRuntime.materialContext(pageContext.materialId);
-      if (materialCtx) {
-        var line = "你目前在「" + materialCtx.title + "」" + (materialCtx.chapter ? "（" + materialCtx.chapter + "）" : "") +
-          "，" + materialCtx.completion.label + "（" + materialCtx.completion.percent + "%）";
-        if (materialCtx.completion.quizDone) {
-          line += materialCtx.dueCount > 0
-            ? "，這份教材還有 " + materialCtx.dueCount + " 題尚待複習到精熟"
-            : "，這份教材的錯題已全部精熟";
+    var line = "你目前在「" + materialCtx.title + "」" + (materialCtx.chapter ? "（" + materialCtx.chapter + "）" : "") +
+      "，" + materialCtx.completion.label + "（" + materialCtx.completion.percent + "%）";
+    if (materialCtx.completion.quizDone) {
+      line += materialCtx.dueCount > 0
+        ? "，這份教材還有 " + materialCtx.dueCount + " 題尚待複習到精熟"
+        : "，這份教材的錯題已全部精熟";
+    }
+    sentences.push(line + "。");
+
+    /* Knowledge Mastery + Growth — this material's own real weakest
+       knowledge point (AI-121-15/16's own real, traceable signal, now
+       scoped instead of workspace-wide), with real day-over-day Growth
+       when one exists (never "0" as a guess — omitted when there's no
+       real prior day to compare against, same discipline
+       KnowledgeMasteryRuntime.growth() itself already honors). */
+    if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.list === "function") {
+      var ownPoints = AHS.KnowledgeMasteryRuntime.list()
+        .filter(function (p) { return p.materialId === pageContext.materialId; })
+        .sort(function (a, b) { return a.mastery - b.mastery; });
+      if (ownPoints.length) {
+        var weakest = ownPoints[0];
+        var kpLine = "「" + weakest.knowledgePoint + "」目前 Mastery " + weakest.mastery + "%";
+        if (weakest.growth && typeof weakest.growth.delta === "number") {
+          kpLine += weakest.growth.delta >= 0 ? "（較上次進步 +" + weakest.growth.delta + "%）" : "（較上次下降 " + weakest.growth.delta + "%）";
         }
-        sentences.push(line + "。");
+        sentences.push(kpLine + "，建議重新閱讀相關摘要。");
+        actions.push({
+          icon: "book", label: "重新閱讀摘要", desc: weakest.knowledgePoint,
+          href: "summary.html?materialId=" + encodeURIComponent(pageContext.materialId)
+        });
       }
     }
+
+    /* Accuracy — this material's own real, most recent attempt accuracy
+       (AHS.StatisticsRuntime.examStats(), existing/unchanged), never the
+       workspace-wide accuracy this Sprint's LOCK forbids mixing in here. */
+    if (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.examStats === "function" &&
+        AHS.PlatformContext && typeof AHS.PlatformContext.examIdFromMaterialId === "function") {
+      var stats = AHS.StatisticsRuntime.examStats(AHS.PlatformContext.examIdFromMaterialId(pageContext.materialId));
+      if (stats.attempts > 0) {
+        sentences.push("這份教材目前正確率 " + stats.accuracy + "%（共作答 " + stats.attempts + " 次）。");
+      }
+    }
+
+    if (!sentences.length) { return null; }
+    return { message: sentences.join(""), actions: actions };
+  }
+
+  function build(context, pageContext) {
+    context = context || {};
+    pageContext = pageContext || {};
+
+    if (pageContext.materialId && AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialContext === "function") {
+      var materialCtx = AHS.StatisticsRuntime.materialContext(pageContext.materialId);
+      if (materialCtx) { return buildMaterialScopedMessage(materialCtx, pageContext); }
+    }
+
+    var sentences = [];
+    var actions = [];
 
     /* Sprint AI-121 AI-121-15/16: AI Tutor now analyzes ONLY Knowledge
        (never Question) — this is the Tutor's real, highest-priority

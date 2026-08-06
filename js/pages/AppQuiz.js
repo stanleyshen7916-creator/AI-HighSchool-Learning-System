@@ -32,10 +32,16 @@ window.AHS = window.AHS || {};
     if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
 
-    var params = new URLSearchParams(window.location.search);
-    var mode = params.get("mode") || undefined;
-    var materialId = params.get("materialId") || undefined;
-    var examId = params.get("examId") || undefined;
+    /* Sprint AI-124 AI-124-02: the one shared AHS.PlatformContext.resolve()
+       instead of this page's own separate URLSearchParams parsing —
+       same real mode/materialId/examId either way (resolve() also
+       derives materialId from examId when only the latter is present,
+       so QuizCenter.js's own downstream practiceMaterialId derivation
+       stays consistent no matter which one link actually carried). */
+    var ctx = AHS.PlatformContext.resolve();
+    var mode = ctx.mode || undefined;
+    var materialId = ctx.materialId || undefined;
+    var examId = ctx.examId || undefined;
 
     /* Platform Refactor Master (PAT 8/9/10), extended Sprint AI-113
        AI-808: same real Tutor Context 首頁/AI Tutor already share

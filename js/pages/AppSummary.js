@@ -25,8 +25,11 @@ window.AHS = window.AHS || {};
     if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
 
-    var params = new URLSearchParams(window.location.search);
-    var materialId = params.get("materialId") || null;
+    /* Sprint AI-124 AI-124-02: reads through the one shared
+       AHS.PlatformContext.resolve() instead of this page's own separate
+       URLSearchParams parsing — same real materialId either way, now the
+       single canonical source every page derives it from. */
+    var materialId = AHS.PlatformContext.resolve().materialId;
 
     /* Platform Refactor Master (PAT 8/9/10), extended Sprint AI-113
        AI-808: same real Tutor Context 首頁/AI Tutor already share

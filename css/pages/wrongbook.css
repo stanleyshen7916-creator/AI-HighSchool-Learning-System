@@ -239,6 +239,10 @@
 
 /* ---- Detail panel ---------------------------------------------------- */
 .wb-detail { position: sticky; top: 92px; }
+/* Sprint AI-124 AI-124-05: 左側篩選變更後真的沒有符合題目時的誠實清空狀態，
+   取代過去停留舊題目資料的行為。 */
+.wb-detail__empty { padding: 48px 16px; text-align: center; }
+.wb-detail__empty-text { margin: 0; font-size: 14px; color: var(--text-muted); }
 .wb-detail__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .wb-detail__title { margin: 0; font-size: 17px; font-weight: 700; }
 .wb-detail__tag-btn {
