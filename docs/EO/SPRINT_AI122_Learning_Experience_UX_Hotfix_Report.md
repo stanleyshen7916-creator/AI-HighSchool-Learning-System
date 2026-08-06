@@ -1,6 +1,6 @@
 # Sprint AI-122｜Learning Experience UX Hotfix — EO Report
 
-**Status**: Development complete, PR pending merge — awaiting Project Owner PAT
+**Status**: Merged（PR #55，merge commit `3da74261`；GitHub Actions QA Automation Framework／Pages 部署皆確認綠燈）— 等待 Project Owner PAT
 **Type**: UX Hotfix（非新功能）
 **LOCK honored**: 本 Sprint 僅修改 UI / UX / Workflow / Layout / Navigation / Routing。KnowledgeRuntime／StatisticsRuntime 核心演算法／WorkspaceRuntime／PersistenceAdapter／QuestionBank Runtime／Learning Engine 完全未修改（僅以既有、未變更的 public API 讀取，例如 `AHS.WrongBookRuntime.sync()`／`AHS.KnowledgeMasteryRuntime.recordAttempt()`／`AHS.QuestionRuntime.getSet()`——這是本專案一貫的作法，讀取不等於修改）。
 
@@ -74,7 +74,12 @@ Sprint AI-121（Learning Knowledge Engine）上線後，Project Owner 實際操�
 
 新增 `playwright/tests/ux-hotfix-122.spec.js`，PAT-122-01～08，共 8 個真實瀏覽器測試，覆蓋本 Sprint 每一項行為修正。
 
-**過程中額外發現並修正的真實 Flake**：反覆執行（stress test，單一完整 suite 內以及連續多次執行）後發現 `knowledge-engine.spec.js` 既有的知識弱點封存測試（AI-121 時期建立）與本 Sprint新增的 PAT-122-01／04／05 都偶發性地在 `page.reload()` 前後 timeout——追查後確認：在多 worker 平行執行造成的 CPU 資源競爭下，`page.goto()` 自己的 `load` 事件有機率在 `wrongbook.html` 尚未執行完所有同步 `<script>`（也就是 `AppWrongBook.js` 的 `init()`，包含 `AHS.WorkspaceRuntime`／`PersistenceAdapter` 建立真實 namespaced sessionStorage key 的那一步）之前就先resolve——跟 Sprint AI-121 當時修過的「每日 AI 練習」測試是完全同一類 race，只是這次發生在 `page.evaluate()` 寫入種子資料的時間點，而不是讀取 Runtime 狀態的時間點。修正方式沿用同一套既有慣例：在 `page.evaluate()` 寫入前，先等待一個確定畫面已經真實 render 完成的元素（`.wb-header__title`）。兩個檔案（`ux-hotfix-122.spec.js` 新增的 `gotoWrongbookReady()` helper、`knowledge-engine.spec.js` 既有測試）都已修正並在多次重複執行下驗證穩定。
+**過程中發現並修正的真實 Flake（含真機 CI 重現，非僅本地環境）**：PR 第一次真實 GitHub Actions CI 執行時，`PAT-122-04` 真的失敗了（重試一次仍失敗）——並非本地沙盒特有的雜訊。追查過程：
+1. 第一輪懷疑是「`AppWrongBook.js` 的 `init()` 尚未執行完成」（跟 Sprint AI-121 修過的「每日 AI 練習」測試同一類 race），加上等待 `.wb-header__title` render 完成再寫入種子資料——仍會失敗，且失敗時的畫面截圖顯示頁面**已經完整 render 完成**、且誠實顯示「目前沒有錯題紀錄」空狀態，證明先前的診斷不成立。
+2. 進一步用 `page.evaluate()` 直接讀回 `sessionStorage` 內容，確認失敗當下該筆資料**完全不存在**（連 key 都沒有），即使在 `page.reload()` 前已用 `page.waitForFunction()` 在同一頁面內確認寫入生效——顯示 `page.evaluate()` 的 Promise 在 Node 端 resolve 的時機，與該筆寫入真正在瀏覽器行程內落地之間，在高負載下仍可能存在競爭。
+3. 最終修正：捨棄「`page.evaluate()` 呼叫 `AHS.WrongBookRuntime.sync()` 後立刻 `page.reload()`」這整套流程，改用本套件其餘 Runtime 早已建立的既有慣例——`seedSession()`（透過 `page.addInitScript()` 在任何頁面腳本執行前就把資料寫進 `sessionStorage`），完全避開「寫入→立即導覽」的競爭視窗。套用範圍：`ux-hotfix-122.spec.js` 的 PAT-122-01／04／05，以及 `knowledge-engine.spec.js` 既有的兩個測試（知識弱點封存、每日 AI 練習——後者原本呼叫 `AHS.QuestionRuntime.importQuestions()`／`AHS.QuestionBankRuntime.ensureBank()` 後立刻二次 `page.goto()`，同一類問題）。
+
+修正後於本機以 `--workers=2/4`、`--retries=0` 重複壓力測試 70 次以上（含完整 45 項 Playwright 套件跑 3 次）皆全綠；推送後真實 GitHub Actions 亦確認綠燈（第二輪 CI，commit `331dc68`）。
 
 ## Definition of Done
 
