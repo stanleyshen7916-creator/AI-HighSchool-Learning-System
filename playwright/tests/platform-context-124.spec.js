@@ -96,6 +96,28 @@ test.describe("PAT-124-①", () => {
 
     expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
   });
+
+  test("PAT Fix follow-up：登入時選擇的學生應與登入後右上角身分一致（不再是與登入身分無關的「同學」）", async ({ page }) => {
+    const errors = collectErrors(page);
+    await loginAs(page, "Student A", "長榮中學", ["高一下學期"]);
+
+    // Real PO report: the top-right user button used to always show the
+    // literal SettingsRuntime default ("同學"), completely independent
+    // of which student was actually picked on login.html — two
+    // disconnected identity stores. AHS.SettingsRuntime.hydrate() now
+    // seeds profile.name from AHS.WorkspaceRuntime.label().studentName
+    // for a brand-new (never-saved) profile, so the very first render
+    // after a real login already shows the real logged-in student.
+    await expect(page.locator(".topbar__user-meta strong")).toHaveText("Student A");
+
+    // Same real Single Source read by the Settings Profile panel
+    // (js/ui/SettingsPanel.js) — must also reflect the real student,
+    // not the generic placeholder, on first open.
+    await page.locator(".sidebar__item", { hasText: "設定" }).click();
+    await expect(page.getByLabel("顯示名稱")).toHaveValue("Student A");
+
+    expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+  });
 });
 
 test("PAT-124-②：AHS.PlatformContext 為唯一 Context 讀取／傳遞方式，materialId／examId 正確解析與往返", async ({ page }) => {
