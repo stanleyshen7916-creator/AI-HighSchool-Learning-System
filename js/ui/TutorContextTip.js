@@ -46,8 +46,18 @@ AHS.TutorContextTip = (function () {
     var model = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), pageContext);
     if (!model || !model.message) { return null; }
 
+    /* Sprint AI-124 AI-124-02/07: this href used to be a bare "tutor.html"
+       — pageContext.materialId/examId were already being read into the
+       message text above, but silently dropped from the link itself, so
+       clicking through to AI Tutor lost exactly the context that made
+       this tip's own message specific to begin with. Carries the same
+       real materialId/examId forward via the one shared
+       AHS.PlatformContext.toQuery(), so tutor.html's own AppTutor.js
+       (AI-124-07) can keep speaking about the same material. */
+    var href = "tutor.html" + (AHS.PlatformContext ? AHS.PlatformContext.toQuery(pageContext || {}) : "");
+
     return el("a", {
-      class: "tutor-tip", href: "tutor.html",
+      class: "tutor-tip", href: href,
       "aria-label": "AI 巧巧老師建議：" + model.message + "，前往 AI Tutor 查看更多"
     }, [
       el("span", { class: "tutor-tip__icon", html: AHS.Icons.tutor() }),

@@ -364,6 +364,77 @@ AHS.QuizCenter = (function () {
     return best;
   }
 
+  /* ---- Difficulty gating — Sprint AI-124 AI-124-09 -----------------------
+     Prior to this Sprint, 巧巧老師出題引導's Easy/Medium/Hard picker
+     (js/components/QuestionGuide.js) was a pure UI gate: it required a
+     choice before enabling 開始練習, but the chosen value was never
+     passed on to actually filter which questions showed up in the
+     Practice list — "Difficulty 僅 UI" is read literally here. This
+     section is the real fix: a single, shared difficulty rank + filter,
+     applied to BOTH content sources Practice Mode already reads
+     (legacy AHS.LearningQuestionRuntime records via their own real
+     `difficulty` field, and real AHS.QuestionRuntime questions via the
+     same read-only AHS.MaterialDetailRepositorySource resolution
+     already used for display, extracted here instead of duplicated). */
+  var DIFFICULTY_RANK = { easy: 0, medium: 1, hard: 2 };
+
+  /* difficultyRank(label) — real Chinese labels ("易"/"中等"/"難", and
+     combined labels like "易~中等" some Mock/Package records carry, per
+     HOTFIX-004's own finding) mapped to a 0/1/2 rank via substring match
+     (same "contains" discipline itemMatchesFilters() above already uses
+     for this exact reason). -1 (never guessed as a rank) when the
+     record genuinely carries no difficulty text at all. */
+  function difficultyRank(label) {
+    if (!label) { return -1; }
+    if (label.indexOf("難") !== -1) { return 2; }
+    if (label.indexOf("中等") !== -1) { return 1; }
+    if (label.indexOf("易") !== -1) { return 0; }
+    return -1;
+  }
+
+  /* resolveRealQuestionDifficulty(q) — the same read-only
+     AHS.MaterialDetailRepositorySource lookup buildRealPracticeQuestionView's
+     own 難度 meta line already used inline; extracted here so the
+     Practice list's difficulty FILTER and the Practice View's difficulty
+     DISPLAY can never drift into two different answers for the same
+     question. Never modifies AHS.QuestionRuntime's own stored shape —
+     purely an additional, read-only cross-reference. */
+  function resolveRealQuestionDifficulty(q) {
+    if (q.difficulty) { return q.difficulty; }
+    if (!q.materialId || !AHS.MaterialDetailRepositorySource ||
+        typeof AHS.MaterialDetailRepositorySource.resolve !== "function") { return ""; }
+    var repo = AHS.MaterialDetailRepositorySource.resolve(q.materialId);
+    var match = (repo && repo.quiz && Array.isArray(repo.quiz.questions))
+      ? repo.quiz.questions.filter(function (rq) { return rq.id === q.id; })[0] : null;
+    return match ? (match.difficulty || "") : "";
+  }
+
+  /* filterByDifficulty(list, chosenDifficulty, rankOf) — chosenDifficulty:
+     "easy"|"medium"|"hard"|falsy (falsy = no filter, returns list
+     unchanged — the pre-Sprint AI-124 behavior, still exactly what
+     happens when Practice Mode is entered without going through
+     巧巧老師出題引導's picker at all). When real matches at the chosen
+     rank exist, returns exactly those (never padded with anything
+     else). When the chosen rank has genuinely NO real matches ("資料
+     不足"), "不得偽造" is honored by falling back to the highest rank
+     that DOES have real data — never inventing a fabricated hard
+     question to fill an Easy request that has none, and never silently
+     showing everything as if difficulty were ignored. Returns the
+     original list unfiltered only when NOT ONE item in it carries any
+     real difficulty data at all (an honest "nothing to filter by",
+     distinct from "the chosen tier is genuinely empty"). */
+  function filterByDifficulty(list, chosenDifficulty, rankOf) {
+    if (!chosenDifficulty || !list.length) { return list; }
+    var targetRank = DIFFICULTY_RANK[chosenDifficulty];
+    if (targetRank === undefined) { return list; }
+    var atTarget = list.filter(function (it) { return rankOf(it) === targetRank; });
+    if (atTarget.length) { return atTarget; }
+    var maxRank = -1;
+    list.forEach(function (it) { var r = rankOf(it); if (r > maxRank) { maxRank = r; } });
+    if (maxRank === -1) { return list; }
+    return list.filter(function (it) { return rankOf(it) === maxRank; });
+  }
+
   function repositoryExamCatalog() {
     var idMap = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function")
       ? (AHS.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {}) : {};
@@ -701,8 +772,15 @@ AHS.QuizCenter = (function () {
      WorkspaceFolder.js's own 前往考前練習) can still resolve a real
      materialId for Practice Mode's own filterMaterialId scoping —
      without this, mode=practice&examId=... had no materialId to filter
-     by at all. Pure string parsing, no Runtime touched. */
+     by at all. Sprint AI-124 AI-124-02: delegates to the one shared
+     AHS.PlatformContext.materialIdFromExamId() (falls back to this
+     file's own prior inline regex when that script hasn't loaded on some
+     page, defensive only — every page this component runs on loads
+     PlatformContext.js). Pure string parsing, no Runtime touched. */
   function materialIdFromExamId(examId) {
+    if (AHS.PlatformContext && typeof AHS.PlatformContext.materialIdFromExamId === "function") {
+      return AHS.PlatformContext.materialIdFromExamId(examId);
+    }
     var m = /^teaching_material_(.+)$/.exec(examId || "");
     return m ? m[1] : null;
   }
@@ -793,7 +871,7 @@ AHS.QuizCenter = (function () {
      sourced material now has a genuine, inline, immediate-feedback
      Practice experience instead of being silently rerouted to Formal
      Exam. */
-  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor) {
+  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor, difficulty) {
     var runtime = AHS.LearningQuestionRuntime;
     var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
     var items = filterMaterialId
@@ -804,6 +882,12 @@ AHS.QuizCenter = (function () {
     /* Task 004: never render a [Stub] placeholder as a practice
        question — real records only, else the honest Empty State. */
     items = items.filter(isRealLearningQuestion);
+    /* Sprint AI-124 AI-124-09: real Difficulty gating — applied AFTER
+       the [Stub] filter (never gates on a placeholder's own fabricated
+       difficulty) and BEFORE the empty-state check below, so "0 real
+       matches at this difficulty" and "0 real questions at all" are
+       never conflated into the same message. */
+    items = filterByDifficulty(items, difficulty, function (r) { return difficultyRank(r.difficulty); });
     /* Sprint AI-015E Part B · Production Cutover: Practice Mode now
        reads 100% from AHS.LearningQuestionRuntime — the Session merge
        (EO-S6.9-002) is removed. Wrong-answer resolution still reaches
@@ -823,7 +907,9 @@ AHS.QuizCenter = (function () {
 
     var repoEntries = (!filterMaterialId && typeof onRepoDrillDown === "function") ? repositoryExamCatalog() : [];
     var realQuestions = (filterMaterialId && typeof onRealPractice === "function")
-      ? realExamQuestionsFor(filterMaterialId) : [];
+      ? filterByDifficulty(realExamQuestionsFor(filterMaterialId), difficulty,
+          function (q) { return difficultyRank(resolveRealQuestionDifficulty(q)); })
+      : [];
 
     if (!items.length && !repoEntries.length && !realQuestions.length) {
       return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
@@ -1171,14 +1257,7 @@ AHS.QuizCenter = (function () {
        resolved the same read-only way — via the real Repository record,
        matched by this question's own real id. */
     var metaBits = [];
-    var difficulty = q.difficulty || "";
-    if (!difficulty && q.materialId && AHS.MaterialDetailRepositorySource &&
-        typeof AHS.MaterialDetailRepositorySource.resolve === "function") {
-      var repo = AHS.MaterialDetailRepositorySource.resolve(q.materialId);
-      var match = (repo && repo.quiz && Array.isArray(repo.quiz.questions))
-        ? repo.quiz.questions.filter(function (rq) { return rq.id === q.id; })[0] : null;
-      difficulty = match ? (match.difficulty || "") : "";
-    }
+    var difficulty = resolveRealQuestionDifficulty(q);
     if (difficulty) { metaBits.push("難度：" + difficulty); }
     if (q.knowledgePoint) { metaBits.push("考點：" + q.knowledgePoint); }
 
@@ -1489,6 +1568,30 @@ AHS.QuizCenter = (function () {
       AHS.UI.mount(root, buildListView(mergedListData(), unifiedStart));
     }
 
+    /* showScopedList(materialId) — Sprint AI-124 AI-124-03/04/12: when a
+       real materialId context already exists (the student arrived via a
+       材料-scoped link, or already picked one in Practice Mode), Exam
+       Mode's own list must NOT fall back to "全部教材" — it stays scoped
+       to that same real material, exactly like Practice Mode's own list
+       already does. Filters mergedListData() down to just the
+       Repository entries whose _repoExamId resolves to this materialId
+       (Mock catalog rows carry no real materialId to match against, so
+       they're honestly excluded here — never guessed). Falls back to
+       the normal, full showList() only when scoping would honestly
+       leave nothing to show (e.g. this material has no Formal Exam
+       content at all) — never a fabricated empty "scoped" view. */
+    function showScopedList(materialId) {
+      var merged = mergedListData();
+      var scopedItems = (merged.items || []).filter(function (it) {
+        return it._repoExamId && materialIdFromExamId(it._repoExamId) === materialId;
+      });
+      if (!scopedItems.length) { showList(); return; }
+      var scoped = {};
+      Object.keys(merged).forEach(function (k) { scoped[k] = merged[k]; });
+      scoped.items = scopedItems;
+      AHS.UI.mount(root, buildListView(scoped, unifiedStart));
+    }
+
     function startExam(item) {
       var session = AHS.ExamRuntime.start({
         subject: item.subject, title: item.title, chapter: item.chapter,
@@ -1649,6 +1752,13 @@ AHS.QuizCenter = (function () {
       tryRetestEntry(directExamId);
     } else if (directExamId && initialMode !== "practice") {
       tryDirectExamEntry(directExamId);
+    } else if (practiceMaterialId) {
+      /* Sprint AI-124 AI-124-03/04: mode=practice&materialId=... (or a
+         reverse-derived examId=...) means Exam Mode's own list, sitting
+         hidden behind Practice Mode, must already be scoped to the SAME
+         material — so switching the mode tab later (examTab, below)
+         never reveals an unrelated "全部教材" list. */
+      showScopedList(practiceMaterialId);
     } else {
       showList();
     }
@@ -1680,13 +1790,26 @@ AHS.QuizCenter = (function () {
     function setAnswerStatus(kind, id, isCorrect) { practiceAnswerState[answerStatusKey(kind, id)] = isCorrect ? "correct" : "wrong"; }
     function clearAnswerStatus(kind, id) { delete practiceAnswerState[answerStatusKey(kind, id)]; }
 
+    /* practiceDifficulty — Sprint AI-124 AI-124-09: the real, explicit
+       choice from 巧巧老師出題引導's picker (js/components/QuestionGuide.js),
+       now actually threaded through into buildPracticeListView() (see
+       showQuestionGuide()'s own onStart below), instead of being
+       discarded the moment 開始練習 was clicked. Session-scoped, in-memory
+       only — same "view-layer state, not a new Runtime" discipline as
+       practiceAnswerState above. null (no filter) whenever Practice Mode
+       is reached WITHOUT going through the Guide's explicit picker at
+       all (e.g. the unfiltered Repository catalog drill-down), which is
+       exactly this Sprint's own pre-existing, unchanged behavior. */
+    var practiceDifficulty = null;
+
     function showPracticeList(materialId) {
       var scopedMaterialId = materialId !== undefined ? materialId : practiceMaterialId;
       AHS.UI.mount(practiceRoot, buildPracticeListView(
         showPracticeQuestion, scopedMaterialId,
         function (drillMaterialId) { showPracticeList(drillMaterialId); },
         showRealPracticeQuestion,
-        answerStatusFor
+        answerStatusFor,
+        practiceDifficulty
       ));
     }
 
@@ -1772,7 +1895,14 @@ AHS.QuizCenter = (function () {
       AHS.UI.mount(practiceRoot, AHS.QuestionGuide.create({
         materialId: practiceMaterialId,
         questions: records.filter(isRealLearningQuestion),
-        onStart: function () {
+        /* Sprint AI-124 AI-124-09: onStart(chosenDifficulty) — the
+           student's real, explicit Easy/Medium/Hard pick (previously
+           discarded here; showPracticeList() took no argument at all) —
+           now actually carried into practiceDifficulty before showing
+           the list, so the choice really does filter which questions
+           appear, not just gate the 開始練習 button. */
+        onStart: function (chosenDifficulty) {
+          practiceDifficulty = chosenDifficulty || null;
           showPracticeList();
         }
       }));

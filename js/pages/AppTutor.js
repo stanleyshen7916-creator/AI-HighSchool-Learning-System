@@ -26,11 +26,19 @@ window.AHS = window.AHS || {};
   function buildRealTutorMessage() {
     if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function" ||
         !AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return null; }
-    var params = new URLSearchParams(window.location.search);
+    /* Sprint AI-124 AI-124-02/07: the one shared AHS.PlatformContext.
+       resolve() instead of this page's own separate URLSearchParams
+       parsing — this is also the real fix that finally lets a materialId
+       actually reach tutor.html (see the AI-124-07 note further down):
+       previously nothing ever linked here with these params (this
+       file's own prior header literally said so), now
+       AHS.WorkspaceFolder.js/summary.html's own AI Tutor entry points
+       carry materialId= through, and this same resolve() picks it up. */
+    var ctx = AHS.PlatformContext.resolve();
     var pageContext = {
       page: "tutor",
-      materialId: params.get("materialId") || undefined,
-      examId: params.get("examId") || undefined
+      materialId: ctx.materialId || undefined,
+      examId: ctx.examId || undefined
     };
     var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), pageContext);
     return built ? { role: "assistant", time: "剛剛", text: built.message } : null;
