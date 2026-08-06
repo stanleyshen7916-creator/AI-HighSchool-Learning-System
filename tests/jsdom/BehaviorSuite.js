@@ -350,7 +350,7 @@ console.log("\n[4] summary.html — Task 003: mandated pending copy (empty-conte
     coreConcepts: [], definitions: [], pitfalls: [], memorize: [], reviewSuggestions: []
   })], seq: 1 };
   const { window, consoleErrors } = loadPage("summary.html", {
-    excludeScripts: ["data/materials/"],
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"],
     seedSession: { "ahs:materialRuntime": materialSeed, "ahs:summaryRuntime": emptySummary }
   });
   const doc = window.document;
@@ -1385,7 +1385,7 @@ console.log("\n[31] HOTFIX-005 AI-503 — 下載總結：直接產生列印內�
   check("iframe 內容包含真實教材標題與核心概念", iframe.getAttribute("srcdoc").includes("排他性"));
   check("Console errors = 0（下載總結）", consoleErrors.length === 0);
 
-  const emptyPage = loadPage("summary.html", { excludeScripts: ["data/materials/"] });
+  const emptyPage = loadPage("summary.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
   const emptyBtn = [...emptyPage.window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("下載總結"));
   emptyBtn.click();
   check("完全沒有學習總結時：明確提示，不產生空白 PDF", /目前沒有可匯出的學習總結/.test(emptyPage.window.document.querySelector(".sum-status").textContent));
@@ -1883,7 +1883,7 @@ console.log("\n[42] Sprint AI-114 AI-903 — Daily Task Engine（首頁今日任
     !!taskCard && !taskCard.textContent.includes("今天沒有安排學習任務"));
   check("Console errors = 0（Daily Task Engine）", consoleErrors.length === 0);
 
-  const { window: emptyWin } = loadPage("index.html", { excludeScripts: ["data/materials/"] });
+  const { window: emptyWin } = loadPage("index.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
   const emptyCard = emptyWin.document.querySelector(".today-card");
   check("無真實資料時今日任務誠實顯示既有空狀態（非假造任務）",
     !!emptyCard && emptyCard.textContent.includes("今天沒有安排學習任務"));
