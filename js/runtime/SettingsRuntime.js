@@ -25,12 +25,34 @@ AHS.SettingsRuntime = (function () {
     aiGatewayEnabled: false
   };
 
+  /* PAT Fix follow-up (real PO report): profile.name used to default to
+     the literal placeholder "同學" regardless of who actually logged
+     in, so the topbar's user button and the Settings Profile panel
+     both showed a name disconnected from the real student picked on
+     login.html — "獨立事件". AHS.WorkspaceRuntime (loaded before this
+     file on every page) is the single real source for "who is logged
+     in"; its own label().studentName is used here ONLY as the seed for
+     a brand-new profile that has never been explicitly saved — once a
+     user edits their own display name via Settings, that saved value
+     always wins (this function is never called again for that
+     Workspace once a real profile.name exists in storage). */
+  function defaultProfileName() {
+    var label = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.label === "function")
+      ? AHS.WorkspaceRuntime.label() : null;
+    return (label && label.studentName) ? label.studentName : DEFAULTS.profile.name;
+  }
+
   function hydrate() {
     var loaded = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function")
       ? AHS.PersistenceAdapter.load(STORAGE_KEY) : null;
-    if (!loaded || typeof loaded !== "object") { return clone(DEFAULTS); }
+    if (!loaded || typeof loaded !== "object") {
+      var seeded = clone(DEFAULTS);
+      seeded.profile.name = defaultProfileName();
+      return seeded;
+    }
     var merged = clone(DEFAULTS);
     merged.profile = Object.assign({}, DEFAULTS.profile, loaded.profile || {});
+    if (!loaded.profile || !loaded.profile.name) { merged.profile.name = defaultProfileName(); }
     if (typeof loaded.showTutorSuggestions === "boolean") { merged.showTutorSuggestions = loaded.showTutorSuggestions; }
     if (typeof loaded.aiGatewayEnabled === "boolean") { merged.aiGatewayEnabled = loaded.aiGatewayEnabled; }
     return merged;

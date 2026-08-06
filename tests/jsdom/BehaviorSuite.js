@@ -1957,10 +1957,16 @@ console.log("\n[44] HOTFIX-008 — Topbar 顯示名稱/年級跨頁與重新整�
     !!reviewName && reviewName.textContent === "小小兵");
   check("Console errors = 0（Topbar 讀 SettingsRuntime）", consoleErrors.length === 0);
 
+  /* PAT Fix follow-up (real PO report): "登入時選擇的學生應與登入後右上角
+     的身分一致，目前是獨立事件" — 從未存過 Settings 時，profile.name 的
+     預設值改為真正登入的學生名稱（AHS.WorkspaceRuntime.label().studentName，
+     這裡是 loadPage() 自動 seed 的預設測試 Workspace student_a -> "Student
+     A"），不再是與登入者無關的字面預設「同學」。此 check 因此改為驗證這個
+     真正同步的名稱，而非舊有、獨立於登入身分的字面 fallback 字串。 */
   const { window: guestWin } = loadPage("index.html", {});
   const guestName = guestWin.document.querySelector(".topbar__user-meta strong");
-  check("從未存過 Settings 時 Topbar 仍正常顯示預設名稱（備援未壞）",
-    !!guestName && guestName.textContent === "同學");
+  check("從未存過 Settings 時 Topbar 預設顯示真正登入的學生名稱（不再是與登入身分無關的「同學」）",
+    !!guestName && guestName.textContent === "Student A");
 }
 
 console.log("\n==============================");
