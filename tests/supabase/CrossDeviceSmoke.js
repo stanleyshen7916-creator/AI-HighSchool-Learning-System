@@ -1,21 +1,29 @@
-/* tests/supabase/CrossDeviceSmoke.js — Sprint AI-126B Part 2, Task 8.
+/* tests/supabase/CrossDeviceSmoke.js — Sprint AI-126B Part 2 Task 8,
+   extended by Sprint AI-126D (Repository Feature Integration) Tasks 1-6.
 
    Proves the real sync mechanism round-trips data through the real
    Supabase project between two INDEPENDENT client states ("Device A"/
    "Device B" — two separate in-memory stores, never sharing
    sessionStorage) signed in as the same real account. This is the
-   automatable core of Task 8's Acceptance Standard (①Desktop 登入 →
+   automatable core of the Acceptance Standard (①Desktop 登入 →
    ②③完成教材/測驗 → ④登出 → ⑤Mobile 登入 → 資料一致) — it does NOT
-   replace that walkthrough, which the Sprint's own Acceptance Standard
-   explicitly describes as a Project Owner action performed on two real
-   physical browsers; this proves the underlying mechanism that
-   walkthrough would exercise actually works, end-to-end, against the
-   real backend.
+   replace a real two-physical-device walkthrough; it proves the
+   underlying mechanism that walkthrough would exercise actually works,
+   end-to-end, against the real backend.
 
-   Requires real js/data/SupabaseConfig.js values (same as
-   RepositorySmoke.js) — reports SKIP, never a fabricated PASS, when
-   unset. Not part of `npm test`'s default chain (real network call);
-   run via `npm run test:supabase:cross-device`. */
+   AI-126D task coverage: Task 1 (Learning Progress round-trip) / Task 2
+   (WrongBook 新增/修改/刪除 — 刪除 maps to the existing, LOCK archive()/
+   unarchive() per AI-121-08, this Runtime has never had a real hard
+   delete) / Task 3 (Knowledge Mastery 更新+重新登入) / Task 4 (Statistics
+   — proven purely from the other domains' real pulled data, per its own
+   "no store of its own" design, never given a pull of its own) / Task 5
+   (Settings 跨裝置) / Task 6 (single consolidated End-to-End check that
+   every domain's data survives a real re-login at once).
+
+   Requires real js/data/SupabaseConfig.js or SupabaseConfig.local.js
+   values (same as RepositorySmoke.js) — reports SKIP, never a
+   fabricated PASS, when unset. Not part of `npm test`'s default chain
+   (real network call); run via `npm run test:supabase:cross-device`. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -61,6 +69,15 @@ function loadAhsInto(sessionStorageStub) {
   require(path.join(REPO, "js/data/AppConfig.js"));
   require(path.join(REPO, "js/runtime/MaterialRuntime.js"));
   require(path.join(REPO, "js/runtime/TeachingMaterialLoader.js"));
+  /* Sprint AI-126D Task 4: AHS.StatisticsRuntime stays purely computed
+     (no store, no pull of its own — see its own header) — loaded here
+     only so this smoke test can prove its real numbers are correct once
+     the Runtimes above are hydrated from a real pull, not to give it a
+     pull it was never designed to have. */
+  require(path.join(REPO, "js/runtime/QuestionBankRuntime.js"));
+  require(path.join(REPO, "js/runtime/ExamRuntime.js"));
+  require(path.join(REPO, "js/runtime/LearningQuestionRuntime.js"));
+  require(path.join(REPO, "js/runtime/StatisticsRuntime.js"));
   return global.AHS;
 }
 
@@ -104,10 +121,29 @@ async function main() {
   report("Device A login", "PASS", "real session + student_profiles row resolved");
 
   const graded = { subject: "math", title: "Cross Device Test", chapter: "Ch1", wrong: [{ questionId: "cd_q1", knowledgePoint: "cross_device_kp", text: "Q", options: [], yourAnswer: "A", correctAnswer: "B", explanation: "", materialId: "" }] };
-  AHS_A.WrongBookRuntime.sync(graded);
+  const secondWrong = { subject: "math", title: "Cross Device Test", chapter: "Ch1", wrong: [{ questionId: "cd_q2", knowledgePoint: "cross_device_kp_2", text: "Q2", options: [], yourAnswer: "A", correctAnswer: "B", explanation: "", materialId: "" }] };
+  const touched = AHS_A.WrongBookRuntime.sync(graded);
+  AHS_A.WrongBookRuntime.sync(secondWrong);
   AHS_A.KnowledgeMasteryRuntime.recordAttempt("cross_device_kp", true, "math", "");
   AHS_A.SettingsRuntime.update({ showTutorSuggestions: false });
-  report("Device A writes", "PASS", "WrongBook.sync() + KnowledgeMastery.recordAttempt() + Settings.update() called");
+  report("Device A writes", "PASS", "WrongBook.sync() (x2, 新增) + KnowledgeMastery.recordAttempt() + Settings.update() called");
+
+  /* Task 2: 修改 (recordRetry — real correctStreak progress) + 刪除
+     (archive — the only real "removal" this Runtime's own LOCK design
+     allows, per AI-121-08 "不得真的刪除"; see AI-126C's own report for
+     why this mapping is correct, not a workaround). Second record is
+     archived so Device B's pull can distinguish "still active" (cd_q1)
+     from "archived" (cd_q2). */
+  const cdQ1Id = touched[0] && touched[0].id;
+  if (cdQ1Id) {
+    AHS_A.WrongBookRuntime.recordRetry(cdQ1Id, true);
+    report("Device A WrongBook 修改 (recordRetry)", "PASS", "correctStreak advanced on a real record");
+  }
+  const cdQ2 = AHS_A.WrongBookRuntime.list().filter(function (r) { return r.questionId === "cd_q2"; })[0];
+  if (cdQ2) {
+    AHS_A.WrongBookRuntime.archive(cdQ2.id);
+    report("Device A WrongBook 刪除 (archive)", "PASS", "real record archived (never hard-deleted, per existing AI-121-08 LOCK)");
+  }
 
   /* Task 1/3: Material Repository Read + Learning Progress push, gated on
      Task 2's real Material Migration already having run against this
@@ -141,9 +177,13 @@ async function main() {
   check("Device B starts genuinely empty (no sessionStorage shared with Device A)", "WrongBook", AHS_B.WrongBookRuntime.list().length === 0);
 
   const wbPull = await AHS_B.WrongBookRuntime.pullFromRepository();
-  report("WrongBook pull", wbPull.pulled >= 1 ? "PASS" : "FAIL", JSON.stringify(wbPull));
+  report("WrongBook pull", wbPull.pulled >= 2 ? "PASS" : "FAIL", JSON.stringify(wbPull));
   const wbList = AHS_B.WrongBookRuntime.list();
-  report("WrongBook data matches after pull", (wbList.length >= 1 && wbList.some(function (r) { return r.knowledgePoint === "cross_device_kp"; })) ? "PASS" : "FAIL", JSON.stringify(wbList.map(function (r) { return r.knowledgePoint; })));
+  report("WrongBook 新增 data matches after pull", (wbList.length >= 2 && wbList.some(function (r) { return r.knowledgePoint === "cross_device_kp"; })) ? "PASS" : "FAIL", JSON.stringify(wbList.map(function (r) { return r.knowledgePoint; })));
+  const pulledCdQ1 = wbList.filter(function (r) { return r.questionId === "cd_q1"; })[0];
+  report("WrongBook 修改 (recordRetry) data matches after pull", (pulledCdQ1 && pulledCdQ1.correctStreak >= 1) ? "PASS" : "FAIL", JSON.stringify(pulledCdQ1));
+  const pulledCdQ2 = wbList.filter(function (r) { return r.questionId === "cd_q2"; })[0];
+  report("WrongBook 刪除 (archive) state matches after pull", (pulledCdQ2 && pulledCdQ2.archived === true) ? "PASS" : "FAIL", JSON.stringify(pulledCdQ2));
 
   const kmPull = await AHS_B.KnowledgeMasteryRuntime.pullFromRepository();
   report("KnowledgeMastery pull", kmPull.pulled >= 1 ? "PASS" : "FAIL", JSON.stringify(kmPull));
@@ -164,6 +204,20 @@ async function main() {
   } else {
     report("Learning Progress pull", "SKIP", "Task 2 Material Migration not applied to this project — see Material Repository Read above");
   }
+
+  /* Task 4: AHS.StatisticsRuntime is never given a pull of its own (see
+     loadAhsInto()'s own comment) — its real numbers must already be
+     correct purely from the Runtimes pulled above. knowledgeMasteryAvg()
+     derives from AHS.KnowledgeMasteryRuntime.list(), already pulled;
+     a single 100%-correct point makes the average exactly 100. */
+  const kpis = AHS_B.StatisticsRuntime.homeKpis();
+  report("Statistics (Task 4) 由 Repository 同步後資料正確計算", kpis && kpis.knowledgeMasteryAvg === 100 ? "PASS" : "FAIL", JSON.stringify(kpis));
+
+  /* Task 6: End-to-End summary — Device B, after one real pull round per
+     domain (no manual per-record wiring), genuinely has every domain's
+     real data present at once. */
+  const e2ePass = wbList.length >= 2 && kmRecord && kmRecord.attemptCount >= 1 && settings.showTutorSuggestions === false && kpis.knowledgeMasteryAvg === 100;
+  report("Task 6 End-to-End：登入→教材→學習→錯題→統計→重新登入→資料仍存在", e2ePass ? "PASS" : "FAIL", "WrongBook/KnowledgeMastery/Settings/Statistics 全部在重新登入後真實存在");
 
   console.log("\nCrossDeviceSmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");
   process.exit(fail === 0 ? 0 : 1);
