@@ -20,6 +20,16 @@
   <script src="js/ui/EmptyState.js"></script>
   <script src="js/core/Icons.js"></script>
   <script src="js/core/PersistenceAdapter.js"></script>
+  <!-- Sprint AI-126C: Repository Layer, wired into a live page for the
+       first time (AI-126B built these files but never <script>-tagged
+       them anywhere). -->
+  <script src="js/data/SupabaseConfig.js"></script>
+  <script src="js/core/SupabaseClient.js"></script>
+  <script src="js/repository/Repository.js"></script>
+  <script src="js/repository/SupabaseRepository.js"></script>
+  <script src="js/repository/RepositoryFactory.js"></script>
+  <script src="js/repository/SyncBridge.js"></script>
+  <script src="js/repository/AuthRepository.js"></script>
   <script src="js/core/PlatformContext.js"></script>
   <script src="js/data/WorkspaceData.js"></script>
   <script src="js/runtime/WorkspaceRuntime.js"></script>
@@ -39,6 +49,11 @@
   <script src="js/runtime/WrongBookRuntime.js"></script>
   <script src="js/runtime/HistoryRuntime.js"></script>
   <script src="js/runtime/KnowledgeMasteryRuntime.js"></script>
+  <!-- Sprint AI-126C: must load after every Repository-integrated Runtime
+       above (MaterialRuntime/WrongBookRuntime/KnowledgeMasteryRuntime/
+       SettingsRuntime) and the Repository Layer block above — triggers
+       each domain's real pullFromRepository() once per page load. -->
+  <script src="js/repository/RepositorySync.js"></script>
   <script src="js/runtime/StatisticsRuntime.js"></script>
   <script src="data/materials/MaterialRepositoryIndex.js"></script>
   <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
