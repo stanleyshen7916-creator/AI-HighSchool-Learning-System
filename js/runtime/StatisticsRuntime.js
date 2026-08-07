@@ -733,6 +733,57 @@ AHS.StatisticsRuntime = (function () {
     };
   }
 
+  /* pushDailySnapshot() — Sprint AI-126B Part 2, Task 6. This Runtime
+     stays "Purely computed... no storage of its own" (own header above,
+     unchanged) — this function only CAPTURES today's already-real,
+     already-computed homeKpis() numbers into the durable public.
+     statistics table (supabase/migrations/20260807000004's own comment:
+     "the real gap a live-only read cannot [cover]: historical
+     today-relative counters after today has passed"). Never invents a
+     number homeKpis() didn't already produce; never called by homeKpis()
+     itself or any existing read path — purely an additive, explicit,
+     new function a caller (e.g. a page bootstrap, once per real session)
+     may invoke. null-valued KPI fields (e.g. accuracyToday before any
+     real attempt today) are honestly skipped, never written as 0. */
+  function pushDailySnapshot() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pushed: 0 }); }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return Promise.resolve({ pushed: 0 }); }
+    var kpis = homeKpis();
+    var metrics = {
+      outstandingTasks: kpis.outstandingTasks,
+      accuracyToday: kpis.accuracyToday,
+      accuracyThisWeek: kpis.accuracyThisWeek,
+      knowledgeMasteryAvg: kpis.knowledgeMasteryAvg,
+      knowledgeGrowthToday: kpis.knowledgeGrowthToday,
+      newWeaknessesToday: kpis.newWeaknessesToday,
+      resolvedWeaknessesToday: kpis.resolvedWeaknessesToday
+    };
+    var repo = AHS.RepositoryFactory.create();
+    var todayIso = new Date().toISOString().slice(0, 10);
+    var keys = Object.keys(metrics).filter(function (k) { return typeof metrics[k] === "number"; });
+    if (!keys.length) { return Promise.resolve({ pushed: 0 }); }
+    return repo.read("statistics", "student_profile_id=eq." + identity.studentProfileId + "&stat_date=eq." + todayIso).then(function (readResult) {
+      var existingByKey = {};
+      (readResult.data || []).forEach(function (row) { existingByKey[row.metric_key] = row; });
+      var writes = keys.map(function (key) {
+        var row = {
+          user_id: identity.userId,
+          student_profile_id: identity.studentProfileId,
+          subject_id: null,
+          stat_date: todayIso,
+          metric_key: key,
+          metric_value: metrics[key]
+        };
+        if (existingByKey[key]) { return repo.update("statistics", "id=eq." + existingByKey[key].id, row); }
+        return repo.insert("statistics", row);
+      });
+      return Promise.all(writes).then(function () { return { pushed: keys.length }; });
+    }).catch(function (err) {
+      return { pushed: 0, error: { message: String(err && err.message || err) } };
+    });
+  }
+
   return {
     overview: overview,
     accuracyBySubject: accuracyBySubject,
@@ -759,6 +810,7 @@ AHS.StatisticsRuntime = (function () {
     homeKpis: homeKpis,
     learningTrend: learningTrend,
     wrongBookAnalytics: wrongBookAnalytics,
-    materialContext: materialContext
+    materialContext: materialContext,
+    pushDailySnapshot: pushDailySnapshot
   };
 })();

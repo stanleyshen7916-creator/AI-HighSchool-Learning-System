@@ -83,6 +83,84 @@ AHS.KnowledgeMasteryRuntime = (function () {
       kp.attempts.splice(0, kp.attempts.length - MAX_ATTEMPTS_PER_POINT);
     }
     persist();
+    pushMastery(knowledgePoint);
+  }
+
+  /* pushMastery(knowledgePoint) — Sprint AI-126B Part 2, Task 5.
+     Fire-and-forget aggregate sync: public.knowledge_mastery stores
+     correct_count/wrong_count/last_attempt_at per (student_profile_id,
+     knowledge_point) — an aggregate, not this Runtime's own full
+     per-attempt log — so this pushes the current real aggregate
+     (kp.attempts, already real, never fabricated), never a second,
+     divergent count. Read-then-upsert by the table's own real unique
+     constraint (student_profile_id, knowledge_point) rather than caching
+     a remote id locally, since this table has no per-row fields this
+     Runtime would otherwise need to remember. Never blocks/changes
+     recordAttempt()'s own (undefined/void) return value. */
+  function pushMastery(knowledgePoint) {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    var kp = store.points[knowledgePoint];
+    if (!kp) { return; }
+    var correctCount = kp.attempts.filter(function (a) { return a.correct; }).length;
+    var wrongCount = kp.attempts.length - correctCount;
+    var lastAttempt = kp.attempts[kp.attempts.length - 1];
+    AHS.SyncBridge.subjectIdFor(kp.subject).then(function (subjectId) {
+      var repo = AHS.RepositoryFactory.create();
+      var row = {
+        user_id: identity.userId,
+        student_profile_id: identity.studentProfileId,
+        subject_id: subjectId || null,
+        knowledge_point: knowledgePoint,
+        correct_count: correctCount,
+        wrong_count: wrongCount,
+        last_attempt_at: lastAttempt ? lastAttempt.ts : new Date().toISOString()
+      };
+      AHS.SyncBridge.pushFireAndForget(function () {
+        return repo.read("knowledge_mastery", "student_profile_id=eq." + identity.studentProfileId + "&knowledge_point=eq." + encodeURIComponent(knowledgePoint)).then(function (readResult) {
+          if (readResult.error) { return readResult; }
+          if (readResult.data && readResult.data.length) {
+            return repo.update("knowledge_mastery", "id=eq." + readResult.data[0].id, row);
+          }
+          return repo.insert("knowledge_mastery", row);
+        });
+      });
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method; merges each real
+     remote aggregate into the local per-attempt-derived store as a
+     single synthetic "attempt" carrying the remote's own real
+     correct_count/wrong_count split (never expands it back into a fake
+     attempt-by-attempt history it doesn't have) — masteryOf()/get()
+     read attempts.length and the correct/wrong split, both honestly
+     preserved this way. Only backfills a point this device has never
+     seen locally; never overwrites richer local attempt history that
+     already exists (the local per-attempt log is always at least as
+     detailed as the remote aggregate, since every local write already
+     pushes here). */
+  function pullFromRepository() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return Promise.resolve({ pulled: 0 }); }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("knowledge_mastery", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
+      var pulled = 0;
+      result.data.forEach(function (row) {
+        if (store.points[row.knowledge_point]) { return; }
+        var attempts = [];
+        for (var i = 0; i < row.correct_count; i++) { attempts.push({ correct: true, day: dayKey(new Date(row.last_attempt_at)), ts: row.last_attempt_at }); }
+        for (var j = 0; j < row.wrong_count; j++) { attempts.push({ correct: false, day: dayKey(new Date(row.last_attempt_at)), ts: row.last_attempt_at }); }
+        store.points[row.knowledge_point] = { subject: "", materialId: "", attempts: attempts };
+        pulled += 1;
+      });
+      if (pulled) { persist(); }
+      return { pulled: pulled };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
   }
 
   /* recordGraded(gradedResult) — convenience wrapper over
@@ -228,6 +306,7 @@ AHS.KnowledgeMasteryRuntime = (function () {
     trend: trend,
     weakPoints: weakPoints,
     topGrowthToday: topGrowthToday,
-    reset: reset
+    reset: reset,
+    pullFromRepository: pullFromRepository
   };
 })();
