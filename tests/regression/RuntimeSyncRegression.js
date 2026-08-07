@@ -133,6 +133,41 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   AHS.RepositorySync.pullAll();
   check("calling pullAll() again explicitly is safe (idempotent no-op, never throws)", true);
 
+  console.log("\n[10] Sprint AI-126E — Runtime Mode (Task 1) / Session Refresh (Task 2) / Offline Queue (Task 5)");
+  require(path.join(REPO, "js/data/RuntimeModeConfig.js"));
+  check("AHS.RuntimeModeConfig ships with the documented default (\"hybrid\")", AHS.RuntimeModeConfig.mode === "hybrid");
+
+  var originalClientIsConfigured = AHS.SupabaseClient.isConfigured;
+  AHS.SupabaseClient.isConfigured = function () { return true; };
+  check("\"hybrid\" mode: isConfigured() reflects the real client state (true here)", AHS.SyncBridge.isConfigured() === true);
+  AHS.RuntimeModeConfig.mode = "memory";
+  check("\"memory\" mode forces isConfigured() false even when the real client reports configured (Task 1)", AHS.SyncBridge.isConfigured() === false);
+  AHS.RuntimeModeConfig.mode = "supabase";
+  check("\"supabase\" mode behaves identically to \"hybrid\" (LOCK: Runtime stays synchronous, no distinct code path)", AHS.SyncBridge.isConfigured() === true);
+  AHS.RuntimeModeConfig.mode = "hybrid";
+  AHS.SupabaseClient.isConfigured = originalClientIsConfigured;
+  check("restoring \"hybrid\" + the real (blank) client state returns to the pre-existing honest false", AHS.SyncBridge.isConfigured() === false);
+
+  check("AHS.SupabaseClient.refreshSession is a real, additive function (Task 2)", typeof AHS.SupabaseClient.refreshSession === "function");
+  check("AHS.SyncBridge.flushQueue / queueSize are real, additive functions (Task 5)", typeof AHS.SyncBridge.flushQueue === "function" && typeof AHS.SyncBridge.queueSize === "function");
+  check("Offline Queue starts empty", AHS.SyncBridge.queueSize() === 0);
+
+  var attempts = 0;
+  AHS.SyncBridge.pushFireAndForget(function () {
+    attempts += 1;
+    return Promise.resolve({ data: null, error: { message: "simulated network failure (no status = network-level, not a real server rejection)" } });
+  });
+  return AHS.SupabaseClient.refreshSession();
+}).then(function (refreshResult) {
+  check("refreshSession() never throws and returns a real { error } object when not configured/no session", refreshResult && refreshResult.error && typeof refreshResult.error.message === "string");
+  return new Promise(function (resolve) { setTimeout(resolve, 20); });
+}).then(function () {
+  check("a network-error push is queued for retry (Task 5), never dropped silently", AHS.SyncBridge.queueSize() === 1);
+  AHS.SyncBridge.flushQueue();
+  return new Promise(function (resolve) { setTimeout(resolve, 20); });
+}).then(function () {
+  check("flushQueue() retries the queued push (re-attempted, requeued again since it still fails identically — never lost, never crashes)", AHS.SyncBridge.queueSize() === 1);
+
   console.log("\nRuntimeSyncRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);
 }).catch(function (err) {

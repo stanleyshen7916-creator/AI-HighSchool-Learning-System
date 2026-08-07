@@ -134,6 +134,40 @@ AHS.SupabaseClient = (function () {
     });
   }
 
+  /* refreshSession() — Sprint AI-126E Task 2 (Session Expire). Supabase's
+     own `/auth/v1/token?grant_type=password` response (already stored
+     whole, unchanged, by setSession() above) carries a real
+     `refresh_token` alongside `access_token` — this was already being
+     persisted, just never used until now. Exchanges it for a fresh
+     access_token via the same real Auth endpoint every other function
+     here already uses. No-op (honest, real error) if there is no
+     current session or it never had a refresh_token (e.g. this session
+     predates this Sprint). Not part of the original Task 3 contract
+     (Login/Logout/Session Restore) — purely additive, called by
+     js/repository/SyncBridge.js's pushFireAndForget() on a real 401. */
+  function refreshSession() {
+    var guard = requireConfigured();
+    if (guard) { return guard; }
+    var c = config();
+    var s = session();
+    var refreshToken = s && s.refresh_token;
+    if (!refreshToken) {
+      return Promise.resolve({ data: null, error: { message: "No refresh_token on the current session — cannot refresh." } });
+    }
+    return fetch(c.url + "/auth/v1/token?grant_type=refresh_token", {
+      method: "POST",
+      headers: { "apikey": c.anonKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    }).then(parseResponse).then(function (result) {
+      if (!result.error && result.data && result.data.access_token) {
+        setSession(result.data);
+      }
+      return result;
+    }).catch(function (err) {
+      return { data: null, error: { message: String(err && err.message || err) } };
+    });
+  }
+
   function signOut() {
     var c = config();
     var s = session();
@@ -207,6 +241,7 @@ AHS.SupabaseClient = (function () {
     signUp: signUp,
     signInWithPassword: signInWithPassword,
     signOut: signOut,
+    refreshSession: refreshSession,
     getSession: getSession,
     read: read,
     insert: insert,
