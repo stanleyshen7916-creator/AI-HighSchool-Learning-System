@@ -38,12 +38,17 @@ window.AHS = window.AHS || {};
 AHS.RepositorySync = (function () {
   "use strict";
 
-  /* Domains named by AI-126C Task 1/2/3/5 (Statistics/Task 4 is
-     intentionally absent — AHS.StatisticsRuntime remains "purely
-     computed, no store of its own", per its own existing header; its
-     numbers are already real once the Runtimes below are hydrated). */
+  /* Domains named by AI-126C Task 1/2/3/5 + AI-126D/E's own Task 3
+     ("TeachingMaterialRuntime" — this is AHS.TeachingMaterialLoader, the
+     Material Repository Read pull built in AI-126B Part 2 v1.1 Task 1,
+     genuinely missing from this list until now, a real gap fixed here,
+     not new work invented for its own sake). Statistics is intentionally
+     absent — AHS.StatisticsRuntime remains "purely computed, no store of
+     its own", per its own existing header; its numbers are already real
+     once the Runtimes below are hydrated. */
   function domains() {
     return [
+      { name: "TeachingMaterialLoader", runtime: AHS.TeachingMaterialLoader },
       { name: "MaterialRuntime", runtime: AHS.MaterialRuntime },
       { name: "WrongBookRuntime", runtime: AHS.WrongBookRuntime },
       { name: "KnowledgeMasteryRuntime", runtime: AHS.KnowledgeMasteryRuntime },
@@ -55,9 +60,12 @@ AHS.RepositorySync = (function () {
      design (this is a background refresh, not a value the synchronous UI
      ever waits on). Safe to call more than once per page (each Runtime's
      own pullFromRepository() is itself idempotent — merges by remote id/
-     origin_key, never duplicates). */
+     origin_key, never duplicates). Sprint AI-126E Task 5: also flushes
+     any still-queued offline pushes from earlier in this same page's
+     lifetime before pulling fresh state. */
   function pullAll() {
     if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    if (typeof AHS.SyncBridge.flushQueue === "function") { AHS.SyncBridge.flushQueue(); }
     if (!AHS.SyncBridge.identity()) { return; }
     domains().forEach(function (d) {
       if (d.runtime && typeof d.runtime.pullFromRepository === "function") {
