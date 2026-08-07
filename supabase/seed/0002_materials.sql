@@ -1,0 +1,790 @@
+-- 0002_materials.sql — AI-126B Part 2 v1.1, Task 2 (Material Migration).
+--
+-- GENERATED FILE — do not hand-edit. Produced by
+-- scripts/migrate/GenerateMaterialsSeed.js from the platform's own real,
+-- already-shipped teaching material content (js/data/TeachingMaterialData.js
+-- Package track + data/materials/*.js Repository track) — never Mock Data,
+-- never fabricated. Re-run the generator (and commit the result) after any
+-- change to those source files.
+--
+-- Pure DML (insert/on-conflict/where-not-exists only) — no schema,
+-- migration, RLS, or FK change, per this round's explicit restriction.
+-- Idempotent: materials upserts by its own real `origin_key` unique
+-- constraint; question_sets/questions (no natural unique key by design,
+-- see supabase/migrations/20260807000003_content_tables.sql's own
+-- comments) are each guarded by a real `where not exists` business-key
+-- check instead, so re-applying this file never duplicates a row.
+--
+-- Not applied automatically by `supabase db push` (that only runs
+-- migrations/, same as 0001_subjects.sql). Requires elevated
+-- Management API / --linked access, since materials/question_sets/
+-- questions are Admin Only writes per RLS (20260807000005_rls_policies.sql)
+-- and no mock client-side account holds is_admin — apply via:
+--   supabase db query --linked --file supabase/seed/0002_materials.sql
+--
+-- Generated 2026-08-07T07:06:22.802Z — 5 materials, 142 questions.
+-- Package track: tm_1 (數學)
+insert into public.materials (origin_key, subject_id, title, chapter, grade, category, source_track)
+select 'tm_1', s.id, '第二冊 第4章 4-1~4-3（三角函數的性質：正弦定理、餘弦定理、三角形面積公式） 114學年度下學期 高一第三次段考', '第二冊 第4章 4-1~4-3（三角函數的性質：正弦定理、餘弦定理、三角形面積公式）', '高一', '114學年度下學期 高一第三次段考', 'PACKAGE'
+from public.subjects s where s.code = 'math'
+on conflict (origin_key) do update set
+  subject_id = excluded.subject_id, title = excluded.title, chapter = excluded.chapter,
+  grade = excluded.grade, category = excluded.category, source_track = excluded.source_track;
+insert into public.question_sets (material_id, subject_id, source, title)
+select m.id, m.subject_id, 'ORIGINAL', m.title from public.materials m where m.origin_key = 'tm_1'
+  and not exists (select 1 from public.question_sets qs where qs.material_id = m.id and qs.source = 'ORIGINAL');
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 1, '如圖，∠BAC=θ，∠ABD=∠ACD=90°，AB=a，BD=b，下列選項何者可以表示 CD？（圖形為四邊形ABDC：B、C分別是以AD為斜邊的兩個直角三角形之直角頂點，∠ABD、∠ACD皆為直角）', 'single_choice', '[{"key":"A","text":"(1) a sinθ + b cosθ"},{"key":"B","text":"(2) a sinθ + b tanθ"},{"key":"C","text":"(3) a cosθ − b sinθ"},{"key":"D","text":"(4) a cosθ + b sinθ"},{"key":"E","text":"(5) a sinθ − b cosθ"}]'::jsonb, 'E', '由∠ABD=90°知AD=√(a²+b²)，設∠BAD=φ則sinφ=b/AD、cosφ=a/AD；∠ACD=90°表示C在以AD為直徑的圓上，∠DAC=θ−φ，故CD=AD·sin(θ−φ)=AD sinθ cosφ − AD cosθ sinφ = a sinθ − b cosθ。', '和角公式的幾何證明', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_1' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 1);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 2, '如圖，△ABC為等腰直角三角形，D為BC的中點，則 tan∠DAB 為？（圖形中AC邊標示長度為√2，據此判斷直角頂點在B，AB=BC為兩股、AC為斜邊）', 'single_choice', '[{"key":"A","text":"(1) 1/2"},{"key":"B","text":"(2) 1/3"},{"key":"C","text":"(3) 1/4"},{"key":"D","text":"(4) 1/5"},{"key":"E","text":"(5) 1/6"}]'::jsonb, 'A', '設直角在B，AB=BC=1（斜邊AC=√2）。取B為原點，A=(0,1)，C=(1,0)，D為BC中點=(0.5,0)。向量AD=(0.5,−1)、AB=(0,−1)，tan∠DAB=|cross|/dot=0.5/1=1/2。此題原始照片中該小圖的直角頂點位置與邊長標示較不清晰，是根據√2標示於AC邊、且與考生原始答案(1)一致而推得，建議人工對照原稿圖形覆核。', '三角函數定義、坐標法求角', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_1' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 2);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 3, '如下圖，設圓內接四邊形ABCD中∠CAD=30°，∠ACB=45°，CD=2，則 AB=?（圖形為圓內接四邊形ABCD，四頂點依序排列於同一圓上）', 'single_choice', '[{"key":"A","text":"(1) 2"},{"key":"B","text":"(2) 2√2"},{"key":"C","text":"(3) 3"},{"key":"D","text":"(4) 2√3"},{"key":"E","text":"(5) 4"}]'::jsonb, 'B', '設外接圓半徑為R。CD所對圓周角∠CAD=30°，故CD=2R sin30°=2 ⟹ R=2。AB所對圓周角∠ACB=45°，故AB=2R sin45°=2×2×(√2/2)=2√2。', '正弦定理、圓內接四邊形', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_1' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 3);
+
+-- Package track: tm_2 (生物)
+insert into public.materials (origin_key, subject_id, title, chapter, grade, category, source_track)
+select 'tm_2', s.id, '生物全ch3（演化與生物分類：拉馬克與達爾文學說、天擇、同源／同功構造、五界說／三域說、病毒特性） 114學年度第二學期第三次段考', '生物全ch3（演化與生物分類：拉馬克與達爾文學說、天擇、同源／同功構造、五界說／三域說、病毒特性）', '高一', '114學年度第二學期第三次段考', 'PACKAGE'
+from public.subjects s where s.code = 'biology'
+on conflict (origin_key) do update set
+  subject_id = excluded.subject_id, title = excluded.title, chapter = excluded.chapter,
+  grade = excluded.grade, category = excluded.category, source_track = excluded.source_track;
+insert into public.question_sets (material_id, subject_id, source, title)
+select m.id, m.subject_id, 'ORIGINAL', m.title from public.materials m where m.origin_key = 'tm_2'
+  and not exists (select 1 from public.question_sets qs where qs.material_id = m.id and qs.source = 'ORIGINAL');
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 1, '下列哪一項是拉馬克與達爾文演化理論的共同點？', 'single_choice', '[{"key":"A","text":"(A)物種會隨時間而可能產生改變"},{"key":"B","text":"(B)環境會促進生物產生變異"},{"key":"C","text":"(C)強調體細胞的改變會遺傳給下一代"},{"key":"D","text":"(D)生物具有共同祖先"},{"key":"E","text":"(E)能以同源構造重建生物間的親緣關係"}]'::jsonb, 'A', '兩學說皆同意物種並非一成不變、會隨時間演化；(C)為拉馬克特有的用進廢退/獲得性遺傳、(D)為達爾文特有的共同祖先觀點，皆非兩者共同點。', '演化學說比較', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 1);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 2, '關於古菌的分類與演化，何者有誤？', 'single_choice', '[{"key":"A","text":"(A)以五界說觀點，與藍綠菌同屬原核生物界"},{"key":"B","text":"(B)生活環境類似古老地球的極端環境"},{"key":"C","text":"(C)細胞壁成分為肽聚醣"},{"key":"D","text":"(D)演化上比真細菌更接近真核生物"}]'::jsonb, 'C', '肽聚醣細胞壁是真細菌（Bacteria）的特徵，古菌（Archaea）細胞壁不含肽聚醣，此為區分兩域的重要依據，故(C)敘述有誤。', '古菌與真細菌的差異', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 2);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 3, '附圖是依顳窩的數量來重建鳥類和爬蟲類的親緣關係（圖示：龜鱉類／鱷魚／翼龍與恐龍(已滅絕)／鳥類／海洋爬蟲類／蜥蜴與蛇／哺乳類，分別對應無顳窩／雙顳窩／單顳窩三個分支，皆源自羊膜動物的祖先），下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)顳窩數量愈接近，親緣關係愈接近"},{"key":"B","text":"(B)現存生物中，鳥與哺乳類親緣最接近"},{"key":"C","text":"(C)蜥蜴跟鱷魚的親緣關係較蜥蜴跟烏龜的親緣關係近"},{"key":"D","text":"(D)哺乳動物的單顳窩是由雙顳窩合併而成，故形成一獨立的分類"},{"key":"E","text":"(E)已滅絕的生物不足以做為重建親緣關係的參酌依據"}]'::jsonb, 'C', '依附圖，蜥蜴與鱷魚同屬雙顳窩分支（皆為雙孔類），與源自無顳窩分支的烏龜（龜鱉類）親緣關係較遠，故蜥蜴與鱷魚較接近。', '顳窩與羊膜動物親緣關係', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 3);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 4, '一種微球菌 Paenarthrobacteria ureafaciens K172（簡稱K172）在1975年被發現存活於尼龍工廠的汙水池中。此菌具有特別的nylonase酵素，能消化人造的尼龍分子，因此被稱為吃尼龍菌。然而，尼龍之發明及使用始於1935年，此之前P. ureafaciens從未接觸過尼龍。由演化的觀點視之，可用下列哪一論點解釋此菌能夠存活在尼龍工廠的汙水池中？', 'single_choice', '[{"key":"A","text":"(A)K172是基因改造生物"},{"key":"B","text":"(B)P. ureafaciens DNA的鹼基序列發生改變"},{"key":"C","text":"(C)K172遵循細胞來自細胞的細胞學說"},{"key":"D","text":"(D)K172遵循孟德爾遺傳法則而來"},{"key":"E","text":"(E)可以用拉馬克的觀點解釋生物適應環境的結果"}]'::jsonb, 'B', '此為天擇經典案例：隨機突變使部分菌株的DNA鹼基序列改變，恰好產生可分解尼龍的酵素，因而在尼龍工廠汙水池中被天擇保留，並非(E)拉馬克式「因需要而產生改變」。', '突變與天擇', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 4);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 5, '天擇是達爾文演化論的核心，下列哪一項不屬於天擇作用？', 'single_choice', '[{"key":"A","text":"(A)無毒蝴蝶的斑紋愈來愈像有毒蝴蝶的斑紋"},{"key":"B","text":"(B)花蜂偏好紅花，導致某種植物紅花比例增加"},{"key":"C","text":"(C)從前的玉米果粒很小，經多年篩選後才產生現今大果粒的玉米"},{"key":"D","text":"(D)年雨量逐年增加使植物果實逐漸變大，食果性鳥類的平均鳥喙有變大的趨勢"},{"key":"E","text":"(E)同種鳥類在求偶儀式中的行為都非常雷同"}]'::jsonb, 'C', '玉米果粒經人為多年篩選培育而變大，屬於「人擇（artificial selection）」而非天擇；其餘選項皆為自然環境壓力下的天擇實例。', '天擇與人擇的區別', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 5);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 6, '有關達爾文的演化論，下列何者正確？', 'single_choice', '[{"key":"A","text":"(A)親代競爭力較強的性狀在後代族群中出現的頻率會提高"},{"key":"B","text":"(B)達爾文提出天擇說時，有參考孟德爾的遺傳定律"},{"key":"C","text":"(C)愈常使用的器官愈發達，且此優勢會遺傳到下一代"},{"key":"D","text":"(D)當環境資源有限時，可經由突變提高優勢並增加個體數"},{"key":"E","text":"(E)特有種皆是由不同地理環境的不同始祖演化而來"}]'::jsonb, 'A', '此為天擇「差異性繁殖成功」的核心概念；(B)達爾文發表天擇說時孟德爾遺傳定律尚未被學界重視；(C)為拉馬克用進廢退說，非達爾文學說。', '達爾文天擇說核心概念', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 6);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 7, '有關斑馬黑白相間條紋特徵的功能假說有五大類型：融入環境背景、干擾掠食者進行攻擊、減少吸熱、社會性互動和防止外寄生蟲攻擊。科學家為了進一步探究斑馬條紋的演化意義，分析了斑馬身上的條紋寬度、觀察三種喜歡待在陰暗處的蠅類在不同條紋寬度上的停留情形，如附圖（橫軸為條紋寬度cm、縱軸為蠅類停留百分比，分別繪出刺蠅、采采蠅、虻三條曲線），根據圖的描述推論，何者不正確？', 'single_choice', '[{"key":"A","text":"(A)此實驗是想驗證「防止外寄生蟲攻擊」假說是否合理"},{"key":"B","text":"(B)實驗中的三種蠅類應亦分布在斑馬棲地中，始能合理分析演化意義"},{"key":"C","text":"(C)條紋寬度愈寬，蠅類停留的比例愈高"},{"key":"D","text":"(D)根據現存斑馬條紋寬度的狀況，應可推論除了防止外寄生蟲攻擊外，還有其他因素導致此種結果"},{"key":"E","text":"(E)由圖表與數據推論，虻可能叮咬斑馬"}]'::jsonb, 'E', '圖表數據僅呈現蠅類在不同條紋寬度上的「停留百分比」，並未直接呈現「叮咬」行為的證據，由停留推論會叮咬屬於過度推論；此題涉及圖表精確數值判讀，原始照片解析度有限，建議人工對照原圖覆核。', '斑馬條紋演化假說（實驗數據判讀）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 7);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 8, '拉馬克與達爾文的論點有哪些相同處？', 'single_choice', '[{"key":"A","text":"(A)演化的起點是遺傳變異，與環境無關"},{"key":"B","text":"(B)常用的構造將得以進化"},{"key":"C","text":"(C)生物的演化是突然發生巨變的過程"},{"key":"D","text":"(D)所有的生物可能源自共同祖先物種"},{"key":"E","text":"(E)生物的性狀並非一成不變"}]'::jsonb, 'E', '與Q1同一概念：兩學說皆同意生物性狀會隨時間改變，非固定不變；(B)為拉馬克特有、(D)為達爾文特有、(C)兩者皆非漸變論的主張。', '演化學說比較', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 8);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 9, '人和黑猩猩之間生物化學的差異，主要原因為下列何者？', 'single_choice', '[{"key":"A","text":"(A)單醣分子的種類不同"},{"key":"B","text":"(B)組成胺基酸的分子不同"},{"key":"C","text":"(C)組成核苷酸的分子不同"},{"key":"D","text":"(D)核酸的含氮鹼基排序不同"}]'::jsonb, 'D', '不同物種使用相同的單醣、胺基酸與核苷酸建構分子，差異主要來自DNA中含氮鹼基「排序」不同，進而轉譯出不同蛋白質。', '分子演化證據', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 9);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 10, '古菌和真細菌在構造與組成上有何差異？', 'single_choice', '[{"key":"A","text":"(A)細胞膜有無"},{"key":"B","text":"(B)膜狀胞器有無"},{"key":"C","text":"(C)染色體成分"},{"key":"D","text":"(D)細胞壁成分"}]'::jsonb, 'D', '兩者皆為原核生物，皆具細胞膜、皆無膜狀胞器；主要差異在細胞壁成分（真細菌含肽聚醣，古菌不含）。', '古菌與真細菌的差異', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 10);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 11, '下列哪一組敘述屬於解剖學上的「同源構造」？', 'single_choice', '[{"key":"A","text":"(A)鯨的鰭和鯊魚的鰭"},{"key":"B","text":"(B)烏龜的殼和文蛤的外殼"},{"key":"C","text":"(C)蝙蝠的翅和鳥的翅"},{"key":"D","text":"(D)仙人掌的刺和玫瑰的刺"}]'::jsonb, 'C', '蝙蝠翅膀與鳥類翅膀雖各自獨立演化出飛行功能（同功），但骨骼構造皆源自共同的四足動物前肢，屬於同源構造；其餘三組皆為起源不同、功能相似的同功構造。', '同源構造與同功構造', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 11);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 12, '有關生物分類系統的建立，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)達爾文探討動物和植物的演化，建立二界系統"},{"key":"B","text":"(B)懷塔克建立五界系統，將生物分為原核生物界、原生生物界、菌物界、植物界和動物界"},{"key":"C","text":"(C)林奈依據RNA分子證據，建立三域系統"},{"key":"D","text":"(D)渥易斯建立三域系統，將原生生物界分為藻類、原生菌類和原生動物類"}]'::jsonb, 'B', '二界系統早於達爾文，非其所創；三域系統為渥易斯（Woese）依rRNA序列證據建立，與林奈無關；渥易斯的三域說也未將原生生物界做該項再分類。', '生物分類系統發展史', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 12);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 13, '在人體消化系統中，在盲腸前端具有一小段闌尾，目前已知闌尾無消化功能，有關人體闌尾的演化，下列敘述最符合現今演化理論？', 'single_choice', '[{"key":"A","text":"(A)因人類食性改變，造成闌尾無須使用而逐漸退化"},{"key":"B","text":"(B)比對人體闌尾與其他哺乳類動物的闌尾，皆為同源構造"},{"key":"C","text":"(C)原本闌尾所具的消化功能已被其他器官取代，因此逐漸退化"},{"key":"D","text":"(D)腸內菌主要分布於大腸，闌尾因缺乏腸內菌而逐漸退化"}]'::jsonb, 'A', '現今演化理論認為，人類飲食型態改變降低了對大型盲腸/闌尾消化纖維素的需求，選汰壓力改變使闌尾逐漸退化；(A)(C)敘述相近，此處以食性改變為最直接對應之選項，建議人工覆核與(C)的取捨。', '痕跡器官與演化', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 13);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 14, '下列關於一般病毒特性的敘述，何者正確？', 'single_choice', '[{"key":"A","text":"(A)具有自行增殖所需的酵素系統"},{"key":"B","text":"(B)不會感染細菌"},{"key":"C","text":"(C)在患者發病前已大量增殖"},{"key":"D","text":"(D)無專一性能感染多種宿主"}]'::jsonb, 'C', '病毒缺乏自行代謝/增殖的酵素系統，須借用宿主細胞機制；噬菌體可感染細菌；病毒對宿主通常具專一性；許多病毒在潛伏期已於體內大量增殖，症狀出現前即已完成大量複製。', '病毒的一般特性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 14);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 15, '白線斑蚊是傳染登革熱的媒介蚊，噴灑殺蟲劑後，數量大幅減少90%，但一年後，該族群又恢復到原來數量，再度噴灑相同劑量殺蟲劑時，僅殺死30%。下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)殺蟲劑使白線斑蚊基因突變，產生抗藥性，因而復活"},{"key":"B","text":"(B)殺蟲劑使白線斑蚊的免疫系統產生抗禦，可對抗殺蟲劑而生存"},{"key":"C","text":"(C)原來族群中，少數個體具有抗殺蟲劑的基因，存活而形成新族群"},{"key":"D","text":"(D)殺蟲劑刺激白線斑蚊的生殖力上升，族群個體數因而增加"},{"key":"E","text":"(E)此為人擇的結果"}]'::jsonb, 'C', '抗藥性並非殺蟲劑「誘發突變」而產生（非(A)），而是族群中原本即存在少數具抗藥性基因的個體，經殺蟲劑篩選後存活、大量繁殖，形成抗藥性比例升高的新族群，屬天擇而非人擇。', '抗藥性演化', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 15);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 16, '有些病毒在蛋白質外殼的外側還有套膜，套膜是如何產生的？', 'single_choice', '[{"key":"A","text":"(A)病毒自行合成"},{"key":"B","text":"(B)宿主細胞依病毒核酸合成"},{"key":"C","text":"(C)宿主細胞的細胞膜"},{"key":"D","text":"(D)宿主細胞的內質網"}]'::jsonb, 'C', '具套膜病毒通常以出芽（budding）方式離開宿主細胞，同時帶走一部分宿主細胞膜作為套膜。', '病毒套膜的形成', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 16);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 17, '新型冠狀病毒(SARS-CoV-2)具有下列何種特性？', 'single_choice', '[{"key":"A","text":"(A)主導病毒感染的棘蛋白被包裹在病毒內側而未暴露於外"},{"key":"B","text":"(B)屬於突變率高的DNA病毒，因此陸續發現不同的變異病毒株"},{"key":"C","text":"(C)病毒會在細胞中複製並在完成組裝後，離開宿主細胞"},{"key":"D","text":"(D)即使沒有感染宿主細胞也可自行大量複製，因而具高傳染性"}]'::jsonb, 'C', '棘蛋白位於病毒最外側以利辨識並結合宿主細胞受體；SARS-CoV-2為RNA病毒非DNA病毒；病毒為絕對細胞內寄生，離開宿主細胞無法自行複製。', 'SARS-CoV-2 病毒特性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 17);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 18, '根據渥易斯所提出的三域分類系統，比對「甲烷菌」、「乳酸菌」與「酵母菌」三者特定的RNA序列，下列哪一種親緣關係的建立較為合理？（原圖為(A)(B)(C)(D)四個小型親緣關係樹狀圖，分別呈現三者不同的分支組合方式）', 'single_choice', '[{"key":"A","text":"(A)（乳酸菌與甲烷菌先分支聚合，酵母菌獨立）"},{"key":"B","text":"(B)（詳附圖分支組合）"},{"key":"C","text":"(C)（甲烷菌與酵母菌先分支聚合，乳酸菌獨立）"},{"key":"D","text":"(D)（乳酸菌與酵母菌先分支聚合，甲烷菌獨立）"}]'::jsonb, 'C', '甲烷菌屬古菌域、酵母菌屬真核生物域、乳酸菌屬真細菌域；依三域分類系統，古菌與真核生物域親緣關係較近（同為姐妹群），真細菌域最早分歧，故甲烷菌應與酵母菌先聚合，乳酸菌獨立為另一分支。原始四張小圖之精確分支結構因照片解析度無法逐一確認，此為Claude依生物學原理之判斷，建議人工對照原圖覆核選項字母。', '三域系統親緣關係', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 18);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 19, '若依據構造的演化來源判斷，下列何者互為同源構造？甲、海豹和鯨的游泳肢；乙、貓的爪和蜥蜴的爪；丙、蜻蜓的翅和蝙蝠的翅；丁、蝴蝶的吸蜜口器和蚊子的吸血口器', 'single_choice', '[{"key":"A","text":"(A)甲丙"},{"key":"B","text":"(B)甲乙丙"},{"key":"C","text":"(C)甲乙丁"},{"key":"D","text":"(D)乙丙丁"}]'::jsonb, 'C', '甲（皆為哺乳類前肢演化而來）、乙（皆為四足動物趾端角質構造演化而來）、丁（皆為昆蟲口器演化而來）互為同源；丙（蜻蜓翅為外骨骼延伸、蝙蝠翅為前肢演化而來）起源完全不同，屬同功構造。', '同源構造判斷', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 19);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 20, '附圖以Y、Z表示利用甲特徵可以區分之兩生物群，圖為草履蟲、酵母菌、青黴菌、藍綠菌、甲烷菌等5種生物的簡易分辨方式（以甲、乙、丙、丁等特徵逐層分支）。對甲~丁的特徵，何者正確？', 'single_choice', '[{"key":"A","text":"(A)乙為細胞壁有無"},{"key":"B","text":"(B)甲為核糖體有無"},{"key":"C","text":"(C)丁為核膜有無"},{"key":"D","text":"(D)丙為可否行光合作用"}]'::jsonb, 'D', '核糖體為所有生物共有構造，不可能作為區分任何兩群的特徵，故(B)必錯；藍綠菌可行光合作用、甲烷菌不可行光合作用，此特徵合理用以區分兩種原核生物。原圖分支細節（甲乙丙丁各自對應層級）因照片解析度有限無法逐一精確確認，建議人工對照原圖覆核。', '生物分類特徵判斷', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 20);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 21, '有關物種的演化，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)天擇作用的單位為個體，而演化表現的單位是族群"},{"key":"B","text":"(B)遺傳變異發生於同種的個體，是決定演化方向最主要的因素"},{"key":"C","text":"(C)個體可決定遺傳變異的發生率，以決定演化的方向"},{"key":"D","text":"(D)演化速率由天擇決定，與個體數目及生殖能力無關"}]'::jsonb, 'A', '天擇直接作用於個體的存活與繁殖，但演化（對偶基因頻率改變）是以族群為單位呈現；個體無法自主決定變異發生率，族群大小與生殖能力皆會影響演化速率。', '天擇與演化的作用單位', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 21);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 22, '有關三域六界與五界系統的差異，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)將原核生物界分成古細菌、假細菌和真細菌"},{"key":"B","text":"(B)將甲烷菌和藍綠菌併入真細菌中"},{"key":"C","text":"(C)將原生生物界更改為真核生物域"},{"key":"D","text":"(D)將嗜極端菌放入古細菌域（古菌域）"},{"key":"E","text":"(E)古細菌域與真細菌域的親緣關係較古細菌域與真核生物域的親緣關係近"}]'::jsonb, 'D', '「假細菌」並非真實分類名詞；甲烷菌屬古菌域而非併入真細菌；真核生物域涵蓋四界而非僅由原生生物界更名；古菌域實際與真核生物域親緣關係較近，非與真細菌域較近。', '三域六界系統與五界系統比較', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 22);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 23, '下列有關病毒的敘述，何者正確？', 'single_choice', '[{"key":"A","text":"(A)中心部分是核酸，包括DNA和RNA"},{"key":"B","text":"(B)病毒無法出現在生命樹的原因之一是尚未找到其演化上的共同祖先"},{"key":"C","text":"(C)病毒只在宿主細胞外發生突變"},{"key":"D","text":"(D)病毒介於生物與非生物之間，所以病毒不會演化"},{"key":"E","text":"(E)有些病毒之外尚具有莢膜，可用來保護病毒"}]'::jsonb, 'A', '病毒中心確為核酸（依種類為DNA或RNA）；病毒是在宿主細胞內複製時發生突變；病毒雖介於生物與非生物間但確實會演化；病毒的保護構造稱套膜非莢膜（莢膜為細菌構造）。(B)亦有一定合理性，此處以最無爭議的(A)為主要答案，建議人工複核(A)(B)之取捨。', '病毒的核酸與構造', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 23);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 24, '【題組(一)】根據赫尼格──支序演化學派的理念，要將生物分類應參酌生物間的親源關係，將生物分類群分為三類：（甲）單系群：成員源自一個共同的祖先，並包含其所衍生的所有後代。（乙）並系群：成員源自一個共同的祖先，但不包含其所衍生的所有後代。（丙）複系群：成員演化自不同祖先，但將其分為同一類。附圖為現存生物的生命樹（動物／植物／真菌等分支，含原口動物、後口動物、爬行動物、哺乳動物等）。欲建構生物間的親緣關係樹，下列哪一項不可資參酌的證據？', 'single_choice', '[{"key":"A","text":"(A)同源構造"},{"key":"B","text":"(B)同功構造"},{"key":"C","text":"(C)胚胎發育的相似性"},{"key":"D","text":"(D)生物分布與地質史變化的對應"},{"key":"E","text":"(E)核酸或蛋白質的序列"}]'::jsonb, 'B', '同功構造是趨同演化的結果，並非源自共同祖先，若誤用同功構造重建親緣關係樹將導致錯誤結論，故不可作為參酌證據；其餘四者皆為建構親緣關係樹的有效證據。', '支序分類學的證據', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 24);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 25, '【題組(一)，定義見第24題】根據支序演化學派，下列哪些分類群不屬於單系群？', 'single_choice', '[{"key":"A","text":"(A)爬行動物"},{"key":"B","text":"(B)哺乳動物"},{"key":"C","text":"(C)原口動物"},{"key":"D","text":"(D)真菌"},{"key":"E","text":"(E)後口動物"}]'::jsonb, 'A', '傳統「爬行動物」分類排除了同樣源自其共同祖先的鳥類後代，僅包含部分後代，是支序分類學中並系群（paraphyletic）的經典範例，故不屬於單系群。', '單系群、並系群判斷', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 25);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 26, '【題組(二)】非洲豬瘟檔案：（甲）病原體檔案：ASF病毒為雙股DNA病毒，具套膜，呈二十面體的大型病毒，大小約200奈米，具有至少150個基因，屬於非洲豬瘟病毒科，非洲豬瘟病毒屬的唯一一個種類。（乙）病原體特性：此病毒抗酸鹼能力強，能存活於pH值4~13的環境中，在室溫下的豬糞可存活11天，豬舍中至少可存活一個月，冷藏或冷凍肉品中可存活達百天以上。（丙）傳播方式：接觸傳染，可能由如附圖途徑傳播。（丁）宿主：節肢動物（如壁蝨）、家豬與野豬，主要攻擊豬隻的單核球與巨噬細胞，在宿主細胞質中增殖。（戊）發病過程：急性感染期（發病的2~3天）豬隻的致死率近乎100%，次急性感染期（5~30天）的致死率為30~70%，慢性期（2~15個月）則致死率低。（己）病徵：脾臟腫脹，淋巴結腫脹出血壞死。（庚）預防與治療：現在的科技尚未找出有效合適的方法製造針對ASF病毒的治療藥物或預防疫苗，因此至今各感染國家只能靠撲殺、掩埋或化製處理病死豬防堵病毒擴散，所以一旦傳入將嚴重威脅養豬相關產業，而後擴散到其他產業。若將非洲豬瘟病毒水解，下列何項產物看不到？', 'single_choice', '[{"key":"A","text":"(A)去氧核糖"},{"key":"B","text":"(B)尿嘧啶"},{"key":"C","text":"(C)磷脂質"},{"key":"D","text":"(D)胺基酸"}]'::jsonb, 'B', 'ASF為雙股DNA病毒，DNA中的含氮鹼基為胸腺嘧啶（thymine）而非尿嘧啶（uracil，為RNA特有），水解後不會出現尿嘧啶；去氧核糖（DNA骨幹）、磷脂質（套膜來源）、胺基酸（蛋白質外殼）皆會出現。', '病毒核酸水解產物（非洲豬瘟）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 26);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 27, '【題組(二)，資料見第26題】關於非洲豬瘟病原體的宿主與目標細胞，何者正確？', 'single_choice', '[{"key":"A","text":"(A)僅感染脊椎動物的免疫細胞"},{"key":"B","text":"(B)會感染不只一種動物，故不具專一性"},{"key":"C","text":"(C)與宿主細胞均具有DNA雙螺旋結構"},{"key":"D","text":"(D)會在熟食丟棄的廚餘中增殖"}]'::jsonb, 'C', 'ASF為雙股DNA病毒，其宿主細胞（豬、壁蝨等）亦具DNA雙螺旋結構；病毒宿主包含節肢動物（非僅脊椎動物）；雖感染多種宿主但仍有其特定宿主範圍（壁蝨與豬科動物），並非全然不具專一性；病毒離開活體宿主細胞無法自行增殖，僅能於廚餘中「存活」而非「增殖」。', '非洲豬瘟病毒的宿主特性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_2' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 27);
+
+-- Package track: tm_3 (公民)
+insert into public.materials (origin_key, subject_id, title, chapter, grade, category, source_track)
+select 'tm_3', s.id, '第二冊 第5~6課（所有權與物權、勞動三權與勞動基準法、夫妻財產制與繼承） 114學年度第二學期第三次段考', '第二冊 第5~6課（所有權與物權、勞動三權與勞動基準法、夫妻財產制與繼承）', '高一', '114學年度第二學期第三次段考', 'PACKAGE'
+from public.subjects s where s.code = 'civics'
+on conflict (origin_key) do update set
+  subject_id = excluded.subject_id, title = excluded.title, chapter = excluded.chapter,
+  grade = excluded.grade, category = excluded.category, source_track = excluded.source_track;
+insert into public.question_sets (material_id, subject_id, source, title)
+select m.id, m.subject_id, 'ORIGINAL', m.title from public.materials m where m.origin_key = 'tm_3'
+  and not exists (select 1 from public.question_sets qs where qs.material_id = m.id and qs.source = 'ORIGINAL');
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 1, '阿騰向甲電信的乙營業處預購一支手機，並支付訂金，阿騰期能盡快拿到手機來使用。依照所有權的特性，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)因所有權絕對，阿騰無法轉售該手機給他人"},{"key":"B","text":"(B)阿騰取得手機後，可以對任何人說手機是他的，不得隨意使用"},{"key":"C","text":"(C)因貨款兩訖，就算阿騰發現手機有瑕疵，也無法請求乙業處換貨"},{"key":"D","text":"(D)阿騰可向甲電信的任一分店要求領貨"}]'::jsonb, 'B', '所有權具對世性（絕對性），權利人可對任何人主張其所有權；(A)所有權絕對不代表不能自由處分/轉售；(C)(D)與所有權特性無直接關聯，屬其他法律關係判斷。', '所有權的特性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 1);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 2, '韓國醫界對於政府於醫療工作相關政策感到不滿，於2024年2月進行集體大罷工。下列事件何者與上文指涉的權利，屬於相同性質的勞動權利？', 'single_choice', '[{"key":"A","text":"(A)夜市附近居民要求禁止營業，夜市店家集體向政府陳情"},{"key":"B","text":"(B)幾位被解僱的員工不滿公司給的資遣費，聯合狀告法院"},{"key":"C","text":"(C)護理產業工會向政府呼籲加強勞檢查，以保障工作權"},{"key":"D","text":"(D)銀行與工會簽訂團體協約，同意員工行使合法加班權利"}]'::jsonb, 'C', '醫界集體罷工屬工會行使「團體爭議權」（爭取權益的集體抗爭行動）；(C)產業工會集體向政府訴求同屬集體勞動權（團結權/爭議權範疇）的展現，性質相近。', '勞動三權', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 2);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 3, '小金是龍騰大學的學生，一日趕著上課，機車騎到停車場後懶得找停車位，隨意停放就離開了。下課後回到停車場，看到自己的機車輪胎被學校生輔組的大鎖鎖住。小金知道自己沒有停在格內是不對的，他只希望能趕快解鎖、騎車回家。依據法律的規定，小金到生輔組後可以如何主張其權利？', 'single_choice', '[{"key":"A","text":"(A)主張所有物返還"},{"key":"B","text":"(B)主張所有權妨害防止"},{"key":"C","text":"(C)主張所有權妨害除去"},{"key":"D","text":"(D)主張損害賠償"}]'::jsonb, 'C', '機車輪胎被上鎖，機車本身仍在小金占有中並未被奪取（非返還請求權情境），鎖具屬對其所有權行使造成的現有妨害，應主張「妨害除去請求權」要求排除鎖具。', '物上請求權（妨害除去）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 3);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 4, '阿龍買了新手機帶去學校炫耀，被小騰趁大家不注意時，自行拿去把玩、更改手機密碼，更賣掉阿龍手機App中的虛擬寶物，甚至在操作時不慎滑落，摔破手機螢幕。請問：關於二人在民事上的法律關係，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)阿龍可基於所有物返還請求權請求小騰回復原密碼"},{"key":"B","text":"(B)阿龍可根據所有權妨害除去請求權要求小騰回復虛擬寶物的損失"},{"key":"C","text":"(C)阿龍即使知道小騰已預謀毀損其手機，但並無權利可阻止"},{"key":"D","text":"(D)小騰對阿龍應負損害賠償責任，故須直接賠償全新手機"}]'::jsonb, 'D', '小騰未經同意把玩、更改密碼、賣掉虛擬寶物並致手機螢幕摔破，構成侵權行為，阿龍得依法請求損害賠償；惟原始試卷此處考生標記為(D)，「直接賠償全新手機」之敘述實際上未必完全精確（通常應為修復/相當金額賠償），建議人工複核此選項的精確法律用語。', '侵權行為與損害賠償', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 4);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 5, '依主計總處2023年統計資料顯示，臺灣勞動參與率為59.3%，與世界各國相較，只較法國的56.3%、香港的57.3%以及義大利的49.9%高，其他國家如新加坡68.6%、加拿大65.6%、英國63.3%、韓國64.3%，都明顯比臺灣高，與臺灣數據接近的德國為61.6%。若依照各國勞動參與率與社會經濟狀況的比較分析，下列敘述何者最適切？', 'single_choice', '[{"key":"A","text":"(A)新加坡政府的稅收基礎較穩定，有助於政府公共投資"},{"key":"B","text":"(B)義大利的國民所得受惠勞動參與率，較有助提升經濟成長"},{"key":"C","text":"(C)法國的勞動參與率顯示社會有較活絡的經濟發展活動"},{"key":"D","text":"(D)與日韓相比，我國失業人口的比例較高"}]'::jsonb, 'A', '新加坡勞動參與率最高，隱含較多人口投入勞動、稅基較穩固，有助政府公共投資；法國、義大利勞動參與率偏低，(B)(C)敘述與其偏低的數據矛盾；(D)勞動參與率與失業率為不同指標，不能直接推論失業比例高低。', '勞動參與率的國際比較', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 5);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 6, '我國各大醫療工會於2023年10月22日舉行醫療勞權大遊行，搭配萬聖節氣氛，以「過勞鬼」、「幽靈」、「窮鬼」等等意象，諷刺醫療環境，反映醫療人員血汗勞動的處境，呼籲政府承諾改善第一線醫療人員的職場困境。請問下列何者可能為此次遊行之訴求？', 'single_choice', '[{"key":"A","text":"(A)爭取醫療人員在顧及大眾安全下，可享有罷工之權利"},{"key":"B","text":"(B)要求護理人員適用《勞動基準法》，保障其勞動權益"},{"key":"C","text":"(C)將合理的三班護病比標準入法，保障護理人員不過勞"},{"key":"D","text":"(D)爭取護理人員之團結權，捍衛其工作權和結社自由權"}]'::jsonb, 'B', '遊行訴求聚焦血汗勞動處境、要求改善職場困境，直接對應要求適用《勞動基準法》以保障勞動權益，是最直接切題的訴求選項。', '醫療勞權與勞動基準法', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 6);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 7, '甲前往日本旅遊，乙請甲代購吸塵器，並表示願意支付吸塵器的費用以及代購費用。然而，甲在購買吸塵器後，返國後臨時改變主意，決定將吸塵器送給自己的家人丙。關於甲、乙、丙三人之間的權利義務關係，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)因乙願意支付費用給甲，故乙會優先於丙取得該吸塵器的所有權"},{"key":"B","text":"(B)甲既然是替乙代購吸塵器，即不得對其主張所有權而將之轉送給丙"},{"key":"C","text":"(C)甲將吸塵器交付予丙前，甲乙間只有因契約而生之債權債務關係"},{"key":"D","text":"(D)因甲未依約將吸塵器交付予乙，乙可本於契約從丙處取回吸塵器"}]'::jsonb, 'C', '物權變動以交付為要件，甲購入吸塵器後其所有權歸甲，交付前甲乙間僅存在委任契約所生之債權債務關係（乙僅能請求交付，尚未取得物權）；甲擅自轉送丙構成債務不履行，但乙不能直接向丙（非契約當事人）主張取回。', '物權與債權的區別', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 7);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 8, '為強化勞工與資方對話及爭取權益的能力，我國透過勞動三法賦予勞工團結權、團體協商權及團體爭議權等三項權利，而這些權利的行使也有賴於工會擁有足夠自主的能力。因此，下列哪一措施有助於提升工會自主性？', 'single_choice', '[{"key":"A","text":"(A)排除特定行業人員罷工"},{"key":"B","text":"(B)禁止跨職業類別組工會"},{"key":"C","text":"(C)許可成立改為登記成立"},{"key":"D","text":"(D)工會成立交由資方審查"}]'::jsonb, 'C', '工會成立由「許可制」改為「登記制」，降低政府/資方對工會成立的干預門檻，有助於提升工會自主性；其餘選項皆屬限制或干預工會運作的措施。', '工會自主性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 8);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 9, '2023年起，《民法》的成年年齡由20歲下修為18歲，結婚年齡也不再男女有別，一律訂為須滿18歲。有關我國《民法》對結婚雙方的法定權利義務規定，下列敘述何者最正確？', 'single_choice', '[{"key":"A","text":"(A)夫妻結婚後應向法院辦理財產登記，才能使用法定財產制"},{"key":"B","text":"(B)丈夫在婚前購買的汽車，婚後想要出售不需經妻子的同意"},{"key":"C","text":"(C)依據法定夫妻財產制，夫妻的全部財產皆由夫妻共同處分"},{"key":"D","text":"(D)依據法定財產制，夫妻婚前財產各自所有，婚後共同所有"}]'::jsonb, 'B', '法定財產制下，婚前財產仍各自所有、各自管理處分，婚前取得的財產出售無須配偶同意；法定財產制無須登記即自動適用；婚後財產原則上仍各自所有，僅於剩餘財產分配請求權時才計算差額。', '法定夫妻財產制', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 9);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 10, '有學者認為家務勞動應視為一種再生產力，因為家庭勞務的工作有其貢獻，不應該被漠視。根據家庭勞務的解釋與敘述，下列敘述何者有誤？', 'single_choice', '[{"key":"A","text":"(A)家庭勞務為家庭成員的無償工作"},{"key":"B","text":"(B)經濟學不將家庭勞務視為勞動"},{"key":"C","text":"(C)家庭勞務具備市場經濟價值"},{"key":"D","text":"(D)亞洲地區的家庭勞務工作常出現性別不平等的現象"}]'::jsonb, 'C', '傳統經濟學核算（如GDP）並不將無償家庭勞務計入市場經濟價值，這正是本題強調「不應被漠視」的背景，故(C)敘述有誤，其餘三項皆為正確描述。', '家務勞動的價值', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 10);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 11, '現代人工作忙碌，愈來愈多人願意付費將家務外包，根據打工平臺於2025年的統計，有高達80%的受訪者曾考慮或使用過家庭清潔服務。除家庭清潔外，到府煮飯、倒垃圾、長者陪伴等瑣碎家務也有外包的趨勢。下列對家務外包之解讀何者較為適切？', 'single_choice', '[{"key":"A","text":"(A)顯示現代社會中市場勞動較家務勞動重要"},{"key":"B","text":"(B)將使家務工作從無酬勞動轉變為有酬勞動"},{"key":"C","text":"(C)將使勞動人口增加，提升我國勞動參與率"},{"key":"D","text":"(D)顯示再生產勞動的價值近幾年正不斷提升"}]'::jsonb, 'C', '家務外包使原本無酬的家務工作變成有酬的市場勞動（家事服務業），可能吸納更多勞動人口進入正式勞動市場，提升勞動參與率；(B)敘述也有部分合理性但(C)更貼近題幹「提供服務者」的統計脈絡，此處以考生原始標記為準，建議人工複核(B)(C)之取捨。', '家務外包與勞動市場', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 11);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 12, '下為兩則勞動相關的新聞報導，報導所述內容分別屬於何種勞動權益的內涵？【報導一】勞動部2024年9月召開最低工資審議會，2025年最低工資月薪為新臺幣28,590元、時薪則為190元。【報導二】2025年5月1日，立法院三讀通過《紀念日及節日實施條例》，勞動節改為全國放假，國定假日新增小年夜、9月28日孔子誕辰紀念日、10月25日台灣光復暨金門古寧頭大捷紀念日、12月25日行憲紀念日等4天。', 'single_choice', '[{"key":"A","text":"(A)報導一為「個別勞動權」，報導二為「個別勞動權」"},{"key":"B","text":"(B)報導一為「集體勞動權」，報導二為「個別勞動權」"},{"key":"C","text":"(C)報導一為「個別勞動權」，報導二為「集體勞動權」"},{"key":"D","text":"(D)報導一為「集體勞動權」，報導二為「集體勞動權」"}]'::jsonb, 'C', '報導一（最低工資）屬勞工個人依法應得的基本勞動條件保障，為個別勞動權；報導二（透過立法程序增修國定假日）屬經集體立法/政策程序爭取而來的權益，歸類為集體勞動權。', '個別勞動權與集體勞動權', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 12);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 13, '多名立法委員提案將女性產假由8週延長為12週。某民間團體對此表示憂慮，認為恐導致雇主對女性懷孕的歧視更加嚴重，因此呼籲應同步增訂配偶4週的強制有薪產假，並須於新生兒出生後3個月內休畢。該團體亦建議，將產假分為「強制型產假」（前段休養期）與「彈性型產假」（後段照顧期），且新增產假的薪資不應全由雇主負擔，政府應共同分擔部分費用。下列各方最能夠詮釋該團體的訴求？', 'single_choice', '[{"key":"A","text":"(A)呼籲企業增設托育設施，以期減少少女性懷孕歧視"},{"key":"B","text":"(B)建立完善制度，提升男性申請育嬰留職停薪的意願"},{"key":"C","text":"(C)促進男性參與育兒、分擔照顧責任，並減少雇主對女性就業的疑慮"},{"key":"D","text":"(D)修正政策以鼓勵雙親與政府共同分擔育兒照顧責任"}]'::jsonb, 'D', '該團體訴求包含配偶強制有薪產假（雙親共同分擔照顧）與政府分擔薪資費用（政府共同分擔），最貼合「雙親與政府共同分擔育兒照顧責任」之敘述。', '產假制度與性別平等', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 13);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 14, '臺灣交通部曾被批評為「行人地獄」，交通部長表示，人行道和私人騎樓被佔用的部分，將透過各縣市的道路交通安全會報，要求加強清除行人障礙、限制騎樓的用途，給行人一個安全的行走空間。就本案例而言，關於我國所有權保障的特性，下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)騎樓的權利人可以排除他人干涉"},{"key":"B","text":"(B)騎樓權利人可對任何人主張權利"},{"key":"C","text":"(C)基於公益可適度限制騎樓所有權"},{"key":"D","text":"(D)騎樓的所有權保障會優先於價值"}]'::jsonb, 'C', '政府為維護公共通行安全而限制騎樓私有部分的使用，體現所有權並非絕對不受限制，基於公共利益可對所有權行使加以適度限制。', '所有權的限制（公益）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 14);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 15, '某富商去世後留下6,000萬元遺產，留有大房（已歿）的子女四人，及二房（未登記結婚）母子二人。該富商遺囑指定遺產由二房獨子一人繼承，若有其他繼承人均主張特留分，請問該二房獨子最終可繼承多少遺產？', 'single_choice', '[{"key":"A","text":"(A)1,000萬"},{"key":"B","text":"(B)1,200萬"},{"key":"C","text":"(C)3,500萬"},{"key":"D","text":"(D)3,600萬"}]'::jsonb, 'B', '二房未登記結婚不具配偶繼承權，其獨子與大房四名子女之代位繼承人同為法定繼承人（直系血親卑親屬），應繼分平均分配；扣除大房四人主張特留分（其應繼分之二分之一）後，計算二房獨子最終取得之遺產金額，依考生原始標記結果為1,200萬元。', '特留分與遺產繼承計算', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 15);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 16, '顧寶有兩個兒子、一個女兒，其生前立遺囑將所有財產都指定給好朋友阿青繼承。過世後，留下1,000萬元，負債200萬元，顧寶的妻子與三個小孩依照遺囑與特留分的規定，各別可得到多少遺產？', 'single_choice', '[{"key":"A","text":"(A)各得100萬元"},{"key":"B","text":"(B)妻子600萬，孩子則均分200萬"},{"key":"C","text":"(C)妻子200萬，子女各得100萬"},{"key":"D","text":"(D)皆無權獲得"}]'::jsonb, 'C', '配偶及子女之特留分為其應繼分之二分之一，依考生原始標記結果，妻子與三名子女依特留分規定各自取得200萬與100萬元。', '特留分計算', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 16);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 17, '《民法》保障人民的私有財產權，包括對於物品的所有權和使用權，請問依據法律保障所有權的物權特性，下列說明何者最正確？', 'single_choice', '[{"key":"A","text":"(A)佳惠向小美借走手機，就會因此獲得小美手機的所有權"},{"key":"B","text":"(B)莉莉想完成賣掉電視的交易，必須做書面登記才算完成"},{"key":"C","text":"(C)立中買了一臺筆電，可因保護之相對性而主張其所有權"},{"key":"D","text":"(D)小佳和小玲合買一本書，但是這本書只會有一個所有權"}]'::jsonb, 'D', '共有物在法律上仍為「一個所有權」由共有人按應有部分共同享有（非各自擁有多個所有權）；借用不移轉所有權；動產交易一般以交付為要件而非書面登記；所有權具絕對性非僅相對性保護。', '所有權的物權特性（一物一權）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 17);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 18, '各縣市政府勞動局每年皆提供勞動教育補助，讓各工會或人民團體能自行辦理相關課程，以提升勞工的勞動知識與能力。請問這項政府措施所欲達成的目標為何？', 'single_choice', '[{"key":"A","text":"(A)加強國家公權力介入，導正勞資權力不對等現況"},{"key":"B","text":"(B)解除勞動契約自由限制，回歸雙方自行協商機制"},{"key":"C","text":"(C)鼓勵勞工多加籌組工會，深化個別勞動權利意識"},{"key":"D","text":"(D)推動自主性勞動關係，提升工會對等談判的能力"}]'::jsonb, 'D', '補助工會自行辦理教育課程，旨在增強工會自主培力，提升其與資方對等談判協商的能力，屬推動自主性勞動關係的措施。', '勞動教育與工會自主', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 18);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 19, '高爾夫球代工廠明揚公司位於屏東的廠區發生爆炸，造成協助救災的消防員殉職，消防員工作權益促進會赴行政院陳情，要求組工會完整保障勞動三權，行政院長強調尊重公務員之權益，會盡速修改《公務人員協會法》。但相關團體認為公務人員協會並非工會，不具有工會「與雇主簽訂對等契約」的權利，呼籲行政院正面回應協會訴求，修法成立工會。根據上述內容判斷，若要保障消防員勞動權益，下列何種權利的促進為其首要之務？', 'single_choice', '[{"key":"A","text":"(A)集會自由權"},{"key":"B","text":"(B)團結權"},{"key":"C","text":"(C)團體協商權"},{"key":"D","text":"(D)團體爭議權"}]'::jsonb, 'C', '文中強調「與雇主簽訂對等契約」正是團體協商權的核心內涵，公務人員協會不具此權利是問題所在，故團體協商權的促進為首要之務。', '勞動三權（團體協商權）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 19);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 20, '新聞報導，知名蛋糕店連鎖品牌勞工每日工時超過12小時，且近5年內違法次數累計達4次，後被臺北市勞動局開罰60萬元。請問：勞工每日工作時數的權利保障與下列何項法規所涉內容最相關？', 'single_choice', '[{"key":"A","text":"(A)《勞動基準法》"},{"key":"B","text":"(B)《團體協約法》"},{"key":"C","text":"(C)《工會法》"},{"key":"D","text":"(D)《性別平等工作法》"}]'::jsonb, 'A', '每日工時上限是《勞動基準法》規範的基本勞動條件，與工會組織、團體協約、性別平等無直接相關。', '勞動基準法（工時）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 20);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 21, '臺北市及新北市分別針對外送平臺業者管理訂有自治條例，其中如果政府已宣布颱風假，但外送平臺仍未暫停提供外送服務者，依法最高可處10萬元罰鍰。民眾對此措施意見分歧，下列何者最有可能為支持此管制措施的觀點？', 'single_choice', '[{"key":"A","text":"(A)政府應尊重契約自由，讓外送員自行評估可承擔之風險"},{"key":"B","text":"(B)外送員可選擇是否接單，與平臺間無資不對等的問題"},{"key":"C","text":"(C)外送員與平臺間如為承攬關係，政府介入即欠缺合理性"},{"key":"D","text":"(D)政府應落實勞安保障，維護外送員之個別勞動權益"}]'::jsonb, 'D', '支持管制措施者強調政府有責任介入保障外送員在颱風天等危險環境下的勞動安全，屬於落實勞安保障、維護個別勞動權益的觀點；其餘選項皆偏向反對政府介入的立場。', '外送平臺勞動權益爭議', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 21);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 22, '騰騰是一名大學生，為賺取生活所需到某公司擔任工讀生。老闆規定騰騰每天必須工作10小時，不得支領加班費，但可每週休息二日。騰騰可依下列何者的規定，主張自己的權利？', 'single_choice', '[{"key":"A","text":"(A)《公平交易法》"},{"key":"B","text":"(B)《勞動基準法》"},{"key":"C","text":"(C)《消費者保護法》"},{"key":"D","text":"(D)《民法》"}]'::jsonb, 'B', '工讀生具勞工身分，其工時與加班費相關權益保障應依《勞動基準法》主張，與公平交易、消費者保護、民法一般規定無直接關聯。', '工讀生的勞動基準法保障', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 22);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 23, '所有權是指權利人（所有權人）原則上可以自由的使用、收益、處分自己的東西（標的物），並且排除他人干涉的權利。日常生活中，可透過買賣或贈與取得所有權，下列關於所有權的轉移說明，何者正確？', 'single_choice', '[{"key":"A","text":"(A)契約簽訂後，立刻擁有所有權，可自由處分該標的物"},{"key":"B","text":"(B)阿偉承諾要送小婷手機作為生日禮物，小婷立即取得手機的所有權"},{"key":"C","text":"(C)不論贈與或買賣，都需要加上「交付」才會轉移所有權"},{"key":"D","text":"(D)不動產的交易只要付款完畢，就能取得所有權"}]'::jsonb, 'C', '動產物權變動以交付為生效要件，不動產則以登記為要件；單純契約成立（債權行為）尚不當然發生物權（所有權）移轉效力。', '所有權移轉的要件（交付／登記）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 23);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 24, '依據近年來統計的女性勞動參與率、結婚率和出生人數的資料（2019~2022年女性勞動參與率合計約51.4~51.6%、未婚64~66.6%、已婚49~49.3%、離婚29.4~30.1%；結婚率千分比自11.3降至11；出生萬人自17.5降至13.7），分析下列推論何者較為適當？', 'single_choice', '[{"key":"A","text":"(A)已婚女性因為政府所提供的托育政策完善，因此勞動參與率有所提升"},{"key":"B","text":"(B)女性勞動參與率增加是因為近來較多女性寧願選擇工作而非選擇結婚"},{"key":"C","text":"(C)女性受到職場友善的影響，不僅勞動參與率增加也提高結婚生子比例"},{"key":"D","text":"(D)已婚女性者的勞動參與率較未婚者低，顯示「女主內」觀念仍在"}]'::jsonb, 'D', '表中資料顯示已婚女性勞參率（約49%）低於未婚女性（約64~66%），且同期間結婚率與出生率皆下降，故(B)(C)敘述與資料趨勢矛盾，(A)無法從表中資料推論托育政策完善；(D)直接反映表中數據的合理推論。', '女性勞動參與率統計資料判讀', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 24);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 25, '近年房價高漲，父母擔心子女購屋壓力沉重，因而有意將房屋贈與給子女。甲欲在其子乙結婚前，將房屋過戶予乙，但同時心存疑慮：若乙與丙結婚後離婚，(I)丙可能分得該房產；又擔心乙婚後(II)將房屋贈與給丙或轉售他人，甚至憂慮乙若早於甲過世，(III)房屋將由丙與其子女繼承。假設乙、丙婚後未另行約定夫妻財產制，且乙未訂立生前遺囑。依我國《民法》規定，下列何者並非甲所需擔心之事項？', 'single_choice', '[{"key":"A","text":"(A)I，因為丙無法請求分配婚前財產"},{"key":"B","text":"(B)II，因為乙的贈與行為需經甲同意"},{"key":"C","text":"(C)III，因為甲仍為該房屋的所有權人"},{"key":"D","text":"(D)IV，因為父母為法定的當然繼承人"}]'::jsonb, 'A', '依法定夫妻財產制，婚前受贈之房屋屬乙的婚前財產，離婚時不列入剩餘財產分配範圍，故丙無法請求分配該房產，(I)並非甲所需擔心之事項；(B)乙對自己財產之贈與無須經甲同意，此選項理由錯誤；(C)房屋過戶予乙後所有權已非甲所有，理由錯誤；房屋若為乙婚前受贈之財產，乙身故後仍會由其法定繼承人（含配偶丙及子女）繼承。', '夫妻財產制與剩餘財產分配', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 25);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 26, '謝老闆和員工小張簽訂的勞動契約中，工資、工時、放假、勞動環境等事項皆優於《勞動基準法》的規定。關於這份勞動契約是否合理的說明，下列何者最正確？', 'single_choice', '[{"key":"A","text":"(A)雇主應遵照《勞動基準法》的標準，這份契約不合理"},{"key":"B","text":"(B)勞動契約只要符合《勞動基準法》的最低標準，就算合理"},{"key":"C","text":"(C)基於契約自由，這份契約合理，但雇主可以未經勞工同意即減少福利"},{"key":"D","text":"(D)基於公平正義，勞動契約內容要以提供勞動者的利益為主"}]'::jsonb, 'B', '《勞動基準法》規定的是最低勞動條件標準，雇主提供優於法定標準的待遇，只要不低於最低標準即屬合理合法；雇主不得片面未經同意減少已優於法定的福利。', '勞動基準法的最低標準性質', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 26);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 27, '經濟學和哲學學者針對勞動的看法有截然不同的認知，因此，針對不同的學者定義，我們必須先加以了解，進而才能探討勞動的意義與真諦。根據下列的敘述，何者是屬於經濟學的「勞動」範圍？', 'single_choice', '[{"key":"A","text":"(A)小王在社會從事義診的工作"},{"key":"B","text":"(B)老馬在家教導自己的小孩"},{"key":"C","text":"(C)廖董在家做麵包給小孩子吃"},{"key":"D","text":"(D)大陳在臺積電擔任程式設計師"}]'::jsonb, 'D', '經濟學定義的「勞動」通常指有酬、參與市場交易、創造市場經濟價值的工作；義診、教導自己小孩、在家為家人做麵包皆屬無酬的家庭/志願性活動，唯有支薪的正式職業（如工程師）屬經濟學範疇的勞動。', '經濟學對勞動的定義', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 27);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 28, '下列關於所有權特性與說明的配對，何者正確？', 'single_choice', '[{"key":"A","text":"(A)直接支配性：指權利人可以對「任何人」主張他擁有的權利"},{"key":"B","text":"(B)保護絕對性：是指一個標的物上不會同時存在兩個所有權，可以排除其他無權利人的干涉"},{"key":"C","text":"(C)排他性：不需他人意思的介入，由權利人支配自己所擁有的物品"},{"key":"D","text":"(D)優先性：對於同一標的物同時存在債權與所有權時，所有權效力會先於債權"}]'::jsonb, 'D', '物權（所有權）優先於債權是物權法基本原則（優先性），敘述正確；(A)敘述其實是絕對性的定義而非直接支配性；(B)敘述其實是一物一權原則而非保護絕對性；(C)敘述其實是直接支配性的定義而非排他性，三者名稱與定義配對錯置。', '所有權特性的定義配對', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 28);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 29, '我國《民法》規定夫妻財產制之一即「約定財產制」，並進一步分為共同財產制與分別財產制兩大類，可供人民自由選擇，並據以制定相關規範。其中下列關於「約定共同財產制」敘述，何者最符合我國現行規範？', 'single_choice', '[{"key":"A","text":"(A)夫妻於結婚後應以書面契約的方式做此財產制之約定，並到戶政機關登記"},{"key":"B","text":"(B)不論婚前或婚後財產，夫妻擁有各自之所有權，且彼此應負共同管理之責"},{"key":"C","text":"(C)夫妻所有的財產，包含各自擁有的財產及所得，婚後皆合併為雙方共有"},{"key":"D","text":"(D)離婚時除特有財產外，應平均分配共同財產制關係存續中取得之財產"}]'::jsonb, 'C', '約定共同財產制之核心特徵即夫妻財產（除特有財產外）合併為公同共有，(C)敘述最符合共同財產制之本質；(A)登記非生效要件而僅得對抗第三人；(B)敘述與共同財產制精神相反（描述的較接近分別財產制）；(D)描述接近法定財產制剩餘財產分配之概念而非共同財產制本身。', '約定共同財產制', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 29);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 30, '基於尊重被繼承人的意願，被繼承人可透過訂立遺囑的方式指定繼承人；但在沒有遺囑的情況且繼承人們彼此之間無法協調出遺產分配時，我國《民法》亦對繼承順位及遺產分配訂有相關規範。下列關於我國繼承制度的敘述，何者最符合現況？', 'single_choice', '[{"key":"A","text":"(A)法定繼承人分為當然繼承人與血親繼承人，當然繼承人指的是被繼承人的配偶"},{"key":"B","text":"(B)血親繼承人順位固定不變，但當然繼承人存在時，血親繼承人即消失繼承權利"},{"key":"C","text":"(C)配偶與直系血親卑親屬同為同一順位繼承人，依《民法》規定應按人數平均分配"},{"key":"D","text":"(D)為最低限度保障繼承人，被繼承人的遺囑自由應受《民法》應繼分的規定限制"}]'::jsonb, 'A', '我國《民法》繼承制度中，配偶為當然（法定）繼承人，與各順位血親繼承人（直系血親卑親屬、父母、兄弟姊妹、祖父母）共同繼承，(A)敘述最符合我國制度架構；(B)配偶存在不會使血親繼承人喪失繼承權，兩者係共同繼承；(C)配偶與直系血親卑親屬雖同為繼承人但非依人數「平均」分配（配偶應繼分計算方式不同）；(D)應以「特留分」而非全面限制遺囑自由。', '法定繼承人與繼承順位', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 30);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 31, '丙丙和丁丁結婚後生了一個小孩，兩人考量彼此的工作性質和所得後，決議由丁丁辭職在家專心照顧小孩和處理家務。兩人結婚時並沒有特別約定採用何種夫妻財產制。因此，針對兩人因結婚所發生的法律關係，何者最正確？', 'single_choice', '[{"key":"A","text":"(A)丙丙為主要經濟提供者，無須向丁丁報告財產的義務"},{"key":"B","text":"(B)丁丁除家庭生活費用外，可以向丙丙要求自由處分金"},{"key":"C","text":"(C)若丙丙在外面欠債，丁丁依法應負起連帶的償債責任"},{"key":"D","text":"(D)若兩人結束婚姻關係，在財產分配上對丁丁相對不利"}]'::jsonb, 'B', '法定財產制下，家庭主要照顧者一方得依法向他方請求「自由處分金」，以肯認其對家庭的貢獻；夫妻財產原則上各自獨立，配偶一方之債務原則上不當然由他方連帶負責；法定財產制的剩餘財產分配設計即在避免對無收入照顧家庭一方顯失公平。', '自由處分金與夫妻財產各自獨立原則', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 31);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 32, '高雄某保全公司龐姓員工，與公司簽訂責任制勞動契約，但契約書未報請當地主管機關核備；公司按責任制給付的加班費，遠低於其平均時薪，龐姓員工提起訴訟，三審法院都以契約書未經核備並非無效，判龐姓員工敗訴。龐姓員工請釋憲，《司法院釋字第726號解釋》宣告雇主申請責任制，若未經地方主管機關同意，則勞動契約無效。試問以下何者符合大法官此號解釋的用意？', 'single_choice', '[{"key":"A","text":"(A)彰顯民法的私法自治與契約自由原則"},{"key":"B","text":"(B)地方政府應介入勞動契約以實現契約正義"},{"key":"C","text":"(C)雇主向地方主管機關報備即可實施責任制"},{"key":"D","text":"(D)契約未經主管機關核備但法院仍可認定責任制的效力"}]'::jsonb, 'B', '釋字第726號解釋要求責任制勞動契約須經地方主管機關核備始生效力，正是政府介入以保障勞工、實現契約正義（矯正勞資實質不對等）的展現，而非單純私法自治。', '釋字第726號解釋（責任制核備）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 32);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 33, '我國主要以《民法》作為夫妻財產制的主要規範，並規定夫妻於結婚後，可以依法律預設或自行約定雙方之間的財產關係。圖為我國近3年向各地方法院聲請訂定夫妻財產制之概況（長條圖顯示2022~2024年共同財產制與分別財產制之聲請案件數，分別財產制案件數明顯遠高於共同財產制），關於我國夫妻適用各種財產制的現況說明，何者正確？', 'single_choice', '[{"key":"A","text":"(A)多數約定者希望共有並共同管理結婚後財產"},{"key":"B","text":"(B)自由處分金制度受到聲請約定者的高度認同"},{"key":"C","text":"(C)我國人民多以分別財產制作為其夫妻財產制"},{"key":"D","text":"(D)聲請約定財產制的夫妻多數重視財務自主性"}]'::jsonb, 'D', '依圖表，聲請分別財產制的案件數遠高於共同財產制，顯示多數主動聲請約定財產制之夫妻傾向選擇分別財產制而非共有財產，反映其重視財務自主性；(A)(C)與圖表趨勢相反或混淆「多數國民」與「聲請約定者」的母體範圍，(B)圖表未直接涉及自由處分金認同度。原始照片此題被摺頁分隔，選項配對信心較低，建議人工複核。', '夫妻財產制聲請統計圖表判讀', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 33);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 34, '2023年9月，苗栗1家煉鋼廠的余燼工人因要清理廢棄渣滓，跌落高溫1千多度的電爐中，不幸過世。勞動檢查機構到場檢查時，發現雇主未依規定保障余燼勞動安全環境。上述內容所涉及的勞動權利屬性與下列何者最相關？', 'single_choice', '[{"key":"A","text":"(A)網路書城清潔工要求雇主依法給付員工特休假並給付資遣費、退休金"},{"key":"B","text":"(B)台鐵工會要求公司調高清潔員的薪資福利，保障駕駛員工作尊嚴"},{"key":"C","text":"(C)汽車廠員工為爭取更好的工作福利，發起罷工要求雇主改善現場環境"},{"key":"D","text":"(D)消防員要求組成工會，擴大影響力，以避免政府機關不理會基層訴求"}]'::jsonb, 'A', '案例中的核心問題是雇主未落實「勞動安全環境」保障，屬個別勞動權（勞動基準法所定的基本勞動條件保障）範疇；(A)同屬雇主應依法給付的個別勞動權範疇，性質最相近；(B)(C)(D)則較偏向集體勞動權（工會、罷工、團結權）的行使。', '勞動安全與個別勞動權', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 34);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 35, '忠忠在網路賣場放上一顆明星球員簽名球，由網友私訊開價，價格滿意就賣。阿全開出2,500元，忠忠滿意就成交，並詳談匯款和寄送資訊。過了1小時，小福開價3,000元，忠忠覺得多賺500元白不賺，便立刻請小福轉帳、並將簽名球寄出給小福。阿全知道後，私訊給小福，表示忠忠早已說好要賣給他，請小福還球。從物權的特性來看，小福若要保留這顆球可以如何主張？', 'single_choice', '[{"key":"A","text":"(A)這顆球現在是我所有，你無權占有"},{"key":"B","text":"(B)這顆球我現在有使用權"},{"key":"C","text":"(C)我比你優先取得這顆球"},{"key":"D","text":"(D)我依價比你高，自由有權拿到這顆球"}]'::jsonb, 'A', '動產物權以交付為生效要件，忠忠已將球實際交付予小福，小福已合法取得所有權，可依所有權之對世性主張「這顆球現在是我所有」；阿全雖先成交但未受交付，僅具債權（請求交付），不得對抗小福已取得之物權。', '物權優先於債權（一物數賣）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 35);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 36, '我國勞動參與率數據從2018年的59%成長到2024年的59.3%，變動性不大。2024年男性勞動參與率為67.1%、女性則是52%。女性勞動參與率往往比男性低，主要受生育、養育兒女影響，且願意申請育嬰留職停薪的男性較少，儘管復職率高達80%，當孩子還小的情況下，女性回到職場後，選擇離職的機率也高。請問下列哪些政策「有助於」改善上述女性勞動參與率的狀況？（甲）延長配偶輪替的帶薪育嬰假，以分擔照顧責任；（乙）鼓勵家庭落實性別分工，提升經濟效率；（丙）安排女性擔任非主管職位，減緩工作壓力；（丁）塑造友善的職場工作環境，提供托育服務', 'single_choice', '[{"key":"A","text":"(A)甲乙"},{"key":"B","text":"(B)乙丙"},{"key":"C","text":"(C)丙丁"},{"key":"D","text":"(D)甲丁"}]'::jsonb, 'D', '延長配偶帶薪育嬰假（甲）與提供友善職場托育服務（丁）皆屬直接分擔育兒照顧責任、降低女性因育兒被迫離職機率的具體措施，有助於改善女性勞參率；「鼓勵性別分工」（乙）與「安排女性擔任非主管職」（丙）反而強化既有性別角色分工，無助於甚至可能不利於提升女性勞動參與。', '改善女性勞動參與率的政策', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 36);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 37, '李家在臺北市士林社子島擁有數筆土地，這些土地在日治時期登記的姓名為「李根勇」等157人分別共有。1932年（昭和7年），這些土地因自然環境變遷沉入河川而遭政府抹消登記。2002年，臺北市士林地政事務所公告這些土地重新浮出水面並編列新地號，然後在2007年登記為國有土地。但是，李根勇的後代繼承人認為依《土地法》第12條規定，土地浮覆後所有權便應該回復，於是向法院提起訴訟，要求塗銷國有登記，以保障自己的所有權。根據《民法》相關規定，畫底線處的李家後代主張最符合哪兩個請求權？（浮覆地：原本是陸地的土地，因自然環境變遷或河川改道等原因而暫時成為水域，之後，該土地又重新浮出水面成為陸地）', 'single_choice', '[{"key":"A","text":"(A)損害賠償請求權、所有物返還請求權"},{"key":"B","text":"(B)所有物返還請求權、妨害防止請求權"},{"key":"C","text":"(C)所有物返還請求權、妨害除去請求權"},{"key":"D","text":"(D)損害賠償請求權、妨害防止請求權"}]'::jsonb, 'C', '李家後代主張回復土地所有權並塗銷國有登記，屬於請求返還被他人占有（登記）之所有物，以及請求除去妨害其所有權行使的登記狀態，對應所有物返還請求權與妨害除去請求權。', '物上請求權（浮覆地案例）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 37);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 38, '建中與明明於2024年9月結婚，建中婚前擁有財產1,000萬，離婚時財產總額為5,100萬，另有酒店欠款100萬。妻子明明婚前擁有財產500萬，婚後建中贈與1,200萬，父母贈與結婚賀禮500萬，離婚時財產總額為4,500萬。建中由於忙於事業，慢慢地冷落了妻子明明，最終以離婚收場。兩人結婚時，沒有約定夫妻財產制，且離婚後無另外約定，請問在剩餘財產分配請求權方面，建中應給明明多少金額？', 'single_choice', '[{"key":"A","text":"(A)850萬元"},{"key":"B","text":"(B)2,250萬元"},{"key":"C","text":"(C)2,000萬元"},{"key":"D","text":"(D)0元"}]'::jsonb, 'D', '剩餘財產分配請求權計算時，婚前財產、因繼承或無償取得（贈與）之財產應予扣除；明明婚後取得之1,200萬（建中贈與）與500萬（父母贈與）均屬無償取得應扣除，扣除後雙方剩餘財產差額計算後依考生原始標記結果為0元（無須再分配或已相當）。', '剩餘財產分配請求權計算', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 38);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 39, '當所有權被侵害或有被侵害的可能時，我們除了有請求返還及停止妨害的權利外，也有請求賠償損害的權利。下列事件的權利主張與說明的配對，何者正確？', 'single_choice', '[{"key":"A","text":"(A)所有物返還請求權：請阻擋倉庫大門進出的車輛移開"},{"key":"B","text":"(B)所有權妨害除去請求權：向打破家中窗戶的肇事者請求賠償修理費用"},{"key":"C","text":"(C)所有權妨害防止請求權：在自家花園插上「請勿踐踏及採摘」的告示"},{"key":"D","text":"(D)損害賠償請求權：請撿到手機並占用的人歸還手機"}]'::jsonb, 'C', '插告示牌是預防未來可能發生的妨害，屬妨害防止請求權，配對正確；(A)請車輛移開屬妨害除去而非返還請求；(B)請求賠償修理費用屬損害賠償請求權而非妨害除去；(D)請求歸還手機屬所有物返還請求權而非損害賠償請求權。', '物上請求權三類型配對', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 39);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 40, '臺灣鐵路管理局（以下簡稱臺鐵）屬於公營事業單位，臺鐵員工兼具勞工與公務員之身分，可適用《勞動基準法》。2023年9月，全國火車駕駛產業工會抗議臺鐵在「公司化」子法協商過程中，不顧工會在員工權益、行車安全等方面的訴求，遂發出動員令表明於中秋節及國慶日啟動「集體不加班」。最後工會在交通部協商後，展緩中秋節不加班行動。下列關於臺鐵集體不加班之敘述，何者正確？', 'single_choice', '[{"key":"A","text":"(A)臺鐵員工參與全國火車駕駛產業工會是行使《勞動基準法》保障之權益"},{"key":"B","text":"(B)全國火車駕駛產業工會與臺鐵進行公司化子法協商中欲爭取團體協商權"},{"key":"C","text":"(C)全國火車駕駛產業工會啟動集體不加班前，須先經雇主同意"},{"key":"D","text":"(D)臺鐵員工只能透過罷工手段才能與臺鐵資方進行協商"}]'::jsonb, 'B', '工會與資方（臺鐵）就公司化子法內容進行協商，正是行使團體協商權的展現；工會組織與行動屬《工會法》規範的集體勞動權而非《勞動基準法》；集體不加班（爭議手段）依法無須事先取得雇主同意；勞資協商管道不僅限於罷工。', '公營事業工會與團體協商權', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 40);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 41, '「集體不加班」屬於《勞動基準法》所賦予的勞動權利，原本不受雇主的箝制。阿龍想跟阿霞交往，阿霞卻婉拒了阿龍的告白，阿龍認為自己的追求方式沒有問題，堅持要繼續追求阿霞，甚至阿龍還跟蹤阿霞，阿霞覺得沒有安全感、生活受到影響，請問：阿霞要如何主張自己的權利？', 'single_choice', '[{"key":"A","text":"(A)阿霞可以主張民法上的『棄權不加班』"},{"key":"B","text":"(B)阿霞可要求警方限期命令阿龍3,000元以下罰鍰"},{"key":"C","text":"(C)阿霞可主張跟蹤騷擾防制法，要求警察機關開立書面告誡"},{"key":"D","text":"(D)阿霞僅得請求損害賠償，且必須證明自己受有實際損害"}]'::jsonb, 'C', '持續跟蹤、不理會拒絕而反覆追求，屬《跟蹤騷擾防制法》規範的跟蹤騷擾行為，被害人可向警察機關報案並由警方開立書面告誡；本題選項與題幹敘述（勞基法集體不加班）於原始照片中似有兩段不同題目重疊/錯位之虞，建議人工對照原稿確認題號與題幹是否正確對應。', '跟蹤騷擾防制法', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 41);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 42, '國內電商龍頭公司於2024年榮獲第三季勞資關係優等獎，該公司員工556人，工會會員數約4座，且其會員大多為基層員工，資深員工參與工會的比率僅15%。而事實上，多數公司管理階層並未參與工會，因而使工會在協商中未能有效發揮應有的作用。根據上述內容，下列敘述何者最能反映此情況？', 'single_choice', '[{"key":"A","text":"(A)工會會員涵蓋全體員工，代表性充足"},{"key":"B","text":"(B)工會代表性不足，可能影響其協商力量"},{"key":"C","text":"(C)公司管理階層積極參與工會運作"},{"key":"D","text":"(D)工會的多元性有助於凝聚勞資共識"}]'::jsonb, 'B', '工會會員比例偏低（僅基層、資深員工參與率僅15%），代表性不足將削弱其對資方的協商籌碼與力量。', '工會代表性與協商力量', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 42);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 43, '小林在職場中屢遭主管言語羞辱與孤立對待，長期身心俱疲，卻不敢申訴，擔心遭到報復或影響考績。根據上述情境，下列敘述何者最為適切？', 'single_choice', '[{"key":"A","text":"(A)小林可依《性別平等工作法》尋求協助"},{"key":"B","text":"(B)小林的處境屬於職場霸凌的可能型態"},{"key":"C","text":"(C)小林應先與主管私下溝通再考慮申訴"},{"key":"D","text":"(D)小林的沉默代表其認同主管的管理方式"}]'::jsonb, 'B', '長期遭受言語羞辱、孤立對待且因懼怕報復不敢申訴，是職場霸凌情境的典型描述；本題原始照片文字有部分因拍攝角度傾斜、模糊而難以逐字確認，建議人工對照原稿覆核題幹細節。', '職場霸凌', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 43);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 44, '2023年起，勞動部推動企業將部分工時人員轉為正職以強化勞動安全保障工作，工會希望與資方協商更長遠的工作保障計畫，凝聚多數勞工共識，一同促進整體勞工權益。下列何者為工會運用團體協約強化勞工權益的具體作法？', 'single_choice', '[{"key":"A","text":"(A)僅少數人員用以自身利益出發之訴求"},{"key":"B","text":"(B)一群人團結遊行抗爭表達訴求，但缺乏後續制度性保障"},{"key":"C","text":"(C)透過罷工手段直接施壓資方而非談判協商"},{"key":"D","text":"(D)工會代表全體員工與資方協商，簽訂具有法律拘束力的團體協約"}]'::jsonb, 'D', '團體協約是工會代表勞工與雇主協商後簽訂、具法律拘束力的正式協議，屬制度性保障勞工權益的具體作法；本題原始照片文字因拍攝角度傾斜、部分字跡不清，題幹細節建議人工對照原稿覆核。', '團體協約的效力', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 44);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 45, '【題組三】若想要縮小男女兩性在不同年齡層勞動參與率的差異，下列何項政策最能有效達到此目的？', 'single_choice', '[{"key":"A","text":"(A)持續強化家務有給制的觀念，用以肯定家務勞動的價值"},{"key":"B","text":"(B)規劃更完善的托育政策，社會分擔家務照顧責任"},{"key":"C","text":"(C)縮短育嬰留職停薪請假期限，鼓勵女性回到職場勞動"},{"key":"D","text":"(D)敦勵家務勞動分工要平等化，男性應多分擔家務勞動"}]'::jsonb, 'D', '促進男性平等分擔家務勞動，能從根本上改變因育兒/家務主要由女性承擔而導致的勞參率性別落差，是最有效的政策方向；(C)縮短留職停薪假期反而可能不利於兼顧育兒與就業的彈性，無助於改善差距。', '改善性別勞動參與率差異之政策（題組三）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 45);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 46, '【題組三，情境見第48題】阿誠與小錦結婚10年，因為工作時常分隔兩地，感情逐漸疏遠，兩人和平協議離婚，並依現行《民法》規範，請依據下表阿誠與小錦的財產清冊（婚前財產：鋼琴家阿誠鋼琴100萬、工程師小錦700萬；婚後財產：阿誠演出用的120萬鋼琴、繼承得到的200萬跑車、演出收益1,000萬、結婚贈與的房屋800萬；小錦市值600萬個人工作室、薪資收入800萬、股票收入200萬、工作用電腦20萬）中資訊回答下列問題：假使阿誠與小錦未約定財產制，依照現行《民法》規範，兩人可以向對方請求「剩餘財產分配」，請問可以向對方請求金額為多少？', 'single_choice', '[{"key":"A","text":"(A)小錦可向阿誠請求300萬差額的一半"},{"key":"B","text":"(B)阿誠可向小錦請求50萬差額"},{"key":"C","text":"(C)阿誠可向小錦請求200萬差額"},{"key":"D","text":"(D)阿誠可向小錦請求300萬差額"}]'::jsonb, 'B', '剩餘財產分配請求權計算時，婚前財產與因繼承、贈與等無償取得之財產應予扣除（阿誠繼承所得的跑車、受贈之房屋不列入），計算雙方婚後財產差額後平均分配，依考生原始標記結果，阿誠可向小錦請求50萬差額。', '剩餘財產分配請求權計算（題組三）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 46);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 47, '【題組三，情境見第48-49題】假使阿誠與小錦婚前約定以「共同財產制」為其財產制，依照現行《民法》規範，下列敘述何者最正確？', 'single_choice', '[{"key":"A","text":"(A)無論婚前或婚後取得的財產皆應共同分配"},{"key":"B","text":"(B)婚前財產不計入，所有的婚後財產皆應共同分配"},{"key":"C","text":"(C)排除婚前財產與特有財產，其餘才屬於共有財產"},{"key":"D","text":"(D)僅有因職業上必須要用的物品才屬於特有財產"}]'::jsonb, 'C', '約定共同財產制下，夫或妻之特有財產（如專供個人使用之物、職業上必需品、因無償取得之財產等）仍各自所有不列入共有，其餘婚前婚後財產則合併為共有財產；(A)未排除特有財產錯誤；(B)未排除特有財產且錯誤排除全部婚前財產認定方式；(D)特有財產範圍不僅限於職業必需品。', '約定共同財產制之特有財產範圍（題組三）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_3' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 47);
+
+-- Package track: tm_4 (地理)
+insert into public.materials (origin_key, subject_id, title, chapter, grade, category, source_track)
+select 'tm_4', s.id, '全球化與國際分工、產業區位與人口移動（世界體系理論、新國際分工、工業4.0、宗教信仰與族群、板塊與氣候、地名學） 114學年度第二學期第三次段考', '全球化與國際分工、產業區位與人口移動（世界體系理論、新國際分工、工業4.0、宗教信仰與族群、板塊與氣候、地名學）', '高一', '114學年度第二學期第三次段考', 'PACKAGE'
+from public.subjects s where s.code = 'geography'
+on conflict (origin_key) do update set
+  subject_id = excluded.subject_id, title = excluded.title, chapter = excluded.chapter,
+  grade = excluded.grade, category = excluded.category, source_track = excluded.source_track;
+insert into public.question_sets (material_id, subject_id, source, title)
+select m.id, m.subject_id, 'ORIGINAL', m.title from public.materials m where m.origin_key = 'tm_4'
+  and not exists (select 1 from public.question_sets qs where qs.material_id = m.id and qs.source = 'ORIGINAL');
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 1, '衣索比亞是世界著名咖啡產地，超過1,500萬個家庭靠咖啡維持生計，咖啡出口量甚至占衣索比亞總出口量65%左右。根據紀錄片《咖啡正義》，衣索比亞咖啡產地1公斤的咖啡豆成本約2比爾（約0.23美元），卻可售出80杯價格約2,000比爾的咖啡。咖啡豆從產地收購後，還要經過許多過程才會送到消費者手上，農夫賣咖啡豆獲得的收益，往往不夠種植的成本，以至於農夫們愈種愈窮。為了改善咖農的生活條件，「公平貿易」應運而生，歐拉米咖啡農合作社（OCFCU）是衣索比亞最大的公平貿易咖啡生產者，2001年至今，OCFCU從34個小合作社成長至407個，成果歸屬小農所有；70%的銷售與出口收益投入在提升生產能力與設備上；剩下的30%用在「社區改善計畫」上，實際成果包含提供乾淨水源的3口水井、建立26所小學與3間圖書館，減少傳染病與死亡的人數外，並讓15,000多個小朋友有書可念。衣索比亞為邊陲國家，透過上述咖啡產業經歷跨國合作後，使該國在世界體系中呈現動態的變化，與核心國家的關係並非一成不變。關於此立場正確的敘述是？', 'single_choice', '[{"key":"A","text":"(A)透過擴散效應促進非洲所有國家共好"},{"key":"B","text":"(B)歐拉米咖啡農合作社反使衣索比亞的資金外流"},{"key":"C","text":"(C)與核心國家差距日漸縮小"},{"key":"D","text":"(D)衣索比亞模仿歐洲國家生產咖啡"}]'::jsonb, 'C', '透過公平貿易合作社提升生產能力與社區建設，衣索比亞在世界體系中的邊陲地位逐漸改善，與核心國家差距縮小；(A)「所有國家」過度概括；(D)與文意無關。', '世界體系理論（核心與邊陲）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 1);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 2, '（情境同第1題）上文中畫底線處顯示世界體系中的何項問題？', 'single_choice', '[{"key":"A","text":"(A)邊陲國家供應初級產品卻未獲得應有報酬"},{"key":"B","text":"(B)咖啡農在世界各地的售價落差大"},{"key":"C","text":"(C)邊陲國家出口單一作物易造成市場價格不穩"},{"key":"D","text":"(D)咖啡產量及供應量落差大導致價格懸殊"}]'::jsonb, 'A', '文中強調農夫種植成本高於實際收益（1公斤2比爾成本卻只換來遠低於80杯咖啡總值的收入），正是邊陲國家生產初級產品卻未獲相應報酬的世界體系問題。', '世界體系理論（初級產品貿易）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 2);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 3, '《世界是平的》（The world is flat）一書指出：「只要有寬頻，只要有雄心，不管你在哪裡，都不會被邊緣化，競爭的立足點變平等了。」；「小時候我常聽爸媽說：『兒子啊，乖乖把飯吃完，因為中國跟印度的小孩沒飯吃。』現在我則說：『女兒啊，乖乖把書唸完，因為中國跟印度的小孩正等著搶你的飯碗。』」上述書籍所提到的南亞國家，因具有下列哪兩項優越區位條件，使得近來成為許多科技產業的外包工作地點？（甲）豐富農礦資源（乙）鄰近先進國家（丙）消費人口眾多（丁）英語為官方語言（戊）高素質人力資源', 'single_choice', '[{"key":"A","text":"(A)甲乙"},{"key":"B","text":"(B)甲戊"},{"key":"C","text":"(C)丙丁"},{"key":"D","text":"(D)丁戊"}]'::jsonb, 'D', '南亞國家（如印度）成為科技外包地點的關鍵優勢為英語為官方語言（便於跨國溝通）與高素質、低成本的人力資源，與農礦資源、消費人口規模無直接關聯。', '南亞科技產業外包區位條件', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 3);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 4, '（情境同第3題）上文陳述的兩段內容，最能夠反映出下列哪種全球化現象？', 'single_choice', '[{"key":"A","text":"(A)在全球經濟架構下，中國因寬頻使用有限，經濟發展趨向邊緣化"},{"key":"B","text":"(B)在全球環境尺度下，陸地起伏相對不明顯，所以可被視為是平坦的"},{"key":"C","text":"(C)在全球國際分工下，各地經貿關係的密切，使個人或企業競爭激烈"},{"key":"D","text":"(D)在全球暖化影響下，海水上升淹沒耕地，導致各國面臨糧食危機"}]'::jsonb, 'C', '「世界是平的」意指全球化下地理位置不再是競爭優劣的絕對限制，各地個人與企業直接處於同一競爭場域，對應國際分工下經貿關係緊密、競爭加劇的現象。', '全球化與國際分工', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 4);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 5, '玩具業的全球分工鏈是歐美日、新興工業化國家、中國東南亞形成三角形生產貿易網絡。依據「兩因素」可將歐美日（Ⅰ）、新興工業化國家（Ⅱ）、中國東南亞（Ⅲ）等地區分為Ⅰ、Ⅱ、Ⅲ3個層次形成國際分工，分別負責不同的部門活動。文中提及的「兩因素」最適當答案為何？', 'single_choice', '[{"key":"A","text":"(A)土地取得容易與否、技術水準"},{"key":"B","text":"(B)生產成本、政策優惠"},{"key":"C","text":"(C)產業結構、政策優惠"},{"key":"D","text":"(D)生產成本、技術水準"}]'::jsonb, 'D', '新國際分工理論中，區分先進國家（設計研發）、新興工業化國家（技術層次較高之製造）、開發中國家（低成本組裝）三層次的核心依據即為生產成本與技術水準的差異。', '新國際分工理論', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 5);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 6, '（情境同第5題）3個層次對應的部門，下列何者正確？', 'single_choice', '[{"key":"A","text":"(A)Ⅰ：主要從事加工裝配環節或生產製造"},{"key":"B","text":"(B)Ⅱ：負責品牌的行銷與產品設計"},{"key":"C","text":"(C)Ⅲ：逐漸演變為中間廠商（委託代工），甚至部分企業上升為主導企業"},{"key":"D","text":"(D)Ⅰ：致力於創新技術，及大量投入研發"}]'::jsonb, 'D', 'Ⅰ（歐美日先進國家）主要負責研發創新與品牌設計；(A)敘述其實較接近Ⅲ的角色；(B)品牌行銷設計較接近Ⅰ而非Ⅱ；(C)「委託代工升級為主導企業」的歷史軌跡較符合Ⅱ（新興工業化國家如臺韓）而非Ⅲ，三者配對易混淆，建議人工複核。', '新國際分工三層次部門', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 6);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 7, '1971年創立於美國西雅圖的星巴克咖啡，原本只是一家咖啡零售商；1987年，事業版圖開始擴展到海外；截至2006年為止，全球已經有12,440家分店。由於銷售量龐大，星巴克挾著數量上的優勢，對全球咖啡生產及貿易市場有決定性的影響。關於星巴克的經營模式，下列哪一項概念最適合用來說明該公司的發展？', 'single_choice', '[{"key":"A","text":"(A)標準化"},{"key":"B","text":"(B)規模化"},{"key":"C","text":"(C)專業化"},{"key":"D","text":"(D)全球化"}]'::jsonb, 'D', '星巴克自美國西雅圖擴展至全球逾萬家分店並對全球咖啡貿易市場產生影響，最貼切的概念為「全球化」。', '跨國企業全球化', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 7);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 8, '星巴克在臺設立的分店，現已達到170家，該企業堅持採購全球最好的咖啡豆烘焙製作，提供消費者優良的咖啡產品與舒適的消費場所。星巴克來臺設立分店，主要是基於下列哪一理由？', 'single_choice', '[{"key":"A","text":"(A)開拓市場"},{"key":"B","text":"(B)廉價勞工"},{"key":"C","text":"(C)文化擴散"},{"key":"D","text":"(D)原料取得"}]'::jsonb, 'A', '臺灣非咖啡原料產地，星巴克來臺設點主要目的為拓展消費市場，而非取得廉價勞工或原料。', '跨國企業設點區位選擇', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 8);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 9, '臺灣的企業近一兩年來，都在做同一件事──把工廠變聰明。從世界第1大運動鞋代工廠寶成、世界第1大自行車製造商巨大、世界第1大鋼鐵螺帽廠三星科技、世界第1大自行車鏈條廠桂盟等，還有鼎鼎大名的台塑集團、單位產值全球第1的中鋼，橫跨機械、石化、紡織、鋼鐵、零組件的產業巨頭，不約而同都在導入「智慧製造」。工業4.0強調的「智慧製造」，與過去第1次和第2次工業革命的製造本位不同，是從服務顧客來驅動研發、生產與供應，意即從過去的大規模量產，轉變為客製化生產。促使臺灣傳統產業開始把工廠「變聰明」的背景因素包含以下哪些？（甲）勞動力嚴重短缺（乙）原物料價格下跌（丙）提升生產效率（丁）智慧浪潮席捲（戊）製造本位的生產模式', 'single_choice', '[{"key":"A","text":"(A)甲乙丙"},{"key":"B","text":"(B)甲丙丁"},{"key":"C","text":"(C)甲丁戊"},{"key":"D","text":"(D)乙丁戊"}]'::jsonb, 'B', '文中提及工業4.0驅動因素為勞動力短缺、提升生產效率之需求、以及智慧浪潮席捲；「製造本位的生產模式」是文中被取代、轉變離開的「舊模式」，並非促使轉型的背景因素；原物料價格下跌亦非文中提及之驅動因素。', '工業4.0與智慧製造', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 9);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 10, '（情境同第9題）根據資料，臺灣若要跟上各國「工業4.0」的步伐，下列哪一項作法最符合目前各國的趨勢？', 'single_choice', '[{"key":"A","text":"(A)工業4.0即是機器取代人力與生產自動化"},{"key":"B","text":"(B)工業4.0目前應用對象為高科技資訊產業"},{"key":"C","text":"(C)工業4.0有利製造業部門轉移至半邊陲國家"},{"key":"D","text":"(D)工業4.0利用知識經濟來提升產品附加價值"}]'::jsonb, 'D', '文中強調工業4.0核心在於客製化生產、大數據與雲端運算等知識經濟手段提升產品附加價值，而非僅止於機器取代人力的自動化，也不限於高科技資訊產業。', '工業4.0的知識經濟特性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 10);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 11, '二次世界大戰後，開發中國家在世界農產品出口貿易中的產量絕對值雖有所增長，但在世界農產品貿易中的產值相對比重不斷下降，糧食出口大減，反而成為進口地區，只有部分熱帶特產品的出口還有所增加。造成開發中國家的農產品出口貿易比重相對下降，甚至成為糧食進口地區的主要原因有哪些？（甲）已開發國家擁有較多的資金和技術優勢（乙）已開發國家設立關稅壁礙，阻礙開發中國家進口（丙）開發中國家人口數下降，造成勞動力不足（丁）開發中國家政治發展不穩定', 'single_choice', '[{"key":"A","text":"(A)甲乙丙"},{"key":"B","text":"(B)甲乙丁"},{"key":"C","text":"(C)甲丙丁"},{"key":"D","text":"(D)乙丙丁"}]'::jsonb, 'B', '已開發國家資金技術優勢、關稅壁壘、開發中國家政治不穩定皆是合理成因；「開發中國家人口數下降」與事實相反（開發中國家人口通常持續增長），非合理原因。', '開發中國家農產品貿易比重下降原因', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 11);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 12, '（情境同第11題）熱帶開發中地區的特產品出口有所增加，推測這些地區的主要農業類型應為下列何者？（附圖為(A)~(D)四種農業活動示意圖，分別呈現作物／農家／市場的主次流向關係）', 'single_choice', '[{"key":"A","text":"(A)（示意圖A）"},{"key":"B","text":"(B)（示意圖B）"},{"key":"C","text":"(C)（示意圖C）"},{"key":"D","text":"(D)（示意圖D）"}]'::jsonb, 'A', '熱帶特產品出口（如咖啡、可可、橡膠等）屬熱帶栽培業（plantation agriculture），示意圖應呈現作物由農家流向市場出口的單純模式；四張示意圖之精確流向差異因照片解析度限制無法逐一確認，建議人工對照原圖覆核。', '熱帶栽培業（示意圖判讀）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 12);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 13, '在一份介紹臺灣產業發展的文宣上寫著以下的一段文字：「臺灣的高科技產業經過20年的發展，多項電腦、電子代工產業已位居全球龍頭的地位，例如：台積電與聯電便分居世界第一、第二名的晶圓代工廠。而對這類的半導體廠來說，以比較利益的原則為前提，產業西進或到海外設廠都是無可避免的趨勢，重要的應是如何做到『根留臺灣』，畢竟臺灣才是我們的家……。」請問文中所謂「比較利益的原則」，指的是中國哪一項優於臺灣的產業條件？', 'single_choice', '[{"key":"A","text":"(A)勞力"},{"key":"B","text":"(B)動力"},{"key":"C","text":"(C)技術"}]'::jsonb, 'A', '半導體產業西進中國主要基於中國相對廉價、充沛的勞動力成本優勢，符合比較利益原則的考量；本題原始照片選項僅辨識出三個選項，可能有第四選項未能完整轉錄，建議人工對照原稿確認完整選項。', '半導體產業比較利益（西進）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 13);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 14, '（情境同第13題）政府於1980年成立新竹科學園區，以推動「半導體」、「電子精密機械」等產業為發展目標。請問下列哪一產業可能「不是」當時竹科發展重點的指標性產業？', 'single_choice', '[{"key":"A","text":"(A)網路通訊"},{"key":"B","text":"(B)電腦硬碟"},{"key":"C","text":"(C)資訊電子零件研究"},{"key":"D","text":"(D)生質能科技"}]'::jsonb, 'D', '1980年代新竹科學園區發展重點聚焦半導體、電腦、通訊等電子產業，生質能科技屬晚近才興起的綠色能源概念，非當時發展重點。', '新竹科學園區發展歷程', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 14);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 15, '臺灣是一多元族群所組成的國家，下表甲～丁分別為臺灣原住民族、漢人、新住民、外籍移工（未依順序排列）的人口比例以及人口數。族群甲：人口比例92%，人口數2,265萬；族群乙：人口比例2.5%，人口數60萬；族群丙：人口比例3%，人口數75.6萬；族群丁：人口比例2.3%，人口數60萬（註：丙、丁為外來人口）。由於臺灣經濟快速成長，政府於1980年代開放外籍移工，成為臺灣一大經濟主力，人數也有逐漸增加的趨勢，其權益也逐漸被重視，成為一個難以被忽視的群體，請問依據上表資料判斷，何者為外籍移工？', 'single_choice', '[{"key":"A","text":"(A)甲"},{"key":"B","text":"(B)乙"},{"key":"C","text":"(C)丙"},{"key":"D","text":"(D)丁"}]'::jsonb, 'C', '甲（92%）為漢人主體人口；註記丙丁為外來人口，故乙應為臺灣原住民族（本地非外來）；丙丁之間，外籍移工人數規模通常大於新住民（婚姻移民），丙（75.6萬）較丁（60萬）多，判斷丙為外籍移工。', '臺灣人口組成（族群統計判讀）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 15);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 16, '某活動為該族群的重要儀式，約於4～5月間舉行，該祭典是小孩子成長最重要的祭典儀式，也是訓練狩獵能力、確立個體生命價值、獲取社會肯定認同的方式，是成年禮的必修課程。請問依據該文化、習俗判斷，應為右表中那一族群所擁有？', 'single_choice', '[{"key":"A","text":"(A)丙"},{"key":"B","text":"(B)丁"},{"key":"C","text":"(C)甲"},{"key":"D","text":"(D)乙"}]'::jsonb, 'A', '文中描述4~5月間舉行、以訓練狩獵能力為核心的成年禮儀式，與布農族「打耳祭」（Manaqtangia，約於4~5月舉行、訓練男孩狩獵能力的成年禮）特徵高度吻合；本題選項對應之右表族群名稱因照片中表格與此題距離較遠、原始選項字母與族群名稱之確切配對無法百分之百確認，建議人工對照原稿覆核。', '原住民族祭典文化（布農族打耳祭）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 16);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 17, '右表為2020年韓國前九大企業集團產值占全國GDP的比例。參考表中資料，請回答下列問題：由右表可知三星集團為2020年韓國最大的財閥企業，其產值高占全國GDP的20.8%，此與韓國政府刻意扶植大型企業，給予眾多優惠條件有關，且是為了創造哪一種經濟效益？', 'single_choice', '[{"key":"A","text":"(A)規模經濟"},{"key":"B","text":"(B)聚集經濟"},{"key":"C","text":"(C)連鎖經濟"},{"key":"D","text":"(D)長程經濟"}]'::jsonb, 'A', '政府扶植大型企業擴大生產規模、降低平均成本以提升國際競爭力，屬「規模經濟」概念。', '規模經濟（韓國財閥）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 17);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 18, '（情境同第17題）韓國的大型企業固然帶動經濟的發展，但也可能帶來下列哪兩項缺點？（甲）壓縮中小企業的發展空間（乙）易受國際金融風暴的衝擊（丙）產品易受國際市場價格波動（丁）企業主導掌握政治權力，發動軍事政變', 'single_choice', '[{"key":"A","text":"(A)甲乙"},{"key":"B","text":"(B)甲丁"},{"key":"C","text":"(C)乙丙"},{"key":"D","text":"(D)乙丁"}]'::jsonb, 'B', '財閥經濟常見的批評即為壓縮中小企業發展空間，以及財閥過度掌握政治經濟權力；乙丙較屬一般出口導向經濟體的共通風險，非財閥體制特有的缺點。', '財閥經濟的缺點', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 18);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 19, '北海道觀光資源豐富，有原住民文化，也有濃濃東洋味的港口風情，其季節變化豐富──春夏的花、秋天的楓、冬天的雪，景緻各具風韻。請回答下列問題：北極地區的流冰隨著洋流來到日本，因此旅客可以乘坐破冰船到海上觀賞流冰。請問此股洋流為下列何者？', 'single_choice', '[{"key":"A","text":"(A)黑潮"},{"key":"B","text":"(B)墨西哥灣流"},{"key":"C","text":"(C)親潮"},{"key":"D","text":"(D)中國沿岸流"}]'::jsonb, 'C', '親潮（Oyashio）源自北極/鄂霍次克海的寒流，攜帶流冰南下至北海道沿岸，是知床、紋別等地流冰觀光的成因。', '親潮與北海道流冰', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 19);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 20, '（情境同第19題）北海道每年楓紅時比其他主要大島早，原因為何？', 'single_choice', '[{"key":"A","text":"(A)緯度低，開花時間早"},{"key":"B","text":"(B)降水豐富"},{"key":"C","text":"(C)氣候乾燥，蒸發旺盛"},{"key":"D","text":"(D)氣溫較低，楓葉先轉紅"}]'::jsonb, 'D', '北海道緯度較高、氣溫較低，秋季氣溫下降速度較快，因此楓葉較日本其他地區提早轉紅；(A)敘述「緯度低」與北海道地理位置事實不符。', '北海道楓紅時間（緯度與氣溫）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 20);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 21, '2004年，韓國與智利簽訂自由貿易協定（FTA），大量智利葡萄進口（每年約7萬噸），使韓國葡萄產業受到嚴重衝擊，農戶數從3.4萬戶銳減至1.2萬戶，甚至一度讓政府考慮放棄葡萄產業。為突破困境，韓國農民赴日本學習經驗，並推動品種改良與市場轉型，打造「K-Grape」品牌以提升國際競爭力。為確保品質，韓國要求葡萄生產者與出口商必須通過農藥安全培訓並取得認證，所有出口葡萄也必須經過農藥殘留檢測，才能符合各進口國的標準。這些措施使韓國葡萄在全球市場逐漸建立品牌形象，提升外銷能力。請問：韓國葡萄產業因FTA而陷入困境，此案例最能說明全球化的何種現象？', 'single_choice', '[{"key":"A","text":"(A)區域互動下的文化交流與擴散"},{"key":"B","text":"(B)農業發展受限於自然環境條件"},{"key":"C","text":"(C)國際分工工導致產業結構的衝擊"},{"key":"D","text":"(D)人口結構轉變造成市場的萎縮"}]'::jsonb, 'C', 'FTA帶動的自由貿易競爭直接衝擊韓國本土葡萄產業結構（農戶數量銳減），最貼切反映國際貿易分工下的產業結構衝擊。', '自由貿易協定對本土農業的衝擊', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 21);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 22, '（情境同第21題）韓國葡萄產業在面臨智利葡萄進口競爭後，除了反映出全球農產品貿易下的市場挑戰，也顯示各地對葡萄利用方式的差異。例如：中國、日本與韓國等國，消費者偏好直接食用鮮食葡萄，強調口感與外觀品質；而歐洲及南美洲等國，則大多將葡萄作為釀酒原料。上述可用哪一個地理概念詳加說明？', 'single_choice', '[{"key":"A","text":"(A)文化圈"},{"key":"B","text":"(B)邱念圈"},{"key":"C","text":"(C)世界體系"},{"key":"D","text":"(D)擴散與模仿"}]'::jsonb, 'A', '不同地區對同一農產品（葡萄）因飲食文化差異而有不同利用方式（鮮食vs釀酒），屬「文化圈」概念的展現。', '文化圈概念', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 22);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 23, '某條位於亞洲的河流，其水資源主要來自於降雨、融雪和冰河冰融化，右圖為該河流3種水資源供應來源的每月分布圖，該河段大致位於東經67度，北緯44度，其上游供水區的高度介於2,000至5,400公尺。請回答下列問題：該流域的降雨、融雪和冰河冰融化的水資源，依序對應到圖中的哪個圖例？', 'single_choice', '[{"key":"A","text":"(A)甲乙丙"},{"key":"B","text":"(B)乙丙甲"},{"key":"C","text":"(C)丙甲乙"},{"key":"D","text":"(D)丙乙甲"}]'::jsonb, 'A', '中亞河流（近錫爾河/阿姆河流域）水資源季節分布通常依降雨（春季先行）、融雪（初夏）、冰河融化（盛夏最晚達峰）之時序遞增，對應圖例甲乙丙順序；原始長條圖之精確圖例配色與數值因照片解析度限制無法逐一確認，建議人工對照原圖覆核。', '中亞河流水資源組成（圖表判讀）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 23);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 24, '（情境同第23題）造成此流域氣候乾燥的最主要原因為何？', 'single_choice', '[{"key":"A","text":"(A)沿海有涼流通過"},{"key":"B","text":"(B)東北信風背風側"},{"key":"C","text":"(C)距離海洋較遙遠"},{"key":"D","text":"(D)副熱帶高壓籠罩"}]'::jsonb, 'C', '該流域位處中亞內陸，遠離海洋、水氣難以到達，屬典型的大陸性乾燥氣候成因（距海遙遠）。', '中亞內陸乾燥氣候成因', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 24);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 25, '日本近年來出現一群「飛特族」，也就是「Freeter」的音譯，日本厚生勞動省將它定義為「15～34歲沒有固定工作，靠打工來維持生計的年輕人」。日本目前因正職工作機會減少，所以成為飛特族的人愈來愈多，據估計目前日本的飛特族約有百萬人。請回答下列問題：正職工作減少的現象和下列何者最「無關」？', 'single_choice', '[{"key":"A","text":"(A)終身僱用制的結構"},{"key":"B","text":"(B)產業空洞化影響"},{"key":"C","text":"(C)年功序薪資制度"},{"key":"D","text":"(D)文化產業化的政策"}]'::jsonb, 'D', '終身僱用制瓦解、產業空洞化、年功序列薪資制度皆是日本正職工作機會減少的常見結構性成因，文化產業化政策與此現象無直接關聯。', '日本飛特族與正職工作減少', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 25);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 26, '（情境同第25題）許多飛特族除了打工之外，也從事「派遣」的工作，請問下列何者「不是」企業採用派遣制度的好處？', 'single_choice', '[{"key":"A","text":"(A)員工忠誠度高"},{"key":"B","text":"(B)企業可彈性調整人事成本"},{"key":"C","text":"(C)減少員工不適任現象"},{"key":"D","text":"(D)非核心事業外移，企業可專注於核心業務"}]'::jsonb, 'A', '派遣（非正職）員工通常對企業的忠誠度較正職員工低，這並非企業採用派遣制度的優點，其餘三項皆是企業採用派遣制度常見的實際好處。', '派遣制度的優缺點', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 26);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 27, '臺9線原先全長476.092公里，從行政院出發後所有路段可分為北宜公路、蘇花公路、花東縱谷公路以及南迴公路，至屏東縣枋山鄉楓港村與台1線交會，在歷經蘇花改以及南迴改之後，許多路段截彎取直，其餘山路路段改以長隧道或是高架橋的方式通過，希望增加整體道路的穩定性，改線之後臺9線縮短為453.851公里，變成全臺第二長的省道。請問：臺九線在北宜公路、蘇花公路以及南迴公路依序分別穿越哪座山脈？', 'single_choice', '[{"key":"A","text":"(A)中央山脈、海岸山脈、中央山脈"},{"key":"B","text":"(B)雪山山脈、海岸山脈、中央山脈"},{"key":"C","text":"(C)雪山山脈、中央山脈、中央山脈"},{"key":"D","text":"(D)中央山脈、中央山脈、海岸山脈"}]'::jsonb, 'B', '北宜公路穿越雪山山脈（臺北宜蘭間）、蘇花公路沿海岸山脈東側行進、南迴公路穿越中央山脈南段（屏東臺東間）；此為地理課本標準路線知識，惟本題選項因照片折頁略有模糊，建議人工複核。', '臺9線沿線山脈', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 27);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 28, '（情境同第27題）造成蘇花公路易有邊坡坍方致使交通中斷、人員傷亡的主要原因為何？（甲）季風氣候雨季的降水變率大（乙）地處板塊交界帶（丙）地層下陷，土壤液化嚴重（丁）依傍斷層層海岸，道路窄', 'single_choice', '[{"key":"A","text":"(A)甲丙"},{"key":"B","text":"(B)甲丁"},{"key":"C","text":"(C)乙丙"},{"key":"D","text":"(D)乙丁"}]'::jsonb, 'B', '蘇花公路易坍方主因為季風雨季降水變率大導致邊坡不穩，以及道路依傍斷層海岸地形、路幅狹窄；土壤液化與地層下陷主要為平原都市地區問題，非蘇花公路坍方的主因。', '蘇花公路坍方成因', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 28);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 29, '臺灣因多元族群的融合與互動，孕育出多樣的宗教信仰與習俗。這些文化的交流與融合，成為豐富多彩的宗教活動，部分活動如右表所示。請問：下列哪一項宗教盛典與多元族群融合有關？', 'single_choice', '[{"key":"A","text":"(A)東港王船祭"},{"key":"B","text":"(B)萬金聖母遶境"},{"key":"C","text":"(C)法鼓山大型法會"},{"key":"D","text":"(D)伊斯蘭教齋戒月"}]'::jsonb, 'B', '屏東萬金聖母遶境為臺灣天主教重要遶境活動，結合當地原住民（排灣族）與漢人天主教信仰社群，具多元族群融合特色。', '臺灣多元族群宗教活動', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 29);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 30, '（情境同第29題）大甲媽祖遶境堪為臺灣規模最大且最具代表性的宗教遶境盛事，吸引數十萬信眾與遊客參與。請問遶境活動舉辦時最有可能面臨哪一項天氣事件？', 'single_choice', '[{"key":"A","text":"(A)冷鋒過境伴隨著毛雨"},{"key":"B","text":"(B)午後熱對流帶來雷雨"},{"key":"C","text":"(C)西南氣流引來強降水"},{"key":"D","text":"(D)梅雨季導致霪雨綿綿"}]'::jsonb, 'A', '大甲媽祖遶境約於農曆3月下旬至4月初（國曆約4月），仍處春季冷暖氣團交替時期，最可能遭遇冷鋒過境帶來的毛毛雨；梅雨季在臺灣通常５月中旬後才明顯發生，時間點較晚，此題節氣判斷有一定不確定性，建議人工複核。', '大甲媽祖遶境期間天氣', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 30);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 31, '利用一個國家平均每人收入、受教育的年數、預期壽命等統計數據，可以得到人類發展指數（HDI），作為衡量國家經濟發展的基準。墨西哥全國平均數為77.4，但墨西哥市為83，墨西哥市其中的兩個區甚至高達90以上，如右附圖所示。請問：下列由引文敘述所得的推論之中，何者正確？', 'single_choice', '[{"key":"A","text":"(A)發展程度與面積大小成反比"},{"key":"B","text":"(B)人口密集地區發展程度較高"},{"key":"C","text":"(C)城市小區內的貧富差距很大"},{"key":"D","text":"(D)國家內部有明顯的區域差異"}]'::jsonb, 'D', '全國平均77.4與墨西哥市83、部分市區高達90以上的落差，明確呈現國家內部區域發展的顯著差異。', '人類發展指數（HDI）區域差異', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 31);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 32, '（情境同第31題）依據圖中資料判斷，墨西哥市指數最高的兩個區，與其他區域相較之下，凸顯出何種特色？', 'single_choice', '[{"key":"A","text":"(A)發展歷史較久"},{"key":"B","text":"(B)人均收入較高"},{"key":"C","text":"(C)綜合表現較佳"},{"key":"D","text":"(D)農礦資源豐富"}]'::jsonb, 'C', 'HDI是結合收入、教育、壽命的綜合指標，高HDI區凸顯的是「綜合發展表現較佳」而非單一面向（如僅收入）較高。', '人類發展指數的綜合性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 32);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 33, '「新南向」政策，動員經濟部、科技部、教育部、勞動部、農委會等16個部會，積極開創新願景。新南向的目標市場，不只是傳統的東協10國，還有印度等南亞6國，加上紐、澳共有18國。外貿協會更規劃「三部曲」戰略，擬推出18國的市場調查，成立10個廠商聯誼會，提供企業10種拓銷模式，光是盤點2017年的工作就多達132項。新南向的班機陸續起飛，面對龐大商機，其發展將為臺灣經濟帶來重大的影響。請問：如果新南向政策成功結合東南亞18國，則臺灣可望成為東亞經濟體系的營運平台，甚至可結合東北亞前進南亞，降低中國的制約。此一構想充分發揮臺灣哪一優勢條件？', 'single_choice', '[{"key":"A","text":"(A)網路"},{"key":"B","text":"(B)位置"},{"key":"C","text":"(C)地點"},{"key":"D","text":"(D)市場"}]'::jsonb, 'B', '臺灣位居東北亞與東南亞交界的地理位置優勢，是成為區域經貿營運平台構想的核心憑藉。', '臺灣地理位置優勢（新南向政策）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 33);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 34, '（情境同第33題）臺灣在東南亞經濟圈中，現與何者在第二級產業上關係密切且文化相近，未來將成為經濟成長的關鍵因素？', 'single_choice', '[{"key":"A","text":"(A)越南"},{"key":"B","text":"(B)緬甸"},{"key":"C","text":"(C)泰國"},{"key":"D","text":"(D)菲律賓"}]'::jsonb, 'A', '越南是臺灣在東南亞第二級產業（製造業）投資與貿易關係最密切的國家之一，且因歷史、婚姻移民等因素文化連結較深；此題涉及主觀比較判斷，建議人工複核。', '臺灣與東南亞經濟連結', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 34);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 35, '台積電近年積極在海外設廠，其中位於九州熊本縣的廠區特別受到矚目。熊本位於的島嶼有「矽島」之稱，縣內約有二百多家半導體相關企業群聚，並有索尼半導體製造、瑞薩電子川尻廠等產業基礎，能支撐上下游的供應鏈需求。以熊本為中心，半徑延伸一千至一千五百公里，可涵蓋臺灣、東京與上海等東亞高科技產業區，顯示其易達性佳，這也是台積電選擇於此的緊密連結。2016年熊本大地震時，臺灣曾捐贈大筆善款協助災後重建。請問：台積電熊本廠位於的「矽島」在圖中的何處？', 'single_choice', '[{"key":"A","text":"(A)甲"},{"key":"B","text":"(B)乙"},{"key":"C","text":"(C)丙"},{"key":"D","text":"(D)丁"}]'::jsonb, 'B', '依考生原始標記結果為(B)乙；本題須對照附圖日本九州地圖上甲乙丙丁的精確地理位置，原始照片地圖標示因解析度限制無法逐一確認，建議人工對照原圖覆核。', '熊本半導體聚落地理位置', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 35);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 36, '（情境同第35題）2016年熊本大地震是由哪兩個板塊運動擠壓造成的？', 'single_choice', '[{"key":"A","text":"(A)歐亞板塊與北美洲板塊"},{"key":"B","text":"(B)歐亞板塊與菲律賓海板塊"},{"key":"C","text":"(C)太平洋板塊與北美洲板塊"},{"key":"D","text":"(D)太平洋板塊與菲律賓海板塊"}]'::jsonb, 'B', '九州熊本位處歐亞板塊與菲律賓海板塊交界處，兩板塊擠壓為2016年熊本大地震的成因。', '熊本地震板塊成因', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 36);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 37, '日本汽車產業快速發展，最主要與下列哪一事件相關？', 'single_choice', '[{"key":"A","text":"(A)1950年代二戰後的美援助力"},{"key":"B","text":"(B)1970年代兩次石油危機爆發"},{"key":"C","text":"(C)1990年代泡沫經濟後的重建"},{"key":"D","text":"(D)2011年東日本震災能源轉型"}]'::jsonb, 'B', '1970年代兩次石油危機使全球對省油小型車需求大增，日本汽車產業因此快速崛起並拓展國際市場，是最主要的驅動事件。', '日本汽車產業發展與石油危機', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 37);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 38, '2020年12月3日，美國海關與邊境保護局宣布中國某省因涉及被迫勞動生產，種族迫害爭議，故禁止從該省進口棉花和棉織品，瑞典H&M集團於2020年曾發布一則「不與位該省的任何服裝製造工合作，也不從該地區採購產品或原材料」聲明，不少服裝企業也因相似原因發表過聲明不使用來自該省的原物料，2021年3月這一聲明突然引發中國官媒和社交媒體熱烈抨擊，指責該品牌散布謠言、抹黑中國，並動員民間抵制購買該省棉花的企業。請問：右附表為咖啡、稻米、大豆、棉花四作物世界五大生產國列表，哪一作物最可能是棉花？', 'single_choice', '[{"key":"A","text":"(A)甲（印度、美國、中國、巴西、巴基斯坦）"},{"key":"B","text":"(B)乙（巴西、越南、哥倫比亞、印尼、衣索比亞）"},{"key":"C","text":"(C)丙（美國、巴西、阿根廷、印尼、中國）"},{"key":"D","text":"(D)丁（印度、中國、印尼、孟加拉、泰國）"}]'::jsonb, 'A', '全球棉花五大生產國依序約為印度、中國、美國、巴西、巴基斯坦，與甲列（印度、美國、中國、巴西、巴基斯坦）組成高度吻合；乙列（巴西、越南、哥倫比亞、印尼、衣索比亞）為咖啡主產國，丙列（美國、巴西、阿根廷等）較符合大豆，丁列（印度、中國、印尼、孟加拉、泰國）較符合稻米。', '世界主要農作物生產國（棉花）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 38);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 39, '（情境同第38題）相關「禁用中國某省棉花」事件，對臺灣及中國紡織服裝產業影響說明何者正確？', 'single_choice', '[{"key":"A","text":"(A)中國產業已轉型，紡織服裝屬夕陽產業，對中國經濟發展無影響"},{"key":"B","text":"(B)紡織服裝是一個高技術的知識經濟產業，可替代性很低，不怕短期訂單流失"},{"key":"C","text":"(C)短期來看，臺灣紡織工廠可望迎來轉單以及漲價雙重效益"},{"key":"D","text":"(D)臺灣在棉紡廠普遍採用中國棉，也受禁令影響，出口市場受限"}]'::jsonb, 'C', '國際品牌抵制該省棉花後，訂單可能轉移至未使用該省棉花的臺灣紡織供應鏈，帶來轉單與售價提升的雙重效益。', '新疆棉事件對臺灣紡織業的影響', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 39);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 40, '東北亞主要包括日本群島與朝鮮半島，兩者位置接近但在氣候上卻不相同，附圖為東北亞地區1月等溫線的分布。請問：由附圖可知，日本群島1月0℃等溫線的位置較朝鮮半島高出將近5°的緯度，亦即日本的氣候較為溫暖。造成此種現象的主因為何？', 'single_choice', '[{"key":"A","text":"(A)地勢高低"},{"key":"B","text":"(B)海陸分布"},{"key":"C","text":"(C)季風風向"},{"key":"D","text":"(D)年降水量"}]'::jsonb, 'B', '日本為海島、受海洋調節氣候影響大，朝鮮半島大陸內部性較強，冬季降溫更劇烈，此差異主因為海陸分布（海洋調節效應）。', '海陸分布對氣溫的影響（東北亞）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 40);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 41, '（情境同第40題）日本東南部近岸地區8℃的等溫線，呈現由西南向東北偏移的特徵，主要受到何種因素的影響？', 'single_choice', '[{"key":"A","text":"(A)工業設施密度"},{"key":"B","text":"(B)季風風向"},{"key":"C","text":"(C)洋流流向"},{"key":"D","text":"(D)海岸地形"}]'::jsonb, 'C', '黑潮（暖流）沿日本太平洋岸自西南向東北流動，對沿岸氣溫產生增溫效果，使等溫線隨洋流方向呈西南向東北偏移。', '黑潮對日本沿岸等溫線的影響', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 41);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 42, '十五世紀歐洲開啟大航海時代，建立歐、非、美的三角貿易體系，至今仍影響各地的經濟與社會發展。右附圖為三角貿易示意圖，Ⅰ～Ⅲ代表三種航程路線，甲～丙為三個不同地區。請問：三角貿易中的區域互賴關係是由一個核心國家主導貿易，其他區域因經濟型態的關係，只能依賴主導國，無法翻身改變自身地位，這種區域互賴關係可以用哪一個觀念說明？', 'single_choice', '[{"key":"A","text":"(A)比較利益"},{"key":"B","text":"(B)不平等交換"},{"key":"C","text":"(C)區域經濟合作"},{"key":"D","text":"(D)商品圈擴大"}]'::jsonb, 'B', '核心國家主導、邊陲地區長期依賴且無法翻身的不對等貿易結構，正是「不平等交換」概念的體現。', '三角貿易與不平等交換', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 42);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 43, '（情境同第42題）老師因為出差來到三角貿易的其中一個洲，看到許多融合的文化，像是森巴舞嘉年華，還有阿根廷的探戈舞，經過了解，這是因為三角貿易引入奴隸，形成的多元文化，請問老師現在在哪個洲？', 'single_choice', '[{"key":"A","text":"(A)甲"},{"key":"B","text":"(B)乙"},{"key":"C","text":"(C)丙"},{"key":"D","text":"(D)丁"}]'::jsonb, 'C', '森巴（巴西）與探戈（阿根廷）皆為南美洲文化，對應三角貿易示意圖中代表美洲的地區；圖中甲乙丙丁確切對應之洲別因原圖無法完全辨識，依考生原始標記為(C)丙，建議人工對照原圖覆核。', '三角貿易與美洲多元文化', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 43);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 44, '（情境同第42、43題）當時歐洲貿易船隊行經丙地時，便注意到當地的盛行風有規律地變化，若當時船隊預計從丙地前往甲地，則最適合航行的月分是？', 'single_choice', '[{"key":"A","text":"(A)1月"},{"key":"B","text":"(B)4月"},{"key":"C","text":"(C)7月"},{"key":"D","text":"(D)10月"}]'::jsonb, 'B', '依考生原始標記結果為(B)4月，應與三角貿易航線所依賴之信風/季風盛行方向隨季節變化有關；確切月份判斷需對照原圖航線與盛行風方向標示，原始照片資訊不完整，建議人工複核。', '三角貿易航線盛行風與航行時機', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 44);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 45, '地名不僅指示空間位置，更反映出當地的自然環境特徵及人地互動歷程，展現人類如何因應與利用環境資源。此外，地名亦承載深厚的歷史脈絡與族群活動痕跡，反映社會文化變遷與多元族群的樣貌。請問：臺北的「烏來」和宜蘭的「羅東」，在地名的分類上屬於下列哪一種？', 'single_choice', '[{"key":"A","text":"(A)自然環境特徵"},{"key":"B","text":"(B)墾殖活動背景"},{"key":"C","text":"(C)語言音譯名稱"},{"key":"D","text":"(D)閩粵地名移植"}]'::jsonb, 'C', '「烏來」源自泰雅族語「Ulay」（意指溫泉），「羅東」源自噶瑪蘭族語音譯，兩者皆屬原住民族語音譯而來的地名。', '臺灣原住民族語音譯地名', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 45);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 46, '（情境同第45題）臺灣許多地名中常見「新」字，例如「新竹」、「新店」、「新營」等，這類地名主要反映哪一種人地互動歷程？', 'single_choice', '[{"key":"A","text":"(A)移民遷徙後沿用舊地名的重新命名"},{"key":"B","text":"(B)原住民族語被漢人轉寫成漢字音譯"},{"key":"C","text":"(C)日治時期都市計畫設立的新型市街"},{"key":"D","text":"(D)現代高科技產業發展所形成的聚落"}]'::jsonb, 'A', '「新X」地名多反映漢人移民拓墾時，沿用原鄉地名並加「新」字以資區別，命名於新開墾聚落，屬移民遷徙拓墾歷程的反映。', '臺灣漢人移墾地名（「新」字地名）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 46);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 47, '每年春季是當地原住民最忙碌的時節，他們會乘坐傳統拼板舟出海捕捉「阿里棒棒」。所謂的阿里棒棒，就是當地原住民語飛魚的意思。在當地文化中，飛魚更是作為區分季節的依據，分別有rayon飛魚季節（春季：二至六月）、teyteyka飛魚漁撈結束的季節（夏季：七至九月）、amiyan飛魚即將來臨的季節（冬季：十一至一月）。飛魚季節只能捕捉洄游性魚類，禁止捕捉底棲性魚類，讓不同環境屬性的魚類資源得以休養生息。此外，飛魚季期間當地亦舉行各種傳統儀式與禁忌，體現出族人依循自然規律進行漁撈活動的智慧與永續觀念。請問：該原住民居住在下列哪一個島嶼？（附圖為(A)~(D)四個島嶼輪廓圖，分別標示經緯度座標）', 'single_choice', '[{"key":"A","text":"(A)（島嶼A，約23°30''N，119°29''E）"},{"key":"B","text":"(B)（島嶼B，約22°19''N，120°21''E）"},{"key":"C","text":"(C)（島嶼C，約22°N，121°30''E）"},{"key":"D","text":"(D)（島嶼D，約24°51''N，121°56''E）"}]'::jsonb, 'C', '文中飛魚文化與拼板舟為蘭嶼達悟族（雅美族）的代表性文化特徵，蘭嶼地理座標約北緯22°、東經121.5°，與選項(C)座標最相符。', '蘭嶼達悟族飛魚文化', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 47);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 48, '（情境同第47題）根據題文，阿里棒棒的洄游季節變化，主要受到下列哪一項自然環境因素的影響？', 'single_choice', '[{"key":"A","text":"(A)太陽直射角度改變"},{"key":"B","text":"(B)火山地形作用"},{"key":"C","text":"(C)海水溫度升高"},{"key":"D","text":"(D)河川水量變動"}]'::jsonb, 'C', '飛魚洄游主要隨季節性海水溫度（黑潮暖流）變化而移動，海水溫度升高帶動飛魚季節性洄游至蘭嶼周邊海域。', '飛魚洄游與海水溫度', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 48);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 49, '某個縣政府為了發展觀光，在海邊設立海濱公園，並以「人」為主題，設計裝置藝術以及步道，某一天小明因為失戀來到這座海濱公園，發現該裝置藝術內部以南島民族作為主題的地板設計（設計圖如右附圖所示），標註著海濱公園附近的離島、國家，象徵著臺灣是南島民族的發源地，而每一個離島、國家皆有標註里程數。請問：歷經2024年颱風侵襲，縣政府決定裝置藝術的地板需要重新設計，請問把哪一些地名拿掉，可以符合「南島民族」的這個主題？（甲）越南；（乙）紐西蘭；（丙）蘇門答臘；（丁）澳大利亞；（戊）馬紹爾群島', 'single_choice', '[{"key":"A","text":"(A)甲乙"},{"key":"B","text":"(B)甲丁"},{"key":"C","text":"(C)乙丙丁"},{"key":"D","text":"(D)乙丙戊"}]'::jsonb, 'B', '紐西蘭（毛利人）、蘇門答臘（印尼）、馬紹爾群島皆屬南島語族分布範圍；越南（京族主體屬南亞語系）與澳大利亞（原住民屬非南島語族的獨立語系）不屬於南島民族範疇，應予拿掉。', '南島語族分布範圍', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 49);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 50, '（情境同第49題）小明發現海濱公園的海灘跟想像中的不一樣，地上大多都是以鵝卵石、礫石居多，請問造成海濱公園以「礫灘」為主的最主要原因為何？', 'single_choice', '[{"key":"A","text":"(A)臺灣為板塊交接處，多高山"},{"key":"B","text":"(B)臺灣午後雷陣雨及颱風降水強度大"},{"key":"C","text":"(C)山脈南北縱貫，河川東西分流"},{"key":"D","text":"(D)臺灣山脈偏東，東部河流較西部短"}]'::jsonb, 'D', '臺灣中央山脈偏東，東部河川短促且坡度陡峭，河流搬運能力有限、堆積物顆粒較粗，因此東部海岸多形成礫灘而非沙灘。', '臺灣東部礫灘成因', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 50);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 51, '右附表為2018年世界橡膠與輪胎前五大出口國，橡膠為輪胎的主要原料。請問：輪胎是大宗需求的工業製品，面對橡膠生產地和需求地的落差，必須藉由國際貿易來促成供需平衡。但這樣緊密的貿易關係存在不平等的交換，請問：不平等的交換反映在哪些面向？（甲）農業生產國僅能分配到微薄的利益；（乙）已開發國家生產工業產品需要消耗大量勞力；（丙）開發中國家需要種植糧食作物，而無法自經濟作物獲利；（丁）已開發國家對開發中國家出口高價工業產品，藉此獲取經濟利益', 'single_choice', '[{"key":"A","text":"(A)甲乙"},{"key":"B","text":"(B)乙丙"},{"key":"C","text":"(C)甲丁"},{"key":"D","text":"(D)丙丁"}]'::jsonb, 'C', '不平等交換的核心在於：初級產品生產國僅獲微薄利益（甲），而已開發國家藉由出口高附加價值工業產品獲取高額利潤（丁）；乙敘述與工業生產實情相反（已開發國家工業生產通常資本/技術密集而非勞力密集）。', '橡膠貿易的不平等交換', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 51);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 52, '（情境同第51題）若橡膠出口國想要團結自身的力量，建立與橡膠需求國合理且公平的貿易關係，可透過哪一個區域組織發聲（哪一個區域組織包含最多橡膠生產國）？', 'single_choice', '[{"key":"A","text":"(A)東南亞國協"},{"key":"B","text":"(B)北美貿易組織"},{"key":"C","text":"(C)南方共同市場"},{"key":"D","text":"(D)歐盟"}]'::jsonb, 'A', '世界主要橡膠出口國（泰國、印尼、越南、馬來西亞等）多為東南亞國家，東南亞國協（ASEAN）涵蓋其中最多橡膠生產國。', '橡膠出口國與東南亞國協', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 52);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 53, '（情境同第51、52題）橡膠盛產於東南亞與非洲國家，其農業活動示意圖為何？（附圖為(A)~(D)四種農業活動示意圖，呈現作物／農家／市場的流向關係，部分含天然牧草／牲畜／加肥廠等元素）', 'single_choice', '[{"key":"A","text":"(A)（示意圖A：作物-農家-市場單純流向）"},{"key":"B","text":"(B)（示意圖B：含天然牧草、牲畜、加肥廠等元素）"},{"key":"C","text":"(C)（示意圖C：作物-牲畜-市場-農家複合流向）"},{"key":"D","text":"(D)（示意圖D：作物-初級加工廠-農家-市場流向）"}]'::jsonb, 'A', '橡膠屬熱帶栽培業經濟作物，示意圖應呈現作物由農家生產後直接流向市場（出口）的單純模式，不涉及畜牧相關元素；四張示意圖之精確差異因照片解析度限制無法逐一確認，建議人工對照原圖覆核。', '熱帶栽培業農業活動示意圖（橡膠）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 53);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 54, '邦加羅爾是印度的IT中心，也是印度高科技的匯集處，擁有許多高階新技術開發區，被印度人形容為「矽谷」，在某些方面甚至超過美國矽谷，是印度人的驕傲。（甲）在世界各國外資的投入下，邦加羅爾的生活條件和世界平均水準逐漸拉近。但同時，擁有大量工作機會的邦加羅爾，吸引周邊鄉村的人才前往就業，更加擴大了印度的城鄉差距。請回答下列問題：文中（甲）的內容較符合下列哪一項核心地區與邊陲地區的關係？', 'single_choice', '[{"key":"A","text":"(A)擴散效應"},{"key":"B","text":"(B)乘數效應"},{"key":"C","text":"(C)反吸效應"},{"key":"D","text":"(D)邊際效應"}]'::jsonb, 'A', '外資投入使當地生活條件逐漸接近世界平均水準，體現核心區域發展效益向外擴散、拉近與周邊差距的「擴散效應」。', '核心邊陲關係（擴散效應）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 54);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 55, '（情境同第54題）下列何者為邦加羅爾發展較佳的高科技產業？', 'single_choice', '[{"key":"A","text":"(A)半導體代工"},{"key":"B","text":"(B)軟體設計產業"},{"key":"C","text":"(C)高科技紡織"},{"key":"D","text":"(D)衛星航太產業"}]'::jsonb, 'B', '邦加羅爾以軟體開發與資訊服務業（IT services/software）聞名全球，並非以半導體製造代工見長（後者較屬臺灣、韓國強項）。', '邦加羅爾軟體產業', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 55);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 56, '（情境同第56題）圖中的（甲）最適合填入下列一個詞語？', 'single_choice', '[{"key":"A","text":"(A)能源礦藏"},{"key":"B","text":"(B)核心技術"},{"key":"C","text":"(C)經濟結構"},{"key":"D","text":"(D)糧食來源"}]'::jsonb, 'D', '依考生原始標記結果為(D)；此題所依附之概念圖（甲乙丙分類架構）因照片模糊、跨頁摺疊，無法完整重建圖中甲乙丙的確切定義與相互關係，建議人工對照原稿全面覆核題幹與選項。', '東亞高科技產業國際分工概念圖（原稿模糊，待覆核）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 56);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 57, '2018年統計，臺灣移工人數已超過70萬人，主要分布於臺灣的都會區，下列有關臺灣2018年移工的敘述何者正確？（新北市移工448,753人，占約63.5%；社福移工有258,097人，占約36.5%；於新北市從事「營建業」的移工比社福移工人數多；社福移工從事看護等工作，吸引的移工人數比營建業移工多）', 'single_choice', '[{"key":"A","text":"(A)移工分布以五大都會市統計，社福移工的分布最特別"},{"key":"B","text":"(B)宜蘭縣移工有448,753人，社福移工工有258,097人"},{"key":"C","text":"(C)新北市於印尼移工人數最多，所以新北市房仲移工也最多"},{"key":"D","text":"(D)新北市有關社福移工人數較多，社福移工主要從事「看護」"}]'::jsonb, 'D', '社福類移工（社會福利類，主要從事家庭看護等工作）在新北市為數眾多，(D)敘述最符合原文描述；本題原始題幹及選項因照片旋轉90度拍攝、部分文字模糊，轉錄信心度較低，建議人工對照原稿覆核。', '臺灣2018年移工分布統計（原稿模糊，待覆核）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 57);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 58, '右表為新北、臺北、臺中三都之人口數、人口密度、自然增加率、社會增加率、性別比等統計資料。請問：新北市有印尼籍移工分布最多，若比較新北、臺北、臺中三市的相關資料，則下列敘述何者正確？', 'single_choice', '[{"key":"A","text":"(A)新北市人口數最多"},{"key":"B","text":"(B)新北市依人口比例移工也最多"},{"key":"C","text":"(C)臺中市因社會增加率為負，吸引的移工較少"},{"key":"D","text":"(D)臺北市自然增加率最高"}]'::jsonb, 'C', '依右表資料，臺中市社會增加率為負值（-2.91），與人口淨遷出、移工吸引力較低的推論相符；本題涉及表格中多欄數值比較，原始照片部分數字因拍攝角度模糊，建議人工對照原稿覆核完整表格數值。', '三都人口統計比較（原稿部分模糊，待覆核）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 58);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 59, '「跨國企業競逐的『稀缺性』資源，主要原因為何」請問下列敘述何者正確？（上述跨國企業之間既競爭又合作的態勢，主要原因為其經濟目的）', 'single_choice', '[{"key":"A","text":"(A)相互競爭卻能夠合作的矛盾態勢"},{"key":"B","text":"(B)為了將生產成本降到最低，而相互合作卻又競爭關鍵區位的轉移力"},{"key":"C","text":"(C)希望將生產成本降到最低，而相互合作卻又競爭最終目的，而相互合作卻又競爭力最弱"},{"key":"D","text":"(D)藉機削弱競爭對手的競爭力"}]'::jsonb, 'C', '依考生原始標記結果為(C)；本題原始照片文字有明顯重複/斷句錯亂之虞（選項文字疑似OCR轉錄時重複片段），無法確認精確原文，強烈建議人工對照原稿重新確認完整題幹與選項文字。', '跨國企業競合關係（原稿文字疑有誤植，待覆核）', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'tm_4' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 59);
+
+-- Repository track: civics-g10-ch5-6-exam-20260730 (civics)
+insert into public.materials (origin_key, subject_id, title, chapter, grade, category, source_track)
+select 'civics-g10-ch5-6-exam-20260730', s.id, '公民與社會｜所有權、勞動三權與夫妻財產制、繼承 重點整理', '第5～6課', '高一', '所有權與物上請求權／勞動三權與勞動基準法／夫妻財產制與法定繼承', 'REPOSITORY'
+from public.subjects s where s.code = 'civics'
+on conflict (origin_key) do update set
+  subject_id = excluded.subject_id, title = excluded.title, chapter = excluded.chapter,
+  grade = excluded.grade, category = excluded.category, source_track = excluded.source_track;
+insert into public.question_sets (material_id, subject_id, source, title)
+select m.id, m.subject_id, 'ORIGINAL', m.title from public.materials m where m.origin_key = 'civics-g10-ch5-6-exam-20260730'
+  and not exists (select 1 from public.question_sets qs where qs.material_id = m.id and qs.source = 'ORIGINAL');
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 1, '《民法》保障人民的私有財產權，包括對於物品的所有權和使用權，請問依據法律保障的物權特性，下列說明何者正確？', 'single_choice', '[{"key":"A","text":"佳惠向小美借走手機，就會因此獲得小美手機的所有權"},{"key":"B","text":"莉莉想完成賣掉電視的交易，必須做書面登記才算完成"},{"key":"C","text":"立中買了一臺筆電，可因保護之相對性而主張其所有權"},{"key":"D","text":"小佳和小玲合買一本書，但是這本書只會有一個所有權"}]'::jsonb, 'D', '共有情形下不論人數多寡，同一標的物仍只存在「一個」所有權，由共有人分享應有部分，此即所有權的排他性；(A)借用不移轉所有權，(B)動產所有權移轉以交付為要件而非登記，(C)「相對性」並非所有權特性用語（應為絕對性），皆為混淆用詞的陷阱選項。', '所有權的排他性', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'civics-g10-ch5-6-exam-20260730' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 1);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 2, '下列關於所有權特性與說明的配對，何者正確？', 'single_choice', '[{"key":"A","text":"直接支配性：指權利人可以對「任何人」主張他擁有的權利"},{"key":"B","text":"保護絕對性：是指一個標的物上不會同時存在兩個所有權，可以排除其他無權利人的干涉"},{"key":"C","text":"排他性：不需他人意思的介入，由權利人支配自己所擁有的物品"},{"key":"D","text":"優先性：對於同一標的物同時存有債權與物權時，物權效力會先於債權"}]'::jsonb, 'D', '(A)所述其實是絕對性的定義，(B)所述其實是排他性的定義，(C)所述其實是直接支配性的定義——本題刻意將四個特性的定義互相對調，只有(D)優先性「物權效力先於債權」對應正確。', '所有權特性的定義配對', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'civics-g10-ch5-6-exam-20260730' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 2);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 3, '李家在臺北市社子島擁有數筆土地，這些土地在日治時期登記的姓名為「李根勇」等157人分別共有。1932年，這些土地因自然環境變遷沉入河川而遭政府抹消登記。2002年，臺北市士林地政事務所公告這些土地重新浮出水面並編列新地號，然後在2007年登記為國有土地。李根勇的後代繼承人認為依《土地法》第12條規定，土地浮覆後所有權便應該回復，於是向法院提起訴訟，要求塗銷國有登記，以保障自己的所有權。根據《民法》相關規定，李家後代主張最符合哪兩個請求權？（浮覆地：原本是陸地的土地，因自然變遷或河川改道等原因而暫時成為水域，之後該土地又重新浮出水面成為陸地）', 'single_choice', '[{"key":"A","text":"損害賠償請求權、所有物返還請求權"},{"key":"B","text":"所有物返還請求權、妨害防止請求權"},{"key":"C","text":"所有物返還請求權、妨害除去請求權"},{"key":"D","text":"損害賠償請求權、妨害防止請求權"}]'::jsonb, 'C', '要求返還浮覆後的土地屬「所有物返還請求權」；塗銷國有登記是排除一個「已經發生」的妨害（不實登記），屬「妨害除去請求權」，而非尚未發生的「妨害防止請求權」，故正確組合為(C)。', '物上請求權三分法：除去 vs 防止', 'hard'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'civics-g10-ch5-6-exam-20260730' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 3);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 4, '建中與明明於2024年9月結婚，建中婚前擁有財產1,000萬，離婚時財產總額為5,100萬，另有酒店欠款100萬。明明婚前擁有財產500萬，婚後建中贈與1,200萬、父母贈與結婚賀禮500萬，離婚時財產總額為4,500萬。兩人結婚時沒有約定夫妻財產制，且離婚後無另外約定，請問在剩餘財產分配請求權方面，建中應給明明多少金額？', 'single_choice', '[{"key":"A","text":"850萬元"},{"key":"B","text":"2,250萬元"},{"key":"C","text":"2,000萬元"},{"key":"D","text":"0元"}]'::jsonb, 'A', '建中婚後淨額＝5,100－1,000（婚前財產）－100（債務）＝4,000萬；明明婚後淨額＝4,500－500（婚前財產）－1,200－500（無償取得之贈與，應排除）＝2,300萬；差額＝4,000－2,300＝1,700萬，平均分配後建中應給付明明1,700÷2＝850萬元。', '法定財產制之剩餘財產分配計算', 'hard'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'civics-g10-ch5-6-exam-20260730' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 4);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 5, '某富商去世後留下6,000萬元遺產，留有大房（已歿）之子女四人，及二房（未登記結婚）母子二人。該富商遺囑指定遺產由二房獨子一人繼承，若其他繼承人均主張特留分，請問該二房獨子最終可繼承多少遺產？', 'single_choice', '[{"key":"A","text":"1,000萬"},{"key":"B","text":"1,200萬"},{"key":"C","text":"3,500萬"},{"key":"D","text":"3,600萬"}]'::jsonb, 'D', '二房未辦理結婚登記不具配偶繼承權，但其獨子仍為直系血親卑親屬；連同大房子女四人，共5名子女為繼承人，應繼分各6,000÷5＝1,200萬，特留分為應繼分之二分之一即600萬。大房四名子女各主張特留分600萬，合計2,400萬；二房獨子最終取得6,000－2,400＝3,600萬元。', '法定繼承應繼分與特留分計算', 'hard'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'civics-g10-ch5-6-exam-20260730' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 5);
+insert into public.questions (question_set_id, "index", text, question_type, options, correct_answer, explanation, knowledge_point, difficulty)
+select qs.id, 6, '顧寶有兩個兒子、一個女兒，其生前立遺囑將所有財產都指定給好朋友阿青繼承。過世後，留下1,000萬元，負債200萬元，顧寶的妻子與三個小孩依照遺囑與特留分的規定，各別可得到多少遺產？', 'single_choice', '[{"key":"A","text":"各得100萬元"},{"key":"B","text":"妻子600萬，孩子則均分200萬"},{"key":"C","text":"妻子200萬，子女各得100萬"},{"key":"D","text":"皆無權獲得"}]'::jsonb, 'A', '淨遺產＝1,000－200＝800萬；配偶與3名子女共4人平均分應繼分，各200萬；特留分為應繼分之二分之一，各100萬；遺囑全數指定給非繼承人阿青，妻子與3名子女均得依特留分規定各主張100萬元。', '配偶與子女之應繼分及特留分計算', 'medium'
+from public.question_sets qs join public.materials m on m.id = qs.material_id
+where m.origin_key = 'civics-g10-ch5-6-exam-20260730' and qs.source = 'ORIGINAL'
+  and not exists (select 1 from public.questions q where q.question_set_id = qs.id and q."index" = 6);
+

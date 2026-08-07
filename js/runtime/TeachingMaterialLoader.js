@@ -170,12 +170,87 @@ AHS.TeachingMaterialLoader = (function () {
     var materialForRuntime = shallowClone(entry.material || {});
     var runtimeSubjectKey = subjectKeyFromChineseName(materialForRuntime.subject);
     if (runtimeSubjectKey) { materialForRuntime.subject = runtimeSubjectKey; }
+    /* Sprint AI-126B Part 2 v1.1, Task 1/3: originKey carries this
+       Package entry's own stable external id ("tm_1", ...) onto the
+       MaterialRuntime record — the only way MaterialRuntime.pushProgress()
+       can later resolve this record's real Supabase materials.id. */
+    materialForRuntime.originKey = entry.materialId;
     var record = AHS.MaterialRuntime.add(materialForRuntime);
     if (!record || !record.id) { return null; }
     idMap[entry.materialId] = record.id;
     saveIdMap(idMap);
     loadSummary(entry, record.id);
+    pushMaterial(entry.materialId, materialForRuntime, "PACKAGE");
     return record.id;
+  }
+
+  /* pushMaterial(originKey, materialForRuntime, sourceTrack) — Sprint
+     AI-126B Part 2 v1.1, Task 1 (Material Repository). Fire-and-forget
+     read-then-upsert to public.materials, keyed by this material's own
+     real, stable origin_key — same pattern every other domain's push
+     glue already uses (WrongBook/KnowledgeMastery/Settings). Only ever
+     called with a real Package/Repository-track entry (never an
+     ordinary Mock/demo Material Center upload — see this file's own
+     header on why only real content flows through this Loader at all).
+     Honest limitation, not a bug: materials is an Admin Only write per
+     RLS (20260807000005_rls_policies.sql) and no mock client-side
+     account holds is_admin, so this Insert/Update attempt will fail
+     (silently, via SyncBridge.pushFireAndForget's own error-swallowing)
+     for every mock student session today — Task 2's real Material
+     Migration (supabase/seed/0002_materials.sql, applied via elevated
+     --linked access) is the actual mechanism that populates materials
+     with real rows. This client-side path exists so the capability is
+     genuinely wired (Task 1's own "Read/Insert/Update/Delete" ask) and
+     so a future real-admin session can maintain materials without a
+     separate code path. */
+  function pushMaterial(originKey, materialForRuntime, sourceTrack) {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    AHS.SyncBridge.subjectIdFor(materialForRuntime.subject).then(function (subjectId) {
+      if (!subjectId) { return; }
+      var repo = AHS.RepositoryFactory.create();
+      var row = {
+        origin_key: originKey,
+        subject_id: subjectId,
+        title: materialForRuntime.title || "",
+        chapter: materialForRuntime.chapter || "",
+        grade: materialForRuntime.grade || "",
+        category: materialForRuntime.category || "",
+        source_track: sourceTrack,
+        created_by: identity.userId
+      };
+      AHS.SyncBridge.pushFireAndForget(function () {
+        return repo.read("materials", "origin_key=eq." + encodeURIComponent(originKey)).then(function (readResult) {
+          if (readResult.error) { return readResult; }
+          if (readResult.data && readResult.data.length) {
+            return repo.update("materials", "id=eq." + readResult.data[0].id, row);
+          }
+          return repo.insert("materials", row);
+        });
+      });
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method (Task 1's Read +
+     Task 8 verification). Reads every real materials row this
+     authenticated session can see (RLS: select is open to any
+     authenticated user, unlike Insert/Update/Delete). Does NOT merge
+     into MaterialRuntime's local store — the Package/Repository JS
+     content already loaded by load() remains the single, authoritative
+     rendering source (no UI/rendering-pipeline change, per this round's
+     restrictions); this is a read/verification capability, the same
+     honest scope every other domain's pullFromRepository() documents
+     for itself. */
+  function pullFromRepository() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("materials", "select=origin_key,title,chapter,grade,category,source_track").then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
+      return { pulled: result.data.length, materials: result.data };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
   }
 
   function examIdFor(runtimeMaterialId) {
@@ -393,6 +468,7 @@ AHS.TeachingMaterialLoader = (function () {
        untouched for its own existing display callers. */
     if (meta.createdAt) { partial.date = meta.createdAt; partial.createdAt = meta.createdAt; }
     if (summary.title) { partial.title = summary.title; } /* this record shape HAS a real title field, unlike Package metadata — no derivation judgment call needed here */
+    partial.originKey = record.id; /* Sprint AI-126B Part 2 v1.1, Task 1/3 — see resolveMaterialId()'s identical comment above */
     return partial;
   }
 
@@ -488,11 +564,13 @@ AHS.TeachingMaterialLoader = (function () {
     var runtimeMaterialId = idMap[record.id];
     if (!runtimeMaterialId) {
       if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return; }
-      var added = AHS.MaterialRuntime.add(repoMaterialPartial(record));
+      var materialPartial = repoMaterialPartial(record);
+      var added = AHS.MaterialRuntime.add(materialPartial);
       if (!added || !added.id) { return; }
       runtimeMaterialId = added.id;
       idMap[record.id] = runtimeMaterialId;
       saveIdMap(idMap);
+      pushMaterial(record.id, materialPartial, "REPOSITORY");
     }
     loadRepoSummary(record, runtimeMaterialId);
     if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
@@ -543,6 +621,7 @@ AHS.TeachingMaterialLoader = (function () {
        Assessment Mode split directly (same function loadQuestions()/
        loadMaterialRepositoryEntry() already call internally above — not
        a second implementation for tests to drift from). */
-    importAssessmentModeVariants: importAssessmentModeVariants
+    importAssessmentModeVariants: importAssessmentModeVariants,
+    pullFromRepository: pullFromRepository
   };
 })();
