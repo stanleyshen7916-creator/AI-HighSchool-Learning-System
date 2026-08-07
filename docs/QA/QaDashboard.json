@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T01:32:37.117Z",
+  "generatedAt": "2026-08-07T03:20:38.493Z",
   "overall": "PASS",
   "suites": [
     {
@@ -7,98 +7,98 @@
       "result": "PASS",
       "pass": 330,
       "fail": 0,
-      "durationMs": 9096
+      "durationMs": 7391
     },
     {
       "name": "PipelineRegression",
       "result": "PASS",
       "pass": 6,
       "fail": 0,
-      "durationMs": 54
+      "durationMs": 39
     },
     {
       "name": "RepositoryFoundation",
       "result": "PASS",
       "pass": 29,
       "fail": 0,
-      "durationMs": 2336
+      "durationMs": 1865
     },
     {
       "name": "MaterialPipelineRegression",
       "result": "PASS",
       "pass": 37,
       "fail": 0,
-      "durationMs": 3086
+      "durationMs": 2617
     },
     {
       "name": "AnalyticsRegression",
       "result": "PASS",
       "pass": 35,
       "fail": 0,
-      "durationMs": 1221
+      "durationMs": 1007
     },
     {
       "name": "LearningFlowRegression",
       "result": "PASS",
       "pass": 45,
       "fail": 0,
-      "durationMs": 1405
+      "durationMs": 1227
     },
     {
       "name": "WorkspaceRegression",
       "result": "PASS",
       "pass": 36,
       "fail": 0,
-      "durationMs": 736
+      "durationMs": 669
     },
     {
       "name": "MaterialCenterRegression",
       "result": "PASS",
       "pass": 12,
       "fail": 0,
-      "durationMs": 848
+      "durationMs": 785
     },
     {
       "name": "FolderRegression",
       "result": "PASS",
       "pass": 11,
       "fail": 0,
-      "durationMs": 703
+      "durationMs": 664
     },
     {
       "name": "AnalyticsFilterRegression",
       "result": "PASS",
       "pass": 6,
       "fail": 0,
-      "durationMs": 888
+      "durationMs": 794
     },
     {
       "name": "TutorRegression",
       "result": "PASS",
       "pass": 8,
       "fail": 0,
-      "durationMs": 766
+      "durationMs": 658
     },
     {
       "name": "WorkspaceUIRegression",
       "result": "PASS",
       "pass": 28,
       "fail": 0,
-      "durationMs": 1227
+      "durationMs": 934
     },
     {
       "name": "KnowledgeEngineRegression",
       "result": "PASS",
       "pass": 44,
       "fail": 0,
-      "durationMs": 1421
+      "durationMs": 1113
     },
     {
       "name": "Playwright",
       "result": "PASS",
       "pass": 60,
       "fail": 0,
-      "durationMs": 63634.582
+      "durationMs": 43972.264
     }
   ]
 }
