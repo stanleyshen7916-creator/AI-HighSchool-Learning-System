@@ -29,7 +29,17 @@ AHS.SupabaseClient = (function () {
 
   var SESSION_KEY = "supabase.session";
 
+  /* Sprint AI-126B Final PAT: prefers AHS.SupabaseConfigLocal (set by the
+     git-ignored js/data/SupabaseConfig.local.js — see that file's own
+     header and js/data/SupabaseConfig.js's) whenever it exists and
+     carries a real, non-empty url; otherwise falls back to the committed
+     AHS.SupabaseConfig placeholder exactly as before. Every other
+     function in this file is unchanged — this is the only place that
+     reads either global. */
   function config() {
+    if (AHS.SupabaseConfigLocal && AHS.SupabaseConfigLocal.url) {
+      return AHS.SupabaseConfigLocal;
+    }
     return (AHS.SupabaseConfig || { url: "", anonKey: "" });
   }
 

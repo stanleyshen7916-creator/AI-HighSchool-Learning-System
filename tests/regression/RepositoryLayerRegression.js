@@ -66,6 +66,16 @@ repo.read("subjects", "code=eq.math").then(function (result) {
   check("AHS.SupabaseConfig.anonKey is empty (Project Owner has not supplied it yet)", AHS.SupabaseConfig.anonKey === "");
   check("AHS.SupabaseClient.isConfigured() honestly reports false while blank", AHS.SupabaseClient.isConfigured() === false);
 
+  console.log("\n[6] Sprint AI-126B Final PAT — git-ignored SupabaseConfig.local.js override precedence (in-memory only, no file touched)");
+  check("AHS.SupabaseConfigLocal is undefined by default (no local file present in this test run)", AHS.SupabaseConfigLocal === undefined);
+  AHS.SupabaseConfigLocal = { url: "https://local-override-test.supabase.co", anonKey: "local-anon-key" };
+  check("SupabaseClient.isConfigured() becomes true once a real-looking local override is set", AHS.SupabaseClient.isConfigured() === true);
+  AHS.SupabaseConfigLocal = { url: "", anonKey: "" };
+  check("A local override with a blank url does NOT take priority (falls back to AHS.SupabaseConfig, still blank)", AHS.SupabaseClient.isConfigured() === false);
+  delete AHS.SupabaseConfigLocal;
+  check("Removing the local override restores the exact same blank-config behavior as before", AHS.SupabaseClient.isConfigured() === false);
+  check("AHS.SupabaseConfig itself is untouched by the local-override mechanism (still the committed blank placeholder)", AHS.SupabaseConfig.url === "" && AHS.SupabaseConfig.anonKey === "");
+
   console.log("\nRepositoryLayerRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);
 });
