@@ -121,6 +121,18 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
 }).then(function (loaderPullResult) {
   check("TeachingMaterialLoader.pullFromRepository() resolves { pulled: 0 } when not configured (never throws)", loaderPullResult && loaderPullResult.pulled === 0);
 
+  console.log("\n[9] AHS.RepositorySync — Sprint AI-126C orchestration (fire-and-forget, additive only, never throws at require-time)");
+  AHS.WrongBookRuntime.reset();
+  AHS.KnowledgeMasteryRuntime.reset();
+  var settingsBefore = AHS.SettingsRuntime.get();
+  var materialsBefore = AHS.MaterialRuntime.list().length;
+  require(path.join(REPO, "js/repository/RepositorySync.js"));
+  check("AHS.RepositorySync.pullAll is a real function", typeof AHS.RepositorySync.pullAll === "function");
+  check("requiring RepositorySync.js (which auto-calls pullAll() at module load) never throws and never touches Runtime state while not configured", AHS.WrongBookRuntime.list().length === 0 && AHS.MaterialRuntime.list().length === materialsBefore);
+  check("SettingsRuntime state is untouched by the auto-pull while not configured", JSON.stringify(AHS.SettingsRuntime.get()) === JSON.stringify(settingsBefore));
+  AHS.RepositorySync.pullAll();
+  check("calling pullAll() again explicitly is safe (idempotent no-op, never throws)", true);
+
   console.log("\nRuntimeSyncRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);
 }).catch(function (err) {
