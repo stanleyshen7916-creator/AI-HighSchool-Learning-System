@@ -13,6 +13,23 @@ const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 const { seedSession } = require("../helpers/seed.js");
 
+/* todayLikeWrongBook() — same "YYYY/MM/DD" convention
+   AHS.WrongBookRuntime/AHS.StatisticsRuntime.newWeaknessesToday() use for
+   firstError/lastError (see js/runtime/StatisticsRuntime.js's own
+   formatTodayLikeWrongBook()). PAT-124-⑧ seeds a wrong item and asserts
+   Home's "今日新增弱點" KPI counts it — that KPI is defined as
+   firstError === real today, so the seed must use the real, live date,
+   not a frozen literal (a hardcoded "YYYY/MM/DD" here would silently
+   stop matching "today" the very next real calendar day, failing with
+   "Expected >= 1, Received 0" — this bit a real run once real time
+   moved past the day this literal was originally written on; the
+   Runtime was never desynced, only this fixture's own clock was). */
+function todayLikeWrongBook() {
+  const d = new Date();
+  const pad = (n) => (n < 10 ? "0" + n : String(n));
+  return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+}
+
 function collectErrors(page) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -317,7 +334,7 @@ test("PAT-124-⑧：首頁 KPI 全部即時由 Runtime 計算，與知識弱點�
         materialId: "", knowledgePoint: "kp_ai124_kpi", question: "KPI 測試題目",
         options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
         yourAnswer: "B", correctAnswer: "A", explanation: "",
-        errorCount: 1, lastError: "2026/08/06", firstError: "2026/08/06", masteredAt: null,
+        errorCount: 1, lastError: todayLikeWrongBook(), firstError: todayLikeWrongBook(), masteredAt: null,
         bookmarked: false, archived: false, correctStreak: 0
       }],
       seq: 1
