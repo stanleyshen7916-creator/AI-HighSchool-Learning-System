@@ -1,0 +1,32 @@
+# AI-126A-3 Deployment — minimal config.toml required by the Supabase CLI
+# for `supabase link` / `supabase db push` / `supabase db query --linked` /
+# `supabase migration list` to run at all (the CLI errors with "Missing
+# config: open supabase/config.toml" without one — confirmed against a real
+# local Supabase CLI install, not assumed). Deliberately NOT the full
+# `supabase init` template: this project has no local Postgres/Auth/Storage/
+# Edge Functions dev workflow (per CLAUDE.md, this is a static prototype —
+# `supabase start` is never run), so only the fields the remote-deploy
+# commands above actually need are kept.
+#
+# A string used to distinguish this project locally. Not the real Supabase
+# project ref — that comes only from the SUPABASE_PROJECT_ID GitHub Secret
+# via `supabase link --project-ref`.
+project_id = "ai-highschool-learning-system"
+
+[db]
+# Must match the real Supabase project's Postgres major version or `supabase
+# link`/`db push` fail with "Remote database Postgres version N is
+# incompatible with db.major_version M". Set to 17 (the current default for
+# newly-created Supabase projects, confirmed via a real `supabase init` run
+# against Supabase CLI 2.111.0) since the real project's actual version is
+# not yet known from this session; the deploy workflow's own job log will
+# state the real version if this needs correcting.
+major_version = 17
+
+[db.seed]
+# Applies supabase/seed/0001_subjects.sql automatically during local
+# `supabase db reset` (parity with the seed/ directory's own documented
+# purpose); the remote deploy workflow applies it explicitly via
+# `supabase db query --linked --file`, not through this section.
+enabled = true
+sql_paths = ["seed/0001_subjects.sql"]

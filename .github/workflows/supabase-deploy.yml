@@ -44,3 +44,39 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      # AI-126A-3: post-deploy verification. All of these run through the
+      # Supabase CLI's own Management API (`--linked`), never a hand-built
+      # psql/pooler connection string — avoids guessing this project's real
+      # pooler region/IPv4-vs-IPv6 host, which is a documented source of
+      # CI connection failures for direct Postgres connections. Output is
+      # schema/row-count/boolean data only, never a secret value.
+      - name: Verify migration history
+        run: supabase migration list
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      - name: Apply seed data (subjects)
+        run: supabase db query --linked --file supabase/seed/0001_subjects.sql
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Verify tables
+        run: |
+          supabase db query --linked "select count(*) as table_count from pg_tables where schemaname = 'public';"
+          supabase db query --linked "select tablename from pg_tables where schemaname = 'public' order by tablename;"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Verify RLS enabled + policies
+        run: |
+          supabase db query --linked "select tablename, rowsecurity from pg_tables where schemaname = 'public' order by tablename;"
+          supabase db query --linked "select count(*) as policy_count from pg_policies where schemaname = 'public';"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Verify seed data
+        run: supabase db query --linked "select code, name from public.subjects order by code;"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

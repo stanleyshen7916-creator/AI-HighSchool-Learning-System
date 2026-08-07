@@ -1,6 +1,6 @@
-# AI-126A Deployment Preparation — GitHub Actions + Secrets Setup
+# AI-126A Deployment — GitHub Actions + Secrets Setup
 
-**Status**: infrastructure only. This document and `.github/workflows/supabase-deploy.yml` exist so a real deployment *can* be run later — **no migration has been deployed by this task**, and the workflow will not run on its own. It only runs when a human clicks "Run workflow" in the GitHub Actions tab, which has deliberately not been done as part of this task.
+**Status**: `.github/workflows/supabase-deploy.yml` is `workflow_dispatch`-only — it never runs automatically, only when explicitly triggered from the **Actions** tab or via the API.
 
 ## Why three secrets, and why these exact names
 
@@ -40,16 +40,19 @@ The workflow reads them only via `${{ secrets.SUPABASE_ACCESS_TOKEN }}` etc. —
    - `SUPABASE_PROJECT_ID`
 3. Do not paste any of these values anywhere else (commit messages, issues, PR descriptions, chat) — once saved as a repository secret, GitHub never displays the value again, only its name.
 
-## What happens after the three secrets exist
+## What the workflow does when run (`Actions → Supabase Deploy → Run workflow`)
 
-Nothing, automatically. `.github/workflows/supabase-deploy.yml` is `workflow_dispatch`-only, so it stays idle until a human explicitly runs it from the **Actions** tab (**Actions → Supabase Deploy → Run workflow**). Running it is a separate, future decision — this task's scope stops at making that run *possible*, not at performing it.
-
-When it eventually is run, the workflow will:
 1. Install the Supabase CLI (`supabase/setup-cli@v3`).
-2. `supabase link --project-ref $SUPABASE_PROJECT_ID`.
+2. `supabase link --project-ref $SUPABASE_PROJECT_ID` (uses `supabase/config.toml`, the minimal config file the CLI requires to run at all).
 3. `supabase db push` — applies every file in `supabase/migrations/`, in filename order, to the real linked project.
+4. `supabase migration list` — prints local vs. remote applied migration history (Migration verification).
+5. `supabase db query --linked --file supabase/seed/0001_subjects.sql` — applies the 9 fixed subject rows.
+6. `supabase db query --linked "..."` (read-only) — prints `public` schema table count/names, `rowsecurity` per table, and `pg_policies` count (Table + RLS verification).
+7. `supabase db query --linked "..."` (read-only) — prints the seeded `subjects` rows (Seed verification).
 
-It does not run `supabase/seed/0001_subjects.sql` or `supabase/schema/rollback.sql` — those remain explicit, separate manual steps (see `supabase/README.md`), never wired into CI, since seeding/rollback are not "deploy the schema" actions.
+Steps 4–7 all go through the CLI's `--linked` mode, which queries via Supabase's Management API rather than a direct Postgres/pooler connection — this avoids guessing the real project's pooler region or IPv4/IPv6 host, a documented source of CI connection failures for hand-built `psql` connection strings. None of these steps ever print a secret value — only schema names, row counts, and booleans.
+
+`supabase/schema/rollback.sql` is not run by this workflow — full teardown remains an explicit, separate manual step (see `supabase/README.md`), never wired into CI.
 
 ## Sources consulted for the secret names and CLI pattern above
 

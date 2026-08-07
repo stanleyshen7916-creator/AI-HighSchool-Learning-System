@@ -6,6 +6,7 @@
 
 ```
 supabase/
+  config.toml   minimal CLI config (required for link/push/query to run at all)
   migrations/   real, applicable Postgres migration files (Supabase CLI naming convention)
   schema/       schema documentation + rollback.sql (full teardown, not auto-applied)
   policies/     RLS design documentation
@@ -35,18 +36,18 @@ supabase link --project-ref <project-ref>
 supabase db push          # applies every file in migrations/, in filename order
 ```
 
-**Deployment infrastructure (AI-126A Deployment Preparation)**: `.github/workflows/supabase-deploy.yml` runs the same two commands via the official Supabase CLI GitHub Action, reading credentials only from GitHub repository secrets — see `supabase/DEPLOYMENT_SETUP.md` for the exact secret names and Project Owner setup steps. The workflow is `workflow_dispatch`-only (manual trigger required) and has not been run — no migration has been deployed to any real Supabase project via this workflow yet.
+**Deployment infrastructure**: `.github/workflows/supabase-deploy.yml` (`workflow_dispatch`-only, manual trigger required) runs `link` → `db push` → `migration list` → seed → table/RLS/seed verification via the official Supabase CLI GitHub Action, reading credentials only from GitHub repository secrets — see `supabase/DEPLOYMENT_SETUP.md` for the exact secret names, what each workflow step does, and Project Owner setup steps.
 
-To seed the fixed lookup data (`subjects`):
+To seed the fixed lookup data (`subjects`) manually, outside the workflow:
 
 ```bash
-psql "$SUPABASE_DB_URL" -f supabase/seed/0001_subjects.sql
+supabase db query --linked --file supabase/seed/0001_subjects.sql
 ```
 
 To fully tear down and rebuild (verification / disaster-recovery drill only — never run against a database with real user data without an explicit, separate decision to do so):
 
 ```bash
-psql "$SUPABASE_DB_URL" -f supabase/schema/rollback.sql
+supabase db query --linked --file supabase/schema/rollback.sql
 supabase db push
 ```
 
