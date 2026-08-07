@@ -41,6 +41,101 @@ AHS.WrongBookRuntime = (function () {
 
   var store = hydrate() || { items: [], seq: 0 };
 
+  /* --- Sprint AI-126B Part 2, Task 4: Supabase sync (additive only) ---
+     Every existing write path below still returns exactly what it did
+     before; pushRecord() is a fire-and-forget background write appended
+     AFTER persist() in each one, via AHS.SyncBridge (never blocks, never
+     changes a return value). record.supabaseId (new field, set once a
+     push first succeeds) is this record's real wrong_book.id — the only
+     way to target an UPDATE at the same remote row on a later edit,
+     since Supabase assigns that id, not this Runtime. Silently a no-op
+     wherever AHS.SyncBridge isn't loaded (e.g. a page that doesn't
+     include the Repository Layer scripts) or Supabase isn't configured. */
+  function pushRecord(record) {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    AHS.SyncBridge.subjectIdFor(record.subject).then(function (subjectId) {
+      if (!subjectId) { return; }
+      var repo = AHS.RepositoryFactory.create();
+      var row = {
+        user_id: identity.userId,
+        student_profile_id: identity.studentProfileId,
+        subject_id: subjectId,
+        knowledge_point: record.knowledgePoint || "",
+        question_text: record.question || "",
+        your_answer: record.yourAnswer || null,
+        correct_answer: record.correctAnswer || null,
+        explanation: record.explanation || "",
+        error_count: record.errorCount,
+        correct_streak: record.correctStreak || 0,
+        mastered_at: record.masteredAt || null,
+        bookmarked: !!record.bookmarked,
+        archived: !!record.archived
+      };
+      if (record.supabaseId) {
+        AHS.SyncBridge.pushFireAndForget(function () { return repo.update("wrong_book", "id=eq." + record.supabaseId, row); });
+        return;
+      }
+      AHS.SyncBridge.pushFireAndForget(function () {
+        return repo.insert("wrong_book", row).then(function (result) {
+          if (!result.error && result.data && result.data[0]) {
+            record.supabaseId = result.data[0].id;
+            persist();
+          }
+          return result;
+        });
+      });
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method (not part of the
+     existing synchronous list()/sync()/... contract those callers keep
+     using unchanged). Merges each real remote row into the local store
+     by supabaseId, so a fresh device/session picks up real prior
+     history instead of starting empty (Task 8's "不得使用 sessionStorage
+     作為資料來源"). Never removes a local-only record that hasn't pushed
+     yet. */
+  function pullFromRepository() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return Promise.resolve({ pulled: 0 }); }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("wrong_book", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
+      var bySupabaseId = {};
+      store.items.forEach(function (item) { if (item.supabaseId) { bySupabaseId[item.supabaseId] = item; } });
+      var pulled = 0;
+      result.data.forEach(function (row) {
+        var local = bySupabaseId[row.id];
+        if (!local) {
+          store.seq += 1;
+          local = { id: "wb_" + store.seq, questionId: row.question_id || "", materialId: row.material_id || "" };
+          store.items.push(local);
+        }
+        local.supabaseId = row.id;
+        local.subject = local.subject || "";
+        local.knowledgePoint = row.knowledge_point;
+        local.question = row.question_text;
+        local.yourAnswer = row.your_answer;
+        local.correctAnswer = row.correct_answer;
+        local.explanation = row.explanation;
+        local.errorCount = row.error_count;
+        local.correctStreak = row.correct_streak;
+        local.masteredAt = row.mastered_at;
+        local.bookmarked = row.bookmarked;
+        local.archived = row.archived;
+        local.firstError = local.firstError || row.first_error_at;
+        local.lastError = row.last_error_at;
+        pulled += 1;
+      });
+      persist();
+      return { pulled: pulled };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
+  }
+
   /* weaknessState(item) — Sprint AI-121 (Learning Knowledge Engine)
      AI-121-08: 錯題本 page renamed 知識弱點 (Knowledge Weakness) with a
      real state — NEW -> LEARNING -> MASTERED -> ARCHIVED, "不得真的刪除，
@@ -162,6 +257,7 @@ AHS.WrongBookRuntime = (function () {
       }
     });
     persist();
+    touched.forEach(pushRecord);
     return clone(touched);
   }
 
@@ -192,6 +288,7 @@ AHS.WrongBookRuntime = (function () {
           store.items[i].masteredAt = null;
         }
         persist();
+        pushRecord(store.items[i]);
         return clone(store.items[i]);
       }
     }
@@ -209,6 +306,7 @@ AHS.WrongBookRuntime = (function () {
       if (store.items[i].id === id) {
         store.items[i].archived = true;
         persist();
+        pushRecord(store.items[i]);
         return withWeaknessState(store.items[i]);
       }
     }
@@ -220,6 +318,7 @@ AHS.WrongBookRuntime = (function () {
       if (store.items[i].id === id) {
         store.items[i].archived = false;
         persist();
+        pushRecord(store.items[i]);
         return withWeaknessState(store.items[i]);
       }
     }
@@ -231,6 +330,7 @@ AHS.WrongBookRuntime = (function () {
       if (store.items[i].id === id) {
         store.items[i].bookmarked = !store.items[i].bookmarked;
         persist();
+        pushRecord(store.items[i]);
         return store.items[i].bookmarked;
       }
     }
@@ -287,6 +387,7 @@ AHS.WrongBookRuntime = (function () {
     unarchive: unarchive,
     weaknessState: weaknessState,
     reset: reset,
-    importRecords: importRecords
+    importRecords: importRecords,
+    pullFromRepository: pullFromRepository
   };
 })();

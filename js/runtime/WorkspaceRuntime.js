@@ -101,6 +101,13 @@ AHS.WorkspaceRuntime = (function () {
   function logout() {
     current = null;
     persist();
+    /* Sprint AI-126B Part 2, Task 2: real Supabase logout, fire-and-
+       forget — same call site every existing caller (js/ui/AppShell.js's
+       doLogout()) already uses unmodified, so this stays invisible
+       plumbing, not a UI change. No-op when Supabase isn't configured. */
+    if (AHS.AuthRepository && typeof AHS.AuthRepository.logout === "function") {
+      AHS.AuthRepository.logout();
+    }
   }
 
   /* storageNamespace() — AHS.PersistenceAdapter 的唯一呼叫進入點。

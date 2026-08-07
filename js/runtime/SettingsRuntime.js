@@ -82,6 +82,7 @@ AHS.SettingsRuntime = (function () {
       store[k] = partial[k];
     });
     persist();
+    pushSettings();
     return get();
   }
 
@@ -91,5 +92,55 @@ AHS.SettingsRuntime = (function () {
     return get();
   }
 
-  return { get: get, update: update, reset: reset };
+  /* pushSettings() — Sprint AI-126B Part 2, Task 7. public.user_settings
+     holds only show_tutor_suggestions/ai_gateway_enabled (profile.name/
+     grade already live on student_profiles — see that table's own
+     comment and this file's real Single Source header above; never
+     duplicated here). Read-then-upsert by the table's own real unique
+     (student_profile_id) constraint. Fire-and-forget; never changes
+     update()'s own already-returned value above. */
+  function pushSettings() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    var repo = AHS.RepositoryFactory.create();
+    var row = {
+      user_id: identity.userId,
+      student_profile_id: identity.studentProfileId,
+      show_tutor_suggestions: !!store.showTutorSuggestions,
+      ai_gateway_enabled: !!store.aiGatewayEnabled
+    };
+    AHS.SyncBridge.pushFireAndForget(function () {
+      return repo.read("user_settings", "student_profile_id=eq." + identity.studentProfileId).then(function (readResult) {
+        if (readResult.error) { return readResult; }
+        if (readResult.data && readResult.data.length) {
+          return repo.update("user_settings", "id=eq." + readResult.data[0].id, row);
+        }
+        return repo.insert("user_settings", row);
+      });
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method. Only the two
+     real toggles this table owns are merged in (profile.name/grade stay
+     locally sourced from AHS.WorkspaceRuntime/student_profiles, per the
+     Single Source split documented above — never overwritten here). */
+  function pullFromRepository() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return Promise.resolve({ pulled: 0 }); }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("user_settings", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+      if (result.error || !result.data || !result.data.length) { return { pulled: 0, error: result.error }; }
+      var row = result.data[0];
+      store.showTutorSuggestions = row.show_tutor_suggestions;
+      store.aiGatewayEnabled = row.ai_gateway_enabled;
+      persist();
+      return { pulled: 1 };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
+  }
+
+  return { get: get, update: update, reset: reset, pullFromRepository: pullFromRepository };
 })();

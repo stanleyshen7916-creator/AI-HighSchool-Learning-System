@@ -56,6 +56,16 @@ window.AHS = window.AHS || {};
         state.schoolId = null;
         state.semesterIds = [];
         state.step = 2;
+        /* Sprint AI-126B Part 2, Task 2: real Supabase Auth login, fired
+           invisibly the moment this Student is picked (no UI change —
+           see js/repository/AuthRepository.js's own header for why this
+           is the only way "真實 Email Login" + "保持目前 Login UI" can
+           both hold). Fire-and-forget: a no-op when Supabase isn't
+           configured, and never blocks/alters this existing picker flow
+           either way. */
+        if (AHS.AuthRepository && typeof AHS.AuthRepository.loginForMockStudent === "function") {
+          AHS.AuthRepository.loginForMockStudent(s);
+        }
         render();
       }));
     });
