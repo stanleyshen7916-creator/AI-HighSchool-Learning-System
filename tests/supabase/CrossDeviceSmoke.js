@@ -17,8 +17,14 @@
    unset. Not part of `npm test`'s default chain (real network call);
    run via `npm run test:supabase:cross-device`. */
 "use strict";
+const fs = require("fs");
 const path = require("path");
 const REPO = path.join(__dirname, "..", "..");
+/* Sprint AI-126B Final PAT: git-ignored local override (real
+   Project-Owner-supplied values) — see js/data/SupabaseConfig.js's own
+   header. Absent in every fresh clone/CI run, so this stays a real,
+   honest SKIP there. */
+const LOCAL_CONFIG_PATH = path.join(REPO, "js/data/SupabaseConfig.local.js");
 
 function freshDeviceState() {
   const store = {};
@@ -38,6 +44,7 @@ function loadAhsInto(sessionStorageStub) {
   global.window = global;
   window.sessionStorage = sessionStorageStub;
   require(path.join(REPO, "js/data/SupabaseConfig.js"));
+  if (fs.existsSync(LOCAL_CONFIG_PATH)) { require(LOCAL_CONFIG_PATH); }
   require(path.join(REPO, "js/data/WorkspaceData.js"));
   require(path.join(REPO, "js/core/PersistenceAdapter.js"));
   require(path.join(REPO, "js/core/SupabaseClient.js"));
@@ -80,7 +87,7 @@ async function main() {
   const AHS_A = loadAhsInto(deviceAStorage);
 
   if (!AHS_A.SupabaseClient.isConfigured()) {
-    report("Cross-Device Sync", "SKIP", "AHS.SupabaseConfig.url/anonKey empty — Project Owner has not provided real values yet");
+    report("Cross-Device Sync", "SKIP", "not configured — create git-ignored js/data/SupabaseConfig.local.js with real url/anonKey (see js/data/SupabaseConfig.js header)");
     console.log("\nCrossDeviceSmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");
     process.exit(0);
   }

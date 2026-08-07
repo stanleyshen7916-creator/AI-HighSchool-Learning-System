@@ -1,5 +1,14 @@
 node_modules/
 
+# Sprint AI-126B Final PAT (Cross Device Validation): real Supabase Project
+# URL / anon-publishable key, developer/Project-Owner-local override of
+# js/data/SupabaseConfig.js's committed blank placeholder — this repository
+# is Public, so real project-specific values must never be committed, even
+# though the anon/publishable key is designed by Supabase itself to be safe
+# to ship to a browser (RLS is the real protection). See
+# js/data/SupabaseConfig.js's own header for the load-precedence.
+js/data/SupabaseConfig.local.js
+
 # Sprint AI-116 QA Automation Framework: Playwright's own run output
 # (HTML report, test-results, ad-hoc screenshots) is ephemeral CI
 # artifact, regenerated every run and uploaded by

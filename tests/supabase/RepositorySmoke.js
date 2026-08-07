@@ -25,6 +25,7 @@
    Connect/Login/CRUD using only SUPABASE_URL/SUPABASE_ANON_KEY — no
    separately-provisioned test account or admin credential required. */
 "use strict";
+const fs = require("fs");
 const path = require("path");
 const REPO = path.join(__dirname, "..", "..");
 
@@ -38,6 +39,12 @@ window.sessionStorage = {
 };
 
 require(path.join(REPO, "js/data/SupabaseConfig.js"));
+/* Sprint AI-126B Final PAT: git-ignored local override (real
+   Project-Owner-supplied values), loaded only when it actually exists on
+   this machine — see js/data/SupabaseConfig.js's own header. Absent in
+   every fresh clone/CI run, so this stays a real, honest SKIP there. */
+const LOCAL_CONFIG_PATH = path.join(REPO, "js/data/SupabaseConfig.local.js");
+if (fs.existsSync(LOCAL_CONFIG_PATH)) { require(LOCAL_CONFIG_PATH); }
 require(path.join(REPO, "js/core/PersistenceAdapter.js"));
 require(path.join(REPO, "js/core/SupabaseClient.js"));
 require(path.join(REPO, "js/repository/Repository.js"));
@@ -57,7 +64,7 @@ async function main() {
   const repo = AHS.RepositoryFactory.create();
 
   if (!AHS.SupabaseClient.isConfigured()) {
-    report("Connect", "SKIP", "AHS.SupabaseConfig.url/anonKey empty — Project Owner has not provided real values yet");
+    report("Connect", "SKIP", "not configured — create git-ignored js/data/SupabaseConfig.local.js with real url/anonKey (see js/data/SupabaseConfig.js header)");
     report("Login", "SKIP", "not-configured");
     report("Read", "SKIP", "not-configured");
     report("Insert", "SKIP", "not-configured");
