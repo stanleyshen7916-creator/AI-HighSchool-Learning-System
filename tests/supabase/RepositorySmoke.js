@@ -122,6 +122,17 @@ async function main() {
     }
   }
 
+  /* Sprint AI-126B Part 2 v1.1, Task 1 — materials Read (RLS: select is
+     open to any authenticated user, unlike Insert/Update/Delete which
+     are Admin Only — see supabase/migrations/20260807000005_rls_policies.sql).
+     This smoke-test account is an ordinary (non-admin) user, so a real
+     Insert attempt here is EXPECTED to fail — asserting that failure is
+     itself real, honest RLS verification, not a bug in this test. */
+  const materialsReadResult = await repo.read("materials", "select=origin_key,title&limit=1");
+  report("Materials Read (RLS select open to authenticated)", !materialsReadResult.error ? "PASS" : "FAIL", materialsReadResult.error ? materialsReadResult.error.message : JSON.stringify(materialsReadResult.data));
+  const materialsInsertResult = await repo.insert("materials", { origin_key: "smoke_test_should_be_rejected_" + Date.now(), subject_id: "00000000-0000-0000-0000-000000000000", title: "Smoke Test (expect RLS rejection)" });
+  report("Materials Insert correctly rejected for non-admin (RLS Admin Only)", materialsInsertResult.error ? "PASS" : "FAIL", materialsInsertResult.error ? materialsInsertResult.error.message : "Insert unexpectedly succeeded — RLS policy regression");
+
   await repo.logout();
 
   console.log("\nSupabaseRepositorySmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");

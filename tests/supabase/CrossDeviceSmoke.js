@@ -50,6 +50,10 @@ function loadAhsInto(sessionStorageStub) {
   require(path.join(REPO, "js/runtime/WrongBookRuntime.js"));
   require(path.join(REPO, "js/runtime/KnowledgeMasteryRuntime.js"));
   require(path.join(REPO, "js/runtime/SettingsRuntime.js"));
+  require(path.join(REPO, "js/core/Icons.js"));
+  require(path.join(REPO, "js/data/AppConfig.js"));
+  require(path.join(REPO, "js/runtime/MaterialRuntime.js"));
+  require(path.join(REPO, "js/runtime/TeachingMaterialLoader.js"));
   return global.AHS;
 }
 
@@ -98,6 +102,23 @@ async function main() {
   AHS_A.SettingsRuntime.update({ showTutorSuggestions: false });
   report("Device A writes", "PASS", "WrongBook.sync() + KnowledgeMastery.recordAttempt() + Settings.update() called");
 
+  /* Task 1/3: Material Repository Read + Learning Progress push, gated on
+     Task 2's real Material Migration already having run against this
+     project — a fresh/unmigrated project honestly SKIPs rather than
+     fabricating a fake materials row to push progress against. */
+  let crossDeviceOriginKey = null;
+  const materialsRead = await AHS_A.RepositoryFactory.create().read("materials", "select=origin_key,title&limit=1");
+  if (materialsRead.error || !materialsRead.data || !materialsRead.data.length) {
+    report("Material Repository Read", "SKIP", "materials table empty — Task 2 Material Migration not yet applied to this project");
+  } else {
+    report("Material Repository Read", "PASS", "real materials row readable (RLS select open to authenticated) — " + materialsRead.data[0].origin_key);
+    crossDeviceOriginKey = materialsRead.data[0].origin_key;
+    const localMaterial = AHS_A.MaterialRuntime.add({ subject: "math", title: materialsRead.data[0].title, originKey: crossDeviceOriginKey });
+    AHS_A.MaterialRuntime.startLearning(localMaterial.id, { progress: 42, minutes: 7 });
+    AHS_A.MaterialRuntime.toggleFavorite(localMaterial.id);
+    report("Device A Learning Progress write", "PASS", "MaterialRuntime.startLearning()/toggleFavorite() called on a real migrated material");
+  }
+
   await waitForBackgroundPushes();
 
   console.log("\n--- Device B: independent fresh state, same real account, pull ---");
@@ -126,6 +147,16 @@ async function main() {
   report("Settings pull", settingsPull.pulled === 1 ? "PASS" : "FAIL", JSON.stringify(settingsPull));
   const settings = AHS_B.SettingsRuntime.get();
   report("Settings data matches after pull", settings.showTutorSuggestions === false ? "PASS" : "FAIL", JSON.stringify(settings));
+
+  if (crossDeviceOriginKey) {
+    const materialPull = await AHS_B.MaterialRuntime.pullFromRepository();
+    report("Learning Progress pull", materialPull.pulled >= 1 ? "PASS" : "FAIL", JSON.stringify(materialPull));
+    const pulledMaterials = AHS_B.MaterialRuntime.list();
+    const pulledMaterial = pulledMaterials.filter(function (m) { return m.originKey === crossDeviceOriginKey; })[0];
+    report("Learning Progress data matches after pull", (pulledMaterial && pulledMaterial.progress === 42 && pulledMaterial.favorite === true) ? "PASS" : "FAIL", JSON.stringify(pulledMaterial));
+  } else {
+    report("Learning Progress pull", "SKIP", "Task 2 Material Migration not applied to this project — see Material Repository Read above");
+  }
 
   console.log("\nCrossDeviceSmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");
   process.exit(fail === 0 ? 0 : 1);

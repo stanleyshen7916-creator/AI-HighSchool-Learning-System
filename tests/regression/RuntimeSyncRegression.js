@@ -99,6 +99,28 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   AHS.WorkspaceRuntime.logout();
   check("logout() still synchronously clears the real Workspace (isLoggedIn() false)", AHS.WorkspaceRuntime.isLoggedIn() === false);
 
+  console.log("\n[8] MaterialRuntime — Task 3 Learning Progress sync (additive only, existing startLearning/markPreviewed/toggleFavorite unchanged)");
+  require(path.join(REPO, "js/runtime/TeachingMaterialLoader.js"));
+  AHS.MaterialRuntime.reset();
+  var plain = AHS.MaterialRuntime.add({ subject: "math", title: "Plain Upload (no originKey)" });
+  check("add() without originKey still works, originKey/materialSupabaseId default null (additive fields, no existing caller breaks)", plain.originKey === null && plain.materialSupabaseId === null);
+  var withOrigin = AHS.MaterialRuntime.add({ subject: "civics", title: "Real Content", originKey: "tm_test_1" });
+  check("add() accepts an optional originKey (Task 1/3 wiring)", withOrigin.originKey === "tm_test_1");
+  var started = AHS.MaterialRuntime.startLearning(withOrigin.id);
+  check("startLearning() still returns the real updated record exactly as before", started && started.learningCount === 1 && started.progress > 0);
+  var previewed = AHS.MaterialRuntime.markPreviewed(plain.id);
+  check("markPreviewed() (no originKey) still returns the real record unchanged in shape", previewed && !!previewed.lastOpenedAt);
+  var favToggled = AHS.MaterialRuntime.toggleFavorite(withOrigin.id);
+  check("toggleFavorite() still returns the real boolean exactly as before", favToggled === true);
+  check("AHS.MaterialRuntime.pullFromRepository is a real, additive function", typeof AHS.MaterialRuntime.pullFromRepository === "function");
+  check("AHS.TeachingMaterialLoader.pullFromRepository is a real, additive function", typeof AHS.TeachingMaterialLoader.pullFromRepository === "function");
+  return AHS.MaterialRuntime.pullFromRepository();
+}).then(function (materialPullResult) {
+  check("MaterialRuntime.pullFromRepository() resolves { pulled: 0 } when not configured (never throws)", materialPullResult && materialPullResult.pulled === 0);
+  return AHS.TeachingMaterialLoader.pullFromRepository();
+}).then(function (loaderPullResult) {
+  check("TeachingMaterialLoader.pullFromRepository() resolves { pulled: 0 } when not configured (never throws)", loaderPullResult && loaderPullResult.pulled === 0);
+
   console.log("\nRuntimeSyncRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);
 }).catch(function (err) {
