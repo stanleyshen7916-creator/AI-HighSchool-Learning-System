@@ -1,6 +1,6 @@
 # supabase/ — AI-126A Supabase Foundation
 
-**Status**: AI-126A (Migration / Schema / RLS) only. No `js/repository/` (AI-126B), no Runtime integration (AI-126C), no real Supabase project connection anywhere in this repo yet — per the PMO's own AI-126 Decision (2026-08-07), no `SUPABASE_URL`/`SUPABASE_ANON_KEY` will be provided until the Integration phase.
+**Status**: AI-126A-3 — deployed to the real Supabase project (2026-08-07, via GitHub Actions `Supabase Deploy` run [31150931374](https://github.com/stanleyshen7916-creator/AI-HighSchool-Learning-System/actions/runs/31150931374), see `docs/EO/SPRINT_AI126A3_Deployment_Report.md` for the full verified output). All 5 migrations applied, 15/15 tables exist with RLS enabled on every table, 34 policies, 9/9 subjects seeded. Still no `js/repository/` (AI-126B), no Runtime integration (AI-126C), no client-side Supabase connection anywhere in `js/` yet.
 
 ## What's here
 
