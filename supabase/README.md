@@ -35,6 +35,8 @@ supabase link --project-ref <project-ref>
 supabase db push          # applies every file in migrations/, in filename order
 ```
 
+**Deployment infrastructure (AI-126A Deployment Preparation)**: `.github/workflows/supabase-deploy.yml` runs the same two commands via the official Supabase CLI GitHub Action, reading credentials only from GitHub repository secrets — see `supabase/DEPLOYMENT_SETUP.md` for the exact secret names and Project Owner setup steps. The workflow is `workflow_dispatch`-only (manual trigger required) and has not been run — no migration has been deployed to any real Supabase project via this workflow yet.
+
 To seed the fixed lookup data (`subjects`):
 
 ```bash

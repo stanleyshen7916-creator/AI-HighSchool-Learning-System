@@ -1,0 +1,46 @@
+name: Supabase Deploy
+
+# AI-126A Deployment Preparation.
+#
+# workflow_dispatch ONLY — this workflow never runs automatically on push,
+# pull_request, or any other event. It only runs when a human explicitly
+# clicks "Run workflow" in the GitHub Actions tab. Adding the three secrets
+# below does NOT trigger a run by itself.
+#
+# Required GitHub repository secrets (Settings → Secrets and variables →
+# Actions), documented with sourcing steps in supabase/DEPLOYMENT_SETUP.md:
+#   - SUPABASE_ACCESS_TOKEN
+#   - SUPABASE_DB_PASSWORD
+#   - SUPABASE_PROJECT_ID
+#
+# None of these values are ever written into this file or into the
+# repository — they are referenced only via ${{ secrets.* }}, which GitHub
+# injects at run time and masks in the log output.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    name: Link project and push migrations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v3
+        with:
+          version: latest
+
+      - name: Link Supabase project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+
+      - name: Push database migrations
+        run: supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
