@@ -7,8 +7,21 @@ const CSS_BAD = [/linear-gradient\([^)]*var\(/, /calc\(var\([^)]*\)\s*[+*/-]\s*v
 /* Pre-existing deviation flagged in QA_EO-S6.8-Repository-001 audit:
    HomeRecentMaterials card click navigation predates the <a href> rule.
    Fixing it changes component behavior — out of this EO's scope
-   (不得修改功能). Tracked for a future WO. */
+   (不得修改功能). Tracked for a future WO — this is debt pending a fix,
+   not an intentional design decision. */
 const KNOWN_ISSUES = { "js/components/HomeRecentMaterials.js": [/window\.location\.href\s*=/] };
+
+/* Sprint AI-126B (PMO-authorized, 2026-08-07): these two files are the
+   Repository Layer's real Supabase connection point (CLAUDE.md's Project
+   Overview documents the exact same exception). Unlike KNOWN_ISSUES above,
+   this is a PERMANENT, intentional design decision, not debt pending a
+   fix — every other file in js/ remains fully forbidden from fetch(/
+   XMLHttpRequest, including every Runtime and every pages/components/ui
+   file, which may only reach Supabase through js/repository/. */
+const AUTHORIZED_EXCEPTIONS = {
+  "js/core/SupabaseClient.js": [/\bfetch\s*\(/],
+  "js/repository/SupabaseRepository.js": [/\bfetch\s*\(/]
+};
 let bad = 0;
 function walk(dir, exts, rules) {
   for (const f of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -24,6 +37,9 @@ function walk(dir, exts, rules) {
       if (!r.test(src)) continue;
       if (KNOWN_ISSUES[rel] && KNOWN_ISSUES[rel].some(k => String(r) === String(k))) {
         console.log("KNOWN-ISSUE (flagged, pending WO)", r, "in", rel); continue;
+      }
+      if (AUTHORIZED_EXCEPTIONS[rel] && AUTHORIZED_EXCEPTIONS[rel].some(k => String(r) === String(k))) {
+        console.log("AUTHORIZED-EXCEPTION (Sprint AI-126B)", r, "in", rel); continue;
       }
       bad++; console.log("FORBIDDEN", r, "in", rel);
     }

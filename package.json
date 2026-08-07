@@ -4,10 +4,11 @@
   "private": true,
   "description": "AI High School Learning System - static prototype (HTML/CSS/JS, Mock Data, no backend)",
   "scripts": {
-    "test": "node tests/jsdom/BehaviorSuite.js && node tests/regression/PipelineRegression.js && node tests/regression/RepositoryFoundation.js && node tests/regression/MaterialPipelineRegression.js && node tests/regression/AnalyticsRegression.js && node tests/regression/LearningFlowRegression.js && node tests/regression/WorkspaceRegression.js && node tests/regression/MaterialCenterRegression.js && node tests/regression/FolderRegression.js && node tests/regression/AnalyticsFilterRegression.js && node tests/regression/TutorRegression.js && node tests/regression/WorkspaceUIRegression.js && node tests/regression/KnowledgeEngineRegression.js",
+    "test": "node tests/jsdom/BehaviorSuite.js && node tests/regression/PipelineRegression.js && node tests/regression/RepositoryFoundation.js && node tests/regression/MaterialPipelineRegression.js && node tests/regression/AnalyticsRegression.js && node tests/regression/LearningFlowRegression.js && node tests/regression/WorkspaceRegression.js && node tests/regression/MaterialCenterRegression.js && node tests/regression/FolderRegression.js && node tests/regression/AnalyticsFilterRegression.js && node tests/regression/TutorRegression.js && node tests/regression/WorkspaceUIRegression.js && node tests/regression/KnowledgeEngineRegression.js && node tests/regression/RepositoryLayerRegression.js",
     "verify": "node scripts/verify/VerifyPaths.js && node scripts/verify/VerifyForbiddenPatterns.js",
     "validate:html": "node tests/validator/HtmlValidator.js",
     "test:e2e": "playwright test --config=playwright/config/playwright.config.js",
+    "test:supabase": "node tests/supabase/RepositorySmoke.js",
     "qa:dashboard": "node scripts/qa/QaDashboard.js"
   },
   "devDependencies": {

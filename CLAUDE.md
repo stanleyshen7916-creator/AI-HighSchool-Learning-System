@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A static, client-side prototype of a Chinese-language high-school AI learning platform (`index.html`, `materials.html`, `quiz.html`, `wrongbook.html`, `summary.html`, `learning.html`, `tutor.html`, `dashboard.html`, `review.html`, `qiaoqiao-gallery.html`). Pure HTML5 / CSS3 / vanilla JavaScript — **no framework, no bundler, no Node server, no Docker, no real backend/database/AI API**. All data is Mock Data. Must keep working over `file://` and on GitHub Pages.
+A static, client-side prototype of a Chinese-language high-school AI learning platform (`index.html`, `materials.html`, `quiz.html`, `wrongbook.html`, `summary.html`, `learning.html`, `tutor.html`, `dashboard.html`, `review.html`, `qiaoqiao-gallery.html`). Pure HTML5 / CSS3 / vanilla JavaScript — **no framework, no bundler, no Node server, no Docker**. All Runtime/UI/page data is still Mock Data. Must keep working over `file://` and on GitHub Pages.
+
+**Sprint AI-126B exception (PMO-authorized, 2026-08-07)**: the project now has exactly one real backend connection point — `js/repository/` + `js/core/SupabaseClient.js` (the Repository Layer, talking to the real Supabase project provisioned in Sprint AI-126A). This is a narrow, explicit exception, not a general relaxation: every Runtime/UI/page file is still Mock Data only and still fully bound by every rule below (including the `fetch(`/`XMLHttpRequest` ban) until a future, separately-authorized Runtime Integration phase wires a Runtime to the Repository Layer. See `scripts/verify/VerifyForbiddenPatterns.js`'s `AUTHORIZED_EXCEPTIONS` for the exact two files this covers.
 
 ## Commands
 
@@ -12,6 +14,7 @@ A static, client-side prototype of a Chinese-language high-school AI learning pl
 npm test              # jsdom BehaviorSuite + Learning Pipeline regression (tests/jsdom, tests/regression)
 npm run verify         # VerifyPaths (broken/legacy href-src refs) + VerifyForbiddenPatterns (banned APIs)
 npm run validate:html  # html5validator over every root HTML page (requires html5validator + Java installed separately, not via npm)
+npm run test:supabase  # Sprint AI-126B Repository Smoke Test — the one test making a real network call to Supabase; requires js/data/SupabaseConfig.js url/anonKey to be set, reports SKIP (not FAIL) otherwise; not part of npm test's default chain
 ```
 
 There is no build/dev-server script by design — open the HTML files directly or serve the repo root as static files. To run a single jsdom check, edit/read `tests/jsdom/BehaviorSuite.js` (checks accumulate in one file, run via `node tests/jsdom/BehaviorSuite.js`) or `tests/regression/PipelineRegression.js` directly with `node`.
@@ -21,8 +24,9 @@ There is no build/dev-server script by design — open the HTML files directly o
 ### Script loading model
 No ES modules, no imports/exports. Every JS file attaches to a single shared global namespace, `window.AHS`, and files are loaded via manually-ordered `<script>` tags in each HTML page's `<body>`. Order matters: dependencies must load before dependents (see `index.html` for the canonical order — core → data/utils → runtime → ui → components → page bootstrap). When adding a new file, add its `<script>` tag in the correct dependency position in every HTML page that uses it.
 
-### `js/` — eight fixed categories (do not mix)
-- `core/` — namespace/shared services: `UI.js` (DOM helpers), `Icons.js`, `Qiaoqiao.js` (mascot art builder — image paths must go through its `EXPR_BASE`/`POSE_BASE` constants only), `PersistenceAdapter.js` (sessionStorage-backed runtime persistence; **not** localStorage — that's a forbidden pattern)
+### `js/` — nine fixed categories (do not mix)
+- `core/` — namespace/shared services: `UI.js` (DOM helpers), `Icons.js`, `Qiaoqiao.js` (mascot art builder — image paths must go through its `EXPR_BASE`/`POSE_BASE` constants only), `PersistenceAdapter.js` (sessionStorage-backed runtime persistence; **not** localStorage — that's a forbidden pattern), `SupabaseClient.js` (Sprint AI-126B — the one file allowed to call `fetch(` against the real Supabase project; never called directly by a Runtime, only by `js/repository/`)
+- `repository/` — Sprint AI-126B: the sole entry point for real backend I/O (`Repository.js` abstract interface, `SupabaseRepository.js` implementation, `RepositoryFactory.js` provider switch — keeps a future `LocalRepository` swappable). No Runtime, UI, or page file may import/call `js/core/SupabaseClient.js` directly — only through this layer.
 - `runtime/` — stateful business-logic modules, one per domain (MaterialRuntime, KnowledgeRuntime, SummaryRuntime, QuestionRuntime, ReviewRuntime, WrongBookRuntime, ExamRuntime, StatisticsRuntime, AITutorRuntime, etc.)
 - `parser/` — the document-processing pipeline chain: `MaterialParser` → `KnowledgeBuilder` → `SummaryGenerator` → `QuestionGenerator` → `LearningPipeline`. These are currently **stub implementations** (no real PDF/text extraction) — sparse output from this chain is expected, not a bug, unless a task says otherwise.
 - `pages/` — one bootstrap file per HTML page (`AppHome.js`, `AppMaterials.js`, `AppQuiz.js`, ...), each the last `<script>` loaded on its page
@@ -41,7 +45,7 @@ Rule of thumb for `components/` vs `ui/`: if it's tied to one page's feature it'
 
 ### Naming and forbidden patterns (enforced by `npm run verify`)
 - JS: PascalCase filenames. CSS: kebab-case. Markdown docs: `PMO_` / `EO_` / `QA_` / `PAT_` / `Decision_` / `Release_` / `Architecture_` prefixes.
-- Forbidden in production JS: `localStorage`, `indexedDB`, `fetch(`, `XMLHttpRequest`, `import`/`export` statements, `window.location.href =` (one pre-existing, tracked exception in `HomeRecentMaterials.js`).
+- Forbidden in production JS: `localStorage`, `indexedDB`, `fetch(`, `XMLHttpRequest`, `import`/`export` statements, `window.location.href =` (one pre-existing, tracked exception in `HomeRecentMaterials.js`). **`fetch(` exception (Sprint AI-126B, PMO-authorized)**: `js/core/SupabaseClient.js` and `js/repository/SupabaseRepository.js` only — these two files exist specifically to talk to the real Supabase backend; every other file remains fully forbidden from `fetch(`/`XMLHttpRequest`, including every Runtime and every `js/pages/`/`js/components/`/`js/ui/` file.
 - Forbidden in CSS: `linear-gradient(...var(...))`, `calc(var(...) +/- var(...))`, `env(safe-area...)`, `inset:`, `NNdvh`.
 - Every `src=`/`href=` in every root HTML page must resolve to a real file; references to legacy pre-v2.0 paths (`js/services/`, `css/layout/`, `assets/illustrations/`, `archive/`, `prototype/`, `developer/`) fail verification.
 - Full structural rules are LOCKed in `docs/Architecture/Architecture_Repository_Structure_v2.1.md` — read it before restructuring anything; changes to the top-level structure require PMO sign-off per that doc.
