@@ -33,7 +33,26 @@
    already resolves { pulled: 0 } / swallows its own error — Runtime's
    Memory Cache is completely unaffected, never cleared, never blocked;
    "Repository 屬於同步機制，不是 Runtime 唯一資料來源" holds by
-   construction. */
+   construction.
+
+   AI Supabase Persistence Root Cause Fix (Root Cause B): the missing half
+   was never the pull itself — it was that nothing told an already-mounted
+   page a pull had just merged fresh rows into a Runtime's Memory Cache.
+   Every page bootstrap (js/pages/App*.js) only ever calls its own render
+   once, at DOMContentLoaded, reading whatever the synchronous Runtime
+   already has at that instant — almost always before a real network pull
+   has resolved. pullAll() now dispatches a plain `window` CustomEvent,
+   "ahs:repository-pulled", once every domain's pullFromRepository() this
+   round has settled (success or failure, via Promise.all over each
+   already-caught promise) — the native, zero-dependency browser mechanism
+   this Sprint's own Fix spec asks to prefer over inventing a new state
+   framework. Each page's own guardedInit()/init() is idempotent (mount()
+   clears and rebuilds #app from scratch every call — js/core/UI.js), so
+   listening for this event and simply re-running the exact same,
+   unmodified init() is sufficient; no Runtime Public API changes, no UI
+   file needs to know about Promises. Only fires when a pull actually ran
+   (isConfigured() + identity() both true) — an unconfigured/logged-out
+   page never gets a spurious re-render. */
 window.AHS = window.AHS || {};
 AHS.RepositorySync = (function () {
   "use strict";
@@ -67,13 +86,19 @@ AHS.RepositorySync = (function () {
     if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
     if (typeof AHS.SyncBridge.flushQueue === "function") { AHS.SyncBridge.flushQueue(); }
     if (!AHS.SyncBridge.identity()) { return; }
-    domains().forEach(function (d) {
-      if (d.runtime && typeof d.runtime.pullFromRepository === "function") {
-        d.runtime.pullFromRepository().catch(function (err) {
+    var pulls = domains()
+      .filter(function (d) { return d.runtime && typeof d.runtime.pullFromRepository === "function"; })
+      .map(function (d) {
+        return d.runtime.pullFromRepository().catch(function (err) {
           if (window.console && console.warn) { console.warn("RepositorySync: " + d.name + " pull threw —", err); }
         });
-      }
-    });
+      });
+    if (pulls.length && typeof window !== "undefined" &&
+        typeof window.dispatchEvent === "function" && typeof window.CustomEvent === "function") {
+      Promise.all(pulls).then(function () {
+        window.dispatchEvent(new window.CustomEvent("ahs:repository-pulled"));
+      });
+    }
   }
 
   /* Auto-run once per page load (module-execution time — this IIFE runs

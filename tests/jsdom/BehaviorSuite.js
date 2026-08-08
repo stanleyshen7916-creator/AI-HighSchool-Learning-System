@@ -117,7 +117,9 @@ function loadPage(htmlFile, { seedSession, excludeScripts, url, skipLogin } = {}
     .map(s => s.getAttribute("src"))
     .filter(src => !(excludeScripts && excludeScripts.some(x => src.includes(x))));
   for (const src of scripts) {
-    const code = fs.readFileSync(path.join(REPO, src), "utf8");
+    const p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    const code = fs.readFileSync(p, "utf8");
     window.eval(code);
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
