@@ -62,15 +62,24 @@
   <script src="js/runtime/LearningQuestionRuntime.js"></script>
   <script src="js/runtime/SummaryRuntime.js"></script>
   <script src="js/runtime/MaterialRuntime.js"></script>
-  <!-- Sprint AI-126C: must load after every Repository-integrated Runtime
-       above (MaterialRuntime/WrongBookRuntime/KnowledgeMasteryRuntime/
-       SettingsRuntime) and the Repository Layer block above — triggers
-       each domain's real pullFromRepository() once per page load. -->
-  <script src="js/repository/RepositorySync.js"></script>
+  <!-- AI Supabase Persistence Root Cause Fix (Phase 3): TeachingMaterialLoader.js
+       moved ahead of RepositorySync.js — RepositorySync.js's own IIFE calls
+       pullAll() synchronously the instant its <script> tag executes, so
+       AHS.TeachingMaterialLoader must already be defined by then or that
+       domain is silently skipped from every initial-page-load pull (a real,
+       previously undiscovered gap: AI-126E added TeachingMaterialLoader to
+       RepositorySync.js's domains() list, but this page's own script order
+       was never re-checked against that addition). -->
   <script src="data/materials/MaterialRepositoryIndex.js"></script>
   <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
   <script src="js/runtime/QuestionBankRuntime.js"></script>
   <script src="js/runtime/TeachingMaterialLoader.js"></script>
+  <!-- Sprint AI-126C: must load after every Repository-integrated Runtime
+       above (MaterialRuntime/WrongBookRuntime/KnowledgeMasteryRuntime/
+       SettingsRuntime/TeachingMaterialLoader) and the Repository Layer block
+       above — triggers each domain's real pullFromRepository() once per
+       page load. -->
+  <script src="js/repository/RepositorySync.js"></script>
   <script src="js/runtime/KnowledgeRuntime.js"></script>
   <script src="js/parser/LearningQuestionGenerator.js"></script>
   <script src="js/runtime/LearningQuestionSession.js"></script>
