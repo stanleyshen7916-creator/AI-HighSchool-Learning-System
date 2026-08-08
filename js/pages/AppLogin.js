@@ -8,7 +8,7 @@ window.AHS = window.AHS || {};
   "use strict";
 
   var el;
-  var state = { step: 1, studentId: null, schoolId: null, semesterIds: [] };
+  var state = { step: 1, studentId: null, schoolId: null, semesterIds: [], loginPromise: null };
 
   function studentsList() { return (AHS.WorkspaceRuntime && AHS.WorkspaceRuntime.students()) || []; }
 
@@ -56,16 +56,24 @@ window.AHS = window.AHS || {};
         state.schoolId = null;
         state.semesterIds = [];
         state.step = 2;
-        /* Sprint AI-126B Part 2, Task 2: real Supabase Auth login, fired
+        /* Sprint AI-126B Part 2, Task 2 / AI Supabase Persistence Root
+           Cause Fix (Root Cause C): real Supabase Auth login, fired
            invisibly the moment this Student is picked (no UI change —
            see js/repository/AuthRepository.js's own header for why this
            is the only way "真實 Email Login" + "保持目前 Login UI" can
-           both hold). Fire-and-forget: a no-op when Supabase isn't
-           configured, and never blocks/alters this existing picker flow
-           either way. */
-        if (AHS.AuthRepository && typeof AHS.AuthRepository.loginForMockStudent === "function") {
-          AHS.AuthRepository.loginForMockStudent(s);
-        }
+           both hold). loginForMockStudent() always resolves (its own
+           internal .catch() turns a real failure into a resolved
+           { error } result, never a rejection) — state.loginPromise is
+           therefore a real completion signal, not a fire-and-forget void
+           call: stepSemester()'s "進入平台" now waits on this exact
+           Promise before navigating away (see that handler's own
+           comment), closing the race where a full-page navigation could
+           fire before AHS.SyncBridge.cacheIdentity() ever ran. null when
+           Supabase isn't configured — "進入平台" then behaves exactly as
+           before this fix (no wait). */
+        state.loginPromise = (AHS.AuthRepository && typeof AHS.AuthRepository.loginForMockStudent === "function")
+          ? AHS.AuthRepository.loginForMockStudent(s).catch(function () { /* never rejects in practice; defensive only */ })
+          : null;
         render();
       }));
     });
@@ -126,7 +134,7 @@ window.AHS = window.AHS || {};
       text: "進入平台"
     });
     enterBtn.addEventListener("click", function () {
-      if (!state.semesterIds.length) { return; }
+      if (!state.semesterIds.length || enterBtn.disabled) { return; }
       var ws = AHS.WorkspaceRuntime.setCurrent({
         studentId: state.studentId, schoolId: state.schoolId, semesterIds: state.semesterIds
       });
@@ -135,7 +143,27 @@ window.AHS = window.AHS || {};
         if (app) { app.appendChild(el("p", { class: "login-error", text: "登入失敗：權限驗證未通過，請重新選擇。" })); }
         return;
       }
-      window.location.assign("index.html");
+      /* AI Supabase Persistence Root Cause Fix (Root Cause C): wait for
+         the real Supabase Auth login chain (state.loginPromise, set in
+         stepStudent()) to actually finish — Promise/callback completion,
+         never a fixed setTimeout() — before navigating away. Without
+         this, window.location.assign() (a full page reload, which kills
+         all in-flight JS state) could fire while
+         AHS.AuthRepository.loginForMockStudent()'s network round-trip
+         (signInWithPassword/signUp -> ensureOwnProfile -> cacheIdentity())
+         is still pending, permanently losing this login's identity cache
+         (Root Cause Diagnosis Task 8/Root Cause C). state.loginPromise is
+         null when Supabase isn't configured — Promise.resolve(null)
+         resolves on the next microtask, so that case still navigates
+         effectively immediately, unchanged from before this fix. Button
+         disabled only to prevent a double-click firing setCurrent() twice
+         during this (usually sub-second) wait — same disabled attribute
+         this button already toggles for the empty-selection case above,
+         not a new UI element. */
+      enterBtn.disabled = true;
+      Promise.resolve(state.loginPromise).then(function () {
+        window.location.assign("index.html");
+      });
     });
     return el("div", { class: "login-step" }, [
       backButton(2),

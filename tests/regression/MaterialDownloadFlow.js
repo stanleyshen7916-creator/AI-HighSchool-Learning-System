@@ -43,7 +43,9 @@ function loadMaterials(seed) {
   window.URL.createObjectURL = function (blob) { lastBlobSize = blob && blob.size; return "blob:ahs/test"; };
   window.URL.revokeObjectURL = function () {};
   for (const src of [...window.document.querySelectorAll("script[src]")].map(s => s.getAttribute("src"))) {
-    window.eval(fs.readFileSync(path.join(REPO, src), "utf8"));
+    var p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    window.eval(fs.readFileSync(p, "utf8"));
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors, blobSize: () => lastBlobSize };

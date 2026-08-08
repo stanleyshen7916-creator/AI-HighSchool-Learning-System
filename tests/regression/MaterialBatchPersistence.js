@@ -57,7 +57,9 @@ function openMaterials(opts) {
   window.URL.revokeObjectURL = function () {};
 
   for (const src of [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"))) {
-    window.eval(fs.readFileSync(path.join(REPO, src), "utf8"));
+    var p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    window.eval(fs.readFileSync(p, "utf8"));
   }
   const ctx = { window, doc: window.document, consoleErrors, lastBlob: () => lastBlob };
   return new Promise((resolve) => setTimeout(() => resolve(ctx), 60));

@@ -177,4 +177,16 @@ window.AHS = window.AHS || {};
   } else {
     guardedInit();
   }
+
+  /* AI Supabase Persistence Root Cause Fix (Root Cause B): re-run the same,
+     unmodified guardedInit() whenever a background Repository pull just
+     merged fresh rows into a Runtime's Memory Cache (js/repository/
+     RepositorySync.js's own header explains why this is necessary — the
+     first render almost always happens before a real network pull
+     resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
+     and rebuilds #app every call), so simply calling it again is enough —
+     no Runtime Public API change, no UI file needs a Promise. */
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("ahs:repository-pulled", guardedInit);
+  }
 })();

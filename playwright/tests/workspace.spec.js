@@ -20,7 +20,22 @@ test.use({ skipDefaultLogin: true });
 function collectErrors(page) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
-  page.on("console", (msg) => { if (msg.type() === "error") { errors.push(msg.text()); } });
+  page.on("console", (msg) => {
+    if (msg.type() !== "error") { return; }
+    /* AI Supabase Persistence Root Cause Fix (Root Cause A): the one,
+       git-ignored, optional js/data/SupabaseConfig.local.js this project
+       already documents (.gitignore) — a real browser 404 on it (there is
+       no way to reference an optional local-only file from a <script> tag
+       without a real browser logging this, network-level, regardless of
+       any onerror handler) is expected in CI/this Sandbox where the file
+       never exists by design; every real reader already falls back to the
+       committed blank AHS.SupabaseConfig. Filtered by the failing
+       resource's own URL (msg.location().url), not by message text, so a
+       genuine 404 on any other file still fails this assertion. */
+    const loc = msg.location && msg.location();
+    if (loc && /SupabaseConfig\.local\.js$/.test(loc.url || "")) { return; }
+    errors.push(msg.text());
+  });
   return errors;
 }
 

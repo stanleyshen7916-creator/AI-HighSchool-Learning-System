@@ -68,7 +68,11 @@ function loadPage(htmlFile, { seedSession, url, skipLogin, excludeScripts } = {}
   const scripts = [...dom.window.document.querySelectorAll("script[src]")]
     .map((s) => s.getAttribute("src"))
     .filter((src) => !(excludeScripts && excludeScripts.some((x) => src.includes(x))));
-  scripts.forEach((src) => window.eval(fs.readFileSync(path.join(REPO, src), "utf8")));
+  scripts.forEach((src) => {
+    var p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { return; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    window.eval(fs.readFileSync(p, "utf8"));
+  });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors };
 }
