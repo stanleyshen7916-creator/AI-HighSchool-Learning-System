@@ -15,13 +15,40 @@ AHS.TodayMission = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* AI-126C Home Hotfix: AppConfig/WorkspaceData no longer carries the
+     old AHS.Subjects lookup object after Production Cleanup. TodayMission
+     must therefore normalize the real task's subject key without assuming
+     a removed global. This is display-only metadata; it never changes the
+     task model or Runtime. */
+  var SUBJECTS = {
+    chinese: { name: "國文", hex: "#7c5cff" },
+    english: { name: "英文", hex: "#3b82f6" },
+    math: { name: "數學", hex: "#ef4444" },
+    physics: { name: "物理", hex: "#8b5cf6" },
+    chemistry: { name: "化學", hex: "#10b981" },
+    biology: { name: "生物", hex: "#22c55e" },
+    history: { name: "歷史", hex: "#f59e0b" },
+    geography: { name: "地理", hex: "#06b6d4" },
+    civics: { name: "公民", hex: "#ec4899" }
+  };
+
+  function subjectMeta(value) {
+    if (value && typeof value === "object" && value.name) { return value; }
+    var key = String(value || "").toLowerCase();
+    if (SUBJECTS[key]) { return SUBJECTS[key]; }
+    return { name: value || "學習", hex: "#7c5cff" };
+  }
+
   function taskRow(item) {
-    var subj = AHS.Subjects[item.subject];
+    var subj = subjectMeta(item && item.subject);
+    var title = item && item.title ? item.title : "學習任務";
+    var done = item && typeof item.done === "number" ? item.done : 0;
+    var total = item && typeof item.total === "number" ? item.total : 0;
     var check = el("button", {
       type: "button",
       class: "today-task__check",
       "aria-pressed": "false",
-      "aria-label": "標記完成：" + subj.name + " " + item.title
+      "aria-label": "標記完成：" + subj.name + " " + title
     });
     var row = el("li", { class: "today-task" }, [
       check,
@@ -29,8 +56,8 @@ AHS.TodayMission = (function () {
         class: "chip",
         style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
       }, [el("span", { text: subj.name })]),
-      el("span", { class: "today-task__unit", text: item.title }),
-      el("span", { class: "today-task__count", text: item.done + "/" + item.total })
+      el("span", { class: "today-task__unit", text: title }),
+      el("span", { class: "today-task__count", text: done + "/" + total })
     ]);
     check.addEventListener("click", function () {
       var on = check.getAttribute("aria-pressed") === "true";
