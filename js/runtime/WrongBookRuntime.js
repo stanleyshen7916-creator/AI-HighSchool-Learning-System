@@ -73,6 +73,16 @@ AHS.WrongBookRuntime = (function () {
         bookmarked: !!record.bookmarked,
         archived: !!record.archived
       };
+      /* AI-126C persistence hotfix: wrong_book.question_id and
+         wrong_book.material_id are nullable UUID foreign keys, but the
+         Runtime previously omitted both fields. That severed the real
+         question/material relationship and made a Supabase-backed wrong
+         answer impossible to round-trip faithfully. Only send them when
+         the local record actually has a real UUID; never fabricate one
+         and never clear an existing remote link during an unrelated
+         update. */
+      if (record.questionId) { row.question_id = record.questionId; }
+      if (record.materialId) { row.material_id = record.materialId; }
       if (record.supabaseId) {
         AHS.SyncBridge.pushFireAndForget(function () { return repo.update("wrong_book", "id=eq." + record.supabaseId, row); });
         return;
@@ -114,6 +124,8 @@ AHS.WrongBookRuntime = (function () {
           store.items.push(local);
         }
         local.supabaseId = row.id;
+        local.questionId = row.question_id || local.questionId || "";
+        local.materialId = row.material_id || local.materialId || "";
         local.subject = local.subject || "";
         local.knowledgePoint = row.knowledge_point;
         local.question = row.question_text;
