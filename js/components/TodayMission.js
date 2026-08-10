@@ -15,8 +15,31 @@ AHS.TodayMission = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* resolveSubject(code) — Sprint AI-127 (Home Runtime Crash Hotfix):
+     item.subject can now legitimately be a value AHS.Subjects (js/core/
+     Icons.js's own, real, single UI-metadata source — chinese/english/
+     math/physics/chemistry/biology/history/geography/civics) doesn't
+     recognize. Two real, currently-shipped Runtime pull-merge paths emit
+     exactly this once a real Repository Pull actually runs (previously
+     silently never executed, so never reachable before this Sprint's own
+     Persistence fixes): WrongBookRuntime.pullFromRepository()'s
+     `local.subject = local.subject || ""` for a WrongBook record newly
+     created from a pulled row, and MaterialRuntime.pullFromRepository()'s
+     `subject: "other"` fallback for a Material newly created the same
+     way. Never fabricates a new subject or a new visual system — a known
+     code still renders with AHS.Subjects' own real name/hex unchanged;
+     anything else falls back to the item's own literal subject string
+     (or "其他" when even that's empty) using --text-muted
+     (css/base/tokens.css's own existing neutral/unknown-state token
+     value), never a newly invented color. */
+  function resolveSubject(code) {
+    var known = AHS.Subjects && AHS.Subjects[code];
+    if (known) { return known; }
+    return { name: code || "其他", hex: "#6b7280" };
+  }
+
   function taskRow(item) {
-    var subj = AHS.Subjects[item.subject];
+    var subj = resolveSubject(item && item.subject);
     var check = el("button", {
       type: "button",
       class: "today-task__check",
