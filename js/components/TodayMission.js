@@ -15,27 +15,22 @@ AHS.TodayMission = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
-  /* AI-126C Home Hotfix: AppConfig/WorkspaceData no longer carries the
-     old AHS.Subjects lookup object after Production Cleanup. TodayMission
-     must therefore normalize the real task's subject key without assuming
-     a removed global. This is display-only metadata; it never changes the
-     task model or Runtime. */
-  var SUBJECTS = {
-    chinese: { name: "國文", hex: "#7c5cff" },
-    english: { name: "英文", hex: "#3b82f6" },
-    math: { name: "數學", hex: "#ef4444" },
-    physics: { name: "物理", hex: "#8b5cf6" },
-    chemistry: { name: "化學", hex: "#10b981" },
-    biology: { name: "生物", hex: "#22c55e" },
-    history: { name: "歷史", hex: "#f59e0b" },
-    geography: { name: "地理", hex: "#06b6d4" },
-    civics: { name: "公民", hex: "#ec4899" }
-  };
-
+  /* AI-127 Follow-up (Single Source of Truth fix): AHS.Subjects
+     (js/core/Icons.js) is the one real, still-existing subject UI-
+     metadata source (chinese/english/math/physics/chemistry/biology/
+     history/geography/civics) — never removed by Production Cleanup, so
+     TodayMission must reuse it directly rather than keep its own,
+     necessarily-divergent copy (the previous hotfix's local SUBJECTS
+     table used different hex values than AHS.Subjects' real ones for
+     the same code, e.g. math). A subject value AHS.Subjects doesn't
+     recognize (e.g. "" or "other", both real placeholder values
+     WrongBookRuntime.js/MaterialRuntime.js's own pullFromRepository()
+     assign to a record newly created from a real Supabase pull) still
+     needs a safe, non-throwing fallback — never a fabricated new
+     subject or a new visual system. */
   function subjectMeta(value) {
-    if (value && typeof value === "object" && value.name) { return value; }
-    var key = String(value || "").toLowerCase();
-    if (SUBJECTS[key]) { return SUBJECTS[key]; }
+    var known = AHS.Subjects && AHS.Subjects[value];
+    if (known) { return known; }
     return { name: value || "學習", hex: "#7c5cff" };
   }
 
