@@ -245,7 +245,7 @@
 .qnav__num.is-answered { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand-ink); }
 .qnav__num.is-current { border-color: var(--brand); background-color: var(--brand); color: #ffffff; }
 .qnav__actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.qnav__prev, .qnav__next, .qnav__finish {
+.qnav__prev, .qnav__next, .qnav__finish, .qnav__finish-early {
   display: inline-flex; align-items: center; gap: 6px;
   font: inherit; font-size: 14px; font-weight: 700;
   border-radius: var(--radius-pill); padding: 10px 20px; cursor: pointer;
@@ -256,6 +256,8 @@
 .qnav__next, .qnav__finish { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
 .qnav__next:hover, .qnav__finish:hover { background-color: var(--brand-strong); }
 .qnav__finish svg { width: 15px; height: 15px; }
+.qnav__finish-early { border: 1px solid var(--line-strong); background-color: var(--card); color: var(--text-muted); }
+.qnav__finish-early:hover { background-color: var(--bg); color: var(--text); }
 
 /* ---- Review view (qreview) -------------------------------------------- */
 .qreview { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
@@ -303,7 +305,7 @@
   .quiz-donut__legend { grid-template-columns: 1fr 1fr; width: 100%; }
   .qnav__num { width: 30px; height: 30px; }
   .qnav__actions { flex-wrap: wrap; }
-  .qnav__prev, .qnav__next, .qnav__finish { flex: 1 1 auto; justify-content: center; }
+  .qnav__prev, .qnav__next, .qnav__finish, .qnav__finish-early { flex: 1 1 auto; justify-content: center; }
   .qreview__score-row { gap: 16px; }
   .qreview__item-answers { flex-direction: column; gap: 2px; }
 }

@@ -13,8 +13,13 @@ AHS.QuestionNavigator = (function () {
        total, currentIndex (0-based), answeredIds (Set-like array of
        question ids answered so far), questionIds (array aligned with
        total, for answered lookup),
-       onGoTo(index), onPrev(), onNext(), onFinish()
-     } */
+       onGoTo(index), onPrev(), onNext(), onFinish(),
+       onFinishEarly() (additive, optional — 完成測試: unlike onFinish,
+       which only ever renders on the LAST question, this button is
+       always visible so a student can submit early from any question;
+       the integrator (QuizCenter.js) owns confirming the action and
+       grading only what was actually answered — this component stays a
+       pure render, no new state here). */
   function create(opts) {
     opts = opts || {};
     var total = opts.total || 0;
@@ -69,10 +74,21 @@ AHS.QuestionNavigator = (function () {
       });
     }
 
+    var actionChildren = [prevBtn, nextBtn];
+    if (typeof opts.onFinishEarly === "function") {
+      var finishEarlyBtn = el("button", { type: "button", class: "qnav__finish-early" }, [
+        el("span", { text: "完成測試" })
+      ]);
+      finishEarlyBtn.addEventListener("click", function () {
+        opts.onFinishEarly();
+      });
+      actionChildren.push(finishEarlyBtn);
+    }
+
     return el("nav", { class: "card qnav", "aria-label": "題號導覽" }, [
       el("div", { class: "qnav__progress-label", text: (currentIndex + 1) + " / " + total + " 題" }),
       grid,
-      el("div", { class: "qnav__actions" }, [prevBtn, nextBtn])
+      el("div", { class: "qnav__actions" }, actionChildren)
     ]);
   }
 

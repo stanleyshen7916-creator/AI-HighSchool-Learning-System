@@ -653,8 +653,11 @@ AHS.QuizCenter = (function () {
      onSwitchMode(baseExamId, mode) — Sprint AI-117 AI-117-08, optional/
      additive: every existing caller that omits it keeps this view's
      exact prior behavior (assessmentModeToggle() returns null without
-     it). */
-  function buildExamView(session, rerender, onFinish, onSwitchMode) {
+     it). onFinishEarly() — 完成測試 hotfix, optional/additive: passed
+     straight through to QuestionNavigator so a "完成測試" button is
+     always visible regardless of currentIndex; omitted entirely means
+     no button renders (QuestionNavigator's own additive default). */
+  function buildExamView(session, rerender, onFinish, onSwitchMode, onFinishEarly) {
     var questions = AHS.QuestionRuntime.getSet(session.examId);
     var currentQuestion = questions[session.currentIndex];
     var answers = AHS.AnswerRuntime.getAnswers(session.examId);
@@ -673,7 +676,8 @@ AHS.QuizCenter = (function () {
       onGoTo: function (index) { AHS.ExamRuntime.goTo(session.examId, index); rerender(); },
       onPrev: function () { AHS.ExamRuntime.prev(session.examId); rerender(); },
       onNext: function () { AHS.ExamRuntime.next(session.examId); rerender(); },
-      onFinish: onFinish
+      onFinish: onFinish,
+      onFinishEarly: onFinishEarly
     });
 
     var subj = AHS.Subjects[session.subject];
@@ -1622,7 +1626,9 @@ AHS.QuizCenter = (function () {
       if (!session || session.examId !== examId) { showList(); return; }
       AHS.UI.mount(root, buildExamView(session, function () { showExam(examId); }, function () {
         finishExam(examId);
-      }, switchAssessmentMode));
+      }, switchAssessmentMode, function () {
+        finishExamEarly(examId);
+      }));
     }
 
     function finishExam(examId) {
@@ -1636,6 +1642,48 @@ AHS.QuizCenter = (function () {
            AutoGrader's own `results` (unlike `wrong`) carries every
            question of this attempt, the one real moment Knowledge
            Mastery/Accuracy/Trend/Growth can be fed honestly. */
+        if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordGraded === "function") {
+          AHS.KnowledgeMasteryRuntime.recordGraded(graded);
+        }
+      }
+      var review = AHS.ReviewRuntime.build(examId);
+      if (!review) { showList(); return; }
+      AHS.UI.mount(root, buildReviewView(review, showList));
+    }
+
+    /* finishExamEarly(examId) — 完成測試 hotfix (user requirement #2):
+       lets a student stop a still-in-progress exam (e.g. answered 3 of
+       10) and have THAT partial attempt genuinely recorded, instead of
+       forcing them to reach the last question before onFinish() even
+       renders. Reuses AHS.ExamRuntime.finish() (same session-closing
+       call finishExam() already uses — no new Runtime state) and
+       AHS.AutoGrader.grade(finished, { answeredOnly: true }) (this
+       Sprint's additive opts param) so only the questions the student
+       actually answered are graded/recorded — an unanswered question is
+       excluded, never counted as wrong (user's own confirmed answer:
+       "只計算已作答的題目，未作答的不算入本次成績"). Blocks a
+       zero-answered click (nothing real to record) and confirms via
+       window.confirm() before finishing, mirroring the existing
+       window.confirm() precedent already used elsewhere in this repo
+       (js/ui/SettingsPanel.js's restore confirmation). */
+    function finishExamEarly(examId) {
+      var answers = AHS.AnswerRuntime.getAnswers(examId);
+      var answeredCount = Object.keys(answers).length;
+      if (!answeredCount) {
+        window.alert("尚未作答任何題目，無法提前完成測試。");
+        return;
+      }
+      var confirmed = window.confirm(
+        "確定要提前完成測試嗎？\n本次僅會記錄已作答的 " + answeredCount + " 題，未作答的題目不計入成績。"
+      );
+      if (!confirmed) { return; }
+
+      var finished = AHS.ExamRuntime.finish(examId);
+      if (!finished) { showList(); return; }
+      var graded = AHS.AutoGrader.grade(finished, { answeredOnly: true });
+      if (graded) {
+        AHS.WrongBookRuntime.sync(graded);
+        AHS.HistoryRuntime.record(graded);
         if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordGraded === "function") {
           AHS.KnowledgeMasteryRuntime.recordGraded(graded);
         }
