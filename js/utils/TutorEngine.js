@@ -18,15 +18,29 @@
    questionId, which is that record's own local id (AHS.PlatformContext's
    existing, previously-unused questionId field — see
    js/components/WrongBook.js's new "問 AI 巧巧老師" link, the first real
-   caller to set it). */
+   caller to set it).
+
+   Off-topic menu (additive): when a student's input isn't one of the two
+   Phase-1 intents (or a real question isn't known yet), reply() no
+   longer hands back a dead-end sentence — it returns a real, always-
+   answerable menu instead: the two Phase-1 intents when a question is
+   already known (guaranteed to have a real answer — resolveQuestion()
+   already succeeded), or a real navigation action into 知識弱點 when it
+   isn't (the one place a real question can be picked from). Never a
+   menu item that leads to another dead end. */
 window.AHS = window.AHS || {};
 AHS.TutorEngine = (function () {
   "use strict";
 
   var STEPS_KEYWORDS = ["解題", "詳解", "怎麼解", "怎麼算", "如何解", "步驟"];
   var CONCEPT_KEYWORDS = ["概念", "解釋", "是什麼", "為什麼", "意思"];
+  var STEPS_LABEL = "解題步驟詳解";
+  var CONCEPT_LABEL = "概念解釋";
 
-  var HONEST_FALLBACK = "目前我只能針對你正在查看的題目，提供這一題已有的詳解或知識點說明。這個問題我還沒有相關資料，建議直接查看題目的「詳解」欄位，或返回教材摘要複習。";
+  /* Out of this Phase's scope entirely (the other quick-suggestion
+     tiles) — reply() defers to the caller's own existing behavior for
+     these exact labels, never intercepts them with the off-topic menu. */
+  var OUT_OF_SCOPE_LABELS = ["類題練習", "重點整理", "考卷解析", "換個主題"];
 
   function matchesAny(text, keywords) {
     return keywords.some(function (k) { return text.indexOf(k) !== -1; });
@@ -71,22 +85,50 @@ AHS.TutorEngine = (function () {
     return lines.join("");
   }
 
-  /* reply(text, pageContext) -> string | null.
-     null means "this engine has nothing real to say about this input" —
-     the caller (AiTutor.js) keeps its own existing fallback behavior for
-     every intent this Phase doesn't cover, unchanged. Only the two
-     Phase-1 intents (解題步驟詳解／概念解釋) are handled here; anything
-     else — including the other quick-suggestion tiles — is intentionally
-     left alone. */
+  /* offTopicMenu(question) — the real, always-answerable menu shown
+     whenever this engine has nothing direct to say. Every item leads to
+     a guaranteed real answer: the two Phase-1 intents when `question`
+     already resolved (resolveQuestion() succeeded, so explainSteps()/
+     explainConcept() are real for this exact record), or a real link to
+     知識弱點 — the one place a student can pick a question this engine
+     can then answer for — when it didn't. */
+  function offTopicMenu(question) {
+    if (question) {
+      return {
+        message: "這個問題我目前還沒辦法直接回答，不過針對你正在看的這一題，我可以提供：",
+        actions: [{ label: STEPS_LABEL }, { label: CONCEPT_LABEL }]
+      };
+    }
+    return {
+      message: "目前我還沒有你正在問的這方面資料。你可以先到「知識弱點」挑一題，我就能針對那一題提供真實的詳解或知識點說明。",
+      actions: [{ label: "前往知識弱點", href: "wrongbook.html" }]
+    };
+  }
+
+  /* reply(text, pageContext) -> string | { message, actions } | null.
+     null means "out of this Phase's scope" (an exact OUT_OF_SCOPE_LABELS
+     match) — the caller (AiTutor.js) keeps its own existing canned-reply
+     behavior unchanged for those. Everything else always gets either a
+     real, grounded answer (string) or the real answerable menu above
+     (object) — never a dead-end sentence with nothing the student can do
+     next. */
   function reply(text, pageContext) {
     if (!text) { return null; }
-    var isSteps = matchesAny(text, STEPS_KEYWORDS);
-    var isConcept = !isSteps && matchesAny(text, CONCEPT_KEYWORDS);
-    if (!isSteps && !isConcept) { return null; }
+    if (OUT_OF_SCOPE_LABELS.indexOf(text) !== -1) { return null; }
 
     var question = resolveQuestion(pageContext);
-    var answer = isSteps ? explainSteps(question) : explainConcept(question);
-    return answer || HONEST_FALLBACK;
+    var isSteps = matchesAny(text, STEPS_KEYWORDS);
+    var isConcept = !isSteps && matchesAny(text, CONCEPT_KEYWORDS);
+
+    if (isSteps) {
+      var steps = explainSteps(question);
+      if (steps) { return steps; }
+    } else if (isConcept) {
+      var concept = explainConcept(question);
+      if (concept) { return concept; }
+    }
+
+    return offTopicMenu(question);
   }
 
   return { reply: reply, resolveQuestion: resolveQuestion };
