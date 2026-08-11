@@ -20,14 +20,17 @@
    js/components/WrongBook.js's new "問 AI 巧巧老師" link, the first real
    caller to set it).
 
-   Off-topic menu (additive): when a student's input isn't one of the two
-   Phase-1 intents (or a real question isn't known yet), reply() no
-   longer hands back a dead-end sentence — it returns a real, always-
-   answerable menu instead: the two Phase-1 intents when a question is
-   already known (guaranteed to have a real answer — resolveQuestion()
-   already succeeded), or a real navigation action into 知識弱點 when it
-   isn't (the one place a real question can be picked from). Never a
-   menu item that leads to another dead end. */
+   Off-topic menu: when a student's input isn't one of the two Phase-1
+   intents (or a real question isn't known yet), reply() never hands
+   back a dead-end sentence — it returns a real, always-answerable menu
+   instead: the two Phase-1 intents when a question is already known
+   (guaranteed to have a real answer — resolveQuestion() already
+   succeeded), or a real navigation action into 知識弱點 when it isn't
+   (the one place a real question can be picked from). Never a menu item
+   that leads to another dead end. This is also why js/data/AppConfig.js's
+   aiTutorPage.suggestions only lists these same two intents now — every
+   other quick-suggestion tile used to be a fixed canned-reply stub with
+   no real answer behind it and has been removed, not hidden. */
 window.AHS = window.AHS || {};
 AHS.TutorEngine = (function () {
   "use strict";
@@ -36,11 +39,6 @@ AHS.TutorEngine = (function () {
   var CONCEPT_KEYWORDS = ["概念", "解釋", "是什麼", "為什麼", "意思"];
   var STEPS_LABEL = "解題步驟詳解";
   var CONCEPT_LABEL = "概念解釋";
-
-  /* Out of this Phase's scope entirely (the other quick-suggestion
-     tiles) — reply() defers to the caller's own existing behavior for
-     these exact labels, never intercepts them with the off-topic menu. */
-  var OUT_OF_SCOPE_LABELS = ["類題練習", "重點整理", "考卷解析", "換個主題"];
 
   function matchesAny(text, keywords) {
     return keywords.some(function (k) { return text.indexOf(k) !== -1; });
@@ -105,16 +103,13 @@ AHS.TutorEngine = (function () {
     };
   }
 
-  /* reply(text, pageContext) -> string | { message, actions } | null.
-     null means "out of this Phase's scope" (an exact OUT_OF_SCOPE_LABELS
-     match) — the caller (AiTutor.js) keeps its own existing canned-reply
-     behavior unchanged for those. Everything else always gets either a
-     real, grounded answer (string) or the real answerable menu above
-     (object) — never a dead-end sentence with nothing the student can do
-     next. */
+  /* reply(text, pageContext) -> string | { message, actions }.
+     null only when text is falsy — every non-empty input always gets
+     either a real, grounded answer (string) or the real answerable menu
+     above (object), never a dead-end sentence with nothing the student
+     can do next. */
   function reply(text, pageContext) {
     if (!text) { return null; }
-    if (OUT_OF_SCOPE_LABELS.indexOf(text) !== -1) { return null; }
 
     var question = resolveQuestion(pageContext);
     var isSteps = matchesAny(text, STEPS_KEYWORDS);

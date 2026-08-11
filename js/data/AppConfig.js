@@ -86,20 +86,14 @@ AHS.AppConfig = {
     tagline: "有問題儘管問我，我會陪你一起思考、一起進步！",
     badge: "AI 助教",
     messages: [],       /* 假對話已移除 — 對話從空白開始 */
+    /* AI Tutor Rule-Based 引擎 Phase 1：只保留真正有真實資料可回答的
+       兩個意圖（js/utils/TutorEngine.js）。「類題練習」「重點整理」
+       「考卷解析」「換個主題」原本點下去也只是固定台詞（cannedReplies，
+       已於 EO 報告 Flag 過的 Prototype 限制），現在移除——不留使用者
+       點了卻拿不到真實答案的選項。 */
     suggestions: [
       { icon: "summary", label: "解題步驟詳解", desc: "請詳細解題" },
-      { icon: "chat", label: "概念解釋", desc: "用簡單的方式說明" },
-      { icon: "quiz", label: "類題練習", desc: "出類似的題目練習" },
-      { icon: "bookmark", label: "重點整理", desc: "整理成重點筆記" },
-      { icon: "target", label: "考卷解析", desc: "解析考卷題目" },
-      { icon: "refresh", label: "換個主題", desc: "聊聊別的內容" }
-    ],
-    /* 巧巧老師 prototype 回覆台詞（UI copy，同勵志語錄性質；已於
-       EO 報告 Flag，PMO 可裁定移除）。 */
-    cannedReplies: [
-      "好的！這是一個很好的問題，我們一步一步來看。首先確認題目的已知條件，再選擇適合的公式或方法。",
-      "沒問題～我先幫你把關鍵概念拆解成幾個小步驟，這樣會更容易理解喔！",
-      "很棒的思考方向！讓我用一個簡單的例子帶你一起推導看看。"
+      { icon: "chat", label: "概念解釋", desc: "用簡單的方式說明" }
     ],
     history: [],        /* 假對話紀錄已移除 */
     resources: []       /* 假檔案清單已移除 */
