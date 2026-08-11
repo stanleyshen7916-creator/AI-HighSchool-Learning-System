@@ -91,12 +91,12 @@ window.AHS = window.AHS || {};
      real data, so that legacy stat is honestly dropped rather than
      mapped to something that doesn't exist ("不得偽造"). */
   var STAT_DEFS = [
-    { key: "totalWrongCount", label: "Total Wrong" },
-    { key: "active", label: "Active" },
-    { key: "archived", label: "Archived" },
-    { key: "new", label: "New" },
-    { key: "learning", label: "Learning" },
-    { key: "mastered", label: "Mastered" }
+    { key: "totalWrongCount", label: "錯題總數" },
+    { key: "active", label: "進行中" },
+    { key: "archived", label: "已封存" },
+    { key: "new", label: "新錯題" },
+    { key: "learning", label: "學習中" },
+    { key: "mastered", label: "已精熟" }
   ];
 
   function realWrongBookStats() {
