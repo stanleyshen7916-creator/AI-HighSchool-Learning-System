@@ -68,7 +68,7 @@ AHS.WorkspaceFolder = (function () {
         el("a", {
           class: "workspace-folder__link",
           href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + m.id),
-          text: "前往考前練習"
+          text: "前往考前總複習"
         }),
         /* Sprint AI-121 AI-121-05: 每日 AI 練習 — real entry into
            QuizCenter's mode=daily branch (random 10 from this material's

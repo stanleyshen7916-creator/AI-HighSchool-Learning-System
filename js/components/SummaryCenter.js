@@ -307,7 +307,7 @@ AHS.SummaryCenter = (function () {
       class: "sum-footer__quiz",
       href: "quiz.html?mode=practice&materialId=" + encodeURIComponent(record.materialId || "")
     }, [
-      el("span", { text: "前往考前練習" }),
+      el("span", { text: "前往考前總複習" }),
       el("span", { html: AHS.Icons.chevronRight() })
     ]);
 

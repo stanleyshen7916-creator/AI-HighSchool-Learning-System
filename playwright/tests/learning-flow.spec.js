@@ -1,6 +1,6 @@
 /* playwright/tests/learning-flow.spec.js — Sprint AI-118 AI-118-12
    Learning Flow E2E — the new Learning Loop this Sprint's own AI-118-01
-   defines: 首頁 -> 教材中心 -> 學習總結 -> 考前練習 -> 正式測驗 -> 錯題本
+   defines: 首頁 -> 教材中心 -> 學習總結 -> 考前總複習 -> 平時練習 -> 錯題本
    -> 首頁, driven by real clicks through the real, reworked CTAs
    (AI-118-04/05/06/07/08), confirming Navigation/Statistics/WrongBook/
    Tutor all stay in sync — never a second, independently-recomputed
@@ -10,7 +10,7 @@
    tests/jsdom/BehaviorSuite.js's own seedProductionQuestions() uses
    (AHS.AITutorService.ensureQuestionSet() -> AHS.QuestionProviderBridge.
    bridge()) — genuine LearningQuestionRuntime content, not hand-seeded
-   fake records. 正式測驗 is driven via page.evaluate() calling the same
+   fake records. 平時練習 is driven via page.evaluate() calling the same
    real ExamRuntime/AutoGrader/WrongBookRuntime/HistoryRuntime functions
    assessment-scenario.spec.js already established as this Sprint's own
    accepted pattern for a teaching-material-scoped exam (no real
@@ -87,7 +87,7 @@ async function dumpSession(page) {
   });
 }
 
-test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習 -> 正式測驗 -> 錯題本 -> 首頁", async ({ page }) => {
+test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前總複習 -> 平時練習 -> 錯題本 -> 首頁", async ({ page }) => {
   const errors = collectErrors(page);
 
   /* ---- Setup: generate REAL practice questions via the real pipeline,
@@ -129,16 +129,16 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習
     await expect(page).toHaveURL(/summary\.html\?materialId=rt_1/);
   });
 
-  await test.step("學習總結 — 重點整理/易錯觀念/AI Tutor 建議齊全，前往考前練習（真實點擊）", async () => {
+  await test.step("學習總結 — 重點整理/易錯觀念/AI Tutor 建議齊全，前往考前總複習（真實點擊）", async () => {
     await expect(page.locator("body")).toContainText("AI-118 核心概念");
     await expect(page.locator("body")).toContainText("AI-118 易錯點");
-    await expect(page.locator(".sum-footer__exam")).toHaveCount(0); // 前往正式測驗已移除
+    await expect(page.locator(".sum-footer__exam")).toHaveCount(0); // 前往平時練習已移除
     await page.locator(".sum-footer__quiz").click();
     await expect(page).toHaveURL(/quiz\.html\?mode=practice&materialId=rt_1/);
   });
 
-  await test.step("考前練習 — 真實作答（答錯），立即看到詳解，非正式成績", async () => {
-    const practiceTab = page.locator(".quiz-mode__tab", { hasText: "考前練習" });
+  await test.step("考前總複習 — 真實作答（答錯），立即看到詳解，非正式成績", async () => {
+    const practiceTab = page.locator(".quiz-mode__tab", { hasText: "考前總複習" });
     await expect(practiceTab).toHaveClass(/is-active/);
     const diffBtn = page.locator(".qguide__diff").first();
     if (await diffBtn.count()) {
@@ -157,7 +157,7 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前練習
     await expect(page.locator(".quiz-practice__result")).toBeVisible();
   });
 
-  await test.step("正式測驗 — 真實批改，永久保存，錯題自動加入錯題本", async () => {
+  await test.step("平時練習 — 真實批改，永久保存，錯題自動加入錯題本", async () => {
     const examResult = await page.evaluate((materialId) => {
       const AHS = window.AHS;
       const examId = "teaching_material_" + materialId;

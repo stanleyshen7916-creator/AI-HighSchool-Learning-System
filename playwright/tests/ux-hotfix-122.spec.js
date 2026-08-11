@@ -111,7 +111,7 @@ test("PAT-122-01：立即重做 Session Reset — 完整重置作答狀態，不
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-122-02：所有「前往考前練習」皆進入 Practice Mode，不得再導向正式測驗", async ({ page }) => {
+test("PAT-122-02：所有「前往考前總複習」皆進入 Practice Mode，不得再導向平時練習", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(fileUrl("quiz"));
   await page.evaluate(() => {
@@ -299,7 +299,7 @@ test("PAT-122-06：最近新增教材 = 近三日新增教材（CreatedAt >= Tod
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-122-07：首頁 CTA 一致化 — 教材資料夾「前往考前練習」真實導向 Practice Mode", async ({ page }) => {
+test("PAT-122-07：首頁 CTA 一致化 — 教材資料夾「前往考前總複習」真實導向 Practice Mode", async ({ page }) => {
   const errors = collectErrors(page);
   await seedSession(page, {
     "ahs:materialRuntime": {
@@ -317,7 +317,7 @@ test("PAT-122-07：首頁 CTA 一致化 — 教材資料夾「前往考前練習
 
   const folderRow = page.locator(".workspace-folder__material", { hasText: "PAT-122-07 教材" });
   await expect(folderRow).toBeVisible();
-  await folderRow.locator(".workspace-folder__link", { hasText: "前往考前練習" }).click();
+  await folderRow.locator(".workspace-folder__link", { hasText: "前往考前總複習" }).click();
 
   await expect(page).toHaveURL(/quiz\.html\?mode=practice&examId=/);
   await expect(page.locator(".qcard")).toHaveCount(0);

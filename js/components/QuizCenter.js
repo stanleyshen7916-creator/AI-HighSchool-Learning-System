@@ -21,6 +21,10 @@ AHS.QuizCenter = (function () {
 
   var DIFF_TONE = { "易": "#22b573", "易~中等": "#22b573", "中等": "#f59e0b", "難": "#ef4444" };
 
+  /* 平時練習（原正式測驗）每次固定抽題數 — 與 AHS.QuestionBankRuntime.
+     drawCycle() 搭配，一份題庫題數不足 10 題時誠實只給實際題數，不湊數。 */
+  var FORMAL_EXAM_QUESTION_COUNT = 10;
+
   function chip(subjectKey) {
     var subj = AHS.Subjects[subjectKey];
     return el("span", {
@@ -465,7 +469,10 @@ AHS.QuizCenter = (function () {
         chapter: meta.chapter || "",
         difficulty: modeDifficulty(questionsForDifficulty),
         type: "單選題",
-        count: set.length,
+        /* 平時練習每次固定隨機抽 FORMAL_EXAM_QUESTION_COUNT 題（題庫題數
+           不足時誠實顯示實際題數，不湊數）— 卡片上的「共 N 題」對應的是
+           這次實際會考的題數，不是題庫總題數。 */
+        count: Math.min(FORMAL_EXAM_QUESTION_COUNT, set.length),
         progress: stats.progress,
         accuracy: stats.accuracy,
         best: stats.best,
@@ -1393,7 +1400,7 @@ AHS.QuizCenter = (function () {
     var beforeState = {};
     questions.forEach(function (q) { beforeState[q.id] = session.statusFor(kind, q.id); });
 
-    var overlay = el("div", { class: "qpv-overlay", role: "dialog", "aria-modal": "true", "aria-label": "考前練習" });
+    var overlay = el("div", { class: "qpv-overlay", role: "dialog", "aria-modal": "true", "aria-label": "考前總複習" });
     var shell = el("div", { class: "qpv" });
     var confirmOverlay = el("div", { class: "qpv-confirm-overlay", hidden: "hidden" });
 
@@ -1434,7 +1441,7 @@ AHS.QuizCenter = (function () {
     var footer = el("div", { class: "qpv__footer" }, [prevBtn, nextBtn]);
 
     function updateHead() {
-      titleEl.textContent = [session.headerMeta.subjectName, session.headerMeta.chapterLabel, "考前練習",
+      titleEl.textContent = [session.headerMeta.subjectName, session.headerMeta.chapterLabel, "考前總複習",
         "第 " + (index + 1) + " / " + total + " 題"].filter(function (s) { return s; }).join("／");
       prevBtn.disabled = index === 0;
       nextBtn.textContent = index === total - 1 ? "完成測驗" : "下一題";
@@ -1641,8 +1648,36 @@ AHS.QuizCenter = (function () {
     /* Sprint v1.6 Module C: a real initialExamId tries direct entry into
        an already-imported exam first; any failure (already running, no
        question set for this id, meta unresolvable) falls back to the
-       normal Exam Mode list — never a broken/blank view. */
+       normal Exam Mode list — never a broken/blank view.
+
+       平時練習 random-10 rework: when `examId` is a real material's own
+       base exam id (the one TeachingMaterialLoader.js already built a
+       permanent AHS.QuestionBankRuntime bank for via ensureBank() at
+       import time — never the "__original"/"__ai" Assessment Mode
+       variants switchAssessmentMode() passes here, which have no bank
+       of their own and fall through to the unchanged whole-set path
+       below), each attempt now draws up to FORMAL_EXAM_QUESTION_COUNT
+       real questions via AHS.QuestionBankRuntime.drawCycle() — a
+       persisted "shuffled bag" that never repeats a question until
+       every question in the bank has been drawn once (可重複，但每一題
+       均必須要出到), imported under a fresh derived examId so
+       ExamRuntime/AutoGrader/WrongBookRuntime/HistoryRuntime run
+       completely unchanged (same additive-variant convention
+       startDrawnSession() below already established). */
     function tryDirectExamEntry(examId) {
+      if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.drawCycle === "function" &&
+          AHS.QuestionBankRuntime.hasBank(examId)) {
+        var drawn = AHS.QuestionBankRuntime.drawCycle(examId, FORMAL_EXAM_QUESTION_COUNT);
+        if (!drawn.length) { showList(); return null; }
+        var derivedExamId = examId + "__formal_" + (Date.now());
+        AHS.QuestionRuntime.importQuestions(derivedExamId, drawn);
+        var drawnMeta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
+          ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
+        var drawnSession = AHS.ExamRuntime.startFromExam(derivedExamId, drawnMeta || {});
+        if (!drawnSession) { showList(); return null; }
+        showExam(drawnSession.examId);
+        return drawnSession.examId;
+      }
       var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
         ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
       var session = AHS.ExamRuntime.startFromExam(examId, meta || {});
@@ -1930,14 +1965,25 @@ AHS.QuizCenter = (function () {
        changing either would mean editing LOCKed Runtime/Question Engine
        code, which this Sprint's own LOCK forbids — flagged in the
        Sprint AI-118 report as a spec/LOCK conflict for Project Owner,
-       not silently claimed as done. */
+       not silently claimed as done.
+
+       Renamed (later Sprint): 正式測驗 → 平時練習, 考前練習 →
+       考前總複習 — both tabs now draw from the exact same real,
+       already-imported question set per material (never a separate Mock
+       pool): 平時練習 draws FORMAL_EXAM_QUESTION_COUNT via
+       AHS.QuestionBankRuntime.drawCycle() (see tryDirectExamEntry()
+       above), 考前總複習 still shows that same set's full question count
+       (buildPracticeListView() below, unchanged). Every real
+       characteristic this comment already documented above is otherwise
+       unchanged — only the display names and 平時練習's per-attempt
+       question count changed. */
     var examTab = el("button", {
       type: "button", class: "quiz-mode__tab" + (startOnPractice ? "" : " is-active"),
-      text: "正式測驗", "data-tip": "固定完成後公布答案・永久保存紀錄・錯題自動加入知識弱點"
+      text: "平時練習", "data-tip": "每次隨機抽 " + FORMAL_EXAM_QUESTION_COUNT + " 題・完成後公布答案・永久保存紀錄・錯題自動加入知識弱點"
     });
     var practiceTab = el("button", {
       type: "button", class: "quiz-mode__tab" + (startOnPractice ? " is-active" : ""),
-      text: "考前練習", "data-tip": "可重複作答・答完立即看到詳解・不影響正式成績"
+      text: "考前總複習", "data-tip": "涵蓋題庫全部題目・可重複作答・答完立即看到詳解・不影響正式成績"
     });
     if (startOnPractice) { root.setAttribute("hidden", "hidden"); }
     examTab.addEventListener("click", function () {

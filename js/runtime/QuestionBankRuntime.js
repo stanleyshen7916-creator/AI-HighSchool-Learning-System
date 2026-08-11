@@ -34,7 +34,13 @@ AHS.QuestionBankRuntime = (function () {
   function hydrate() {
     if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function") {
       var loaded = AHS.PersistenceAdapter.load(STORAGE_KEY);
-      if (loaded && loaded.banks && typeof loaded.banks === "object") { return loaded; }
+      if (loaded && loaded.banks && typeof loaded.banks === "object") {
+        /* cycles (additive field): older persisted stores predate
+           drawCycle() and won't have it — default to {} rather than
+           treating the whole store as invalid. */
+        if (!loaded.cycles || typeof loaded.cycles !== "object") { loaded.cycles = {}; }
+        return loaded;
+      }
     }
     return null;
   }
@@ -44,7 +50,7 @@ AHS.QuestionBankRuntime = (function () {
     AHS.PersistenceAdapter.save(STORAGE_KEY, store);
   }
 
-  var store = hydrate() || { banks: {} };
+  var store = hydrate() || { banks: {}, cycles: {} };
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -94,10 +100,70 @@ AHS.QuestionBankRuntime = (function () {
     return typeof n === "number" ? bank.slice(0, n) : bank;
   }
 
+  function shuffledIds(bank) {
+    var ids = bank.map(function (q) { return q.id; });
+    for (var i = ids.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = ids[i]; ids[i] = ids[j]; ids[j] = tmp;
+    }
+    return ids;
+  }
+
+  function findById(bank, id) {
+    for (var i = 0; i < bank.length; i++) { if (bank[i].id === id) { return bank[i]; } }
+    return null;
+  }
+
+  /* drawCycle(examId, n) — "可重複，但每一題均必須要出到": unlike
+     drawRandom() (an independent reshuffle every call, so the same
+     question can come back on the very next draw), this draws from a
+     persisted, real "shuffled bag" per examId — store.cycles[examId].
+     remaining — that never hands out a question a SECOND time until
+     every question in the bank has been drawn once. When the bag runs
+     dry mid-draw, a fresh bag is shuffled and drawing continues from it
+     (so 平時練習/正式測驗's own real re-entry across separate sessions
+     is what "可重複" refers to — never within the same single draw,
+     which is capped at the bank's own real size so one exam can never
+     contain the same question twice). Persists via the same
+     AHS.PersistenceAdapter store this file already uses, so the bag
+     survives page reloads exactly like the bank itself does. Returns
+     real question objects (not just ids), honestly fewer than n when
+     the bank itself is smaller than n (same "never padded" rule
+     drawRandom() already documents). */
+  function drawCycle(examId, n) {
+    var bank = getBank(examId);
+    if (!bank.length) { return []; }
+    var count = Math.min(typeof n === "number" ? n : bank.length, bank.length);
+    var cycle = store.cycles[examId];
+    if (!cycle || !Array.isArray(cycle.remaining) || !cycle.remaining.length) {
+      cycle = { remaining: shuffledIds(bank) };
+      store.cycles[examId] = cycle;
+    }
+    var drawn = [];
+    var drawnThisCall = {};
+    for (var i = 0; i < count; i++) {
+      if (!cycle.remaining.length) {
+        /* Fresh cycle mid-draw (n >= bank size, or a small leftover):
+           must exclude ids already picked THIS call, or a reshuffle of
+           the full bank could hand back a question already in `drawn`,
+           putting the same question twice in one exam — count is
+           already capped to bank.length, so bank.length - drawn.length
+           unused ids always exist to fill the rest of this draw. */
+        cycle.remaining = shuffledIds(bank).filter(function (id) { return !drawnThisCall[id]; });
+      }
+      var id = cycle.remaining.shift();
+      drawnThisCall[id] = true;
+      var q = findById(bank, id);
+      if (q) { drawn.push(clone(q)); }
+    }
+    persist();
+    return drawn;
+  }
+
   /* reset() — test helper; clears every built bank back to first-open
      state, same convention every other Runtime's reset() already uses. */
   function reset() {
-    store = { banks: {} };
+    store = { banks: {}, cycles: {} };
     persist();
   }
 
@@ -107,6 +173,7 @@ AHS.QuestionBankRuntime = (function () {
     getBank: getBank,
     bankSize: bankSize,
     drawRandom: drawRandom,
+    drawCycle: drawCycle,
     reset: reset,
     MAX_BANK_SIZE: MAX_BANK_SIZE
   };
