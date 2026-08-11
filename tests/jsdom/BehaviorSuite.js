@@ -932,11 +932,17 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
      simulated page loads (see docs/EO/HOTFIX-002 report). */
   const { window, consoleErrors } = loadPage("materials.html", {});
   const doc = window.document;
-  check("data/materials/*.js 已 register 真實教材", window.AHS.MaterialRepository.list().length === 1);
-  check("MaterialRuntime 確實載入該教材（非空陣列，對應 PAT FAIL 的核心症狀）", window.AHS.MaterialRuntime.list().length === 1);
+  /* PMO Decision (Teaching Material Upload v1.0): more real materials have
+     since been added to the Repository (國文 five lessons alongside the
+     original 公民與社會 exam), so the Repository/Runtime are no longer
+     conceptually "exactly one entry" — the PAT FAIL this test guards
+     against is any real Repository content failing to reach
+     MaterialRuntime, which "at least one" still proves. */
+  check("data/materials/*.js 已 register 真實教材", window.AHS.MaterialRepository.list().length >= 1);
+  check("MaterialRuntime 確實載入該教材（非空陣列，對應 PAT FAIL 的核心症狀）", window.AHS.MaterialRuntime.list().length >= 1);
   check("Material Card 確實渲染真實教材標題", /公民與社會｜所有權、勞動三權與夫妻財產制、繼承 重點整理/.test(doc.body.textContent));
   check("Console errors = 0（HOTFIX-002，materials.html）", consoleErrors.length === 0);
-  const rt = window.AHS.MaterialRuntime.list()[0];
+  const rt = window.AHS.MaterialRuntime.list().find(m => m.title === "公民與社會｜所有權、勞動三權與夫妻財產制、繼承 重點整理");
 
   /* quiz.html doesn't <script>-tag MaterialRuntime.js at all — by real
      design (see quiz.html's own script list), so on its own it cannot
