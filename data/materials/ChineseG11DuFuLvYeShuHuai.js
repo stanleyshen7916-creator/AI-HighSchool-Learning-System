@@ -24,7 +24,7 @@ window.AHS = window.AHS || {};
       subject: "chinese",
       subjectLabel: "國文",
       grade: "高二",
-      chapter: "第三課／近體詩選",
+      chapter: "第三課／近體詩選－杜甫〈旅夜書懷〉",
       unit: "杜甫〈旅夜書懷〉",
       materialType: "課本",
       source: "私立長榮中學 高二國文課本「近體詩選」單元：杜甫〈旅夜書懷〉（題解／作者／課文）",
