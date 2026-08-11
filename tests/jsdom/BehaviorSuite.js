@@ -528,8 +528,8 @@ console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session
   const stats = doc.querySelector(".wb-live-stats");
   check("即時統計卡渲染", !!stats);
   const values = [...stats.querySelectorAll(".wb-live-stats__item")].map(n => n.textContent);
-  check("統計值：Total Wrong=1 / Active=1 / New=1",
-    values.some(v => /1\s*Total Wrong/.test(v)) && values.some(v => /1\s*Active/.test(v)) && values.some(v => /1\s*New/.test(v)));
+  check("統計值：錯題總數=1 / 進行中=1 / 新錯題=1",
+    values.some(v => /1\s*錯題總數/.test(v)) && values.some(v => /1\s*進行中/.test(v)) && values.some(v => /1\s*新錯題/.test(v)));
   check("Console errors = 0 (wrongbook 整合)", consoleErrors.length === 0);
   if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0,3));
 }

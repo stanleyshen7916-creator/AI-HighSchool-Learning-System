@@ -406,10 +406,10 @@ test("PAT-124-PAT-03：知識弱點頁「錯題即時統計」讀取真實 AHS.W
   const byLabel = {};
   labels.forEach((l, i) => { byLabel[l] = Number(values[i]); });
 
-  expect(byLabel["Total Wrong"]).toBe(2);
-  expect(byLabel["Active"]).toBe(1);
-  expect(byLabel["Archived"]).toBe(1);
-  expect(byLabel["New"]).toBe(1);
+  expect(byLabel["錯題總數"]).toBe(2);
+  expect(byLabel["進行中"]).toBe(1);
+  expect(byLabel["已封存"]).toBe(1);
+  expect(byLabel["新錯題"]).toBe(1);
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
