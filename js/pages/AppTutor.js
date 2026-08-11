@@ -72,7 +72,13 @@ window.AHS = window.AHS || {};
     });
     if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
-    shell.main.appendChild(AHS.AiTutor.create(buildModel()));
+    /* Phase 1 Rule-Based Tutor Engine: the same real ?questionId= this
+       page already reads via AHS.PlatformContext.resolve() (see
+       buildRealTutorMessage() above), passed through so AiTutor.js's
+       sendMessage() can ground a real answer via AHS.TutorEngine when
+       the student arrived here from a specific real question. */
+    var tutorPageContext = { questionId: AHS.PlatformContext ? AHS.PlatformContext.resolve().questionId : null };
+    shell.main.appendChild(AHS.AiTutor.create(buildModel(), tutorPageContext));
   }
   function coreReady() {
     return !!(window.AHS && AHS.UI && typeof AHS.UI.el === "function" &&
