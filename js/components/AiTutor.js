@@ -1,8 +1,11 @@
 /* components/AiTutor.js — AI Tutor (巧巧老師) chat page.
    Hero + chat thread + input bar (left), suggestion tiles (middle),
    chat history + common resources (right). Sending a message appends the
-   user bubble and a canned assistant reply — all Mock, no API. PascalCase
-   under window.AHS. Assistant avatar reuses AHS.Qiaoqiao. */
+   user bubble, then either a real, grounded answer or a real answerable
+   menu from AHS.TutorEngine.js's Rule-Based engine (no LLM/AI API — see
+   that file's own header), falling back to a canned reply rotation only
+   for the handful of quick-suggestion tiles this Phase doesn't cover.
+   PascalCase under window.AHS. Assistant avatar reuses AHS.Qiaoqiao. */
 window.AHS = window.AHS || {};
 AHS.AiTutor = (function () {
   "use strict";
@@ -10,7 +13,27 @@ AHS.AiTutor = (function () {
 
   var FILE_TONE = { PDF: "#ef4444", PPT: "#f59e0b", DOCX: "#3b82f6", XLSX: "#22b573", MP4: "#7c5cff" };
 
-  function bubble(msg) {
+  /* menu(actionList, onPick) — AHS.TutorEngine's off-topic menu, rendered
+     inline under the reply. Every item is guaranteed to lead to a real
+     answer (TutorEngine.offTopicMenu()'s own contract), never a dead
+     end. Mirrors js/components/AiTutorHomeCard.js's established
+     href-vs-button split: a real href renders a plain <a> (real
+     navigation, never window.location.href=); no href re-invokes
+     sendMessage() with that exact label — guaranteed answerable since
+     TutorEngine only ever offers it here after resolving the question. */
+  function menu(actionList, onPick) {
+    return el("div", { class: "tutor-msg__menu" },
+      actionList.map(function (a) {
+        if (a.href) {
+          return el("a", { class: "tutor-msg__menu-item", href: a.href }, [el("span", { text: a.label })]);
+        }
+        var btn = el("button", { type: "button", class: "tutor-msg__menu-item" }, [el("span", { text: a.label })]);
+        if (onPick) { btn.addEventListener("click", function () { onPick(a.label); }); }
+        return btn;
+      }));
+  }
+
+  function bubble(msg, onMenuPick) {
     if (msg.role === "user") {
       return el("div", { class: "tutor-msg tutor-msg--user" }, [
         el("div", { class: "tutor-msg__bubble", text: msg.text }),
@@ -28,16 +51,18 @@ AHS.AiTutor = (function () {
       el("button", { type: "button", class: "tutor-msg__act", "aria-label": "讚", html: AHS.Icons.like() }),
       el("button", { type: "button", class: "tutor-msg__act", "aria-label": "倒讚", html: AHS.Icons.dislike() })
     ]);
+    var colChildren = [body];
+    if (Array.isArray(msg.actions) && msg.actions.length) {
+      colChildren.push(menu(msg.actions, onMenuPick));
+    }
+    colChildren.push(el("div", { class: "tutor-msg__foot" }, [
+      el("span", { class: "tutor-msg__time", text: msg.time }),
+      actions
+    ]));
     return el("div", { class: "tutor-msg tutor-msg--ai" }, [
       el("span", { class: "tutor-msg__avatar qiaoqiao-bust qiaoqiao-bust--sm",
         html: AHS.Qiaoqiao.bust("gentle") }),
-      el("div", { class: "tutor-msg__col" }, [
-        body,
-        el("div", { class: "tutor-msg__foot" }, [
-          el("span", { class: "tutor-msg__time", text: msg.time }),
-          actions
-        ])
-      ])
+      el("div", { class: "tutor-msg__col" }, colChildren)
     ]);
   }
 
@@ -76,12 +101,20 @@ AHS.AiTutor = (function () {
     function sendMessage(text) {
       if (!text) { return; }
       thread.appendChild(bubble({ role: "user", time: "剛剛", text: text }));
-      /* Phase 1 Rule-Based Engine: only intercepts the two intents it
-         honestly supports (解題步驟詳解／概念解釋) — everything else
-         (including the other quick-suggestion tiles) keeps the exact
-         prior canned-reply rotation below, unchanged. */
+      /* Phase 1 Rule-Based Engine: intercepts the two intents it honestly
+         supports (解題步驟詳解／概念解釋) with a real answer, and hands
+         back a real, always-answerable menu (see AHS.TutorEngine's own
+         offTopicMenu()) for anything else it doesn't recognize — except
+         the other quick-suggestion tiles (類題練習 etc.), which keep the
+         exact prior canned-reply rotation below, unchanged (reply()
+         returns null for those specifically). */
       var engineReply = (AHS.TutorEngine && typeof AHS.TutorEngine.reply === "function")
         ? AHS.TutorEngine.reply(text, pageContext) : null;
+      if (engineReply && typeof engineReply === "object") {
+        thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: engineReply.message, actions: engineReply.actions }, sendMessage));
+        scrollBottom();
+        return;
+      }
       var reply = engineReply || data.cannedReplies[replyIndex % data.cannedReplies.length];
       if (!engineReply) { replyIndex += 1; }
       thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: reply }));
