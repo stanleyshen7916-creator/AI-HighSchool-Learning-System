@@ -138,8 +138,8 @@ console.log("\n[1] Navigation — 固定順序，複習中心／我的學習已�
     !hrefs.includes("review.html") && !hrefs.includes("learning.html"));
 
   const bottomLabels = [...doc.querySelectorAll(".bottom-nav__item")].map((n) => n.textContent.trim());
-  check("Bottom Nav 為首頁/教材/總結/測驗/錯題 五項",
-    ["首頁", "教材", "總結", "測驗", "錯題"].every((label) => bottomLabels.some((t) => t.includes(label))));
+  check("Bottom Nav 為首頁/教材/總結/測驗/知識弱點 五項",
+    ["首頁", "教材", "總結", "測驗", "知識弱點"].every((label) => bottomLabels.some((t) => t.includes(label))));
 
   check("Console errors = 0（首頁 Navigation）", consoleErrors.length === 0);
 }
