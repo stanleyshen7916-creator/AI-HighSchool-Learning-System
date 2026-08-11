@@ -209,8 +209,8 @@ AHS.TutorMessage = (function () {
         href: "materials.html?id=" + encodeURIComponent(context.nextMaterial.id)
       });
     } else if (context.allComplete) {
-      sentences.push("太棒了！目前的教材與錯題都已完成，建議挑戰正式測驗鞏固實力。");
-      actions.push({ icon: "quiz", label: "前往正式測驗", desc: "挑戰測驗", href: "quiz.html" });
+      sentences.push("太棒了！目前的教材與錯題都已完成，建議挑戰平時練習鞏固實力。");
+      actions.push({ icon: "quiz", label: "前往平時練習", desc: "挑戰測驗", href: "quiz.html" });
     }
 
     if (context.weakestSubject) {
@@ -219,7 +219,7 @@ AHS.TutorMessage = (function () {
         context.weakestSubject.percent + "%，是目前較弱的科目。"
       );
       actions.push({
-        icon: "quiz", label: "前往考前練習", desc: subjectName(context.weakestSubject.subject),
+        icon: "quiz", label: "前往考前總複習", desc: subjectName(context.weakestSubject.subject),
         href: "quiz.html?mode=practice"
       });
     }

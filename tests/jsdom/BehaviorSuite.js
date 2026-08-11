@@ -330,7 +330,7 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
   });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
-  const examTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "正式測驗");
+  const examTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "平時練習");
   check("Exam Mode tab active by default (保持現況)", examTab && examTab.classList.contains("is-active"));
   const practiceRoot = doc.querySelector(".quiz-practice-root");
   check("Practice root hidden by default", practiceRoot && practiceRoot.hasAttribute("hidden"));
@@ -339,7 +339,7 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
      開啟為正式 Empty State when genuinely no Repository material exists. */
   check("Exam Mode 正式 Empty State（無 Repository 資料時，預設題庫已移除）",
     doc.querySelectorAll(".quiz-row").length === 0 && /目前沒有可用的測驗/.test(doc.body.textContent));
-  const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前練習");
+  const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前總複習");
   practiceTab.click();
   check("Practice tab (no materialId, no Repository data) skips guide, stub filtered → Empty State",
     !doc.querySelector(".qguide") && !!doc.querySelector(".quiz-practice__empty"));
@@ -1137,7 +1137,7 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
      unfiltered full catalog (AI-122-03). */
   const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const docM = qByMaterialId.window.document;
-  check("② Quiz Center（materialId-only 連結）：進入巧巧老師出題引導（Practice Mode，不再導向正式測驗）",
+  check("② Quiz Center（materialId-only 連結）：進入巧巧老師出題引導（Practice Mode，不再導向平時練習）",
     !!docM.querySelector('.qguide[aria-label="巧巧老師出題引導"]') && !docM.querySelector(".qcard"));
   check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊未被隱藏（AI-122-02）",
     !docM.querySelector(".quiz-practice-root[hidden]"));
@@ -1156,13 +1156,13 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
 
   const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const docE = qByExamId.window.document;
-  check("② Quiz Center（examId 連結）：同樣進入巧巧老師出題引導（Practice Mode，不再導向正式測驗）",
+  check("② Quiz Center（examId 連結）：同樣進入巧巧老師出題引導（Practice Mode，不再導向平時練習）",
     !!docE.querySelector('.qguide[aria-label="巧巧老師出題引導"]') && !docE.querySelector(".qcard"));
   check("② Quiz Center（examId 連結）：Practice Mode 區塊未被隱藏", !docE.querySelector(".quiz-practice-root[hidden]"));
 
   /* PAT：真實練習作答 -> 直接透過 WrongBookRuntime／KnowledgeMasteryRuntime
      真實 Knowledge Engine（AI-121）寫入，而非 Formal Exam 的 AutoGrader／
-     HistoryRuntime 路徑（那條路徑僅屬於正式測驗，Practice Mode 不應誤觸，
+     HistoryRuntime 路徑（那條路徑僅屬於平時練習，Practice Mode 不應誤觸，
      覆蓋範圍已由本檔其餘 AutoGrader／WrongBook／History PAT 涵蓋）。 */
   docE.querySelector('.qguide__diff[data-difficulty="medium"]').click();
   docE.querySelector(".qguide__start").click();
@@ -1256,10 +1256,10 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
 
-  check("正式測驗：Repository 教材直接出現在預設列表（無需先經教材中心）",
+  check("平時練習：Repository 教材直接出現在預設列表（無需先經教材中心）",
     /私有財產權|所有權/.test(doc.body.textContent) && doc.querySelectorAll(".quiz-row").length > 0);
   const examRow = doc.querySelector(".quiz-row");
-  check("正式測驗：可直接點擊開始（走既有 tryDirectExamEntry／startFromExam，非重新產生）", !!examRow);
+  check("平時練習：可直接點擊開始（走既有 tryDirectExamEntry／startFromExam，非重新產生）", !!examRow);
   if (examRow) {
     examRow.querySelector(".quiz-row__start").click();
     check("點擊後直接進入真實測驗畫面（真實題目，非 Mock）", /私有財產權|所有權/.test(doc.body.textContent) &&
@@ -1269,7 +1269,7 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
   const p2 = loadPage("quiz.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc2 = p2.window.document;
   doc2.body.appendChild(p2.window.AHS.QuizCenter.create());
-  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前練習");
+  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前總複習");
   practiceTab.click();
   check("練習模式：Repository 教材也直接出現（不需 materialId 帶入）",
     /Repository 教材/.test(doc2.body.textContent) && (/私有財產權|所有權/.test(doc2.body.textContent)));
@@ -1278,14 +1278,14 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
   if (repoRow) { repoRow.click(); }
   /* Sprint AI-122 AI-122-02/10 (CTA 一致化): 點擊練習模式自己列表中的
      Repository 列，drill 進入該教材真實題目列表 — 仍停留在 Practice
-     Mode，不再切換到正式測驗（HOTFIX-005 當時因 Practice Mode 尚無真實
+     Mode，不再切換到平時練習（HOTFIX-005 當時因 Practice Mode 尚無真實
      內容才切去 Exam，AI-121 之後已不誠實）。 Scoped to THIS row's own
      practiceRoot — QuizCenter.create() is mounted twice on this page
      (once by AppQuiz.js's real bootstrap, once by this test's own manual
      doc2.body.appendChild above), so a document-wide .quiz-practice-root
      query would false-fail on the OTHER instance's own untouched, still
      hidden practiceRoot. */
-  check("點擊練習模式中的 Repository 教材：drill 進入該教材真實練習題（仍在 Practice Mode，不再切換到正式測驗）",
+  check("點擊練習模式中的 Repository 教材：drill 進入該教材真實練習題（仍在 Practice Mode，不再切換到平時練習）",
     !!ownRoot && !ownRoot.hasAttribute("hidden") && !ownRoot.querySelector(".qcard") &&
     /私有財產權|所有權/.test(ownRoot.textContent));
   check("Console errors = 0（quiz.html 直接進入，AI-501／AI-122）", consoleErrors.length === 0);
@@ -1558,12 +1558,12 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
   check("AI-612: tutor.html 的訊息串真的包含真實建議文字（非僅罐頭回覆）",
     pTutor.window.document.body.textContent.includes("已有 1 題錯題達到精熟"));
 
-  /* AI-602/608: 測驗中心同步 — 完成/精熟後，正式測驗與練習模式列表仍
+  /* AI-602/608: 測驗中心同步 — 完成/精熟後，平時練習與練習模式列表仍
      一致反映真實資料，全流程走完未出現 Runtime 孤島。 */
   const pQuiz = loadPage("quiz.html", { seedSession: carried });
   pQuiz.window.document.body.appendChild(pQuiz.window.AHS.QuizCenter.create());
   const finalRow = pQuiz.window.document.querySelector(".quiz-row");
-  check("AI-608: 測驗中心同步 — 完成/精熟後正式測驗列表仍正確反映真實完成狀態",
+  check("AI-608: 測驗中心同步 — 完成/精熟後平時練習列表仍正確反映真實完成狀態",
     !!finalRow && finalRow.classList.contains("is-done"));
 
   check("AI-613: 全流程無 Console errors（教材->測驗->批改->錯題->複習->首頁->AI Tutor->複習中心->測驗中心）",

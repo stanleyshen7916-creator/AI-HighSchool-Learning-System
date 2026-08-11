@@ -155,7 +155,7 @@ console.log("\n[2] review.html／learning.html 仍存在且可正常開啟（Nav
 }
 
 /* ---- 3. 教材中心卡片 CTA（AI-118-04） ---- */
-console.log("\n[3] 教材中心卡片 CTA — 前往學習總結／前往考前練習，非查看摘要／開始練習");
+console.log("\n[3] 教材中心卡片 CTA — 前往學習總結／前往考前總複習，非查看摘要／開始練習");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:materialRuntime": materialSeed }
@@ -168,8 +168,8 @@ console.log("\n[3] 教材中心卡片 CTA — 前往學習總結／前往考前�
   check("「前往學習總結」CTA 存在且連向 summary.html",
     !!summaryLink && summaryLink.getAttribute("aria-label") === "前往學習總結" &&
     summaryLink.getAttribute("href").indexOf("summary.html") === 0);
-  check("「前往考前練習」CTA 存在且連向 quiz.html",
-    !!practiceLink && practiceLink.getAttribute("aria-label") === "前往考前練習" &&
+  check("「前往考前總複習」CTA 存在且連向 quiz.html",
+    !!practiceLink && practiceLink.getAttribute("aria-label") === "前往考前總複習" &&
     practiceLink.getAttribute("href").indexOf("quiz.html") === 0);
   check("不再有「查看摘要」／舊版「開始練習」字樣", !doc.body.textContent.includes("查看摘要"));
   check("不再有獨立「預覽教材」圖示（HOTFIX-009 既有修正，未被本 Sprint 迴歸）",
@@ -178,7 +178,7 @@ console.log("\n[3] 教材中心卡片 CTA — 前往學習總結／前往考前�
 }
 
 /* ---- 4. 學習總結 CTA（AI-118-05） ---- */
-console.log("\n[4] 學習總結 CTA — 前往考前練習／前往錯題本，前往正式測驗／開始 AI 練習已移除");
+console.log("\n[4] 學習總結 CTA — 前往考前總複習／前往錯題本，前往平時練習／開始 AI 練習已移除");
 {
   const { window, consoleErrors } = loadPage("summary.html", {
     seedSession: {
@@ -189,27 +189,27 @@ console.log("\n[4] 學習總結 CTA — 前往考前練習／前往錯題本，�
   const doc = window.document;
   const practiceLink = doc.querySelector(".sum-footer__quiz");
   const wrongBookLink = doc.querySelector(".sum-footer__wrongbook");
-  check("「前往考前練習」CTA 存在（原「開始 AI 練習」，連結不變）",
-    !!practiceLink && practiceLink.textContent.includes("前往考前練習") &&
+  check("「前往考前總複習」CTA 存在（原「開始 AI 練習」，連結不變）",
+    !!practiceLink && practiceLink.textContent.includes("前往考前總複習") &&
     practiceLink.getAttribute("href").indexOf("quiz.html?mode=practice") === 0);
   check("「前往知識弱點」CTA 存在且連向 wrongbook.html（AI-121-08 錯題本更名）",
     !!wrongBookLink && wrongBookLink.textContent.includes("前往知識弱點") &&
     wrongBookLink.getAttribute("href") === "wrongbook.html");
-  check("不再有「前往正式測驗」CTA", !doc.body.textContent.includes("前往正式測驗"));
+  check("不再有「前往平時練習」CTA", !doc.body.textContent.includes("前往平時練習"));
   check("重點整理／易錯觀念／AI Tutor 建議齊全（AI-118-05 明確要求保留）",
     doc.body.textContent.includes("AI-118 核心概念") && doc.body.textContent.includes("AI-118 易錯點"));
   check("Console errors = 0（學習總結）", consoleErrors.length === 0);
 }
 
 /* ---- 5. 測驗中心模式標籤（AI-118-06） ---- */
-console.log("\n[5] 測驗中心 — 考前練習／正式測驗標籤明確，舊版「練習模式」已移除");
+console.log("\n[5] 測驗中心 — 考前總複習／平時練習標籤明確，舊版「練習模式」已移除");
 {
   const { window, consoleErrors } = loadPage("quiz.html", {
     seedSession: { "ahs:learningQuestionRuntime": { items: [], seq: 1 } }
   });
   const doc = window.document;
   const tabs = [...doc.querySelectorAll(".quiz-mode__tab")].map((n) => n.textContent.trim());
-  check("模式標籤為「正式測驗」／「考前練習」", tabs.includes("正式測驗") && tabs.includes("考前練習"));
+  check("模式標籤為「平時練習」／「考前總複習」", tabs.includes("平時練習") && tabs.includes("考前總複習"));
   check("不再有「練習模式」字樣", !tabs.includes("練習模式"));
   check("Console errors = 0（測驗中心）", consoleErrors.length === 0);
 }

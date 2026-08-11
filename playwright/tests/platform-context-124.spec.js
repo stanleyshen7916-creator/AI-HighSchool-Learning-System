@@ -161,7 +161,7 @@ test("PAT-124-②：AHS.PlatformContext 為唯一 Context 讀取／傳遞方式�
   expect(resolved.examId).toBe("teaching_material_ai124_pc__ai");
   expect(resolved.mode).toBe("practice");
 
-  // examId-only links (e.g. WorkspaceFolder.js's own 前往考前練習) must
+  // examId-only links (e.g. WorkspaceFolder.js's own 前往考前總複習) must
   // still resolve a real materialId via the same shared convention.
   const fromExamOnly = await page.evaluate(() =>
     window.AHS.PlatformContext.resolve("?examId=teaching_material_ai124_pc2__original"));
@@ -178,7 +178,7 @@ test("PAT-124-②：AHS.PlatformContext 為唯一 Context 讀取／傳遞方式�
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-124-③：Practice — 考前練習題目列表真實 scoped 到目前教材，不顯示未篩選 Repository 全部清單", async ({ page }) => {
+test("PAT-124-③：Practice — 考前總複習題目列表真實 scoped 到目前教材，不顯示未篩選 Repository 全部清單", async ({ page }) => {
   const errors = collectErrors(page);
   await seedQuestions(page, "ai124_ctx", "biology");
   await page.goto(fileUrl("quiz") + "?mode=practice&materialId=ai124_ctx");
@@ -192,7 +192,7 @@ test("PAT-124-③：Practice — 考前練習題目列表真實 scoped 到目前
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-124-④②：Quiz — 由考前練習切回正式測驗，Context（Subject/Material）保持一致，不重新列出全部教材", async ({ page }) => {
+test("PAT-124-④②：Quiz — 由考前總複習切回平時練習，Context（Subject/Material）保持一致，不重新列出全部教材", async ({ page }) => {
   const errors = collectErrors(page);
   // Sprint AI-124's own real fix (showScopedList() in QuizCenter.js)
   // scopes Exam Mode's list via repositoryExamCatalog() — the same real
@@ -224,16 +224,16 @@ test("PAT-124-④②：Quiz — 由考前練習切回正式測驗，Context（Su
   const practiceRowCount = await page.locator(".quiz-practice__row").count();
   expect(practiceRowCount).toBeGreaterThan(0);
 
-  // AI-124-03/04/12's own real bug: switching to 正式測驗 must show ONLY
+  // AI-124-03/04/12's own real bug: switching to 平時練習 must show ONLY
   // this same material's own exam entry — never the full, unfiltered
   // catalog (data.items + every other Repository material).
-  await page.locator(".quiz-mode__tab", { hasText: "正式測驗" }).click();
+  await page.locator(".quiz-mode__tab", { hasText: "平時練習" }).click();
   await expect(page.locator(".quiz-row")).toHaveCount(1);
   await expect(page.locator(".quiz-row .chip")).toContainText("公民");
 
-  // Switching back to 考前練習 must still be the same one material —
+  // Switching back to 考前總複習 must still be the same one material —
   // "不得重新 Reset" (AI-124-12).
-  await page.locator(".quiz-mode__tab", { hasText: "考前練習" }).click();
+  await page.locator(".quiz-mode__tab", { hasText: "考前總複習" }).click();
   await expect(page.locator(".quiz-practice__row")).toHaveCount(practiceRowCount);
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);

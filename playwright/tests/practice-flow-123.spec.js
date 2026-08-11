@@ -78,7 +78,7 @@ async function seedQuestions(page, materialId, count) {
   }, { matId: materialId, count: count });
 }
 
-test("AI-123-01/02：點擊題目直接開啟全畫面 Practice View，Header 顯示科目／考前練習／第 N/M 題", async ({ page }) => {
+test("AI-123-01/02：點擊題目直接開啟全畫面 Practice View，Header 顯示科目／考前總複習／第 N/M 題", async ({ page }) => {
   const errors = collectErrors(page);
   await seedTwoQuestions(page, "ai123_a");
   await enterPracticeList(page, "ai123_a");
@@ -89,9 +89,9 @@ test("AI-123-01/02：點擊題目直接開啟全畫面 Practice View，Header �
   // AI-123-01: never the old inline Detail Panel — a real full-screen overlay.
   await expect(page.locator(".qpv-overlay")).toBeVisible();
   await expect(page.locator(".quiz-practice__question")).toContainText("AI-123 練習題1");
-  // AI-123-02: Header carries 科目／考前練習／第 N / M 題.
+  // AI-123-02: Header carries 科目／考前總複習／第 N / M 題.
   await expect(page.locator(".qpv__title")).toContainText("公民");
-  await expect(page.locator(".qpv__title")).toContainText("考前練習");
+  await expect(page.locator(".qpv__title")).toContainText("考前總複習");
   await expect(page.locator(".qpv__title")).toContainText("第 1 / 2 題");
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
