@@ -48,9 +48,9 @@ const base = { label: "正弦定理", content: "正弦定理", knowledgeId: null
 console.log("\n[Source Traceability — 五欄位強制]");
 check("缺 sourceFileId → 拒絕",
   !KE.validate(Object.assign({}, base, { type: "concept", sourceFileId: null })).valid);
-check("缺 folderId → 拒絕（Folder Scope，EO-S8.0-004）",
-  !KE.validate(Object.assign({}, base, { type: "concept", folderId: null })).valid);
-["sourcePage","sourceParagraph","documentType","knowledgeId"].forEach(f => {
+check("folderId 為 null 可通過（AI107-01：無 Folder 為合法未分類 Study Scope）",
+  KE.validate(Object.assign({}, base, { type: "concept", folderId: null })).valid);
+["sourcePage","sourceParagraph","documentType","knowledgeId","folderId"].forEach(f => {
   const n = Object.assign({}, base, { type: "concept" }); delete n[f];
   check("缺 " + f + " 欄位 → 拒絕（不得省略）", !KE.validate(n).valid);
 });

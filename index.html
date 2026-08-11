@@ -27,8 +27,23 @@
   <script src="js/utils/Countdown.js"></script>
   <script src="js/utils/Quote.js"></script>
   <script src="js/utils/TaskUtils.js"></script>
+  <script src="js/utils/TutorMessage.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/runtime/MaterialRuntime.js"></script>
+  <script src="js/runtime/QuestionBank.js"></script>
+  <script src="js/runtime/QuestionRuntime.js"></script>
+  <script src="js/runtime/ExamRuntime.js"></script>
+  <script src="js/runtime/AnswerRuntime.js"></script>
+  <script src="js/runtime/AutoGrader.js"></script>
+  <script src="js/runtime/WrongBookRuntime.js"></script>
+  <script src="js/runtime/HistoryRuntime.js"></script>
+  <script src="js/runtime/StatisticsRuntime.js"></script>
+  <!-- HOTFIX-001 Repository Loader Integration: Repository (Source of Truth)
+       -> MaterialRuntime bridge. Must load after MaterialRuntime.js and
+       before AppHome.js, which calls TeachingMaterialLoader.load(). -->
+  <script src="data/materials/MaterialRepositoryIndex.js"></script>
+  <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
+  <script src="js/runtime/TeachingMaterialLoader.js"></script>
   <script src="js/runtime/KnowledgeRuntime.js"></script>
   <script src="js/runtime/SummaryRuntime.js"></script>
   <script src="js/runtime/WrongBookSession.js"></script>

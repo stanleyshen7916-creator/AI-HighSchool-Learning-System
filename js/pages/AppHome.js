@@ -133,6 +133,22 @@ window.AHS = window.AHS || {};
     };
   }
 
+  /* Sprint AI-111 AI-611/AI-612: AiTutorHomeCard.create(model) already
+     had a real-data path (see that file's own header — "requires a real
+     model... with none supplied it shows the mandated Empty State") that
+     was simply never fed one. AHS.StatisticsRuntime.learningContext()
+     (additive, Sprint AI-111) reads live WrongBookRuntime/HistoryRuntime;
+     AHS.TutorMessage.build() (new stateless util, shared verbatim with
+     tutor.html's own real chat message) turns that into real sentences.
+     Returns undefined (renders the existing Empty State) when there is
+     genuinely no real learning data yet — never fabricated. */
+  function buildAiTutorModel() {
+    if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function" ||
+        !AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return undefined; }
+    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext());
+    return built || undefined;
+  }
+
   function buildHome() {
     /* Sprint 1 · Task 001: 依系統時間更新問候文字，其餘 hero 內容不變。 */
     if (AHS.Utils && typeof AHS.Utils.getGreeting === "function") {
@@ -194,7 +210,7 @@ window.AHS = window.AHS || {};
       /* EO-S7.0-003 · Review Widget：今日待複習/已完成/總錯題/Mastery
          Progress，資料全部來自 AHS.ReviewModel（唯讀查詢層）。 */
       (AHS.ReviewWidget ? AHS.ReviewWidget.create() : null),
-      AHS.AiTutorHomeCard.create(),
+      AHS.AiTutorHomeCard.create(buildAiTutorModel()),
       AHS.AchievementBadges.create(),
       AHS.LearningTime.create(buildTodayMinutesModel()),
       AHS.ContinueLearning.create(buildContinueLearningModel())
@@ -206,6 +222,12 @@ window.AHS = window.AHS || {};
   function init() {
     var app = document.getElementById("app");
     if (!app) { return; }
+
+    /* HOTFIX-001 Repository Loader Integration: load Repository content
+       into MaterialRuntime before buildHome() reads it. */
+    if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.load === "function") {
+      AHS.TeachingMaterialLoader.load();
+    }
 
     var shell = AHS.AppShell.create(AHS.AppConfig, {
       onNavigate: function () { /* Mock navigation — single-page prototype. */ }

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TeachingMaterials/QuestionBank.schema.json",
+  "title": "Teaching Material Question Bank",
+  "description": "Per EO-S1.1-001 v1.1, EO-S1.1-002 v1.0, EO-S1.1-002A v1.0, refined again by EO-S1.1-003 v1.0 (Teaching Material Package Standard). questionNumber/page are now flat fields (replacing the earlier nested 'source' object — materialId/page were the only two fields it carried, both now flat, avoiding duplication). needsManualReview is renamed needsReview to match this EO's exact field name. questionSource/origin/ocrConfidence/needsReview pairing and thresholds are enforced by scripts/ValidateMaterial.js (plain JSON Schema draft-07 can't express them without more machinery than this hand-rolled validator carries). At minimum single_choice/true_false/fill_blank; calculation/essay added only when the source material genuinely supports them.",
+  "type": "object",
+  "required": ["materialId", "questions"],
+  "properties": {
+    "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "questionId", "materialId", "questionNumber", "type", "questionSource", "origin",
+          "question", "answer", "page", "version", "createdDate"
+        ],
+        "properties": {
+          "questionId": { "type": "string" },
+          "materialId": { "type": "string", "pattern": "^tm_[0-9]+$" },
+          "questionNumber": { "type": "string", "description": "The question's real number/label in the source material (e.g. \"1\", \"3-b\") — never renumbered by Claude" },
+          "type": { "type": "string", "enum": ["single_choice", "true_false", "fill_blank", "calculation", "essay"] },
+          "questionSource": {
+            "type": "string", "enum": ["ORIGINAL", "AI_GENERATED", "TEACHER_CREATED"],
+            "description": "ORIGINAL: copied verbatim from an exam/mock exam/past paper/teacher paper/homework/textbook exercise. AI_GENERATED: Claude-derived from the material's real content. TEACHER_CREATED: authored by a teacher, provided as such by Project Owner. materialType=EXAM (metadata.json) requires every question to be ORIGINAL."
+          },
+          "origin": {
+            "type": "string", "enum": ["Uploaded Material", "AI", "Teacher"],
+            "description": "Must pair with questionSource: ORIGINAL -> 'Uploaded Material', AI_GENERATED -> 'AI', TEACHER_CREATED -> 'Teacher' (this third pairing is Claude's own judgment call — EO-S1.1-003 names TEACHER_CREATED as a questionSource value but doesn't state its paired origin value; flagged in README.md)."
+          },
+          "ocrConfidence": {
+            "type": "number", "minimum": 0, "maximum": 1,
+            "description": "ORIGINAL only, required (absent for AI_GENERATED/TEACHER_CREATED). EO-S1.1-003 OCR Rule: if < 0.90, needsReview must be true; Claude must never guess/self-complete uncertain text, and a package with any such question stays manifest.json status=pending_review, not complete."
+          },
+          "needsReview": {
+            "type": "boolean",
+            "description": "ORIGINAL only, required explicit true/false (absent for AI_GENERATED/TEACHER_CREATED). True whenever ocrConfidence < 0.90, or whenever Claude is otherwise not fully certain the transcription is verbatim."
+          },
+          "question": { "type": "string" },
+          "options": { "type": "array", "items": { "type": "string" }, "description": "single_choice only" },
+          "answer": { "type": "string" },
+          "explanation": { "type": ["string", "null"] },
+          "page": { "type": ["integer", "null"], "description": "Real page number in the source material; null only when the material genuinely has none (e.g. a single-page handout)" },
+          "section": { "type": ["string", "null"], "description": "Optional continuity field carried from EO-S1.1-001's original source-trace object — not in EO-S1.1-003's own field list, kept for extra traceability, never required" },
+          "version": { "type": "string", "description": "Starts \"1\"; incremented if this specific question is later corrected/re-transcribed" },
+          "createdDate": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

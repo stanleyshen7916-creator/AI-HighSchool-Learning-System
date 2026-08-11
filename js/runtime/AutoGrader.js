@@ -35,6 +35,15 @@ AHS.AutoGrader = (function () {
         options: q.options,
         knowledgePoint: q.knowledgePoint,
         explanation: q.explanation,
+        /* AI-601 (Sprint AI-109): additive passthrough of the question's
+           own real materialId (already set on every Repository-imported
+           question by js/runtime/TeachingMaterialLoader.js) — never
+           fabricated, "" when the question has none (Mock/QuestionBank
+           Exam Mode questions aren't tied to any real material). Lets
+           WrongBookRuntime.sync() record a real 教材來源 without
+           changing this function's own return shape for any existing
+           consumer (every field before this one is untouched). */
+        materialId: q.materialId || "",
         yourAnswer: yourAnswer,
         correctAnswer: q.correctAnswer,
         isCorrect: isCorrect

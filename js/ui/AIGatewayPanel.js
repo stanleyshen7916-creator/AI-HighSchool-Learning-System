@@ -83,13 +83,63 @@ AHS.AIGatewayPanel = (function () {
     return el("div", { class: "mat-question__list" }, questions.map(questionItem));
   }
 
+  /* HOTFIX-004 (Material Detail 資料未顯示，第二階段): a Repository-
+     sourced material already has a real, human/Claude-verified summary
+     and question bank — the same records js/ui/MaterialSummaryCard.js /
+     js/ui/MaterialQuestionCard.js already render via
+     AHS.MaterialDetailRepositorySource.resolve() (HOTFIX-003). Before
+     this fix, this panel never consulted that resolver at all, so these
+     two sections always started idle and could only ever show real
+     content via a live call to spec.adapter.generateViaGateway() — a
+     network call to a Gateway backend that (per CLAUDE.md) does not
+     exist in this static prototype, so it can never succeed. That is
+     the actual, non-cache root cause of "AI Gateway 重點整理/練習題"
+     staying empty for every material, Repository-sourced or not.
+     repoSummaryPayload()/repoQuestionPayload() reshape the SAME resolved
+     data MaterialSummaryCard/MaterialQuestionCard already display into
+     this panel's own flat payload shape (summaryContent()/
+     questionContent() above) — no new data source, no fabrication;
+     fields with no real source value are simply omitted. Returns null
+     (not an empty object) when the material isn't Repository-sourced or
+     the resolver found nothing, so the existing idle/Gateway-call
+     behavior is completely unchanged for every other material. */
+  function repoSummaryPayload(item) {
+    var repo = (AHS.MaterialDetailRepositorySource && typeof AHS.MaterialDetailRepositorySource.resolve === "function")
+      ? AHS.MaterialDetailRepositorySource.resolve(item.id) : null;
+    var s = repo && repo.summary && repo.summary.summary;
+    if (!s) { return null; }
+    function texts(list) { return (Array.isArray(list) ? list : []).map(function (t) { return t.text; }).filter(Boolean); }
+    var payload = {
+      title: repo.summary.title || "AI Gateway 重點整理",
+      concepts: texts(s.coreConcepts),
+      definitions: texts(s.definitions),
+      formulas: texts(s.formulas),
+      examples: [],
+      keywords: texts(s.keywords)
+    };
+    var hasContent = payload.concepts.length || payload.definitions.length ||
+      payload.formulas.length || payload.keywords.length;
+    return hasContent ? payload : null;
+  }
+
+  function repoQuestionPayload(item) {
+    var repo = (AHS.MaterialDetailRepositorySource && typeof AHS.MaterialDetailRepositorySource.resolve === "function")
+      ? AHS.MaterialDetailRepositorySource.resolve(item.id) : null;
+    var questions = repo && repo.quiz && Array.isArray(repo.quiz.questions) ? repo.quiz.questions : [];
+    return questions.length ? { questions: questions } : null;
+  }
+
   /* create(item, spec) — spec: { operation: "summary"|"question",
-     heading, buttonLabel, adapter: {generateViaGateway}, renderContent }.
+     heading, buttonLabel, adapter: {generateViaGateway}, repoData }.
      Returns { node, render } — same shape as MaterialSummaryCard/
      MaterialQuestionCard's create(). */
   function create(item, spec) {
     var section = el("section", { class: "mat-summary", "aria-label": spec.heading });
     var inFlight = false;
+
+    function repoPayload() {
+      return (typeof spec.repoData === "function") ? spec.repoData(item) : null;
+    }
 
     function render(state, payload) {
       section.innerHTML = "";
@@ -118,14 +168,27 @@ AHS.AIGatewayPanel = (function () {
         return;
       }
 
-      /* idle */
+      /* idle — HOTFIX-003 AI-305/AI-306: explicit "尚未建立" notice text
+         alongside the existing (unmodified) button; the button's own
+         behavior (calls the real Gateway adapter, surfaces a genuine
+         error if the Gateway isn't deployed — see this file's own
+         header) is untouched. */
+      if (spec.idleNotice) {
+        section.appendChild(el("p", { class: "mat-summary__notice", text: spec.idleNotice }));
+      }
       var genBtn = el("button", { type: "button", class: "mat-summary__btn", text: spec.buttonLabel });
       genBtn.addEventListener("click", generate);
       section.appendChild(genBtn);
     }
 
+    /* HOTFIX-004: a Repository-sourced material's real data always wins
+       — checked first, same "never overwrite real content with a failed/
+       fake network call" precedent already established for 「重新產生
+       題目」in js/ui/MaterialQuestionCard.js. */
     function generate() {
       if (inFlight) { return; }
+      var repo = repoPayload();
+      if (repo) { render("ready", repo); return; }
       inFlight = true;
       render("loading");
       spec.adapter.generateViaGateway(item.id).then(function (result) {
@@ -135,7 +198,8 @@ AHS.AIGatewayPanel = (function () {
       });
     }
 
-    render("idle");
+    var initialRepo = repoPayload();
+    render(initialRepo ? "ready" : "idle", initialRepo);
     return { node: section, render: render };
   }
 
@@ -144,8 +208,10 @@ AHS.AIGatewayPanel = (function () {
       operation: "summary",
       heading: "AI Gateway 重點整理",
       buttonLabel: "透過 AI Gateway 產生重點整理",
+      idleNotice: "尚未建立 Gateway 重點整理。",
       adapter: AHS.SummaryAdapter,
-      renderContent: summaryContent
+      renderContent: summaryContent,
+      repoData: repoSummaryPayload
     });
   }
 
@@ -154,8 +220,10 @@ AHS.AIGatewayPanel = (function () {
       operation: "question",
       heading: "AI Gateway 練習題",
       buttonLabel: "透過 AI Gateway 產生練習題",
+      idleNotice: "尚未建立 Gateway 練習題。",
       adapter: AHS.QuestionAdapter,
-      renderContent: questionContent
+      renderContent: questionContent,
+      repoData: repoQuestionPayload
     });
   }
 

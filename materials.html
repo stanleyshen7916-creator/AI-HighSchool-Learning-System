@@ -20,16 +20,13 @@
   <script src="js/ui/EmptyState.js"></script>
   <script src="js/core/Icons.js"></script>
   <script src="js/core/PersistenceAdapter.js"></script>
+  <script src="js/core/DocumentExport.js"></script>
   <script src="js/data/AppConfig.js"></script>
-  <!-- Teaching Material Repository (PMO Decision, Teaching Material Upload v1.0): data only, no logic. -->
-  <script src="js/data/TeachingMaterialPackageMathTrigonometry.js"></script>
-  <script src="js/data/TeachingMaterialPackageChemistryFinalReview.js"></script>
-  <script src="js/data/TeachingMaterialRepositoryIndex.js"></script>
+  <script src="js/data/TeachingMaterialData.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
   <script src="js/ui/MaterialHeader.js"></script>
   <script src="js/ui/MaterialSearchBar.js"></script>
-  <script src="js/ui/MaterialSubjectTabs.js"></script>
   <script src="js/ui/MaterialCategoryTabs.js"></script>
   <script src="js/ui/MaterialFileStore.js"></script>
   <script src="js/ui/MaterialCard.js"></script>
@@ -45,6 +42,9 @@
   <script src="js/runtime/KnowledgeRuntime.js"></script>
   <script src="js/parser/SummaryGenerator.js"></script>
   <script src="js/runtime/SummaryRuntime.js"></script>
+  <script src="data/materials/MaterialRepositoryIndex.js"></script>
+  <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
+  <script src="js/runtime/TeachingMaterialLoader.js"></script>
   <script src="js/parser/QuestionGenerator.js"></script>
   <script src="js/runtime/LearningQuestionRuntime.js"></script>
   <!-- Sprint AI-015C: Question Provider Bridge Script Wiring — Schema v1.0
@@ -72,10 +72,6 @@
   <script src="js/runtime/KnowledgeSummaryRuntime.js"></script>
   <script src="js/runtime/QuestionGenerationRuntime.js"></script>
   <script src="js/runtime/QuestionProviderBridge.js"></script>
-  <!-- Teaching Material Repository — Adapter/Loader/Bridge only (Runtime files above unmodified). -->
-  <script src="js/runtime/TeachingMaterialAdapter.js"></script>
-  <script src="js/runtime/TeachingMaterialLoader.js"></script>
-  <script src="js/runtime/TeachingMaterialRepositoryBridge.js"></script>
   <script src="js/runtime/WrongBookSession.js"></script>
   <script src="js/parser/WrongBookGenerator.js"></script>
   <script src="js/runtime/ReviewGeneratorRuntime.js"></script>
@@ -139,6 +135,8 @@
   <script src="js/ai/SummaryAdapter.js"></script>
   <script src="js/ai/QuestionAdapter.js"></script>
   <script src="js/ai/GatewayIntegration.js"></script>
+  <script src="js/ui/MaterialDetailRepositorySource.js"></script>
+  <script src="js/ui/MaterialContentView.js"></script>
   <script src="js/ui/MaterialSummaryCard.js"></script>
   <script src="js/ui/MaterialQuestionCard.js"></script>
   <script src="js/ui/AIGatewayPanel.js"></script>

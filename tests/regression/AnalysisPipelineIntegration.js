@@ -38,8 +38,9 @@ check("允許五型內容節點", JSON.stringify(KG.CONTENT_TYPES) ===
   check("永久禁止下游型別：" + t, KG.addNode({ type: t, label: "x", folderId: folder.folderId,
     documentType: "material", sourceFileId: mat.id, sourcePage: null, sourceParagraph: null }) === null);
 });
-check("內容節點缺 folderId → 拒絕寫入（不得跨 Folder）",
-  KG.addNode({ type: "concept", label: "x", documentType: "material", sourceFileId: mat.id, sourcePage: null, sourceParagraph: null }) === null);
+check("內容節點未指定 folderId → 正常寫入，正規化為 null（AI107-01：無 Folder 為合法未分類 Study Scope）",
+  (() => { var n = KG.addNode({ type: "concept", label: "folder-less-node", documentType: "material", sourceFileId: mat.id, sourcePage: null, sourceParagraph: null });
+           return n !== null && n.folderId === null; })());
 check("內容節點缺 documentType → 拒絕寫入",
   KG.addNode({ type: "concept", label: "x", folderId: folder.folderId, sourceFileId: mat.id, sourcePage: null, sourceParagraph: null }) === null);
 
@@ -66,12 +67,11 @@ check("六項追溯欄位齊備（含 folderId / documentType）",
   ex.nodes.every(n => n.folderId === folder.folderId && n.sourceFileId === mat.id &&
     n.documentType === "material" && "knowledgeId" in n && n.sourcePage === null && n.sourceParagraph > 0));
 check("insufficient_source → 零節點", KE.extract(empty.id).nodes.length === 0);
-check("Pipeline 於 Folder 閘門即擋下未歸屬教材",
-  (() => { const r = KP.process(orphan.id); return r.status === "failed" && /Folder/.test(r.errors[0]); })());
-check("KnowledgeExtraction 自身 Folder 閘門亦生效（直接建圖後仍拒絕）",
-  (() => { KG.buildFromMaterial(MR.getById(orphan.id) || { id: orphan.id, subject: "math", fileName: "orphan教材.pdf" }, { documentType: "material" });
-           const r = KE.extract(orphan.id);
-           return r.status === "pending" && r.nodes.length === 0 && /Folder/.test(r.reason); })());
+check("Pipeline 對未歸屬 Folder 教材正常執行到底（AI107-01：Folder 為選填，null 為合法未分類 Study Scope）",
+  (() => { const r = KP.process(orphan.id); return r.status === "success" && r.stage === "done" && r.folderId === null && r.nodesCreated > 0; })());
+check("KnowledgeExtraction 對未歸屬 Folder 教材同樣正常抽取，節點 folderId 誠實為 null",
+  (() => { const r = KE.extract(orphan.id);
+           return r.status === "ready" && r.nodes.length > 0 && r.nodes.every(n => n.folderId === null); })());
 
 console.log("\n[Knowledge Graph 寫入 — 完整鏈路]");
 const stored = KE.store(ex.nodes);
@@ -99,10 +99,10 @@ const r2 = KP.process(m2.id);
 check("完整流程 done/success 並寫入節點",
   r2.status === "success" && r2.stage === "done" && r2.nodesCreated === 2 && r2.folderId === f2.folderId);
 check("material 不存在 → failed", KP.process("rt_none").status === "failed");
-check("未歸屬 Folder → failed（Folder 驗證閘門）",
+check("未歸屬 Folder → 正常執行（AI107-01：Folder 為選填）",
   (() => { const m3 = MR.add({ title: "孤兒", subject: "math", grade: "高一", category: "課本",
              fileName: "x教材.pdf", fileType: "PDF", content: "內容" });
-           const r = KP.process(m3.id); return r.status === "failed" && /Folder/.test(r.errors[0]); })());
+           const r = KP.process(m3.id); return r.status === "success" && r.folderId === null; })());
 check("無可讀文字 → success 但零節點（analysis_insufficient）",
   (() => { const m4 = MR.add({ title: "空白", subject: "math", grade: "高一", category: "課本",
              fileName: "blank教材.pdf", fileType: "PDF", folderId: f2.folderId });

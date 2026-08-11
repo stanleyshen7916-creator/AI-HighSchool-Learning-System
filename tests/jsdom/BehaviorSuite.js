@@ -19,7 +19,19 @@ function check(name, cond) {
   else { fail++; failures.push(name); console.log("  FAIL  " + name); }
 }
 
-function loadPage(htmlFile, { seedSession, skipScripts } = {}) {
+/* excludeScripts (HOTFIX-002): substrings matched against each page's own
+   <script src> list — any match is skipped entirely. Added specifically
+   so tests that assert an exact, isolated MaterialRuntime/SummaryRuntime
+   state (an exact seeded card count, a true empty state, absence of any
+   rendered content) can opt out of data/materials/*.js's now-real,
+   permanently-committed Repository content (HOTFIX-002 finally wired
+   AHS.MaterialRepository into MaterialRuntime — see
+   js/runtime/TeachingMaterialLoader.js). That real content is exactly
+   what production should show; these specific tests were never about
+   it and would otherwise become fragile to every future real material
+   added to data/materials/ — excluding it here keeps their original,
+   already-correct assertions intact rather than loosening any of them. */
+function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const consoleErrors = [];
   const vconsole = new (require("jsdom").VirtualConsole)();
@@ -31,7 +43,7 @@ function loadPage(htmlFile, { seedSession, skipScripts } = {}) {
     consoleErrors.push(s);
   });
   const dom = new JSDOM(html, {
-    url: "https://ahs.test/" + htmlFile,
+    url: "https://ahs.test/" + (url || htmlFile),
     runScripts: "outside-only",
     pretendToBeVisual: true,
     virtualConsole: vconsole
@@ -44,17 +56,50 @@ function loadPage(htmlFile, { seedSession, skipScripts } = {}) {
   }
   // Execute the page's ordered scripts manually (runScripts outside-only
   // keeps subresource loading deterministic).
-  let scripts = [...dom.window.document.querySelectorAll("script[src]")]
-    .map(s => s.getAttribute("src"));
-  if (Array.isArray(skipScripts) && skipScripts.length) {
-    scripts = scripts.filter(src => !skipScripts.some(needle => src.indexOf(needle) !== -1));
-  }
+  const scripts = [...dom.window.document.querySelectorAll("script[src]")]
+    .map(s => s.getAttribute("src"))
+    .filter(src => !(excludeScripts && excludeScripts.some(x => src.includes(x))));
   for (const src of scripts) {
     const code = fs.readFileSync(path.join(REPO, src), "utf8");
     window.eval(code);
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, dom, consoleErrors };
+}
+
+/* Minimal ZIP reader (Node Buffer-based) — independent of
+   js/core/DocumentExport.js's own writer, so this genuinely round-trips
+   the hand-rolled .docx it produces rather than trusting the same code
+   that wrote it. Reads the End-Of-Central-Directory record, walks the
+   central directory, and extracts one named entry's real bytes via its
+   local file header (STORED/uncompressed, per DocumentExport.js). */
+function readZipEntryText(uint8Bytes, entryName) {
+  const buf = Buffer.from(uint8Bytes);
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= 0; i--) {
+    if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd === -1) { return null; }
+  const totalEntries = buf.readUInt16LE(eocd + 10);
+  const centralOffset = buf.readUInt32LE(eocd + 16);
+  let ptr = centralOffset;
+  for (let i = 0; i < totalEntries; i++) {
+    if (buf.readUInt32LE(ptr) !== 0x02014b50) { return null; }
+    const uncompSize = buf.readUInt32LE(ptr + 24);
+    const nameLen = buf.readUInt16LE(ptr + 28);
+    const extraLen = buf.readUInt16LE(ptr + 30);
+    const commentLen = buf.readUInt16LE(ptr + 32);
+    const localOffset = buf.readUInt32LE(ptr + 42);
+    const name = buf.toString("utf8", ptr + 46, ptr + 46 + nameLen);
+    if (name === entryName) {
+      const lNameLen = buf.readUInt16LE(localOffset + 26);
+      const lExtraLen = buf.readUInt16LE(localOffset + 28);
+      const dataStart = localOffset + 30 + lNameLen + lExtraLen;
+      return buf.slice(dataStart, dataStart + uncompSize).toString("utf8");
+    }
+    ptr += 46 + nameLen + extraLen + commentLen;
+  }
+  return null;
 }
 
 /* Sprint AI-015E (Option A, PMO-approved, EO-AI-015E-002) — the single
@@ -202,10 +247,18 @@ console.log("\n[2] quiz.html — Task 001: guide with REAL summary + real questi
   check("Practice list shows exactly the 1 real question", rows.length === 1 && /sinθ/.test(rows[0].textContent));
 }
 
-console.log("\n[3] quiz.html — regression: default entry (no params) unchanged");
+console.log("\n[3] quiz.html — regression: default entry (no params) unchanged, no Repository data");
 {
+  /* Isolated from data/materials/*.js's real, committed content (see
+     excludeScripts's own header comment) — this specifically tests the
+     genuine "no Repository material imported at all" state, still a
+     real, reachable state (e.g. before any real material is ever added
+     to either Repository track). HOTFIX-005 AI-501's own "Repository
+     row surfaces automatically" behavior is covered separately in [29]
+     below, with the real Repository content intact. */
   const { window, consoleErrors } = loadPage("quiz.html", {
-    seedSession: { "ahs:learningQuestionRuntime": { items: [stubQuestion], seq: 1 } }
+    seedSession: { "ahs:learningQuestionRuntime": { items: [stubQuestion], seq: 1 } },
+    excludeScripts: ["data/materials/"]
   });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
@@ -215,15 +268,14 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
   check("Practice root hidden by default", practiceRoot && practiceRoot.hasAttribute("hidden"));
   check("No guide rendered without materialId deep link", !doc.querySelector(".qguide"));
   /* EO-S7.0-003 Production Cleanup: 預設題庫已移除 — Exam Mode 首次
-     開啟為正式 Empty State。 */
-  check("Exam Mode 正式 Empty State（預設題庫已移除）",
+     開啟為正式 Empty State when genuinely no Repository material exists. */
+  check("Exam Mode 正式 Empty State（無 Repository 資料時，預設題庫已移除）",
     doc.querySelectorAll(".quiz-row").length === 0 && /目前沒有可用的測驗/.test(doc.body.textContent));
-  // Task 004 also inside default practice tab:
   const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
   practiceTab.click();
-  check("Practice tab (no materialId) skips guide, stub filtered → Empty State",
+  check("Practice tab (no materialId, no Repository data) skips guide, stub filtered → Empty State",
     !doc.querySelector(".qguide") && !!doc.querySelector(".quiz-practice__empty"));
-  check("Console errors = 0 (quiz.html default)", consoleErrors.length === 0);
+  check("Console errors = 0 (quiz.html default, no Repository data)", consoleErrors.length === 0);
 }
 
 console.log("\n[4] summary.html — Task 003: mandated pending copy (empty-content record)");
@@ -232,6 +284,7 @@ console.log("\n[4] summary.html — Task 003: mandated pending copy (empty-conte
     coreConcepts: [], definitions: [], pitfalls: [], memorize: [], reviewSuggestions: []
   })], seq: 1 };
   const { window, consoleErrors } = loadPage("summary.html", {
+    excludeScripts: ["data/materials/"],
     seedSession: { "ahs:materialRuntime": materialSeed, "ahs:summaryRuntime": emptySummary }
   });
   const doc = window.document;
@@ -444,14 +497,14 @@ console.log("\n[9] EO-S6.9-002 — empty-content summary -> mandated Empty State
 console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統（零 Mock/Seed/Demo）");
 {
   for (const page of ["index.html", "materials.html", "quiz.html", "wrongbook.html", "dashboard.html", "tutor.html"]) {
-    const { window, consoleErrors } = loadPage(page, {});
+    const { window, consoleErrors } = loadPage(page, { excludeScripts: ["data/materials/"] });
     const text = window.document.body.textContent;
     check(page + "：零模擬內容（無假教材/假測驗/假錯題/假統計/假通知/陳同學）",
       !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+/.test(text));
     check(page + "：Console Error = 0", consoleErrors.length === 0);
   }
   // 首頁 Review Widget（資料來自 ReviewModel）
-  const { window } = loadPage("index.html", {});
+  const { window } = loadPage("index.html", { excludeScripts: ["data/materials/"] });
   const w = window.document.querySelector(".review-widget");
   check("首頁 Review Widget 渲染（今日待複習/已完成/總錯題）",
     !!w && /今日待複習/.test(w.textContent) && /已完成/.test(w.textContent) && /總錯題/.test(w.textContent));
@@ -483,18 +536,7 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
 }
 
 
-/* Sprint MAT-CONTENT-003 · PMO Decision (Teaching Material Upload v1.0):
-   Sprint 6.6's "Material Center 預設為 Empty State" LOCK is rescinded.
-   Material Center's default data source is no longer Upload-only — the
-   Teaching Material Repository (js/data/TeachingMaterialPackage*.js,
-   bridged in by js/runtime/TeachingMaterialRepositoryBridge.js) now
-   seeds real materials on every materials.html load. New baseline,
-   verified by tests [15]/[16] below:
-     Repository 為空 → Empty State (unchanged for that case)
-     Repository 有教材 → Material Center 立即顯示，不需先 Upload
-   The old assertion "first load is always Empty State regardless of
-   Repository content" no longer holds and is replaced. */
-console.log("\n[15] HF-8.2.001 · HF-001 → PMO Decision (Teaching Material Upload v1.0) — Material Center 首次進入即顯示教材（含 Repository baseline，不需再次切換）");
+console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯示教材（不需再次切換）");
 {
   const twoMaterials = { materials: [
     Object.assign({}, materialSeed.materials[0], { id: "rt_1", order: 1 }),
@@ -504,12 +546,13 @@ console.log("\n[15] HF-8.2.001 · HF-001 → PMO Decision (Teaching Material Upl
       fileType: "PDF", fileSize: "2.0 MB", folderId: null, file: null }
   ], folders: [], seq: 2, folderSeq: 0 };
 
-  const { window, consoleErrors } = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": twoMaterials } });
+  const { window, consoleErrors } = loadPage("materials.html", {
+    excludeScripts: ["data/materials/"],
+    seedSession: { "ahs:materialRuntime": twoMaterials }
+  });
   const doc = window.document;
-  const repoCount = (window.AHS.TeachingMaterialLoader && window.AHS.TeachingMaterialLoader.list().length) || 0;
-  const expectedCount = 2 + repoCount;
   const cards = doc.querySelectorAll(".mat-card");
-  check("首次載入即渲染全部教材卡片（已上傳 2 張 + Repository " + repoCount + " 張，無需切換）", cards.length === expectedCount);
+  check("首次載入即渲染全部教材卡片（2 張，無需切換）", cards.length === 2);
   check("教材標題正確顯示", /牛頓運動定律/.test(doc.body.textContent));
   check("Empty State 未誤顯示", !doc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
   check("Console errors = 0（首次載入）", consoleErrors.length === 0);
@@ -518,32 +561,17 @@ console.log("\n[15] HF-8.2.001 · HF-001 → PMO Decision (Teaching Material Upl
   /* 切換科目分頁後張數不變 —— 證明首次已完整初始化，非靠事件補救。 */
   const tab = doc.querySelector("[data-subject]");
   if (tab) { tab.click(); }
-  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === expectedCount);
+  check("切換後張數一致（初始化完整，非二次補救）", doc.querySelectorAll(".mat-card").length === 2);
 }
 
-console.log("\n[16] HF-8.2.001 · HF-001 → PMO Decision (Teaching Material Upload v1.0) — Repository 為空顯示 Empty State／Repository 有教材立即載入");
+console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
 {
-  /* Repository 為空（略過 Package/Index 三個 script，模擬 Repository
-     尚未建立任何教材，且無任何上傳）→ 仍應顯示正式 Empty State。 */
-  const empty = loadPage("materials.html", {
-    skipScripts: ["TeachingMaterialPackageMathTrigonometry", "TeachingMaterialPackageChemistryFinalReview", "TeachingMaterialRepositoryIndex"]
-  });
-  const emptyDoc = empty.window.document;
-  check("Repository 為空且無上傳：卡片為 0", emptyDoc.querySelectorAll(".mat-card").length === 0);
-  check("Repository 為空且無上傳：顯示正式 Empty State（非空白頁）",
-    !!emptyDoc.querySelector(".mat-empty") && !emptyDoc.querySelector(".mat-empty[hidden]"));
-  check("Console errors = 0（Repository 為空）", empty.consoleErrors.length === 0);
-
-  /* Repository 有教材（正常載入，不 skip 任何 script）→ 不需 Upload，
-     Material Center 自動顯示 Repository 教材。 */
-  const seeded = loadPage("materials.html", {});
-  const seededDoc = seeded.window.document;
-  const repoCount = (seeded.window.AHS.TeachingMaterialLoader && seeded.window.AHS.TeachingMaterialLoader.list().length) || 0;
-  check("Repository 有教材：卡片數等於 Repository 教材數（" + repoCount + "），不需先 Upload",
-    repoCount > 0 && seededDoc.querySelectorAll(".mat-card").length === repoCount);
-  check("Repository 有教材：Empty State 未誤顯示",
-    !seededDoc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
-  check("Console errors = 0（Repository 有教材）", seeded.consoleErrors.length === 0);
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["data/materials/"] });
+  const doc = window.document;
+  check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
+  check("顯示正式 Empty State（非空白頁）",
+    !!doc.querySelector(".mat-empty") && !doc.querySelector(".mat-empty[hidden]"));
+  check("Console errors = 0（空狀態）", consoleErrors.length === 0);
 }
 
 console.log("\n[17] HF-8.2.001 · HF-002 — 跨頁後仍可下載（Download Flow 位元組保存）");
@@ -586,10 +614,28 @@ console.log("\n[18] HF-8.2.001 · HF-002 — 無檔案來源／檔案過大：�
 {
   const base = { materials: [Object.assign({}, materialSeed.materials[0], { id: "rt_1", fileName: "trig.pdf", file: null })],
     folders: [], seq: 1, folderSeq: 0 };
+  /* HOTFIX-005 AI-502: state==="none" (no original file at all) no longer
+     dead-ends on a message — a real .docx is generated on the spot from
+     whatever this Runtime chain has (here: honest 教材資訊 only, since
+     this fixture's content/AI output are genuinely empty — verifies the
+     "（無資料）" fallback renders instead of a fabricated section, not
+     just the "real Repository data" happy path already covered by [30]). */
   const noFile = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base } });
+  let noFileBlob = null, noFileName = null;
+  noFile.window.URL.createObjectURL = function (blob) { noFileBlob = blob; return "blob:ahs/test-docx"; };
+  noFile.window.URL.revokeObjectURL = function () {};
+  const origCreateNoFile = noFile.window.document.createElement.bind(noFile.window.document);
+  noFile.window.document.createElement = function (tag) {
+    const node = origCreateNoFile(tag);
+    if (String(tag).toLowerCase() === "a") {
+      node.click = function () { noFileName = node.getAttribute("download"); };
+    }
+    return node;
+  };
   noFile.window.document.querySelector(".mat-card__dl").click();
-  check("無任何檔案來源 → 明確訊息",
-    /沒有可下載的原始檔案/.test(noFile.window.document.querySelector(".mat-status, [role='status']").textContent));
+  check("無原始檔案 → 不再顯示「沒有可下載的原始檔案」，改為真實產生 .docx",
+    !/沒有可下載的原始檔案/.test(noFile.window.document.querySelector(".mat-status, [role='status']").textContent) &&
+    !!noFileBlob && noFileBlob.size > 0 && noFileName === "三角函數講義.docx");
 
   const oversize = loadPage("materials.html", { seedSession: { "ahs:materialRuntime": base,
     "ahs:materialFileIndex": { entries: { rt_1: { name: "big.pdf", type: "application/pdf", state: "oversize" } } } } });
@@ -685,10 +731,16 @@ console.log("\n[21] EO-S8.3.004 — AI 重點整理 UI 串接（Material Preview
 
   const overlay = A.MaterialPreview.open(mat, function () {});
   doc.body.appendChild(overlay);
-  check("預覽含「AI 重點整理」區塊", !!overlay.querySelector(".mat-summary"));
+  /* Sprint AI-105 Task AI105-06 added an additive 教材內容 section before
+     this one, reusing the same .mat-summary__heading class (same pattern
+     MaterialQuestionCard/AIGatewayPanel already use) — scope the query
+     to the real AI 重點整理 section via its aria-label rather than
+     assuming it is the first .mat-summary__heading in document order. */
+  const summarySection = overlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("預覽含「AI 重點整理」區塊", !!summarySection);
   check("區塊標題為「AI 重點整理」",
-    (overlay.querySelector(".mat-summary__heading") || {}).textContent === "AI 重點整理");
-  const btn = overlay.querySelector(".mat-summary__btn");
+    (summarySection && summarySection.querySelector(".mat-summary__heading") || {}).textContent === "AI 重點整理");
+  const btn = summarySection.querySelector(".mat-summary__btn");
   check("提供「開始 AI 分析」按鈕", !!btn && btn.textContent === "開始 AI 分析");
   check("分析前尚無 Summary（未自動產生）",
     A.KnowledgeSummaryRuntime.getSummaryByMaterial(mat.id) === null);
@@ -865,6 +917,550 @@ console.log("\n[23] EO-AI-012E — AI 重點整理 UI 串接（New Runtime，Sum
 
   check("AI Engine New Runtime UI 全流程 Console errors = 0", consoleErrors.length === 0);
   if (consoleErrors.length) { console.log("   errors:", consoleErrors.slice(0, 3)); }
+}
+
+console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialRepository 真實內容確實載入 MaterialRuntime（PAT FAIL 修正回歸測試）");
+{
+  /* Reproduces exactly what the reported PAT FAIL found broken:
+     window.AHS.TeachingMaterialData => [] / MaterialRuntime.list() => []
+     even though data/materials/CivicsG10Ch5to6Exam20260730.js is real,
+     committed content. Cross-page id-continuity (materials.html's
+     resolved id surviving into quiz.html) is NOT re-tested here — each
+     loadPage() call gets an isolated jsdom session/sessionStorage by
+     design, so that scenario can only be verified the way it already
+     was: a Node vm simulation sharing one sessionStorage mock across
+     simulated page loads (see docs/EO/HOTFIX-002 report). */
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  check("data/materials/*.js 已 register 真實教材", window.AHS.MaterialRepository.list().length === 1);
+  check("MaterialRuntime 確實載入該教材（非空陣列，對應 PAT FAIL 的核心症狀）", window.AHS.MaterialRuntime.list().length === 1);
+  check("Material Card 確實渲染真實教材標題", /公民與社會｜所有權、勞動三權與夫妻財產制、繼承 重點整理/.test(doc.body.textContent));
+  check("Console errors = 0（HOTFIX-002，materials.html）", consoleErrors.length === 0);
+  const rt = window.AHS.MaterialRuntime.list()[0];
+
+  /* quiz.html doesn't <script>-tag MaterialRuntime.js at all — by real
+     design (see quiz.html's own script list), so on its own it cannot
+     resolve a MaterialRuntime id. The real, intended user journey is
+     materials.html (or any MaterialRuntime.js-loading page) visited
+     first in the same browser tab, persisting the id via
+     PersistenceAdapter/sessionStorage, with quiz.html inheriting that
+     session afterward — exactly what carrying materials.html's real
+     sessionStorage forward here simulates. */
+  const carried = {};
+  for (let i = 0; i < window.sessionStorage.length; i++) {
+    const k = window.sessionStorage.key(i);
+    carried[k] = JSON.parse(window.sessionStorage.getItem(k));
+  }
+  const { window: quizWindow, consoleErrors: quizErrors } = loadPage("quiz.html", { seedSession: carried });
+  quizWindow.AHS.TeachingMaterialLoader.initialize();
+  const examId = "teaching_material_" + rt.id;
+  check("quiz.html 沿用同一 Session 也能將真實單選題匯入 QuestionRuntime", quizWindow.AHS.QuestionRuntime.hasExam(examId));
+  check("匯入題數與來源資料一致（6 題 singleChoice）", quizWindow.AHS.QuestionRuntime.getSet(examId).length === 6);
+  check("Console errors = 0（HOTFIX-002，quiz.html）", quizErrors.length === 0);
+}
+
+console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個區塊皆正確 Render（PAT FAIL 修正回歸測試）");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  const doc = window.document;
+  const A = window.AHS;
+  const item = A.MaterialRuntime.list()[0];
+
+  const overlay = A.MaterialPreview.open(item, function () {});
+  doc.body.appendChild(overlay);
+
+  const contentSection = overlay.querySelector('.mat-content[aria-label="教材內容"]');
+  check("① 教材內容：不再顯示「尚無可顯示的內容」", !!contentSection && !/此教材目前尚無可顯示的內容/.test(contentSection.textContent));
+  check("① 教材內容：顯示真實教材標題", !!contentSection && /所有權、勞動三權與夫妻財產制、繼承/.test(contentSection.textContent));
+
+  const summarySection = overlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("② AI 重點整理：直接顯示真實內容（無需點擊「開始 AI 分析」）", !!summarySection && !summarySection.querySelector(".mat-summary__btn"));
+  check("② AI 重點整理：內容為真實核心概念", !!summarySection && /所有權的排他性/.test(summarySection.textContent));
+
+  const questionSection = overlay.querySelector('.mat-question[aria-label="AI 練習題"]');
+  check("③ AI 練習題：直接顯示真實題目（無需點擊「產生 AI 題目」）", !!questionSection && !/^產生 AI 題目$/m.test([...questionSection.querySelectorAll(".mat-summary__btn")].map(b => b.textContent).join("\n")));
+  check("③ AI 練習題：顯示題數", !!questionSection && /共 6 題/.test(questionSection.textContent));
+  check("③ AI 練習題：顯示難度／考點", !!questionSection && /難度：/.test(questionSection.textContent) && /考點：/.test(questionSection.textContent));
+
+  /* HOTFIX-004 第二階段: a Repository-sourced material's real summary/
+     question data now renders directly here too — Gateway sections no
+     longer require a (permanently failing, no real backend exists) live
+     network call before showing real content. */
+  const gwSummarySection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 重點整理"]');
+  check("④ AI Gateway 重點整理：直接顯示真實內容（無需「尚未建立」按鈕流程）",
+    !!gwSummarySection && !/尚未建立 Gateway 重點整理/.test(gwSummarySection.textContent) && /所有權的排他性/.test(gwSummarySection.textContent));
+
+  const gwQuizSection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 練習題"]');
+  check("⑤ AI Gateway 練習題：直接顯示真實題目（無需「尚未建立」按鈕流程）",
+    !!gwQuizSection && !/尚未建立 Gateway 練習題/.test(gwQuizSection.textContent) && gwQuizSection.querySelectorAll(".mat-question__card").length === 6);
+
+  check("Console errors = 0（HOTFIX-003）", consoleErrors.length === 0);
+
+  /* 一般上傳教材（無 Repository 來源）行為完全不變 — 既有 AITutorService
+     流程／honest empty state／Gateway「尚未建立」idle 文案皆未受影響。 */
+  const regular = A.MaterialRuntime.add({ subject: "math", title: "一般上傳教材", chapter: "測試章節" });
+  const regularOverlay = A.MaterialPreview.open(regular, function () {});
+  doc.body.appendChild(regularOverlay);
+  const regularContent = regularOverlay.querySelector('.mat-content[aria-label="教材內容"]');
+  check("一般上傳教材（無內容）：仍誠實顯示空狀態，未受影響", !!regularContent && /此教材目前尚無可顯示的內容/.test(regularContent.textContent));
+  const regularSummary = regularOverlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
+  check("一般上傳教材：AI 重點整理仍保留「開始 AI 分析」按鈕，未受影響", !!regularSummary && !!regularSummary.querySelector(".mat-summary__btn"));
+  const regularGwSummary = regularOverlay.querySelector('.mat-summary[aria-label="AI Gateway 重點整理"]');
+  check("一般上傳教材：AI Gateway 重點整理仍誠實顯示「尚未建立」，未受影響",
+    !!regularGwSummary && /尚未建立 Gateway 重點整理/.test(regularGwSummary.textContent) && !!regularGwSummary.querySelector(".mat-summary__btn"));
+  const regularGwQuiz = regularOverlay.querySelector('.mat-summary[aria-label="AI Gateway 練習題"]');
+  check("一般上傳教材：AI Gateway 練習題仍誠實顯示「尚未建立」，未受影響",
+    !!regularGwQuiz && /尚未建立 Gateway 練習題/.test(regularGwQuiz.textContent) && !!regularGwQuiz.querySelector(".mat-summary__btn"));
+}
+
+console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration（PAT 修正回歸測試）");
+{
+  /* Issue 001: summary.html's ⑤ 複習建議 must show real, derived content
+     for a Repository-sourced material — never "尚無資料", never
+     fabricated, never requiring a click. */
+  const p1 = loadPage("materials.html", {});
+  const rt = p1.window.AHS.MaterialRuntime.list()[0];
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) {
+    const k = p1.window.sessionStorage.key(i);
+    carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k));
+  }
+
+  const p2 = loadPage("summary.html", { seedSession: carried });
+  const reviewSection = p2.window.document.querySelector('section[aria-label="⑤ 複習建議"]');
+  check("① 複習建議：不再顯示「尚無資料」", !!reviewSection && !/尚無資料/.test(reviewSection.textContent));
+  check("① 複習建議：顯示建議閱讀順序（真實 chapter/section 組成）", !!reviewSection && /建議閱讀順序/.test(reviewSection.textContent) && /第5～6課/.test(reviewSection.textContent));
+  check("① 複習建議：顯示建議複習方式（真實統計數字，非虛構）", !!reviewSection && /建議複習方式/.test(reviewSection.textContent) && /個核心概念/.test(reviewSection.textContent));
+  check("① 複習建議：顯示建議注意事項（來自真實 commonMistakes／pitfalls）", !!reviewSection && /建議注意事項/.test(reviewSection.textContent));
+  check("Console errors = 0（summary.html HOTFIX-004）", p2.consoleErrors.length === 0);
+
+  /* Regular (non-Repository) material's honest empty state (Stub pending
+     — record's five sections are ALL genuinely empty) must be unaffected. */
+  p1.window.AHS.SummaryRuntime.add({ materialId: "rt_regular_test", subject: "math", title: "一般教材" });
+  const p3 = loadPage("summary.html", { seedSession: (() => {
+    const c = {};
+    for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); c[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+    return c;
+  })() });
+  check("一般教材（五段皆空）：仍誠實顯示分析中狀態，未受影響", /AI 正在分析教材/.test(p3.window.document.body.textContent));
+
+  /* Issue 002: quiz.html must show real Repository questions immediately
+     via BOTH entry points — the new examId link (Sprint v1.6) and the
+     pre-existing materialId-only link (Summary Detail's「開始 AI
+     練習」, unchanged since Sprint 6.8) — with 難度/考點 shown, and
+     without a second, empty Practice-Mode section rendering alongside
+     the real content. */
+  const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id });
+  const bodyM = qByMaterialId.window.document.body.textContent;
+  check("② Quiz Center（materialId-only 連結）：不再顯示「尚無 AI 練習題」", !bodyM.includes("尚無 AI 練習題"));
+  check("② Quiz Center（materialId-only 連結）：立即顯示真實題目", bodyM.includes("私有財產權"));
+  check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊正確隱藏（不與 Exam 內容同時顯示）",
+    !!qByMaterialId.window.document.querySelector(".quiz-practice-root[hidden]"));
+  const qcardMeta = qByMaterialId.window.document.querySelector(".qcard__meta");
+  check("② Quiz Center：顯示難度／考點（Repository 實際擁有的欄位）", !!qcardMeta && /難度：/.test(qcardMeta.textContent) && /考點：/.test(qcardMeta.textContent));
+  check("Console errors = 0（quiz.html materialId-only，HOTFIX-004）", qByMaterialId.consoleErrors.length === 0);
+
+  const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id });
+  check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響", qByExamId.window.document.body.textContent.includes("私有財產權"));
+  check("② Quiz Center（examId 連結）：Practice Mode 區塊仍正確隱藏", !!qByExamId.window.document.querySelector(".quiz-practice-root[hidden]"));
+
+  /* PAT: 開始測驗 -> AutoGrader -> WrongBook -> History 全部正常. */
+  const AQ = qByMaterialId.window.AHS;
+  const examId = "teaching_material_" + rt.id;
+  const qs = AQ.QuestionRuntime.getSet(examId);
+  qs.forEach(q => { AQ.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG" : q.correctAnswer); });
+  const finished = AQ.ExamRuntime.finish(examId);
+  const graded = AQ.AutoGrader.grade(finished);
+  check("PAT：AutoGrader 正常評分", graded.totalCount === qs.length && graded.wrong.length === 1);
+  const touched = AQ.WrongBookRuntime.sync(graded);
+  check("PAT：WrongBook 正常寫入", touched.length === 1 && AQ.WrongBookRuntime.list().length === 1);
+  const hist = AQ.HistoryRuntime.record(graded);
+  check("PAT：History 正常寫入", !!hist && AQ.HistoryRuntime.count() === 1);
+
+  /* Regular material's Practice/Guide flow (LearningQuestionRuntime-based,
+     unrelated to any Repository) must be completely unaffected. A fresh,
+     isolated page load (not reusing `carried`/`p1`'s idMap) avoids any
+     stale-id collision between this new regular material and the real
+     Civics material's own already-resolved id. */
+  const p4 = loadPage("materials.html", {});
+  const regRecord = p4.window.AHS.MaterialRuntime.add({ subject: "math", title: "一般練習教材" });
+  const regularCarried = {};
+  for (let i = 0; i < p4.window.sessionStorage.length; i++) { const k = p4.window.sessionStorage.key(i); regularCarried[k] = JSON.parse(p4.window.sessionStorage.getItem(k)); }
+  const qRegular = loadPage("quiz.html", { seedSession: regularCarried, url: "quiz.html?mode=practice&materialId=" + regRecord.id });
+  check("一般教材：巧巧老師出題引導仍誠實顯示「尚無 AI 練習題」，未受影響",
+    qRegular.window.document.body.textContent.includes("尚無 AI 練習題"));
+}
+
+console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示修正（AI Gateway 串接 + resolve() 自我初始化）");
+{
+  /* Requirement 2: MaterialDetailRepositorySource.resolve() must not
+     silently depend on some earlier bootstrap step having already called
+     AHS.TeachingMaterialLoader.load()/initialize() — it must ensure this
+     itself. Simulated here by loading materials.html WITHOUT running
+     AppMaterials.js's own bootstrap script (excludeScripts), so nothing
+     has called the Loader yet, then calling MaterialRuntime.add()
+     directly is not representative of a Repository id — instead we
+     confirm resolve() still returns real data purely by calling it cold,
+     immediately after page load, before anything else has touched
+     AHS.TeachingMaterialLoader. */
+  const { window } = loadPage("materials.html", {});
+  const A = window.AHS;
+  // Reset the Loader's own idempotency flag to simulate "not yet initialized",
+  // without touching MaterialRuntime/idMap state already persisted from the
+  // page's own real bootstrap — proves resolve() re-runs load() itself.
+  A.TeachingMaterialLoader.reset();
+  const rt2 = A.MaterialRuntime.list()[0];
+  const resolved = A.MaterialDetailRepositorySource.resolve(rt2.id);
+  check("resolve()：即使 Loader 的 initialized 旗標被重置，仍自動完成初始化並回傳真實資料", !!resolved && Array.isArray(resolved.sections) && resolved.sections.length > 0);
+
+  /* Requirement 3/4: all five Material Detail sections have real data for
+     the real Civics material — combined sanity check across the whole
+     modal at once, not just per-section as in [25]. */
+  const overlay = A.MaterialPreview.open(rt2, function () {});
+  window.document.body.appendChild(overlay);
+  const sectionLabels = ["教材內容", "AI 重點整理", "AI 練習題", "AI Gateway 重點整理", "AI Gateway 練習題"];
+  const allHaveData = sectionLabels.every(label => {
+    const node = overlay.querySelector('[aria-label="' + label + '"]');
+    return !!node && !/尚無|尚未建立|尚無可/.test(node.textContent);
+  });
+  check("五個區塊皆有真實資料，無任何空白／尚未建立文案", allHaveData);
+}
+
+console.log("\n[28] 學習總結 — 重點關鍵字紅色標示");
+{
+  const p1 = loadPage("materials.html", {});
+  const rt3 = p1.window.AHS.MaterialRuntime.list()[0];
+  const carried3 = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried3[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+  const { window } = loadPage("summary.html", { seedSession: carried3 });
+  const coreSection = window.document.querySelector('section[aria-label="① 核心概念"]');
+  const keywordSpans = coreSection ? coreSection.querySelectorAll(".sum-kp__keyword") : [];
+  check("核心概念：關鍵字（冒號前）以 .sum-kp__keyword 標示", keywordSpans.length > 0);
+  check("關鍵字文字為真實資料（非虛構），例：所有權的排他性", [...keywordSpans].some(s => s.textContent.includes("排他性")));
+  const firstItem = coreSection.querySelector(".sum-kp__text");
+  check("標示後完整文字內容不變（僅拆分顯示，未遺漏任何字）", firstItem.textContent.includes("："));
+}
+
+console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步（直接進入，無需先經教材中心）");
+{
+  /* Cold entry: quiz.html loaded directly, real data/materials/*.js
+     content intact, WITHOUT visiting materials.html first in this
+     session — proves js/runtime/MaterialRuntime.js now being <script>
+     -tagged on quiz.html lets TeachingMaterialLoader.load() fully
+     bootstrap the Repository material on quiz.html itself, not just on
+     materials.html. */
+  const { window, consoleErrors } = loadPage("quiz.html", {});
+  const doc = window.document;
+  doc.body.appendChild(window.AHS.QuizCenter.create());
+
+  check("正式測驗：Repository 教材直接出現在預設列表（無需先經教材中心）",
+    /私有財產權|所有權/.test(doc.body.textContent) && doc.querySelectorAll(".quiz-row").length > 0);
+  const examRow = doc.querySelector(".quiz-row");
+  check("正式測驗：可直接點擊開始（走既有 tryDirectExamEntry／startFromExam，非重新產生）", !!examRow);
+  if (examRow) {
+    examRow.querySelector(".quiz-row__start").click();
+    check("點擊後直接進入真實測驗畫面（真實題目，非 Mock）", /私有財產權|所有權/.test(doc.body.textContent) &&
+      !!doc.querySelector(".qcard, .quiz-exam, [class*='exam']"));
+  }
+
+  const p2 = loadPage("quiz.html", {});
+  const doc2 = p2.window.document;
+  doc2.body.appendChild(p2.window.AHS.QuizCenter.create());
+  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
+  practiceTab.click();
+  check("練習模式：Repository 教材也直接出現（不需 materialId 帶入）",
+    /Repository 教材/.test(doc2.body.textContent) && (/私有財產權|所有權/.test(doc2.body.textContent)));
+  const repoRow = doc2.querySelector(".quiz-practice__row");
+  if (repoRow) { repoRow.click(); }
+  check("點擊練習模式中的 Repository 教材：切換到真實測驗畫面（Runtime 未混用，僅切換顯示）",
+    !doc2.querySelector(".quiz-practice-root:not([hidden])") || /私有財產權|所有權/.test(doc2.body.textContent));
+  check("Console errors = 0（quiz.html 直接進入，AI-501）", consoleErrors.length === 0);
+}
+
+console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時產生真實 .docx");
+{
+  const { window } = loadPage("materials.html", {});
+  const A = window.AHS;
+  const item = A.MaterialRuntime.list()[0];
+
+  let captured = null;
+  const origBuildDocxBlob = A.DocumentExport.buildDocxBlob;
+  A.DocumentExport.buildDocxBlob = function (title, blocks) {
+    captured = { title: title, blocks: blocks };
+    return origBuildDocxBlob(title, blocks);
+  };
+  let downloadedName = null;
+  A.DocumentExport.downloadBlob = function (blob, filename) { downloadedName = filename; };
+
+  window.document.querySelector('[data-id="' + item.id + '"] .mat-card__dl').click();
+
+  check("下載教材：不再顯示「沒有可下載的原始檔案」", !window.document.querySelector(".mat-status, [role='status']").textContent.includes("沒有可下載的原始檔案"));
+  check("下載教材：狀態訊息確認已產生 .docx", /已下載教材（依現有 Repository／AI 資料產生 \.docx）/.test(window.document.querySelector(".mat-status, [role='status']").textContent));
+  check("下載教材：檔名為 <教材名稱>.docx", downloadedName === item.title + ".docx");
+  check("下載教材：確實呼叫 buildDocxBlob 並帶入區塊", !!captured && Array.isArray(captured.blocks) && captured.blocks.length > 0);
+
+  const infoBlock = captured.blocks.find(b => b.heading === "教材資訊");
+  check("教材資訊區塊含真實科目／年級／章節", !!infoBlock && infoBlock.lines.some(l => l.includes("公民")) );
+  const contentBlock = captured.blocks.find(b => b.heading === "教材內容");
+  check("教材內容區塊含真實 Repository 內容（非空、非虛構）", !!contentBlock && contentBlock.lines.length > 0);
+  const summaryBlock = captured.blocks.find(b => b.heading === "AI 重點整理");
+  check("AI 重點整理區塊含真實核心概念", !!summaryBlock && summaryBlock.lines.some(l => l.includes("排他性")));
+  const quizBlock = captured.blocks.find(b => b.heading === "AI 練習題");
+  check("AI 練習題區塊含真實題目", !!quizBlock && quizBlock.lines.some(l => l.includes("私有財產權")));
+
+  /* Full-pipeline round trip: the REAL captured blocks -> real .docx
+     bytes -> real ZIP parse -> real XML text — not just "a function was
+     called", the actual generated file genuinely contains this content. */
+  const zipBytes = A.DocumentExport._internal.buildDocxBytes(captured.title, captured.blocks);
+  const documentXml = readZipEntryText(zipBytes, "word/document.xml");
+  check(".docx word/document.xml 可被獨立 ZIP reader 正確解析", typeof documentXml === "string" && documentXml.length > 0);
+  check(".docx 內文包含真實教材標題", documentXml.includes(item.title));
+  check(".docx 內文包含真實核心概念文字", documentXml.includes("排他性"));
+  check(".docx 內文包含真實練習題文字", documentXml.includes("私有財產權"));
+
+  /* Regular material WITH a real uploaded file is completely unaffected
+     — the .docx path only runs for state==="none", never overrides a
+     real file's own download. */
+  const regularSeed = { materials: [{ id: "rt_x", order: 1, subject: "math", title: "一般教材", chapter: "測試",
+    grade: "高一", category: "講義", date: "2026/08/02", views: "0", content: "text",
+    progress: 0, lastOpenedAt: null, lastLearningAt: null, learningTime: 0, learningCount: 0,
+    favorite: false, fileName: "a.pdf", fileType: "PDF", fileSize: "10 KB", folderId: null, file: null }],
+    folders: [], seq: 1, folderSeq: 0 };
+  const p2 = loadPage("materials.html", { seedSession: {
+    "ahs:materialRuntime": regularSeed,
+    "ahs:materialFileIndex": { entries: { rt_x: { name: "a.pdf", type: "application/pdf", state: "stored" } } },
+    "ahs:materialFile:rt_x": { name: "a.pdf", type: "application/pdf", dataUrl: "data:application/pdf;base64,QUhT" }
+  } });
+  let regularDocxCalled = false;
+  p2.window.AHS.DocumentExport.buildDocxBlob = function () { regularDocxCalled = true; return origBuildDocxBlob.apply(this, arguments); };
+  p2.window.URL.createObjectURL = function () { return "blob:ahs/regular"; };
+  p2.window.URL.revokeObjectURL = function () {};
+  p2.window.document.querySelector(".mat-card__dl").click();
+  check("一般教材（有真實檔案）：下載流程未受影響，未觸發 .docx 產生", !regularDocxCalled);
+}
+
+console.log("\n[31] HOTFIX-005 AI-503 — 下載總結：直接產生列印內容（真實 PDF，透過瀏覽器另存為）");
+{
+  const p1 = loadPage("materials.html", {});
+  const rt = p1.window.AHS.MaterialRuntime.list()[0];
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+  const { window, consoleErrors } = loadPage("summary.html", { seedSession: carried });
+  const A = window.AHS;
+
+  let printedTitle = null, printedBlocks = null;
+  const origPrintBlocks = A.DocumentExport.printBlocks;
+  A.DocumentExport.printBlocks = function (title, blocks) { printedTitle = title; printedBlocks = blocks; return origPrintBlocks(title, blocks); };
+
+  const btn = [...window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("下載總結"));
+  btn.click();
+
+  check("下載總結：確實呼叫 printBlocks（非 UI Stub）", printedTitle === "學習總結" && Array.isArray(printedBlocks));
+  check("下載總結：狀態訊息確認已產生內容並提示另存為 PDF", /已產生學習總結內容.*另存為 PDF/.test(window.document.querySelector(".sum-status").textContent));
+  const coreBlock = printedBlocks.find(b => b.heading === "① 核心概念");
+  check("列印內容含真實①核心概念資料", !!coreBlock && coreBlock.lines.some(l => l.includes("排他性")));
+  const reviewBlock = printedBlocks.find(b => b.heading === "⑤ 複習建議");
+  check("列印內容含真實⑤複習建議（HOTFIX-004 derive 邏輯）", !!reviewBlock && reviewBlock.lines.length > 0);
+
+  /* printBlocks() really did build a real, content-filled printable
+     document and hand it to a hidden iframe (the browser's own "另存為
+     PDF" is triggered from iframe.contentWindow.print() on load — see
+     js/core/DocumentExport.js's own header for why this, not a hand-
+     rolled PDF byte generator, is the honest way to get real Chinese
+     text into a real PDF with no backend/library). */
+  const iframe = window.document.querySelector("iframe");
+  check("已建立隱藏 iframe 準備真實列印內容", !!iframe && iframe.hasAttribute("srcdoc"));
+  check("iframe 內容包含真實教材標題與核心概念", iframe.getAttribute("srcdoc").includes("排他性"));
+  check("Console errors = 0（下載總結）", consoleErrors.length === 0);
+
+  const emptyPage = loadPage("summary.html", { excludeScripts: ["data/materials/"] });
+  const emptyBtn = [...emptyPage.window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("下載總結"));
+  emptyBtn.click();
+  check("完全沒有學習總結時：明確提示，不產生空白 PDF", /目前沒有可匯出的學習總結/.test(emptyPage.window.document.querySelector(".sum-status").textContent));
+}
+
+console.log("\n[32] HOTFIX-005 AI-504 — 匯出筆記：直接產生真實 Markdown");
+{
+  const p1 = loadPage("materials.html", {});
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+  const { window, consoleErrors } = loadPage("summary.html", { seedSession: carried });
+  const A = window.AHS;
+
+  let mdText = null, downloadedBlob = null, downloadedName = null;
+  A.DocumentExport.downloadBlob = function (blob, filename) { downloadedBlob = blob; downloadedName = filename; };
+
+  const btn = [...window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("匯出筆記"));
+  btn.click();
+
+  check("匯出筆記：確實觸發真實檔案下載（非 UI Stub）", !!downloadedBlob && downloadedName === "學習總結.md");
+  check("匯出筆記：Blob 型別為 Markdown", downloadedBlob.type.includes("markdown"));
+  check("匯出筆記：狀態訊息確認完成", /已匯出筆記（Markdown）/.test(window.document.querySelector(".sum-status").textContent));
+
+  mdText = A.DocumentExport.buildMarkdownText("學習總結", [
+    { heading: "① 核心概念", lines: ["所有權的排他性：測試"] }
+  ]);
+  check("buildMarkdownText 產生正確 Markdown 結構", mdText.startsWith("# 學習總結") && mdText.includes("### ① 核心概念") && mdText.includes("- 所有權的排他性：測試"));
+  check("Console errors = 0（匯出筆記）", consoleErrors.length === 0);
+}
+
+console.log("\n[33] Sprint AI-109 — Learning Runtime Integration（AI-601/602/604）");
+{
+  /* AI-601/602 root cause: WrongBookRuntime/HistoryRuntime were plain
+     in-memory stores with no AHS.PersistenceAdapter hydrate/persist
+     calls anywhere — a real wrong answer recorded on quiz.html was lost
+     the instant the browser navigated to a different page (a genuine
+     multi-page-app "Runtime island", not caught by earlier PATs since
+     those all stayed within one simulated jsdom `window`). This
+     reproduces a REAL cross-page journey: quiz.html (real Civics exam,
+     answer wrong on purpose) -> carry sessionStorage forward exactly like
+     a real browser tab does -> a FRESH page load of wrongbook.html and
+     quiz.html, proving the data survived the navigation. */
+  const p1 = loadPage("quiz.html", {});
+  const A1 = p1.window.AHS;
+  const examId = "teaching_material_" + A1.MaterialRuntime.list()[0].id;
+  const meta = A1.TeachingMaterialLoader.resolveExamMeta(examId) || {};
+  const session = A1.ExamRuntime.startFromExam(examId, meta);
+  const qs = A1.QuestionRuntime.getSet(examId);
+  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
+  const finished = A1.ExamRuntime.finish(examId);
+  const graded = A1.AutoGrader.grade(finished);
+  A1.WrongBookRuntime.sync(graded);
+  A1.HistoryRuntime.record(graded);
+
+  check("AI-601: AutoGrader.grade() 的 wrong[] 帶有真實 materialId（來自題目本身）", graded.wrong[0].materialId === A1.MaterialRuntime.list()[0].id);
+
+  const carried = {};
+  for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
+
+  const p2 = loadPage("wrongbook.html", { seedSession: carried });
+  const wbList = p2.window.AHS.WrongBookRuntime.list();
+  check("AI-601: 錯題跨頁存活（WrongBookRuntime 現在有 PersistenceAdapter 持久化）", wbList.length === 1);
+  const wb = wbList[0];
+  check("AI-601: 錯題本紀錄包含全部必要欄位", wb.question && wb.correctAnswer && wb.yourAnswer &&
+    wb.errorCount === 1 && wb.lastError && wb.subject && wb.chapter && wb.materialId);
+  check("AI-601: 教材來源為真實 materialId（非空、非虛構）", wb.materialId === A1.MaterialRuntime.list()[0].id);
+
+  p2.window.document.body.appendChild(p2.window.AHS.WrongBook.create());
+  check("AI-601: 錯題本頁面（非僅 Runtime）真的渲染出這筆真實錯題", p2.window.document.body.textContent.includes(wb.question.slice(0, 6)));
+
+  const p3 = loadPage("quiz.html", { seedSession: carried });
+  p3.window.document.body.appendChild(p3.window.AHS.QuizCenter.create());
+  const repoRow3 = p3.window.document.querySelector(".quiz-row");
+  check("AI-602: 測驗中心的真實統計跨頁存活（不需重新整理同一頁面才看到）",
+    !!repoRow3 && repoRow3.classList.contains("is-done") &&
+    /100%/.test(repoRow3.querySelector(".quiz-row__metric-val").textContent) &&
+    repoRow3.querySelector(".quiz-row__metric-strong").textContent !== "0%");
+
+  check("AI-604: 科目篩選 chips 依 Repository 動態新增「公民」，不再固定寫死清單",
+    [...p3.window.document.querySelectorAll(".quiz-filter__subject")].some(b => b.textContent === "公民"));
+
+  check("Console errors = 0（Sprint AI-109 跨頁流程）", p1.consoleErrors.length === 0 && p2.consoleErrors.length === 0 && p3.consoleErrors.length === 0);
+}
+
+console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/611/612/613）");
+{
+  /* Full real cross-page loop, mirroring AI-613's own required flow:
+     教材 -> 開始測驗 -> 批改 -> 錯題 -> 複習(重新作答直到精熟) -> 首頁同步
+     -> AI Tutor 更新 -> 複習中心同步 -> 測驗中心同步. Every step loads a
+     FRESH page and carries only sessionStorage forward, exactly like a
+     real browser tab — the same technique [33] introduced, extended
+     across every page this Sprint touches. */
+  const p1 = loadPage("quiz.html", {});
+  const A1 = p1.window.AHS;
+  const materialId = A1.MaterialRuntime.list()[0].id;
+  const examId = "teaching_material_" + materialId;
+  const meta = A1.TeachingMaterialLoader.resolveExamMeta(examId) || {};
+  A1.ExamRuntime.startFromExam(examId, meta);
+  const qs = A1.QuestionRuntime.getSet(examId);
+  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
+  const finished = A1.ExamRuntime.finish(examId);
+  const graded = A1.AutoGrader.grade(finished);
+  A1.WrongBookRuntime.sync(graded);
+  A1.HistoryRuntime.record(graded);
+  const wrongId = A1.WrongBookRuntime.list()[0].id;
+
+  function carry(win) {
+    const out = {};
+    for (let i = 0; i < win.sessionStorage.length; i++) { const k = win.sessionStorage.key(i); out[k] = JSON.parse(win.sessionStorage.getItem(k)); }
+    return out;
+  }
+
+  /* AI-610: 重新作答 -> 答對 三次直到「已精熟」，透過真實 DOM 互動（點擊
+     立即重做 -> 選正確答案 -> 提交答案），非直接呼叫內部函式 —— 驗證的是
+     使用者實際看到、點擊的畫面，不是 Runtime 私有 API。 */
+  let carried = carry(p1.window);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const pw = loadPage("wrongbook.html", { seedSession: carried });
+    pw.window.document.body.appendChild(pw.window.AHS.WrongBook.create());
+    const item = pw.window.AHS.WrongBookRuntime.getById(wrongId);
+    pw.window.document.querySelector(".wb-row").click();
+    const redoBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("立即重做"));
+    redoBtn.click();
+    const correctOpt = [...pw.window.document.querySelectorAll(".wb-detail__option")].find(li => li.querySelector(".wb-detail__option-key").textContent === item.correctAnswer);
+    correctOpt.click();
+    const submitBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("提交答案"));
+    submitBtn.click();
+    if (attempt === 0) {
+      check("AI-610: 重新作答答對後，WrongBookRuntime 的 correctStreak 真實更新（非僅畫面局部狀態）",
+        pw.window.AHS.WrongBookRuntime.getById(wrongId).correctStreak === 1);
+      check("AI-610: 畫面狀態同步顯示「複習中」（來自真實 correctStreak，非 session-local tracker）",
+        pw.window.document.querySelector(".wb-detail__status").textContent === "複習中");
+    }
+    carried = carry(pw.window);
+  }
+  check("AI-610: 連續三次答對後 correctStreak >= 3，Runtime 真實記錄已精熟", (() => {
+    const final = loadPage("wrongbook.html", { seedSession: carried });
+    return final.window.AHS.WrongBookRuntime.getById(wrongId).correctStreak >= 3;
+  })());
+
+  /* AI-609: 複習中心同步 — 今日待複習歸零（唯一錯題已精熟）、已完成複習 = 1，
+     皆直接來自 WrongBookRuntime，非重新計算的第二份統計。 */
+  const pReview = loadPage("review.html", { seedSession: carried });
+  pReview.window.document.body.appendChild(pReview.window.AHS.ReviewHomeCard.create({
+    dueToday: pReview.window.AHS.StatisticsRuntime.dueForReview().length,
+    doneToday: 0, doneWeek: 0,
+    masteredReview: pReview.window.AHS.StatisticsRuntime.masteredReviewItems().length
+  }));
+  check("AI-609: 今日待複習歸零（唯一錯題已精熟，非固定 0）", pReview.window.AHS.StatisticsRuntime.dueForReview().length === 0);
+  check("AI-609: 已完成複習 = 1（真實來自 WrongBookRuntime.correctStreak）", pReview.window.AHS.StatisticsRuntime.masteredReviewItems().length === 1);
+  check("AI-609: 複習中心頁面真的渲染出「已完成複習」統計", pReview.window.document.body.textContent.includes("已完成複習"));
+
+  /* AI-611: 首頁同步 — AiTutorHomeCard 現在收到真實 model（非 Empty State），
+     內容包含真實已完成複習數字／建議文字，非 Mock／非固定文字。 */
+  const pHome = loadPage("index.html", { seedSession: carried });
+  pHome.window.document.body.appendChild(pHome.window.AHS.AiTutorHomeCard.create(
+    pHome.window.AHS.TutorMessage.build(pHome.window.AHS.StatisticsRuntime.learningContext())
+  ));
+  check("AI-611: 首頁 AI 巧巧老師卡片不再是空狀態（真實 Runtime 資料已產生建議）",
+    !pHome.window.document.body.textContent.includes("AI 老師尚無建議"));
+  check("AI-611: 建議內容提及真實已精熟題數", pHome.window.document.body.textContent.includes("已有 1 題錯題達到精熟"));
+
+  /* AI-612: AI Tutor（tutor.html）真實建議訊息，透過完整頁面 bootstrap
+     （AppTutor.js）而非手動組 model —— 驗證的是頁面真的會顯示，不只是
+     TutorMessage.build() 本身正確。 */
+  const pTutor = loadPage("tutor.html", { seedSession: carried });
+  pTutor.window.document.body.appendChild(pTutor.window.AHS.AiTutor.create());
+  check("AI-612: tutor.html 的訊息串真的包含真實建議文字（非僅罐頭回覆）",
+    pTutor.window.document.body.textContent.includes("已有 1 題錯題達到精熟"));
+
+  /* AI-602/608: 測驗中心同步 — 完成/精熟後，正式測驗與練習模式列表仍
+     一致反映真實資料，全流程走完未出現 Runtime 孤島。 */
+  const pQuiz = loadPage("quiz.html", { seedSession: carried });
+  pQuiz.window.document.body.appendChild(pQuiz.window.AHS.QuizCenter.create());
+  const finalRow = pQuiz.window.document.querySelector(".quiz-row");
+  check("AI-608: 測驗中心同步 — 完成/精熟後正式測驗列表仍正確反映真實完成狀態",
+    !!finalRow && finalRow.classList.contains("is-done"));
+
+  check("AI-613: 全流程無 Console errors（教材->測驗->批改->錯題->複習->首頁->AI Tutor->複習中心->測驗中心）",
+    p1.consoleErrors.length === 0 && pReview.consoleErrors.length === 0 &&
+    pHome.consoleErrors.length === 0 && pTutor.consoleErrors.length === 0 && pQuiz.consoleErrors.length === 0);
+
+  /* AI-613: 不得出現不一致資料 — 同一筆錯題在 WrongBookRuntime／複習中心／
+     測驗中心三處讀到的 correctStreak/mastered 狀態必須完全一致。 */
+  const wbFinal = pQuiz.window.AHS.WrongBookRuntime.getById(wrongId);
+  check("AI-613: 跨頁資料一致（WrongBookRuntime 為唯一真實來源，無重複/不一致資料）",
+    wbFinal.correctStreak >= 3 && pReview.window.AHS.StatisticsRuntime.masteredReviewItems()[0].id === wrongId);
 }
 
 console.log("\n==============================");

@@ -23,15 +23,30 @@ AHS.SummaryCenter = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* HOTFIX-005 AI-503/AI-504: sections a real Summary Runtime record
+     already has, reshaped into AHS.DocumentExport's block model — real
+     content only, "（無資料）" (never fabricated) when a section is
+     genuinely empty. Shared by both 下載總結 (PDF, via browser print) and
+     匯出筆記 (Markdown) so their output always matches exactly. */
+  function summaryExportBlocks(records) {
+    var blocks = [];
+    (records || []).forEach(function (record) {
+      blocks.push({ heading: "《" + (record.title || record.materialId || "教材") + "》", kind: "title" });
+      blocks.push({ heading: "① 核心概念", lines: record.coreConcepts || [] });
+      blocks.push({ heading: "② 重要定義／公式／關鍵字", lines: record.definitions || [] });
+      blocks.push({ heading: "③ 易錯與常考題型", lines: record.pitfalls || [] });
+      blocks.push({ heading: "④ 必背重點", lines: record.memorize || [] });
+      blocks.push({ heading: "⑤ 複習建議", lines: deriveReviewSuggestions(record) });
+    });
+    return blocks;
+  }
+
   /* ---- Banner ------------------------------------------------------------
-     Static copy only now (no per-summary Mock title/subtitle to read).
-     Export buttons keep the existing Mock-feedback convention used
-     throughout the repo for not-yet-implemented actions (AppShell.js
-     profilePanel, Review Center, etc.) — this is a UI-action stub, not
-     fabricated content data, so it doesn't conflict with "不得自建
-     資料". */
-  function banner(status) {
-    function exportBtn(cls, icon, label, sub) {
+     getRecords(): returns whatever summary record(s) are CURRENTLY shown
+     below (respecting the 篩選教材 filter) — export always matches what
+     the user is actually looking at, never a hidden/different set. */
+  function banner(status, getRecords) {
+    function exportBtn(cls, icon, label, sub, onExport) {
       var b = el("button", { type: "button", class: "sum-export " + cls }, [
         el("span", { class: "sum-export__icon", html: AHS.Icons[icon]() }),
         el("span", { class: "sum-export__text" }, [
@@ -40,8 +55,13 @@ AHS.SummaryCenter = (function () {
         ])
       ]);
       b.addEventListener("click", function () {
-        status.textContent = "" + label + "（" + sub + "）";
-        status.removeAttribute("hidden");
+        var records = (typeof getRecords === "function" ? getRecords() : []) || [];
+        if (!records.length) {
+          status.textContent = "目前沒有可匯出的學習總結，請先上傳教材並產生總結。";
+          status.removeAttribute("hidden");
+          return;
+        }
+        onExport(records);
       });
       return b;
     }
@@ -51,8 +71,20 @@ AHS.SummaryCenter = (function () {
         el("p", { class: "sum-banner__subtitle", text: "依教材自動整理的核心概念、定義與複習重點" })
       ]),
       el("div", { class: "sum-banner__actions" }, [
-        exportBtn("sum-export--primary", "download", "下載總結", "PDF / DOCX / PPT"),
-        exportBtn("sum-export--ghost", "bookmark", "匯出筆記", "Notion / Evernote")
+        exportBtn("sum-export--primary", "download", "下載總結", "PDF", function (records) {
+          if (!AHS.DocumentExport || typeof AHS.DocumentExport.printBlocks !== "function") { return; }
+          AHS.DocumentExport.printBlocks("學習總結", summaryExportBlocks(records));
+          status.textContent = "已產生學習總結內容，請於列印視窗選擇「另存為 PDF」完成下載。";
+          status.removeAttribute("hidden");
+        }),
+        exportBtn("sum-export--ghost", "bookmark", "匯出筆記", "Markdown", function (records) {
+          if (!AHS.DocumentExport || typeof AHS.DocumentExport.buildMarkdownText !== "function") { return; }
+          var text = AHS.DocumentExport.buildMarkdownText("學習總結", summaryExportBlocks(records));
+          var blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+          AHS.DocumentExport.downloadBlob(blob, "學習總結.md");
+          status.textContent = "已匯出筆記（Markdown）。";
+          status.removeAttribute("hidden");
+        })
       ])
     ]);
   }
@@ -116,13 +148,37 @@ AHS.SummaryCenter = (function () {
     ]);
   }
 
+  /* 重點關鍵字標示: every section item is already either a plain sentence
+     or a Repository-derived "關鍵字：說明" string (see
+     js/runtime/TeachingMaterialLoader.js's own coreConcepts/commonMistakes
+     flattening) — when the full-width colon separator is present, the
+     part before it IS the real keyword the record itself identified, not
+     an invented one. Splitting it out to render in red only makes an
+     already-real distinction visible; sentences with no such separator
+     render exactly as before. */
+  function splitKeyword(text) {
+    var s = String(text || "");
+    var idx = s.indexOf("：");
+    if (idx <= 0 || idx > 24) { return null; }
+    return { keyword: s.slice(0, idx), rest: s.slice(idx) };
+  }
+
+  function keywordText(text) {
+    var parts = splitKeyword(text);
+    if (!parts) { return [el("span", { text: String(text) })]; }
+    return [
+      el("span", { class: "sum-kp__keyword", text: parts.keyword }),
+      el("span", { text: parts.rest })
+    ];
+  }
+
   function sectionList(sectionKey, icon, title, items) {
     var badge = sectionBadge(sectionKey);
     var body = (items && items.length)
       ? el("ol", { class: "sum-kp__list" }, items.map(function (text, i) {
           return el("li", { class: "sum-kp__item" }, [
             el("span", { class: "sum-kp__num", text: String(i + 1) }),
-            el("span", { class: "sum-kp__text", text: String(text) })
+            el("span", { class: "sum-kp__text" }, keywordText(text))
           ]);
         }))
       : el("p", { class: "sum-section__empty", text: "尚無資料" });
@@ -266,6 +322,46 @@ AHS.SummaryCenter = (function () {
     return el("div", { class: "sum-footer" }, [readBtn, practiceLink, examLink, aiGenerateEntry]);
   }
 
+  /* HOTFIX-004 Issue 001: ⑤ 複習建議 derivation, used only when
+     record.reviewSuggestions (SummaryRuntime's own, real field — never
+     modified here) is genuinely empty. Never calls an AI, never re-
+     analyses the material, never waits for a button — reads only fields
+     record ALREADY has (coreConcepts/memorize/pitfalls/chapter/section),
+     which themselves already came from the Teaching Material Repository
+     (via TeachingMaterialLoader.js, HOTFIX-002) — no new Repository
+     lookup, no new file, no fabricated content. If reviewSuggestions is
+     already real (any future Repository/EO populates it directly), that
+     wins unconditionally; if the record has no underlying data at all
+     either (the honest Stub-pipeline pending state), this returns []
+     and the existing "尚無資料" rendering is untouched. */
+  function deriveReviewSuggestions(record) {
+    if (Array.isArray(record.reviewSuggestions) && record.reviewSuggestions.length) {
+      return record.reviewSuggestions;
+    }
+    var suggestions = [];
+
+    var order = [record.chapter, record.section].filter(Boolean).join("→");
+    if (order) {
+      suggestions.push("建議閱讀順序：先複習「" + order + "」的內容，再依序進行後續章節。");
+    }
+
+    var coreCount = Array.isArray(record.coreConcepts) ? record.coreConcepts.length : 0;
+    var memorizeCount = Array.isArray(record.memorize) ? record.memorize.length : 0;
+    if (coreCount || memorizeCount) {
+      var parts = [];
+      if (coreCount) { parts.push(coreCount + " 個核心概念"); }
+      if (memorizeCount) { parts.push(memorizeCount + " 項必背重點"); }
+      suggestions.push("建議複習方式：本教材整理了" + parts.join("、") +
+        "，建議先閱讀重點整理，再搭配練習題確認理解程度。");
+    }
+
+    if (Array.isArray(record.pitfalls) && record.pitfalls.length) {
+      suggestions.push("建議注意事項：" + record.pitfalls.slice(0, 3).join("；"));
+    }
+
+    return suggestions;
+  }
+
   /* ---- One Summary Runtime record ---------------------------------------- */
   function summaryRecordCard(record) {
     var subj = AHS.Subjects[record.subject] || { name: record.subject || "未分類", hex: "#6b7280" };
@@ -308,10 +404,15 @@ AHS.SummaryCenter = (function () {
       return Array.isArray(record[s.key]) && record[s.key].length;
     });
 
+    var effectiveReviewSuggestions = deriveReviewSuggestions(record);
+
     var sections;
     if (anyContent) {
       sections = el("div", { class: "sum-section-grid" },
-        fiveSections.map(function (s) { return sectionList(s.key, s.icon, s.title, record[s.key]); }));
+        fiveSections.map(function (s) {
+          var content = s.key === "reviewSuggestions" ? effectiveReviewSuggestions : record[s.key];
+          return sectionList(s.key, s.icon, s.title, content);
+        }));
     } else {
       /* Sprint 6.8 EO-S6.8-002 Task 003 (PAT Critical, PMO ruling):
          Parser 尚未完成解析時的 Pending State 固定顯示這三句 —— 不得
@@ -387,8 +488,13 @@ AHS.SummaryCenter = (function () {
 
     var body = el("div", { class: "sum-body" });
     var filterSlot = el("div", { class: "sum-filter-slot" });
+    /* HOTFIX-005 AI-503/AI-504: whatever is CURRENTLY rendered in `body`
+       (respecting 篩選教材) is exactly what 下載總結／匯出筆記 export —
+       kept in sync by renderRecords(), the single place `body` changes. */
+    var currentRecords = [];
 
     function renderRecords(records, forMaterialId) {
+      currentRecords = records || [];
       body.innerHTML = "";
       if (!records || !records.length) {
         body.appendChild(forMaterialId ? noSummaryForMaterialState(forMaterialId) : emptyState());
@@ -431,7 +537,7 @@ AHS.SummaryCenter = (function () {
     renderAll();
 
     return el("div", { class: "sum-page" }, [
-      banner(status),
+      banner(status, function () { return currentRecords; }),
       filterSlot,
       body,
       status

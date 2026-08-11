@@ -82,8 +82,15 @@ window.AHS = window.AHS || {};
     return start;
   }
 
-  /* deriveStats(historyItems) — real counts only, from real records. */
-  function deriveStats(historyItems) {
+  /* deriveStats(historyItems, dueCount) — real counts only, from real
+     records. Sprint AI-111 AI-609: dueToday was a fixed 0 by an earlier,
+     explicit PMO ruling ("no due-date concept exists anywhere"). AI-610
+     (same Sprint) gave WrongBookRuntime a real, persisted correctStreak
+     field, and AHS.StatisticsRuntime.dueForReview() (additive) derives a
+     real, deterministic count from it — "not yet 已精熟" — the exact same
+     rule js/components/WrongBook.js's own getMasteryStatus() already
+     uses, not a second definition, and not AI-inferred scheduling. */
+  function deriveStats(historyItems, dueCount, masteredCount) {
     var now = new Date();
     var weekStart = startOfWeek(now);
     var doneToday = 0;
@@ -97,9 +104,10 @@ window.AHS = window.AHS || {};
     });
 
     return {
-      dueToday: 0, /* fixed — no due-date concept exists (PMO ruling) */
+      dueToday: dueCount || 0,
       doneToday: doneToday,
-      doneWeek: doneWeek
+      doneWeek: doneWeek,
+      masteredReview: masteredCount || 0
     };
   }
 
@@ -108,9 +116,13 @@ window.AHS = window.AHS || {};
     if (!app) { return; }
 
     var historyItems = (AHS.HistoryRuntime ? AHS.HistoryRuntime.list() : []);
-    var stats = deriveStats(historyItems);
-    var mostRecent = historyItems.length ? historyItems[0] : null; // list() is newest-first
     var wrongItems = (AHS.WrongBookRuntime ? AHS.WrongBookRuntime.list() : []);
+    var dueItems = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.dueForReview === "function")
+      ? AHS.StatisticsRuntime.dueForReview() : wrongItems;
+    var masteredItems = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.masteredReviewItems === "function")
+      ? AHS.StatisticsRuntime.masteredReviewItems() : [];
+    var stats = deriveStats(historyItems, dueItems.length, masteredItems.length);
+    var mostRecent = historyItems.length ? historyItems[0] : null; // list() is newest-first
 
     var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "review",
