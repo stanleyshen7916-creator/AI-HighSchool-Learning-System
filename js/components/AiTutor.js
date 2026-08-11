@@ -1,10 +1,9 @@
 /* components/AiTutor.js — AI Tutor (巧巧老師) chat page.
    Hero + chat thread + input bar (left), suggestion tiles (middle),
    chat history + common resources (right). Sending a message appends the
-   user bubble, then either a real, grounded answer or a real answerable
-   menu from AHS.TutorEngine.js's Rule-Based engine (no LLM/AI API — see
-   that file's own header), falling back to a canned reply rotation only
-   for the handful of quick-suggestion tiles this Phase doesn't cover.
+   user bubble, then always either a real, grounded answer or a real
+   answerable menu from AHS.TutorEngine.js's Rule-Based engine (no LLM/AI
+   API — see that file's own header) — no fabricated canned reply.
    PascalCase under window.AHS. Assistant avatar reuses AHS.Qiaoqiao. */
 window.AHS = window.AHS || {};
 AHS.AiTutor = (function () {
@@ -85,11 +84,9 @@ AHS.AiTutor = (function () {
      AHS.PlatformContext.resolve(), passed in by js/pages/AppTutor.js.
      Lets sendMessage() ground a real answer via AHS.TutorEngine when the
      student arrived here from a specific real question (js/components/
-     WrongBook.js's new "問 AI 巧巧老師" link); every existing caller that
-     omits it keeps the exact prior canned-reply behavior. */
+     WrongBook.js's new "問 AI 巧巧老師" link). */
   function create(model, pageContext) {
     var data = model || AHS.AppConfig.aiTutorPage;
-    var replyIndex = 0;
 
     var thread = el("div", { class: "tutor-thread" }, [
       el("div", { class: "tutor-thread__day", text: "今天" })
@@ -101,23 +98,17 @@ AHS.AiTutor = (function () {
     function sendMessage(text) {
       if (!text) { return; }
       thread.appendChild(bubble({ role: "user", time: "剛剛", text: text }));
-      /* Phase 1 Rule-Based Engine: intercepts the two intents it honestly
-         supports (解題步驟詳解／概念解釋) with a real answer, and hands
-         back a real, always-answerable menu (see AHS.TutorEngine's own
-         offTopicMenu()) for anything else it doesn't recognize — except
-         the other quick-suggestion tiles (類題練習 etc.), which keep the
-         exact prior canned-reply rotation below, unchanged (reply()
-         returns null for those specifically). */
+      /* AHS.TutorEngine.js's Rule-Based engine always answers (a real,
+         grounded reply, or a real answerable menu — never a dead end);
+         the only fallback needed here is the defensive "core not ready"
+         case (EO-S7.0-HOTFIX-001), never a fabricated canned reply. */
       var engineReply = (AHS.TutorEngine && typeof AHS.TutorEngine.reply === "function")
         ? AHS.TutorEngine.reply(text, pageContext) : null;
       if (engineReply && typeof engineReply === "object") {
         thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: engineReply.message, actions: engineReply.actions }, sendMessage));
-        scrollBottom();
-        return;
+      } else {
+        thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: engineReply || "系統資源載入失敗，暫時無法回覆，請重新整理頁面。" }));
       }
-      var reply = engineReply || data.cannedReplies[replyIndex % data.cannedReplies.length];
-      if (!engineReply) { replyIndex += 1; }
-      thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: reply }));
       scrollBottom();
     }
 
