@@ -554,7 +554,9 @@ AHS.WrongBook = (function () {
      wrap it in a Review Session + Result screen — see WS-003). */
   function buildReviewInteraction(item, onSubmit) {
     var selectedKey = null;
-    var optionEls = item.options.map(function (o) {
+    /* AI-127 hotfix: same missing-options guard as renderDetail() —
+       a record pulled from Supabase never has item.options. */
+    var optionEls = (Array.isArray(item.options) ? item.options : []).map(function (o) {
       var li = el("li", { class: "wb-detail__option", role: "button", tabindex: "0" }, [
         el("span", { class: "wb-detail__option-key", text: o.key }),
         el("span", { class: "wb-detail__option-text", text: o.text })
@@ -599,8 +601,18 @@ AHS.WrongBook = (function () {
     var subj = AHS.Subjects[item.subject];
     var isCorrectNow = item.yourAnswer === item.correctAnswer;
 
-    var options = el("ol", { class: "wb-detail__options" },
-      item.options.map(function (o) {
+    /* AI-127 hotfix: wrong_book has no `options` column at all (see
+       supabase/migrations/20260807000004_learning_tables.sql) — a record
+       hydrated purely from WrongBookRuntime.pullFromRepository() (i.e.
+       every cross-session/cross-device record) never has item.options.
+       Only a record still in this session's memory from a real sync()
+       carries it. Guard to [] rather than assume it's always an array;
+       an empty option list renders honestly empty instead of crashing
+       (which previously aborted the whole Detail Panel + Question List
+       render before either could mount). */
+    var itemOptions = Array.isArray(item.options) ? item.options : [];
+    var options = itemOptions.length ? el("ol", { class: "wb-detail__options" },
+      itemOptions.map(function (o) {
         var mods = "";
         if (o.key === item.correctAnswer) { mods += " is-correct"; }
         if (o.key === item.yourAnswer && item.yourAnswer !== item.correctAnswer) { mods += " is-wrong"; }
@@ -608,7 +620,7 @@ AHS.WrongBook = (function () {
           el("span", { class: "wb-detail__option-key", text: o.key }),
           el("span", { class: "wb-detail__option-text", text: o.text })
         ]);
-      }));
+      })) : null;
 
     /* WB-003 (renamed from 標記知識點): 加入重點整理 — adds/removes this
        question's Knowledge Point from the session-scoped Review Center
@@ -634,7 +646,16 @@ AHS.WrongBook = (function () {
        Update Wrong Count -> Refresh Detail -> Return Wrong Book, entirely
        in place (no page navigation). WB-007: the row's More Menu 開始複習
        triggers the exact same flow via autoStartReview below. */
-    var reviewBtn = el("button", { type: "button", class: "wb-detail__btn wb-detail__btn--primary" }, [
+    /* AI-127 hotfix: 立即重做 needs real option choices to be interactive
+       at all (buildReviewInteraction() above) — a record pulled from
+       Supabase (no options persisted) has none, so honestly disable the
+       button with a real reason rather than opening an interaction with
+       nothing to click. */
+    var reviewBtn = el("button", {
+      type: "button", class: "wb-detail__btn wb-detail__btn--primary",
+      disabled: itemOptions.length ? null : "disabled",
+      title: itemOptions.length ? null : "此題無選項資料，暫不支援立即重做"
+    }, [
       el("span", { html: AHS.Icons.refresh() }),
       el("span", { text: "立即重做" })
     ]);
@@ -724,7 +745,7 @@ AHS.WrongBook = (function () {
       el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn])
     ]);
 
-    if (autoStartReview) { startReview(); }
+    if (autoStartReview && itemOptions.length) { startReview(); }
     return { el: body, favBtn: favBtn };
   }
 
