@@ -700,6 +700,20 @@ AHS.WrongBook = (function () {
       favBtn.querySelector(".wb-detail__btn-label").textContent = nowOn ? "已加入最愛" : "加入最愛";
     });
 
+    /* AI Tutor Rule-Based Engine Phase 1: real entry point carrying this
+       question's own real, local id (item.id — the only stable way
+       AHS.TutorEngine can resolve back to this exact WrongBookRuntime
+       record on tutor.html) via AHS.PlatformContext.toQuery(), the same
+       shared Context every other cross-page link already uses (never a
+       second, ad-hoc query-string builder). */
+    var askTutorLink = el("a", {
+      class: "wb-detail__btn wb-detail__btn--ghost",
+      href: "tutor.html" + (AHS.PlatformContext ? AHS.PlatformContext.toQuery({ questionId: item.id }) : "")
+    }, [
+      el("span", { html: AHS.Icons.robot() }),
+      el("span", { text: "問 AI 巧巧老師" })
+    ]);
+
     var body = el("div", { class: "wb-detail__body" }, [
       el("div", { class: "wb-detail__head" }, [
         el("h2", { class: "wb-detail__title", text: "題目詳解" }),
@@ -742,7 +756,7 @@ AHS.WrongBook = (function () {
         el("span", { class: "wb-detail__explain-label", text: "詳解" }),
         el("p", { class: "wb-detail__explain-text", text: item.explanation })
       ]),
-      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn])
+      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink])
     ]);
 
     if (autoStartReview && itemOptions.length) { startReview(); }

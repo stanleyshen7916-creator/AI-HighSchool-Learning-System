@@ -56,7 +56,13 @@ AHS.AiTutor = (function () {
     ]);
   }
 
-  function create(model) {
+  /* pageContext (Phase 1, additive/optional) — { questionId } from
+     AHS.PlatformContext.resolve(), passed in by js/pages/AppTutor.js.
+     Lets sendMessage() ground a real answer via AHS.TutorEngine when the
+     student arrived here from a specific real question (js/components/
+     WrongBook.js's new "問 AI 巧巧老師" link); every existing caller that
+     omits it keeps the exact prior canned-reply behavior. */
+  function create(model, pageContext) {
     var data = model || AHS.AppConfig.aiTutorPage;
     var replyIndex = 0;
 
@@ -70,8 +76,14 @@ AHS.AiTutor = (function () {
     function sendMessage(text) {
       if (!text) { return; }
       thread.appendChild(bubble({ role: "user", time: "剛剛", text: text }));
-      var reply = data.cannedReplies[replyIndex % data.cannedReplies.length];
-      replyIndex += 1;
+      /* Phase 1 Rule-Based Engine: only intercepts the two intents it
+         honestly supports (解題步驟詳解／概念解釋) — everything else
+         (including the other quick-suggestion tiles) keeps the exact
+         prior canned-reply rotation below, unchanged. */
+      var engineReply = (AHS.TutorEngine && typeof AHS.TutorEngine.reply === "function")
+        ? AHS.TutorEngine.reply(text, pageContext) : null;
+      var reply = engineReply || data.cannedReplies[replyIndex % data.cannedReplies.length];
+      if (!engineReply) { replyIndex += 1; }
       thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: reply }));
       scrollBottom();
     }
