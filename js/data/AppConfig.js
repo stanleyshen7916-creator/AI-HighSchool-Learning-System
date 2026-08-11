@@ -142,7 +142,7 @@ AHS.AppConfig = {
       { id: "materials", label: "教材", icon: "book" },
       { id: "summary", label: "總結", icon: "summary" },
       { id: "quiz", label: "測驗", icon: "quiz" },
-      { id: "wrongbook", label: "錯題", icon: "wrong" }
+      { id: "wrongbook", label: "知識弱點", icon: "wrong" }
     ]
   },
 

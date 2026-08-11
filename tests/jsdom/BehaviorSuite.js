@@ -1645,7 +1645,7 @@ console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/
      longer applies since there is no "我的" Bottom Nav item at all. */
   const bottomLabels = [...doc.querySelectorAll(".bottom-nav__item")].map(n => n.textContent.trim());
   check("Bottom Navigation 不再有「我的」／「複習」項目",
-    !bottomLabels.some(t => t.includes("我的")) && !bottomLabels.some(t => t.includes("複習") && t !== "錯題"));
+    !bottomLabels.some(t => t.includes("我的")) && !bottomLabels.some(t => t.includes("複習") && t !== "知識弱點"));
   const bottomHrefs = [...doc.querySelectorAll(".bottom-nav__item")].map(n => n.getAttribute("href")).filter(Boolean);
   check("Bottom Navigation 不再連向 learning.html／review.html",
     !bottomHrefs.includes("learning.html") && !bottomHrefs.includes("review.html"));

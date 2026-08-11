@@ -1328,7 +1328,7 @@ AHS.QuizCenter = (function () {
     backBtn.addEventListener("click", function () { actions.onBackToList(); });
     var retestBtn = el("button", { type: "button", class: "qpv-summary__btn", text: "再次測驗" });
     retestBtn.addEventListener("click", function () { actions.onRetest(); });
-    var wrongBookLink = el("a", { class: "qpv-summary__btn qpv-summary__btn--link", href: "wrongbook.html", text: "前往錯題本" });
+    var wrongBookLink = el("a", { class: "qpv-summary__btn qpv-summary__btn--link", href: "wrongbook.html", text: "前往知識弱點" });
 
     return el("div", { class: "qpv-summary" }, [
       el("h2", { class: "qpv-summary__title", text: "成績摘要" }),

@@ -172,7 +172,7 @@ test("AI-123-05/06/07：列表 Status Icon 立即更新，重新點擊已完成�
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("AI-123-04/09：完成全部題目 -> 成績摘要 -> 只能返回題目列表／再次測驗／前往錯題本", async ({ page }) => {
+test("AI-123-04/09：完成全部題目 -> 成績摘要 -> 只能返回題目列表／再次測驗／前往知識弱點", async ({ page }) => {
   const errors = collectErrors(page);
   await seedTwoQuestions(page, "ai123_d");
   await enterPracticeList(page, "ai123_d");
@@ -190,7 +190,7 @@ test("AI-123-04/09：完成全部題目 -> 成績摘要 -> 只能返回題目列
   await expect(summary).toContainText("1 / 2");
   await expect(summary.locator(".qpv-summary__btn", { hasText: "返回題目列表" })).toBeVisible();
   await expect(summary.locator(".qpv-summary__btn", { hasText: "再次測驗" })).toBeVisible();
-  const wbLink = summary.locator(".qpv-summary__btn", { hasText: "前往錯題本" });
+  const wbLink = summary.locator(".qpv-summary__btn", { hasText: "前往知識弱點" });
   await expect(wbLink).toHaveAttribute("href", "wrongbook.html");
   // AI-123-09: no Home/Material Center link anywhere in the summary.
   await expect(summary.locator("a[href='index.html']")).toHaveCount(0);
