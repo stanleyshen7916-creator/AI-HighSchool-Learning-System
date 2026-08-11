@@ -39,6 +39,13 @@ AHS.WrongBookRuntime = (function () {
     AHS.PersistenceAdapter.save(STORAGE_KEY, store);
   }
 
+  /* isUuid(value) — AI-127 hotfix: distinguishes a real Supabase-issued
+     UUID from this app's own local, non-UUID ids (e.g. "rt_1", "tm_1_q1")
+     before ever sending it to a `uuid`-typed column. */
+  function isUuid(value) {
+    return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+  }
+
   var store = hydrate() || { items: [], seq: 0 };
 
   /* --- Sprint AI-126B Part 2, Task 4: Supabase sync (additive only) ---
@@ -80,9 +87,19 @@ AHS.WrongBookRuntime = (function () {
          answer impossible to round-trip faithfully. Only send them when
          the local record actually has a real UUID; never fabricate one
          and never clear an existing remote link during an unrelated
-         update. */
-      if (record.questionId) { row.question_id = record.questionId; }
-      if (record.materialId) { row.material_id = record.materialId; }
+         update.
+
+         AI-127 hotfix: record.questionId/record.materialId are sourced
+         from AutoGrader's passthrough of the question's own local
+         identifiers (js/data/TeachingMaterialData.js question ids like
+         "tm_1_q1", and MaterialRuntime's own "rt_" + seq local id) — not
+         Supabase's real questions.id/materials.id. Sending either
+         straight through fails Postgres's uuid type check (22P02) on
+         every push. Only forward a value that is actually UUID-shaped;
+         a local, non-UUID id is silently omitted, same as "no real link
+         known yet" rather than a fabricated/wrong one. */
+      if (record.questionId && isUuid(record.questionId)) { row.question_id = record.questionId; }
+      if (record.materialId && isUuid(record.materialId)) { row.material_id = record.materialId; }
       if (record.supabaseId) {
         AHS.SyncBridge.pushFireAndForget(function () { return repo.update("wrong_book", "id=eq." + record.supabaseId, row); });
         return;
