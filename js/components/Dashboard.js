@@ -321,7 +321,7 @@ AHS.Dashboard = (function () {
       ]),
       el("div", {
         class: "dash-ai__avatar qiaoqiao-bust qiaoqiao-bust--lg",
-        html: AHS.Qiaoqiao.bust("gentle")
+        html: AHS.Qiaoqiao.randomBust()
       })
     ]);
   }

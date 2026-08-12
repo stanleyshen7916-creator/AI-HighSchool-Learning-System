@@ -157,6 +157,22 @@ AHS.AppShell = (function () {
     var profile = (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function")
       ? AHS.SettingsRuntime.get().profile : null;
 
+    /* AI-130 hotfix (real PO report): the Workspace chip's displayed name
+       used to read wsLabel.studentName (AHS.WorkspaceData's static demo
+       seed, e.g. "Student A") while the user menu next to it read
+       AHS.SettingsRuntime's own real, user-editable profile.name (e.g.
+       "愛因斯坦" once the user renames themselves in Settings) — same
+       logged-in person, two different names shown side by side in the
+       same topbar. profile.name IS already seeded from wsLabel.studentName
+       on first run (see SettingsRuntime.js's defaultProfileName()), so
+       before any customization the two already agree; this only matters
+       once the user actually renames themselves, at which point the
+       user's own chosen name should win everywhere, not just in the user
+       menu. wsLabel.studentId/schoolName/semesterNames (the real
+       Workspace-scoping identity) are completely untouched — only the
+       display label changes. */
+    var userName = (profile && profile.name) || (user && user.name) || "Guest";
+
     var badge = el("span", { class: "topbar__badge" });
     function unreadCount() {
       var n = 0;
@@ -198,11 +214,11 @@ AHS.AppShell = (function () {
       });
       wsChip = el("button", {
         type: "button", class: "topbar__workspace-chip", "aria-haspopup": "true",
-        "aria-label": "目前 Workspace：" + wsLabel.studentName + "・" + wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、")
+        "aria-label": "目前 Workspace：" + userName + "・" + wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、")
       }, [
         el("span", { class: "topbar__workspace-chip-icon", html: AHS.Icons.book ? AHS.Icons.book() : "" }),
         el("span", { class: "topbar__workspace-chip-text" }, [
-          el("strong", { text: wsLabel.studentName }),
+          el("strong", { text: userName }),
           el("small", { text: wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、") })
         ])
       ]);
@@ -245,7 +261,6 @@ AHS.AppShell = (function () {
       if (typeof openSettings === "function") { openSettings(); }
     });
 
-    var userName = (profile && profile.name) || (user && user.name) || "Guest";
     var userGrade = (profile && profile.grade) || (model && model.student && model.student.grade) || "";
     var userBtn = el("div", {
       class: "topbar__user", role: "button", tabindex: "0", "aria-haspopup": "true",

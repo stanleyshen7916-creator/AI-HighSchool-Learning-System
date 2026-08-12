@@ -86,9 +86,29 @@ AHS.Qiaoqiao = (function () {
   function expressionLabel(key) { return EXPRESSIONS[key] || ""; }
   function poseLabel(key) { return POSES[key] || ""; }
 
+  /* AI-130 (real PO report): "巧巧老師的圖片必須隨機更新" — tip/reminder
+     locations that previously always rendered the exact same fixed
+     expression/pose (e.g. bust("cheer") on every single render) now have
+     a real way to pick a different one each render, instead of the
+     caller hand-rolling its own Math.random() against expressionKeys/
+     poseKeys. Purely additive — bust(key)/full(key) with an explicit key
+     are completely unchanged for every existing caller that still wants
+     one specific, deterministic expression (section-header identity
+     avatars, empty-state illustrations, the topbar's own user avatar). */
+  function randomBust() {
+    var keys = Object.keys(EXPRESSIONS);
+    return bust(keys[Math.floor(Math.random() * keys.length)]);
+  }
+  function randomFull() {
+    var keys = Object.keys(POSES);
+    return full(keys[Math.floor(Math.random() * keys.length)]);
+  }
+
   return {
     bust: bust,
     full: full,
+    randomBust: randomBust,
+    randomFull: randomFull,
     expressionKeys: Object.keys(EXPRESSIONS),
     poseKeys: Object.keys(POSES),
     expressionLabel: expressionLabel,

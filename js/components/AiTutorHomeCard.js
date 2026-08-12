@@ -81,7 +81,7 @@ AHS.AiTutorHomeCard = (function () {
         ]),
         el("div", {
           class: "tutor-card__avatar qiaoqiao-full qiaoqiao-full--sm",
-          html: AHS.Qiaoqiao.full("pointing")
+          html: AHS.Qiaoqiao.randomFull()
         })
       ]);
     } else {
@@ -89,7 +89,7 @@ AHS.AiTutorHomeCard = (function () {
         emptyBody(),
         el("div", {
           class: "tutor-card__avatar qiaoqiao-full qiaoqiao-full--sm",
-          html: AHS.Qiaoqiao.full("pointing")
+          html: AHS.Qiaoqiao.randomFull()
         })
       ]);
     }
