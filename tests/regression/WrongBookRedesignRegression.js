@@ -129,8 +129,33 @@ console.log("\n[2] Question List Row — 同時顯示錯誤次數與正確次數
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 3. Detail Panel — 統計區塊 + 詳解預設收合，點擊才展開 -------------- */
-console.log("\n[3] Detail Panel — 統計區塊真實反映次數；詳解預設收合，點擊 explainToggle 才展開");
+/* ---- 3. AI-129: 頁面載入時不自動彈出任何 Modal，點擊題目才彈出 -------- */
+console.log("\n[3] AI-129 — 載入時無任何 Modal 自動彈出；點擊題目才真的彈出「題目詳解」");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItem(qWin);
+  const carry = dumpSession(qWin);
+
+  const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carry });
+  window.document.body.appendChild(window.AHS.WrongBook.create());
+
+  check("載入當下沒有任何題目列被標記為 is-active（無自動選取）",
+    window.document.querySelectorAll(".wb-row.is-active").length === 0);
+  check("載入當下沒有 Modal Overlay 存在", !window.document.querySelector(".wb-modal__overlay"));
+
+  const row = window.document.querySelector(".wb-row");
+  check("題目列表真實存在（未渲染成兩欄式排版，而是全寬單欄）", !!row);
+  row.click();
+
+  check("點擊題目後才真的彈出 Modal", !!window.document.querySelector(".wb-modal__overlay"));
+  check("被點擊的列真的標記為 is-active", row.classList.contains("is-active"));
+  check("Modal 內容真的是題目詳解（含題目文字）", !!window.document.querySelector(".wb-modal__body .wb-detail__question"));
+
+  check("Console errors = 0", consoleErrors.length === 0);
+}
+
+/* ---- 4. Detail Modal — 統計區塊 + 詳解預設收合，點擊才展開 ------------- */
+console.log("\n[4] Detail Modal — 統計區塊真實反映次數；詳解預設收合，點擊 explainToggle 才展開");
 {
   const { window: qWin } = loadPage("quiz.html");
   const item = seedWrongItem(qWin);
@@ -140,9 +165,10 @@ console.log("\n[3] Detail Panel — 統計區塊真實反映次數；詳解預�
 
   const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carry });
   window.document.body.appendChild(window.AHS.WrongBook.create());
+  window.document.querySelector(".wb-row").click();
 
   const statValues = Array.from(window.document.querySelectorAll(".wb-detail__stat-value")).map((n) => n.textContent);
-  check("Detail Panel 統計區塊顯示錯誤次數(1)與正確次數(2)", statValues.indexOf("1") !== -1 && statValues.indexOf("2") !== -1);
+  check("Detail Modal 統計區塊顯示錯誤次數(1)與正確次數(2)", statValues.indexOf("1") !== -1 && statValues.indexOf("2") !== -1);
 
   const explainToggle = window.document.querySelector(".wb-detail__explain-toggle");
   const explainText = window.document.querySelector(".wb-detail__explain-text");
@@ -162,8 +188,46 @@ console.log("\n[3] Detail Panel — 統計區塊真實反映次數；詳解預�
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 4. 立即重做（startReview）流程仍與詳解收合機制相容 ---------------- */
-console.log("\n[4] 立即重做流程仍正常運作（不受詳解收合機制影響）");
+/* ---- 5. Modal 關閉機制：X／背景點擊／Escape 皆可真實關閉 --------------- */
+console.log("\n[5] AI-129 — Modal 三種關閉方式（X／背景點擊／Escape）皆真實生效，且清空選取狀態");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItem(qWin);
+  const carry = dumpSession(qWin);
+
+  // X 按鈕
+  {
+    const { window } = loadPage("wrongbook.html", { seedSession: carry });
+    window.document.body.appendChild(window.AHS.WrongBook.create());
+    const row = window.document.querySelector(".wb-row");
+    row.click();
+    window.document.querySelector(".wb-modal__close").click();
+    check("點擊 X 後 Modal 真的關閉", !window.document.querySelector(".wb-modal__overlay"));
+    check("關閉後該列的 is-active 也真的移除", !row.classList.contains("is-active"));
+  }
+
+  // 背景點擊
+  {
+    const { window } = loadPage("wrongbook.html", { seedSession: carry });
+    window.document.body.appendChild(window.AHS.WrongBook.create());
+    window.document.querySelector(".wb-row").click();
+    const overlay = window.document.querySelector(".wb-modal__overlay");
+    overlay.dispatchEvent(new window.Event("click", { bubbles: true }));
+    check("點擊背景（非 Panel 本身）後 Modal 真的關閉", !window.document.querySelector(".wb-modal__overlay"));
+  }
+
+  // Escape 鍵
+  {
+    const { window } = loadPage("wrongbook.html", { seedSession: carry });
+    window.document.body.appendChild(window.AHS.WrongBook.create());
+    window.document.querySelector(".wb-row").click();
+    window.document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape" }));
+    check("按下 Escape 後 Modal 真的關閉", !window.document.querySelector(".wb-modal__overlay"));
+  }
+}
+
+/* ---- 6. 篩選區塊與「今日待複習」並排（wb-top-row），非左右兩欄 -------- */
+console.log("\n[6] AI-129 — 篩選區塊與「今日待複習」統計卡並排於同一列，題目列表為單欄全寬");
 {
   const { window: qWin } = loadPage("quiz.html");
   seedWrongItem(qWin);
@@ -172,11 +236,54 @@ console.log("\n[4] 立即重做流程仍正常運作（不受詳解收合機制�
   const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carry });
   window.document.body.appendChild(window.AHS.WrongBook.create());
 
+  const topRow = window.document.querySelector(".wb-top-row");
+  check("wb-top-row 真實存在", !!topRow);
+  check("wb-top-row 內同時包含「今日待複習」統計卡與篩選區塊（並排）",
+    !!topRow.querySelector(".wb-summary") && !!topRow.querySelector(".wb-filter"));
+  check("舊的左右兩欄式 wb-layout 不再存在（題目列表已改為單欄全寬）",
+    !window.document.querySelector(".wb-layout"));
+
+  check("Console errors = 0", consoleErrors.length === 0);
+}
+
+/* ---- 7. 清除篩選 bugfix：真的能重置下拉選單的視覺狀態 ------------------ */
+console.log("\n[7] AI-129 bugfix — 清除篩選真的能重置篩選下拉選單（不只重置內部狀態）");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItem(qWin);
+  const carry = dumpSession(qWin);
+
+  const { window } = loadPage("wrongbook.html", { seedSession: carry });
+  window.document.body.appendChild(window.AHS.WrongBook.create());
+
+  const subjectSelect = window.document.querySelector('select[aria-label="科目"]');
+  subjectSelect.selectedIndex = 1;
+  subjectSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
+
+  const clearBtn = window.document.querySelector(".wb-clear");
+  clearBtn.click();
+
+  check("清除篩選後，科目下拉選單真的視覺回到第一個選項（bugfix：之前查詢錯 DOM 範圍，選單畫面不會重置）",
+    subjectSelect.selectedIndex === 0);
+}
+
+/* ---- 8. 立即重做（startReview）流程仍與 Modal／詳解收合機制相容 -------- */
+console.log("\n[8] 立即重做流程仍正常運作（在 Modal 內，不受詳解收合機制影響）");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItem(qWin);
+  const carry = dumpSession(qWin);
+
+  const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carry });
+  window.document.body.appendChild(window.AHS.WrongBook.create());
+  window.document.querySelector(".wb-row").click();
+
   const reviewBtn = window.document.querySelector(".wb-detail__btn--primary");
   check("立即重做按鈕存在且可點擊（有真實選項資料）", !!reviewBtn && !reviewBtn.disabled);
   reviewBtn.click();
   const interaction = window.document.querySelector(".wb-detail__review");
-  check("點擊後真實進入重新作答互動介面", !!interaction);
+  check("點擊後真實進入重新作答互動介面（仍在同一個 Modal 內，未關閉再重開）", !!interaction);
+  check("Modal 本身仍維持開啟（同一個 overlay，未被關閉重建）", !!window.document.querySelector(".wb-modal__overlay"));
   const explainWrap = window.document.querySelector(".wb-detail__explain");
   check("重做期間詳解區塊整個隱藏（不會透過收合機制偷看到答案）",
     !explainWrap || explainWrap.hasAttribute("hidden"));

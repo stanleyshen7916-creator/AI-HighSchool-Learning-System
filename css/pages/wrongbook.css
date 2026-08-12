@@ -1,5 +1,7 @@
 /* css/wrongbook.css — 錯題本 (Wrong Book). BEM. RWD.
-   Layout: header (+banner+actions) then [main list | detail panel]. */
+   AI-129: header (+banner+actions) → [今日待複習 統計卡 ｜ 篩選區塊]
+   並排一列 (wb-top-row) → 單欄全寬題目列表 (wb-main) → 點擊題目才彈出的
+   題目詳解 Modal (wb-modal__*，取代原本常駐的 30/70 左右兩欄排版)。 */
 
 .wb-page { display: flex; flex-direction: column; gap: 18px; }
 
@@ -70,16 +72,15 @@
 .wb-empty__btn { text-decoration: none; }
 
 /* ---- Layout ------------------------------------------------------------
-   Sprint AI-122 AI-122-05: Question List 30% / Detail Panel 70% — Detail
-   Panel becomes the main reading area (previously a fixed 400px sidebar,
-   too small once it also carries 詳解/選項/知識點 reading content). */
-.wb-layout {
-  display: grid;
-  grid-template-columns: minmax(260px, 3fr) minmax(0, 7fr);
-  gap: 18px;
-  align-items: start;
-}
+   AI-129: 題目列表改為單欄全寬（取代舊有的 30%/70% 左右兩欄 wb-layout —
+   詳解已改為點擊後才彈出的 Modal，不再需要常駐的右側欄位）。 */
 .wb-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+/* wb-top-row: 「今日待複習」統計卡與篩選區塊並排同一列，方便挑選
+   （使用者需求：搜尋/篩選區塊移至今日待複習旁並排）。 */
+.wb-top-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.wb-top-row .wb-summary { flex: 0 0 auto; }
+.wb-top-row .wb-filter { flex: 1 1 360px; min-width: 280px; }
 
 /* ---- Filter ---------------------------------------------------------- */
 .wb-filter { display: flex; flex-direction: column; gap: 14px; }
@@ -241,12 +242,32 @@
   font-size: 13px; font-weight: 600;
 }
 
-/* ---- Detail panel ---------------------------------------------------- */
-.wb-detail { position: sticky; top: 92px; }
-/* Sprint AI-124 AI-124-05: 左側篩選變更後真的沒有符合題目時的誠實清空狀態，
-   取代過去停留舊題目資料的行為。 */
-.wb-detail__empty { padding: 48px 16px; text-align: center; }
-.wb-detail__empty-text { margin: 0; font-size: 14px; color: var(--text-muted); }
+/* ---- 題目詳解 Modal（AI-129，取代原本常駐右側的 Detail Panel）---------
+   沿用 js/ui/MaterialPreview.js 已建立的 overlay/panel/close 視覺慣例
+   （.mat-preview__* 的固定 overlay、置中面板、右上角 X 關閉、可捲動內文），
+   同一套彈窗語言，不是重新發明。 */
+.wb-modal__overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 100;
+  background-color: rgba(31, 36, 48, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.wb-modal__panel {
+  width: 100%; max-width: 720px; max-height: 90vh;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.wb-modal__close {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  border: 0; background: var(--card); cursor: pointer; color: var(--text-muted);
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; box-shadow: var(--shadow-btn);
+}
+.wb-modal__close:hover { background-color: var(--bg); }
+.wb-modal__close svg { width: 18px; height: 18px; }
+.wb-modal__body { flex: 1 1 auto; overflow: auto; padding: 20px; }
+
 .wb-detail__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .wb-detail__title { margin: 0; font-size: 17px; font-weight: 700; }
 .wb-detail__tag-btn {
