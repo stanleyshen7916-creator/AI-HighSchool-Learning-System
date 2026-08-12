@@ -31,7 +31,7 @@ AHS.TodayMission = (function () {
   function subjectMeta(value) {
     var known = AHS.Subjects && AHS.Subjects[value];
     if (known) { return known; }
-    return { name: value || "學習", hex: "#7c5cff" };
+    return { name: value || "科目", hex: "#7c5cff" };
   }
 
   function taskRow(item) {
