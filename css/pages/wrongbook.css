@@ -416,14 +416,18 @@
 .wb-detail__btn--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .wb-detail__btn--ghost:hover { background-color: var(--bg); }
 .wb-detail__btn--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
+/* AI-129 hotfix: 立即重做在「此題無真實選項資料」時是真的被 disabled
+   （見 renderDetail() 的 itemOptions.length 判斷），但這顆按鈕在 disabled
+   之前完全沒有對應樣式，視覺上與可點擊時一模一樣 — 使用者點了沒反應，
+   會誤以為壞掉，而非「這題本來就不支援」。title 提示原本就有，這裡補上
+   真正看得出來的視覺狀態（連同 hover 也一併停用，之前 disabled 仍會誤觸
+   :hover 變色）。 */
+.wb-detail__btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.wb-detail__btn--primary[disabled]:hover { background-color: var(--brand); }
 
 .wb-action--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
 
 /* ---- RWD ------------------------------------------------------------- */
-@media (max-width: 1024px) {
-  .wb-layout { grid-template-columns: minmax(0, 1fr); }
-  .wb-detail { position: static; }
-}
 @media (max-width: 720px) {
   .wb-header__actions { width: 100%; }
   .wb-header__actions .wb-action { flex: 1 1 auto; justify-content: center; }

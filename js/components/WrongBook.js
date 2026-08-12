@@ -95,7 +95,7 @@ AHS.WrongBook = (function () {
      item.subject is always a real key, so the row/detail chip never
      throws and silently blanks the whole list. */
   function chip(subjectKey) {
-    var subj = AHS.Subjects[subjectKey] || { name: subjectKey || "學習", hex: "#7c5cff" };
+    var subj = AHS.Subjects[subjectKey] || { name: subjectKey || "科目", hex: "#7c5cff" };
     return el("span", {
       class: "chip",
       style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"

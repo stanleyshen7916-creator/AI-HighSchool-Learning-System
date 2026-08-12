@@ -291,5 +291,44 @@ console.log("\n[8] 立即重做流程仍正常運作（在 Modal 內，不受詳
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
+/* ---- 9. AI-129 hotfix — 無選項資料時「立即重做」真的 disabled，並且有
+   看得出來的視覺區別（使用者回報：按鈕看起來可點擊，點了卻沒反應） ------ */
+function seedWrongItemNoOptions(window) {
+  const AHS = window.AHS;
+  const examId = "wb_no_options_test";
+  AHS.QuestionRuntime.importQuestions(examId, [
+    { id: "wq_no_opt", index: 1, text: "無選項資料的真實錯題（模擬 Supabase 拉回、無 options 欄位的情境）",
+      correctAnswer: "A", knowledgePoint: "測試知識點", explanation: "詳解內容" }
+  ]);
+  const session = AHS.ExamRuntime.startFromExam(examId, { subject: "math", title: "測試教材" });
+  AHS.AnswerRuntime.saveAnswer(session.examId, "wq_no_opt", "B");
+  const finished = AHS.ExamRuntime.finish(session.examId);
+  const graded = AHS.AutoGrader.grade(finished);
+  AHS.WrongBookRuntime.sync(graded);
+  return AHS.WrongBookRuntime.list()[0];
+}
+
+console.log("\n[9] AI-129 hotfix — 無選項資料（如 Supabase 拉回的真實記錄）時，立即重做真的被 disabled，且不會誤觸互動介面");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItemNoOptions(qWin);
+  const carry = dumpSession(qWin);
+
+  const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carry });
+  window.document.body.appendChild(window.AHS.WrongBook.create());
+  window.document.querySelector(".wb-row").click();
+
+  const reviewBtn = window.document.querySelector(".wb-detail__btn--primary");
+  check("無選項資料時，立即重做按鈕真的是 disabled（過去雖 disabled 但無視覺差異，使用者會誤以為壞掉）",
+    !!reviewBtn && reviewBtn.disabled === true);
+  check("按鈕帶有 title 提示說明原因", reviewBtn.getAttribute("title") === "此題無選項資料，暫不支援立即重做");
+
+  reviewBtn.click();
+  check("點擊 disabled 按鈕不會誤觸互動介面（瀏覽器原生阻擋 disabled 按鈕觸發 click）",
+    !window.document.querySelector(".wb-detail__review"));
+
+  check("Console errors = 0", consoleErrors.length === 0);
+}
+
 console.log("\nWrongBookRedesignRegression: " + pass + " PASS / " + fail + " FAIL");
 if (fail > 0) { process.exit(1); }
