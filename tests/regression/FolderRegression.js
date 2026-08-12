@@ -88,11 +88,13 @@ console.log("\n[2] Folder 直接讀取 Repository（非固定資料）— 新增
   check("新增教材依真實 Subject 分類到「歷史」群組", !!historyGroup && historyGroup.textContent.indexOf("FolderRegression 新增教材") !== -1);
 }
 
-/* ---- 3. 空 Workspace（高二上）誠實顯示空狀態 --------------------------- */
+/* ---- 3. 空 Workspace（高二下）誠實顯示空狀態 ---------------------------
+   高二上（g2s1）自「國文教材上傳｜高二國文五課」加入後已非空 workspace，
+   改用真正尚無任何 Repository 教材標記的高二下（g2s2）驗證誠實空狀態。 */
 console.log("\n[3] Folder — 尚無教材的 Workspace 誠實顯示空狀態（非假造教材）");
 {
   const { window, consoleErrors } = loadPage("index.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
+    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s2"] } }
   });
   const doc = window.document;
   const folder = doc.querySelector(".workspace-folder");

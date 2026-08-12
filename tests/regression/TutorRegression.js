@@ -92,16 +92,18 @@ console.log("\n[2] AI Tutor — 高二上（尚無教材/錯題）不得推薦�
   const g1s2Titles = g1s2Window.AHS.MaterialRuntime.list().map((m) => m.title).filter(Boolean);
   check("（前置）高一下學期真實有教材可比對", g1s2Titles.length > 0);
 
-  const { window: g2s1Window } = loadPage("index.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
+  /* 高二上（g2s1）自「國文教材上傳｜高二國文五課」加入後已非空 workspace，
+     改用真正尚無任何 Repository 教材標記的高二下（g2s2）驗證此處為空。 */
+  const { window: g2s2Window } = loadPage("index.html", {
+    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s2"] } }
   });
-  const ctx = g2s1Window.AHS.StatisticsRuntime.learningContext();
-  const msg = g2s1Window.AHS.TutorMessage.build(ctx);
+  const ctx = g2s2Window.AHS.StatisticsRuntime.learningContext();
+  const msg = g2s2Window.AHS.TutorMessage.build(ctx);
   const text = msg ? (msg.text || "") + JSON.stringify(msg.actions || []) : "";
   const leaked = g1s2Titles.some((t) => text.indexOf(t) !== -1);
-  check("高二上的 Tutor 訊息（若有）不含任何高一下學期教材標題", !leaked);
-  check("高二上 MaterialRuntime 真實為空（Tutor 的 Context 本來就沒有可推薦的教材）",
-    g2s1Window.AHS.MaterialRuntime.list().length === 0);
+  check("高二下的 Tutor 訊息（若有）不含任何高一下學期教材標題", !leaked);
+  check("高二下 MaterialRuntime 真實為空（Tutor 的 Context 本來就沒有可推薦的教材）",
+    g2s2Window.AHS.MaterialRuntime.list().length === 0);
 }
 
 /* ---- 3. AI Tutor 頁面本身：Console 無錯誤、真實渲染 -------------------- */

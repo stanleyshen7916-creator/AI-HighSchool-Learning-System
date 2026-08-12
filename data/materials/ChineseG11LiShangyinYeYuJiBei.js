@@ -25,6 +25,13 @@ window.AHS = window.AHS || {};
       subject: "chinese",
       subjectLabel: "國文",
       grade: "高二",
+      /* workspaceSchool/workspaceSemester — Sprint AI-120 (Workspace
+         Repository Integration): 長榮中學高二上學期，比照
+         data/materials/CivicsG10Ch5to6Exam20260730.js 的既有欄位命名與
+         用法（與上方 grade 顯示字串無關，AHS.WorkspaceData.semesters[].id
+         格式）。使用者確認本課歸屬高二上學期。 */
+      workspaceSchool: "cjsh",
+      workspaceSemester: "g2s1",
       chapter: "第三課／近體詩選",
       unit: "李商隱〈夜雨寄北〉",
       materialType: "課本",

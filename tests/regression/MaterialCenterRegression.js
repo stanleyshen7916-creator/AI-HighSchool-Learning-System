@@ -69,14 +69,31 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 2. Student A + 長榮中學 + 高二上：尚未匯入任何教材，誠實空狀態 ---- */
-console.log("\n[2] Student A／長榮中學／高二上學期 — 尚無教材，誠實顯示空狀態（不得出現高一下教材）");
+/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 5 筆真實 Repository 教材
+   （國文教材上傳｜高二國文五課，workspaceSemester: "g2s1"），不得出現
+   高一下（g1s2）教材，兩學期互相隔離 -------------------------------- */
+console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 5 筆國文教材（不得出現高一下教材）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實為空（AI-120-01：不得出現高一下教材）", materials.length === 0);
+  check("高二上真實看到 5 筆國文教材（AI-120-01：不得混入高一下教材）", materials.length === 5);
+  check("皆為國文科（無高一下的 math/biology/civics/geography 教材混入）",
+    materials.every((m) => m.subject === "chinese"));
+  check("包含五課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
+  check("Console errors = 0", consoleErrors.length === 0);
+}
+
+/* ---- 2b. Student A + 長榮中學 + 高二下：真正尚未匯入任何教材，誠實空狀態
+   （g2s2 尚無任何 workspaceSemester 標記為此值的教材） ------------------ */
+console.log("\n[2b] Student A／長榮中學／高二下學期 — 尚無教材，誠實顯示空狀態（不得出現高一下／高二上教材）");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {
+    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s2"] } }
+  });
+  const materials = window.AHS.MaterialRuntime.list();
+  check("高二下真實為空（不得混入高一下或高二上教材）", materials.length === 0);
   const doc = window.document;
   check("Material Center 顯示真實 Empty State（非破版、非假造教材）", !!doc.querySelector(".mat-empty"));
   check("Console errors = 0", consoleErrors.length === 0);

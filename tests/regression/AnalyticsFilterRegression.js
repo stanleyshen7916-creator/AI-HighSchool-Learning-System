@@ -109,10 +109,12 @@ console.log("\n[4] subjectAnalytics() 同樣自動隨 Workspace 隔離（Analyti
   const analytics = window.AHS.StatisticsRuntime.subjectAnalytics();
   check("高一下學期 subjectAnalytics() 反映真實已遷移的教材科目（非空）", analytics.length > 0);
 
-  const { window: g2s1Window } = loadPage("materials.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
+  /* 高二上（g2s1）自「國文教材上傳｜高二國文五課」加入後已非空 workspace，
+     改用真正尚無任何 Repository 教材標記的高二下（g2s2）驗證此處為空。 */
+  const { window: g2s2Window } = loadPage("materials.html", {
+    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s2"] } }
   });
-  check("高二上學期 subjectAnalytics() 真實為空（尚無教材）", g2s1Window.AHS.StatisticsRuntime.subjectAnalytics().length === 0);
+  check("高二下學期 subjectAnalytics() 真實為空（尚無教材）", g2s2Window.AHS.StatisticsRuntime.subjectAnalytics().length === 0);
 }
 
 console.log("\n==============================");
