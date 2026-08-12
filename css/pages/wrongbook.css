@@ -174,7 +174,11 @@
 .wb-row__favbadge svg { width: 12px; height: 12px; }
 .wb-row__favbadge.is-hidden { display: none; }
 .wb-row__col { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-start; }
+/* AI-128: 錯誤次數／正確次數並列顯示（原本只有錯誤次數一個數字）。 */
+.wb-row__col--counts { gap: 8px; }
 .wb-row__count { font-size: 13px; font-weight: 700; }
+.wb-row__count--wrong { color: var(--subj-history); }
+.wb-row__count--correct { color: var(--ok); }
 .wb-row__date { font-size: 12px; color: var(--text-muted); }
 .wb-tag { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
 .wb-tag--muted { color: var(--text-faint); background-color: var(--bg); }
@@ -340,18 +344,43 @@
 }
 .wb-detail__answer-badge.is-correct { background-color: var(--ok); }
 .wb-detail__answer-badge.is-wrong { background-color: var(--subj-history); }
-.wb-detail__answer-count { font-size: 16px; font-weight: 800; }
+
+/* AI-128（知識弱點排版重新設計）: 錯誤次數／正確次數獨立為一列明顯的統計
+   區塊 — 取代舊排版把「錯誤次數」擠在你的答案／正確答案旁邊、不易一眼
+   看出的做法。 */
+.wb-detail__stats {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+  margin-bottom: 14px; padding: 12px; border-radius: 12px; background-color: var(--bg);
+}
+.wb-detail__stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.wb-detail__stat-value { font-size: 22px; font-weight: 800; }
+.wb-detail__stat-label { font-size: 12px; color: var(--text-muted); }
+.wb-detail__stat--wrong .wb-detail__stat-value { color: var(--subj-history); }
+.wb-detail__stat--correct .wb-detail__stat-value { color: var(--ok); }
 
 .wb-detail__kp { margin-bottom: 14px; }
-.wb-detail__kp-label,
-.wb-detail__explain-label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.wb-detail__kp-label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .wb-detail__kp-chip {
   display: inline-block; font-size: 13px; font-weight: 600;
   color: var(--brand); background-color: var(--brand-soft);
   padding: 5px 12px; border-radius: 8px;
 }
 .wb-detail__explain { margin-bottom: 18px; }
-.wb-detail__explain-text { margin: 0; font-size: 14px; line-height: 1.8; color: var(--text-muted); }
+/* AI-128: 詳解預設收合，「當點選本題目時，才展開詳解」— explainToggle 是
+   唯一的展開／收合入口，展開狀態由 aria-expanded/.is-open 反映。 */
+.wb-detail__explain-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px; background-color: var(--card);
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer;
+}
+.wb-detail__explain-toggle:hover { background-color: var(--bg); }
+.wb-detail__explain-toggle.is-open { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
+.wb-detail__explain-chevron { display: inline-flex; transition: transform 0.15s ease; }
+.wb-detail__explain-chevron svg { width: 16px; height: 16px; }
+.wb-detail__explain-toggle.is-open .wb-detail__explain-chevron { transform: rotate(90deg); }
+.wb-detail__explain-text { margin: 10px 0 0; font-size: 14px; line-height: 1.8; color: var(--text-muted); }
+.wb-detail__explain-text[hidden] { display: none; }
 
 .wb-detail__actions { display: flex; gap: 10px; }
 .wb-detail__btn {

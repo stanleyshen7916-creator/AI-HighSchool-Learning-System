@@ -483,8 +483,13 @@ AHS.WrongBook = (function () {
         el("p", { class: "wb-row__meta", text: item.knowledgePoint || "" }),
         el("div", { class: "wb-row__stats" }, [
           el("span", { class: "wb-row__col wb-row__col--diff" }, [diffTag(deriveDifficulty(item))]),
-          el("span", { class: "wb-row__col" }, [
-            el("span", { class: "wb-row__count", text: item.errorCount + " 次" })
+          /* AI-128: 錯誤次數／正確次數 both shown side by side (was
+             錯誤次數 only) — item.correctCount is the new real, cumulative
+             field WrongBookRuntime.recordRetry() maintains (see that
+             file's own comment on why it's distinct from correctStreak). */
+          el("span", { class: "wb-row__col wb-row__col--counts" }, [
+            el("span", { class: "wb-row__count wb-row__count--wrong", text: "錯 " + item.errorCount + " 次" }),
+            el("span", { class: "wb-row__count wb-row__count--correct", text: "對 " + (item.correctCount || 0) + " 次" })
           ]),
           el("span", { class: "wb-row__col wb-row__col--date" }, [
             el("span", { class: "wb-row__date", text: item.lastError })
@@ -714,6 +719,40 @@ AHS.WrongBook = (function () {
       el("span", { text: "問 AI 巧巧老師" })
     ]);
 
+    /* AI-128（知識弱點排版重新設計）: 錯誤次數／正確次數獨立成一列明顯的
+       統計區塊，取代過去混在「你的答案／正確答案／錯誤次數」三欄裡、不易
+       一眼看出的舊排版 — 直接對應使用者需求「秀出本題目一共錯誤幾次，
+       正確幾次」。correctCount 是 WrongBookRuntime 這次新增的真實累計
+       欄位（見該檔 recordRetry() 的註解），不是借用 correctStreak。 */
+    var statsBlock = el("div", { class: "wb-detail__stats" }, [
+      el("div", { class: "wb-detail__stat wb-detail__stat--wrong" }, [
+        el("strong", { class: "wb-detail__stat-value", text: String(item.errorCount || 0) }),
+        el("span", { class: "wb-detail__stat-label", text: "錯誤次數" })
+      ]),
+      el("div", { class: "wb-detail__stat wb-detail__stat--correct" }, [
+        el("strong", { class: "wb-detail__stat-value", text: String(item.correctCount || 0) }),
+        el("span", { class: "wb-detail__stat-label", text: "正確次數" })
+      ])
+    ]);
+
+    /* AI-128: 詳解預設收合，「當點選本題目時，才展開詳解」— 點擊本題目
+       只展開題目本身的作答資訊（題目／選項／你的答案），詳解本身要再點一次
+       這顆按鈕才會展開，避免右側一開始就是一整片文字牆。 */
+    var explainToggle = el("button", {
+      type: "button", class: "wb-detail__explain-toggle", "aria-expanded": "false"
+    }, [
+      el("span", { class: "wb-detail__explain-toggle-label", text: "詳解" }),
+      el("span", { class: "wb-detail__explain-chevron", html: AHS.Icons.chevronRight() })
+    ]);
+    var explainText = el("p", { class: "wb-detail__explain-text", text: item.explanation, hidden: "hidden" });
+    explainToggle.addEventListener("click", function () {
+      var isOpen = explainToggle.getAttribute("aria-expanded") === "true";
+      explainToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      explainToggle.classList.toggle("is-open", !isOpen);
+      if (isOpen) { explainText.setAttribute("hidden", "hidden"); }
+      else { explainText.removeAttribute("hidden"); }
+    });
+
     var body = el("div", { class: "wb-detail__body" }, [
       el("div", { class: "wb-detail__head" }, [
         el("h2", { class: "wb-detail__title", text: "題目詳解" }),
@@ -729,6 +768,7 @@ AHS.WrongBook = (function () {
         diffTag(deriveDifficulty(item)),
         el("span", { class: "wb-detail__status" }, [statusTag(getMasteryStatus(item.correctStreak))])
       ]),
+      statsBlock,
       el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
       options,
       el("div", { class: "wb-detail__answers" }, [
@@ -742,20 +782,13 @@ AHS.WrongBook = (function () {
         el("div", { class: "wb-detail__answer" }, [
           el("span", { class: "wb-detail__answer-label", text: "正確答案" }),
           el("span", { class: "wb-detail__answer-badge is-correct", text: item.correctAnswer })
-        ]),
-        el("div", { class: "wb-detail__answer" }, [
-          el("span", { class: "wb-detail__answer-label", text: "錯誤次數" }),
-          el("strong", { class: "wb-detail__answer-count", text: item.errorCount + " 次" })
         ])
       ]),
       el("div", { class: "wb-detail__kp" }, [
         el("span", { class: "wb-detail__kp-label", text: "知識點" }),
         el("span", { class: "wb-detail__kp-chip", text: item.knowledgePoint })
       ]),
-      el("div", { class: "wb-detail__explain" }, [
-        el("span", { class: "wb-detail__explain-label", text: "詳解" }),
-        el("p", { class: "wb-detail__explain-text", text: item.explanation })
-      ]),
+      el("div", { class: "wb-detail__explain" }, [explainToggle, explainText]),
       el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink])
     ]);
 
@@ -813,8 +846,10 @@ AHS.WrongBook = (function () {
         diffCol.innerHTML = "";
         diffCol.appendChild(diffTag(deriveDifficulty(pair.item)));
       }
-      var countEl = pair.row.querySelector(".wb-row__count");
-      if (countEl) { countEl.textContent = pair.item.errorCount + " 次"; }
+      var wrongCountEl = pair.row.querySelector(".wb-row__count--wrong");
+      if (wrongCountEl) { wrongCountEl.textContent = "錯 " + pair.item.errorCount + " 次"; }
+      var correctCountEl = pair.row.querySelector(".wb-row__count--correct");
+      if (correctCountEl) { correctCountEl.textContent = "對 " + (pair.item.correctCount || 0) + " 次"; }
       var dateEl = pair.row.querySelector(".wb-row__date");
       if (dateEl) { dateEl.textContent = pair.item.lastError; }
       var statusSlot = pair.row.querySelector(".wb-row__status");

@@ -156,6 +156,12 @@ AHS.WrongBookRuntime = (function () {
         local.archived = row.archived;
         local.firstError = local.firstError || row.first_error_at;
         local.lastError = row.last_error_at;
+        /* AI-128: no wrong_book column for this yet — a remote row never
+           carries it, so preserve whatever this session's own local
+           value already is (0 for a record that only just got created
+           by the `!local` branch above) instead of letting a remote
+           pull silently wipe real local progress. */
+        local.correctCount = local.correctCount || 0;
         pulled += 1;
       });
       persist();
@@ -279,7 +285,19 @@ AHS.WrongBookRuntime = (function () {
           archived: false,
           /* AI-610: real, persisted retry progress — see recordRetry()
              below. 0 = never retried correctly since the last miss. */
-          correctStreak: 0
+          correctStreak: 0,
+          /* AI-128 (知識弱點排版重新設計): real, persisted, CUMULATIVE
+             correct-retry count — never reset by a later wrong answer,
+             unlike correctStreak (which tracks only the current
+             consecutive run and resets to 0 on a miss). Added so the
+             Detail Panel can honestly show "正確幾次" as a real total,
+             not a proxy for something else. Local-only (no wrong_book
+             column for this yet — same non-blocking pattern already used
+             for anything this Sprint doesn't have Supabase schema
+             authorization to add); pullFromRepository() below preserves
+             whatever local value already exists rather than resetting it
+             to 0 on every pull. */
+          correctCount: 0
         };
         store.items.push(record);
         touched.push(record);
@@ -307,6 +325,15 @@ AHS.WrongBookRuntime = (function () {
       if (store.items[i].id === id) {
         var wasMasteredBefore = (store.items[i].correctStreak || 0) >= 3;
         store.items[i].correctStreak = wasCorrect ? (store.items[i].correctStreak || 0) + 1 : 0;
+        /* AI-128: cumulative, never reset by a wrong retry — distinct
+           from correctStreak above (which wasCorrect ? +1 : RESET TO 0
+           on the very same line). A record created before this field
+           existed (already-persisted sessionStorage from an older
+           session) has correctCount === undefined; `|| 0` covers it the
+           same way correctStreak already guards itself above. */
+        if (wasCorrect) {
+          store.items[i].correctCount = (store.items[i].correctCount || 0) + 1;
+        }
         /* AI-121-12/19: real, set exactly once — the calendar day this
            item FIRST reached 已精熟 (3 consecutive correct). A retry that
            keeps an already-mastered item mastered doesn't touch it again
