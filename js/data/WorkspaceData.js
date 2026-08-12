@@ -12,13 +12,24 @@
    Student A 被授權 高一下 + 高二上（示範複選、示範跨學期切換）；
    Student B 僅被授權 高一下（示範同一 School 下、依然被 Semester
    權限完全隔開，看不到高二上）。Admin 授權全部 Semester，供 PAT 全流程
-   驗證使用。這是 Mock Data，不是真實帳號權限系統。 */
+   驗證使用。這是 Mock Data，不是真實帳號權限系統。
+
+   password — Sprint AI-133（使用者需求：登入流程選完學生/學校/學期後，
+   按下「進入平台」前，需輸入密碼才可進入）。每個學生各自一組密碼
+   （使用者確認方案），由 js/pages/AppLogin.js 新增的第 4 步驟
+   （stepPassword）在瀏覽器端比對。誠實揭露：這個專案是純前端靜態
+   Prototype，沒有後端資料庫可驗證帳密，這裡的密碼必然明文寫在前端
+   程式碼裡、由瀏覽器端 JavaScript 比對——技術上任何看得到原始碼或開啟
+   開發者工具的人都能繞過，不是真正資安等級的保護，只能當作「一般訪客
+   擋門」的門禁（使用者已明確確認接受此定位，見 Sprint AI-133 對話紀錄）。
+   刻意不做任何雜湊/混淆假裝安全——明碼比隱藏起來看似安全但其實一樣能
+   被繞過更誠實。 */
 window.AHS = window.AHS || {};
 AHS.WorkspaceData = {
   students: [
-    { id: "admin", name: "Admin", role: "ADMIN" },
-    { id: "student_a", name: "Student A", role: "STUDENT" },
-    { id: "student_b", name: "Student B", role: "STUDENT" }
+    { id: "admin", name: "Admin", role: "ADMIN", password: "admin2026" },
+    { id: "student_a", name: "Student A", role: "STUDENT", password: "studentA2026" },
+    { id: "student_b", name: "Student B", role: "STUDENT", password: "studentB2026" }
   ],
   schools: [
     { id: "cjsh", name: "長榮中學" }

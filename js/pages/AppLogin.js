@@ -8,7 +8,14 @@ window.AHS = window.AHS || {};
   "use strict";
 
   var el;
-  var state = { step: 1, studentId: null, schoolId: null, semesterIds: [], loginPromise: null };
+  var state = {
+    step: 1, studentId: null, schoolId: null, semesterIds: [], loginPromise: null,
+    /* Sprint AI-133（使用者需求：選完學生/學校/學期後，按下「進入平台」
+       前需輸入密碼）。password 只在單次表單提交時短暫存在於記憶體，never
+       persisted — 見 stepPassword() 自身的誠實揭露：純前端明碼比對，非
+       真正資安等級保護，僅供一般訪客擋門用途（使用者已明確確認）。 */
+    password: "", passwordError: null
+  };
 
   function studentsList() { return (AHS.WorkspaceRuntime && AHS.WorkspaceRuntime.students()) || []; }
 
@@ -31,12 +38,12 @@ window.AHS = window.AHS || {};
   }
 
   function stepLabel(n) {
-    return n === 1 ? "選擇學生" : n === 2 ? "選擇學校" : "選擇學期";
+    return n === 1 ? "選擇學生" : n === 2 ? "選擇學校" : n === 3 ? "選擇學期" : "輸入密碼";
   }
 
   function steps() {
     var list = el("ol", { class: "login-steps" });
-    [1, 2, 3].forEach(function (n) {
+    [1, 2, 3, 4].forEach(function (n) {
       list.appendChild(el("li", {
         class: "login-steps__item" + (n === state.step ? " is-active" : "") + (n < state.step ? " is-done" : "")
       }, [
@@ -153,35 +160,12 @@ window.AHS = window.AHS || {};
     });
     enterBtn.addEventListener("click", function () {
       if (!state.semesterIds.length || enterBtn.disabled) { return; }
-      var ws = AHS.WorkspaceRuntime.setCurrent({
-        studentId: state.studentId, schoolId: state.schoolId, semesterIds: state.semesterIds
-      });
-      if (!ws) {
-        var app = document.getElementById("app");
-        if (app) { app.appendChild(el("p", { class: "login-error", text: "登入失敗：權限驗證未通過，請重新選擇。" })); }
-        return;
-      }
-      /* AI Supabase Persistence Root Cause Fix (Root Cause C): wait for
-         the real Supabase Auth login chain (state.loginPromise, set in
-         stepStudent()) to actually finish — Promise/callback completion,
-         never a fixed setTimeout() — before navigating away. Without
-         this, window.location.assign() (a full page reload, which kills
-         all in-flight JS state) could fire while
-         AHS.AuthRepository.loginForMockStudent()'s network round-trip
-         (signInWithPassword/signUp -> ensureOwnProfile -> cacheIdentity())
-         is still pending, permanently losing this login's identity cache
-         (Root Cause Diagnosis Task 8/Root Cause C). state.loginPromise is
-         null when Supabase isn't configured — Promise.resolve(null)
-         resolves on the next microtask, so that case still navigates
-         effectively immediately, unchanged from before this fix. Button
-         disabled only to prevent a double-click firing setCurrent() twice
-         during this (usually sub-second) wait — same disabled attribute
-         this button already toggles for the empty-selection case above,
-         not a new UI element. */
-      enterBtn.disabled = true;
-      Promise.resolve(state.loginPromise).then(function () {
-        window.location.assign("index.html");
-      });
+      /* Sprint AI-133：真正的 setCurrent()／導向 index.html 動作，移到
+         新增的第 4 步（stepPassword）——這裡只負責前進到密碼輸入步驟。 */
+      state.password = "";
+      state.passwordError = null;
+      state.step = 4;
+      render();
     });
     return el("div", { class: "login-step" }, [
       backButton(2),
@@ -191,10 +175,80 @@ window.AHS = window.AHS || {};
     ]);
   }
 
+  /* stepPassword() — Sprint AI-133（真實 PO 需求："首頁登入畫面後，需輸入
+     密碼，才可進入本平台使用"）。使用者確認方案：每個學生各自一組密碼
+     （AHS.WorkspaceData.students[].password），選完學生/學校/學期、按下
+     「進入平台」後才要求輸入，答對才真的呼叫 AHS.WorkspaceRuntime.
+     setCurrent() 並導向 index.html——這一步之前，setCurrent() 完全不會
+     被呼叫，即使跳過畫面直接改網址也一樣（AppShell.create() 本來就會在
+     沒有有效 Workspace 時導回 login.html，這裡沒有新增/修改那個既有把關）。
+     誠實揭露：純前端明碼比對，技術上可被繞過，只作為一般訪客擋門用途
+     （使用者已在需求討論中明確確認接受這個定位，非真正資安等級保護）。 */
+  function stepPassword() {
+    var passwordInput = el("input", {
+      type: "password", class: "login-password__input", placeholder: "請輸入密碼",
+      autocomplete: "current-password"
+    });
+    passwordInput.value = state.password || "";
+
+    var errorEl = state.passwordError
+      ? el("p", { class: "login-error", role: "alert", text: state.passwordError })
+      : null;
+
+    var enterBtn = el("button", { type: "button", class: "login-enter-btn", text: "進入平台" });
+
+    function submit() {
+      var student = AHS.WorkspaceRuntime.findStudent(state.studentId);
+      var expected = student && student.password;
+      if (!expected || passwordInput.value !== expected) {
+        state.password = "";
+        state.passwordError = "密碼錯誤，請再試一次。";
+        render();
+        return;
+      }
+      var ws = AHS.WorkspaceRuntime.setCurrent({
+        studentId: state.studentId, schoolId: state.schoolId, semesterIds: state.semesterIds
+      });
+      if (!ws) {
+        state.passwordError = "登入失敗：權限驗證未通過，請重新選擇。";
+        render();
+        return;
+      }
+      /* AI Supabase Persistence Root Cause Fix (Root Cause C)：同既有邏輯
+         （原本掛在選學期步驟的「進入平台」上），等待真實 Supabase Auth
+         登入鏈完成後才導向，避免整頁刷新時遺失尚未寫入的 identity cache。
+         state.loginPromise 未設定 Supabase 時為 null，Promise.resolve(null)
+         下一個 microtask 就會 resolve，行為等同立即導向。 */
+      enterBtn.disabled = true;
+      passwordInput.disabled = true;
+      Promise.resolve(state.loginPromise).then(function () {
+        window.location.assign("index.html");
+      });
+    }
+
+    enterBtn.addEventListener("click", submit);
+    passwordInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { submit(); }
+    });
+
+    var body = el("div", { class: "login-step" }, [
+      backButton(3),
+      el("h1", { class: "login-step__title", text: "輸入密碼" }),
+      el("p", { class: "login-step__hint", text: "請輸入你的登入密碼才能進入平台。" }),
+      el("div", { class: "login-password" }, [passwordInput, errorEl].filter(Boolean)),
+      enterBtn
+    ]);
+    setTimeout(function () { passwordInput.focus(); }, 0);
+    return body;
+  }
+
   function render() {
     var app = document.getElementById("app");
     if (!app) { return; }
-    var stepBody = state.step === 1 ? stepStudent() : (state.step === 2 ? stepSchool() : stepSemester());
+    var stepBody = state.step === 1 ? stepStudent()
+      : state.step === 2 ? stepSchool()
+      : state.step === 3 ? stepSemester()
+      : stepPassword();
     var card = el("div", { class: "login-card" }, [
       el("div", { class: "login-card__brand" }, [
         el("span", { class: "login-card__logo", html: AHS.Icons.book() }),
