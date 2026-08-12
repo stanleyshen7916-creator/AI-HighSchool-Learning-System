@@ -148,7 +148,7 @@ AHS.WrongBook = (function () {
         el("div", { class: "wb-banner" }, [
           el("span", {
             class: "wb-banner__avatar qiaoqiao-bust qiaoqiao-bust--md",
-            html: AHS.Qiaoqiao.bust("cheer")
+            html: AHS.Qiaoqiao.randomBust()
           }),
           el("p", { class: "wb-banner__tip", text: data.bannerTip })
         ])

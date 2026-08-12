@@ -14,11 +14,19 @@
    only the same <script> tags 首頁/tutor.html already carry.
 
    Deliberately NOT a second AiTutorHomeCard: no quick-action tiles, no
-   speech bubble, no character illustration — those are 首頁's own
-   dedicated card design (Product Baseline). This is a compact banner
-   that links to tutor.html for the full experience, so "AI Tutor 不再
-   只存在於 tutor.html" is satisfied without inventing five different
-   interaction patterns.
+   speech bubble — those are 首頁's own dedicated card design (Product
+   Baseline). This is a compact banner that links to tutor.html for the
+   full experience, so "AI Tutor 不再只存在於 tutor.html" is satisfied
+   without inventing five different interaction patterns.
+
+   AI-130 (real PO report): the character illustration itself IS now
+   included — every other real 提示/建議 surface in the app already pairs
+   its text with 巧巧老師's own bust (js/core/Qiaoqiao.js), and this
+   widget being the one exception (a generic AHS.Icons.tutor() badge)
+   made it read as a different, unbranded feature on the five pages that
+   mount it. Uses AHS.Qiaoqiao.randomBust() — same "隨機更新" requirement
+   as every other tip location this Sprint touched — not a fixed
+   expression.
 
    create() returns null (mounts nothing) when there is genuinely no
    real data yet — never a placeholder/empty-state box added to a page
@@ -60,7 +68,7 @@ AHS.TutorContextTip = (function () {
       class: "tutor-tip", href: href,
       "aria-label": "AI 巧巧老師建議：" + model.message + "，前往 AI Tutor 查看更多"
     }, [
-      el("span", { class: "tutor-tip__icon", html: AHS.Icons.tutor() }),
+      el("span", { class: "tutor-tip__icon qiaoqiao-bust qiaoqiao-bust--sm", html: AHS.Qiaoqiao.randomBust() }),
       el("span", { class: "tutor-tip__body" }, [
         el("span", { class: "tutor-tip__label", text: "AI 巧巧老師建議" }),
         el("span", { class: "tutor-tip__msg", text: model.message })

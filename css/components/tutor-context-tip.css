@@ -22,21 +22,13 @@
   border-color: var(--brand);
 }
 
+/* AI-130: the badge is now 巧巧老師's own bust (AHS.Qiaoqiao.randomBust()),
+   framed by the shared qiaoqiao-bust/qiaoqiao-bust--sm classes (same 40px
+   circular frame every other tip location already uses) — this rule only
+   adds the flex layout role, sizing/shape/background belong to that
+   shared class now. */
 .tutor-tip__icon {
   flex: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-pill);
-  background: var(--brand);
-  color: #fff;
-}
-
-.tutor-tip__icon svg {
-  width: 18px;
-  height: 18px;
 }
 
 .tutor-tip__body {

@@ -76,7 +76,7 @@ AHS.HeroCard = (function () {
       el("div", { class: "hero-card__figure" }, [
         el("div", {
           class: "hero-card__avatar qiaoqiao-full qiaoqiao-full--md",
-          html: AHS.Qiaoqiao.full("pointing")
+          html: AHS.Qiaoqiao.randomFull()
         }),
         bubble
       ])
