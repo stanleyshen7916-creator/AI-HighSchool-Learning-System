@@ -502,13 +502,144 @@ AHS.QuizCenter = (function () {
     return entries;
   }
 
+  /* openChapterPicker(mode, onConfirm) — 使用者需求 B："在「平時測驗」與
+     「考前複習」裡增加一個選擇功能，用於可以挑選複習的課別...可以一次
+     選擇三課來進行複習". A real pre-entry screen (使用者確認選項：「進入
+     平時練習/考前總複習前，先跳出課別複選畫面」) listing this Sprint's
+     already-real repositoryExamCatalog() entries as checkable rows,
+     scoped to ONE subject at a time (使用者原文例子本身就是同一科目内
+     跨課合併 — 從未要求跨科目合併). onConfirm(selectedExamIds) fires
+     exactly once, only on a real confirm click with >=1 real
+     _repoExamId selected — never invented ids, never auto-confirms.
+     mode is display-only here (picker title text); the two real
+     combined-session builders (tryCombinedExamEntry/openCombinedPractice,
+     below) are what actually differ per mode. Overlay/close/Escape/
+     backdrop-click pattern mirrors the existing, already-shipped
+     js/ui/MaterialPreview.js overlay precedent — no new UI convention
+     introduced. */
+  function openChapterPicker(mode, onConfirm) {
+    var catalog = repositoryExamCatalog();
+    if (!catalog.length) {
+      window.alert("目前沒有可合併複習的課別，請先於教材中心上傳並完成 AI 建立。");
+      return;
+    }
+    var subjects = [];
+    catalog.forEach(function (it) {
+      if (it.subject && subjects.indexOf(it.subject) === -1) { subjects.push(it.subject); }
+    });
+    if (!subjects.length) {
+      window.alert("目前沒有可合併複習的課別，請先於教材中心上傳並完成 AI 建立。");
+      return;
+    }
+    var pickedSubject = subjects[0];
+    var selected = {};
+
+    var overlay = el("div", {
+      class: "qpick-overlay", role: "dialog", "aria-modal": "true", "aria-label": "選擇合併複習課別"
+    });
+    function close() {
+      if (overlay.parentNode) { overlay.parentNode.removeChild(overlay); }
+      document.removeEventListener("keydown", onKeydown);
+    }
+    function onKeydown(e) { if (e.key === "Escape") { close(); } }
+    document.addEventListener("keydown", onKeydown);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
+
+    var body = el("div", { class: "qpick-body" });
+    var footer = el("div", { class: "qpick-footer" });
+
+    function renderFooter() {
+      footer.innerHTML = "";
+      var count = Object.keys(selected).length;
+      var cancelBtn = el("button", { type: "button", class: "qpick-btn qpick-btn--ghost", text: "取消" });
+      cancelBtn.addEventListener("click", close);
+      var confirmBtn = el("button", {
+        type: "button",
+        class: "qpick-btn qpick-btn--primary",
+        disabled: count ? null : "disabled",
+        text: count ? "開始合併複習（已選 " + count + " 課）" : "請至少選擇 1 課"
+      });
+      confirmBtn.addEventListener("click", function () {
+        if (!count) { return; }
+        var examIds = Object.keys(selected);
+        close();
+        onConfirm(examIds);
+      });
+      footer.appendChild(cancelBtn);
+      footer.appendChild(confirmBtn);
+    }
+
+    function renderBody() {
+      body.innerHTML = "";
+      var subjectRow = el("div", { class: "qpick-subjects" }, subjects.map(function (s) {
+        var subj = AHS.Subjects[s] || { name: s, hex: "#6b7280" };
+        var btn = el("button", {
+          type: "button",
+          class: "qpick-subject" + (s === pickedSubject ? " is-active" : ""),
+          style: s === pickedSubject ? ("border-color:" + subj.hex + ";color:" + subj.hex) : "",
+          text: subj.name
+        });
+        btn.addEventListener("click", function () {
+          if (pickedSubject === s) { return; }
+          pickedSubject = s;
+          selected = {};
+          renderBody();
+          renderFooter();
+        });
+        return btn;
+      }));
+      var chapters = catalog.filter(function (it) { return it.subject === pickedSubject; });
+      var rows = chapters.length ? chapters.map(function (it) {
+        var checkbox = el("input", { type: "checkbox", "data-exam-id": it._repoExamId });
+        checkbox.checked = !!selected[it._repoExamId];
+        var row = el("label", { class: "qpick-row" + (checkbox.checked ? " is-checked" : "") }, [
+          checkbox,
+          el("span", { class: "qpick-row-title", text: it.title }),
+          el("span", { class: "qpick-row-meta", text: (it.chapter ? it.chapter + "・" : "") + "共 " + it.count + " 題" })
+        ]);
+        checkbox.addEventListener("change", function () {
+          if (checkbox.checked) { selected[it._repoExamId] = true; } else { delete selected[it._repoExamId]; }
+          row.classList.toggle("is-checked", checkbox.checked);
+          renderFooter();
+        });
+        return row;
+      }) : [el("p", { class: "qpick-empty", text: "此科目目前沒有可複習的課別。" })];
+      body.appendChild(subjectRow);
+      body.appendChild(el("div", { class: "qpick-list" }, rows));
+    }
+
+    renderBody();
+    renderFooter();
+
+    var closeX = el("button", { type: "button", class: "qpick-close", "aria-label": "關閉", html: AHS.Icons.filterX() });
+    closeX.addEventListener("click", close);
+
+    var panel = el("div", { class: "qpick-panel card" }, [
+      el("div", { class: "qpick-head" }, [
+        el("h2", {
+          class: "qpick-title",
+          text: mode === "practice" ? "選擇多課合併複習（考前總複習）" : "選擇多課合併複習（平時練習）"
+        }),
+        closeX
+      ]),
+      body,
+      footer
+    ]);
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+  }
+
   /* ---- List view (Exam List) -------------------------------------------
      data: AHS.AppConfig.quiz. onStart(item): begins the real exam flow.
      Sprint 4.1: 科目/年級/章節/難易度/題型/只看未完成/排序 all drive a real
      filter+sort of data.items, re-rendered immediately into listContainer
      on every change (no page reload). Filter State lives here, in
-     QuizCenter's own closure — not a new Runtime, not a new global. */
-  function buildListView(data, onStart) {
+     QuizCenter's own closure — not a new Runtime, not a new global.
+     onOpenCombine() — Feature B, optional/additive: renders a "選擇多課
+     合併複習" action when provided; every existing caller that omits it
+     (none left, but future ones are safe) keeps the pre-Feature-B list
+     unchanged. */
+  function buildListView(data, onStart, onOpenCombine) {
     /* EO-S7.0-003 Production Cleanup: 預設題庫已移除 — Exam Mode 無
        真實測驗來源前顯示正式 Empty State（未來由測驗建立功能填入）。 */
     if (!data.items || !data.items.length) {
@@ -568,12 +699,22 @@ AHS.QuizCenter = (function () {
     renderFilterBar();
     renderList();
 
+    var combineRow = null;
+    if (typeof onOpenCombine === "function") {
+      var combineBtn = el("button", {
+        type: "button", class: "quiz-combine-btn", html: AHS.Icons.chevronRight() + "<span>選擇多課合併複習</span>"
+      });
+      combineBtn.addEventListener("click", onOpenCombine);
+      combineRow = el("div", { class: "quiz-combine-row" }, [combineBtn]);
+    }
+
     var main = el("div", { class: "quiz-main" }, [
       banner(data),
       filterBarContainer,
+      combineRow,
       listContainer,
       status
-    ]);
+    ].filter(Boolean));
 
     /* Live stats once at least one exam has been completed this session;
        otherwise the original Mock numbers (first-open example content). */
@@ -881,8 +1022,15 @@ AHS.QuizCenter = (function () {
      below. This is the real content path AI-122 restores: a Repository-
      sourced material now has a genuine, inline, immediate-feedback
      Practice experience instead of being silently rerouted to Formal
-     Exam. */
-  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor, difficulty) {
+     Exam.
+     onOpenCombine() — Feature B, optional/additive: renders a "選擇多課
+     合併複習" action inside the Repository 教材 section header, only
+     when provided and only alongside that section (never shown once a
+     single material is already drilled into — filterMaterialId gates
+     the whole Repository section already, see repoEntries below). Every
+     existing caller that omits this 7th param keeps this view's exact
+     prior behavior. */
+  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor, difficulty, onOpenCombine) {
     var runtime = AHS.LearningQuestionRuntime;
     var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
     var items = filterMaterialId
@@ -942,10 +1090,16 @@ AHS.QuizCenter = (function () {
         row.addEventListener("click", function () { onRepoDrillDown(materialIdFromExamId(entry._repoExamId)); });
         return row;
       });
+      var repoHead = [el("h2", { class: "card__title", text: "Repository 教材（" + repoEntries.length + "）" })];
+      if (typeof onOpenCombine === "function") {
+        var combineBtn = el("button", {
+          type: "button", class: "quiz-combine-btn quiz-combine-btn--sm", text: "選擇多課合併複習"
+        });
+        combineBtn.addEventListener("click", onOpenCombine);
+        repoHead.push(combineBtn);
+      }
       sections.push(el("section", { class: "card quiz-practice__list", "aria-label": "Repository 教材" }, [
-        el("div", { class: "card__head" }, [
-          el("h2", { class: "card__title", text: "Repository 教材（" + repoEntries.length + "）" })
-        ]),
+        el("div", { class: "card__head" }, repoHead),
         el("div", { class: "quiz-practice__rows" }, repoRows)
       ]));
     }
@@ -1576,7 +1730,7 @@ AHS.QuizCenter = (function () {
     }
 
     function showList() {
-      AHS.UI.mount(root, buildListView(mergedListData(), unifiedStart));
+      AHS.UI.mount(root, buildListView(mergedListData(), unifiedStart, openCombinePicker));
     }
 
     /* showScopedList(materialId) — Sprint AI-124 AI-124-03/04/12: when a
@@ -1732,6 +1886,106 @@ AHS.QuizCenter = (function () {
       if (!session) { showList(); return null; }
       showExam(session.examId);
       return session.examId;
+    }
+
+    /* tryCombinedExamEntry(examIds) — Feature B (使用者需求："在「平時
+       測驗」...可以一次選擇三課來進行複習"): the 平時練習 sibling of
+       tryDirectExamEntry() above, for a real multi-chapter selection made
+       via openChapterPicker(). For each selected chapter, draws the same
+       honest FORMAL_EXAM_QUESTION_COUNT-capped set tryDirectExamEntry()
+       already draws per chapter (AHS.QuestionBankRuntime.drawCycle() when
+       a bank exists, else that chapter's own full real set) and
+       concatenates them into ONE combined derived examId — question ids
+       are already globally unique per-material (e.g. "tm_1_q1"/
+       "tm_2_q1", never bare "q1"), so combining never collides answers/
+       grading across chapters. Combined subject/title/chapter/grade are
+       read directly from the SAME repositoryExamCatalog() entries the
+       picker itself displayed — never re-derived/guessed — so the
+       resulting ExamRuntime session honestly reflects exactly which
+       chapters were picked. Runs through the exact same
+       ExamRuntime/AutoGrader/WrongBook/History/KnowledgeMastery chain as
+       every other exam entry point; not a parallel grading path. */
+    function tryCombinedExamEntry(examIds) {
+      if (!Array.isArray(examIds) || !examIds.length) { return null; }
+      var catalog = repositoryExamCatalog();
+      var byId = {};
+      catalog.forEach(function (it) { byId[it._repoExamId] = it; });
+      var combined = [];
+      var subjectKey = "";
+      var gradeLabel = "";
+      var chapterLabels = [];
+      examIds.forEach(function (examId) {
+        var entry = byId[examId];
+        if (!entry) { return; }
+        var drawn = (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.drawCycle === "function" &&
+            AHS.QuestionBankRuntime.hasBank(examId))
+          ? AHS.QuestionBankRuntime.drawCycle(examId, FORMAL_EXAM_QUESTION_COUNT)
+          : (AHS.QuestionRuntime && typeof AHS.QuestionRuntime.getSet === "function"
+            ? AHS.QuestionRuntime.getSet(examId) : []);
+        if (!drawn.length) { return; }
+        combined = combined.concat(drawn);
+        if (!subjectKey && entry.subject) { subjectKey = entry.subject; }
+        if (!gradeLabel && entry.grade) { gradeLabel = entry.grade; }
+        if (entry.chapter) { chapterLabels.push(entry.chapter); }
+      });
+      if (!combined.length) { showList(); return null; }
+      var derivedExamId = "combined_exam_" + Date.now();
+      AHS.QuestionRuntime.importQuestions(derivedExamId, combined);
+      var combinedMeta = {
+        subject: subjectKey,
+        title: chapterLabels.length ? chapterLabels.join("、") + "（合併複習）" : "合併複習",
+        chapter: chapterLabels.join("、"),
+        grade: gradeLabel
+      };
+      var session = AHS.ExamRuntime.startFromExam(derivedExamId, combinedMeta);
+      if (!session) { showList(); return null; }
+      showExam(session.examId);
+      return session.examId;
+    }
+
+    function openCombinePicker() {
+      openChapterPicker("exam", function (examIds) { tryCombinedExamEntry(examIds); });
+    }
+
+    /* openCombinedPractice(examIds) — Feature B, 考前總複習 sibling: real
+       already-imported questions (realExamQuestionsFor(), the same
+       source onRealPractice's single-chapter drill-down already reads)
+       from EVERY selected chapter, concatenated into one Practice
+       Session (openPracticeSession("real", ...)) — 考前總複習's own real
+       characteristics (可重複作答／不影響正式成績／立即看到詳解) are
+       untouched since this reuses that exact same session surface, just
+       with a longer, real question list. returnMaterialId is
+       deliberately null (no single chapter to return to — closing the
+       session correctly lands back on the top-level Repository 教材
+       list, not a scoped one). headerMeta is built from the same
+       repositoryExamCatalog() entries the picker displayed, honestly
+       labelled "N 課合併複習" rather than any one chapter's own name. */
+    function openCombinedPractice(examIds) {
+      if (!Array.isArray(examIds) || !examIds.length) { return; }
+      var catalog = repositoryExamCatalog();
+      var byId = {};
+      catalog.forEach(function (it) { byId[it._repoExamId] = it; });
+      var combined = [];
+      var subjectKey = "";
+      var chapterCount = 0;
+      examIds.forEach(function (examId) {
+        var entry = byId[examId];
+        if (!entry) { return; }
+        var materialId = materialIdFromExamId(examId);
+        var qs = realExamQuestionsFor(materialId);
+        if (!qs.length) { return; }
+        combined = combined.concat(qs);
+        chapterCount += 1;
+        if (!subjectKey && entry.subject) { subjectKey = entry.subject; }
+      });
+      if (!combined.length) { return; }
+      var subjectName = (subjectKey && AHS.Subjects[subjectKey]) ? AHS.Subjects[subjectKey].name : subjectKey;
+      var headerMeta = { subjectName: subjectName || "", chapterLabel: chapterCount + " 課合併複習" };
+      openPracticeSession("real", combined, 0, null, headerMeta);
+    }
+
+    function openCombinePracticePicker() {
+      openChapterPicker("practice", openCombinedPractice);
     }
 
     /* startDrawnSession(baseExamId, suffix) — Sprint AI-121 (Learning
@@ -1892,20 +2146,29 @@ AHS.QuizCenter = (function () {
         function (drillMaterialId) { showPracticeList(drillMaterialId); },
         showRealPracticeQuestion,
         answerStatusFor,
-        practiceDifficulty
+        practiceDifficulty,
+        openCombinePracticePicker
       ));
     }
 
-    /* openPracticeSession(kind, questions, startIndex, returnMaterialId) —
-       Sprint AI-123 AI-123-01: the ONLY way into an actual answering
-       surface now — appended straight to document.body as a fixed,
-       full-viewport overlay (AI-123-02: 全畫面作答), deliberately outside
-       practiceRoot/root/AppShell's own DOM so the underlying question
-       list is never rebuilt or scrolled while this is open — closing it
-       (onExit) is the only moment the list re-renders, immediately after
-       which window.scrollTo restores the exact position it was at before
-       opening (AI-123-11: "不得重新整理。不得失去目前 Scroll Position"). */
-    function openPracticeSession(kind, questions, startIndex, returnMaterialId) {
+    /* openPracticeSession(kind, questions, startIndex, returnMaterialId,
+       headerMetaOverride) — Sprint AI-123 AI-123-01: the ONLY way into an
+       actual answering surface now — appended straight to document.body
+       as a fixed, full-viewport overlay (AI-123-02: 全畫面作答),
+       deliberately outside practiceRoot/root/AppShell's own DOM so the
+       underlying question list is never rebuilt or scrolled while this
+       is open — closing it (onExit) is the only moment the list
+       re-renders, immediately after which window.scrollTo restores the
+       exact position it was at before opening (AI-123-11: "不得重新整理。
+       不得失去目前 Scroll Position").
+       headerMetaOverride — Feature B, optional/additive: a combined
+       multi-chapter session has no single real materialId to derive a
+       header from (practiceHeaderMeta(returnMaterialId, ...) would just
+       show the FIRST chapter's own subject/chapter, silently hiding that
+       this is really N chapters combined); every existing caller omits
+       this param and keeps the exact prior practiceHeaderMeta()-derived
+       header. */
+    function openPracticeSession(kind, questions, startIndex, returnMaterialId, headerMetaOverride) {
       var savedScroll = window.scrollY;
       document.body.classList.add("qpv-lock-scroll");
       var overlay;
@@ -1913,7 +2176,7 @@ AHS.QuizCenter = (function () {
         kind: kind,
         questions: questions,
         startIndex: startIndex,
-        headerMeta: practiceHeaderMeta(returnMaterialId, questions[startIndex]),
+        headerMeta: headerMetaOverride || practiceHeaderMeta(returnMaterialId, questions[startIndex]),
         statusFor: answerStatusFor,
         onAnswered: function (id, isCorrect) { setAnswerStatus(kind, id, isCorrect); }
       }, {
@@ -1927,7 +2190,7 @@ AHS.QuizCenter = (function () {
           questions.forEach(function (q) { clearAnswerStatus(kind, q.id); });
           if (overlay.parentNode) { document.body.removeChild(overlay); }
           document.body.classList.remove("qpv-lock-scroll");
-          openPracticeSession(kind, questions, 0, returnMaterialId);
+          openPracticeSession(kind, questions, 0, returnMaterialId, headerMetaOverride);
         }
       });
       document.body.appendChild(overlay);
