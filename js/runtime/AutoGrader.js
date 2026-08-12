@@ -13,15 +13,29 @@ AHS.AutoGrader = (function () {
   /* cache: examId -> last graded result. */
   var cache = {};
 
-  /* grade(examSession) — examSession is the ExamRuntime session record
-     (needs examId / subject / title / totalQuestions). Returns the
-     graded result (clone), or null if the exam has no question set. */
-  function grade(examSession) {
+  /* grade(examSession, opts) — examSession is the ExamRuntime session
+     record (needs examId / subject / title / totalQuestions). Returns
+     the graded result (clone), or null if the exam has no question set.
+
+     opts.answeredOnly (additive, optional — 完成測試 early-finish hotfix):
+     when true, scopes totalCount/correctCount/results/wrong to ONLY the
+     questions the student actually answered before finishing early —
+     an unanswered question is simply excluded, never counted as wrong.
+     Every existing caller (no opts, the normal 完成測驗 full-finish flow)
+     keeps the exact prior behavior unchanged (unanswered = wrong,
+     counted in totalCount). Returns null when the filtered set is
+     empty (nothing real to grade — same "no question set" honesty
+     start(examMeta) already returns null for above). */
+  function grade(examSession, opts) {
     if (!examSession || !examSession.examId) { return null; }
     var examId = examSession.examId;
     var questions = AHS.QuestionRuntime.getSet(examId);
     if (!questions.length) { return null; }
     var answers = AHS.AnswerRuntime.getAnswers(examId);
+    if (opts && opts.answeredOnly) {
+      questions = questions.filter(function (q) { return answers[q.id] != null; });
+      if (!questions.length) { return null; }
+    }
 
     var correctCount = 0;
     var results = questions.map(function (q) {
