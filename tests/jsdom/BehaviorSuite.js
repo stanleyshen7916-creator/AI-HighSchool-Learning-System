@@ -19,6 +19,40 @@ function check(name, cond) {
   else { fail++; failures.push(name); console.log("  FAIL  " + name); }
 }
 
+/* backFromPractice(doc) — Sprint AI-123 Practice Flow UX Refactor:
+   Practice View (js/components/QuizCenter.js's buildPracticeSessionView)
+   is now a full-screen overlay appended straight to document.body, not a
+   node inside QuizCenter's own mount root — every test below that used
+   to query mountEl/preMount/m for .quiz-practice__option--btn /
+   .quiz-practice__result / .quiz-practice__answer now reads from `doc`
+   instead. Its own back button (.qpv__back, AI-123-03) may pop a real
+   "尚有 N 題未完成" confirm dialog first (AI-123-12) when this practice
+   set has more than the one question a test just answered — this helper
+   clicks Back, then (only if the dialog actually appeared) clicks its
+   own non-primary "返回列表" button to actually leave, matching how a
+   real student would dismiss it. */
+function backFromPractice(doc) {
+  var back = doc.querySelector(".qpv__back");
+  if (!back) { return; }
+  back.click();
+  var overlay = doc.querySelector(".qpv-confirm-overlay");
+  if (overlay && !overlay.hasAttribute("hidden")) {
+    var btns = [...overlay.querySelectorAll(".qpv-confirm__btn")];
+    var leave = btns.find(function (b) { return !b.classList.contains("qpv-confirm__btn--primary"); });
+    if (leave) { leave.click(); }
+  }
+}
+
+/* Sprint AI-122 AI-122-06: 最近教材 now filters on real createdAt (>=
+   today-3days) — any seedSession material meant to show up there needs a
+   real, always-current createdAt (never a hardcoded past date that would
+   silently age out of the 3-day window). */
+function todayStr() {
+  var d = new Date();
+  var pad = function (n) { return n < 10 ? "0" + n : String(n); };
+  return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+}
+
 /* excludeScripts (HOTFIX-002): substrings matched against each page's own
    <script src> list — any match is skipped entirely. Added specifically
    so tests that assert an exact, isolated MaterialRuntime/SummaryRuntime
@@ -31,7 +65,27 @@ function check(name, cond) {
    it and would otherwise become fragile to every future real material
    added to data/materials/ — excluding it here keeps their original,
    already-correct assertions intact rather than loosening any of them. */
-function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
+/* Sprint AI-119 (Platform Core Baseline): AHS.PersistenceAdapter now
+   namespaces every save()/load()/remove() under the active Workspace's
+   storage namespace, and AHS.AppShell.create() redirects to login.html
+   (rendering nothing) unless a Workspace is active. This suite predates
+   Login/Workspace entirely and isn't about testing either — rather than
+   rewrite every individual seedSession literal across this file's 79
+   loadPage() call sites, loadPage() itself auto-establishes ONE fixed
+   default test Workspace (unless the caller passes skipLogin) and
+   transparently namespaces each bare "ahs:<key>" seed entry to match —
+   idempotent (an already-namespaced entry passes through unchanged). */
+const AHS_TEST_WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] };
+const AHS_TEST_NS = "student_a__cjsh__g1s2";
+function namespacedKey(k) {
+  if (k === "ahs:workspace") { return k; }
+  const nsPrefix = "ahs:" + AHS_TEST_NS + ":";
+  if (k.indexOf(nsPrefix) === 0) { return k; }
+  if (k.indexOf("ahs:") === 0) { return "ahs:" + AHS_TEST_NS + ":" + k.slice(4); }
+  return k;
+}
+
+function loadPage(htmlFile, { seedSession, excludeScripts, url, skipLogin } = {}) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const consoleErrors = [];
   const vconsole = new (require("jsdom").VirtualConsole)();
@@ -49,9 +103,12 @@ function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
     virtualConsole: vconsole
   });
   const { window } = dom;
+  if (!skipLogin) {
+    window.sessionStorage.setItem("ahs:workspace", JSON.stringify(AHS_TEST_WORKSPACE));
+  }
   if (seedSession) {
     for (const [k, v] of Object.entries(seedSession)) {
-      window.sessionStorage.setItem(k, JSON.stringify(v));
+      window.sessionStorage.setItem(skipLogin ? k : namespacedKey(k), JSON.stringify(v));
     }
   }
   // Execute the page's ordered scripts manually (runScripts outside-only
@@ -60,7 +117,9 @@ function loadPage(htmlFile, { seedSession, excludeScripts, url } = {}) {
     .map(s => s.getAttribute("src"))
     .filter(src => !(excludeScripts && excludeScripts.some(x => src.includes(x))));
   for (const src of scripts) {
-    const code = fs.readFileSync(path.join(REPO, src), "utf8");
+    const p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    const code = fs.readFileSync(p, "utf8");
     window.eval(code);
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
@@ -126,10 +185,19 @@ function seedProductionQuestions(title) {
   A.AITutorService.ensureQuestionSet(mat.id);
   const genRecord = A.QuestionGenerationRuntime.getQuestionsByMaterial(mat.id);
   A.QuestionProviderBridge.bridge(mat.id);
+  /* Sprint AI-119: read back via AHS.PersistenceAdapter (short key), not
+     a raw sessionStorage.getItem("ahs:materialRuntime") — materials.html
+     was itself loaded through loadPage()'s own auto-seeded default test
+     Workspace, so its real writes landed under that Workspace's
+     namespaced key, not the bare legacy one. PersistenceAdapter.load()
+     already knows how to resolve that; carried stays bare-keyed
+     ("ahs:materialRuntime", not namespaced) so the next loadPage() call
+     re-namespaces it consistently, exactly like every other seedSession
+     object in this file. */
   const carried = {};
-  ["ahs:materialRuntime", "ahs:learningQuestionRuntime", "ahs:learningQuestionSession"].forEach(function (k) {
-    const v = matPage.window.sessionStorage.getItem(k);
-    if (v) { carried[k] = JSON.parse(v); }
+  ["materialRuntime", "learningQuestionRuntime", "learningQuestionSession"].forEach(function (shortKey) {
+    const v = A.PersistenceAdapter.load(shortKey);
+    if (v) { carried["ahs:" + shortKey] = v; }
   });
   return { materialId: mat.id, genRecord: genRecord, carried: carried };
 }
@@ -258,11 +326,11 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
      below, with the real Repository content intact. */
   const { window, consoleErrors } = loadPage("quiz.html", {
     seedSession: { "ahs:learningQuestionRuntime": { items: [stubQuestion], seq: 1 } },
-    excludeScripts: ["data/materials/"]
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"]
   });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
-  const examTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "正式測驗");
+  const examTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "平時練習");
   check("Exam Mode tab active by default (保持現況)", examTab && examTab.classList.contains("is-active"));
   const practiceRoot = doc.querySelector(".quiz-practice-root");
   check("Practice root hidden by default", practiceRoot && practiceRoot.hasAttribute("hidden"));
@@ -271,7 +339,7 @@ console.log("\n[3] quiz.html — regression: default entry (no params) unchanged
      開啟為正式 Empty State when genuinely no Repository material exists. */
   check("Exam Mode 正式 Empty State（無 Repository 資料時，預設題庫已移除）",
     doc.querySelectorAll(".quiz-row").length === 0 && /目前沒有可用的測驗/.test(doc.body.textContent));
-  const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
+  const practiceTab = [...doc.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前總複習");
   practiceTab.click();
   check("Practice tab (no materialId, no Repository data) skips guide, stub filtered → Empty State",
     !doc.querySelector(".qguide") && !!doc.querySelector(".quiz-practice__empty"));
@@ -284,7 +352,7 @@ console.log("\n[4] summary.html — Task 003: mandated pending copy (empty-conte
     coreConcepts: [], definitions: [], pitfalls: [], memorize: [], reviewSuggestions: []
   })], seq: 1 };
   const { window, consoleErrors } = loadPage("summary.html", {
-    excludeScripts: ["data/materials/"],
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"],
     seedSession: { "ahs:materialRuntime": materialSeed, "ahs:summaryRuntime": emptySummary }
   });
   const doc = window.document;
@@ -380,13 +448,13 @@ console.log("\n[8] Sprint AI-015E — Production Pipeline wiring (materials.html
      now resolved via Sprint AI-015E's Identity Mapping (Runtime record
      displayed -> Session sibling looked up for WrongBookGenerator). */
   rows[0].closest(".quiz-practice__row") ? rows[0].closest(".quiz-practice__row").click() : rows[0].click();
-  const optBtns = [...mountEl.querySelectorAll(".quiz-practice__option--btn")];
+  const optBtns = [...doc.querySelectorAll(".quiz-practice__option--btn")];
   check("single_choice 呈現可作答選項", optBtns.length === 4);
   const q0 = window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const wrongOpt = optBtns.find(b => b.textContent !== String(q0.answer));
   wrongOpt.click();
-  check("Submit 後顯示批改結果（答錯）", /答錯了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
-  check("explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(mountEl.querySelector(".quiz-practice__answer").textContent));
+  check("Submit 後顯示批改結果（答錯）", /答錯了/.test(doc.querySelector(".quiz-practice__result").textContent));
+  check("explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(doc.querySelector(".quiz-practice__answer").textContent));
   check("答錯 → WrongBookSession 自動建立 1 筆（Identity Mapping 成功解析 Runtime→Session）", window.AHS.WrongBookSession.count() === 1);
   const wbRec = window.AHS.WrongBookSession.list()[0];
   check("錯題記錄內容解析自真實題目", wbRec.correctAnswer === q0.answer && wbRec.userAnswer === wrongOpt.textContent);
@@ -414,16 +482,16 @@ console.log("\n[10] EO-S7.0-002 / Sprint AI-015E — 答對不建立 / 重複答
   }
   // Correct answer first: no wrong-book entry
   openRow(0);
-  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click();
-  check("答對 → 不建立 Wrong Book", window.AHS.WrongBookSession.count() === 0 && /答對了/.test(mountEl.querySelector(".quiz-practice__result").textContent));
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click();
+  check("答對 → 不建立 Wrong Book", window.AHS.WrongBookSession.count() === 0 && /答對了/.test(doc.querySelector(".quiz-practice__result").textContent));
   // Wrong twice: single record, wrongCount 2, firstWrongAt preserved
-  mountEl.querySelector(".quiz-practice__back").click();
+  backFromPractice(doc);
   openRow(0);
-  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const first = window.AHS.WrongBookSession.list()[0];
-  mountEl.querySelector(".quiz-practice__back").click();
+  backFromPractice(doc);
   openRow(0);
-  [...mountEl.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const after = window.AHS.WrongBookSession.list()[0];
   check("重複答錯不重建資料（仍 1 筆）", window.AHS.WrongBookSession.count() === 1);
   check("wrongCount 正常累加 (2) 且 firstWrongAt 不覆蓋",
@@ -444,11 +512,11 @@ console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session
   const rows = [...preMount.querySelectorAll(".quiz-practice__row-q")];
   const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
-  [...preMount.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {
-    "ahs:learningQuestionSession": JSON.parse(pre.window.sessionStorage.getItem("ahs:learningQuestionSession")),
-    "ahs:wrongBookSession": JSON.parse(pre.window.sessionStorage.getItem("ahs:wrongBookSession")),
-    "ahs:reviewQueue": JSON.parse(pre.window.sessionStorage.getItem("ahs:reviewQueue"))
+    "ahs:learningQuestionSession": pre.window.AHS.PersistenceAdapter.load("learningQuestionSession"),
+    "ahs:wrongBookSession": pre.window.AHS.PersistenceAdapter.load("wrongBookSession"),
+    "ahs:reviewQueue": pre.window.AHS.PersistenceAdapter.load("reviewQueue")
   };
   check("前置：quiz 頁答錯已持久化", carried["ahs:wrongBookSession"].items.length === 1);
 
@@ -460,8 +528,8 @@ console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session
   const stats = doc.querySelector(".wb-live-stats");
   check("即時統計卡渲染", !!stats);
   const values = [...stats.querySelectorAll(".wb-live-stats__item")].map(n => n.textContent);
-  check("統計值：Total Wrong=1 / Active=1 / New=1",
-    values.some(v => /1\s*Total Wrong/.test(v)) && values.some(v => /1\s*Active/.test(v)) && values.some(v => /1\s*New/.test(v)));
+  check("統計值：錯題總數=1 / 進行中=1 / 新錯題=1",
+    values.some(v => /1\s*錯題總數/.test(v)) && values.some(v => /1\s*進行中/.test(v)) && values.some(v => /1\s*新錯題/.test(v)));
   check("Console errors = 0 (wrongbook 整合)", consoleErrors.length === 0);
   if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0,3));
 }
@@ -503,10 +571,17 @@ console.log("\n[13] EO-S7.0-003 — First Run：GitHub 首次開啟為空系統�
       !/二次函數的圖形與性質|牛頓運動定律總整理|岳陽樓記|陳同學|段考倒數提醒|較上週 \+/.test(text));
     check(page + "：Console Error = 0", consoleErrors.length === 0);
   }
-  // 首頁 Review Widget（資料來自 ReviewModel）
+  /* Sprint AI-122 AI-122-08: ReviewWidget.js is no longer mounted on
+     Home (js/pages/AppHome.js's own comment explains why — not in the
+     PO's explicit 6-section 首頁資訊排序 list, and its own info overlaps
+     學習成效總覽/今日任務). Not deleted from the codebase (still real,
+     still <script>-tagged on index.html per the same "don't delete
+     source files outside this Sprint's scope" precedent AI-118 already
+     established) — so its own real behavior is still exercised here
+     directly, decoupled from Home's own composition. */
   const { window } = loadPage("index.html", { excludeScripts: ["data/materials/"] });
-  const w = window.document.querySelector(".review-widget");
-  check("首頁 Review Widget 渲染（今日待複習/已完成/總錯題）",
+  const w = window.AHS.ReviewWidget.create();
+  check("ReviewWidget 渲染（今日待複習/已完成/總錯題，AI-122-08：不再掛載於首頁本身）",
     !!w && /今日待複習/.test(w.textContent) && /已完成/.test(w.textContent) && /總錯題/.test(w.textContent));
   check("空系統 Widget 全 0 + 正式空狀態文案",
     [...w.querySelectorAll(".review-widget__value")].every(n => n.textContent === "0") && /目前沒有錯題紀錄/.test(w.textContent));
@@ -524,11 +599,13 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
   const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const rows = [...m.querySelectorAll(".quiz-practice__row-q")];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
-  [...m.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
   const carried = {};
-  for (const k of ["ahs:wrongBookSession", "ahs:reviewQueue"]) carried[k] = JSON.parse(pre.window.sessionStorage.getItem(k));
+  for (const shortKey of ["wrongBookSession", "reviewQueue"]) carried["ahs:" + shortKey] = pre.window.AHS.PersistenceAdapter.load(shortKey);
   const { window } = loadPage("index.html", { seedSession: carried });
-  const w = window.document.querySelector(".review-widget");
+  /* Sprint AI-122 AI-122-08: same as [13] above — ReviewWidget.js kept
+     real, just no longer auto-mounted by AppHome.js's own composition. */
+  const w = window.AHS.ReviewWidget.create();
   check("總錯題 = 1、今日待複習 = 0（nextReviewAt=null 排除，等待 Scheduler）",
     (() => { const v = [...w.querySelectorAll(".review-widget__value")].map(n => n.textContent);
              return v[0] === "0" && v[1] === "0" && v[2] === "1"; })());
@@ -547,7 +624,7 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
   ], folders: [], seq: 2, folderSeq: 0 };
 
   const { window, consoleErrors } = loadPage("materials.html", {
-    excludeScripts: ["data/materials/"],
+    excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"],
     seedSession: { "ahs:materialRuntime": twoMaterials }
   });
   const doc = window.document;
@@ -566,7 +643,7 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
 
 console.log("\n[16] HF-8.2.001 · HF-001 — 空 Runtime 仍顯示正式 Empty State");
 {
-  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["data/materials/"] });
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   check("零教材時卡片為 0", doc.querySelectorAll(".mat-card").length === 0);
   check("顯示正式 Empty State（非空白頁）",
@@ -667,7 +744,10 @@ console.log("\n[19] HF-8.2.003 — 跨頁預覽改由位元組還原（先前必
   const doc = window.document;
   window.URL.createObjectURL = function (blob) { return "blob:ahs/" + (blob && blob.size); };
   window.URL.revokeObjectURL = function () {};
-  doc.querySelector(".mat-card__preview").click();
+  /* HOTFIX-009-2: the standalone 預覽教材 icon button was removed
+     (duplicated the card-click preview action) — click the card body,
+     the sole remaining preview trigger, instead. */
+  doc.querySelector(".mat-card").click();
   const overlay = doc.querySelector(".mat-preview__overlay, .mat-preview");
   const img = overlay && overlay.querySelector("img.mat-preview__media");
   check("跨頁圖片預覽渲染 img 且有 src（file 為 null 亦可）", !!img && !!img.getAttribute("src"));
@@ -930,7 +1010,7 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
      design, so that scenario can only be verified the way it already
      was: a Node vm simulation sharing one sessionStorage mock across
      simulated page loads (see docs/EO/HOTFIX-002 report). */
-  const { window, consoleErrors } = loadPage("materials.html", {});
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   /* PMO Decision (Teaching Material Upload v1.0): more real materials have
      since been added to the Repository (國文 five lessons alongside the
@@ -957,7 +1037,7 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
     const k = window.sessionStorage.key(i);
     carried[k] = JSON.parse(window.sessionStorage.getItem(k));
   }
-  const { window: quizWindow, consoleErrors: quizErrors } = loadPage("quiz.html", { seedSession: carried });
+  const { window: quizWindow, consoleErrors: quizErrors } = loadPage("quiz.html", { seedSession: carried, excludeScripts: ["js/data/TeachingMaterialData.js"] });
   quizWindow.AHS.TeachingMaterialLoader.initialize();
   const examId = "teaching_material_" + rt.id;
   check("quiz.html 沿用同一 Session 也能將真實單選題匯入 QuestionRuntime", quizWindow.AHS.QuestionRuntime.hasExam(examId));
@@ -967,7 +1047,7 @@ console.log("\n[24] HOTFIX-002 — Repository Loader Bridge：AHS.MaterialReposi
 
 console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個區塊皆正確 Render（PAT FAIL 修正回歸測試）");
 {
-  const { window, consoleErrors } = loadPage("materials.html", {});
+  const { window, consoleErrors } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   const A = window.AHS;
   const item = A.MaterialRuntime.list()[0];
@@ -1024,7 +1104,7 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   /* Issue 001: summary.html's ⑤ 複習建議 must show real, derived content
      for a Repository-sourced material — never "尚無資料", never
      fabricated, never requiring a click. */
-  const p1 = loadPage("materials.html", {});
+  const p1 = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const rt = p1.window.AHS.MaterialRuntime.list()[0];
   const carried = {};
   for (let i = 0; i < p1.window.sessionStorage.length; i++) {
@@ -1050,38 +1130,61 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   })() });
   check("一般教材（五段皆空）：仍誠實顯示分析中狀態，未受影響", /AI 正在分析教材/.test(p3.window.document.body.textContent));
 
-  /* Issue 002: quiz.html must show real Repository questions immediately
-     via BOTH entry points — the new examId link (Sprint v1.6) and the
-     pre-existing materialId-only link (Summary Detail's「開始 AI
-     練習」, unchanged since Sprint 6.8) — with 難度/考點 shown, and
-     without a second, empty Practice-Mode section rendering alongside
-     the real content. */
-  const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id });
-  const bodyM = qByMaterialId.window.document.body.textContent;
-  check("② Quiz Center（materialId-only 連結）：不再顯示「尚無 AI 練習題」", !bodyM.includes("尚無 AI 練習題"));
-  check("② Quiz Center（materialId-only 連結）：立即顯示真實題目", bodyM.includes("私有財產權"));
-  check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊正確隱藏（不與 Exam 內容同時顯示）",
-    !!qByMaterialId.window.document.querySelector(".quiz-practice-root[hidden]"));
-  const qcardMeta = qByMaterialId.window.document.querySelector(".qcard__meta");
-  check("② Quiz Center：顯示難度／考點（Repository 實際擁有的欄位）", !!qcardMeta && /難度：/.test(qcardMeta.textContent) && /考點：/.test(qcardMeta.textContent));
-  check("Console errors = 0（quiz.html materialId-only，HOTFIX-004）", qByMaterialId.consoleErrors.length === 0);
+  /* Sprint AI-122 AI-122-02/03 (再次修正 HOTFIX-004 Issue 002): a real
+     materialId/examId link with mode=practice must now ALWAYS land on
+     Practice Mode — never Formal Exam — reversing HOTFIX-004's own
+     workaround (quoted in QuizCenter.js) from when Practice Mode had no
+     real content for a Repository material. AI-121's real QuestionBank/
+     QuestionRuntime now gives it real content, so both entry points land
+     on the pre-existing 巧巧老師出題引導 (Sprint 6.8 flow, previously
+     bypassed only because it used to be genuinely empty for these
+     materials) scoped to THIS material only; picking a difficulty and
+     starting reveals a real, scoped practice question list — never the
+     unfiltered full catalog (AI-122-03). */
+  const qByMaterialId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&materialId=" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
+  const docM = qByMaterialId.window.document;
+  check("② Quiz Center（materialId-only 連結）：進入巧巧老師出題引導（Practice Mode，不再導向平時練習）",
+    !!docM.querySelector('.qguide[aria-label="巧巧老師出題引導"]') && !docM.querySelector(".qcard"));
+  check("② Quiz Center（materialId-only 連結）：Practice Mode 區塊未被隱藏（AI-122-02）",
+    !docM.querySelector(".quiz-practice-root[hidden]"));
+  docM.querySelector('.qguide__diff[data-difficulty="medium"]').click();
+  docM.querySelector(".qguide__start").click();
+  const qs0MaterialId = qByMaterialId.window.AHS.QuestionRuntime.getSet("teaching_material_" + rt.id)[0];
+  check("② Quiz Center（materialId-only 連結）：開始練習後顯示此教材真實題目（AI-122-03：僅此教材，非全部教材）",
+    !!qs0MaterialId && docM.body.textContent.includes(qs0MaterialId.text) && !docM.querySelector('[aria-label="Repository 教材"]'));
+  const realRow = docM.querySelector(".quiz-practice__row");
+  check("② Quiz Center：真實題目可點擊進入單題作答", !!realRow);
+  if (realRow) { realRow.click(); }
+  const realMeta = docM.querySelector(".quiz-practice__meta");
+  check("② Quiz Center：作答畫面顯示難度／考點（Repository 實際擁有的欄位）",
+    !!realMeta && /難度：/.test(realMeta.textContent) && /考點：/.test(realMeta.textContent));
+  check("Console errors = 0（quiz.html materialId-only，AI-122-02）", qByMaterialId.consoleErrors.length === 0);
 
-  const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id });
-  check("② Quiz Center（examId 連結，Sprint v1.6）：仍正常運作，未受影響", qByExamId.window.document.body.textContent.includes("私有財產權"));
-  check("② Quiz Center（examId 連結）：Practice Mode 區塊仍正確隱藏", !!qByExamId.window.document.querySelector(".quiz-practice-root[hidden]"));
+  const qByExamId = loadPage("quiz.html", { seedSession: carried, url: "quiz.html?mode=practice&examId=teaching_material_" + rt.id, excludeScripts: ["js/data/TeachingMaterialData.js"] });
+  const docE = qByExamId.window.document;
+  check("② Quiz Center（examId 連結）：同樣進入巧巧老師出題引導（Practice Mode，不再導向平時練習）",
+    !!docE.querySelector('.qguide[aria-label="巧巧老師出題引導"]') && !docE.querySelector(".qcard"));
+  check("② Quiz Center（examId 連結）：Practice Mode 區塊未被隱藏", !docE.querySelector(".quiz-practice-root[hidden]"));
 
-  /* PAT: 開始測驗 -> AutoGrader -> WrongBook -> History 全部正常. */
-  const AQ = qByMaterialId.window.AHS;
+  /* PAT：真實練習作答 -> 直接透過 WrongBookRuntime／KnowledgeMasteryRuntime
+     真實 Knowledge Engine（AI-121）寫入，而非 Formal Exam 的 AutoGrader／
+     HistoryRuntime 路徑（那條路徑僅屬於平時練習，Practice Mode 不應誤觸，
+     覆蓋範圍已由本檔其餘 AutoGrader／WrongBook／History PAT 涵蓋）。 */
+  docE.querySelector('.qguide__diff[data-difficulty="medium"]').click();
+  docE.querySelector(".qguide__start").click();
+  const AQ = qByExamId.window.AHS;
   const examId = "teaching_material_" + rt.id;
   const qs = AQ.QuestionRuntime.getSet(examId);
-  qs.forEach(q => { AQ.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG" : q.correctAnswer); });
-  const finished = AQ.ExamRuntime.finish(examId);
-  const graded = AQ.AutoGrader.grade(finished);
-  check("PAT：AutoGrader 正常評分", graded.totalCount === qs.length && graded.wrong.length === 1);
-  const touched = AQ.WrongBookRuntime.sync(graded);
-  check("PAT：WrongBook 正常寫入", touched.length === 1 && AQ.WrongBookRuntime.list().length === 1);
-  const hist = AQ.HistoryRuntime.record(graded);
-  check("PAT：History 正常寫入", !!hist && AQ.HistoryRuntime.count() === 1);
+  const wrongBefore = AQ.WrongBookRuntime.list().length;
+  docE.querySelector(".quiz-practice__row").click();
+  const wrongOption = [...docE.querySelectorAll(".quiz-practice__option")]
+    .find(b => b.dataset.key !== qs[0].correctAnswer) || docE.querySelector(".quiz-practice__option");
+  wrongOption.click();
+  check("PAT：真實練習答錯 -> 直接寫入知識弱點（AHS.WrongBookRuntime，AI-121 Knowledge Engine）",
+    AQ.WrongBookRuntime.list().length === wrongBefore + 1);
+  const masteryAfter = AQ.KnowledgeMasteryRuntime.get(qs[0].knowledgePoint);
+  check("PAT：真實練習作答 -> 直接寫入 KnowledgeMasteryRuntime（同一 Knowledge Engine，非 Formal Exam 路徑）",
+    !!masteryAfter && masteryAfter.attemptCount >= 1);
 
   /* Regular material's Practice/Guide flow (LearningQuestionRuntime-based,
      unrelated to any Repository) must be completely unaffected. A fresh,
@@ -1109,7 +1212,7 @@ console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示�
      confirm resolve() still returns real data purely by calling it cold,
      immediately after page load, before anything else has touched
      AHS.TeachingMaterialLoader. */
-  const { window } = loadPage("materials.html", {});
+  const { window } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const A = window.AHS;
   // Reset the Loader's own idempotency flag to simulate "not yet initialized",
   // without touching MaterialRuntime/idMap state already persisted from the
@@ -1134,7 +1237,7 @@ console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示�
 
 console.log("\n[28] 學習總結 — 重點關鍵字紅色標示");
 {
-  const p1 = loadPage("materials.html", {});
+  const p1 = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const rt3 = p1.window.AHS.MaterialRuntime.list()[0];
   const carried3 = {};
   for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried3[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
@@ -1155,37 +1258,48 @@ console.log("\n[29] HOTFIX-005 AI-501 — 測驗中心 Repository 自動同步�
      -tagged on quiz.html lets TeachingMaterialLoader.load() fully
      bootstrap the Repository material on quiz.html itself, not just on
      materials.html. */
-  const { window, consoleErrors } = loadPage("quiz.html", {});
+  const { window, consoleErrors } = loadPage("quiz.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc = window.document;
   doc.body.appendChild(window.AHS.QuizCenter.create());
 
-  check("正式測驗：Repository 教材直接出現在預設列表（無需先經教材中心）",
+  check("平時練習：Repository 教材直接出現在預設列表（無需先經教材中心）",
     /私有財產權|所有權/.test(doc.body.textContent) && doc.querySelectorAll(".quiz-row").length > 0);
   const examRow = doc.querySelector(".quiz-row");
-  check("正式測驗：可直接點擊開始（走既有 tryDirectExamEntry／startFromExam，非重新產生）", !!examRow);
+  check("平時練習：可直接點擊開始（走既有 tryDirectExamEntry／startFromExam，非重新產生）", !!examRow);
   if (examRow) {
     examRow.querySelector(".quiz-row__start").click();
     check("點擊後直接進入真實測驗畫面（真實題目，非 Mock）", /私有財產權|所有權/.test(doc.body.textContent) &&
       !!doc.querySelector(".qcard, .quiz-exam, [class*='exam']"));
   }
 
-  const p2 = loadPage("quiz.html", {});
+  const p2 = loadPage("quiz.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const doc2 = p2.window.document;
   doc2.body.appendChild(p2.window.AHS.QuizCenter.create());
-  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "練習模式");
+  const practiceTab = [...doc2.querySelectorAll(".quiz-mode__tab")].find(t => t.textContent === "考前總複習");
   practiceTab.click();
   check("練習模式：Repository 教材也直接出現（不需 materialId 帶入）",
     /Repository 教材/.test(doc2.body.textContent) && (/私有財產權|所有權/.test(doc2.body.textContent)));
   const repoRow = doc2.querySelector(".quiz-practice__row");
+  const ownRoot = repoRow && repoRow.closest(".quiz-practice-root");
   if (repoRow) { repoRow.click(); }
-  check("點擊練習模式中的 Repository 教材：切換到真實測驗畫面（Runtime 未混用，僅切換顯示）",
-    !doc2.querySelector(".quiz-practice-root:not([hidden])") || /私有財產權|所有權/.test(doc2.body.textContent));
-  check("Console errors = 0（quiz.html 直接進入，AI-501）", consoleErrors.length === 0);
+  /* Sprint AI-122 AI-122-02/10 (CTA 一致化): 點擊練習模式自己列表中的
+     Repository 列，drill 進入該教材真實題目列表 — 仍停留在 Practice
+     Mode，不再切換到平時練習（HOTFIX-005 當時因 Practice Mode 尚無真實
+     內容才切去 Exam，AI-121 之後已不誠實）。 Scoped to THIS row's own
+     practiceRoot — QuizCenter.create() is mounted twice on this page
+     (once by AppQuiz.js's real bootstrap, once by this test's own manual
+     doc2.body.appendChild above), so a document-wide .quiz-practice-root
+     query would false-fail on the OTHER instance's own untouched, still
+     hidden practiceRoot. */
+  check("點擊練習模式中的 Repository 教材：drill 進入該教材真實練習題（仍在 Practice Mode，不再切換到平時練習）",
+    !!ownRoot && !ownRoot.hasAttribute("hidden") && !ownRoot.querySelector(".qcard") &&
+    /私有財產權|所有權/.test(ownRoot.textContent));
+  check("Console errors = 0（quiz.html 直接進入，AI-501／AI-122）", consoleErrors.length === 0);
 }
 
 console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時產生真實 .docx");
 {
-  const { window } = loadPage("materials.html", {});
+  const { window } = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const A = window.AHS;
   const item = A.MaterialRuntime.list()[0];
 
@@ -1247,7 +1361,7 @@ console.log("\n[30] HOTFIX-005 AI-502 — 教材下載：Repository 教材即時
 
 console.log("\n[31] HOTFIX-005 AI-503 — 下載總結：直接產生列印內容（真實 PDF，透過瀏覽器另存為）");
 {
-  const p1 = loadPage("materials.html", {});
+  const p1 = loadPage("materials.html", { excludeScripts: ["js/data/TeachingMaterialData.js"] });
   const rt = p1.window.AHS.MaterialRuntime.list()[0];
   const carried = {};
   for (let i = 0; i < p1.window.sessionStorage.length; i++) { const k = p1.window.sessionStorage.key(i); carried[k] = JSON.parse(p1.window.sessionStorage.getItem(k)); }
@@ -1279,7 +1393,7 @@ console.log("\n[31] HOTFIX-005 AI-503 — 下載總結：直接產生列印內�
   check("iframe 內容包含真實教材標題與核心概念", iframe.getAttribute("srcdoc").includes("排他性"));
   check("Console errors = 0（下載總結）", consoleErrors.length === 0);
 
-  const emptyPage = loadPage("summary.html", { excludeScripts: ["data/materials/"] });
+  const emptyPage = loadPage("summary.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
   const emptyBtn = [...emptyPage.window.document.querySelectorAll(".sum-export")].find(b => b.textContent.includes("下載總結"));
   emptyBtn.click();
   check("完全沒有學習總結時：明確提示，不產生空白 PDF", /目前沒有可匯出的學習總結/.test(emptyPage.window.document.querySelector(".sum-status").textContent));
@@ -1450,12 +1564,12 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
   check("AI-612: tutor.html 的訊息串真的包含真實建議文字（非僅罐頭回覆）",
     pTutor.window.document.body.textContent.includes("已有 1 題錯題達到精熟"));
 
-  /* AI-602/608: 測驗中心同步 — 完成/精熟後，正式測驗與練習模式列表仍
+  /* AI-602/608: 測驗中心同步 — 完成/精熟後，平時練習與練習模式列表仍
      一致反映真實資料，全流程走完未出現 Runtime 孤島。 */
   const pQuiz = loadPage("quiz.html", { seedSession: carried });
   pQuiz.window.document.body.appendChild(pQuiz.window.AHS.QuizCenter.create());
   const finalRow = pQuiz.window.document.querySelector(".quiz-row");
-  check("AI-608: 測驗中心同步 — 完成/精熟後正式測驗列表仍正確反映真實完成狀態",
+  check("AI-608: 測驗中心同步 — 完成/精熟後平時練習列表仍正確反映真實完成狀態",
     !!finalRow && finalRow.classList.contains("is-done"));
 
   check("AI-613: 全流程無 Console errors（教材->測驗->批改->錯題->複習->首頁->AI Tutor->複習中心->測驗中心）",
@@ -1467,6 +1581,400 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
   const wbFinal = pQuiz.window.AHS.WrongBookRuntime.getById(wrongId);
   check("AI-613: 跨頁資料一致（WrongBookRuntime 為唯一真實來源，無重複/不一致資料）",
     wbFinal.correctStreak >= 3 && pReview.window.AHS.StatisticsRuntime.masteredReviewItems()[0].id === wrongId);
+}
+
+console.log("\n[35] Platform Sync Check — Statistics 單一資料來源一致性（我的學習 vs 測驗中心）");
+{
+  /* Finding: js/components/MyLearning.js used to compute its own
+     totalCorrect/totalQuestions weighted-average "正確率" independently
+     from AHS.StatisticsRuntime.overview()'s avgAccuracy (average of each
+     exam's own accuracy%) — same real AHS.HistoryRuntime data, two
+     different formulas, two different displayed numbers. Two crafted
+     real-shaped history records with deliberately different per-exam
+     accuracy make the two formulas diverge (weighted 4/14=28.6% vs
+     unweighted mean of 75%/10%=42.5%→43%) if the bug still existed. */
+  const history = {
+    items: [
+      { id: "hist_1", order: 1, examId: "e1", subject: "math", title: "考試一", chapter: "",
+        score: 75, accuracy: 75, correctCount: 3, totalCount: 4, when: "2026/08/02 09:00" },
+      { id: "hist_2", order: 2, examId: "e2", subject: "math", title: "考試二", chapter: "",
+        score: 10, accuracy: 10, correctCount: 1, totalCount: 10, when: "2026/08/02 10:00" }
+    ], seq: 2
+  };
+  const { window, consoleErrors } = loadPage("learning.html", { seedSession: { "ahs:historyRuntime": history } });
+  const A = window.AHS;
+  const expected = A.StatisticsRuntime.overview().avgAccuracy;
+  window.document.body.appendChild(A.MyLearning.create());
+  const statValue = [...window.document.querySelectorAll(".ml-overview__stat")]
+    .find(s => s.textContent.includes("正確率"));
+  check("我的學習「正確率」與 AHS.StatisticsRuntime.overview().avgAccuracy 完全一致（單一資料來源，非重新計算）",
+    !!statValue && statValue.textContent.includes(String(expected)) && statValue.textContent.includes("%"));
+  check("非退化案例：兩公式在此組資料下真的會分歧（確認測試本身有效，不是巧合通過）",
+    expected !== Math.round((3 + 1) / (4 + 10) * 1000) / 10);
+  check("Console errors = 0（我的學習 Statistics 一致性）", consoleErrors.length === 0);
+}
+
+console.log("\n[36] Platform Refactor Master — Platform Integration（PAT 6/7/12 名詞與導覽修正）");
+{
+  /* PAT 6/7 (original): 首頁「最近教材」顯示的是 MaterialRuntime.progress
+     （閱讀進度），曾被誤標為「學習進度」。Sprint AI-117 AI-117-01 supersedes
+     this label again — "取消目前「閱讀進度」概念": the card now shows real
+     Material Completion (AHS.StatisticsRuntime.materialCompletion(),
+     ①教材閱讀 ②測驗 ③複習) under a "教材完成度" label, never "學習進度"
+     either. Same underlying real data source, only the displayed label/
+     value definition changed (per this Sprint's own explicit instruction,
+     not a silent regression). */
+  const materialSeed = {
+    materials: [{
+      id: "rt_1", order: 1, subject: "math", title: "測試教材", chapter: "第一章",
+      grade: "高一", category: "課本", date: "2026/08/01", views: "1", content: "",
+      createdAt: todayStr(),
+      progress: 42, lastOpenedAt: "2026/08/01 10:00", lastLearningAt: "2026/08/01 10:00",
+      learningTime: 10, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
+      fileSize: "", folderId: null
+    }],
+    folders: [], seq: 1, folderSeq: 0
+  };
+  const { window, consoleErrors } = loadPage("index.html", { seedSession: { "ahs:materialRuntime": materialSeed } });
+  const doc = window.document;
+  const recentCard = doc.querySelector(".recent-card, [class*='recent-card']");
+  check("首頁最近教材卡片標籤為「教材完成度」（Sprint AI-117 Material Completion，非「學習進度」）",
+    !!recentCard && recentCard.textContent.includes("教材完成度") && !recentCard.textContent.includes("學習進度"));
+  check("Console errors = 0（首頁最近教材）", consoleErrors.length === 0);
+
+  /* Sprint AI-118 AI-118-09: Bottom Navigation reordered/trimmed to match
+     the new Sidebar (首頁/教材中心/學習總結/測驗中心/錯題本) — "我的"/
+     "複習" (learning.html/review.html) removed from both Nav lists;
+     those pages themselves still exist and are reachable by direct URL
+     (AI-118-02/AI-118-03), only the Nav entry is gone. Supersedes the
+     old PAT 12 check above (Bottom Nav「我的」→ learning.html), which no
+     longer applies since there is no "我的" Bottom Nav item at all. */
+  const bottomLabels = [...doc.querySelectorAll(".bottom-nav__item")].map(n => n.textContent.trim());
+  check("Bottom Navigation 不再有「我的」／「複習」項目",
+    !bottomLabels.some(t => t.includes("我的")) && !bottomLabels.some(t => t.includes("複習") && t !== "知識弱點"));
+  const bottomHrefs = [...doc.querySelectorAll(".bottom-nav__item")].map(n => n.getAttribute("href")).filter(Boolean);
+  check("Bottom Navigation 不再連向 learning.html／review.html",
+    !bottomHrefs.includes("learning.html") && !bottomHrefs.includes("review.html"));
+}
+
+console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10：教材/學習總結/測驗中心/錯題本/複習中心共用同一 Tutor Context）");
+{
+  /* Same real WrongBookRuntime record shape AI-111's own groups use.
+     correctStreak: 0 (< 3) makes it a real "due for review" item, so
+     AHS.TutorMessage.build() (the exact same function 首頁/tutor.html
+     already call) produces a real, non-null message — proving these 5
+     pages now read from the identical single source, not a re-derived
+     or fabricated one. */
+  const wrongBookSeed = {
+    items: [{
+      id: "wb_1", questionId: "q1", subject: "math", title: "測試教材",
+      chapter: "第一章", materialId: "rt_1", knowledgePoint: "二次函數",
+      question: "1+1=?", options: ["1", "2"], yourAnswer: "1", correctAnswer: "2",
+      explanation: "", errorCount: 1, lastError: "2026/08/02 10:00",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1
+  };
+  const pages = ["materials.html", "summary.html", "quiz.html", "wrongbook.html", "review.html"];
+
+  pages.forEach(function (page) {
+    const { window, consoleErrors } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+    const tip = window.document.querySelector(".tutor-tip");
+    check(page + "：Tutor Context Tip 渲染真實建議（與首頁/AI Tutor 同一組真實資料來源）",
+      !!tip && tip.textContent.includes("題錯題待複習") && tip.getAttribute("href") === "tutor.html");
+    check(page + "：Console errors = 0（Tutor Context Tip）", consoleErrors.length === 0);
+  });
+
+  /* Honesty check: with genuinely no real data anywhere, the tip must
+     render nothing at all — never an Empty State placeholder box added
+     to a page that never had one, and never fabricated filler text. */
+  pages.forEach(function (page) {
+    const { window } = loadPage(page, { excludeScripts: ["data/materials/"] });
+    check(page + "：無真實資料時 Tutor Context Tip 不渲染（誠實，非假建議）",
+      !window.document.querySelector(".tutor-tip"));
+  });
+}
+
+console.log("\n[38] Sprint AI-113 — Settings + User Menu（AI-804/AI-805：真實功能，非 Stub）");
+{
+  const { window, consoleErrors } = loadPage("index.html", {});
+  const A = window.AHS;
+  const doc = window.document;
+
+  const overlay = doc.querySelector(".settings-panel__overlay");
+  check("Settings Panel 已掛載且預設隱藏", !!overlay && overlay.hasAttribute("hidden"));
+
+  const sidebarSettingsBtn = [...doc.querySelectorAll(".sidebar__item")].find(b => b.textContent.includes("設定"));
+  sidebarSettingsBtn.click();
+  check("Sidebar「設定」按鈕真實開啟 Settings Panel（非 Stub）", overlay && !overlay.hasAttribute("hidden"));
+
+  const nameInput = overlay.querySelector('.settings-panel__section input[type="text"]');
+  const saveBtn = [...overlay.querySelectorAll(".settings-panel__btn")].find(b => b.textContent === "儲存");
+  nameInput.value = "測試學生";
+  nameInput.dispatchEvent(new window.Event("input", { bubbles: true }));
+  saveBtn.click();
+  check("Profile 儲存後真實寫入 AHS.SettingsRuntime", A.SettingsRuntime.get().profile.name === "測試學生");
+  const topbarName = doc.querySelector(".topbar__user-meta strong");
+  check("Profile 儲存後 Topbar 顯示名稱即時更新（非需重新整理）", !!topbarName && topbarName.textContent === "測試學生");
+
+  const tutorToggle = overlay.querySelector(".settings-panel__checkbox");
+  const wasChecked = tutorToggle.checked;
+  tutorToggle.checked = !wasChecked;
+  tutorToggle.dispatchEvent(new window.Event("change", { bubbles: true }));
+  check("Learning 設定（顯示 AI 建議卡片）真實持久化", A.SettingsRuntime.get().showTutorSuggestions === !wasChecked);
+
+  const repoInfo = [...overlay.querySelectorAll(".settings-panel__info")].find(p => p.textContent.includes("Repository 教材"));
+  check("Repository 區塊顯示真實教材筆數（來自 AHS.MaterialRepository/AHS.TeachingMaterialData）",
+    !!repoInfo && /Repository 教材：\d+ 筆｜Package 教材：\d+ 筆/.test(repoInfo.textContent));
+
+  const backupBtn = [...overlay.querySelectorAll(".settings-panel__btn")].find(b => b.textContent === "備份全部資料");
+  check("備份按鈕存在且非 Stub（點擊呼叫真實 AHS.PersistenceAdapter.exportAll + 真實下載）", !!backupBtn);
+  const before = A.PersistenceAdapter.exportAll();
+  check("exportAll() 真實回傳目前 session 的資料（含剛儲存的 settings）", !!before.settings && before.settings.profile.name === "測試學生");
+
+  check("Console errors = 0（Settings Panel 開啟與操作）", consoleErrors.length === 0);
+
+  const profileMenuBtn = doc.querySelector(".topbar__user");
+  profileMenuBtn.click();
+  const logoutItem = [...doc.querySelectorAll(".profile-menu__item")].find(b => b.textContent === "Logout");
+  check("Profile Menu 的 Logout 項目存在", !!logoutItem);
+  logoutItem.click();
+  check("Logout 真實清空 AHS-namespace session 資料（非僅 UI 選單關閉）",
+    Object.keys(A.PersistenceAdapter.exportAll()).length === 0);
+}
+
+console.log("\n[39] Sprint AI-113 AI-808 — AI Tutor Context 依「目前教材」真實客製化（非固定文字）");
+{
+  const materialSeed = {
+    materials: [{
+      id: "rt_1", order: 1, subject: "math", title: "AI-808 測試教材", chapter: "第九章",
+      grade: "高一", category: "課本", date: "2026/08/03", views: "1", content: "",
+      progress: 60, lastOpenedAt: "2026/08/03 10:00", lastLearningAt: "2026/08/03 10:00",
+      learningTime: 10, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
+      fileSize: "", folderId: null
+    }],
+    folders: [], seq: 1, folderSeq: 0
+  };
+  const { window } = loadPage("summary.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed },
+    url: "summary.html?materialId=rt_1"
+  });
+  const A = window.AHS;
+  const built = A.TutorMessage.build(A.StatisticsRuntime.learningContext(), { page: "summary", materialId: "rt_1" });
+  check("materialId 存在時，訊息真實提及該教材標題與章節", !!built && built.message.includes("AI-808 測試教材") && built.message.includes("第九章"));
+  /* Sprint AI-117 AI-117-01/AI-117-07: message now reports real Material
+     Completion (via AHS.StatisticsRuntime.materialContext(), the Tutor
+     Engine's sole read path) instead of raw reading progress. progress:60
+     (< 100, stage 0 — reading not yet DONE) interpolates to a real,
+     non-fixed 12% (round(60/100*20)) — still genuinely derived from the
+     real progress value, never a canned string. */
+  check("訊息真實反映該教材的 Material Completion（非固定文字）", built.message.includes("12%") && built.message.includes("尚未開始"));
+
+  const tip = window.document.querySelector(".tutor-tip");
+  check("summary.html 的 Tutor Context Tip 真實帶入該頁 materialId 客製化內容", !!tip && tip.textContent.includes("AI-808 測試教材"));
+
+  const builtNoMaterial = A.TutorMessage.build(A.StatisticsRuntime.learningContext(), { page: "summary" });
+  check("無 materialId 時維持既有通用邏輯（向下相容，未破壞既有行為）",
+    !builtNoMaterial || !builtNoMaterial.message.includes("AI-808 測試教材"));
+}
+
+console.log("\n[40] Sprint AI-114 AI-901 — Review Session（複習中心真實在頁複習流程，非跳轉錯題本）");
+{
+  const wrongBookSeed = {
+    items: [{
+      id: "wb_1", questionId: "q1", subject: "math", title: "AI-901 測試教材",
+      chapter: "第一章", materialId: "rt_1", knowledgePoint: "測試知識點",
+      question: "1+1=?", options: [{ key: "A", text: "1" }, { key: "B", text: "2" }],
+      yourAnswer: "A", correctAnswer: "B",
+      explanation: "詳解", errorCount: 1, lastError: "2026/08/03 09:00",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1
+  };
+  const { window, consoleErrors } = loadPage("review.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+  const doc = window.document;
+  const A = window.AHS;
+
+  const startBtn = [...doc.querySelectorAll(".rv-quick__btn")].find(b => b.textContent.includes("開始今日複習"));
+  check("dueToday > 0 時「開始今日複習」為真實按鈕（非連結跳轉錯題本）", !!startBtn && startBtn.tagName === "BUTTON");
+  startBtn.click();
+
+  const session = doc.querySelector(".rv-session");
+  check("點擊後真實在頁掛載 Review Session（非導向 wrongbook.html）", !!session && session.textContent.includes("AI-901 測試教材"));
+  check("Review Session 重用 WrongBook 既有真實作答互動元件（同一定義，非另建一份）",
+    !!session.querySelector(".wb-detail__options") && !!session.querySelector(".wb-detail__btn--primary"));
+
+  const correctOpt = [...session.querySelectorAll(".wb-detail__option")]
+    .find(li => li.querySelector(".wb-detail__option-key").textContent === "B");
+  correctOpt.click();
+  const submitBtn = [...session.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("提交答案"));
+  submitBtn.click();
+
+  check("作答後真實更新 WrongBookRuntime.correctStreak（透過 ReviewRuntime.answerCurrent，非畫面局部狀態）",
+    A.WrongBookRuntime.getById("wb_1").correctStreak === 1);
+
+  const resultScreen = doc.querySelector(".rv-session__result");
+  check("完成唯一題目後顯示真實複習結果（總題數/答對/正確率）",
+    !!resultScreen && resultScreen.textContent.includes("答對") && resultScreen.textContent.includes("100%"));
+
+  const doneBtn = doc.querySelector(".rv-session__btn--primary");
+  doneBtn.click();
+  check("完成後真實返回複習中心（頁面以最新真實狀態重新渲染）",
+    !doc.querySelector(".rv-session") && !!doc.querySelector(".rv-quick"));
+
+  check("Console errors = 0（Review Session 全流程）", consoleErrors.length === 0);
+}
+
+console.log("\n[41] Sprint AI-114 AI-902 — WrongBook 全部重新複習只包含尚未精熟項目");
+{
+  const wrongBookSeed = {
+    items: [
+      { id: "wb_1", questionId: "q1", subject: "math", title: "已精熟教材", chapter: "第一章",
+        materialId: "", knowledgePoint: "kp1", question: "Q1", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+        yourAnswer: "A", correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+        bookmarked: false, correctStreak: 3 },
+      { id: "wb_2", questionId: "q2", subject: "math", title: "尚未精熟教材", chapter: "第二章",
+        materialId: "", knowledgePoint: "kp2", question: "Q2", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+        yourAnswer: "A", correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+        bookmarked: false, correctStreak: 0 }
+    ], seq: 2
+  };
+  const { window } = loadPage("wrongbook.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+  const doc = window.document;
+  /* Sprint AI-118 AI-118-07: 複習中心 Navigation 移除後「今日待複習」改由
+     錯題本自己顯示（同一條 correctStreak < 3 規則，經
+     AHS.StatisticsRuntime.dueForReview() 讀取，非第二套計算）。 */
+  const summaryValues = [...doc.querySelectorAll(".wb-summary__item")];
+  const dueTodayItem = summaryValues.find(n => n.textContent.includes("今日待複習"));
+  check("錯題本統計卡顯示真實「今日待複習」（經 StatisticsRuntime.dueForReview()）",
+    !!dueTodayItem && dueTodayItem.querySelector(".wb-summary__value").textContent === "1");
+
+  const reviewAllBtn = [...doc.querySelectorAll(".wb-action")].find(b => b.textContent.includes("全部重新練習"));
+  reviewAllBtn.click();
+  const sessionBody = doc.querySelector(".wb-review-session__progress");
+  check("全部重新複習只納入尚未精熟項目（1 題，已精熟的另一題被排除）",
+    !!sessionBody && sessionBody.textContent.includes("1 / 1"));
+}
+
+console.log("\n[42] Sprint AI-114 AI-903 — Daily Task Engine（首頁今日任務真實、依優先序、非固定文字）");
+{
+  const materialSeed = {
+    materials: [
+      { id: "rt_1", order: 1, subject: "math", title: "進行中教材", chapter: "第一章",
+        grade: "高一", category: "課本", date: "2026/08/03", views: "1", content: "",
+        progress: 40, lastOpenedAt: "2026/08/03 09:00", lastLearningAt: "2026/08/03 09:00",
+        learningTime: 5, learningCount: 1, favorite: false, fileName: "", fileType: "FILE",
+        fileSize: "", folderId: null },
+      { id: "rt_2", order: 2, subject: "english", title: "尚未開始教材", chapter: "Unit 1",
+        grade: "高一", category: "課本", date: "2026/08/03", views: "0", content: "",
+        progress: 0, lastOpenedAt: null, lastLearningAt: null,
+        learningTime: 0, learningCount: 0, favorite: false, fileName: "", fileType: "FILE",
+        fileSize: "", folderId: null }
+    ], folders: [], seq: 2, folderSeq: 0
+  };
+  const wrongBookSeed = {
+    items: [{ id: "wb_1", questionId: "q1", subject: "math", title: "測試", chapter: "第一章",
+      materialId: "rt_1", knowledgePoint: "kp1", question: "Q", options: [], yourAnswer: "A",
+      correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+      bookmarked: false, correctStreak: 0 }], seq: 1
+  };
+  const { window, consoleErrors } = loadPage("index.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:wrongBookRuntime": wrongBookSeed }
+  });
+  const A = window.AHS;
+  const tasks = A.LearningStateRuntime.dailyTasks(4);
+  check("今日任務真實、非空（有真實待複習/未完成教材資料時）", tasks.length > 0);
+  check("優先序①今日 Review 排在最前（真實 dueForReview 存在）", tasks[0].kind === "review");
+  check("今日任務內容包含真實教材標題（非固定文字）",
+    tasks.some(t => t.title.includes("進行中教材")) || tasks.some(t => t.title.includes("尚未開始教材")));
+
+  const taskCard = window.document.querySelector(".today-card");
+  check("首頁今日任務卡片真實渲染任務列（非既有空狀態文案）",
+    !!taskCard && !taskCard.textContent.includes("今天沒有安排學習任務"));
+  check("Console errors = 0（Daily Task Engine）", consoleErrors.length === 0);
+
+  const { window: emptyWin } = loadPage("index.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
+  const emptyCard = emptyWin.document.querySelector(".today-card");
+  check("無真實資料時今日任務誠實顯示既有空狀態（非假造任務）",
+    !!emptyCard && emptyCard.textContent.includes("今天沒有安排學習任務"));
+}
+
+console.log("\n[43] Sprint AI-114 PAT — 複習中心不再顯示衝突的第二份「複習進度」（Practice Mode ReviewWidget 移除）");
+{
+  /* PAT report: review.html showed 3 different "複習進度"-flavored
+     panels with conflicting numbers — the real Exam Mode stats
+     (ReviewHomeCard, WrongBookRuntime-sourced) at the top, and
+     js/components/ReviewWidget.js (Practice Mode, WrongBookSession ->
+     ReviewQueue -> ReviewModel — a deliberately separate, LOCKed
+     pipeline that never shares data with Exam Mode) at the bottom,
+     honestly showing all-zero since no Practice Mode quiz was ever
+     taken in this scenario. Root cause wasn't a calculation bug —
+     both panels were individually correct for their own real, separate
+     data source — it was showing two genuinely different "複習進度"
+     concepts on the same page with no distinguishing label. Fix:
+     ReviewWidget removed from review.html (redundant now that this
+     page has its own complete real Exam Mode review flow); it remains
+     exactly as before on index.html, its own file header's documented
+     real home ("首頁 Review Widget"). */
+  const wrongBookSeed = {
+    items: [{
+      id: "wb_1", questionId: "q1", subject: "math", title: "測試教材",
+      chapter: "第一章", materialId: "rt_1", knowledgePoint: "kp1",
+      question: "Q", options: [], yourAnswer: "A", correctAnswer: "B",
+      explanation: "", errorCount: 1, lastError: "2026/08/03 09:00",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1
+  };
+  const { window: reviewWin, consoleErrors } = loadPage("review.html", { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+  check("複習中心不再掛載 Practice Mode 的 ReviewWidget（.review-widget 不存在）",
+    !reviewWin.document.querySelector(".review-widget"));
+  check("複習中心真實 Exam Mode 統計仍正常顯示（今日待複習 = 1）",
+    reviewWin.document.body.textContent.includes("今日待複習") &&
+    reviewWin.AHS.StatisticsRuntime.dueForReview().length === 1);
+  check("Console errors = 0（複習中心移除 ReviewWidget 後）", consoleErrors.length === 0);
+
+  /* Sprint AI-122 AI-122-08: Home's own composition changed this Sprint
+     — ReviewWidget is no longer auto-mounted there (see js/pages/
+     AppHome.js's own comment: not part of the PO's explicit 6-section
+     首頁資訊排序 list, overlaps 學習成效總覽/今日任務's own real signals).
+     The component itself is still real and unchanged (proved directly
+     in [13]/[14] above) — this check now honestly reflects "not
+     auto-mounted on Home" instead of the stale "首頁保持不變" claim. */
+  const { window: homeWin } = loadPage("index.html", {});
+  check("首頁不再自動掛載 ReviewWidget（AI-122-08：其資訊已併入學習成效總覽／今日任務，不重複顯示）",
+    !homeWin.document.querySelector(".review-widget"));
+}
+
+console.log("\n[44] HOTFIX-008 — Topbar 顯示名稱/年級跨頁與重新整理後仍與 Settings 同步");
+{
+  /* PAT report: 在 Settings 儲存顯示名稱後，換頁或重新整理，Topbar 又變回
+     預設的「同學」。Root cause：js/ui/AppShell.js 的 topbar() 一直是直接讀
+     AHS.AppConfig.user/student（Mock 預設值），SettingsPanel.js 的儲存
+     只在當下那次點擊時手動 patch 一次 DOM 節點文字 —
+     AppShell 重新 build（換頁、重新整理）時完全沒有讀真正的 Single Source
+     AHS.SettingsRuntime，於是又顯示回 Mock 預設。修正：topbar() 改為優先讀
+     AHS.SettingsRuntime.get().profile，AppConfig 僅作為它未載入時的備援。 */
+  const settingsSeed = { profile: { name: "小小兵", grade: "高中生" }, showTutorSuggestions: true, aiGatewayEnabled: false };
+
+  const { window: homeWin } = loadPage("index.html", { seedSession: { "ahs:settings": settingsSeed } });
+  const homeName = homeWin.document.querySelector(".topbar__user-meta strong");
+  check("首頁初次載入即顯示 Settings 儲存過的名稱（不需先手動觸發儲存）",
+    !!homeName && homeName.textContent === "小小兵");
+
+  const { window: reviewWin, consoleErrors } = loadPage("review.html", { seedSession: { "ahs:settings": settingsSeed } });
+  const reviewName = reviewWin.document.querySelector(".topbar__user-meta strong");
+  check("換到另一頁（複習中心）Topbar 名稱仍與 Settings 一致（不會變回「同學」）",
+    !!reviewName && reviewName.textContent === "小小兵");
+  check("Console errors = 0（Topbar 讀 SettingsRuntime）", consoleErrors.length === 0);
+
+  /* PAT Fix follow-up (real PO report): "登入時選擇的學生應與登入後右上角
+     的身分一致，目前是獨立事件" — 從未存過 Settings 時，profile.name 的
+     預設值改為真正登入的學生名稱（AHS.WorkspaceRuntime.label().studentName，
+     這裡是 loadPage() 自動 seed 的預設測試 Workspace student_a -> "Student
+     A"），不再是與登入者無關的字面預設「同學」。此 check 因此改為驗證這個
+     真正同步的名稱，而非舊有、獨立於登入身分的字面 fallback 字串。 */
+  const { window: guestWin } = loadPage("index.html", {});
+  const guestName = guestWin.document.querySelector(".topbar__user-meta strong");
+  check("從未存過 Settings 時 Topbar 預設顯示真正登入的學生名稱（不再是與登入身分無關的「同學」）",
+    !!guestName && guestName.textContent === "Student A");
 }
 
 console.log("\n==============================");

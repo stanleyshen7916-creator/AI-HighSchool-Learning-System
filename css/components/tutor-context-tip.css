@@ -1,0 +1,65 @@
+/* css/components/tutor-context-tip.css — shared styling for
+   js/ui/TutorContextTip.js (Platform Refactor Master · PAT 8/9/10).
+   Linked from every page that mounts the widget (教材中心/學習總結/
+   測驗中心/錯題本/複習中心), same pattern as components/qiaoqiao.css. */
+
+.tutor-tip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-line);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s ease;
+}
+
+.tutor-tip:hover,
+.tutor-tip:focus-visible {
+  border-color: var(--brand);
+}
+
+/* AI-130: the badge is now 巧巧老師's own bust (AHS.Qiaoqiao.randomBust()),
+   framed by the shared qiaoqiao-bust/qiaoqiao-bust--sm classes (same 40px
+   circular frame every other tip location already uses) — this rule only
+   adds the flex layout role, sizing/shape/background belong to that
+   shared class now. */
+.tutor-tip__icon {
+  flex: none;
+}
+
+.tutor-tip__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tutor-tip__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+.tutor-tip__msg {
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tutor-tip__more {
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-strong);
+}
+
+@media (max-width: 640px) {
+  .tutor-tip__more { display: none; }
+}

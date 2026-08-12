@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "TeachingMaterials/Metadata.schema.json",
   "title": "Teaching Material Metadata",
-  "description": "Per EO-S1.1-002 v1.0's exact 11-field list (supersedes EO-S1.1-001 v1.1's initial reuse of Sprint AI-103's MetadataParser.js field names — that PascalCase set described a different context, the raw Metadata.json import file), plus EO-S1.1-003 v1.0's materialType addition. Every field must be present; unknown values are null (or [] for arrays) — never guessed or fabricated.",
+  "description": "Per EO-S1.1-002 v1.0's exact 11-field list (supersedes EO-S1.1-001 v1.1's initial reuse of Sprint AI-103's MetadataParser.js field names — that PascalCase set described a different context, the raw Metadata.json import file), plus EO-S1.1-003 v1.0's materialType addition, plus Sprint AI-119 (Platform Core Baseline) §8/§9's school/semester Repository-classification fields. Every required field must be present; unknown values are null (or [] for arrays) — never guessed or fabricated. school/semester are optional (null on a Package that predates this Sprint and hasn't been migrated yet — a real, honest 'not yet classified' state, not fabricated to fit the Baseline's own School/Semester enum before that migration actually happens).",
   "type": "object",
   "required": [
     "materialId", "subject", "grade", "publisher", "chapter", "unit",
@@ -10,6 +10,8 @@
   ],
   "properties": {
     "materialId": { "type": "string", "pattern": "^tm_[0-9]+$", "description": "Stable id, assigned once on first analysis, e.g. tm_1" },
+    "school": { "type": ["string", "null"], "description": "Sprint AI-119 §8/§9: AHS.WorkspaceData.schools[].id (e.g. \"cjsh\"), or null when not yet classified." },
+    "semester": { "type": ["string", "null"], "description": "Sprint AI-119 §8/§9: AHS.WorkspaceData.semesters[].id (e.g. \"g1s2\"), or null when not yet classified." },
     "subject": { "type": ["string", "null"] },
     "grade": { "type": ["string", "null"] },
     "publisher": { "type": ["string", "null"] },

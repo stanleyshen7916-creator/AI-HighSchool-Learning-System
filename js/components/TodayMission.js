@@ -15,13 +15,35 @@ AHS.TodayMission = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* AI-127 Follow-up (Single Source of Truth fix): AHS.Subjects
+     (js/core/Icons.js) is the one real, still-existing subject UI-
+     metadata source (chinese/english/math/physics/chemistry/biology/
+     history/geography/civics) — never removed by Production Cleanup, so
+     TodayMission must reuse it directly rather than keep its own,
+     necessarily-divergent copy (the previous hotfix's local SUBJECTS
+     table used different hex values than AHS.Subjects' real ones for
+     the same code, e.g. math). A subject value AHS.Subjects doesn't
+     recognize (e.g. "" or "other", both real placeholder values
+     WrongBookRuntime.js/MaterialRuntime.js's own pullFromRepository()
+     assign to a record newly created from a real Supabase pull) still
+     needs a safe, non-throwing fallback — never a fabricated new
+     subject or a new visual system. */
+  function subjectMeta(value) {
+    var known = AHS.Subjects && AHS.Subjects[value];
+    if (known) { return known; }
+    return { name: value || "科目", hex: "#7c5cff" };
+  }
+
   function taskRow(item) {
-    var subj = AHS.Subjects[item.subject];
+    var subj = subjectMeta(item && item.subject);
+    var title = item && item.title ? item.title : "學習任務";
+    var done = item && typeof item.done === "number" ? item.done : 0;
+    var total = item && typeof item.total === "number" ? item.total : 0;
     var check = el("button", {
       type: "button",
       class: "today-task__check",
       "aria-pressed": "false",
-      "aria-label": "標記完成：" + subj.name + " " + item.title
+      "aria-label": "標記完成：" + subj.name + " " + title
     });
     var row = el("li", { class: "today-task" }, [
       check,
@@ -29,8 +51,8 @@ AHS.TodayMission = (function () {
         class: "chip",
         style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
       }, [el("span", { text: subj.name })]),
-      el("span", { class: "today-task__unit", text: item.title }),
-      el("span", { class: "today-task__count", text: item.done + "/" + item.total })
+      el("span", { class: "today-task__unit", text: title }),
+      el("span", { class: "today-task__count", text: done + "/" + total })
     ]);
     check.addEventListener("click", function () {
       var on = check.getAttribute("aria-pressed") === "true";

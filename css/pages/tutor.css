@@ -56,6 +56,16 @@
 .tutor-msg__act svg { width: 15px; height: 15px; }
 .tutor-msg__act:hover { background-color: var(--bg); color: var(--brand); }
 
+/* AHS.TutorEngine's off-topic menu — every item leads to a real answer
+   (never a dead end), rendered as small pill chips under the reply. */
+.tutor-msg__menu { display: flex; flex-wrap: wrap; gap: 8px; }
+.tutor-msg__menu-item {
+  border: 1px solid var(--brand-line); border-radius: var(--radius-pill); padding: 6px 14px;
+  background-color: var(--brand-soft); color: var(--brand); font: inherit; font-size: 13px;
+  cursor: pointer; text-decoration: none; display: inline-flex; align-items: center;
+}
+.tutor-msg__menu-item:hover { background-color: var(--brand); color: #ffffff; }
+
 /* ---- Input ----------------------------------------------------------- */
 .tutor-input { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
 .tutor-input__row { display: flex; align-items: center; gap: 10px; }
@@ -71,14 +81,6 @@
 }
 .tutor-input__send svg { width: 20px; height: 20px; }
 .tutor-input__send:hover { background-color: var(--brand-strong); }
-.tutor-input__tools { display: flex; gap: 8px; flex-wrap: wrap; }
-.tutor-input__tool {
-  display: inline-flex; align-items: center; gap: 6px;
-  border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 8px 14px;
-  background-color: var(--card); color: var(--text-muted); font: inherit; font-size: 13px; cursor: pointer;
-}
-.tutor-input__tool svg { width: 15px; height: 15px; }
-.tutor-input__tool:hover { background-color: var(--bg); color: var(--brand); }
 
 /* ---- Suggestions ----------------------------------------------------- */
 .tutor-suggest__title { display: flex; align-items: center; gap: 6px; }
@@ -125,6 +127,4 @@
 @media (max-width: 560px) {
   .tutor-hero { flex-direction: column; text-align: center; }
   .tutor-msg { max-width: 92%; }
-  .tutor-input__tool span:last-child { display: none; }
-  .tutor-input__tool { padding: 8px; }
 }

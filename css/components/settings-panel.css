@@ -1,0 +1,166 @@
+/* css/components/settings-panel.css — shared styling for
+   js/ui/SettingsPanel.js (Sprint AI-113 · AI-804/AI-805). Linked from
+   every page that mounts AHS.AppShell (same pattern as qiaoqiao.css). */
+
+.settings-panel__overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(31, 36, 48, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+  z-index: 200;
+}
+
+/* The browser's own [hidden] { display: none } rule and this file's
+   .settings-panel__overlay { display: flex } rule have equal CSS
+   specificity (0-1-0 each) — author styles win ties over the UA
+   stylesheet, so without this override the overlay stayed visible on
+   every page load regardless of the hidden attribute SettingsPanel.js
+   sets by default, blocking the entire app on first paint. This
+   compound selector (0-2-0) restores the intended hidden state. */
+.settings-panel__overlay[hidden] {
+  display: none;
+}
+
+.settings-panel__dialog {
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+}
+
+.settings-panel__head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+
+.settings-panel__heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.settings-panel__close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-1);
+}
+
+.settings-panel__close:hover { color: var(--text); }
+
+.settings-panel__body {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.settings-panel__section {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.settings-panel__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-ink);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.settings-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--space-2);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.settings-panel__field--row {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.settings-panel__input {
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.settings-panel__checkbox {
+  width: 16px;
+  height: 16px;
+}
+
+.settings-panel__info {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.settings-panel__hint {
+  font-size: 12px;
+  color: var(--text-faint);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.settings-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.settings-panel__btn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-panel__btn:hover { border-color: var(--brand); color: var(--brand-strong); }
+
+.settings-panel__btn--primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.settings-panel__btn--primary:hover { color: #fff; opacity: 0.9; }
+
+.settings-panel__status {
+  font-size: 12px;
+  color: var(--ok);
+  min-height: 16px;
+  margin: var(--space-1) 0 0 0;
+}
+
+.settings-panel__status.is-error { color: #e14b4b; }

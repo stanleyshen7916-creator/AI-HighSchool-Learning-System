@@ -61,12 +61,23 @@ AHS.MyLearning = (function () {
     });
 
     var hist = history();
-    var totalQuestions = 0, totalCorrect = 0;
+    var totalQuestions = 0;
     hist.forEach(function (h) {
       totalQuestions += (typeof h.totalCount === "number" ? h.totalCount : 0);
-      totalCorrect += (typeof h.correctCount === "number" ? h.correctCount : 0);
     });
-    var accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 1000) / 10 : 0;
+    /* Platform Sync Check finding: this used to compute its own
+       totalCorrect/totalQuestions weighted-average accuracy, a different
+       formula than AHS.StatisticsRuntime.overview()'s avgAccuracy
+       (average of each exam's own accuracy%) — same real HistoryRuntime
+       data, two different numbers for "正確率" depending which page you
+       were on. Now reads the single, already-established source
+       (AHS.StatisticsRuntime.overview(), the same value Quiz Center's
+       own stat card already shows) instead of a second, independent
+       calculation. 完成題數 (totalQuestions) has no equivalent metric on
+       StatisticsRuntime — it stays a real, local sum of the same
+       HistoryRuntime records, not a duplicate of anything. */
+    var accuracy = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.overview === "function")
+      ? AHS.StatisticsRuntime.overview().avgAccuracy : 0;
 
     return {
       title: "學習總覽",
@@ -514,19 +525,21 @@ AHS.MyLearning = (function () {
   }
 
   /* ---- Progress -------------------------------------------------------
-     Real per-subject average of AHS.MaterialRuntime's own `progress`
-     field (existing, per-material Schema field — not a new one). Empty
-     State when there are no materials at all. */
+     Sprint AI-117 AI-117-02/AI-117-10: this section previously averaged
+     AHS.MaterialRuntime's own raw `progress` field itself — a real
+     Single-Source violation ("不得自行計算" — this page had its own
+     completion-rate calculation, distinct from every other page's own).
+     Now reads AHS.StatisticsRuntime.subjectAnalytics() only:
+     materialCompletionRate is the real % of this subject's materials at
+     Material Completion stage 3 (AI-117-01 — reading + quiz + review),
+     not a raw reading-progress average. Empty State when there are no
+     materials at all. */
   function computeSubjectProgress() {
-    var bySubject = {};
-    materials().forEach(function (m) {
-      if (!bySubject[m.subject]) { bySubject[m.subject] = { total: 0, count: 0 }; }
-      bySubject[m.subject].total += (typeof m.progress === "number" ? m.progress : 0);
-      bySubject[m.subject].count += 1;
-    });
-    return Object.keys(bySubject).map(function (s) {
-      var avg = Math.round(bySubject[s].total / bySubject[s].count);
-      return { subject: s, percent: avg, status: avg >= 100 ? "已完成" : avg > 0 ? "進行中" : "尚未開始" };
+    var analytics = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.subjectAnalytics === "function")
+      ? AHS.StatisticsRuntime.subjectAnalytics() : [];
+    return analytics.map(function (a) {
+      var status = a.materialCompletionRate >= 100 ? "已完成" : a.materialCompletionRate > 0 ? "進行中" : "尚未開始";
+      return { subject: a.subject, percent: a.materialCompletionRate, status: status };
     });
   }
 

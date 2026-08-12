@@ -193,9 +193,18 @@
 
 /* ---- Exam-taking view (qexam / QuestionCard / QuestionNavigator) ----- */
 .qexam { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
-.qexam__head { display: flex; align-items: center; gap: 10px; }
+.qexam__head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .qexam__subject { font-size: 12px; font-weight: 700; border-radius: var(--radius-pill); padding: 4px 10px; }
 .qexam__title { margin: 0; font-size: 18px; font-weight: 800; }
+
+/* Sprint AI-117 AI-117-08 Assessment Mode toggle (原始試卷／AI 練習). */
+.qexam__mode-toggle { display: flex; gap: 8px; margin-left: auto; }
+.qexam__mode-btn {
+  font-size: 12px; font-weight: 700; border-radius: var(--radius-pill);
+  padding: 4px 12px; border: 1px solid var(--line);
+  background: transparent; color: var(--text-muted); cursor: pointer;
+}
+.qexam__mode-btn.is-active { background: var(--brand-soft); color: var(--brand); border-color: transparent; }
 
 .qcard { display: flex; flex-direction: column; gap: 16px; }
 .qcard__head { display: flex; align-items: center; gap: 10px; }
@@ -236,7 +245,7 @@
 .qnav__num.is-answered { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand-ink); }
 .qnav__num.is-current { border-color: var(--brand); background-color: var(--brand); color: #ffffff; }
 .qnav__actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.qnav__prev, .qnav__next, .qnav__finish {
+.qnav__prev, .qnav__next, .qnav__finish, .qnav__finish-early {
   display: inline-flex; align-items: center; gap: 6px;
   font: inherit; font-size: 14px; font-weight: 700;
   border-radius: var(--radius-pill); padding: 10px 20px; cursor: pointer;
@@ -247,6 +256,8 @@
 .qnav__next, .qnav__finish { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
 .qnav__next:hover, .qnav__finish:hover { background-color: var(--brand-strong); }
 .qnav__finish svg { width: 15px; height: 15px; }
+.qnav__finish-early { border: 1px solid var(--line-strong); background-color: var(--card); color: var(--text-muted); }
+.qnav__finish-early:hover { background-color: var(--bg); color: var(--text); }
 
 /* ---- Review view (qreview) -------------------------------------------- */
 .qreview { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
@@ -294,7 +305,7 @@
   .quiz-donut__legend { grid-template-columns: 1fr 1fr; width: 100%; }
   .qnav__num { width: 30px; height: 30px; }
   .qnav__actions { flex-wrap: wrap; }
-  .qnav__prev, .qnav__next, .qnav__finish { flex: 1 1 auto; justify-content: center; }
+  .qnav__prev, .qnav__next, .qnav__finish, .qnav__finish-early { flex: 1 1 auto; justify-content: center; }
   .qreview__score-row { gap: 16px; }
   .qreview__item-answers { flex-direction: column; gap: 2px; }
 }
@@ -312,6 +323,37 @@
   background-color: transparent; color: var(--text-muted);
 }
 .quiz-mode__tab.is-active { background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+
+/* Sprint AI-118 AI-118-06 — CSS-only tooltip for each mode tab's real
+   characteristics, same technique as css/pages/material.css's
+   [data-tip] pattern (WO-006), scoped to .quiz-mode__tab here. */
+@media (hover: hover) and (pointer: fine) {
+  .quiz-mode__tab[data-tip] { position: relative; }
+  .quiz-mode__tab[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background-color: var(--text);
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
+    padding: 5px 8px;
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0s linear 0s, visibility 0s linear 0s;
+  }
+  .quiz-mode__tab[data-tip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.12s ease 0.3s, visibility 0s linear 0.3s;
+  }
+}
 
 .quiz-practice { display: flex; flex-direction: column; gap: 16px; }
 
@@ -345,6 +387,11 @@
   border-radius: var(--radius-pill); padding: 8px 18px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
 }
 .quiz-practice__answer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
+/* Sprint AI-114: pre-existing gap found during the HOTFIX-006 CSS
+   specificity audit — see wrongbook.css's own .wb-review-center[hidden]
+   comment for the exact mechanism. This block rendered (empty) before
+   an answer was actually submitted. */
+.quiz-practice__answer[hidden] { display: none; }
 .quiz-practice__answer-block { font-size: 14px; }
 .quiz-practice__exp-block { font-size: 13px; }
 .quiz-practice__exp-title { display: block; margin-bottom: 4px; color: var(--brand-ink); }
@@ -413,7 +460,120 @@
 }
 .quiz-practice__input--area { min-height: 72px; resize: vertical; }
 .quiz-practice__assess { display: flex; align-items: center; gap: 8px; }
+.quiz-practice__assess[hidden] { display: none; }
 .quiz-practice__assess-label { font-size: 13px; color: var(--text-muted); }
 .quiz-practice__result { margin: 10px 0 0; font-size: 14px; font-weight: 700; }
 .quiz-practice__result.is-correct { color: #15803d; }
 .quiz-practice__result.is-wrong { color: #b91c1c; }
+
+/* ---- Practice list row status icon — Sprint AI-123 AI-123-05/06.
+   Prefixed before the subject chip so it's the first thing a student
+   sees scanning the list, per "學生必須一眼知道哪些完成、哪些答錯". ---- */
+.quiz-practice__row-status {
+  flex: 0 0 auto; width: 20px; text-align: center;
+  font-size: 15px; font-weight: 800; color: var(--text-faint);
+}
+.quiz-practice__row-status--correct { color: #15803d; }
+.quiz-practice__row-status--wrong { color: #b91c1c; }
+.quiz-practice__row-status--pending { color: var(--text-faint); }
+
+/* ---- Practice View (full-screen) — Sprint AI-123 Practice Flow UX
+   Refactor. Appended straight to document.body (see QuizCenter.js's own
+   openPracticeSession header) so it covers the entire viewport,
+   including AppShell's sidebar/topbar — genuinely "全畫面作答", not just
+   the main content column. Explicit top/right/bottom/left (never the
+   `inset` shorthand, forbidden per this repo's own CSS convention) at a
+   z-index above every other overlay in this app (settings-panel.css's
+   own 200 is the previous highest). ---- */
+.qpv-lock-scroll { overflow: hidden; }
+.qpv-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 300;
+  background-color: var(--bg);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.qpv {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: 20px;
+  width: 100%; max-width: 720px; margin: 0 auto;
+  padding: 20px 20px 32px;
+}
+.qpv__head { display: flex; flex-direction: column; gap: 10px; }
+.qpv__back {
+  align-self: flex-start; border: 0; background: transparent; color: var(--brand);
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 6px 0;
+}
+.qpv__title { font-size: 15px; font-weight: 700; color: var(--text-muted); }
+.qpv__body { flex: 1 1 auto; }
+.qpv__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.qpv__prev, .qpv__next {
+  font: inherit; font-size: 14px; font-weight: 700;
+  border-radius: var(--radius-pill); padding: 10px 22px; cursor: pointer;
+}
+.qpv__prev { border: 1px solid var(--line); background-color: var(--card); color: var(--text-muted); }
+.qpv__prev:hover { background-color: var(--bg); }
+.qpv__prev:disabled { opacity: 0.4; cursor: not-allowed; }
+.qpv__next { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+.qpv__next:hover { background-color: var(--brand-strong); }
+
+/* ---- Practice View exit-confirm dialog — AI-123-12. ---- */
+.qpv-confirm-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 310;
+  background-color: rgba(31, 36, 48, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.qpv-confirm-overlay[hidden] { display: none; }
+.qpv-confirm {
+  width: 100%; max-width: 340px;
+  background-color: var(--card); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card); padding: 20px;
+  display: flex; flex-direction: column; gap: 16px; text-align: center;
+}
+.qpv-confirm__text { margin: 0; font-size: 15px; font-weight: 700; color: var(--text); }
+.qpv-confirm__actions { display: flex; gap: 10px; }
+.qpv-confirm__btn {
+  flex: 1 1 auto; padding: 10px 14px; border-radius: var(--radius-pill);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+}
+.qpv-confirm__btn--primary { background-color: var(--brand); color: #ffffff; border-color: var(--brand); }
+.qpv-confirm__btn--primary:hover { background-color: var(--brand-strong); }
+
+/* ---- Score summary — AI-123-04. ---- */
+.qpv-summary { display: flex; flex-direction: column; gap: 20px; padding-top: 24px; text-align: center; }
+.qpv-summary__title { margin: 0; font-size: 20px; font-weight: 800; }
+.qpv-summary__score-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 24px; }
+.qpv-summary__score { display: flex; flex-direction: column; gap: 2px; }
+.qpv-summary__score strong { font-size: 24px; font-weight: 800; }
+.qpv-summary__score span { font-size: 12px; color: var(--text-muted); }
+.qpv-summary__extra {
+  display: flex; justify-content: center; gap: 24px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 16px 0;
+}
+.qpv-summary__extra-item { display: flex; flex-direction: column; gap: 4px; }
+.qpv-summary__extra-label { font-size: 12px; color: var(--text-muted); }
+.qpv-summary__extra-item strong { font-size: 18px; font-weight: 800; color: var(--brand-ink); }
+.qpv-summary__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.qpv-summary__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+  border-radius: var(--radius-pill); padding: 10px 22px;
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none;
+}
+.qpv-summary__btn--primary { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+.qpv-summary__btn--primary:hover { background-color: var(--brand-strong); }
+.qpv-summary__btn--link { border-color: var(--brand-line); color: var(--brand); background-color: var(--brand-soft); }
+
+@media (max-width: 560px) {
+  .qpv { padding: 16px 16px 24px; gap: 16px; }
+  .qpv__footer { flex-wrap: wrap; }
+  .qpv__prev, .qpv__next { flex: 1 1 auto; }
+  .qpv-summary__score-row { gap: 16px; }
+  .qpv-summary__extra { flex-direction: column; align-items: center; gap: 10px; }
+  .qpv-summary__actions { flex-direction: column; }
+  .qpv-summary__btn { width: 100%; }
+}

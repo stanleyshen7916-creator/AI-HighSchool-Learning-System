@@ -22,7 +22,20 @@ window.AHS = window.AHS || {};
       AHS.TeachingMaterialLoader.initialize();
     }
 
-    var materialCenterRoot = AHS.MaterialCenter.create();
+    /* HOTFIX-009-1: arriving here with ?id=<materialId> (e.g. a Home
+       material card click) should land already filtered to that
+       material's own subject, not the unfiltered "全部科目" view the
+       user then had to manually reselect. Derived from the real
+       MaterialRuntime record — never a second, separate subject param
+       to keep in sync with the link. */
+    var initialSubject = null;
+    var materialId = new URLSearchParams(window.location.search).get("id");
+    if (materialId && AHS.MaterialRuntime && typeof AHS.MaterialRuntime.getById === "function") {
+      var target = AHS.MaterialRuntime.getById(materialId);
+      if (target) { initialSubject = target.subject; }
+    }
+
+    var materialCenterRoot = AHS.MaterialCenter.create({ initialSubject: initialSubject });
 
     var shell = AHS.AppShell.create(AHS.AppConfig, {
       active: "materials",
@@ -32,7 +45,15 @@ window.AHS = window.AHS || {};
       }
     });
 
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
+
+    /* Platform Refactor Master (PAT 8/9/10): same real Tutor Context
+       首頁/AI Tutor already share (Sprint AI-111), reused verbatim —
+       renders nothing when there is no real data yet. */
+    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create({ page: "materials" });
+    if (tip) { shell.main.appendChild(tip); }
+
     shell.main.appendChild(materialCenterRoot);
   }
 
@@ -61,5 +82,17 @@ window.AHS = window.AHS || {};
     document.addEventListener("DOMContentLoaded", guardedInit);
   } else {
     guardedInit();
+  }
+
+  /* AI Supabase Persistence Root Cause Fix (Root Cause B): re-run the same,
+     unmodified guardedInit() whenever a background Repository pull just
+     merged fresh rows into a Runtime's Memory Cache (js/repository/
+     RepositorySync.js's own header explains why this is necessary — the
+     first render almost always happens before a real network pull
+     resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
+     and rebuilds #app every call), so simply calling it again is enough —
+     no Runtime Public API change, no UI file needs a Promise. */
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("ahs:repository-pulled", guardedInit);
   }
 })();

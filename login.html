@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7c5cff">
+  <meta name="color-scheme" content="light">
+  <title>AI 高中學習系統 · 登入</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="css/base/tokens.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="js/core/UI.js"></script>
+  <script src="js/core/Icons.js"></script>
+  <script src="js/core/PersistenceAdapter.js"></script>
+  <!-- Sprint AI-126C: Repository Layer, wired for the first time — this
+       page's AppLogin.js already calls AHS.AuthRepository.loginForMockStudent()
+       (built in AI-126B Part 1) but that call has been silently no-op'ing
+       in every real browser until now, since AuthRepository.js was never
+       actually <script>-tagged here. -->
+  <script src="js/data/SupabaseConfig.js"></script>
+  <script src="js/data/SupabaseConfig.local.js"></script>
+  <script src="js/data/RuntimeModeConfig.js"></script>
+  <script src="js/core/SupabaseClient.js"></script>
+  <script src="js/repository/Repository.js"></script>
+  <script src="js/repository/SupabaseRepository.js"></script>
+  <script src="js/repository/RepositoryFactory.js"></script>
+  <script src="js/repository/SyncBridge.js"></script>
+  <script src="js/repository/AuthRepository.js"></script>
+  <script src="js/core/PlatformContext.js"></script>
+  <script src="js/data/WorkspaceData.js"></script>
+  <script src="js/runtime/WorkspaceRuntime.js"></script>
+  <script src="js/pages/AppLogin.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-08-07T03:20:38.493Z",
+  "overall": "PASS",
+  "suites": [
+    {
+      "name": "BehaviorSuite",
+      "result": "PASS",
+      "pass": 330,
+      "fail": 0,
+      "durationMs": 7391
+    },
+    {
+      "name": "PipelineRegression",
+      "result": "PASS",
+      "pass": 6,
+      "fail": 0,
+      "durationMs": 39
+    },
+    {
+      "name": "RepositoryFoundation",
+      "result": "PASS",
+      "pass": 29,
+      "fail": 0,
+      "durationMs": 1865
+    },
+    {
+      "name": "MaterialPipelineRegression",
+      "result": "PASS",
+      "pass": 37,
+      "fail": 0,
+      "durationMs": 2617
+    },
+    {
+      "name": "AnalyticsRegression",
+      "result": "PASS",
+      "pass": 35,
+      "fail": 0,
+      "durationMs": 1007
+    },
+    {
+      "name": "LearningFlowRegression",
+      "result": "PASS",
+      "pass": 45,
+      "fail": 0,
+      "durationMs": 1227
+    },
+    {
+      "name": "WorkspaceRegression",
+      "result": "PASS",
+      "pass": 36,
+      "fail": 0,
+      "durationMs": 669
+    },
+    {
+      "name": "MaterialCenterRegression",
+      "result": "PASS",
+      "pass": 12,
+      "fail": 0,
+      "durationMs": 785
+    },
+    {
+      "name": "FolderRegression",
+      "result": "PASS",
+      "pass": 11,
+      "fail": 0,
+      "durationMs": 664
+    },
+    {
+      "name": "AnalyticsFilterRegression",
+      "result": "PASS",
+      "pass": 6,
+      "fail": 0,
+      "durationMs": 794
+    },
+    {
+      "name": "TutorRegression",
+      "result": "PASS",
+      "pass": 8,
+      "fail": 0,
+      "durationMs": 658
+    },
+    {
+      "name": "WorkspaceUIRegression",
+      "result": "PASS",
+      "pass": 28,
+      "fail": 0,
+      "durationMs": 934
+    },
+    {
+      "name": "KnowledgeEngineRegression",
+      "result": "PASS",
+      "pass": 44,
+      "fail": 0,
+      "durationMs": 1113
+    },
+    {
+      "name": "Playwright",
+      "result": "PASS",
+      "pass": 60,
+      "fail": 0,
+      "durationMs": 43972.264
+    }
+  ]
+}

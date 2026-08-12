@@ -29,12 +29,26 @@ window.AHS = window.AHS || {};
       onNavigate: function () { /* Mock navigation — prototype. */ }
     });
 
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
 
-    var params = new URLSearchParams(window.location.search);
-    var mode = params.get("mode") || undefined;
-    var materialId = params.get("materialId") || undefined;
-    var examId = params.get("examId") || undefined;
+    /* Sprint AI-124 AI-124-02: the one shared AHS.PlatformContext.resolve()
+       instead of this page's own separate URLSearchParams parsing —
+       same real mode/materialId/examId either way (resolve() also
+       derives materialId from examId when only the latter is present,
+       so QuizCenter.js's own downstream practiceMaterialId derivation
+       stays consistent no matter which one link actually carried). */
+    var ctx = AHS.PlatformContext.resolve();
+    var mode = ctx.mode || undefined;
+    var materialId = ctx.materialId || undefined;
+    var examId = ctx.examId || undefined;
+
+    /* Platform Refactor Master (PAT 8/9/10), extended Sprint AI-113
+       AI-808: same real Tutor Context 首頁/AI Tutor already share
+       (Sprint AI-111), now also given this page's real materialId/examId
+       when present. Renders nothing when there is no real data yet. */
+    var tip = AHS.TutorContextTip && AHS.TutorContextTip.create({ page: "quiz", materialId: materialId, examId: examId });
+    if (tip) { shell.main.appendChild(tip); }
 
     shell.main.appendChild(AHS.QuizCenter.create(undefined, mode, materialId, examId));
   }
@@ -64,5 +78,17 @@ window.AHS = window.AHS || {};
     document.addEventListener("DOMContentLoaded", guardedInit);
   } else {
     guardedInit();
+  }
+
+  /* AI Supabase Persistence Root Cause Fix (Root Cause B): re-run the same,
+     unmodified guardedInit() whenever a background Repository pull just
+     merged fresh rows into a Runtime's Memory Cache (js/repository/
+     RepositorySync.js's own header explains why this is necessary — the
+     first render almost always happens before a real network pull
+     resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
+     and rebuilds #app every call), so simply calling it again is enough —
+     no Runtime Public API change, no UI file needs a Promise. */
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("ahs:repository-pulled", guardedInit);
   }
 })();

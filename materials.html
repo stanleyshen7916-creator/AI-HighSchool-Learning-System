@@ -9,6 +9,8 @@
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="stylesheet" href="css/base/tokens.css">
   <link rel="stylesheet" href="css/components/qiaoqiao.css">
+  <link rel="stylesheet" href="css/components/tutor-context-tip.css">
+  <link rel="stylesheet" href="css/components/settings-panel.css">
   <link rel="stylesheet" href="css/base/layout.css">
   <link rel="stylesheet" href="css/pages/material.css">
 </head>
@@ -20,8 +22,26 @@
   <script src="js/ui/EmptyState.js"></script>
   <script src="js/core/Icons.js"></script>
   <script src="js/core/PersistenceAdapter.js"></script>
+  <!-- Sprint AI-126C: Repository Layer, wired into a live page for the
+       first time (AI-126B built these files but never <script>-tagged
+       them anywhere). -->
+  <script src="js/data/SupabaseConfig.js"></script>
+  <script src="js/data/SupabaseConfig.local.js"></script>
+  <script src="js/data/RuntimeModeConfig.js"></script>
+  <script src="js/core/SupabaseClient.js"></script>
+  <script src="js/repository/Repository.js"></script>
+  <script src="js/repository/SupabaseRepository.js"></script>
+  <script src="js/repository/RepositoryFactory.js"></script>
+  <script src="js/repository/SyncBridge.js"></script>
+  <script src="js/repository/AuthRepository.js"></script>
+  <script src="js/core/PlatformContext.js"></script>
+  <script src="js/data/WorkspaceData.js"></script>
+  <script src="js/runtime/WorkspaceRuntime.js"></script>
   <script src="js/core/DocumentExport.js"></script>
+  <script src="js/runtime/SettingsRuntime.js"></script>
+  <script src="js/ui/SettingsPanel.js"></script>
   <script src="js/data/AppConfig.js"></script>
+  <script src="js/data/RepositoryStatus.js"></script>
   <script src="js/data/TeachingMaterialData.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
@@ -42,6 +62,17 @@
   <script src="js/runtime/KnowledgeRuntime.js"></script>
   <script src="js/parser/SummaryGenerator.js"></script>
   <script src="js/runtime/SummaryRuntime.js"></script>
+  <script src="js/runtime/WrongBookRuntime.js"></script>
+  <script src="js/runtime/HistoryRuntime.js"></script>
+  <script src="js/runtime/KnowledgeMasteryRuntime.js"></script>
+  <!-- AI Supabase Persistence Root Cause Fix (Phase 3): TeachingMaterialLoader.js
+       moved ahead of RepositorySync.js — RepositorySync.js's own IIFE calls
+       pullAll() synchronously the instant its <script> tag executes, so
+       AHS.TeachingMaterialLoader must already be defined by then or that
+       domain is silently skipped from every initial-page-load pull (a real,
+       previously undiscovered gap: AI-126E added TeachingMaterialLoader to
+       RepositorySync.js's domains() list, but this page's own script order
+       was never re-checked against that addition). -->
   <script src="data/materials/MaterialRepositoryIndex.js"></script>
   <script src="data/materials/CivicsG10Ch5to6Exam20260730.js"></script>
   <script src="data/materials/ChineseG11LaoshanDaoshi.js"></script>
@@ -49,7 +80,19 @@
   <script src="data/materials/ChineseG11DuFuLvYeShuHuai.js"></script>
   <script src="data/materials/ChineseG11LiShangyinYeYuJiBei.js"></script>
   <script src="data/materials/ChineseG11HuangTingjianJiHuangJifu.js"></script>
+  <script src="js/runtime/QuestionBankRuntime.js"></script>
   <script src="js/runtime/TeachingMaterialLoader.js"></script>
+  <!-- Sprint AI-126C: must load after every Repository-integrated Runtime
+       above (MaterialRuntime/WrongBookRuntime/KnowledgeMasteryRuntime/
+       SettingsRuntime/TeachingMaterialLoader) and the Repository Layer block
+       above — triggers each domain's real pullFromRepository() once per
+       page load. -->
+  <script src="js/repository/RepositorySync.js"></script>
+  <script src="js/runtime/StatisticsRuntime.js"></script>
+  <script src="js/runtime/LearningStateRuntime.js"></script>
+  <script src="js/runtime/MaterialLearningStateRuntime.js"></script>
+  <script src="js/utils/TutorMessage.js"></script>
+  <script src="js/ui/TutorContextTip.js"></script>
   <script src="js/parser/QuestionGenerator.js"></script>
   <script src="js/runtime/LearningQuestionRuntime.js"></script>
   <!-- Sprint AI-015C: Question Provider Bridge Script Wiring — Schema v1.0

@@ -1,0 +1,29 @@
+{
+  "materialId": "tm_2",
+  "school": "cjsh",
+  "semester": "g1s2",
+  "subject": "生物",
+  "grade": "高一",
+  "publisher": null,
+  "chapter": "生物全ch3（演化與生物分類：拉馬克與達爾文學說、天擇、同源／同功構造、五界說／三域說、病毒特性）",
+  "unit": "114學年度第二學期第三次段考",
+  "keywords": [
+    "演化",
+    "天擇",
+    "拉馬克",
+    "達爾文",
+    "同源構造",
+    "同功構造",
+    "五界說",
+    "三域說",
+    "支序分類法",
+    "單系群",
+    "病毒",
+    "非洲豬瘟"
+  ],
+  "difficulty": null,
+  "source": "考卷",
+  "uploadDate": "2026-08-03T00:00:00Z",
+  "version": "1",
+  "materialType": "EXAM"
+}

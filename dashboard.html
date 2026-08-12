@@ -9,6 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="stylesheet" href="css/base/tokens.css">
   <link rel="stylesheet" href="css/components/qiaoqiao.css">
+  <link rel="stylesheet" href="css/components/settings-panel.css">
   <link rel="stylesheet" href="css/base/layout.css">
   <link rel="stylesheet" href="css/pages/dashboard.css">
 </head>
@@ -19,7 +20,26 @@
   <script src="js/ui/EmptyState.js"></script>
   <script src="js/core/Icons.js"></script>
   <script src="js/core/PersistenceAdapter.js"></script>
+  <!-- Sprint AI-126C: Repository Layer, wired into a live page for the
+       first time (AI-126B built these files but never <script>-tagged
+       them anywhere). -->
+  <script src="js/data/SupabaseConfig.js"></script>
+  <script src="js/data/SupabaseConfig.local.js"></script>
+  <script src="js/data/RuntimeModeConfig.js"></script>
+  <script src="js/core/SupabaseClient.js"></script>
+  <script src="js/repository/Repository.js"></script>
+  <script src="js/repository/SupabaseRepository.js"></script>
+  <script src="js/repository/RepositoryFactory.js"></script>
+  <script src="js/repository/SyncBridge.js"></script>
+  <script src="js/repository/AuthRepository.js"></script>
+  <script src="js/core/PlatformContext.js"></script>
+  <script src="js/data/WorkspaceData.js"></script>
+  <script src="js/runtime/WorkspaceRuntime.js"></script>
+  <script src="js/core/DocumentExport.js"></script>
+  <script src="js/runtime/SettingsRuntime.js"></script>
+  <script src="js/ui/SettingsPanel.js"></script>
   <script src="js/data/AppConfig.js"></script>
+  <script src="js/data/RepositoryStatus.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
   <script src="js/ui/AppShell.js"></script>
   <!-- Sprint AI-020: Dashboard Production Integration — real data sources,
@@ -27,6 +47,12 @@
        (Exam Mode, Sprint 4) and WrongBookSession/ReviewQueue/ReviewModel +
        LearningHistoryModel (Practice Mode, Sprint AI-015F/G/AI-019). -->
   <script src="js/runtime/HistoryRuntime.js"></script>
+  <script src="js/runtime/KnowledgeMasteryRuntime.js"></script>
+  <!-- Sprint AI-126C: must load after every Repository-integrated Runtime
+       above (MaterialRuntime/WrongBookRuntime/KnowledgeMasteryRuntime/
+       SettingsRuntime) and the Repository Layer block above — triggers
+       each domain's real pullFromRepository() once per page load. -->
+  <script src="js/repository/RepositorySync.js"></script>
   <script src="js/runtime/StatisticsRuntime.js"></script>
   <script src="js/runtime/WrongBookSession.js"></script>
   <script src="js/runtime/ReviewQueue.js"></script>

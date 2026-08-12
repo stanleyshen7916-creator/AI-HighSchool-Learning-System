@@ -1,0 +1,71 @@
+/* playwright/tests/smoke.spec.js — Sprint AI-116 AI-116-03 Smoke Test,
+   extended Sprint AI-117 AI-117-11 to the full 9-page list (Summary/
+   Learning added — the spec's own list also names Home/Material
+   Center/Quiz/WrongBook/Review/Tutor/Settings, all already covered).
+   Every page named in the spec opens cleanly in a REAL browser (not
+   jsdom — this is the whole point of this Sprint: catching real
+   rendering/CSS bugs jsdom's own DOM-only simulation can't, exactly the
+   class of bug HOTFIX-006/the [hidden]-specificity audit found by hand
+   earlier this project). No 404 (title/shell always resolve against a
+   real file), no blank page (.shell/.shell__main always visible), no
+   console error — AI-117-11's own three "不得" rules. */
+"use strict";
+const { test, expect } = require("../helpers/fixtures.js");
+const { fileUrl } = require("../helpers/urls.js");
+
+function collectErrors(page) {
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(String(e)));
+  page.on("console", (msg) => {
+    if (msg.type() !== "error") { return; }
+    /* AI Supabase Persistence Root Cause Fix (Root Cause A): the one,
+       git-ignored, optional js/data/SupabaseConfig.local.js this project
+       already documents (.gitignore) — a real browser 404 on it (there is
+       no way to reference an optional local-only file from a <script> tag
+       without a real browser logging this, network-level, regardless of
+       any onerror handler) is expected in CI/this Sandbox where the file
+       never exists by design; every real reader already falls back to the
+       committed blank AHS.SupabaseConfig. Filtered by the failing
+       resource's own URL (msg.location().url), not by message text, so a
+       genuine 404 on any other file still fails this assertion. */
+    const loc = msg.location && msg.location();
+    if (loc && /SupabaseConfig\.local\.js$/.test(loc.url || "")) { return; }
+    errors.push(msg.text());
+  });
+  return errors;
+}
+
+const PAGES = [
+  { key: "home", label: "首頁", titleIncludes: "首頁" },
+  { key: "materials", label: "教材中心", titleIncludes: "教材中心" },
+  { key: "summary", label: "學習總結", titleIncludes: "學習總結" },
+  { key: "quiz", label: "測驗中心", titleIncludes: "測驗中心" },
+  { key: "wrongbook", label: "知識弱點", titleIncludes: "知識弱點" },
+  { key: "review", label: "複習中心", titleIncludes: "複習中心" },
+  { key: "learning", label: "我的學習", titleIncludes: "我的學習" },
+  { key: "tutor", label: "AI Tutor", titleIncludes: "AI Tutor" }
+];
+
+for (const p of PAGES) {
+  test("Smoke：" + p.label + " 可正常開啟", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto(fileUrl(p.key));
+    await expect(page).toHaveTitle(new RegExp(p.titleIncludes));
+    await expect(page.locator(".shell")).toBeVisible();
+    await expect(page.locator(".shell__main")).toBeVisible();
+    expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+  });
+}
+
+test("Smoke：Settings 可正常開啟（AppShell 共用 Settings Panel）", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(fileUrl("home"));
+  const settingsBtn = page.locator(".sidebar__item", { hasText: "設定" });
+  await settingsBtn.click();
+  const overlay = page.locator(".settings-panel__overlay");
+  await expect(overlay).toBeVisible();
+  await expect(overlay.locator(".settings-panel__heading")).toHaveText("設定");
+  await expect(overlay.locator('section[aria-label="Profile"]')).toBeVisible();
+  await expect(overlay.locator('section[aria-label="Repository"]')).toBeVisible();
+  expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+});

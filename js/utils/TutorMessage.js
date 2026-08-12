@@ -1,4 +1,6 @@
-/* js/utils/TutorMessage.js — Sprint AI-111 · AI-611/AI-612.
+/* js/utils/TutorMessage.js — Sprint AI-111 · AI-611/AI-612, re-scoped
+   Sprint AI-117 AI-117-07 as the Platform Tutor Engine's own Rule-Based
+   message builder.
 
    Stateless text builder shared by 首頁's AiTutorHomeCard model and
    AI Tutor's (tutor.html) real chat message — both need the exact same
@@ -8,6 +10,18 @@
    texts for the same underlying data ("不得建立第二份統計"). Pure
    function, no Runtime, no store, no persistence — matches js/utils/'s
    own "small stateless helpers" role.
+
+   Sprint AI-117 AI-117-07: "Tutor 只能讀取 Learning Analytics。不得直接
+   存取各 Runtime。" build() previously called AHS.MaterialRuntime.
+   getById()/AHS.LearningStateRuntime.materialState() directly for its
+   pageContext.materialId branch — a real, pre-existing gap this Sprint's
+   own rule now closes: it calls AHS.StatisticsRuntime.materialContext()
+   instead (new this Sprint, itself the only place that wraps those two
+   Runtimes), so every branch in this file reads exclusively through
+   AHS.StatisticsRuntime — no exception. No LLM/AI API is called anywhere
+   in this file (never has been) — every sentence is template text over
+   real numbers, which is what "Rule-Based Tutor" / "完全不需 LLM API"
+   means in practice.
 
    build(context) -> { message, actions } | null. Returns null when
    context has genuinely nothing real yet — callers must render their own
@@ -22,21 +36,192 @@ AHS.TutorMessage = (function () {
     return (AHS.Subjects && AHS.Subjects[key]) ? AHS.Subjects[key].name : (key || "");
   }
 
-  /* build(context) — context: AHS.StatisticsRuntime.learningContext()'s
-     own return shape. Builds each sentence only when its real data is
-     present; omits it otherwise (never a placeholder for a missing
-     signal). */
-  function build(context) {
-    context = context || {};
+  /* build(context, pageContext) — context: AHS.StatisticsRuntime.
+     learningContext()'s own return shape. pageContext (Sprint AI-113
+     AI-808, optional, additive — every existing caller that omits it
+     keeps its exact prior behavior): { page, materialId, examId } —
+     real signals about what the user is currently looking at. When a
+     real materialId resolves to a real material (via
+     AHS.StatisticsRuntime.materialContext(), Sprint AI-117 AI-117-07 —
+     the Tutor Engine's sole read path, never MaterialRuntime/
+     LearningStateRuntime directly), that specific material's own
+     Material Completion stage/percent is mentioned FIRST, before the
+     generic cross-material stats below — "目前教材/目前章節/目前測驗"
+     context, never fabricated when no real materialId is given or it
+     doesn't resolve to a real record. Builds each sentence only when
+     its real data is present; omits it otherwise (never a placeholder
+     for a missing signal). */
+  /* buildMaterialScopedMessage(materialCtx, pageContext) — Sprint AI-124
+     AI-124-07/08: "AI Tutor 只能依照目前 Platform Context...不得跨教材".
+     When a real materialId context resolves, this is now the ONLY
+     source of sentences — every cross-material signal below in build()
+     (workspace-wide weakestKnowledgePoint/weakestSubject/
+     recommendedChapters/recommendedRetest/masteredCount) is skipped
+     entirely, never mixed in alongside a "you're currently in X"
+     sentence (the exact "Practice：生物，Quiz：全部教材" kind of
+     inconsistency this Sprint's PAT calls out, applied to the Tutor).
+
+     Composes from real, already-existing, unmodified public API only —
+     no new Runtime, no new field on any LOCKed Runtime:
+       - materialCtx.completion / materialCtx.dueCount — already computed
+         by AHS.StatisticsRuntime.materialContext() (existing, unchanged).
+       - AHS.KnowledgeMasteryRuntime.list() — existing, unchanged; this
+         file reads it directly (not routed through StatisticsRuntime)
+         only because StatisticsRuntime.knowledgeAnalytics()'s existing
+         return shape has no materialId field to filter by, and this
+         Sprint's LOCK forbids adding one (LOCKed: "Statistics Runtime").
+         Flagged as a disclosed, narrow exception to AI-117-07's own
+         "Tutor only reads Analytics" convention — still a read-only call
+         against an already-existing Runtime function, not a
+         modification of it.
+       - AHS.StatisticsRuntime.examStats() — existing, unchanged; the
+         real per-material Accuracy signal (AI-124-08's own "Accuracy"
+         requirement) this Sprint's spec calls out. */
+  function buildMaterialScopedMessage(materialCtx, pageContext) {
     var sentences = [];
     var actions = [];
+
+    var line = "你目前在「" + materialCtx.title + "」" + (materialCtx.chapter ? "（" + materialCtx.chapter + "）" : "") +
+      "，" + materialCtx.completion.label + "（" + materialCtx.completion.percent + "%）";
+    if (materialCtx.completion.quizDone) {
+      line += materialCtx.dueCount > 0
+        ? "，這份教材還有 " + materialCtx.dueCount + " 題尚待複習到精熟"
+        : "，這份教材的錯題已全部精熟";
+    }
+    sentences.push(line + "。");
+
+    /* Knowledge Mastery + Growth — this material's own real weakest
+       knowledge point (AI-121-15/16's own real, traceable signal, now
+       scoped instead of workspace-wide), with real day-over-day Growth
+       when one exists (never "0" as a guess — omitted when there's no
+       real prior day to compare against, same discipline
+       KnowledgeMasteryRuntime.growth() itself already honors). */
+    if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.list === "function") {
+      var ownPoints = AHS.KnowledgeMasteryRuntime.list()
+        .filter(function (p) { return p.materialId === pageContext.materialId; })
+        .sort(function (a, b) { return a.mastery - b.mastery; });
+      if (ownPoints.length) {
+        var weakest = ownPoints[0];
+        var kpLine = "「" + weakest.knowledgePoint + "」目前 Mastery " + weakest.mastery + "%";
+        if (weakest.growth && typeof weakest.growth.delta === "number") {
+          kpLine += weakest.growth.delta >= 0 ? "（較上次進步 +" + weakest.growth.delta + "%）" : "（較上次下降 " + weakest.growth.delta + "%）";
+        }
+        sentences.push(kpLine + "，建議重新閱讀相關摘要。");
+        actions.push({
+          icon: "book", label: "重新閱讀摘要", desc: weakest.knowledgePoint,
+          href: "summary.html?materialId=" + encodeURIComponent(pageContext.materialId)
+        });
+      }
+    }
+
+    /* Accuracy — this material's own real, most recent attempt accuracy
+       (AHS.StatisticsRuntime.examStats(), existing/unchanged), never the
+       workspace-wide accuracy this Sprint's LOCK forbids mixing in here. */
+    if (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.examStats === "function" &&
+        AHS.PlatformContext && typeof AHS.PlatformContext.examIdFromMaterialId === "function") {
+      var stats = AHS.StatisticsRuntime.examStats(AHS.PlatformContext.examIdFromMaterialId(pageContext.materialId));
+      if (stats.attempts > 0) {
+        sentences.push("這份教材目前正確率 " + stats.accuracy + "%（共作答 " + stats.attempts + " 次）。");
+      }
+    }
+
+    if (!sentences.length) { return null; }
+    return { message: sentences.join(""), actions: actions };
+  }
+
+  function build(context, pageContext) {
+    context = context || {};
+    pageContext = pageContext || {};
+
+    if (pageContext.materialId && AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialContext === "function") {
+      var materialCtx = AHS.StatisticsRuntime.materialContext(pageContext.materialId);
+      if (materialCtx) { return buildMaterialScopedMessage(materialCtx, pageContext); }
+    }
+
+    var sentences = [];
+    var actions = [];
+
+    /* Sprint AI-121 AI-121-15/16: AI Tutor now analyzes ONLY Knowledge
+       (never Question) — this is the Tutor's real, highest-priority
+       signal, ahead of every branch below: the single real lowest-
+       Mastery knowledge point (AHS.KnowledgeMasteryRuntime, via
+       AHS.StatisticsRuntime.learningContext()'s weakestKnowledgePoint).
+       Wording matches the Sprint's own literal worked example
+       ("DNA 聚合酶 Mastery 42% -> 重新閱讀 DNA 聚合酶摘要") — always a
+       real knowledge point name + real % + a real next action, never a
+       vague "多加練習". Honestly reuses the real material's existing
+       summary (never regenerates/fabricates a new one) when a real
+       materialId is known for this point; omits the action (sentence
+       still shown) when it isn't. */
+    if (context.weakestKnowledgePoint) {
+      var kp = context.weakestKnowledgePoint;
+      sentences.push(
+        "「" + kp.knowledgePoint + "」Mastery " + kp.mastery + "%，建議重新閱讀「" + kp.knowledgePoint + "」相關摘要。"
+      );
+      if (kp.materialId) {
+        actions.push({
+          icon: "book", label: "重新閱讀摘要", desc: kp.knowledgePoint,
+          href: "summary.html?materialId=" + encodeURIComponent(kp.materialId)
+        });
+      }
+    }
+
+    /* Sprint AI-114 AI-906: priority-driven primary suggestion — picks
+       exactly one real, most-relevant "what to do next" for the current
+       real state, in this fixed priority order (never fixed text: every
+       branch's wording embeds real numbers/names that change with the
+       actual data, per AHS.LearningStateRuntime's own real signals):
+         ① 今天待複習     -> dueForReview 非空：提醒 Review（其中如有
+                            correctStreak===0 的「錯題增加」新錯題，一併
+                            提及，非兩個互斥分支硬套同一組真實資料）
+         ③ 教材完成       -> completedMaterial 存在且 nextMaterial 存在：
+                            推薦下一教材
+         ④ 全部完成       -> allComplete：推薦挑戰測驗
+       其餘既有真實訊號（弱科／建議章節／建議重測）作為次要補充，維持
+       既有行為，不因新增優先序而消失。 */
+    var freshlyWrong = (context.dueForReview || []).filter(function (w) { return (w.correctStreak || 0) === 0; });
+
+    /* Sprint AI-118 AI-118-08: 所有推薦流程固定為 教材→學習總結→考前練習→
+       正式測驗→錯題→再次推薦教材，不得跳脫此流程 — each action below now
+       carries a real `href` into the correct next step (previously these
+       tiles set only a status-text stub, no real navigation existed to
+       stay "inside" or "jump outside" of in the first place). 前往複習
+       中心 renamed 前往知識弱點 (複習中心's Nav entry is gone this Sprint,
+       AI-118-03: "所有入口整併：知識弱點" — dueForReview's own real items
+       live in WrongBookRuntime either way, so wrongbook.html is the
+       correct, not a substitute, destination). */
+    if (context.dueForReview && context.dueForReview.length) {
+      var reviewLine = "你今天有 " + context.dueForReview.length + " 題錯題待複習，建議先完成今日複習。";
+      if (freshlyWrong.length) {
+        reviewLine += "其中 " + freshlyWrong.length + " 題是尚未複習過的新錯題。";
+      }
+      sentences.push(reviewLine);
+      actions.push({
+        icon: "clock", label: "前往知識弱點", desc: context.dueForReview.length + " 題待複習",
+        href: "wrongbook.html"
+      });
+    } else if (context.completedMaterial && context.nextMaterial) {
+      sentences.push(
+        "你已經完成「" + context.completedMaterial.title + "」，建議接著閱讀「" + context.nextMaterial.title + "」。"
+      );
+      actions.push({
+        icon: "book", label: "前往教材中心", desc: context.nextMaterial.title,
+        href: "materials.html?id=" + encodeURIComponent(context.nextMaterial.id)
+      });
+    } else if (context.allComplete) {
+      sentences.push("太棒了！目前的教材與錯題都已完成，建議挑戰平時練習鞏固實力。");
+      actions.push({ icon: "quiz", label: "前往平時練習", desc: "挑戰測驗", href: "quiz.html" });
+    }
 
     if (context.weakestSubject) {
       sentences.push(
         "你在「" + subjectName(context.weakestSubject.subject) + "」的平均正確率是 " +
         context.weakestSubject.percent + "%，是目前較弱的科目。"
       );
-      actions.push({ icon: "quiz", label: "加強練習", desc: subjectName(context.weakestSubject.subject) });
+      actions.push({
+        icon: "quiz", label: "前往考前總複習", desc: subjectName(context.weakestSubject.subject),
+        href: "quiz.html?mode=practice"
+      });
     }
 
     if (context.recommendedChapters && context.recommendedChapters.length) {
@@ -46,17 +231,19 @@ AHS.TutorMessage = (function () {
       );
     }
 
-    if (context.dueForReview && context.dueForReview.length) {
-      sentences.push("錯題本中有 " + context.dueForReview.length + " 題尚待複習到精熟。");
-      actions.push({ icon: "wrong", label: "前往錯題本", desc: context.dueForReview.length + " 題待複習" });
-    }
-
     if (context.recommendedRetest) {
+      /* Sprint AI-121 AI-121-07: 重新測驗 renamed 再次測試 — purpose is
+         real, honest mastery verification (a fresh random 10 from the
+         same material's permanent QuestionBank, via QuizCenter's
+         mode=retest branch), not chasing a higher score. */
       sentences.push(
         "「" + (context.recommendedRetest.title || "上次測驗") + "」上次正確率 " +
-        (context.recommendedRetest.accuracy || 0) + "%，建議重新測驗加強。"
+        (context.recommendedRetest.accuracy || 0) + "%，建議再次測試以驗證是否已精熟。"
       );
-      actions.push({ icon: "refresh", label: "重新測驗", desc: context.recommendedRetest.title || "" });
+      actions.push({
+        icon: "refresh", label: "再次測試", desc: context.recommendedRetest.title || "",
+        href: context.recommendedRetest.examId ? "quiz.html?mode=retest&examId=" + encodeURIComponent(context.recommendedRetest.examId) : "quiz.html"
+      });
     }
 
     if (context.masteredCount) {

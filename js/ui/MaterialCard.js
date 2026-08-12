@@ -60,6 +60,22 @@ AHS.MaterialCard = (function () {
 
     var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };
     var pct = clampProgress(item.progress);
+    /* Sprint AI-117 AI-117-01/AI-117-10: 取消「閱讀進度」作為完成度的顯示
+       依據 — displayed completion now comes solely from
+       AHS.StatisticsRuntime.materialCompletion() (① 教材閱讀 ② 完成測驗
+       ③ 完成複習), this card never computes its own completion number
+       again. `pct` (raw AHS.MaterialRuntime.progress) is kept only for
+       the 開始學習/繼續學習 button label decision below (a real, distinct
+       "has reading started at all" check, not a completion % shown to
+       the user) — the Runtime field itself is unmodified, only what this
+       card displays as "完成度" changed. Falls back to the old raw-
+       progress display when StatisticsRuntime isn't loaded on a given
+       page (defensive, matches this file's own "never throw at load
+       time" convention). */
+    var completion = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialCompletion === "function")
+      ? AHS.StatisticsRuntime.materialCompletion(item.id) : null;
+    var completionPct = completion ? completion.percent : pct;
+    var completionLabel = completion ? completion.label + "（" + completion.percent + "%）" : progressLabel(pct);
 
     function announce(msg) {
       status.textContent = msg; status.removeAttribute("hidden");
@@ -111,17 +127,14 @@ AHS.MaterialCard = (function () {
       applyFav(nowFav);
     });
 
-    /* 預覽 / 下載 standalone icon buttons — hover shows only a tooltip
-       (WO-006); the action fires on click, never on hover. Preview does
-       NOT update progress/learning (RC-003-006). */
-    var previewBtn = el("button", {
-      type: "button", class: "mat-card__act mat-card__preview",
-      "aria-label": "預覽教材", "data-tip": "預覽教材", html: AHS.Icons.book()
-    });
-    previewBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      previewMaterial();
-    });
+    /* 下載 standalone icon button — hover shows only a tooltip (WO-006);
+       the action fires on click, never on hover. HOTFIX-009-2: the
+       separate "預覽教材" icon button was removed — it opened the exact
+       same AHS.MaterialPreview.open() dialog as clicking the card body
+       (line ~275 below) and as 開始學習/繼續學習 (learnMaterial(), which
+       also opens it plus starts the Learning Session), so it was a pure
+       duplicate action, not a distinct feature. previewMaterial() itself
+       is kept — the card body click still uses it. */
     var dlBtn = el("button", {
       type: "button", class: "mat-card__act mat-card__dl",
       "aria-label": "下載教材", "data-tip": "下載教材", html: AHS.Icons.download()
@@ -131,22 +144,24 @@ AHS.MaterialCard = (function () {
       downloadMaterial();
     });
 
-    /* Sprint v1.6 Module A — Material Card Navigation Action: 查看摘要 /
-       開始練習. Plain <a href> elements (never window.location.href=,
-       per this repo's forbidden-pattern rule), reusing the existing
-       .mat-card__act icon-button class verbatim — no new CSS, no Layout
-       change, matching "僅新增 Navigation Action". Rendered on every
-       card unconditionally (Material Card has no way to know in advance
-       whether a Summary/Exam record exists — summary.html/quiz.html
-       already show their own honest Empty State / fall back to the
-       normal Exam Mode list when there's nothing real to show, exactly
-       like every other real-content-dependent link in this app). The
-       "teaching_material_" + id examId convention matches
+    /* Sprint v1.6 Module A — Material Card Navigation Action, relabeled
+       Sprint AI-118 AI-118-04: 前往學習總結 / 前往考前練習 (was 查看摘要 /
+       開始練習) — matches the Learning Loop's own terminology (AI-118-01:
+       首頁→教材中心→學習總結→測驗中心→知識弱點→首頁) and AI-118-06's
+       考前練習/正式測驗 naming, so a student never sees two different
+       names for the same next step. Href/behavior unchanged — AI-118-04
+       only requires the label to route into 學習總結, never expand
+       Summary inline, which was already true (plain <a href>, never
+       window.location.href=, per this repo's forbidden-pattern rule).
+       Rendered on every card unconditionally — summary.html/quiz.html
+       already show their own honest Empty State when there's nothing
+       real yet, exactly like every other real-content-dependent link in
+       this app. The "teaching_material_" + id examId convention matches
        js/runtime/TeachingMaterialLoader.js's own examIdFor(). */
     var summaryLink = el("a", {
       class: "mat-card__act mat-card__summary-link",
       href: "summary.html?materialId=" + encodeURIComponent(item.id),
-      "aria-label": "查看摘要", "data-tip": "查看摘要",
+      "aria-label": "前往學習總結", "data-tip": "前往學習總結",
       html: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
         'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<path d="M6 4h9l3 3v13H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>'
@@ -156,16 +171,18 @@ AHS.MaterialCard = (function () {
     var practiceLink = el("a", {
       class: "mat-card__act mat-card__practice-link",
       href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + item.id),
-      "aria-label": "開始練習", "data-tip": "開始練習",
+      "aria-label": "前往考前總複習", "data-tip": "前往考前總複習",
       html: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
         'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'
     });
     practiceLink.addEventListener("click", function (e) { e.stopPropagation(); });
 
-    /* RC-003-007: card icons are 收藏 / 預覽教材 / 下載教材 / 刪除教材.
-       No 開啟教材 icon. */
-    var acts = [favBtn, previewBtn, dlBtn, summaryLink, practiceLink];
+    /* RC-003-007, updated HOTFIX-009-2/AI-118-04: card icons are 收藏 /
+       下載教材 / 前往學習總結 / 前往考前練習 / 刪除教材. No 開啟教材 icon,
+       and no separate 預覽教材 icon (duplicated the card-click/繼續學習
+       preview action). */
+    var acts = [favBtn, dlBtn, summaryLink, practiceLink];
     if (typeof onDelete === "function") {
       /* Trash icon defined locally (the shared Icons.js is out of this
          WO's modify scope); matches the spec's 垃圾桶 glyph. */
@@ -203,9 +220,9 @@ AHS.MaterialCard = (function () {
     var progressBar = el("div", {
       class: "progressbar",
       role: "progressbar",
-      "aria-valuenow": String(pct), "aria-valuemin": "0", "aria-valuemax": "100"
+      "aria-valuenow": String(completionPct), "aria-valuemin": "0", "aria-valuemax": "100"
     }, [
-      el("div", { class: "progressbar__fill", style: "width:" + pct + "%;background-color:" + subj.hex })
+      el("div", { class: "progressbar__fill", style: "width:" + completionPct + "%;background-color:" + subj.hex })
     ]);
 
     /* File info line — only for uploaded runtime materials (have a
@@ -235,8 +252,8 @@ AHS.MaterialCard = (function () {
       el("p", { class: "mat-card__intro", text: item.content || "" }),
       el("div", { class: "mat-card__progress-block" }, [
         el("div", { class: "mat-card__progress-head" }, [
-          el("span", { text: "學習進度" }),
-          el("span", { class: "mat-card__pct", text: progressLabel(pct) })
+          el("span", { text: "教材完成度" }),
+          el("span", { class: "mat-card__pct", text: completionLabel })
         ]),
         progressBar
       ]),

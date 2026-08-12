@@ -15,10 +15,32 @@ window.AHS = window.AHS || {};
 (function () {
   "use strict";
 
+  /* Sprint AI-113 AI-808: optional real ?materialId=/?examId= — no
+     existing page links here with these params yet (disclosed, not
+     hidden — same "build the real capability, UI consumer follows
+     later" precedent as Sprint AI-103's ImportRuntime.js), but any
+     future "問 AI 巧巧老師" link from a specific material/quiz can reach
+     tutor.html?materialId=... and immediately get a context-specific
+     message via the same shared AHS.TutorMessage.build() every other
+     page already uses — never a second definition. */
   function buildRealTutorMessage() {
     if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function" ||
         !AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return null; }
-    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext());
+    /* Sprint AI-124 AI-124-02/07: the one shared AHS.PlatformContext.
+       resolve() instead of this page's own separate URLSearchParams
+       parsing — this is also the real fix that finally lets a materialId
+       actually reach tutor.html (see the AI-124-07 note further down):
+       previously nothing ever linked here with these params (this
+       file's own prior header literally said so), now
+       AHS.WorkspaceFolder.js/summary.html's own AI Tutor entry points
+       carry materialId= through, and this same resolve() picks it up. */
+    var ctx = AHS.PlatformContext.resolve();
+    var pageContext = {
+      page: "tutor",
+      materialId: ctx.materialId || undefined,
+      examId: ctx.examId || undefined
+    };
+    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), pageContext);
     return built ? { role: "assistant", time: "剛剛", text: built.message } : null;
   }
 
@@ -48,8 +70,15 @@ window.AHS = window.AHS || {};
       active: "tutor",
       onNavigate: function () { /* Mock navigation — prototype. */ }
     });
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
-    shell.main.appendChild(AHS.AiTutor.create(buildModel()));
+    /* Phase 1 Rule-Based Tutor Engine: the same real ?questionId= this
+       page already reads via AHS.PlatformContext.resolve() (see
+       buildRealTutorMessage() above), passed through so AiTutor.js's
+       sendMessage() can ground a real answer via AHS.TutorEngine when
+       the student arrived here from a specific real question. */
+    var tutorPageContext = { questionId: AHS.PlatformContext ? AHS.PlatformContext.resolve().questionId : null };
+    shell.main.appendChild(AHS.AiTutor.create(buildModel(), tutorPageContext));
   }
   function coreReady() {
     return !!(window.AHS && AHS.UI && typeof AHS.UI.el === "function" &&
@@ -76,5 +105,17 @@ window.AHS = window.AHS || {};
     document.addEventListener("DOMContentLoaded", guardedInit);
   } else {
     guardedInit();
+  }
+
+  /* AI Supabase Persistence Root Cause Fix (Root Cause B): re-run the same,
+     unmodified guardedInit() whenever a background Repository pull just
+     merged fresh rows into a Runtime's Memory Cache (js/repository/
+     RepositorySync.js's own header explains why this is necessary — the
+     first render almost always happens before a real network pull
+     resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
+     and rebuilds #app every call), so simply calling it again is enough —
+     no Runtime Public API change, no UI file needs a Promise. */
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("ahs:repository-pulled", guardedInit);
   }
 })();

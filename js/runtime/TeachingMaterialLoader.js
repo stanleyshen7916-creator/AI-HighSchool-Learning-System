@@ -160,12 +160,97 @@ AHS.TeachingMaterialLoader = (function () {
       return idMap[entry.materialId];
     }
     if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return null; }
-    var record = AHS.MaterialRuntime.add(entry.material || {});
+    /* Bug fix (first real Package-track material, tm_1): Package metadata's
+       subject is a Chinese display name ("數學"), but MaterialCard.js/
+       WrongBook.js/etc. all do AHS.Subjects[record.subject] expecting a real
+       key ("math") — some with no fallback, which throws. Remap through the
+       same subjectKeyFromChineseName() already used by
+       buildExamCompatibleQuestions() below, on a clone so entry.material
+       itself (read elsewhere by its own Chinese-name convention) is untouched. */
+    var materialForRuntime = shallowClone(entry.material || {});
+    var runtimeSubjectKey = subjectKeyFromChineseName(materialForRuntime.subject);
+    if (runtimeSubjectKey) { materialForRuntime.subject = runtimeSubjectKey; }
+    /* Sprint AI-126B Part 2 v1.1, Task 1/3: originKey carries this
+       Package entry's own stable external id ("tm_1", ...) onto the
+       MaterialRuntime record — the only way MaterialRuntime.pushProgress()
+       can later resolve this record's real Supabase materials.id. */
+    materialForRuntime.originKey = entry.materialId;
+    var record = AHS.MaterialRuntime.add(materialForRuntime);
     if (!record || !record.id) { return null; }
     idMap[entry.materialId] = record.id;
     saveIdMap(idMap);
     loadSummary(entry, record.id);
+    pushMaterial(entry.materialId, materialForRuntime, "PACKAGE");
     return record.id;
+  }
+
+  /* pushMaterial(originKey, materialForRuntime, sourceTrack) — Sprint
+     AI-126B Part 2 v1.1, Task 1 (Material Repository). Fire-and-forget
+     read-then-upsert to public.materials, keyed by this material's own
+     real, stable origin_key — same pattern every other domain's push
+     glue already uses (WrongBook/KnowledgeMastery/Settings). Only ever
+     called with a real Package/Repository-track entry (never an
+     ordinary Mock/demo Material Center upload — see this file's own
+     header on why only real content flows through this Loader at all).
+     Honest limitation, not a bug: materials is an Admin Only write per
+     RLS (20260807000005_rls_policies.sql) and no mock client-side
+     account holds is_admin, so this Insert/Update attempt will fail
+     (silently, via SyncBridge.pushFireAndForget's own error-swallowing)
+     for every mock student session today — Task 2's real Material
+     Migration (supabase/seed/0002_materials.sql, applied via elevated
+     --linked access) is the actual mechanism that populates materials
+     with real rows. This client-side path exists so the capability is
+     genuinely wired (Task 1's own "Read/Insert/Update/Delete" ask) and
+     so a future real-admin session can maintain materials without a
+     separate code path. */
+  function pushMaterial(originKey, materialForRuntime, sourceTrack) {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    AHS.SyncBridge.subjectIdFor(materialForRuntime.subject).then(function (subjectId) {
+      if (!subjectId) { return; }
+      var repo = AHS.RepositoryFactory.create();
+      var row = {
+        origin_key: originKey,
+        subject_id: subjectId,
+        title: materialForRuntime.title || "",
+        chapter: materialForRuntime.chapter || "",
+        grade: materialForRuntime.grade || "",
+        category: materialForRuntime.category || "",
+        source_track: sourceTrack,
+        created_by: identity.userId
+      };
+      AHS.SyncBridge.pushFireAndForget(function () {
+        return repo.read("materials", "origin_key=eq." + encodeURIComponent(originKey)).then(function (readResult) {
+          if (readResult.error) { return readResult; }
+          if (readResult.data && readResult.data.length) {
+            return repo.update("materials", "id=eq." + readResult.data[0].id, row);
+          }
+          return repo.insert("materials", row);
+        });
+      });
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method (Task 1's Read +
+     Task 8 verification). Reads every real materials row this
+     authenticated session can see (RLS: select is open to any
+     authenticated user, unlike Insert/Update/Delete). Does NOT merge
+     into MaterialRuntime's local store — the Package/Repository JS
+     content already loaded by load() remains the single, authoritative
+     rendering source (no UI/rendering-pipeline change, per this round's
+     restrictions); this is a read/verification capability, the same
+     honest scope every other domain's pullFromRepository() documents
+     for itself. */
+  function pullFromRepository() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("materials", "select=origin_key,title,chapter,grade,category,source_track").then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
+      return { pulled: result.data.length, materials: result.data };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
   }
 
   function examIdFor(runtimeMaterialId) {
@@ -212,7 +297,14 @@ AHS.TeachingMaterialLoader = (function () {
           return { key: OPTION_KEYS[i] || String(i), text: text };
         }),
         correctAnswer: OPTION_KEYS[answerIndex],
-        knowledgePoint: chapter,
+        /* Sprint AI-121 AI-121-09 fix: Package-track questions already
+           carry a real, richer per-question knowledgePoint string (see
+           js/data/TeachingMaterialData.js) — prefer it over the
+           chapter-level fallback so Knowledge Analytics operates on the
+           real per-question signal, matching repoExamCompatibleQuestions()
+           below which never had this collapse bug. chapter remains the
+           fallback for the rare question with no real knowledgePoint. */
+        knowledgePoint: q.knowledgePoint || chapter,
         explanation: q.explanation || "",
         materialId: runtimeMaterialId,
         questionSource: q.questionSource,
@@ -221,6 +313,25 @@ AHS.TeachingMaterialLoader = (function () {
       });
     });
     return compatible;
+  }
+
+  /* Sprint AI-117 AI-117-08 Assessment Mode: "原始試卷"（真實上傳教材，
+     questionSource=ORIGINAL）與"AI 題庫"（questionSource=AI_GENERATED）
+     "不得混用" — imported here as two ADDITIONAL, separate examIds
+     alongside the existing combined one (examId itself, kept 100%
+     unchanged for every existing caller/link — no existing behavior
+     removed), so a caller that explicitly wants one mode can load only
+     that mode's questions, never both under one running exam. Skips a
+     variant entirely (never importQuestions() with an empty array,
+     matching this file's own existing "no-op when nothing real exists"
+     rule) when this material genuinely has no question of that source —
+     most materials will only ever have one real variant. */
+  function importAssessmentModeVariants(examId, questions) {
+    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
+    var original = questions.filter(function (q) { return q.questionSource === "ORIGINAL"; });
+    var aiGenerated = questions.filter(function (q) { return q.questionSource === "AI_GENERATED"; });
+    if (original.length) { AHS.QuestionRuntime.importQuestions(examId + "__original", original); }
+    if (aiGenerated.length) { AHS.QuestionRuntime.importQuestions(examId + "__ai", aiGenerated); }
   }
 
   /* Re-run on every page load where AHS.QuestionRuntime is present —
@@ -236,6 +347,16 @@ AHS.TeachingMaterialLoader = (function () {
     var questions = buildExamCompatibleQuestions(entry, runtimeMaterialId);
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
+    importAssessmentModeVariants(examId, questions);
+    /* Sprint AI-121 AI-121-03: build-once QuestionBank, real content
+       only. hasExam() already guarded this call site to "first time
+       this examId's questions are known this session" above, so this
+       is exactly the one real moment ensureBank() should be offered
+       this material's real questions — ensureBank() itself is still
+       the one enforcing "never regenerate" across sessions/reloads. */
+    if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.ensureBank === "function") {
+      AHS.QuestionBankRuntime.ensureBank(examId, questions);
+    }
   }
 
   /* resolveExamMeta(examId) — Sprint v1.6 Module C: quiz.html's direct
@@ -263,7 +384,14 @@ AHS.TeachingMaterialLoader = (function () {
     entries.forEach(function (e) { if (e && e.materialId === sourceId) { entry = e; } });
     if (entry && entry.material) {
       return {
-        subject: entry.material.subject,
+        /* Same fix as resolveMaterialId() above: ExamRuntime.startFromExam()
+           stores this straight into the exam session's own `subject` field,
+           which flows into AutoGrader.grade()/WrongBookRuntime.sync() and
+           eventually WrongBook.js's chip() (no fallback) — must be a real
+           AHS.Subjects key, not the Package's Chinese display name. Falls
+           back to the raw name only if unmappable (pre-existing gap for an
+           unknown subject, not newly introduced here). */
+        subject: subjectKeyFromChineseName(entry.material.subject) || entry.material.subject,
         title: entry.material.title,
         chapter: entry.material.chapter,
         grade: entry.material.grade
@@ -281,8 +409,32 @@ AHS.TeachingMaterialLoader = (function () {
     return null;
   }
 
+  /* workspaceAllows(school, semester) — Sprint AI-120 (Workspace
+     Repository Integration) AI-120-01: a Repository entry tagged with a
+     real school/semester (Sprint AI-119 §9's migration + this Sprint's
+     own generator passthrough) only bridges into MaterialRuntime for a
+     Workspace whose own School matches AND whose selected Semester(s)
+     intersect it — "Student A → 長榮中學 → 高二上 只能看到高二上教材,
+     不得出現高一下". An entry with NEITHER field set (not yet migrated)
+     stays visible everywhere, unchanged from pre-Sprint-AI-120 behavior
+     — never silently disappears for content nobody has classified yet.
+     No active Workspace (AHS.WorkspaceRuntime not loaded, or every
+     pre-Sprint-AI-119 test that never establishes one) also stays
+     unfiltered — same backward-compatibility discipline as
+     PersistenceAdapter's own namespace() fallback. */
+  function workspaceAllows(school, semester) {
+    if (!school && !semester) { return true; }
+    if (!AHS.WorkspaceRuntime || typeof AHS.WorkspaceRuntime.getCurrent !== "function") { return true; }
+    var ws = AHS.WorkspaceRuntime.getCurrent();
+    if (!ws) { return true; }
+    if (school && ws.schoolId !== school) { return false; }
+    if (semester && ws.semesterIds.indexOf(semester) === -1) { return false; }
+    return true;
+  }
+
   function loadEntry(entry, idMap) {
     if (!entry || !entry.materialId || !entry.material) { return; }
+    if (!workspaceAllows(entry.material.school, entry.material.semester)) { return; }
     var runtimeMaterialId = resolveMaterialId(entry, idMap);
     if (!runtimeMaterialId) { return; }
     loadQuestions(entry, runtimeMaterialId);
@@ -302,8 +454,21 @@ AHS.TeachingMaterialLoader = (function () {
     if (meta.grade) { partial.grade = meta.grade; }
     if (meta.chapter) { partial.chapter = meta.chapter; }
     if (meta.unit) { partial.category = meta.unit; }
-    if (meta.createdAt) { partial.date = meta.createdAt; }
+    /* Sprint AI-122 AI-122-06: meta.createdAt was only ever copied into
+       partial.date (display-only field, js/ui/MaterialCard.js etc.) —
+       never into MaterialRuntime's own real partial.createdAt, so
+       js/runtime/MaterialRuntime.js's add() silently defaulted every
+       Repository material's createdAt to "right now" (js/runtime/
+       MaterialRuntime.js:179's own formatDate(now) fallback), on every
+       fresh session. That made 首頁「近三日新增教材」meaningless — a
+       Repository material authored months ago would always look
+       brand-new. Reading the SAME real meta.createdAt this record
+       already carries (data/materials/*.js's own real per-material
+       field) into the real createdAt too is additive — partial.date is
+       untouched for its own existing display callers. */
+    if (meta.createdAt) { partial.date = meta.createdAt; partial.createdAt = meta.createdAt; }
     if (summary.title) { partial.title = summary.title; } /* this record shape HAS a real title field, unlike Package metadata — no derivation judgment call needed here */
+    partial.originKey = record.id; /* Sprint AI-126B Part 2 v1.1, Task 1/3 — see resolveMaterialId()'s identical comment above */
     return partial;
   }
 
@@ -390,14 +555,22 @@ AHS.TeachingMaterialLoader = (function () {
 
   function loadMaterialRepositoryEntry(record, idMap) {
     if (!record || !record.id) { return; }
+    var meta = record.metadata || {};
+    /* workspaceSchool/workspaceSemester, not meta.school/meta.semester —
+       this Repository track's own metadata already has an unrelated,
+       pre-existing display-string `semester` field (e.g. "第二學期");
+       see data/materials/CivicsG10Ch5to6Exam20260730.js's own comment. */
+    if (!workspaceAllows(meta.workspaceSchool, meta.workspaceSemester)) { return; }
     var runtimeMaterialId = idMap[record.id];
     if (!runtimeMaterialId) {
       if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.add !== "function") { return; }
-      var added = AHS.MaterialRuntime.add(repoMaterialPartial(record));
+      var materialPartial = repoMaterialPartial(record);
+      var added = AHS.MaterialRuntime.add(materialPartial);
       if (!added || !added.id) { return; }
       runtimeMaterialId = added.id;
       idMap[record.id] = runtimeMaterialId;
       saveIdMap(idMap);
+      pushMaterial(record.id, materialPartial, "REPOSITORY");
     }
     loadRepoSummary(record, runtimeMaterialId);
     if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
@@ -406,6 +579,10 @@ AHS.TeachingMaterialLoader = (function () {
     var questions = repoExamCompatibleQuestions(record, runtimeMaterialId);
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
+    importAssessmentModeVariants(examId, questions);
+    if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.ensureBank === "function") {
+      AHS.QuestionBankRuntime.ensureBank(examId, questions);
+    }
   }
 
   function loadMaterialRepository(idMap) {
@@ -434,5 +611,17 @@ AHS.TeachingMaterialLoader = (function () {
     initialized = false;
   }
 
-  return { initialize: load, load: load, resolveExamMeta: resolveExamMeta, reset: reset };
+  return {
+    initialize: load,
+    load: load,
+    resolveExamMeta: resolveExamMeta,
+    reset: reset,
+    /* Sprint AI-117 AI-117-08: exposed so
+       tests/regression/AnalyticsRegression.js can exercise the real
+       Assessment Mode split directly (same function loadQuestions()/
+       loadMaterialRepositoryEntry() already call internally above — not
+       a second implementation for tests to drift from). */
+    importAssessmentModeVariants: importAssessmentModeVariants,
+    pullFromRepository: pullFromRepository
+  };
 })();

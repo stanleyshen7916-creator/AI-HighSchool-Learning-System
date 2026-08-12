@@ -20,12 +20,27 @@ window.AHS = window.AHS || {};
 (function () {
   "use strict";
 
+  /* Sprint AI-122 AI-122-06: parses MaterialRuntime's real createdAt
+     field ("YYYY/MM/DD" for genuinely-new records — js/runtime/
+     MaterialRuntime.js's own formatDate(); "YYYY-MM-DD" for the
+     Repository track's real authored date — data/materials/*.js's own
+     metadata.createdAt, now actually wired through by this Sprint's
+     TeachingMaterialLoader.js fix). Both are valid Date constructor
+     input; never throws — genuinely unparseable data is honestly
+     excluded (null), not treated as "recent" by default. */
+  function parseCreatedAt(str) {
+    if (!str) { return null; }
+    var d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
   function buildRecentMaterialsModel() {
+    var emptyModel = { title: "最近新增教材", items: [], emptyText: "目前近三日沒有新增教材" };
     if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") {
-      return { title: "最近教材", items: [] };
+      return emptyModel;
     }
     var items = AHS.MaterialRuntime.list();
-    if (!items.length) { return { title: "最近教材", items: [] }; }
+    if (!items.length) { return emptyModel; }
 
     var summarizedMaterialIds = {};
     if (AHS.SummaryRuntime && typeof AHS.SummaryRuntime.list === "function") {
@@ -34,10 +49,25 @@ window.AHS = window.AHS || {};
       });
     }
 
-    var sorted = items.slice().sort(function (a, b) { return (b.order || 0) - (a.order || 0); }).slice(0, 4);
+    /* AI-122-06: 最近教材重新定義為「近三日新增教材」（CreatedAt >=
+       Today -3 Days）— replaces the old "just show the newest 4,
+       regardless of age" behavior, which duplicated 教材資料夾's own
+       full material listing in a different sort order (AI-122-11). */
+    var cutoff = new Date();
+    cutoff.setHours(0, 0, 0, 0);
+    cutoff.setDate(cutoff.getDate() - 3);
+
+    var withDate = items
+      .map(function (m) { return { m: m, createdAt: parseCreatedAt(m.createdAt) }; })
+      .filter(function (x) { return x.createdAt && x.createdAt >= cutoff; })
+      .sort(function (a, b) { return b.createdAt - a.createdAt; });
+
+    if (!withDate.length) { return emptyModel; }
+
     return {
-      title: "最近教材",
-      items: sorted.map(function (m) {
+      title: "最近新增教材",
+      items: withDate.map(function (x) {
+        var m = x.m;
         return {
           id: m.id,
           subject: m.subject,
@@ -61,76 +91,18 @@ window.AHS = window.AHS || {};
     };
   }
 
-  /* Sprint 6.6 · GitHub QA Fix (WO-001): 今日任務 has no Runtime anywhere
-     in this repository (no Task/Mission Runtime was ever built, and
-     building one now would be a new feature, out of scope). Always
-     returns an explicit empty model — never AHS.AppConfig.todayTasks — so
-     TodayMission.js's own existing Empty State ("今天沒有安排學習任務")
-     renders honestly instead of Mock content. */
+  /* Sprint AI-114 AI-903 Daily Task Engine: 今日任務 now has a real
+     source — AHS.LearningStateRuntime.dailyTasks() (this Sprint's own
+     new function), built from real Review/WrongBook/Material signals,
+     recomputed on every page load (never cached, so "每日重新計算" is
+     automatically true — there is no stored state to go stale). Still
+     renders TodayMission.js's own existing Empty State honestly when
+     genuinely nothing is due (a session with zero materials and zero
+     wrong items) — never a fabricated task. */
   function buildTodayMissionModel() {
-    return { title: "今日任務", items: [] };
-  }
-
-  function buildStudyStatsModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return undefined; }
-    var items = AHS.MaterialRuntime.list();
-    if (!items.length) { return undefined; }
-
-    var bySubject = {};
-    var totalMinutes = 0;
-    items.forEach(function (m) {
-      var minutes = typeof m.learningTime === "number" ? m.learningTime : 0;
-      totalMinutes += minutes;
-      bySubject[m.subject] = (bySubject[m.subject] || 0) + minutes;
-    });
-    var bars = Object.keys(bySubject).map(function (subj) {
-      return { subject: subj, hours: Math.round((bySubject[subj] / 60) * 10) / 10 };
-    });
-    if (!bars.length) { bars = [{ subject: items[0].subject, hours: 0 }]; }
-
-    return {
-      title: "學習統計",
-      rangeLabel: "本次 Session",
-      totalHours: Math.round((totalMinutes / 60) * 10) / 10,
-      deltaHours: 0, /* no historical baseline exists to compare against — honestly 0, never fabricated */
-      bars: bars
-    };
-  }
-
-  /* Sprint 6.6 · GitHub QA Fix (WO-001) 今日學習: real computation from
-     AHS.MaterialRuntime — sums learningTime (minutes) for materials
-     whose lastLearningAt falls on today's calendar date. Honestly 0
-     whenever nothing has called MaterialRuntime.startLearning() yet
-     (currently always, since no page wires that call — see Known
-     Issues), never fabricated. */
-  function buildTodayMinutesModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return { todayMinutes: 0 }; }
-    var now = new Date();
-    var minutes = 0;
-    AHS.MaterialRuntime.list().forEach(function (m) {
-      if (!m.lastLearningAt) { return; }
-      var d = new Date(m.lastLearningAt);
-      if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()) {
-        minutes += (typeof m.learningTime === "number" ? m.learningTime : 0);
-      }
-    });
-    return { todayMinutes: minutes };
-  }
-
-  function buildContinueLearningModel() {
-    if (!AHS.MaterialRuntime || typeof AHS.MaterialRuntime.list !== "function") { return {}; }
-    var items = AHS.MaterialRuntime.list().filter(function (m) { return !!m.lastLearningAt; });
-    if (!items.length) { return {}; } /* nothing has called startLearning() yet — honest empty, ContinueLearning.js shows "尚無學習紀錄" */
-
-    var latest = items.sort(function (a, b) { return new Date(b.lastLearningAt) - new Date(a.lastLearningAt); })[0];
-    var subj = AHS.Subjects[latest.subject];
-    return {
-      subject: subj ? subj.name : latest.subject,
-      chapter: latest.chapter,
-      lesson: latest.title,
-      progress: latest.progress,
-      materialId: latest.id
-    };
+    var items = (AHS.LearningStateRuntime && typeof AHS.LearningStateRuntime.dailyTasks === "function")
+      ? AHS.LearningStateRuntime.dailyTasks(4) : [];
+    return { title: "今日任務", items: items };
   }
 
   /* Sprint AI-111 AI-611/AI-612: AiTutorHomeCard.create(model) already
@@ -143,9 +115,15 @@ window.AHS = window.AHS || {};
      Returns undefined (renders the existing Empty State) when there is
      genuinely no real learning data yet — never fabricated. */
   function buildAiTutorModel() {
+    /* Sprint AI-113 AI-804: real Settings > Learning > "顯示 AI 巧巧老師
+       建議卡片" toggle. Off means the same honest Empty State the card
+       already shows when there's no real data — never a different,
+       second behavior invented for "hidden". */
+    if (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function" &&
+        AHS.SettingsRuntime.get().showTutorSuggestions === false) { return undefined; }
     if (!AHS.StatisticsRuntime || typeof AHS.StatisticsRuntime.learningContext !== "function" ||
         !AHS.TutorMessage || typeof AHS.TutorMessage.build !== "function") { return undefined; }
-    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext());
+    var built = AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), { page: "home" });
     return built || undefined;
   }
 
@@ -192,31 +170,43 @@ window.AHS = window.AHS || {};
 
     var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
-    /* Main column (left): hero, recent materials, then 學習統計 | 學習計畫
-       side by side. Right rail: 今日任務, AI 巧巧老師, 成就勳章.
-       Two independent vertical stacks — matches the approved mockup and
-       keeps card heights from coupling across columns. */
+    /* Sprint AI-122 AI-122-08 (首頁資訊排序): PO's PAT mandates one
+       explicit, literal top-to-bottom order — Hero→今日任務→學習成果
+       總覽→最近新增教材→教材資料夾→AI Tutor — exactly 6 sections, no
+       more. A two-column main/rail split (Sprint AI-118's own layout)
+       can't honestly represent one single asserted sequence (今日任務
+       used to sit in a side rail, visually parallel to 最近教材/學習
+       成效總覽 rather than after them), so Home collapses to one single
+       stacked column here, in this exact order.
+       複習進度 (ReviewWidget, previously kept in the rail since Sprint
+       7.0/AI-114) is intentionally NOT in the PO's 6-item list and is
+       removed from Home this Sprint — its own 今日待複習 count already
+       surfaces via 今日任務 (AHS.LearningStateRuntime.dailyTasks()
+       prioritizes real Review items first) and its Mastery breakdown
+       overlaps 學習成效總覽's own Knowledge Mastery/新增弱點/解除弱點
+       KPIs (AI-122-11: 不得資訊重複). Not deleted from the codebase —
+       same conservative "don't delete source files outside this
+       Sprint's scope" precedent AI-118's own report already established
+       for 學習統計/學習計畫/成就勳章/今日學習時間/繼續學習. Flagged in
+       this Sprint's EO report as a judgment call for PO review. */
     var main = el("div", { class: "home__main" }, [
       hero,
-      AHS.HomeRecentMaterials.create(buildRecentMaterialsModel()),
-      el("div", { class: "home__statsplan" }, [
-        AHS.StudyStats.create(buildStudyStatsModel()),
-        AHS.StudyPlan.create()
-      ])
-    ]);
-
-    var rail = el("div", { class: "home__rail" }, [
       AHS.TodayMission.create(buildTodayMissionModel()),
-      /* EO-S7.0-003 · Review Widget：今日待複習/已完成/總錯題/Mastery
-         Progress，資料全部來自 AHS.ReviewModel（唯讀查詢層）。 */
-      (AHS.ReviewWidget ? AHS.ReviewWidget.create() : null),
-      AHS.AiTutorHomeCard.create(buildAiTutorModel()),
-      AHS.AchievementBadges.create(),
-      AHS.LearningTime.create(buildTodayMinutesModel()),
-      AHS.ContinueLearning.create(buildContinueLearningModel())
+      /* Sprint AI-121 AI-121-01/19: 學習成效總覽 — real Learning Outcome
+         (Knowledge Mastery/Growth/Weakness), never reading completion. */
+      (AHS.HomeKpiBoard ? AHS.HomeKpiBoard.create() : null),
+      /* Sprint AI-122 AI-122-06: 最近教材重新定義為「近三日新增教材」
+         （見 buildRecentMaterialsModel 本身的真實 CreatedAt 篩選）。 */
+      AHS.HomeRecentMaterials.create(buildRecentMaterialsModel()),
+      /* Sprint AI-120 AI-120-02/03 + AI-122-07: 教材資料夾 — 唯一教材
+         入口，real Current-Workspace materials grouped by Subject
+         (School/Semester already fixed by the Workspace itself), each
+         linking straight into 學習總結/考前練習。 */
+      (AHS.WorkspaceFolder ? AHS.WorkspaceFolder.create() : null),
+      AHS.AiTutorHomeCard.create(buildAiTutorModel())
     ].filter(Boolean));
 
-    return el("div", { class: "home" }, [main, rail]);
+    return el("div", { class: "home" }, [main]);
   }
 
   function init() {
@@ -233,6 +223,7 @@ window.AHS = window.AHS || {};
       onNavigate: function () { /* Mock navigation — single-page prototype. */ }
     });
 
+    if (!shell) { return; } /* Sprint AI-119: not logged in — AppShell already redirected to login.html */
     AHS.UI.mount(app, shell.root);
     shell.main.appendChild(buildHome());
   }
@@ -262,5 +253,17 @@ window.AHS = window.AHS || {};
     document.addEventListener("DOMContentLoaded", guardedInit);
   } else {
     guardedInit();
+  }
+
+  /* AI Supabase Persistence Root Cause Fix (Root Cause B): re-run the same,
+     unmodified guardedInit() whenever a background Repository pull just
+     merged fresh rows into a Runtime's Memory Cache (js/repository/
+     RepositorySync.js's own header explains why this is necessary — the
+     first render almost always happens before a real network pull
+     resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
+     and rebuilds #app every call), so simply calling it again is enough —
+     no Runtime Public API change, no UI file needs a Promise. */
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("ahs:repository-pulled", guardedInit);
   }
 })();

@@ -1,8 +1,10 @@
 /* components/AiTutor.js — AI Tutor (巧巧老師) chat page.
    Hero + chat thread + input bar (left), suggestion tiles (middle),
    chat history + common resources (right). Sending a message appends the
-   user bubble and a canned assistant reply — all Mock, no API. PascalCase
-   under window.AHS. Assistant avatar reuses AHS.Qiaoqiao. */
+   user bubble, then always either a real, grounded answer or a real
+   answerable menu from AHS.TutorEngine.js's Rule-Based engine (no LLM/AI
+   API — see that file's own header) — no fabricated canned reply.
+   PascalCase under window.AHS. Assistant avatar reuses AHS.Qiaoqiao. */
 window.AHS = window.AHS || {};
 AHS.AiTutor = (function () {
   "use strict";
@@ -10,7 +12,27 @@ AHS.AiTutor = (function () {
 
   var FILE_TONE = { PDF: "#ef4444", PPT: "#f59e0b", DOCX: "#3b82f6", XLSX: "#22b573", MP4: "#7c5cff" };
 
-  function bubble(msg) {
+  /* menu(actionList, onPick) — AHS.TutorEngine's off-topic menu, rendered
+     inline under the reply. Every item is guaranteed to lead to a real
+     answer (TutorEngine.offTopicMenu()'s own contract), never a dead
+     end. Mirrors js/components/AiTutorHomeCard.js's established
+     href-vs-button split: a real href renders a plain <a> (real
+     navigation, never window.location.href=); no href re-invokes
+     sendMessage() with that exact label — guaranteed answerable since
+     TutorEngine only ever offers it here after resolving the question. */
+  function menu(actionList, onPick) {
+    return el("div", { class: "tutor-msg__menu" },
+      actionList.map(function (a) {
+        if (a.href) {
+          return el("a", { class: "tutor-msg__menu-item", href: a.href }, [el("span", { text: a.label })]);
+        }
+        var btn = el("button", { type: "button", class: "tutor-msg__menu-item" }, [el("span", { text: a.label })]);
+        if (onPick) { btn.addEventListener("click", function () { onPick(a.label); }); }
+        return btn;
+      }));
+  }
+
+  function bubble(msg, onMenuPick) {
     if (msg.role === "user") {
       return el("div", { class: "tutor-msg tutor-msg--user" }, [
         el("div", { class: "tutor-msg__bubble", text: msg.text }),
@@ -28,16 +50,18 @@ AHS.AiTutor = (function () {
       el("button", { type: "button", class: "tutor-msg__act", "aria-label": "讚", html: AHS.Icons.like() }),
       el("button", { type: "button", class: "tutor-msg__act", "aria-label": "倒讚", html: AHS.Icons.dislike() })
     ]);
+    var colChildren = [body];
+    if (Array.isArray(msg.actions) && msg.actions.length) {
+      colChildren.push(menu(msg.actions, onMenuPick));
+    }
+    colChildren.push(el("div", { class: "tutor-msg__foot" }, [
+      el("span", { class: "tutor-msg__time", text: msg.time }),
+      actions
+    ]));
     return el("div", { class: "tutor-msg tutor-msg--ai" }, [
       el("span", { class: "tutor-msg__avatar qiaoqiao-bust qiaoqiao-bust--sm",
         html: AHS.Qiaoqiao.bust("gentle") }),
-      el("div", { class: "tutor-msg__col" }, [
-        body,
-        el("div", { class: "tutor-msg__foot" }, [
-          el("span", { class: "tutor-msg__time", text: msg.time }),
-          actions
-        ])
-      ])
+      el("div", { class: "tutor-msg__col" }, colChildren)
     ]);
   }
 
@@ -56,9 +80,13 @@ AHS.AiTutor = (function () {
     ]);
   }
 
-  function create(model) {
+  /* pageContext (Phase 1, additive/optional) — { questionId } from
+     AHS.PlatformContext.resolve(), passed in by js/pages/AppTutor.js.
+     Lets sendMessage() ground a real answer via AHS.TutorEngine when the
+     student arrived here from a specific real question (js/components/
+     WrongBook.js's new "問 AI 巧巧老師" link). */
+  function create(model, pageContext) {
     var data = model || AHS.AppConfig.aiTutorPage;
-    var replyIndex = 0;
 
     var thread = el("div", { class: "tutor-thread" }, [
       el("div", { class: "tutor-thread__day", text: "今天" })
@@ -70,9 +98,17 @@ AHS.AiTutor = (function () {
     function sendMessage(text) {
       if (!text) { return; }
       thread.appendChild(bubble({ role: "user", time: "剛剛", text: text }));
-      var reply = data.cannedReplies[replyIndex % data.cannedReplies.length];
-      replyIndex += 1;
-      thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: reply }));
+      /* AHS.TutorEngine.js's Rule-Based engine always answers (a real,
+         grounded reply, or a real answerable menu — never a dead end);
+         the only fallback needed here is the defensive "core not ready"
+         case (EO-S7.0-HOTFIX-001), never a fabricated canned reply. */
+      var engineReply = (AHS.TutorEngine && typeof AHS.TutorEngine.reply === "function")
+        ? AHS.TutorEngine.reply(text, pageContext) : null;
+      if (engineReply && typeof engineReply === "object") {
+        thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: engineReply.message, actions: engineReply.actions }, sendMessage));
+      } else {
+        thread.appendChild(bubble({ role: "assistant", time: "剛剛", text: engineReply || "系統資源載入失敗，暫時無法回覆，請重新整理頁面。" }));
+      }
       scrollBottom();
     }
 
@@ -93,20 +129,13 @@ AHS.AiTutor = (function () {
       if (ev.key === "Enter") { ev.preventDefault(); submit(); }
     });
 
-    function toolBtn(icon, label) {
-      return el("button", { type: "button", class: "tutor-input__tool" }, [
-        el("span", { html: AHS.Icons[icon]() }),
-        el("span", { text: label })
-      ]);
-    }
-
+    /* AI-129 hotfix: 上傳檔案／拍照上傳／語音輸入 had no click handler at
+       all (never wired to any real feature) — a dead, non-functional row
+       that only misled students into thinking it did something. Hidden
+       per explicit report rather than left as dead UI; the row can come
+       back once a real upload/voice pipeline exists to back it. */
     var inputBar = el("div", { class: "tutor-input" }, [
-      el("div", { class: "tutor-input__row" }, [input, sendBtn]),
-      el("div", { class: "tutor-input__tools" }, [
-        toolBtn("paperclip", "上傳檔案"),
-        toolBtn("camera", "拍照上傳"),
-        toolBtn("mic", "語音輸入")
-      ])
+      el("div", { class: "tutor-input__row" }, [input, sendBtn])
     ]);
 
     var chatCol = el("div", { class: "tutor-chat card" }, [thread, inputBar]);

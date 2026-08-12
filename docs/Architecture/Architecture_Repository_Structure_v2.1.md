@@ -239,10 +239,11 @@ AI-HighSchool-Learning-System/
 ### css/
 `base/`（tokens.css、layout.css）｜`components/`（共用元件 CSS）｜`pages/`（每頁一份 kebab-case，不得跨頁混放）｜`utilities/`（v2.1 新增：helper／animation／spacing 類；目前為保留空分類 —— 依「不得新增未引用 CSS」不建立空殼檔案）
 
-### js/（八分類，不得混放）
+### js/（九分類，不得混放；v2.2／Sprint AI-126B 新增 `repository/`，`core/` 新增 `SupabaseClient.js`）
 | 分類 | 內容 |
 |---|---|
-| `core/` | namespace／shared：`UI.js`、`Icons.js`、`Qiaoqiao.js`、`PersistenceAdapter.js` |
+| `core/` | namespace／shared：`UI.js`、`Icons.js`、`Qiaoqiao.js`、`PersistenceAdapter.js`、`SupabaseClient.js`（Sprint AI-126B，唯一允許呼叫 `fetch(` 連線真實 Supabase 的檔案，僅供 `repository/` 呼叫，禁止任何 Runtime 直接呼叫） |
+| `repository/` | Sprint AI-126B 新增：真實後端 I/O 的唯一入口。`Repository.js`（抽象介面）／`SupabaseRepository.js`（實作，呼叫 `core/SupabaseClient.js`）／`RepositoryFactory.js`（provider 切換，保留未來 `LocalRepository` 可切換能力）。任何 Runtime／UI／頁面皆不得直接呼叫 `core/SupabaseClient.js`，一律經此層。 |
 | `runtime/` | 全部 13 個 Runtime |
 | `parser/` | 解析／生成引擎鏈：MaterialParser、KnowledgeBuilder、SummaryGenerator、QuestionGenerator、LearningPipeline |
 | `pages/` | 每頁 bootstrap（v2.1 恢復）：AppHome／AppMaterials／AppSummary／AppQuiz／AppWrongBook／AppReview／AppLearning／AppDashboard／AppTutor（+ AppQiaoqiaoGallery 頁沿用 QiaoqiaoGallery 元件自掛載） |
@@ -255,7 +256,7 @@ AI-HighSchool-Learning-System/
 `PMO/`｜`EO/`｜`QA/`｜`PAT/`｜`Decision/`｜`Architecture/`｜`Specifications/`（v2.1 新增，保留）｜`Release/`
 
 ### tests/ 與 scripts/
-`tests/jsdom/`（BehaviorSuite.js，累積）｜`tests/regression/`（PipelineRegression.js）｜`tests/validator/`（HtmlValidator.js）
+`tests/jsdom/`（BehaviorSuite.js，累積）｜`tests/regression/`（PipelineRegression.js）｜`tests/validator/`（HtmlValidator.js）｜`tests/supabase/`（Sprint AI-126B 新增：`RepositorySmoke.js`，唯一對真實外部服務發出真實網路請求的測試，不納入 `npm test` 預設鏈，獨立以 `npm run test:supabase` 執行）
 `scripts/verify/`（VerifyPaths.js、VerifyForbiddenPatterns.js）｜`scripts/release/`｜`scripts/maintenance/`
 
 ---

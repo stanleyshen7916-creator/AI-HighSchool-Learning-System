@@ -12,7 +12,14 @@ AHS.HomeRecentMaterials = (function () {
 
   function card(item, status) {
     var subj = AHS.Subjects[item.subject];
-    var pct = Math.max(0, Math.min(100, item.progress));
+    /* Sprint AI-117 AI-117-01/AI-117-10: same Material Completion single
+       source as js/ui/MaterialCard.js — see that file's own comment for
+       the full rationale. Falls back to raw reading progress only when
+       StatisticsRuntime isn't loaded on this page. */
+    var completion = (AHS.StatisticsRuntime && typeof AHS.StatisticsRuntime.materialCompletion === "function")
+      ? AHS.StatisticsRuntime.materialCompletion(item.id) : null;
+    var pct = completion ? completion.percent : Math.max(0, Math.min(100, item.progress));
+    var completionLabel = completion ? completion.label + "（" + completion.percent + "%）" : (pct + "%");
 
     var canAccessFile = !!item.file;
     var docBtn = el("button", {
@@ -81,8 +88,8 @@ AHS.HomeRecentMaterials = (function () {
         : null,
       el("div", { class: "recent-card__progress" }, [
         el("div", { class: "recent-card__progress-head" }, [
-          el("span", { text: "學習進度" }),
-          el("span", { class: "recent-card__pct", text: pct + "%" })
+          el("span", { text: "教材完成度" }),
+          el("span", { class: "recent-card__pct", text: completionLabel })
         ]),
         el("div", {
           class: "progressbar",
@@ -116,23 +123,33 @@ AHS.HomeRecentMaterials = (function () {
      one (real data or an explicit empty shape). Missing/invalid input
      renders the Empty State rather than throwing. */
   function create(model) {
-    var data = model || { title: "最近教材", items: [] };
+    var data = model || { title: "最近新增教材", items: [], emptyText: "目前近三日沒有新增教材" };
     var status = el("p", {
       class: "recent-materials__status", "aria-live": "polite", hidden: "hidden"
     });
     var items = (data && data.items) || [];
 
     /* Empty state reuses the existing .today-card__empty utility class —
-       no new Empty UI is introduced, per HOME-F008 requirement. */
+       no new Empty UI is introduced, per HOME-F008 requirement. Sprint
+       AI-122 AI-122-06: honest, context-specific copy (data.emptyText,
+       "目前近三日沒有新增教材") — not the old generic "目前沒有教材",
+       which would have misleadingly implied the Repository itself is
+       empty rather than just "nothing new in the last 3 days". */
     var body = items.length
       ? el("div", { class: "recent-materials__list" },
           items.map(function (item) { return card(item, status); }))
-      : el("p", { class: "today-card__empty", text: "目前沒有教材" });
+      : el("p", { class: "today-card__empty", text: (data && data.emptyText) || "目前沒有教材" });
 
-    return el("section", { class: "card recent-materials", "aria-label": (data && data.title) || "最近教材" }, [
+    /* Sprint AI-122 AI-122-09: 查看全部 previously href="#" — a real
+       link, but one that navigates nowhere ("可點擊沒有事件" in spirit,
+       even though it's technically a working anchor tag). Wired to the
+       real 教材資料夾/Material Center entry point (materials.html) —
+       every action button on this card is now either genuinely
+       functional or honestly disabled, never a dead click. */
+    return el("section", { class: "card recent-materials", "aria-label": (data && data.title) || "最近新增教材" }, [
       el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: (data && data.title) || "最近教材" }),
-        el("a", { class: "card__more", href: "#" }, [
+        el("h2", { class: "card__title", text: (data && data.title) || "最近新增教材" }),
+        el("a", { class: "card__more", href: "materials.html" }, [
           el("span", { text: "查看全部" }),
           el("span", { html: AHS.Icons.chevronRight() })
         ])

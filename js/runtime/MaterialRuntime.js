@@ -126,11 +126,129 @@ AHS.MaterialRuntime = (function () {
       folderId: partial.folderId || null,
       /* runtime-only File reference for open/preview; null for
          seed-shaped or fileless records. Not persisted. */
-      file: partial.file || null
+      file: partial.file || null,
+      /* --- Sprint AI-126B Part 2 v1.1, Task 3: Learning Progress sync
+         (additive only, both fields optional/null for every existing
+         caller that never sets them). originKey — the stable external
+         id (js/runtime/TeachingMaterialLoader.js's own "tm_1"/
+         "civics-g10-ch5-6-exam-20260730" convention, only ever set by
+         that file, never by an ordinary Material Center upload) — the
+         only way to resolve this record's real Supabase materials.id,
+         since this Runtime's own "rt_N" id is a local, per-session
+         sequence, not a stable external identifier. materialSupabaseId
+         is cached once resolved (or once a push first creates the row),
+         same precedent as WrongBookRuntime.js's record.supabaseId. */
+      originKey: partial.originKey || null,
+      materialSupabaseId: partial.materialSupabaseId || null
     };
     store.materials.push(record);
     persist();
     return record;
+  }
+
+  function findByOriginKey(originKey) {
+    if (!originKey) { return null; }
+    for (var i = 0; i < store.materials.length; i++) {
+      if (store.materials[i].originKey === originKey) { return store.materials[i]; }
+    }
+    return null;
+  }
+
+  /* pushProgress(record) — Sprint AI-126B Part 2 v1.1, Task 3. Fire-and-
+     forget background sync of this record's real Learning Progress
+     signals (progress/lastOpenedAt/lastLearningAt/learningTime/
+     learningCount/favorite — all already-real fields this Runtime has
+     owned since RC-003) to public.learning_progress. Only materials
+     with a real originKey (i.e. loaded via TeachingMaterialLoader.js
+     from the real Package/Repository content, never an ordinary Mock
+     upload — see that file's own header for why only real content is
+     ever pushed) can resolve a real materials.id and sync; every other
+     record silently no-ops here, same as every other Runtime's sync
+     glue when unconfigured. Never blocks/changes the calling function's
+     own (synchronous) return value. */
+  function pushProgress(record) {
+    if (!record || !record.originKey) { return; }
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    var repo = AHS.RepositoryFactory.create();
+
+    function upsert(materialId) {
+      if (!materialId) { return; }
+      if (record.materialSupabaseId !== materialId) {
+        record.materialSupabaseId = materialId;
+        persist();
+      }
+      var row = {
+        user_id: identity.userId,
+        student_profile_id: identity.studentProfileId,
+        material_id: materialId,
+        progress: record.progress,
+        last_opened_at: record.lastOpenedAt || null,
+        last_learning_at: record.lastLearningAt || null,
+        learning_time: record.learningTime,
+        learning_count: record.learningCount,
+        favorite: !!record.favorite
+      };
+      AHS.SyncBridge.pushFireAndForget(function () {
+        return repo.read("learning_progress", "student_profile_id=eq." + identity.studentProfileId + "&material_id=eq." + materialId).then(function (readResult) {
+          if (readResult.error) { return readResult; }
+          if (readResult.data && readResult.data.length) {
+            return repo.update("learning_progress", "id=eq." + readResult.data[0].id, row);
+          }
+          return repo.insert("learning_progress", row);
+        });
+      });
+    }
+
+    if (record.materialSupabaseId) { upsert(record.materialSupabaseId); return; }
+    /* real materials.id resolved by this record's own real origin_key —
+       requires Task 2's Material Migration to have already inserted this
+       material into Supabase; if it hasn't (or the read fails), this
+       silently no-ops, never fabricates a fake material_id to satisfy
+       the NOT NULL FK. */
+    repo.read("materials", "origin_key=eq." + encodeURIComponent(record.originKey)).then(function (result) {
+      var id = (!result.error && result.data && result.data[0]) ? result.data[0].id : null;
+      if (id) { upsert(id); }
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method (Task 3 + Task 8).
+     Merges each real remote learning_progress row into the local store
+     via PostgREST's embedded-resource select (materials(origin_key)),
+     resolving the row back to this Runtime's own originKey-keyed
+     record — creating a minimal local record if this device has never
+     seen that material locally yet (Task 8's "不得使用 sessionStorage
+     作為資料來源"). Never overwrites a local record's title/chapter/etc.
+     (those stay owned by the Package/Repository content load, per
+     TeachingMaterialLoader.js) — only the real progress signals. */
+  function pullFromRepository() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return Promise.resolve({ pulled: 0 }); }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("learning_progress", "select=*,materials(origin_key)&student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
+      var pulled = 0;
+      result.data.forEach(function (row) {
+        var originKey = row.materials && row.materials.origin_key;
+        if (!originKey) { return; }
+        var local = findByOriginKey(originKey);
+        if (!local) { local = add({ originKey: originKey, title: originKey, subject: "other" }); }
+        local.materialSupabaseId = row.material_id;
+        local.progress = row.progress;
+        local.lastOpenedAt = row.last_opened_at;
+        local.lastLearningAt = row.last_learning_at;
+        local.learningTime = row.learning_time;
+        local.learningCount = row.learning_count;
+        local.favorite = !!row.favorite;
+        pulled += 1;
+      });
+      if (pulled) { persist(); }
+      return { pulled: pulled };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
   }
 
   function remove(id) {
@@ -150,6 +268,7 @@ AHS.MaterialRuntime = (function () {
     if (!m) { return false; }
     m.favorite = !m.favorite;
     persist();
+    pushProgress(m);
     return m.favorite;
   }
 
@@ -239,6 +358,7 @@ AHS.MaterialRuntime = (function () {
     if (!m) { return null; }
     m.lastOpenedAt = new Date().toISOString();
     persist();
+    pushProgress(m);
     return m;
   }
 
@@ -263,6 +383,7 @@ AHS.MaterialRuntime = (function () {
       m.progress = Math.max(1, Math.min(100, next));
     }
     persist();
+    pushProgress(m);
     return m;
   }
 
@@ -297,6 +418,7 @@ AHS.MaterialRuntime = (function () {
     folderMaterialCount: folderMaterialCount,
     removeFolder: removeFolder,
     searchFolders: searchFolders,
-    reset: reset
+    reset: reset,
+    pullFromRepository: pullFromRepository
   };
 })();

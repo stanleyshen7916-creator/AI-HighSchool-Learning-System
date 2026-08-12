@@ -57,7 +57,9 @@ function openMaterials(opts) {
   window.URL.revokeObjectURL = function () {};
 
   for (const src of [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"))) {
-    window.eval(fs.readFileSync(path.join(REPO, src), "utf8"));
+    var p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    window.eval(fs.readFileSync(p, "utf8"));
   }
   const ctx = { window, doc: window.document, consoleErrors, lastBlob: () => lastBlob };
   return new Promise((resolve) => setTimeout(() => resolve(ctx), 60));
@@ -142,7 +144,9 @@ function clickDownload(ctx, card) {
   let previewOk = 0, downloadOk = 0;
   const downloadedNames = [];
   cards.forEach((card) => {
-    card.querySelector(".mat-card__preview").click();
+    /* HOTFIX-009-2: 預覽教材 icon removed (duplicated card-click preview);
+       click the card body, the sole remaining preview trigger. */
+    card.click();
     const overlay = b.doc.querySelector(".mat-preview__overlay, .mat-preview");
     const img = overlay && overlay.querySelector("img.mat-preview__media");
     if (img && img.getAttribute("src")) { previewOk += 1; }

@@ -2,8 +2,12 @@
    Banner + 5 stat cards + 學習趨勢 (dual-line SVG chart) + 學習時間分布
    (SVG donut) + 學習進度 (SVG ring + subject bars) + 知識點掌握度 Top10
    (horizontal bars) on the main column; 今日任務 + 科目狀態 + AI 學習建議
-   on the right rail. All Mock. Pure inline SVG/CSS charts (no library).
-   Reuses existing patterns/tokens; PascalCase under window.AHS. */
+   on the right rail. Pure presentational component — every section only
+   renders when its data is actually supplied by the caller (real,
+   Runtime-derived data since Sprint AI-020's AppDashboard.js; a section
+   with no data renders its own honest Empty State, nothing here is
+   fabricated). Pure inline SVG/CSS charts (no library). Reuses existing
+   patterns/tokens; PascalCase under window.AHS. */
 window.AHS = window.AHS || {};
 AHS.Dashboard = (function () {
   "use strict";
@@ -317,7 +321,7 @@ AHS.Dashboard = (function () {
       ]),
       el("div", {
         class: "dash-ai__avatar qiaoqiao-bust qiaoqiao-bust--lg",
-        html: AHS.Qiaoqiao.bust("gentle")
+        html: AHS.Qiaoqiao.randomBust()
       })
     ]);
   }

@@ -32,7 +32,7 @@ AHS.AppConfig = {
     startLabel: "開始今日學習",
     continueLabel: "繼續昨天進度",
     startFeedback: "從上傳教材開始今天的學習吧！",
-    continueFeedback: "回到教材中心繼續你的學習進度。"
+    continueFeedback: "回到教材中心繼續你的閱讀進度。"
   },
 
   materials: {
@@ -40,7 +40,7 @@ AHS.AppConfig = {
     subtitle: "探索、學習與下載各科教材資源",
     categories: ["全部分類", "課本", "講義", "考卷", "筆記", "補充資料", "影片", "其他"],
     grades: ["高一", "高二", "高三"],
-    sorts: ["最新上傳", "最多觀看", "學習進度"],
+    sorts: ["最新上傳", "最多觀看", "閱讀進度"],
     formats: ["全部格式", "PDF", "PPT", "PPTX", "DOC", "DOCX", "XLS", "XLSX", "TXT", "MP4", "MP3", "JPG", "JPEG", "PNG", "GIF", "WEBP", "其他"],
     /* subjectCounts is a template of the nine fixed subjects; the REAL
        per-subject counts are computed from AHS.MaterialRuntime at page
@@ -71,13 +71,13 @@ AHS.AppConfig = {
   },
 
   wrongBook: {
-    title: "錯題本",
+    title: "知識弱點",
     subtitle: "整理錯題，釐清觀念，強化弱點！",
     bannerTip: "每一次錯誤，都是進步的線索！再試一次，你一定可以更好！",
     subjectOptions: ["全部科目", "國文", "英文", "數學", "物理", "化學", "生物", "歷史", "地理", "公民"],
     knowledgeOptions: ["全部知識點"],
     difficultyOptions: ["全部難易度", "簡單", "中等", "困難"],
-    statusOptions: ["全部狀態", "待複習", "複習中", "已精熟"],
+    statusOptions: ["全部狀態", "待複習", "複習中", "已精熟", "已封存"],
     perPage: 6
   },
 
@@ -86,43 +86,57 @@ AHS.AppConfig = {
     tagline: "有問題儘管問我，我會陪你一起思考、一起進步！",
     badge: "AI 助教",
     messages: [],       /* 假對話已移除 — 對話從空白開始 */
+    /* AI Tutor Rule-Based 引擎 Phase 1：只保留真正有真實資料可回答的
+       兩個意圖（js/utils/TutorEngine.js）。「類題練習」「重點整理」
+       「考卷解析」「換個主題」原本點下去也只是固定台詞（cannedReplies，
+       已於 EO 報告 Flag 過的 Prototype 限制），現在移除——不留使用者
+       點了卻拿不到真實答案的選項。 */
     suggestions: [
       { icon: "summary", label: "解題步驟詳解", desc: "請詳細解題" },
-      { icon: "chat", label: "概念解釋", desc: "用簡單的方式說明" },
-      { icon: "quiz", label: "類題練習", desc: "出類似的題目練習" },
-      { icon: "bookmark", label: "重點整理", desc: "整理成重點筆記" },
-      { icon: "target", label: "考卷解析", desc: "解析考卷題目" },
-      { icon: "refresh", label: "換個主題", desc: "聊聊別的內容" }
-    ],
-    /* 巧巧老師 prototype 回覆台詞（UI copy，同勵志語錄性質；已於
-       EO 報告 Flag，PMO 可裁定移除）。 */
-    cannedReplies: [
-      "好的！這是一個很好的問題，我們一步一步來看。首先確認題目的已知條件，再選擇適合的公式或方法。",
-      "沒問題～我先幫你把關鍵概念拆解成幾個小步驟，這樣會更容易理解喔！",
-      "很棒的思考方向！讓我用一個簡單的例子帶你一起推導看看。"
+      { icon: "chat", label: "概念解釋", desc: "用簡單的方式說明" }
     ],
     history: [],        /* 假對話紀錄已移除 */
     resources: []       /* 假檔案清單已移除 */
   },
 
+  /* Sprint AI-118 AI-118-01/AI-118-09 · Learning Experience (LX) Refactor:
+     Navigation reordered to match the real Learning Loop —
+     首頁→教材中心→學習總結→測驗中心→知識弱點→首頁 — with AI Tutor/設定/登出
+     after it (設定/登出 are rendered as separate Sidebar buttons in
+     AppShell.js's sidebar(), not part of this items array — this list
+     only covers the Loop + AI Tutor).
+     "複習中心"/"我的學習" removed from Navigation per AI-118-02/AI-118-03:
+     - review.html itself, its Runtime, and its Review Session flow are
+       all still fully intact and reachable by direct URL — only the Nav
+       entry is gone, and every entry point into "review" now goes
+       through 知識弱點 instead (AI-118-03's "所有入口整併：知識弱點").
+     - learning.html (我的學習) is also still intact and reachable by
+       direct URL; its real, non-duplicate content (科目進度／教材完成度)
+       was folded into Home (AI-118-02/AI-118-10) instead of deleting the
+       page outright — a conservative choice flagged in the Sprint AI-118
+       report, since the spec's own explicit "Page 保留" carve-out is
+       stated only for 複習中心 (AI-118-03), not learning.html. */
   nav: {
     active: "home",
     items: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材中心", icon: "book" },
-      { id: "quiz", label: "測驗中心", icon: "quiz" },
-      { id: "wrongbook", label: "錯題本", icon: "wrong" },
       { id: "summary", label: "學習總結", icon: "summary" },
-      { id: "review", label: "複習中心", icon: "clock" },
-      { id: "learning", label: "我的學習", icon: "learning" },
+      { id: "quiz", label: "測驗中心", icon: "quiz" },
+      { id: "wrongbook", label: "知識弱點", icon: "wrong" },
       { id: "tutor", label: "AI Tutor", icon: "tutor" }
     ],
+    /* Bottom Navigation stays capped at 5 slots (this repo's own existing
+       mobile-nav convention, unchanged by this Sprint) — AI Tutor is
+       reachable from the Sidebar/every page's own real entry points
+       (TutorContextTip) even though it doesn't get one of the 5 bottom
+       slots; a judgment call, flagged rather than silently decided. */
     bottomItems: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材", icon: "book" },
+      { id: "summary", label: "總結", icon: "summary" },
       { id: "quiz", label: "測驗", icon: "quiz" },
-      { id: "review", label: "複習", icon: "clock" },
-      { id: "dashboard", label: "我的", icon: "tutor" }
+      { id: "wrongbook", label: "知識弱點", icon: "wrong" }
     ]
   },
 

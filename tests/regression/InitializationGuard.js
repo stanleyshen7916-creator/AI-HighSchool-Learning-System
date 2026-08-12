@@ -22,7 +22,9 @@ function loadIndex({ skip }) {
   const thrown = [];
   for (const src of [...window.document.querySelectorAll("script[src]")].map(s => s.getAttribute("src"))) {
     if (skip && skip.includes(src)) continue;          /* simulate the 404 */
-    try { window.eval(fs.readFileSync(path.join(ROOT, src), "utf8")); }
+    const p = path.join(ROOT, src);
+    if (!fs.existsSync(p)) continue;                   /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    try { window.eval(fs.readFileSync(p, "utf8")); }
     catch (e) { thrown.push(src + ": " + e.message); }
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));

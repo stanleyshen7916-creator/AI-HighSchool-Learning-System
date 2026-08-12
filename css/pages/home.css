@@ -2,26 +2,117 @@
    progressbar) + the responsive content grid + block-specific styles.
    BEM. RWD: 3-region grid on desktop, single column on mobile. */
 
-/* ---- Content grid ---------------------------------------------------- */
+/* ---- Content grid ------------------------------------------------------
+   Sprint AI-122 AI-122-08: single stacked column — see AppHome.js's own
+   comment for why the previous main/rail 2-column split couldn't honestly
+   represent the PO's one literal top-to-bottom section order. */
 .home {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
-.home__main,
-.home__rail {
+.home__main {
   display: flex;
   flex-direction: column;
   gap: 18px;
   min-width: 0;
 }
-.home__statsplan {
+/* ---- Material Completion Overview (Sprint AI-118 AI-118-02/AI-118-10)
+   教材完成度 — same visual pattern as learning.html's own 科目進度
+   (css/pages/learning.css's .ml-progress__*), redeclared here rather
+   than reused across pages per this repo's own CSS architecture rule
+   ("pages/ 一頁一檔，不得跨頁混用"). No new Design Token — reuses
+   .progressbar/.progressbar__fill (already shared) plus existing
+   tokens only. */
+.home-completion__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 18px;
-  align-items: start;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
+.home-completion__item { display: flex; flex-direction: column; gap: 6px; }
+.home-completion__top { display: flex; align-items: center; gap: 6px; }
+.home-completion__dot { width: 10px; height: 10px; border-radius: var(--radius-pill); flex: 0 0 auto; }
+.home-completion__name { flex: 1 1 auto; font-size: 14px; font-weight: 700; }
+.home-completion__pct { font-size: 14px; font-weight: 800; }
+.home-completion__status { font-size: 11px; color: var(--text-faint); }
+.home-completion__empty { margin: 0; font-size: 13px; color: var(--text-faint); }
+
+/* ---- Workspace Folder (Sprint AI-120 AI-120-02/AI-120-03) 教材資料夾 —
+   Current Workspace's materials grouped by Subject; School/Semester
+   themselves are already fixed by the Workspace (shown as a subtitle,
+   not a second grouping level). */
+.workspace-folder .card__head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.workspace-folder__subtitle { font-size: 12px; color: var(--text-faint); }
+.workspace-folder__groups { display: flex; flex-direction: column; gap: 14px; }
+.workspace-folder__group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.workspace-folder__group-dot { width: 10px; height: 10px; border-radius: var(--radius-pill); flex: 0 0 auto; }
+.workspace-folder__group-name { font-size: 14px; }
+.workspace-folder__group-count { margin-left: auto; font-size: 12px; color: var(--text-faint); }
+.workspace-folder__material-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.workspace-folder__material {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg);
+}
+/* Sprint AI-122 AI-122-07: now a real <a href> (教材資料夾→教材 step) —
+   neutralize the browser's default anchor color/underline, same pattern
+   already used by .tutor-card__tile's own comment for the same reason. */
+.workspace-folder__material-title {
+  font-size: 13px; font-weight: 700;
+  color: inherit; text-decoration: none;
+}
+.workspace-folder__material-title:hover { color: var(--brand); text-decoration: underline; }
+.workspace-folder__material-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.workspace-folder__link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--brand-soft);
+}
+.workspace-folder__link:hover { background-color: var(--brand-line); }
+.workspace-folder__empty { margin: 0; font-size: 13px; color: var(--text-faint); }
+
+/* Sprint AI-121 AI-121-01/02: per-material Learning State badge. */
+.workspace-folder__state {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  color: var(--text-faint);
+  background-color: var(--bg-muted, var(--bg));
+}
+.workspace-folder__state--READY_FOR_RETEST { color: #b45309; }
+.workspace-folder__state--MASTERED { color: #15803d; }
+
+/* Sprint AI-121 AI-121-01/19: 學習成效總覽 (Home KPI board). */
+.home-kpi__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.home-kpi__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg);
+}
+.home-kpi__label { font-size: 12px; color: var(--text-faint); }
+.home-kpi__value { font-size: 20px; font-weight: 800; }
+.home-kpi__sub { font-size: 11px; color: var(--text-faint); }
+.home-kpi__item--warn .home-kpi__value { color: #b45309; }
+.home-kpi__item--up .home-kpi__value { color: #15803d; }
+.home-kpi__item--down .home-kpi__value { color: #dc2626; }
 
 /* ---- Hero ------------------------------------------------------------ */
 .hero-card {
@@ -314,6 +405,11 @@
   cursor: pointer;
   text-align: center;
   font: inherit;
+  /* Sprint AI-118 AI-118-08: this tile can now be a real <a href> —
+     neutralize the browser's default anchor color/underline so it keeps
+     looking exactly like the existing button-styled tile. */
+  color: inherit;
+  text-decoration: none;
 }
 .tutor-card__tile:hover { background-color: var(--bg); }
 .tutor-card__tile-icon { color: var(--brand); }
@@ -429,9 +525,6 @@
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {
-  .home {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .hero-card { flex-direction: column; }
   .hero-card__figure { align-self: center; }
 }

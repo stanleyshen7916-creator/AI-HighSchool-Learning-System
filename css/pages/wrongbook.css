@@ -1,5 +1,7 @@
 /* css/wrongbook.css — 錯題本 (Wrong Book). BEM. RWD.
-   Layout: header (+banner+actions) then [main list | detail panel]. */
+   AI-129: header (+banner+actions) → [今日待複習 統計卡 ｜ 篩選區塊]
+   並排一列 (wb-top-row) → 單欄全寬題目列表 (wb-main) → 點擊題目才彈出的
+   題目詳解 Modal (wb-modal__*，取代原本常駐的 30/70 左右兩欄排版)。 */
 
 .wb-page { display: flex; flex-direction: column; gap: 18px; }
 
@@ -39,10 +41,13 @@
 .wb-action--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .wb-action--ghost:hover { background-color: var(--bg); }
 
-/* ---- Summary Card (W001-1) --------------------------------------------- */
+/* ---- Summary Card (W001-1, reworked Sprint AI-118 AI-118-07) -----------
+   grid-template-columns changed from a fixed repeat(4, ...) to
+   auto-fit/minmax: SUMMARY_DEFS now has 1 real item (今日待複習) instead
+   of 4, and a fixed 4-column grid would leave 3 empty stretched columns. */
 .wb-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 240px));
   gap: 16px;
 }
 .wb-summary__item { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -66,14 +71,16 @@
 .wb-empty__description { margin: 0 0 8px; font-size: 14px; color: var(--text-muted); max-width: 360px; }
 .wb-empty__btn { text-decoration: none; }
 
-/* ---- Layout ---------------------------------------------------------- */
-.wb-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
-  gap: 18px;
-  align-items: start;
-}
+/* ---- Layout ------------------------------------------------------------
+   AI-129: 題目列表改為單欄全寬（取代舊有的 30%/70% 左右兩欄 wb-layout —
+   詳解已改為點擊後才彈出的 Modal，不再需要常駐的右側欄位）。 */
 .wb-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+/* wb-top-row: 「今日待複習」統計卡與篩選區塊並排同一列，方便挑選
+   （使用者需求：搜尋/篩選區塊移至今日待複習旁並排）。 */
+.wb-top-row { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.wb-top-row .wb-summary { flex: 0 0 auto; }
+.wb-top-row .wb-filter { flex: 1 1 360px; min-width: 280px; }
 
 /* ---- Filter ---------------------------------------------------------- */
 .wb-filter { display: flex; flex-direction: column; gap: 14px; }
@@ -127,8 +134,6 @@
 }
 .wb-list__title { margin: 0; font-size: 16px; font-weight: 700; color: var(--brand); }
 .wb-list__count { font-size: 13px; color: var(--text-muted); }
-.wb-list__cols { margin-left: auto; display: flex; gap: 24px; font-size: 12px; color: var(--text-faint); }
-.wb-list__cols span:nth-child(3) { width: 78px; text-align: right; }
 
 .wb-list__no-match {
   display: none; flex-direction: column; align-items: center; gap: 10px;
@@ -140,7 +145,7 @@
 .wb-list__rows { display: flex; flex-direction: column; }
 
 .wb-row {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;
   padding: 14px 10px;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
@@ -151,8 +156,16 @@
 .wb-row.is-active { background-color: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
 .wb-row:focus-visible { outline: 2px solid var(--brand-line); outline-offset: 1px; }
 .wb-row__info { flex: 1 1 160px; min-width: 120px; }
-.wb-row__title { margin: 0; font-size: 14px; font-weight: 700; }
-.wb-row__meta { margin: 2px 0 0; font-size: 12px; color: var(--text-faint); }
+/* Sprint AI-122 AI-122-04: 題號→題目（第一行）→Knowledge Point→難度→
+   錯誤次數→最近錯誤日期，narrow 30%-width column now stacks this
+   vertically instead of the old single-line 教材標題 + horizontal table
+   columns (no longer fits once the panel shrank to make room for the
+   70% Detail Panel — AI-122-05). */
+.wb-row__title { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.5; }
+.wb-row__index { color: var(--text-faint); font-weight: 700; margin-right: 6px; white-space: nowrap; }
+.wb-row__question { }
+.wb-row__meta { margin: 4px 0 0; font-size: 12px; color: var(--brand); font-weight: 600; }
+.wb-row__stats { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
 .wb-row__favbadge {
   display: inline-flex; align-items: center; gap: 4px;
   margin-top: 6px; padding: 2px 8px; border-radius: 8px;
@@ -161,10 +174,12 @@
 }
 .wb-row__favbadge svg { width: 12px; height: 12px; }
 .wb-row__favbadge.is-hidden { display: none; }
-.wb-row__col { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
-.wb-row__col--diff { width: 56px; }
-.wb-row__col--date { width: 78px; justify-content: flex-end; }
+.wb-row__col { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-start; }
+/* AI-128: 錯誤次數／正確次數並列顯示（原本只有錯誤次數一個數字）。 */
+.wb-row__col--counts { gap: 8px; }
 .wb-row__count { font-size: 13px; font-weight: 700; }
+.wb-row__count--wrong { color: var(--subj-history); }
+.wb-row__count--correct { color: var(--ok); }
 .wb-row__date { font-size: 12px; color: var(--text-muted); }
 .wb-tag { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
 .wb-tag--muted { color: var(--text-faint); background-color: var(--bg); }
@@ -227,8 +242,32 @@
   font-size: 13px; font-weight: 600;
 }
 
-/* ---- Detail panel ---------------------------------------------------- */
-.wb-detail { position: sticky; top: 92px; }
+/* ---- 題目詳解 Modal（AI-129，取代原本常駐右側的 Detail Panel）---------
+   沿用 js/ui/MaterialPreview.js 已建立的 overlay/panel/close 視覺慣例
+   （.mat-preview__* 的固定 overlay、置中面板、右上角 X 關閉、可捲動內文），
+   同一套彈窗語言，不是重新發明。 */
+.wb-modal__overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 100;
+  background-color: rgba(31, 36, 48, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.wb-modal__panel {
+  width: 100%; max-width: 720px; max-height: 90vh;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.wb-modal__close {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  border: 0; background: var(--card); cursor: pointer; color: var(--text-muted);
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; box-shadow: var(--shadow-btn);
+}
+.wb-modal__close:hover { background-color: var(--bg); }
+.wb-modal__close svg { width: 18px; height: 18px; }
+.wb-modal__body { flex: 1 1 auto; overflow: auto; padding: 20px; }
+
 .wb-detail__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .wb-detail__title { margin: 0; font-size: 17px; font-weight: 700; }
 .wb-detail__tag-btn {
@@ -241,9 +280,12 @@
 .wb-detail__tag-btn.is-on { background-color: var(--brand); color: #ffffff; border-color: var(--brand); }
 
 .wb-detail__tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+/* Sprint AI-122 AI-122-04: 教材資訊（item.title）唯一顯示位置 — 不再重複
+   於左側題目列表（questionRow）。 */
+.wb-detail__material { font-size: 12px; font-weight: 700; color: var(--text); }
 .wb-detail__chapter { font-size: 12px; color: var(--text-muted); }
 
-.wb-detail__question { margin: 0 0 14px; font-size: 15px; font-weight: 600; line-height: 1.7; }
+.wb-detail__question { margin: 0 0 14px; font-size: 17px; font-weight: 600; line-height: 1.8; }
 
 .wb-detail__options { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .wb-detail__option {
@@ -288,6 +330,12 @@
 .wb-row__status { margin-top: 4px; }
 
 .wb-review-center { display: flex; flex-direction: column; gap: 10px; }
+/* Sprint AI-114: pre-existing gap found during the HOTFIX-006 CSS
+   specificity audit — .wb-review-center's own display:flex tied with
+   the UA [hidden]{display:none} rule (author styles win ties), so this
+   panel rendered unconditionally on every wrongbook.html load instead
+   of staying hidden until a Knowledge Point is actually tagged. */
+.wb-review-center[hidden] { display: none; }
 .wb-review-center__head { display: flex; align-items: center; gap: 8px; }
 .wb-review-center__title { margin: 0; font-size: 15px; font-weight: 700; }
 .wb-review-center__count { font-size: 13px; font-weight: 700; color: var(--brand); }
@@ -298,6 +346,16 @@
   display: flex; gap: 10px; margin-bottom: 14px;
   padding: 12px; border-radius: 12px; background-color: var(--bg);
 }
+/* Sprint AI-122 AI-122-01: this class's own unconditional `display: flex`
+   has higher precedence than the browser's native [hidden] UA rule
+   (author stylesheet always wins over UA stylesheet at equal
+   specificity, regardless of source order) — so setting the `hidden`
+   attribute alone (startReview()'s own real fix, js/components/
+   WrongBook.js) silently failed to actually hide this block in a real
+   browser, even though it correctly reported hidden="hidden" in the DOM
+   (which is all jsdom's own BehaviorSuite.js checks — a real-browser-
+   only bug a real click in Playwright caught). */
+.wb-detail__answers[hidden] { display: none; }
 .wb-detail__answer { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .wb-detail__answer-label { font-size: 12px; color: var(--text-muted); }
 .wb-detail__answer-badge {
@@ -307,18 +365,43 @@
 }
 .wb-detail__answer-badge.is-correct { background-color: var(--ok); }
 .wb-detail__answer-badge.is-wrong { background-color: var(--subj-history); }
-.wb-detail__answer-count { font-size: 16px; font-weight: 800; }
+
+/* AI-128（知識弱點排版重新設計）: 錯誤次數／正確次數獨立為一列明顯的統計
+   區塊 — 取代舊排版把「錯誤次數」擠在你的答案／正確答案旁邊、不易一眼
+   看出的做法。 */
+.wb-detail__stats {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+  margin-bottom: 14px; padding: 12px; border-radius: 12px; background-color: var(--bg);
+}
+.wb-detail__stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.wb-detail__stat-value { font-size: 22px; font-weight: 800; }
+.wb-detail__stat-label { font-size: 12px; color: var(--text-muted); }
+.wb-detail__stat--wrong .wb-detail__stat-value { color: var(--subj-history); }
+.wb-detail__stat--correct .wb-detail__stat-value { color: var(--ok); }
 
 .wb-detail__kp { margin-bottom: 14px; }
-.wb-detail__kp-label,
-.wb-detail__explain-label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.wb-detail__kp-label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .wb-detail__kp-chip {
   display: inline-block; font-size: 13px; font-weight: 600;
   color: var(--brand); background-color: var(--brand-soft);
   padding: 5px 12px; border-radius: 8px;
 }
 .wb-detail__explain { margin-bottom: 18px; }
-.wb-detail__explain-text { margin: 0; font-size: 14px; line-height: 1.8; color: var(--text-muted); }
+/* AI-128: 詳解預設收合，「當點選本題目時，才展開詳解」— explainToggle 是
+   唯一的展開／收合入口，展開狀態由 aria-expanded/.is-open 反映。 */
+.wb-detail__explain-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px; background-color: var(--card);
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer;
+}
+.wb-detail__explain-toggle:hover { background-color: var(--bg); }
+.wb-detail__explain-toggle.is-open { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
+.wb-detail__explain-chevron { display: inline-flex; transition: transform 0.15s ease; }
+.wb-detail__explain-chevron svg { width: 16px; height: 16px; }
+.wb-detail__explain-toggle.is-open .wb-detail__explain-chevron { transform: rotate(90deg); }
+.wb-detail__explain-text { margin: 10px 0 0; font-size: 14px; line-height: 1.8; color: var(--text-muted); }
+.wb-detail__explain-text[hidden] { display: none; }
 
 .wb-detail__actions { display: flex; gap: 10px; }
 .wb-detail__btn {
@@ -333,18 +416,21 @@
 .wb-detail__btn--ghost { border: 1px solid var(--line); background-color: var(--card); color: var(--text); }
 .wb-detail__btn--ghost:hover { background-color: var(--bg); }
 .wb-detail__btn--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
+/* AI-129 hotfix: 立即重做在「此題無真實選項資料」時是真的被 disabled
+   （見 renderDetail() 的 itemOptions.length 判斷），但這顆按鈕在 disabled
+   之前完全沒有對應樣式，視覺上與可點擊時一模一樣 — 使用者點了沒反應，
+   會誤以為壞掉，而非「這題本來就不支援」。title 提示原本就有，這裡補上
+   真正看得出來的視覺狀態（連同 hover 也一併停用，之前 disabled 仍會誤觸
+   :hover 變色）。 */
+.wb-detail__btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.wb-detail__btn--primary[disabled]:hover { background-color: var(--brand); }
 
 .wb-action--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
 
 /* ---- RWD ------------------------------------------------------------- */
-@media (max-width: 1024px) {
-  .wb-layout { grid-template-columns: minmax(0, 1fr); }
-  .wb-detail { position: static; }
-}
 @media (max-width: 720px) {
   .wb-header__actions { width: 100%; }
   .wb-header__actions .wb-action { flex: 1 1 auto; justify-content: center; }
-  .wb-list__cols { display: none; }
   .wb-row__col--diff { width: auto; }
   .wb-row__col--date { display: none; }
   .wb-select { flex: 1 1 46%; }

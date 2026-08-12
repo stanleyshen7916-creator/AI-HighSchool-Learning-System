@@ -1,0 +1,293 @@
+/* tests/regression/RepositoryFoundation.js — Sprint AI-112 AI-708.
+   Teaching Material Repository Foundation regression: proves the single,
+   real Repository -> Loader -> Bridge -> Runtime -> Platform chain
+   (documented in docs/Architecture/Architecture_TeachingMaterialRepository_
+   Foundation_v1.0.md) still holds across every page it feeds, using the
+   data/materials/ track's real material (CivicsG10Ch5to6Exam20260730.js)
+   plus the Package track's own generator/validator/adapter (verified with
+   scratch, never-committed data — see this Sprint's own EO report for the
+   exact scratch-package steps). The Package track itself also carries
+   real, permanently-committed content as of tm_1 (see
+   docs/TeachingMaterials/materials/tm_1/) — this suite's own [1]-[10]
+   below still exercise it via data/materials/ only, unaffected.
+   Run: node tests/regression/RepositoryFoundation.js */
+const { JSDOM } = require("jsdom");
+const fs = require("fs");
+const path = require("path");
+
+const REPO = path.join(__dirname, "..", "..");
+let pass = 0, fail = 0;
+function check(name, cond) {
+  if (cond) { pass++; console.log("  PASS  " + name); }
+  else { fail++; console.log("  FAIL  " + name); }
+}
+
+/* Sprint AI-119 (Platform Core Baseline): AHS.PersistenceAdapter now
+   namespaces every save()/load()/remove() under the active Workspace's
+   storage namespace, and AHS.AppShell.create() redirects to login.html
+   (rendering nothing) unless a Workspace is active. This suite predates
+   Login/Workspace entirely and isn't about testing either — rather than
+   rewrite every individual seedSession literal in this file, loadPage()
+   auto-establishes ONE fixed default test Workspace (unless the caller
+   passes skipLogin) and transparently namespaces each bare "ahs:<key>"
+   seed entry to match — idempotent (an already-namespaced entry, e.g.
+   from carry(), passes through unchanged). */
+const AHS_TEST_WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] };
+const AHS_TEST_NS = "student_a__cjsh__g1s2";
+function namespacedKey(k) {
+  if (k === "ahs:workspace") { return k; }
+  const nsPrefix = "ahs:" + AHS_TEST_NS + ":";
+  if (k.indexOf(nsPrefix) === 0) { return k; }
+  if (k.indexOf("ahs:") === 0) { return "ahs:" + AHS_TEST_NS + ":" + k.slice(4); }
+  return k;
+}
+
+function loadPage(htmlFile, { seedSession, url, skipLogin } = {}) {
+  const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
+  const vconsole = new (require("jsdom").VirtualConsole)();
+  const consoleErrors = [];
+  vconsole.on("error", (m) => consoleErrors.push(String(m)));
+  vconsole.on("jsdomError", (e) => {
+    const s = String((e && e.message) || e);
+    if (/Could not load link|Could not parse CSS|not implemented/i.test(s)) { return; }
+    consoleErrors.push(s);
+  });
+  const dom = new JSDOM(html, {
+    url: "https://ahs.test/" + (url || htmlFile),
+    runScripts: "outside-only",
+    pretendToBeVisual: true,
+    virtualConsole: vconsole
+  });
+  const { window } = dom;
+  if (!skipLogin) {
+    window.sessionStorage.setItem("ahs:workspace", JSON.stringify(AHS_TEST_WORKSPACE));
+  }
+  if (seedSession) {
+    Object.entries(seedSession).forEach(([k, v]) => window.sessionStorage.setItem(skipLogin ? k : namespacedKey(k), JSON.stringify(v)));
+  }
+  const scripts = [...dom.window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
+  scripts.forEach((src) => {
+    var p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { return; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
+    window.eval(fs.readFileSync(p, "utf8"));
+  });
+  window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
+  return { window, consoleErrors };
+}
+
+function carry(win) {
+  const out = {};
+  for (let i = 0; i < win.sessionStorage.length; i++) { const k = win.sessionStorage.key(i); out[k] = JSON.parse(win.sessionStorage.getItem(k)); }
+  return out;
+}
+
+console.log("Repository Foundation Regression — Sprint AI-112");
+
+/* ---- 1. Repository 建立 -------------------------------------------- */
+console.log("\n[1] Repository 建立");
+{
+  const { window } = loadPage("materials.html", {});
+  const A = window.AHS;
+  check("AHS.MaterialRepository 存在且唯一", typeof A.MaterialRepository === "object" && typeof A.MaterialRepository.list === "function");
+  const repoList = A.MaterialRepository.list();
+  check("Repository 至少一筆真實教材（公民與社會）", repoList.length >= 1 && repoList.some((r) => r.id && r.id.indexOf("civics") !== -1));
+  /* Package track carries real, permanently-committed content as of tm_1
+     (docs/TeachingMaterials/materials/tm_1/) — this array is no longer
+     honestly empty; it must reflect that real Package, not a stale "still
+     empty" assumption from before any Package track material existed. */
+  check("AHS.TeachingMaterialData（Package track）存在，含真實 Package 教材（tm_1）", Array.isArray(A.TeachingMaterialData) && A.TeachingMaterialData.some((m) => m.materialId === "tm_1"));
+}
+
+/* ---- 2. Index 更新 ---------------------------------------------------
+   Package track's index.json is generated by GenerateTeachingMaterialData.js
+   from the same real scan as js/data/TeachingMaterialData.js — verified
+   directly (not through the browser) by re-running the generator and
+   diffing its own reported counts against the real materials/ directory. */
+console.log("\n[2] Index 更新");
+{
+  const generator = require(path.join(REPO, "docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js"));
+  const ids = generator.listMaterialIds();
+  const before = fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/index.json"), "utf8");
+  const count = generator.generate();
+  const after = fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/index.json"), "utf8");
+  const indexJson = JSON.parse(after);
+  check("index.json 由 generator 自動產生（非人工維護的舊內容）", after.includes("auto-generated by GenerateTeachingMaterialData.js"));
+  check("index.json 的教材數與實際掃描到的 Package 數一致", indexJson.materials.length === count && count === ids.length);
+  check("目前無真實 Package 教材時，index.json 誠實為空", ids.length === 0 ? indexJson.materials.length === 0 : true);
+  void before; // generation is idempotent for the empty case — no drift expected
+}
+
+/* ---- 3/4/5. Loader / Bridge / Runtime -------------------------------- */
+console.log("\n[3/4/5] Loader / Bridge / Runtime");
+{
+  const { window } = loadPage("materials.html", {});
+  const A = window.AHS;
+  const idMapBefore = A.PersistenceAdapter.load("teachingMaterialLoaderIdMap");
+  check("Loader：Repository -> MaterialRuntime 橋接成立（idMap 有真實對應）", !!idMapBefore && Object.keys(idMapBefore).length >= 1);
+  const runtimeId = Object.values(idMapBefore)[0];
+  const material = A.MaterialRuntime.getById(runtimeId);
+  check("Runtime：MaterialRuntime 持有真實教材（透過既有 Public API add() 寫入，未修改 Runtime）", !!material && !!material.title);
+  const summary = A.SummaryRuntime.findByMaterialId(runtimeId);
+  check("Bridge：Repository -> SummaryRuntime 同步成立", summary.length === 1 && summary[0].coreConcepts.length > 0);
+
+  /* materials.html has no Exam-Mode QuestionRuntime loaded (by real page
+     design) — carry the real bridged session into quiz.html, which does,
+     to check the Question bridge without assuming a script it never
+     tags. */
+  const qp = loadPage("quiz.html", { seedSession: carry(window) });
+  const examId = "teaching_material_" + runtimeId;
+  check("Bridge：Repository -> QuestionRuntime 同步成立", qp.window.AHS.QuestionRuntime.hasExam(examId) && qp.window.AHS.QuestionRuntime.getSet(examId).length > 0);
+}
+
+/* ---- 6. Material Center ------------------------------------------------ */
+console.log("\n[6] Material Center");
+{
+  const { window, consoleErrors } = loadPage("materials.html", {});
+  window.document.body.appendChild(window.AHS.MaterialCenter.create());
+  check("教材中心真實渲染 Repository 教材卡片", !!window.document.querySelector(".mat-card"));
+  check("Console errors = 0（教材中心）", consoleErrors.length === 0);
+}
+
+/* ---- 7. Summary ---------------------------------------------------- */
+console.log("\n[7] Summary");
+{
+  const p1 = loadPage("materials.html", {});
+  const seed = carry(p1.window);
+  const { window, consoleErrors } = loadPage("summary.html", { seedSession: seed });
+  window.document.body.appendChild(window.AHS.SummaryCenter.create());
+  check("學習總結真實渲染 Repository 教材的核心概念", window.document.body.textContent.includes("核心概念"));
+  check("Console errors = 0（學習總結）", consoleErrors.length === 0);
+}
+
+/* ---- 8. Quiz ------------------------------------------------------- */
+console.log("\n[8] Quiz");
+{
+  const { window, consoleErrors } = loadPage("quiz.html", {});
+  window.document.body.appendChild(window.AHS.QuizCenter.create());
+  check("測驗中心直接顯示 Repository 教材（AI-501，無需先經教材中心）", window.document.querySelectorAll(".quiz-row").length > 0);
+  check("Console errors = 0（測驗中心）", consoleErrors.length === 0);
+}
+
+/* ---- 9. WrongBook ---------------------------------------------------
+   Runtime-level check: WrongBookRuntime is persisted (AI-109) and reads
+   whatever real wrong answers Exam Mode writes to it — page rendering
+   itself (empty state with none yet) is covered by earlier Sprints'
+   own regression groups; this proves the Repository-fed chain can reach
+   it, not that a wrong answer already exists in a fresh run. */
+console.log("\n[9] WrongBook");
+{
+  const { window, consoleErrors } = loadPage("wrongbook.html", {});
+  const A = window.AHS;
+  check("WrongBookRuntime 存在且可被 Repository 驅動的 Exam Mode 寫入（sync/recordRetry 為既有 Public API）",
+    typeof A.WrongBookRuntime.sync === "function" && typeof A.WrongBookRuntime.recordRetry === "function");
+  window.document.body.appendChild(A.WrongBook.create());
+  check("錯題本頁面正常渲染（無錯題時誠實顯示空狀態）", !!window.document.querySelector(".wb-header, .wb-empty, [class*='wb-']"));
+  check("Console errors = 0（錯題本）", consoleErrors.length === 0);
+}
+
+/* ---- 10. Tutor ------------------------------------------------------- */
+console.log("\n[10] Tutor");
+{
+  const { window, consoleErrors } = loadPage("tutor.html", {});
+  window.document.body.appendChild(window.AHS.AiTutor.create());
+  check("AI Tutor 頁面正常渲染（無真實學習資料時維持既有罐頭對話，非破版）", !!window.document.querySelector(".tutor-thread, .tutor-chat"));
+  check("Console errors = 0（AI Tutor）", consoleErrors.length === 0);
+}
+
+/* ---- 11. Material Lifecycle + Package Standard (Sprint AI-113 AI-806/807,
+   stage names + file names updated Sprint AI-115 AI-115-01/02: RAW/
+   WAITING_ANALYSIS/CLAUDE_READY_WAITING_IMPORT/RUNTIME_READY renamed
+   RAW/ANALYZING/CLAUDE_READY/READY_FOR_IMPORT/IMPORTED (+ new ARCHIVED),
+   questions.json renamed questionbank.json, material.md added as a
+   required Package Standard file. This section intentionally still
+   exercises only the low-level generator.generate() path directly (not
+   RepositoryManager.prepare()/ImportManager.importAll()) — the new,
+   more thorough gated-pipeline flow (CLAUDE_READY -> prepare() ->
+   READY_FOR_IMPORT -> ImportManager -> IMPORTED, plus duplicate/
+   rollback/import-log) is tests/regression/MaterialPipelineRegression.js
+   (AI-115-10), not duplicated here.
+   Real end-to-end run against a scratch, never-committed Package
+   (tm_999998, an id unlikely to collide with any real material), same
+   discipline Sprint AI-112 used to verify the schema gaps it closed:
+   build -> validate -> generate -> assert real output -> delete ->
+   regenerate to confirm the Repository returns to its real baseline
+   state (whatever real, permanently-committed Packages exist — tm_1
+   onward, once any are imported; genuinely 0 before that), every time
+   this suite runs, not just once by hand. */
+console.log("\n[11] Material Lifecycle + Package Standard");
+{
+  const lifecycle = require(path.join(REPO, "docs/TeachingMaterials/scripts/MaterialLifecycle.js"));
+  const generator = require(path.join(REPO, "docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js"));
+  const { execFileSync } = require("child_process");
+  const scratchId = "tm_999998";
+  const dir = path.join(REPO, "docs/TeachingMaterials/materials", scratchId);
+  const baselineCount = generator.generate();
+
+  try {
+    fs.mkdirSync(path.join(dir, "source"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "source", "original.txt"), "scratch\n");
+    fs.writeFileSync(path.join(dir, "metadata.json"), JSON.stringify({
+      materialId: scratchId, subject: "math", grade: "高一", publisher: "測試",
+      chapter: "測試章", unit: "1-1", keywords: ["測試"], difficulty: "中等",
+      source: "教科書", uploadDate: "2026-08-03T00:00:00Z", version: "1", materialType: "HANDOUT"
+    }, null, 2));
+
+    check("RAW：只有 metadata.json 時，Lifecycle Stage 正確為 ANALYZING",
+      lifecycle.resolveStage(scratchId) === "ANALYZING");
+
+    fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify({
+      materialId: scratchId, packageVersion: "1", createdDate: "2026-08-03T00:00:00Z",
+      updatedDate: "2026-08-03T00:00:00Z", repositoryVersion: "EO-S1.1-003",
+      analysisEngine: "Claude", status: "complete"
+    }, null, 2));
+    fs.writeFileSync(path.join(dir, "material.md"), "# 測試章\n\n測試 Package 內容。\n");
+    fs.writeFileSync(path.join(dir, "summary.json"), JSON.stringify({
+      materialId: scratchId, coreConcepts: ["測試核心概念"], definitions: [],
+      keywords: [], keyPoints: [], pitfalls: []
+    }, null, 2));
+    fs.writeFileSync(path.join(dir, "questionbank.json"), JSON.stringify({
+      materialId: scratchId, questions: [{
+        questionId: scratchId + "_q1", materialId: scratchId, questionNumber: "1",
+        type: "single_choice", questionSource: "ORIGINAL", origin: "Uploaded Material",
+        ocrConfidence: 0.95, needsReview: false, question: "測試題目？",
+        options: ["A", "B"], answer: "A", explanation: null, page: 1,
+        version: "1", createdDate: "2026-08-03T00:00:00Z", knowledgePoint: "測試核心概念"
+      }]
+    }, null, 2));
+    fs.writeFileSync(path.join(dir, "related.json"), JSON.stringify({ materialId: scratchId, related: [] }, null, 2));
+
+    check("CLAUDE_READY：Package 完整且 manifest.status=complete，但 knowledge.json/report.md 尚未產生",
+      lifecycle.resolveStage(scratchId) === "CLAUDE_READY");
+
+    const validateOut = execFileSync(process.execPath, [
+      path.join(REPO, "docs/TeachingMaterials/scripts/ValidateMaterial.js"), scratchId
+    ], { encoding: "utf8" });
+    check("ValidateMaterial.js 對 scratch Package 全數 PASS（Package Standard 結構正確）",
+      /\d+ PASS \/ 0 FAIL/.test(validateOut));
+
+    generator.generate();
+
+    check("IMPORTED：generate() 後 Lifecycle Stage 正確反映已進入 index.json",
+      lifecycle.resolveStage(scratchId) === "IMPORTED");
+
+    const knowledge = JSON.parse(fs.readFileSync(path.join(dir, "knowledge.json"), "utf8"));
+    check("knowledge.json 真實由 summary/questionbank 衍生（非人工維護）",
+      knowledge.knowledgePoints.length === 1 && knowledge.knowledgePoints[0].name === "測試核心概念" &&
+      knowledge.knowledgePoints[0].source === "both");
+
+    const report = fs.readFileSync(path.join(dir, "report.md"), "utf8");
+    check("report.md 真實包含該教材的 Metadata 與 Lifecycle Stage",
+      report.includes(scratchId) && report.includes("IMPORTED") && report.includes("測試章"));
+
+    const index = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/index.json"), "utf8"));
+    const indexed = index.materials.find((m) => m.materialId === scratchId);
+    check("index.json 該筆 lifecycleStage 為 IMPORTED", !!indexed && indexed.lifecycleStage === "IMPORTED");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+    const finalCount = generator.generate();
+    check("清除 scratch Package 後，Repository 回到真實的原始狀態（非殘留測試資料）", finalCount === baselineCount);
+  }
+}
+
+console.log("\nRepositoryFoundation: " + pass + " PASS / " + fail + " FAIL");
+process.exit(fail === 0 ? 0 : 1);
