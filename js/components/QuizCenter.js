@@ -960,6 +960,21 @@ AHS.QuizCenter = (function () {
     return q.indexOf("[Stub]") !== 0 && a.indexOf("[Stub]") !== 0;
   }
 
+  /* isMaterialApproved(materialId) — Sprint AI-132（使用者需求 A）：
+     考前總複習的「練習題」清單直接讀 AHS.LearningQuestionRuntime，這是
+     一個獨立於 MaterialRuntime 的 Store，本身不知道「這份教材是否已
+     審核通過」——若不在這裡把關，一份學生剛上傳、尚未經管理者核准的
+     教材，其 AI 產生的練習題會立刻出現在這裡，繞過審核佇列，等同
+     「上傳的資料...在我尚未同意前」的規則沒有真正生效。只有在真的能
+     解析到一筆 MaterialRuntime 記錄、且該記錄明確 approved === false
+     時才過濾掉；找不到對應記錄（例如測試環境獨立造的資料，或非學生
+     上傳面板的其他來源）一律視為可見，不影響任何既有行為。 */
+  function isMaterialApproved(materialId) {
+    if (!materialId || !AHS.MaterialRuntime || typeof AHS.MaterialRuntime.getById !== "function") { return true; }
+    var m = AHS.MaterialRuntime.getById(materialId);
+    return !m || m.approved !== false;
+  }
+
   /* Sprint AI-015E Part B · Identity Mapping (read-only cross-reference,
      no new store, no Runtime API touched, no WrongBookGenerator change).
      AHS.WrongBookGenerator resolves wrong answers exclusively via
@@ -1041,6 +1056,9 @@ AHS.QuizCenter = (function () {
     /* Task 004: never render a [Stub] placeholder as a practice
        question — real records only, else the honest Empty State. */
     items = items.filter(isRealLearningQuestion);
+    /* Sprint AI-132（使用者需求 A）：尚未審核的學生上傳教材，其練習題
+       在這裡也必須誠實地不存在，不只是 Material Center 清單看不到。 */
+    items = items.filter(function (r) { return isMaterialApproved(r.materialId); });
     /* Sprint AI-124 AI-124-09: real Difficulty gating — applied AFTER
        the [Stub] filter (never gates on a placeholder's own fabricated
        difficulty) and BEFORE the empty-state check below, so "0 real

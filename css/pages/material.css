@@ -685,6 +685,78 @@
   .mat-dialog__btn, .mat-preview__btn { width: 100%; }
 }
 
+/* ---- Sprint AI-132（使用者需求 A）：Admin 審核佇列 --------------------
+   .mat-review-entry — MaterialCenter.js 頁面裡的掛載點（僅管理者可見）。
+   .mat-review__toggle — 入口按鈕。.mat-review-overlay/__panel/... —
+   Modal 本體，沿用上方 .mat-preview__overlay 的既有 Overlay/關閉模式。 */
+.mat-review-entry { display: flex; justify-content: flex-end; margin: -4px 0 4px; }
+.mat-review__toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--brand-line); border-radius: var(--radius-pill);
+  padding: 8px 16px; background-color: var(--brand-soft); color: var(--brand-ink);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.mat-review__toggle:hover { background-color: var(--brand-line); }
+.mat-review__toggle-icon svg { width: 16px; height: 16px; }
+
+.mat-review-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 100;
+  background-color: rgba(31, 36, 48, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.mat-review__panel {
+  width: 100%; max-width: 720px; max-height: 86vh;
+  background-color: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.mat-review__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--line);
+}
+.mat-review__panel-title { margin: 0; font-size: 16px; font-weight: 800; }
+.mat-review__close {
+  border: 0; background: transparent; cursor: pointer; color: var(--text-muted);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+}
+.mat-review__close:hover { background-color: var(--bg); }
+.mat-review__close svg { width: 18px; height: 18px; }
+.mat-review__hint {
+  margin: 0; padding: 10px 18px; font-size: 12px; color: var(--text-muted);
+  background-color: var(--bg); border-bottom: 1px solid var(--line);
+}
+.mat-review__body { flex: 1 1 auto; overflow: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+.mat-review__empty { margin: 0; padding: 24px 0; text-align: center; color: var(--text-muted); font-size: 13px; }
+.mat-review__row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; flex-wrap: wrap;
+}
+.mat-review__info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mat-review__info-top { display: flex; align-items: center; gap: 8px; }
+.mat-review__title { font-size: 14px; font-weight: 700; }
+.mat-review__meta { font-size: 12px; color: var(--text-muted); }
+.mat-review__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.mat-review__btn {
+  padding: 7px 14px; border-radius: var(--radius-pill);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+}
+.mat-review__btn:hover { background-color: var(--bg); }
+.mat-review__btn--primary { background-color: var(--brand); color: #fff; border-color: var(--brand); }
+.mat-review__btn--primary:hover { background-color: var(--brand-strong); }
+.mat-review__btn--danger { background-color: #d9534f; color: #fff; border-color: #d9534f; }
+.mat-review__btn--danger:hover { background-color: #c9302c; border-color: #c9302c; }
+
+@media (max-width: 560px) {
+  .mat-review__row { flex-direction: column; align-items: flex-start; }
+  .mat-review__actions { width: 100%; }
+  .mat-review__btn { flex: 1 1 auto; }
+}
+
 /* ---- Folder list in sidebar (BUG-010) -------------------------------- */
 .mat-folder { padding: 16px; border-top: 1px solid var(--line); }
 .mat-folder__title { margin: 0 0 10px; font-size: 14px; font-weight: 700; color: var(--text-muted); }

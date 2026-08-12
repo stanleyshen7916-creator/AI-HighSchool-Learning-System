@@ -79,12 +79,47 @@ AHS.MaterialRuntime = (function () {
      `m.file` behaves the same as any other fileless/seed-shaped record. */
   store.materials.forEach(function (m) { m.file = m.file || null; });
 
+  /* approved — Sprint AI-132 (使用者需求 A，材料上傳審核機制): additive
+     field, default true for every existing caller (Repository/Package
+     imports via TeachingMaterialLoader.js, every pre-existing test/
+     seed call) — only js/components/MaterialCenter.js's student upload
+     panel (onFilesPicked) explicitly passes approved:false, since that
+     is the one real "student-submitted, unreviewed" content path this
+     Sprint's approval gate covers (docs/TeachingMaterials Repository
+     pipeline stays untouched/always-visible, per the agreed scope).
+     list()/recentByCreatedOrder()/favorites()/folderMaterialCount()
+     below all read from visibleMaterials() so a pending upload stays
+     completely invisible everywhere those are consumed (Material
+     Center grid, Home Recent Materials, Analytics, AI Tutor context,
+     etc.) without each of those 15+ call sites needing to know this
+     field exists. getById() stays UNFILTERED — the Admin 審核佇列 and
+     直接 id 查找 (e.g. delete/approve) must still resolve a pending
+     record by id. */
+  function visibleMaterials() {
+    return store.materials.filter(function (m) { return m.approved !== false; });
+  }
+
   function list() {
-    return store.materials.slice();
+    return visibleMaterials();
+  }
+
+  function listPending() {
+    return store.materials.filter(function (m) { return m.approved === false; });
+  }
+
+  /* approve(id) — Admin 審核佇列's sole state-changing action besides
+     remove() (reused as-is for 退回/刪除 — an already-real, tested
+     delete). Real, explicit action only; no auto-approve anywhere. */
+  function approve(id) {
+    var m = getById(id);
+    if (!m) { return null; }
+    m.approved = true;
+    persist();
+    return m;
   }
 
   function isEmpty() {
-    return store.materials.length === 0;
+    return visibleMaterials().length === 0;
   }
 
   function getById(id) {
@@ -139,7 +174,13 @@ AHS.MaterialRuntime = (function () {
          is cached once resolved (or once a push first creates the row),
          same precedent as WrongBookRuntime.js's record.supabaseId. */
       originKey: partial.originKey || null,
-      materialSupabaseId: partial.materialSupabaseId || null
+      materialSupabaseId: partial.materialSupabaseId || null,
+      /* approved — see visibleMaterials()'s own comment above. Defaults
+         true so every pre-existing caller (Repository/Package imports,
+         tests) is completely unaffected; only an explicit
+         `approved: false` (currently: MaterialCenter.js's own upload
+         panel only) opts a record into the pending-review state. */
+      approved: typeof partial.approved === "boolean" ? partial.approved : true
     };
     store.materials.push(record);
     persist();
@@ -273,13 +314,13 @@ AHS.MaterialRuntime = (function () {
   }
 
   function favorites() {
-    return store.materials.filter(function (m) { return m.favorite; });
+    return visibleMaterials().filter(function (m) { return m.favorite; });
   }
 
   /* recentByCreatedOrder() — newest-created first (spec: use Created
      Order while there is no full timestamp field). */
   function recentByCreatedOrder() {
-    return store.materials.slice().sort(function (a, b) { return b.order - a.order; });
+    return visibleMaterials().sort(function (a, b) { return b.order - a.order; });
   }
 
   /* ---- Folder API (BUG-010) ------------------------------------------
@@ -319,8 +360,9 @@ AHS.MaterialRuntime = (function () {
   /* folderMaterialCount(folderId) — how many materials live in a folder. */
   function folderMaterialCount(folderId) {
     var n = 0;
-    for (var i = 0; i < store.materials.length; i++) {
-      if (store.materials[i].folderId === folderId) { n++; }
+    var visible = visibleMaterials();
+    for (var i = 0; i < visible.length; i++) {
+      if (visible[i].folderId === folderId) { n++; }
     }
     return n;
   }
@@ -403,6 +445,8 @@ AHS.MaterialRuntime = (function () {
 
   return {
     list: list,
+    listPending: listPending,
+    approve: approve,
     isEmpty: isEmpty,
     getById: getById,
     add: add,
