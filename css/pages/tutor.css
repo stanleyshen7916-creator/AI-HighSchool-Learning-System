@@ -81,14 +81,6 @@
 }
 .tutor-input__send svg { width: 20px; height: 20px; }
 .tutor-input__send:hover { background-color: var(--brand-strong); }
-.tutor-input__tools { display: flex; gap: 8px; flex-wrap: wrap; }
-.tutor-input__tool {
-  display: inline-flex; align-items: center; gap: 6px;
-  border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 8px 14px;
-  background-color: var(--card); color: var(--text-muted); font: inherit; font-size: 13px; cursor: pointer;
-}
-.tutor-input__tool svg { width: 15px; height: 15px; }
-.tutor-input__tool:hover { background-color: var(--bg); color: var(--brand); }
 
 /* ---- Suggestions ----------------------------------------------------- */
 .tutor-suggest__title { display: flex; align-items: center; gap: 6px; }
@@ -135,6 +127,4 @@
 @media (max-width: 560px) {
   .tutor-hero { flex-direction: column; text-align: center; }
   .tutor-msg { max-width: 92%; }
-  .tutor-input__tool span:last-child { display: none; }
-  .tutor-input__tool { padding: 8px; }
 }

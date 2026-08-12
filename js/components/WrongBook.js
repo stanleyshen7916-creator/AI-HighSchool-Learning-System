@@ -470,7 +470,7 @@ AHS.WrongBook = (function () {
        Header，見 renderDetail 的 wb-detail__tags）。這樣才知道「錯哪一
        題」，而非只看到一堆同名的教材列。 */
     var row = el("article", {
-      class: "wb-row" + (index === 0 ? " is-active" : ""),
+      class: "wb-row",
       "data-subject": item.subject, "tabindex": "0", "role": "button",
       "aria-label": "第 " + (index + 1) + " 題：" + item.question
     }, [
@@ -796,41 +796,80 @@ AHS.WrongBook = (function () {
     return { el: body, favBtn: favBtn };
   }
 
-  /* Master-detail body (filter bar + row list + detail panel) — unchanged
-     structure, now sourced from AHS.WrongBookRuntime.list() instead of
-     AHS.AppConfig.wrongBook. `data` still supplies page copy (title/subtitle/
-     bannerTip) and filter dropdown option labels only.
+  /* AI-129（知識弱點排版重新設計）: 題目詳解改為點擊題目後才彈出的 Modal
+     （取代原本常駐右側 30/70 的 Detail Panel），呼應使用者需求「點選題目
+     後，再彈出『題目詳解』視窗」。沿用 js/ui/MaterialPreview.js 已建立的
+     overlay/panel/close 慣例（同一個 role="dialog" aria-modal="true"、
+     背景點擊關閉、右上角 X 關閉），不是重新發明一套彈窗機制。
+     openDetailModal(bodyEl, ariaLabel, onClose) — onClose 在「任何」關閉
+     途徑（X／背景點擊／Escape）都會真實觸發一次，呼叫端用它同步清空自己
+     的選取狀態，永遠不會有「面板顯示過期資料」的問題。 */
+  function openDetailModal(bodyEl, ariaLabel, onClose) {
+    var overlay = el("div", {
+      class: "wb-modal__overlay", role: "dialog", "aria-modal": "true",
+      "aria-label": ariaLabel || "題目詳解"
+    });
+    var bodyWrap = el("div", { class: "wb-modal__body" }, [bodyEl]);
+    function close() {
+      if (overlay.parentNode) { overlay.parentNode.removeChild(overlay); }
+      document.removeEventListener("keydown", onKeydown);
+      if (onClose) { onClose(); }
+    }
+    function onKeydown(ev) { if (ev.key === "Escape") { close(); } }
+    document.addEventListener("keydown", onKeydown);
+    overlay.addEventListener("click", function (ev) { if (ev.target === overlay) { close(); } });
+    var closeX = el("button", {
+      type: "button", class: "wb-modal__close", "aria-label": "關閉", html: AHS.Icons.filterX()
+    });
+    closeX.addEventListener("click", close);
+    var panel = el("div", { class: "card wb-modal__panel" }, [closeX, bodyWrap]);
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+    return {
+      close: close,
+      setBody: function (nextBodyEl) {
+        bodyWrap.innerHTML = "";
+        bodyWrap.appendChild(nextBodyEl);
+      }
+    };
+  }
+
+  /* Master-detail body (filter bar + row list + detail modal) — sourced
+     from AHS.WrongBookRuntime.list() instead of AHS.AppConfig.wrongBook.
+     `data` still supplies page copy (title/subtitle/bannerTip) and filter
+     dropdown option labels only.
      onFavoriteOnlyChange(isOn) — optional callback so a caller outside this
      function (the Header's 我的最愛 button, built separately in create())
      can stay visually in sync with the Favorite Filter chip. */
   function buildMasterDetail(data, runtimeItems, runtime, status, summary, onFavoriteOnlyChange, onReviewCenterChange) {
-    var detailPanel = el("section", { class: "card wb-detail", "aria-label": "題目詳解" });
+    var currentModal = null;
     var currentRow = null;
     var currentDetailItemId = null;
     var currentDetailFavBtn = null;
 
+    /* showDetailBody(bodyEl) — AI-129: opens the 題目詳解 Modal on the
+       first call, then re-uses the SAME modal (setBody) for every
+       subsequent call while it's still open (e.g. onReviewSubmit()'s own
+       re-render after answering, or the multi-step Review Session's
+       renderStep()/renderResult() below) — never stacks a second modal
+       on top of an already-open one. */
+    function showDetailBody(bodyEl) {
+      if (currentModal) { currentModal.setBody(bodyEl); return; }
+      currentModal = openDetailModal(bodyEl, "題目詳解", function () {
+        currentModal = null;
+        if (currentRow) { currentRow.classList.remove("is-active"); currentRow = null; }
+        currentDetailItemId = null;
+        currentDetailFavBtn = null;
+      });
+    }
+
     function selectItem(item, row, autoStartReview) {
       if (currentRow) { currentRow.classList.remove("is-active"); }
       if (row) { row.classList.add("is-active"); currentRow = row; }
-      detailPanel.innerHTML = "";
-      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange);
-      detailPanel.appendChild(detail.el);
       currentDetailItemId = item.id;
+      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange);
       currentDetailFavBtn = detail.favBtn;
-    }
-
-    /* clearDetail() — Sprint AI-124 AI-124-05: 左側篩選變更後若真的沒有任何
-       符合的題目，右側 Detail 過去仍停留在上一筆已被篩掉的題目資料
-       （"不得保留上一筆資料" 的真實反例）。現在誠實清空並顯示一句真實狀態
-       文字，不捏造任何題目內容。 */
-    function clearDetail() {
-      if (currentRow) { currentRow.classList.remove("is-active"); currentRow = null; }
-      currentDetailItemId = null;
-      currentDetailFavBtn = null;
-      detailPanel.innerHTML = "";
-      detailPanel.appendChild(el("div", { class: "wb-detail__empty", role: "status" }, [
-        el("p", { class: "wb-detail__empty-text", text: "目前篩選條件沒有符合的題目。" })
-      ]));
+      showDetailBody(detail.el);
     }
 
     function getPairById(id) {
@@ -937,7 +976,6 @@ AHS.WrongBook = (function () {
       if (queue.length === 0) { return; }
       var index = 0;
       var results = { total: queue.length, correct: 0, wrong: 0, newlyMastered: 0 };
-      var returnItemId = currentDetailItemId;
 
       /* EO-S7.0-003 · Review → Submit → WrongBook 更新（單一路徑）：
          複習作答結果同步回 v1.0 WrongBookSession —— 一律經
@@ -984,8 +1022,7 @@ AHS.WrongBook = (function () {
           index += 1;
           if (index < queue.length) { renderStep(); } else { renderResult(); }
         });
-        detailPanel.innerHTML = "";
-        detailPanel.appendChild(el("div", { class: "wb-detail__body wb-review-session" }, [
+        showDetailBody(el("div", { class: "wb-detail__body wb-review-session" }, [
           el("p", { class: "wb-review-session__progress", text: "複習進度：" + (index + 1) + " / " + queue.length }),
           el("h2", { class: "wb-detail__title", text: item.title }),
           el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
@@ -998,17 +1035,14 @@ AHS.WrongBook = (function () {
         var returnBtn = el("button", { type: "button", class: "wb-detail__btn wb-detail__btn--primary" }, [
           el("span", { text: "返回知識弱點" })
         ]);
+        /* AI-129: 題目詳解已改為彈出視窗 — 沒有常駐面板可「返回」，這裡的
+           返回動作就是關掉視窗，回到題目列表（filter 狀態全程未被觸碰，
+           所以列表本來就維持原樣）。 */
         returnBtn.addEventListener("click", function () {
-          // Return Wrong Book automatically; filter state was never
-          // touched, so this restores exactly what was visible.
           applyView();
-          var backPair = (returnItemId && getPairById(returnItemId)) || getVisibleItems().map(function (it) {
-            return getPairById(it.id);
-          })[0];
-          if (backPair) { selectItem(backPair.item, backPair.row); }
+          if (currentModal) { currentModal.close(); }
         });
-        detailPanel.innerHTML = "";
-        detailPanel.appendChild(el("div", { class: "wb-detail__body wb-review-result" }, [
+        showDetailBody(el("div", { class: "wb-detail__body wb-review-result" }, [
           el("h2", { class: "wb-detail__title", text: "複習結果" }),
           el("div", { class: "wb-review-result__stats" }, [
             statBlock("總題數", results.total),
@@ -1086,7 +1120,6 @@ AHS.WrongBook = (function () {
       };
     });
     var rows = pairs.map(function (p) { return p.row; });
-    currentRow = rows[0];
 
     /* ---- Filter + Search + Sort (combined) ------------------------------- */
     var SORT_COMPARATORS = {
@@ -1189,21 +1222,10 @@ AHS.WrongBook = (function () {
       else { noMatch.setAttribute("hidden", "hidden"); }
 
       if (paginationCtrl) { paginationCtrl.render(currentPage, totalPages); }
-
-      // Left List <-> Right Detail must always stay synchronized — but
-      // "preserve Detail selection correctly" (WB-013) means paging to a
-      // different page must NOT change what's selected, only Filter/
-      // Search truly removing the selected item from the result set
-      // should trigger a fallback to the first match.
-      var stillMatches = currentDetailItemId &&
-        matching.some(function (p) { return p.item.id === currentDetailItemId; });
-      if (!stillMatches && matching.length > 0) {
-        selectItem(matching[0].item, matching[0].row);
-      } else if (matching.length === 0 && currentDetailItemId) {
-        /* AI-124-05: zero real matches left — clear the stale Detail
-           rather than silently keep showing the last-selected item. */
-        clearDetail();
-      }
+      /* AI-129: 題目詳解已是使用者自己點開的獨立 Modal（非常駐面板），與
+         左側列表的篩選/分頁狀態脫鉤 — 篩選變更不再需要「回退到第一筆符合
+         項目」或「清空過期 Detail」，Modal 若已開啟就維持原樣，關閉與否
+         完全由使用者自己決定。 */
     }
 
     function goToPage(page) {
@@ -1292,7 +1314,15 @@ AHS.WrongBook = (function () {
     }
 
     function clearFilters() {
-      Array.prototype.forEach.call(list.querySelectorAll(".wb-select__control"),
+      /* AI-129 bugfix: this used to query `list` (the 題目列表 section) —
+         but the actual <select> controls live in the filter bar, a
+         SIBLING of `list`, never a descendant of it, so selectedIndex was
+         never really reset here (only the underlying filter STATE
+         variables were, via the assignments below) — the dropdowns kept
+         showing their old label even though filtering behaved as "全部".
+         mainCol wraps both, so querying from there actually reaches
+         them. */
+      Array.prototype.forEach.call(mainCol.querySelectorAll(".wb-select__control"),
         function (s) { s.selectedIndex = 0; });
       var searchInput = mainCol.querySelector(".wb-search__input");
       if (searchInput) { searchInput.value = ""; }
@@ -1327,27 +1357,31 @@ AHS.WrongBook = (function () {
     ];
     var list = el("section", { class: "card wb-list", "aria-label": "錯題列表" }, listChildren);
 
+    /* AI-129: 篩選區與「今日待複習」統計卡並排（wb-top-row），取代原本
+       篩選區獨立一列、統計卡另外顯示在頁面最上方的排版；題目列表本身則
+       改為單欄全寬（取代原本 30%/70% 的左右兩欄），呼應「左邊題目改到
+       中間『題目詳解』位置」— 題目列表現在佔用的正是過去 Detail Panel
+       所在的主要閱讀區域。 */
+    var filterBarEl = filterBar(data, knowledgeOptions, {
+      onSubject: onSubjectFilter,
+      onKnowledge: onKnowledgeFilter,
+      onDifficulty: onDifficultyFilter,
+      onStatus: onStatusFilter,
+      onSearch: onSearchInput,
+      onSort: onSortChange,
+      onFavoriteToggle: setFavoriteOnly,
+      onClear: clearFilters
+    });
+    var topRow = el("div", { class: "wb-top-row" }, [summary.el, filterBarEl]);
     var mainCol = el("div", { class: "wb-main" }, [
-      filterBar(data, knowledgeOptions, {
-        onSubject: onSubjectFilter,
-        onKnowledge: onKnowledgeFilter,
-        onDifficulty: onDifficultyFilter,
-        onStatus: onStatusFilter,
-        onSearch: onSearchInput,
-        onSort: onSortChange,
-        onFavoriteToggle: setFavoriteOnly,
-        onClear: clearFilters
-      }),
+      topRow,
       list,
       status
     ]);
     refreshFavoriteCount();
 
-    // initial detail
-    selectItem(runtimeItems[0], rows[0]);
-
     return {
-      el: el("div", { class: "wb-layout" }, [mainCol, detailPanel]),
+      el: mainCol,
       setFavoriteOnly: setFavoriteOnly,
       isFavoriteOnly: isFavoriteOnly,
       getVisibleItems: getVisibleItems,
@@ -1376,8 +1410,12 @@ AHS.WrongBook = (function () {
     // Favorite Mode changes, regardless of whether it was triggered by the
     // Header button itself or the filter bar's 只看收藏 chip.
     var headerFavBtn = null;
+    /* AI-129: summary.el (今日待複習) is now paired side-by-side with the
+       filter bar INSIDE buildMasterDetail's own wb-top-row — only the
+       true-empty branch (no filter bar exists to pair it with) still
+       renders it here as its own standalone row. */
     var body = isEmpty
-      ? { el: emptyState(), setFavoriteOnly: null, isFavoriteOnly: function () { return false; }, getVisibleItems: function () { return []; }, startReviewSession: function () {} }
+      ? { el: el("div", { class: "wb-empty-wrap" }, [summary.el, emptyState()]), setFavoriteOnly: null, isFavoriteOnly: function () { return false; }, getVisibleItems: function () { return []; }, startReviewSession: function () {} }
       : buildMasterDetail(data, runtimeItems, runtime, status, summary, function (isOn) {
         if (headerFavBtn) {
           headerFavBtn.setAttribute("aria-pressed", isOn ? "true" : "false");
@@ -1411,7 +1449,6 @@ AHS.WrongBook = (function () {
 
     return el("div", { class: "wb-page" }, [
       header.el,
-      summary.el,
       reviewCenterPanelCtrl.el,
       body.el
     ]);
@@ -1419,7 +1456,7 @@ AHS.WrongBook = (function () {
 
   /* Sprint AI-114 AI-901/902: buildReviewInteraction is a pure function
      (item, onSubmit) -> DOM node — no dependency on this module's own
-     closure state (pairs/detailPanel/etc.). Exposed so js/components/
+     closure state (pairs/currentModal/etc.). Exposed so js/components/
      ReviewSession.js (複習中心's own real Review Session, AI-901) can
      reuse the exact same real question-interaction UI instead of
      building a second one — same rendering, same "選了才能提交" behavior,

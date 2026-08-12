@@ -75,10 +75,12 @@
 }
 .continue-reading__btn:hover { background-color: var(--brand-strong); }
 
-/* ---- Layout ---------------------------------------------------------- */
+/* ---- Layout ----------------------------------------------------------
+   AI-129: 新增資料夾／上傳教材／最近檔案 (.mat-rail) 目前先隱藏（不掛進
+   頁面），版面改為單欄全寬，簡單明瞭。 */
 .mat-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
@@ -497,9 +499,6 @@
 .mat-skeleton--pill { width: 104px; height: 36px; border-radius: 999px; flex: 0 0 auto; }
 
 /* ---- RWD ------------------------------------------------------------- */
-@media (max-width: 1024px) {
-  .mat-layout { grid-template-columns: minmax(0, 1fr); }
-}
 @media (max-width: 720px) {
   .mat-main { grid-template-columns: minmax(0, 1fr); }
   .subj-filter__list { flex-direction: row; flex-wrap: wrap; }
