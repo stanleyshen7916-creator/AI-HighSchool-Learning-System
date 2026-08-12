@@ -25,7 +25,7 @@ window.AHS = window.AHS || {};
       subject: "chinese",
       subjectLabel: "國文",
       grade: "高二",
-      chapter: "第三課／近體詩選－李商隱〈夜雨寄北〉",
+      chapter: "第三課／近體詩選",
       unit: "李商隱〈夜雨寄北〉",
       materialType: "課本",
       source: "私立長榮中學 高二國文課本「近體詩選」單元：李商隱〈夜雨寄北〉（課文與注釋）",
