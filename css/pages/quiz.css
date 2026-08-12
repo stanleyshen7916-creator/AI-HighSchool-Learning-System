@@ -577,3 +577,87 @@
   .qpv-summary__actions { flex-direction: column; }
   .qpv-summary__btn { width: 100%; }
 }
+
+/* ---- Feature B: 多課合併複習 (Combined Multi-Chapter Review) ---------
+   .quiz-combine-btn — the entry action shown in both 平時練習's own list
+   (buildListView) and 考前總複習's Repository 教材 section header
+   (buildPracticeListView). .qpick-* — the chapter multi-select picker
+   overlay itself (openChapterPicker), same overlay/close/backdrop
+   pattern as .mat-preview__overlay in css/pages/material.css. */
+.quiz-combine-row { display: flex; justify-content: flex-end; }
+.quiz-combine-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px dashed var(--brand-line); border-radius: var(--radius-pill);
+  padding: 8px 16px; background-color: var(--brand-soft); color: var(--brand-ink);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.quiz-combine-btn:hover { background-color: var(--brand-line); }
+.quiz-combine-btn svg { width: 14px; height: 14px; transform: rotate(90deg); }
+.quiz-combine-btn--sm { padding: 6px 12px; font-size: 12px; margin-left: auto; }
+
+.qpick-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 100;
+  background-color: rgba(31, 36, 48, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.qpick-panel {
+  width: 100%; max-width: 620px; max-height: 86vh;
+  display: flex; flex-direction: column;
+  border-radius: var(--radius-xl); overflow: hidden;
+  background-color: var(--card); box-shadow: 0 20px 60px rgba(31, 36, 48, 0.25);
+}
+.qpick-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 16px 18px; border-bottom: 1px solid var(--line);
+}
+.qpick-title { margin: 0; font-size: 16px; font-weight: 800; }
+.qpick-close {
+  border: 0; background: transparent; cursor: pointer; color: var(--text-muted);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; flex: none;
+}
+.qpick-close:hover { background-color: var(--bg); }
+.qpick-close svg { width: 18px; height: 18px; }
+.qpick-body { flex: 1 1 auto; overflow: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.qpick-subjects { display: flex; flex-wrap: wrap; gap: 8px; }
+.qpick-subject {
+  border: 1px solid var(--line); border-radius: var(--radius-pill);
+  padding: 6px 14px; background-color: var(--card);
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+}
+.qpick-subject:hover { background-color: var(--bg); }
+.qpick-subject.is-active { font-weight: 800; }
+.qpick-list { display: flex; flex-direction: column; gap: 8px; }
+.qpick-row {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 12px; cursor: pointer;
+}
+.qpick-row:hover { background-color: var(--bg); }
+.qpick-row.is-checked { border-color: var(--brand); background-color: var(--brand-soft); }
+.qpick-row input[type="checkbox"] { flex: none; width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.qpick-row-title { flex: 1 1 auto; font-size: 14px; font-weight: 700; }
+.qpick-row-meta { flex: none; font-size: 12px; color: var(--text-muted); }
+.qpick-empty { margin: 0; padding: 20px 0; text-align: center; color: var(--text-muted); font-size: 13px; }
+.qpick-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 12px 18px; border-top: 1px solid var(--line);
+}
+.qpick-btn {
+  padding: 9px 18px; border-radius: var(--radius-pill);
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--line); background-color: var(--card); color: var(--text);
+}
+.qpick-btn--primary { background-color: var(--brand); color: #fff; border-color: var(--brand); }
+.qpick-btn--primary:hover { background-color: var(--brand-strong); }
+.qpick-btn--primary[disabled] { opacity: 0.5; cursor: not-allowed; }
+.qpick-btn--primary[disabled]:hover { background-color: var(--brand); }
+.qpick-btn--ghost:hover { background-color: var(--bg); }
+
+@media (max-width: 560px) {
+  .qpick-panel { max-height: 92vh; }
+  .qpick-footer { flex-direction: column-reverse; }
+  .qpick-btn { width: 100%; }
+}

@@ -28,6 +28,19 @@ AHS.SummaryCenter = (function () {
      content only, "（無資料）" (never fabricated) when a section is
      genuinely empty. Shared by both 下載總結 (PDF, via browser print) and
      匯出筆記 (Markdown) so their output always matches exactly. */
+  /* isMaterialApproved(materialId) — Sprint AI-132（使用者需求 A）：與
+     js/components/QuizCenter.js 的同名/同用途 helper 一致（各自獨立小
+     函式，未抽成共用模組——這兩處都是各自元件內、只有幾行的純讀取判斷，
+     照抄一個新的共用 ui/ 檔案反而是這個規模不需要的抽象）。AHS.SummaryRuntime
+     本身不知道教材審核狀態，這裡在渲染前把關，避免尚未核准的學生上傳
+     教材的 AI 摘要直接出現在總結中心。找不到對應 MaterialRuntime 記錄
+     時視為可見（不影響既有測試/資料）。 */
+  function isMaterialApproved(materialId) {
+    if (!materialId || !AHS.MaterialRuntime || typeof AHS.MaterialRuntime.getById !== "function") { return true; }
+    var m = AHS.MaterialRuntime.getById(materialId);
+    return !m || m.approved !== false;
+  }
+
   function summaryExportBlocks(records) {
     var blocks = [];
     (records || []).forEach(function (record) {
@@ -521,6 +534,12 @@ AHS.SummaryCenter = (function () {
       var records = model
         ? (Array.isArray(model) ? model : [model])
         : (runtime && typeof runtime.list === "function" ? runtime.list() : []);
+      /* Sprint AI-132（使用者需求 A）：一般瀏覽（非 model 帶入、非
+         initialMaterialId 深連結）一定要套用審核過濾；model 是呼叫端
+         自己明確傳入的既有資料，維持既有行為不變。 */
+      if (!model) {
+        records = records.filter(function (r) { return isMaterialApproved(r.materialId); });
+      }
 
       filterSlot.innerHTML = "";
       var filter = materialFilter(records, function (materialId) {

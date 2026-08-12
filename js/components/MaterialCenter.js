@@ -330,6 +330,18 @@ AHS.MaterialCenter = (function () {
       class: "mat-status", "aria-live": "polite", hidden: "hidden"
     });
 
+    /* isAdmin() — Sprint AI-132（使用者需求 A）：審核佇列只給管理者看得
+       到、用得到，判斷方式沿用 login.html「選擇學生」畫面已經在用的同一
+       個真實角色欄位（AHS.WorkspaceData.students[].role），不新增第二套
+       權限概念。目前登入的 Workspace 沒有對應 role 時，安全預設為
+       非管理者（false）。 */
+    function isAdmin() {
+      var current = AHS.WorkspaceRuntime && AHS.WorkspaceRuntime.getCurrent();
+      if (!current) { return false; }
+      var student = AHS.WorkspaceRuntime.findStudent(current.studentId);
+      return !!(student && student.role === "ADMIN");
+    }
+
     function runtimeItems() { return AHS.MaterialRuntime.list(); }
 
     /* Recent Learning — Runtime-driven (created-order). Rendered into a
@@ -564,7 +576,11 @@ AHS.MaterialCenter = (function () {
                 category: item.category, folderId: item.folderId,
                 fileName: item.file.name, fileType: fileExt(item.file.name),
                 fileSize: formatSize(item.file.size), file: item.file,
-                content: text || ""
+                content: text || "",
+                /* Sprint AI-132（使用者需求 A）：學生上傳面板送出的教材，
+                   在管理者於審核佇列核准前，保持完全不可見（approved:
+                   false — 見 MaterialRuntime.js 的 visibleMaterials()）。 */
+                approved: false
               });
               rememberFileBytes(record.id, item.file, function (result) {
                 if (!result || result.state !== "stored") {
@@ -608,7 +624,9 @@ AHS.MaterialCenter = (function () {
               fileType: fileExt(f.name),
               fileSize: formatSize(f.size),
               file: f,
-              content: text || ""
+              content: text || "",
+              /* Sprint AI-132（使用者需求 A）：同上，單筆上傳同樣預設未審核。 */
+              approved: false
             });
             /* HF-8.2.003: bytes under this material's own unique key. */
             rememberFileBytes(record.id, f, function (result) {
@@ -1157,12 +1175,20 @@ AHS.MaterialCenter = (function () {
        先隱藏（不掛進頁面樹），版面改為單欄全寬、簡單明瞭 —
        rail/uploadUI/newFolderBtn/recentFilesSlot 本身仍是真實、完整運作
        的程式碼（只是先不顯示），保留完整可隨時恢復，並非死碼移除。 */
+    /* Sprint AI-132（使用者需求 A）：審核佇列入口，僅管理者可見——完全
+       不影響學生視角的既有版面。AHS.MaterialReviewQueue 是獨立元件
+       （見該檔案自身標頭），這裡只負責「是否掛載」的判斷。 */
+    var reviewQueueBtn = (isAdmin() && AHS.MaterialReviewQueue && typeof AHS.MaterialReviewQueue.create === "function")
+      ? AHS.MaterialReviewQueue.create()
+      : null;
+
     var page = el("div", { class: "mat-page" }, [
       header(seed, searchBar),
+      reviewQueueBtn ? el("div", { class: "mat-review-entry" }, [reviewQueueBtn]) : null,
       tabsEl,
       recentLearningSlot,
       el("div", { class: "mat-layout" }, [main])
-    ]);
+    ].filter(Boolean));
 
     /* Sprint 6.6 Runtime QA Round 3 (WO-011, Issue #022): the shared
        AppShell Header search bar lives OUTSIDE this component (it's a
