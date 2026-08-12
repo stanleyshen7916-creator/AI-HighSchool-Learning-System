@@ -129,20 +129,13 @@ AHS.AiTutor = (function () {
       if (ev.key === "Enter") { ev.preventDefault(); submit(); }
     });
 
-    function toolBtn(icon, label) {
-      return el("button", { type: "button", class: "tutor-input__tool" }, [
-        el("span", { html: AHS.Icons[icon]() }),
-        el("span", { text: label })
-      ]);
-    }
-
+    /* AI-129 hotfix: 上傳檔案／拍照上傳／語音輸入 had no click handler at
+       all (never wired to any real feature) — a dead, non-functional row
+       that only misled students into thinking it did something. Hidden
+       per explicit report rather than left as dead UI; the row can come
+       back once a real upload/voice pipeline exists to back it. */
     var inputBar = el("div", { class: "tutor-input" }, [
-      el("div", { class: "tutor-input__row" }, [input, sendBtn]),
-      el("div", { class: "tutor-input__tools" }, [
-        toolBtn("paperclip", "上傳檔案"),
-        toolBtn("camera", "拍照上傳"),
-        toolBtn("mic", "語音輸入")
-      ])
+      el("div", { class: "tutor-input__row" }, [input, sendBtn])
     ]);
 
     var chatCol = el("div", { class: "tutor-chat card" }, [thread, inputBar]);
