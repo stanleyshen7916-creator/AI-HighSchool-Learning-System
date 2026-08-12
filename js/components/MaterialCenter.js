@@ -1153,11 +1153,15 @@ AHS.MaterialCenter = (function () {
        No Runtime, no lifecycle rewrite, no new render path. */
     renderAll();
 
+    /* AI-129 hotfix: 新增資料夾／上傳教材／最近檔案 (rail) 目前不對外提供，
+       先隱藏（不掛進頁面樹），版面改為單欄全寬、簡單明瞭 —
+       rail/uploadUI/newFolderBtn/recentFilesSlot 本身仍是真實、完整運作
+       的程式碼（只是先不顯示），保留完整可隨時恢復，並非死碼移除。 */
     var page = el("div", { class: "mat-page" }, [
       header(seed, searchBar),
       tabsEl,
       recentLearningSlot,
-      el("div", { class: "mat-layout" }, [main, rail])
+      el("div", { class: "mat-layout" }, [main])
     ]);
 
     /* Sprint 6.6 Runtime QA Round 3 (WO-011, Issue #022): the shared
