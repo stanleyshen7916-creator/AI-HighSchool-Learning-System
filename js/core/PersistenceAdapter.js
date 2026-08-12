@@ -221,6 +221,38 @@ AHS.PersistenceAdapter = (function () {
     return count;
   }
 
+  /* findFirstForNamespacePrefix(nsPrefix, shortKey) — AI-131 (real PO
+     report): login.html's 選擇學生 step lists every student BEFORE any
+     Workspace is chosen (no school/semester picked yet), so there is no
+     active namespace() to load()/save() a normal namespaced key through
+     — but a student who already renamed themselves via Settings under
+     SOME previously-picked school+semester combination has that real
+     value sitting under a namespaced key like
+     "ahs:student_a__cjsh__g1s2:settings", not the bare "ahs:settings"
+     load() alone can ever reach. This scans every stored key whose
+     namespace starts with the given studentId prefix (e.g. "student_a__"
+     — storageNamespace()'s own format is always
+     "<studentId>__<schoolId>__<sems>") and returns the first real match's
+     parsed value, so a caller who doesn't yet have a Workspace can still
+     honestly ask "has this student saved anything under shortKey, in ANY
+     of their permitted Workspaces?" — read-only, never writes, and still
+     goes through this file (the only module allowed to touch
+     sessionStorage) rather than a caller reaching in directly. */
+  function findFirstForNamespacePrefix(nsPrefix, shortKey) {
+    if (!nsPrefix || !shortKey || !isAvailable()) { return null; }
+    try {
+      for (var i = 0; i < window.sessionStorage.length; i += 1) {
+        var k = window.sessionStorage.key(i);
+        if (!k || k.indexOf(PREFIX) !== 0) { continue; }
+        var parsed = splitKey(k);
+        if (parsed.shortKey !== shortKey || parsed.ns.indexOf(nsPrefix) !== 0) { continue; }
+        try { return JSON.parse(window.sessionStorage.getItem(k)); }
+        catch (e) { continue; } /* skip one corrupt entry, keep scanning */
+      }
+    } catch (e) { /* no-op */ }
+    return null;
+  }
+
   return {
     save: save,
     load: load,
@@ -231,6 +263,7 @@ AHS.PersistenceAdapter = (function () {
     importAll: importAll,
     saveGlobal: saveGlobal,
     loadGlobal: loadGlobal,
-    removeGlobal: removeGlobal
+    removeGlobal: removeGlobal,
+    findFirstForNamespacePrefix: findFirstForNamespacePrefix
   };
 })();

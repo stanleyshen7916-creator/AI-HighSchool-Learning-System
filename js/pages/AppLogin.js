@@ -12,6 +12,24 @@ window.AHS = window.AHS || {};
 
   function studentsList() { return (AHS.WorkspaceRuntime && AHS.WorkspaceRuntime.students()) || []; }
 
+  /* displayNameFor(student) — AI-131 (real PO report): 選擇學生 used to
+     always show AHS.WorkspaceData's static seed name ("Student A") even
+     after the user had genuinely renamed themselves via Settings under a
+     previously-picked Workspace — the rename never carried back to this
+     pre-Workspace step, so re-logging in looked like the rename "didn't
+     save". No Workspace is active yet here, so AHS.SettingsRuntime.get()
+     (which only ever reads the CURRENT Workspace's own namespace) can't
+     answer this; AHS.PersistenceAdapter.findFirstForNamespacePrefix()
+     scans every namespace this studentId has ever saved a real settings
+     value under and returns the first one found — real, not a guess: the
+     static seed name is still the honest fallback when nothing was ever
+     saved (a student who's never touched Settings). */
+  function displayNameFor(student) {
+    var saved = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.findFirstForNamespacePrefix === "function")
+      ? AHS.PersistenceAdapter.findFirstForNamespacePrefix(student.id + "__", "settings") : null;
+    return (saved && saved.profile && saved.profile.name) ? saved.profile.name : student.name;
+  }
+
   function stepLabel(n) {
     return n === 1 ? "選擇學生" : n === 2 ? "選擇學校" : "選擇學期";
   }
@@ -51,7 +69,7 @@ window.AHS = window.AHS || {};
       list.appendChild(el("p", { class: "login-empty", text: "尚無可登入的學生資料。" }));
     }
     all.forEach(function (s) {
-      list.appendChild(optionButton(s.name, s.role === "ADMIN" ? "管理者" : "學生", function () {
+      list.appendChild(optionButton(displayNameFor(s), s.role === "ADMIN" ? "管理者" : "學生", function () {
         state.studentId = s.id;
         state.schoolId = null;
         state.semesterIds = [];
