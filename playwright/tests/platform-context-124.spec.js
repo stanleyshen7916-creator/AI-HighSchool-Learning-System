@@ -280,7 +280,17 @@ test("PAT-124-⑤：AI Tutor 只依照目前 Platform Context，不跨教材", a
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-124-⑥：知識弱點左右同步，篩選後真的無符合題目時 Detail 誠實清空（不保留上一筆）", async ({ page }) => {
+test("PAT-124-⑥：知識弱點篩選後列表誠實只顯示符合條件的題目，點擊仍正確開啟對應題目的 Modal", async ({ page }) => {
+  /* AI-129 redesign（本 Session 較早的真實變更，發生在 AI-124 之後）：
+     知識弱點的 Detail 從「跟著左側清單即時同步的側欄」改為「點擊題目才
+     彈出、彼此獨立的 Modal」——見 js/components/WrongBook.js 自身
+     AI-129 hotfix 的說明："applyView() 的 stillMatches/自動退回選取/
+     clearDetail 邏輯整個移除——Modal 現在不受列表篩選影響"，這是刻意的
+     設計決策，不是 Bug。原本「篩選後 Detail 必須清空」的假設已經不成立
+     （Modal 本來就只在使用者明確點擊時才開啟／才有內容）。這裡改為驗證
+     真正還成立、也更重要的事：篩選本身是否誠實（不符合的題目真的從
+     列表消失），以及篩選之後點擊仍能正確對應到真實題目內容，不會抓錯
+     題目。 */
   const errors = collectErrors(page);
   await seedSession(page, {
     "ahs:wrongBookRuntime": {
@@ -297,20 +307,23 @@ test("PAT-124-⑥：知識弱點左右同步，篩選後真的無符合題目時
   });
   await page.goto(fileUrl("wrongbook"));
 
-  // Default selection: the one real item's own question text is shown
-  // in the Detail panel (left/right already in sync on first render).
-  await expect(page.locator(".wb-detail__question")).toContainText("AI-124 知識弱點題目本文");
+  const row = page.locator(".wb-row", { hasText: "AI-124 知識弱點題目本文" });
+  await expect(row).toBeVisible();
 
-  // Switch 科目 filter to a subject with zero real matches — Detail must
-  // NOT keep showing the now-filtered-out item's stale data.
+  // Switch 科目 filter to a subject with zero real matches — the row must
+  // honestly disappear, and the list's own no-match empty state appears.
   await page.selectOption('select[aria-label="科目"]', "英文");
-  await expect(page.locator(".wb-row", { hasText: "AI-124 知識弱點測試題" })).toBeHidden();
-  await expect(page.locator(".wb-detail__question")).toHaveCount(0);
-  await expect(page.locator(".wb-detail__empty")).toBeVisible();
+  await expect(row).toBeHidden();
+  await expect(page.locator(".wb-list__no-match")).toBeVisible();
+  await expect(page.locator(".wb-list__no-match")).toContainText("找不到符合條件");
 
-  // Restoring the filter re-syncs Detail immediately, no stale data.
+  // Restoring the filter brings the real row back — clicking it still
+  // resolves to the correct, real question content (filtering never
+  // corrupts which item a later click opens).
   await page.selectOption('select[aria-label="科目"]', "全部科目");
-  await expect(page.locator(".wb-detail__question")).toContainText("AI-124 知識弱點題目本文");
+  await expect(row).toBeVisible();
+  await row.click();
+  await expect(page.locator(".wb-modal__panel")).toContainText("AI-124 知識弱點題目本文");
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });

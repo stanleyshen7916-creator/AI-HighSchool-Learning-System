@@ -113,7 +113,13 @@ test("Learning Loop E2E：首頁 -> 教材 -> Summary -> Quiz -> WrongBook -> Re
 
   await test.step("WrongBook（錯題本）", async () => {
     await page.goto(fileUrl("wrongbook"));
-    await expect(page.locator("body")).toContainText(MATERIAL_TITLE);
+    /* AI-129 redesign（本 Session 較早的真實變更）：列表列本身只顯示
+       題目文字，不重複顯示教材名稱（PAT-122-04 自己的要求）——教材名稱
+       只會出現在點擊題目後彈出的 Modal 裡，所以這裡先點開題目才看得到
+       MATERIAL_TITLE，而不是預期它一開始就印在頁面上。 */
+    await expect(page.locator("body")).toContainText("1+1=?");
+    await page.locator(".wb-row", { hasText: "1+1=?" }).click();
+    await expect(page.locator(".wb-modal__panel")).toContainText(MATERIAL_TITLE);
     /* Sprint AI-118 AI-118-07: 錯題本統計卡改為顯示「今日待複習」
        （AHS.StatisticsRuntime.dueForReview()，取代先前的「尚未精熟」）。 */
     await expect(page.locator("body")).toContainText("今日待複習");

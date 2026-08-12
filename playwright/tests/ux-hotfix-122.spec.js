@@ -209,7 +209,11 @@ test("PAT-122-04：知識弱點左側改為 Question List — 題號/題目/Know
   await expect(row.locator(".wb-row__meta")).toContainText("kp_pat122_04");
   // 難度／錯誤次數／最近錯誤日期 all present.
   await expect(row.locator(".wb-row__col--diff")).toBeVisible();
-  await expect(row.locator(".wb-row__count")).toContainText("次");
+  /* AI-129 redesign: the row now shows BOTH 錯誤次數 and 正確次數 side by
+     side (.wb-row__count--wrong / .wb-row__count--correct), so a bare
+     .wb-row__count match resolves to 2 elements — target the wrong-count
+     one specifically, matching this test's own "錯誤次數" requirement. */
+  await expect(row.locator(".wb-row__count--wrong")).toContainText("次");
   await expect(row.locator(".wb-row__date")).toBeVisible();
   // 教材名稱 (item.title) must NOT repeat inside the row itself.
   await expect(row).not.toContainText("PAT-122-04 教材標題（不應出現在列表列）");
@@ -221,7 +225,16 @@ test("PAT-122-04：知識弱點左側改為 Question List — 題號/題目/Know
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-122-05：Detail Panel Layout — Question List 30% / Detail Panel 70%", async ({ page }) => {
+test("AI-129：Detail 從固定 30/70 側欄改為點擊題目才彈出的 Modal，且列表為單欄全寬", async ({ page }) => {
+  /* AI-129 redesign (real PO report, this session): the old persistent
+     30%/70% list/detail split (PAT-122-05's original requirement) was
+     replaced by a full-width, single-column list plus a click-to-open
+     Modal for 題目詳解 — see js/components/WrongBook.js's own AI-129
+     hotfix header for the real change. This test now proves the NEW
+     real behavior instead of asserting a layout ratio that no longer
+     exists: (1) no Modal auto-opens on load, list is full-width; (2)
+     clicking a row opens a real, prominent Modal panel (not a cramped
+     sidebar) containing the question detail. */
   const errors = collectErrors(page);
   await gotoWrongbookWithItem(page, {
     id: "wb_1", questionId: "pat122-05-q1", title: "PAT-122-05 教材", knowledgePoint: "kp_pat122_05",
@@ -230,17 +243,24 @@ test("PAT-122-05：Detail Panel Layout — Question List 30% / Detail Panel 70%"
   });
 
   const list = page.locator(".wb-list");
-  const detail = page.locator(".wb-detail");
   await expect(list).toBeVisible();
-  await expect(detail).toBeVisible();
-  const listBox = await list.boundingBox();
-  const detailBox = await detail.boundingBox();
-  expect(listBox).toBeTruthy();
-  expect(detailBox).toBeTruthy();
-  // Detail Panel is now the MAIN reading area — real proof: it must be
-  // meaningfully wider than the list (≈ 70/30 ⇒ detail ≳ 1.5× list),
-  // reversing the old fixed-400px-sidebar layout.
-  expect(detailBox.width).toBeGreaterThan(listBox.width * 1.5);
+  await expect(page.locator(".wb-modal__overlay")).toHaveCount(0);
+  const listBoxBefore = await list.boundingBox();
+  const mainBox = await page.locator(".wb-page").boundingBox();
+  expect(listBoxBefore).toBeTruthy();
+  expect(mainBox).toBeTruthy();
+  // 列表在未開啟 Modal 前，本身就是單欄全寬（不再是被壓縮的 30% 側欄）。
+  expect(listBoxBefore.width).toBeGreaterThan(mainBox.width * 0.85);
+
+  await page.locator(".wb-row", { hasText: "PAT-122-05 題目" }).click();
+  const panel = page.locator(".wb-modal__panel");
+  await expect(panel).toBeVisible();
+  const panelBox = await panel.boundingBox();
+  expect(panelBox).toBeTruthy();
+  // Modal 本身是真正的主要閱讀區（非窄小側欄）：至少佔視窗寬度一半。
+  const viewport = page.viewportSize();
+  expect(panelBox.width).toBeGreaterThan(viewport.width * 0.5);
+  await expect(panel).toContainText("PAT-122-05 題目");
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
