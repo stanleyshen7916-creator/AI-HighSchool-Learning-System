@@ -69,19 +69,22 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 5 筆真實 Repository 教材
-   （國文教材上傳｜高二國文五課，workspaceSemester: "g2s1"），不得出現
+/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 3 筆真實 Repository 教材
+   （國文教材上傳｜高二國文三課，workspaceSemester: "g2s1" —— 第三課
+   ／近體詩選的三首詩已合併為單一教材／單一測驗），不得出現
    高一下（g1s2）教材，兩學期互相隔離 -------------------------------- */
-console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 5 筆國文教材（不得出現高一下教材）");
+console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 3 筆國文教材（不得出現高一下教材）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實看到 5 筆國文教材（AI-120-01：不得混入高一下教材）", materials.length === 5);
+  check("高二上真實看到 3 筆國文教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一）", materials.length === 3);
   check("皆為國文科（無高一下的 math/biology/civics/geography 教材混入）",
     materials.every((m) => m.subject === "chinese"));
-  check("包含五課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
+  check("包含第一課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
+  check("包含第三課合併教材（近體詩選：杜甫、李商隱、黃庭堅）",
+    materials.some((m) => (m.title || "").indexOf("近體詩選") !== -1));
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
