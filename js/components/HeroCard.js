@@ -62,30 +62,29 @@ AHS.HeroCard = (function () {
 
     var quoteInfo = el("p", { class: "hero-quote" });
 
-    /* hero-card__top — Sprint AI-134 續：body（左）與 figure（右）包成一
-       個橫向 row，讓 .hero-card 本身可以再往下疊一個 .hero-card__pet 區塊
-       （飼養寵物小遊戲），使寵物真正「在 Hero 卡片裡面」而不是首頁另一個
-       獨立區塊（見 js/pages/AppHome.js buildHome() 如何把 AHS.PetWidget.
-       create() 掛進這裡）。 */
+    /* hero-card__figure — Sprint AI-134 續（真實 PO 回饋）：飼養寵物小
+       遊戲直接插進這裡、巧巧老師左邊（見 js/pages/AppHome.js buildHome()
+       如何把 AHS.PetWidget.create() 插到這個 figure 區塊最前面），寵物
+       真正「在 Hero 卡片裡面」而不是首頁另一個獨立區塊。這裡本身不引用
+       AHS.PetWidget（元件相依方向維持由上層 AppHome.js 決定，HeroCard 本
+       身不知道寵物存在，AppHome.js 才是真正把兩者接起來的地方）。 */
     return el("section", { class: "hero-card", "aria-label": "首頁 Hero" }, [
-      el("div", { class: "hero-card__top" }, [
-        el("div", { class: "hero-card__body" }, [
-          el("p", { class: "hero-card__greeting", text: hero.greeting }),
-          dateInfo,
-          examInfo,
-          quoteInfo,
-          el("h1", { class: "hero-card__headline", text: hero.headline }),
-          el("p", { class: "hero-card__reco", text: hero.recommendation }),
-          el("div", { class: "hero-card__actions" }, [startBtn, continueBtn]),
-          status
-        ]),
-        el("div", { class: "hero-card__figure" }, [
-          el("div", {
-            class: "hero-card__avatar qiaoqiao-full qiaoqiao-full--md",
-            html: AHS.Qiaoqiao.randomFull()
-          }),
-          bubble
-        ])
+      el("div", { class: "hero-card__body" }, [
+        el("p", { class: "hero-card__greeting", text: hero.greeting }),
+        dateInfo,
+        examInfo,
+        quoteInfo,
+        el("h1", { class: "hero-card__headline", text: hero.headline }),
+        el("p", { class: "hero-card__reco", text: hero.recommendation }),
+        el("div", { class: "hero-card__actions" }, [startBtn, continueBtn]),
+        status
+      ]),
+      el("div", { class: "hero-card__figure" }, [
+        el("div", {
+          class: "hero-card__avatar qiaoqiao-full qiaoqiao-full--md",
+          html: AHS.Qiaoqiao.randomFull()
+        }),
+        bubble
       ])
     ]);
   }

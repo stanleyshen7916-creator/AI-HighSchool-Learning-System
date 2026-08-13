@@ -182,12 +182,15 @@ window.AHS = window.AHS || {};
       if (quoteEl) { quoteEl.textContent = AHS.Utils.getDailyQuote(); }
     }
 
-    /* Sprint AI-134 續（真實 PO 回饋）："寵物可否不要獨立在一個項目"——
-       直接把 AHS.PetWidget.create() 掛進 Hero Card 本身（.hero-card__pet
-       插槽，見 js/components/HeroCard.js／PetWidget.js 標頭說明），不再
-       是首頁另一個獨立 <section>。掛在 Hero 既有內容（body+figure）之
-       後，讓 Hero 這張卡片本身往下長高，仍是同一張卡片。 */
-    if (AHS.PetWidget) { hero.appendChild(AHS.PetWidget.create()); }
+    /* Sprint AI-134 續（真實 PO 回饋二輪）："寵物可否不要獨立在一個項目"
+       + "位置放在巧巧老師左邊，大小比她略小" —— 把 AHS.PetWidget.create()
+       插進 .hero-card__figure 最前面（巧巧老師 avatar 之前），不再是首頁
+       另一個獨立 <section>，也不是掛在 Hero 卡片最下面（見
+       js/components/HeroCard.js／PetWidget.js 標頭說明）。 */
+    if (AHS.PetWidget) {
+      var figureEl = hero.querySelector(".hero-card__figure");
+      if (figureEl) { figureEl.insertBefore(AHS.PetWidget.create(), figureEl.firstChild); }
+    }
 
     var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 

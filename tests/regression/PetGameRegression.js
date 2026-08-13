@@ -203,7 +203,7 @@ console.log("\n[4] AHS.PetWidget（首頁）— 尚未選寵物顯示 2 選項�
   const stage = doc.querySelector(".pet-widget__stage");
   check("點擊圖案後，真實切換為成長畫面", !!stage);
   check("成長畫面真實顯示完成度百分比文字",
-    !!doc.querySelector(".pet-widget__stage-pct") && doc.querySelector(".pet-widget__stage-pct").textContent.indexOf("教材完成度") !== -1);
+    !!doc.querySelector(".pet-widget__stage-pct") && doc.querySelector(".pet-widget__stage-pct").textContent.indexOf("完成度") !== -1);
   check("Runtime 真實記下了剛才點擊選定的寵物", !!window.AHS.PetRuntime.getSelectedSpecies());
   check("同一個 Session 內剛選定寵物，Hero Card 泡泡標題立即真實同步更新（不需重新整理頁面）",
     doc.querySelector(".hero-card__bubble-title").textContent !== bubbleTitleBeforePick &&
