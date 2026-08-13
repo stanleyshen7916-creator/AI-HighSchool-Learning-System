@@ -75,7 +75,9 @@ AHS.Icons = (function () {
     dislike: '<path d="M17 14V4h3v10zM17 14l-4 7c-1.5 0-2.5-1-2.5-2.5V15h-5a2 2 0 0 1-2-2.3l1.2-7A2 2 0 0 1 6.7 4H17"/>',
     paperclip: '<path d="M20 11l-8.5 8.5a4 4 0 0 1-6-6L14 5a3 3 0 0 1 4 4l-8 8a1.5 1.5 0 0 1-2-2l7-7"/>',
     mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>',
-    robot: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M8 13h.01M16 13h.01M9 16h6"/><circle cx="12" cy="3" r="1"/>'
+    robot: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M8 13h.01M16 13h.01M9 16h6"/><circle cx="12" cy="3" r="1"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    eyeOff: '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.4 4.3M6.4 6.4A17.3 17.3 0 0 0 2 12s3.5 7 10 7c1.3 0 2.5-.2 3.6-.6"/><path d="M9.5 9.8A3 3 0 0 0 12 15a3 3 0 0 0 2.2-.9"/>'
   };
 
   var api = {};

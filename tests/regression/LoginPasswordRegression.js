@@ -93,6 +93,19 @@ console.log("\n[1] login.html — Step 3「進入平台」不再直接登入，�
   check("密碼輸入框真實存在", !!doc.querySelector(".login-password__input"));
   check("尚未輸入密碼前，AHS.WorkspaceRuntime.isLoggedIn() 仍為 false（setCurrent 完全沒被呼叫）",
     window.AHS.WorkspaceRuntime.isLoggedIn() === false);
+
+  /* 顯示/隱藏密碼按鈕 — 讓學生能確認自己實際輸入的內容是否正確。 */
+  const input = doc.querySelector(".login-password__input");
+  const toggleBtn = doc.querySelector(".login-password__toggle");
+  check("顯示/隱藏密碼按鈕真實存在", !!toggleBtn);
+  check("密碼輸入框預設仍是遮蔽的 type=\"password\"", input.type === "password");
+  input.value = "1234";
+  click(toggleBtn);
+  check("點擊按鈕後，輸入框真實變成 type=\"text\"（明碼顯示）", input.type === "text");
+  check("切換顯示後，密碼內容本身沒有被清空或改變", input.value === "1234");
+  click(toggleBtn);
+  check("再點一次真實切回 type=\"password\"（重新遮蔽）", input.type === "password");
+
   check("Console errors = 0", consoleErrors.length === 0);
 }
 

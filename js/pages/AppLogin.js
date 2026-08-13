@@ -191,6 +191,21 @@ window.AHS = window.AHS || {};
     });
     passwordInput.value = state.password || "";
 
+    /* 顯示/隱藏密碼切換按鈕 — 使用者反映登入一直失敗但看不出是不是打錯字，
+       加這顆按鈕讓學生能親眼確認自己實際輸入的內容，純前端 input type
+       password/text 切換，不影響既有的密碼比對邏輯。 */
+    var toggleBtn = el("button", {
+      type: "button", class: "login-password__toggle",
+      "aria-label": "顯示密碼", html: AHS.Icons.eye()
+    });
+    toggleBtn.addEventListener("click", function () {
+      var showing = passwordInput.type === "text";
+      passwordInput.type = showing ? "password" : "text";
+      toggleBtn.setAttribute("aria-label", showing ? "顯示密碼" : "隱藏密碼");
+      toggleBtn.innerHTML = showing ? AHS.Icons.eye() : AHS.Icons.eyeOff();
+      passwordInput.focus();
+    });
+
     var errorEl = state.passwordError
       ? el("p", { class: "login-error", role: "alert", text: state.passwordError })
       : null;
@@ -235,7 +250,10 @@ window.AHS = window.AHS || {};
       backButton(3),
       el("h1", { class: "login-step__title", text: "輸入密碼" }),
       el("p", { class: "login-step__hint", text: "請輸入你的登入密碼才能進入平台。" }),
-      el("div", { class: "login-password" }, [passwordInput, errorEl].filter(Boolean)),
+      el("div", { class: "login-password" }, [
+        el("div", { class: "login-password__field" }, [passwordInput, toggleBtn]),
+        errorEl
+      ].filter(Boolean)),
       enterBtn
     ]);
     setTimeout(function () { passwordInput.focus(); }, 0);
