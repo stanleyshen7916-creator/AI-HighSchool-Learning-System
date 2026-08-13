@@ -153,6 +153,39 @@ console.log("\n[1] Material Completion — reading -> quiz -> review, 0/partial/
   const { window: w4 } = loadPage("index.html", { seedSession: dueSeed });
   const c4 = w4.AHS.StatisticsRuntime.materialCompletion("rt_1");
   check("尚有未精熟錯題：停在 stage 2（複習尚未完成）", c4.stage === 2 && c4.reviewDone === false);
+
+  /* AI-135（真實 PO 回饋，修正邏輯漏洞）：實際使用上學生不會反覆點
+     「繼續學習」把閱讀進度衝到 100%，重點在試題與錯題知識弱點——② quiz
+     與 ③ review 不應該被①reading 卡住。以下用「完全沒讀過（progress
+     維持 0，readingDone=false）但真的寫了測驗」直接驗證這個修正：
+     修正前這裡會誤判為 stage 0（quizDone 被 readingDone && 卡死），
+     修正後 quizDone 應該真實地獨立判定為 true。 */
+  const unreadQuizSeed = {
+    "ahs:materialRuntime": materialSeed, /* progress 仍是 0，未讀 */
+    "ahs:historyRuntime": { items: [{
+      id: "hist_unread", order: 1, examId: "teaching_material_rt_1", subject: "math", title: "AI-117 測試教材",
+      chapter: "第一章", score: 100, accuracy: 100, correctCount: 1, totalCount: 1, when: "2026/08/03 09:00"
+    }], seq: 1 }
+  };
+  const { window: w5 } = loadPage("index.html", { seedSession: unreadQuizSeed });
+  const c5 = w5.AHS.StatisticsRuntime.materialCompletion("rt_1");
+  check("AI-135：完全沒讀過教材（readingDone=false）但真的寫了測驗，quizDone 仍真實判定為 true（不再被 reading 卡住）",
+    c5.readingDone === false && c5.quizDone === true);
+  check("AI-135：沒讀過、滿分測驗無錯題 -> 直接視為 stage 3（複習完成），percent 100，不因未讀而卡在 0",
+    c5.stage === 3 && c5.percent === 100 && c5.label === "複習完成");
+
+  const unreadDueSeed = Object.assign({}, unreadQuizSeed, {
+    "ahs:wrongBookRuntime": { items: [{
+      id: "wb_unread", questionId: "q1", subject: "math", title: "AI-117 測試教材", chapter: "第一章",
+      materialId: "rt_1", knowledgePoint: "kp1", question: "Q", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
+      yourAnswer: "A", correctAnswer: "B", explanation: "", errorCount: 1, lastError: "2026/07/20",
+      bookmarked: false, correctStreak: 0
+    }], seq: 1 }
+  });
+  const { window: w6 } = loadPage("index.html", { seedSession: unreadDueSeed });
+  const c6 = w6.AHS.StatisticsRuntime.materialCompletion("rt_1");
+  check("AI-135：沒讀過、測驗有真實未精熟錯題 -> stage 2（測驗完成，60%），quizDone 真實反映測驗行為",
+    c6.readingDone === false && c6.stage === 2 && c6.percent === 60 && c6.reviewDone === false);
 }
 
 /* ---- 2/3/6. Subject / Material / WrongBook Analytics — single source,

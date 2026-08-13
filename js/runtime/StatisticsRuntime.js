@@ -306,56 +306,52 @@ AHS.StatisticsRuntime = (function () {
      LearningStateRuntime) — this file remains the single Aggregation
      Layer; nothing here starts a second statistics source. */
 
-  /* materialCompletion(materialId) — AI-117-01. Replaces "閱讀進度" as
-     THE completion signal (取消目前「閱讀進度」概念): reading progress
-     is still a real, unmodified AHS.MaterialRuntime field (removing the
-     field itself would be a Runtime API change, forbidden by this same
-     Sprint's own Scope — "不得修改既有 Runtime API"), it is simply no
-     longer treated as, or displayed as, completion on its own. Three
-     sequential real stages, each gated on the previous (matches the
-     Sprint's own worked example: 0% -> 20% (① reading) -> 60% (② quiz)
-     -> 100% (③ review) — a deliberate, uneven 20/40/40 weighting, not a
-     flat 33/33/33 split, taken literally from the spec's own numbers):
-       ① reading — AHS.LearningStateRuntime.materialState().readingDone
-          (real progress >= 100), the same single definition
-          js/pages/AppMaterials.js's own consumers already trust —
-          reused, not re-derived.
-       ② quiz — real evidence a quiz was actually taken for this
-          material: either LearningStateRuntime's own quizAttempted
-          (real WrongBookRuntime activity) OR a real
-          AHS.HistoryRuntime record for this material's own Teaching-
-          Material examId convention ("teaching_material_" + materialId,
-          the same convention js/runtime/TeachingMaterialLoader.js
-          already establishes) — the second check is what
-          LearningStateRuntime alone cannot see: a quiz taken with a
-          perfect score produces zero WrongBookRuntime entries, so
-          "quizAttempted" alone would wrongly stay false for a student
-          who got everything right.
-       ③ review — every real wrong item for this material is 已精熟
-          (dueCount === 0), only meaningful once ② is real (a material
-          never quizzed has nothing to review, so review can never be
-          "done" before quiz is).
+  /* materialCompletion(materialId) — AI-117-01，AI-135 修正真實使用情境
+     的邏輯漏洞。原始設計（AI-117-01）把 ①閱讀 ②測驗 ③複習 三個階段做成
+     依序「前一階段沒完成，後一階段永遠算不到」的 AND 閘（quizDone 必須
+     readingDone 先為 true 才可能是 true）。真實 PO 回饋：實際使用上學生
+     不會反覆點「繼續學習」把閱讀進度衝到 100%，重點會放在試題與錯題
+     知識弱點——這代表學生就算真的把測驗寫完、錯題也全部精熟，只要沒
+     特地點滿閱讀進度，完成度卡片會誠實地「完全沒有反應」，這不是故意
+     設計成這樣、是舊版邏輯的真實缺陷，必須修正（PO 明確指示「必須立刻
+     修改」）。
 
-     percent within the reading stage interpolates from the real, raw
-     progress value (0-20, proportional to state.reading, real
-     AHS.MaterialRuntime data — not a fabricated smoothing) rather than
-     jumping straight from 0 to 20 the instant reading crosses 100%; a
-     material genuinely 90% read should not honestly look identical to
-     one never opened. Once every stage is gated open, percent snaps to
-     the Sprint's own literal checkpoint values (20/60/100) exactly. */
+     修正後：①②③ 三個階段各自獨立判定，不再互相 AND 閘（唯一例外：
+     ③ review 仍然合理地需要 ② quiz 先為真——沒測驗過的教材，沒有錯題
+     可以複習，「複習完成」對它沒有意義）：
+       ① reading — AHS.LearningStateRuntime.materialState().readingDone
+          （真實 progress >= 100），與 js/pages/AppMaterials.js 既有消費
+          者信任的同一個定義，沿用不重新定義。
+       ② quiz — 真實測驗紀錄：LearningStateRuntime 自己的 quizAttempted
+          （真實 WrongBookRuntime 活動）或一筆真實 AHS.HistoryRuntime 對
+          應這份教材自己的 Teaching-Material examId 慣例
+          （"teaching_material_" + materialId，與
+          js/runtime/TeachingMaterialLoader.js 既有慣例一致）——第二個
+          條件是 LearningStateRuntime 自己看不到的：滿分測驗完全不會
+          產生 WrongBookRuntime 錯題項目，quizAttempted 單獨判斷會誤判
+          為 false。**不再要求 readingDone 為真**——真實測驗紀錄本身就
+          是比閱讀進度更直接的完成度證據。
+       ③ review — 這份教材所有真實錯題都已精熟（dueCount === 0），仍然
+          需要 ② quiz 先為真（沒測驗過就沒有錯題可言，複習完成對它沒
+          意義），但**不再額外要求 readingDone**。
+
+     percent 仍取三個階段各自的 checkpoint（20/60/100），stage 0 內仍對
+     真實、原始的 progress 值做 0-20 內插（不是從 0 瞬間跳到 20），一份
+     真的讀了 90% 的教材誠實地不應該跟完全沒開過的看起來一樣。差別只在
+     於 stage 2/3 現在各自獨立判定，不再要求 stage 1 先達成。 */
   function materialCompletion(materialId) {
     var lsr = AHS.LearningStateRuntime;
     var state = (lsr && typeof lsr.materialState === "function") ? lsr.materialState(materialId) : null;
     var readingDone = !!(state && state.readingDone);
     var examId = "teaching_material_" + materialId;
     var hasHistoryAttempt = AHS.HistoryRuntime.list().some(function (h) { return h.examId === examId; });
-    var quizDone = readingDone && (!!(state && state.quizAttempted) || hasHistoryAttempt);
+    var quizDone = !!(state && state.quizAttempted) || hasHistoryAttempt;
     var reviewDone = quizDone && !!state && state.dueCount === 0;
 
     var stage = 0;
     if (readingDone) { stage = 1; }
-    if (readingDone && quizDone) { stage = 2; }
-    if (readingDone && quizDone && reviewDone) { stage = 3; }
+    if (quizDone) { stage = 2; }
+    if (reviewDone) { stage = 3; }
     var percent = stage === 0
       ? Math.round((state ? state.reading : 0) / 100 * 20)
       : [0, 20, 60, 100][stage];
