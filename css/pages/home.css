@@ -117,10 +117,8 @@
 /* ---- Hero ------------------------------------------------------------ */
 .hero-card {
   display: flex;
-  align-items: stretch;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 24px;
-  min-height: 300px;
   border-radius: var(--radius-xl);
   padding: 36px 44px;
   background-image: linear-gradient(120deg, #e7dfff 0%, #efe8fe 52%, #e4d9ff 100%);
@@ -128,6 +126,10 @@
   box-shadow: 0 10px 30px rgba(124, 92, 255, 0.12);
   overflow: hidden;
 }
+
+/* hero-card__top — 原本 .hero-card 本身的 body/figure 橫向排版，抽成子層
+   讓 .hero-card 能再往下疊 .hero-card__pet（Sprint AI-134 續）。 */
+.hero-card__top { display: flex; align-items: stretch; justify-content: space-between; gap: 24px; min-height: 260px; }
 
 .hero-card__body { flex: 1 1 auto; min-width: 0; align-self: center; }
 .hero-card__greeting { margin: 0; font-size: 20px; font-weight: 700; color: var(--brand-ink); }
@@ -525,7 +527,7 @@
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {
-  .hero-card { flex-direction: column; }
+  .hero-card__top { flex-direction: column; }
   .hero-card__figure { align-self: center; }
 }
 
@@ -613,10 +615,19 @@
 .review-widget__fill--reviewing { background-color: var(--brand); }
 .review-widget__fill--mastered { background-color: #22b573; }
 
-/* ---- Sprint AI-134: 飼養寵物小遊戲 ------------------------------------ */
+/* ---- Sprint AI-134 續: 飼養寵物小遊戲 — 掛在 Hero Card 裡面的插槽
+   （.hero-card__pet），不再是首頁另一個獨立卡片，所以這裡自己補一層
+   半透明白底面板，在紫色 Hero 背景上仍維持清楚的卡片感。 ------------- */
+.hero-card__pet {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+.hero-card__pet-title { margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--brand-ink); }
 .pet-widget__body { display: flex; flex-direction: column; gap: 14px; }
 .pet-widget__intro { margin: 0; font-size: 13px; color: var(--text-muted); }
-.pet-widget__options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pet-widget__options { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; max-width: 320px; }
 .pet-widget__option {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 12px 8px; border: 1px solid var(--line); border-radius: var(--radius-md);
@@ -632,17 +643,9 @@
 .pet-widget__stage-info { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
 .pet-widget__stage-name { font-size: 15px; font-weight: 800; color: var(--text); }
 .pet-widget__stage-pct { font-size: 12px; color: var(--text-muted); }
-.pet-widget__tip {
-  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
-  border-radius: var(--radius-md); background: var(--brand-soft);
-}
-.pet-widget__tip-avatar { flex: 0 0 auto; width: 36px; height: 36px; border-radius: var(--radius-pill); overflow: hidden; }
-.pet-widget__tip-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.pet-widget__tip-title { display: block; font-size: 12px; font-weight: 700; color: var(--brand); }
-.pet-widget__tip-text { margin: 4px 0 0; font-size: 13px; color: var(--text); }
 .pet-widget__change {
   align-self: flex-start; padding: 6px 14px; font-size: 12px; font-weight: 700;
-  color: var(--brand); background: transparent; border: 1px solid var(--brand-soft);
+  color: var(--brand); background: rgba(255, 255, 255, 0.7); border: 1px solid var(--brand-soft);
   border-radius: var(--radius-pill); cursor: pointer;
 }
 .pet-widget__change:hover { background: var(--brand-soft); }

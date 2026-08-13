@@ -182,6 +182,13 @@ window.AHS = window.AHS || {};
       if (quoteEl) { quoteEl.textContent = AHS.Utils.getDailyQuote(); }
     }
 
+    /* Sprint AI-134 續（真實 PO 回饋）："寵物可否不要獨立在一個項目"——
+       直接把 AHS.PetWidget.create() 掛進 Hero Card 本身（.hero-card__pet
+       插槽，見 js/components/HeroCard.js／PetWidget.js 標頭說明），不再
+       是首頁另一個獨立 <section>。掛在 Hero 既有內容（body+figure）之
+       後，讓 Hero 這張卡片本身往下長高，仍是同一張卡片。 */
+    if (AHS.PetWidget) { hero.appendChild(AHS.PetWidget.create()); }
+
     var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
     /* Sprint AI-122 AI-122-08 (首頁資訊排序): PO's PAT mandates one
@@ -206,15 +213,14 @@ window.AHS = window.AHS || {};
 
        Sprint AI-134 判斷／衝突揭露: 上面這條規則明確寫死「exactly 6
        sections, no more」，而這個 Sprint 的真實 PO 需求是「目前的首頁
-       可否增加一個飼養寵物的小遊戲」——本身就是要求在首頁新增一個區塊，
-       直接與這條舊規則衝突。這裡選擇服從「目前這次、更新的 PO 指示」
-       （新增第 7 個區塊 AHS.PetWidget），因為新的明確指示晚於且優先於
-       舊的一次性 PAT 鎖定；沒有回頭修改上面 AI-122-08 那段舊註解本身
+       可否增加一個飼養寵物的小遊戲」——本身就是要求在首頁新增內容。這裡
+       選擇服從「目前這次、更新的 PO 指示」，因為新的明確指示晚於且優先
+       於舊的一次性 PAT 鎖定；沒有回頭修改上面 AI-122-08 那段舊註解本身
        （保留原始決策紀錄），只在這裡誠實記錄「這次刻意打破了那條 6 個
-       區塊的規則」，供之後 PO 覆核。放在 AI Tutor 之前——飼養寵物是
-       激勵性質的附加小遊戲，不是核心學習動線，放在核心 6 個區塊之後、
-       AI Tutor 建議卡片之前，不打斷 Hero→今日任務→…→教材資料夾這條
-       既有主線。 */
+       區塊的規則」，供之後 PO 覆核。續（PO 回饋「寵物不要獨立在一個項
+       目」）：飼養寵物小遊戲最終沒有成為第 7 個獨立區塊，而是掛進上面
+       hero 這張卡片本身（見上方 AHS.PetWidget.create() 呼叫），這裡的
+       6 個區塊仍是原本那 6 個，沒有變動。 */
     var main = el("div", { class: "home__main" }, [
       hero,
       AHS.TodayMission.create(buildTodayMissionModel()),
@@ -229,8 +235,6 @@ window.AHS = window.AHS || {};
          (School/Semester already fixed by the Workspace itself), each
          linking straight into 學習總結/考前練習。 */
       (AHS.WorkspaceFolder ? AHS.WorkspaceFolder.create() : null),
-      /* Sprint AI-134: 飼養寵物小遊戲（見上方本區塊開頭的衝突揭露）。 */
-      (AHS.PetWidget ? AHS.PetWidget.create() : null),
       AHS.AiTutorHomeCard.create(buildAiTutorModel())
     ].filter(Boolean));
 

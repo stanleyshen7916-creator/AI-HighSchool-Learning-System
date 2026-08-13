@@ -62,23 +62,30 @@ AHS.HeroCard = (function () {
 
     var quoteInfo = el("p", { class: "hero-quote" });
 
+    /* hero-card__top — Sprint AI-134 續：body（左）與 figure（右）包成一
+       個橫向 row，讓 .hero-card 本身可以再往下疊一個 .hero-card__pet 區塊
+       （飼養寵物小遊戲），使寵物真正「在 Hero 卡片裡面」而不是首頁另一個
+       獨立區塊（見 js/pages/AppHome.js buildHome() 如何把 AHS.PetWidget.
+       create() 掛進這裡）。 */
     return el("section", { class: "hero-card", "aria-label": "首頁 Hero" }, [
-      el("div", { class: "hero-card__body" }, [
-        el("p", { class: "hero-card__greeting", text: hero.greeting }),
-        dateInfo,
-        examInfo,
-        quoteInfo,
-        el("h1", { class: "hero-card__headline", text: hero.headline }),
-        el("p", { class: "hero-card__reco", text: hero.recommendation }),
-        el("div", { class: "hero-card__actions" }, [startBtn, continueBtn]),
-        status
-      ]),
-      el("div", { class: "hero-card__figure" }, [
-        el("div", {
-          class: "hero-card__avatar qiaoqiao-full qiaoqiao-full--md",
-          html: AHS.Qiaoqiao.randomFull()
-        }),
-        bubble
+      el("div", { class: "hero-card__top" }, [
+        el("div", { class: "hero-card__body" }, [
+          el("p", { class: "hero-card__greeting", text: hero.greeting }),
+          dateInfo,
+          examInfo,
+          quoteInfo,
+          el("h1", { class: "hero-card__headline", text: hero.headline }),
+          el("p", { class: "hero-card__reco", text: hero.recommendation }),
+          el("div", { class: "hero-card__actions" }, [startBtn, continueBtn]),
+          status
+        ]),
+        el("div", { class: "hero-card__figure" }, [
+          el("div", {
+            class: "hero-card__avatar qiaoqiao-full qiaoqiao-full--md",
+            html: AHS.Qiaoqiao.randomFull()
+          }),
+          bubble
+        ])
       ])
     ]);
   }

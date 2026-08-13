@@ -1,15 +1,18 @@
 /* js/components/PetWidget.js — Sprint AI-134（真實 PO 需求）：首頁飼養
-   寵物小遊戲。
+   寵物小遊戲。續（PO 回饋）：寵物不要獨立成首頁另一個項目，改掛進 Hero
+   Card 內（見 js/components/HeroCard.js 的 .hero-card__pet 插槽 與
+   js/pages/AppHome.js buildHome() 如何把 create() 的回傳值掛進去）。
 
    讀取 AHS.PetRuntime（Single Source：寵物選擇 + 由
    AHS.StatisticsRuntime.overallMaterialCompletion() 換算出的成長狀態，
    本檔案完全不重新計算完成度），畫面分兩種狀態：
-   1) 尚未選擇寵物 — 顯示 4 種可選圖案（AHS.PetArt 純 CSS/SVG 繪製），
-      點擊即選定並立即持久化（AHS.PetRuntime.selectSpecies()）。
+   1) 尚未選擇寵物 — 顯示可選圖案（AHS.PetArt 引用 assets/pets/ 真實插
+      畫），點擊即選定並立即持久化（AHS.PetRuntime.selectSpecies()）。
    2) 已選擇寵物 — 顯示目前成長階段的寵物圖案、真實完成度百分比、成長
-      進度條，以及巧巧老師的每日飼養提醒（寵物飼養主題文案，取自
-      AHS.PetRuntime.growth().hint，不是固定不變的靜態字串）。可點擊
-      「換一隻寵物」回到選擇畫面重新選。
+      進度條。巧巧老師的每日飼養提醒文字改由 Hero Card 自己的提醒泡泡
+      顯示（同一份 AHS.PetRuntime.tipMessage()，不在這裡重複畫一次），
+      避免同一張 Hero 卡片裡出現兩個內容重複的泡泡。可點擊「換一隻寵物」
+      回到選擇畫面重新選。
 
    同一個 Home Section 內用 refresh(body) 局部重繪（與既有
    js/components/MaterialReviewQueue.js 的 refresh() 樣式一致），不需要
@@ -80,14 +83,11 @@ AHS.PetWidget = (function () {
       ])
     ]));
 
-    body.appendChild(el("div", { class: "pet-widget__tip" }, [
-      el("span", { class: "pet-widget__tip-avatar", html: AHS.Qiaoqiao.bust("cheer") }),
-      el("div", { class: "pet-widget__tip-body" }, [
-        el("strong", { class: "pet-widget__tip-title", text: "巧巧老師的每日飼養提醒" }),
-        el("p", { class: "pet-widget__tip-text", text: growth.hint })
-      ])
-    ]));
-
+    /* Sprint AI-134 續：這個 Widget 現在直接掛在 Hero Card 裡面（見
+       js/components/HeroCard.js 標頭說明），Hero 自己的巧巧老師提醒泡泡
+       已經在顯示同一份 AHS.PetRuntime.tipMessage() 文案（syncHeroBubble()
+       負責同步），這裡不再重複畫一次幾乎一樣的提醒文字，避免同一張卡片
+       裡出現兩個內容重複的泡泡。 */
     body.appendChild(changeBtn);
   }
 
@@ -97,13 +97,17 @@ AHS.PetWidget = (function () {
     if (selected) { displayView(body, refresh); } else { pickerView(body, refresh); }
   }
 
+  /* create() — Sprint AI-134 續：真實 PO 回饋「寵物可否不要獨立在一個
+     項目」，改為掛進 js/pages/AppHome.js 的 Hero Card 裡（.hero-card__pet
+     插槽，非首頁另一個獨立 <section class="card">），所以這裡回傳的是
+     .hero-card__pet 這個「嵌在 Hero 裡的區塊」，不再是自己的白色卡片＋
+     標題列。內部 .pet-widget__* 這些 class 完全不變（PetGameRegression.js
+     與 Playwright 都是抓這些 class，換外層容器不影響既有測試）。 */
   function create() {
     var body = el("div", { class: "pet-widget__body" });
     refresh(body, false);
-    return el("section", { class: "card pet-widget", "aria-label": "飼養寵物" }, [
-      el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: "我的學習寵物" })
-      ]),
+    return el("div", { class: "hero-card__pet pet-widget", "aria-label": "飼養寵物" }, [
+      el("h2", { class: "hero-card__pet-title", text: "我的學習寵物" }),
       body
     ]);
   }
