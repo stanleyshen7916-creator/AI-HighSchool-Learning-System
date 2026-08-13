@@ -15,7 +15,7 @@
    驗證使用。這是 Mock Data，不是真實帳號權限系統。
 
    password — Sprint AI-133（使用者需求：登入流程選完學生/學校/學期後，
-   按下「進入平台」前，需輸入密碼才可進入）。每個學生各自一組密碼
+   按下「進入平台」前，需輸入密碼才可進入）。測試期間統一改為 "1234"
    （使用者確認方案），由 js/pages/AppLogin.js 新增的第 4 步驟
    （stepPassword）在瀏覽器端比對。誠實揭露：這個專案是純前端靜態
    Prototype，沒有後端資料庫可驗證帳密，這裡的密碼必然明文寫在前端
@@ -27,9 +27,9 @@
 window.AHS = window.AHS || {};
 AHS.WorkspaceData = {
   students: [
-    { id: "admin", name: "Admin", role: "ADMIN", password: "admin2026" },
-    { id: "student_a", name: "Student A", role: "STUDENT", password: "studentA2026" },
-    { id: "student_b", name: "Student B", role: "STUDENT", password: "studentB2026" }
+    { id: "admin", name: "Admin", role: "ADMIN", password: "1234" },
+    { id: "student_a", name: "Student A", role: "STUDENT", password: "1234" },
+    { id: "student_b", name: "Student B", role: "STUDENT", password: "1234" }
   ],
   schools: [
     { id: "cjsh", name: "長榮中學" }

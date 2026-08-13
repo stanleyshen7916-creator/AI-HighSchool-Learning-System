@@ -127,11 +127,25 @@ window.AHS = window.AHS || {};
     return built || undefined;
   }
 
+  /* Sprint AI-134（真實 PO 需求）："巧巧老師的小提醒可以與寵物飼養結合，
+     進行每日飼養提醒" — 選了寵物之後，Hero Card 既有的巧巧老師提醒泡泡
+     文字改為寵物飼養主題（AHS.PetRuntime.growth().hint，會隨真實教材
+     完成度變化，不是固定文字）；尚未選寵物前保持 AppConfig 原本的通用
+     提醒文字不變（誠實反映「還沒開始養」，不假裝已經有寵物內容）。 */
+  function applyPetTip() {
+    if (!AHS.PetRuntime || typeof AHS.PetRuntime.tipMessage !== "function") { return; }
+    var msg = AHS.PetRuntime.tipMessage();
+    if (!msg) { return; }
+    AHS.AppConfig.hero.tipTitle = msg.title;
+    AHS.AppConfig.hero.tip = msg.text;
+  }
+
   function buildHome() {
     /* Sprint 1 · Task 001: 依系統時間更新問候文字，其餘 hero 內容不變。 */
     if (AHS.Utils && typeof AHS.Utils.getGreeting === "function") {
       AHS.AppConfig.hero.greeting = AHS.Utils.getGreeting();
     }
+    applyPetTip();
 
     var hero = AHS.HeroCard.create(AHS.AppConfig, {
       onStart: function () { /* Mock event — no real navigation yet. */ },
@@ -188,7 +202,19 @@ window.AHS = window.AHS || {};
        same conservative "don't delete source files outside this
        Sprint's scope" precedent AI-118's own report already established
        for 學習統計/學習計畫/成就勳章/今日學習時間/繼續學習. Flagged in
-       this Sprint's EO report as a judgment call for PO review. */
+       this Sprint's EO report as a judgment call for PO review.
+
+       Sprint AI-134 判斷／衝突揭露: 上面這條規則明確寫死「exactly 6
+       sections, no more」，而這個 Sprint 的真實 PO 需求是「目前的首頁
+       可否增加一個飼養寵物的小遊戲」——本身就是要求在首頁新增一個區塊，
+       直接與這條舊規則衝突。這裡選擇服從「目前這次、更新的 PO 指示」
+       （新增第 7 個區塊 AHS.PetWidget），因為新的明確指示晚於且優先於
+       舊的一次性 PAT 鎖定；沒有回頭修改上面 AI-122-08 那段舊註解本身
+       （保留原始決策紀錄），只在這裡誠實記錄「這次刻意打破了那條 6 個
+       區塊的規則」，供之後 PO 覆核。放在 AI Tutor 之前——飼養寵物是
+       激勵性質的附加小遊戲，不是核心學習動線，放在核心 6 個區塊之後、
+       AI Tutor 建議卡片之前，不打斷 Hero→今日任務→…→教材資料夾這條
+       既有主線。 */
     var main = el("div", { class: "home__main" }, [
       hero,
       AHS.TodayMission.create(buildTodayMissionModel()),
@@ -203,6 +229,8 @@ window.AHS = window.AHS || {};
          (School/Semester already fixed by the Workspace itself), each
          linking straight into 學習總結/考前練習。 */
       (AHS.WorkspaceFolder ? AHS.WorkspaceFolder.create() : null),
+      /* Sprint AI-134: 飼養寵物小遊戲（見上方本區塊開頭的衝突揭露）。 */
+      (AHS.PetWidget ? AHS.PetWidget.create() : null),
       AHS.AiTutorHomeCard.create(buildAiTutorModel())
     ].filter(Boolean));
 
