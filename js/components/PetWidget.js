@@ -1,15 +1,22 @@
 /* js/components/PetWidget.js — Sprint AI-134（真實 PO 需求）：首頁飼養
-   寵物小遊戲。
+   寵物小遊戲。續（PO 回饋二輪）：
+   1) 寵物不要獨立成首頁另一個項目 — 改插進 Hero Card 的
+      .hero-card__figure，巧巧老師左邊（見 js/components/HeroCard.js／
+      js/pages/AppHome.js buildHome() 如何把 create() 的回傳值插進去）。
+   2) 已選寵物畫面不需要名稱/階段文字＋進度條 — 只需要在寵物圖案旁邊顯示
+      完成度 %；寵物圖案比巧巧老師略小（見 css/pages/home.css 的
+      .hero-card__pet-mini 尺寸，對照 .qiaoqiao-full--md）。
 
    讀取 AHS.PetRuntime（Single Source：寵物選擇 + 由
    AHS.StatisticsRuntime.overallMaterialCompletion() 換算出的成長狀態，
    本檔案完全不重新計算完成度），畫面分兩種狀態：
-   1) 尚未選擇寵物 — 顯示 4 種可選圖案（AHS.PetArt 純 CSS/SVG 繪製），
-      點擊即選定並立即持久化（AHS.PetRuntime.selectSpecies()）。
-   2) 已選擇寵物 — 顯示目前成長階段的寵物圖案、真實完成度百分比、成長
-      進度條，以及巧巧老師的每日飼養提醒（寵物飼養主題文案，取自
-      AHS.PetRuntime.growth().hint，不是固定不變的靜態字串）。可點擊
-      「換一隻寵物」回到選擇畫面重新選。
+   1) 尚未選擇寵物 — 顯示可選圖案（AHS.PetArt 引用 assets/pets/ 真實插
+      畫），點擊即選定並立即持久化（AHS.PetRuntime.selectSpecies()）。
+   2) 已選擇寵物 — 顯示目前成長階段的寵物圖案 + 完成度 % 小標籤。巧巧
+      老師的每日飼養提醒文字由 Hero Card 自己的提醒泡泡顯示（同一份
+      AHS.PetRuntime.tipMessage()，不在這裡重複畫一次），避免同一張 Hero
+      卡片裡出現兩個內容重複的泡泡。可點擊「換一隻寵物」小字連結回到選
+      擇畫面重新選。
 
    同一個 Home Section 內用 refresh(body) 局部重繪（與既有
    js/components/MaterialReviewQueue.js 的 refresh() 樣式一致），不需要
@@ -51,8 +58,6 @@ AHS.PetWidget = (function () {
   }
 
   function pickerView(body, refresh) {
-    body.appendChild(el("p", { class: "pet-widget__intro",
-      text: "選一隻寵物，讓牠陪你每天一起成長！寵物的成長速度會依照你目前的教材完成度自動變化，不需要額外操作。" }));
     body.appendChild(el("div", { class: "pet-widget__options" },
       AHS.PetRuntime.listSpecies().map(function (species) {
         return speciesOption(species, function (id) {
@@ -70,25 +75,9 @@ AHS.PetWidget = (function () {
 
     body.appendChild(el("div", { class: "pet-widget__stage" }, [
       el("span", { class: "pet-widget__stage-art", html: AHS.PetArt.render(growth.speciesId, growth.percent) }),
-      el("div", { class: "pet-widget__stage-info" }, [
-        el("strong", { class: "pet-widget__stage-name",
-          text: AHS.PetArt.speciesLabel(growth.speciesId) + "・" + growth.stageLabel }),
-        el("div", { class: "progressbar" }, [
-          el("div", { class: "progressbar__fill", style: "width:" + growth.percent + "%" })
-        ]),
-        el("span", { class: "pet-widget__stage-pct", text: "教材完成度 " + growth.percent + "%" })
-      ])
+      el("span", { class: "pet-widget__stage-pct", text: "完成度 " + growth.percent + "%" }),
+      changeBtn
     ]));
-
-    body.appendChild(el("div", { class: "pet-widget__tip" }, [
-      el("span", { class: "pet-widget__tip-avatar", html: AHS.Qiaoqiao.bust("cheer") }),
-      el("div", { class: "pet-widget__tip-body" }, [
-        el("strong", { class: "pet-widget__tip-title", text: "巧巧老師的每日飼養提醒" }),
-        el("p", { class: "pet-widget__tip-text", text: growth.hint })
-      ])
-    ]));
-
-    body.appendChild(changeBtn);
   }
 
   function refresh(body, forcePicker) {
@@ -97,15 +86,15 @@ AHS.PetWidget = (function () {
     if (selected) { displayView(body, refresh); } else { pickerView(body, refresh); }
   }
 
+  /* create() — Sprint AI-134 續：插進 js/components/HeroCard.js 的
+     .hero-card__figure，巧巧老師左邊、尺寸比她略小（見
+     css/pages/home.css 的 .hero-card__pet-mini）。內部 .pet-widget__*
+     這些 class 大致沿用（PetGameRegression.js 與 Playwright 都是抓這些
+     class），只是拿掉了名稱/進度條，換成完成度 % 小標籤。 */
   function create() {
     var body = el("div", { class: "pet-widget__body" });
     refresh(body, false);
-    return el("section", { class: "card pet-widget", "aria-label": "飼養寵物" }, [
-      el("div", { class: "card__head" }, [
-        el("h2", { class: "card__title", text: "我的學習寵物" })
-      ]),
-      body
-    ]);
+    return el("div", { class: "hero-card__pet-mini pet-widget", "aria-label": "飼養寵物" }, [body]);
   }
 
   return { create: create };
