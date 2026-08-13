@@ -541,6 +541,8 @@
   .badges-card__grid { grid-template-columns: repeat(2, 1fr); }
   .hero-card__figure { flex-direction: column-reverse; align-items: center; }
   .hero-card__bubble { max-width: 100%; }
+  .pet-widget__options { grid-template-columns: repeat(2, 1fr); }
+  .pet-widget__stage { flex-direction: column; align-items: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -610,4 +612,38 @@
 .review-widget__fill--learning { background-color: #f59e0b; }
 .review-widget__fill--reviewing { background-color: var(--brand); }
 .review-widget__fill--mastered { background-color: #22b573; }
+
+/* ---- Sprint AI-134: 飼養寵物小遊戲 ------------------------------------ */
+.pet-widget__body { display: flex; flex-direction: column; gap: 14px; }
+.pet-widget__intro { margin: 0; font-size: 13px; color: var(--text-muted); }
+.pet-widget__options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pet-widget__option {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 12px 8px; border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--card); cursor: pointer; transition: border-color .15s ease, transform .15s ease;
+}
+.pet-widget__option:hover { border-color: var(--brand); transform: translateY(-2px); }
+.pet-widget__option-art { width: 56px; height: 56px; }
+.pet-widget__option-art svg { width: 100%; height: 100%; }
+.pet-widget__option-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.pet-widget__stage { display: flex; align-items: center; gap: 16px; }
+.pet-widget__stage-art { flex: 0 0 auto; width: 84px; height: 84px; }
+.pet-widget__stage-art svg { width: 100%; height: 100%; }
+.pet-widget__stage-info { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
+.pet-widget__stage-name { font-size: 15px; font-weight: 800; color: var(--text); }
+.pet-widget__stage-pct { font-size: 12px; color: var(--text-muted); }
+.pet-widget__tip {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+  border-radius: var(--radius-md); background: var(--brand-soft);
+}
+.pet-widget__tip-avatar { flex: 0 0 auto; width: 36px; height: 36px; border-radius: var(--radius-pill); overflow: hidden; }
+.pet-widget__tip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.pet-widget__tip-title { display: block; font-size: 12px; font-weight: 700; color: var(--brand); }
+.pet-widget__tip-text { margin: 4px 0 0; font-size: 13px; color: var(--text); }
+.pet-widget__change {
+  align-self: flex-start; padding: 6px 14px; font-size: 12px; font-weight: 700;
+  color: var(--brand); background: transparent; border: 1px solid var(--brand-soft);
+  border-radius: var(--radius-pill); cursor: pointer;
+}
+.pet-widget__change:hover { background: var(--brand-soft); }
 .review-widget__empty { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }

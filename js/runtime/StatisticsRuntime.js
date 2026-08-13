@@ -372,6 +372,21 @@ AHS.StatisticsRuntime = (function () {
     };
   }
 
+  /* overallMaterialCompletion() — Sprint AI-134（真實 PO 需求：首頁飼養
+     寵物小遊戲，「每日飼養的邏輯為依照教材完成度百分比的完成比例來作為
+     成長的因子」）。單一、平台整體的完成度百分比：對目前 Workspace 下
+     每一筆真實教材呼叫既有的 materialCompletion(m.id)，取其 percent 的
+     平均值，四捨五入到整數 — 直接重用 materialCompletion() 本身（不是
+     另外發明第二套完成度定義，遵循本專案既有的 Single Source 原則，與
+     subjectAnalytics() 用的是同一份底層數字）。沒有任何真實教材時誠實
+     回傳 0（不是假造一個進度），呼叫端自行決定要顯示什麼空狀態文案。 */
+  function overallMaterialCompletion() {
+    var mats = materials();
+    if (!mats.length) { return 0; }
+    var total = mats.reduce(function (sum, m) { return sum + materialCompletion(m.id).percent; }, 0);
+    return Math.round(total / mats.length);
+  }
+
   /* subjectAnalytics() — AI-117-02. One entry per real subject present
      in AHS.MaterialRuntime.list(). accuracyBySubject()/wrongItems() are
      reused (not re-derived) for avgAccuracy/wrongCount/masteryRate/
@@ -800,6 +815,7 @@ AHS.StatisticsRuntime = (function () {
     doneToday: doneToday,
     doneThisWeek: doneThisWeek,
     materialCompletion: materialCompletion,
+    overallMaterialCompletion: overallMaterialCompletion,
     subjectAnalytics: subjectAnalytics,
     materialAnalytics: materialAnalytics,
     materialAnalyticsAll: materialAnalyticsAll,
