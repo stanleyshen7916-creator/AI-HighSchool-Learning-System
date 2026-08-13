@@ -176,8 +176,8 @@ window.AHS = window.AHS || {};
   }
 
   /* stepPassword() — Sprint AI-133（真實 PO 需求："首頁登入畫面後，需輸入
-     密碼，才可進入本平台使用"）。使用者確認方案：每個學生各自一組密碼
-     （AHS.WorkspaceData.students[].password），選完學生/學校/學期、按下
+     密碼，才可進入本平台使用"）。密碼統一為 "1234"（測試期間使用者確認
+     方案，見 AHS.WorkspaceData.students[].password），選完學生/學校/學期、按下
      「進入平台」後才要求輸入，答對才真的呼叫 AHS.WorkspaceRuntime.
      setCurrent() 並導向 index.html——這一步之前，setCurrent() 完全不會
      被呼叫，即使跳過畫面直接改網址也一樣（AppShell.create() 本來就會在
