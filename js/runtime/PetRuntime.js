@@ -8,9 +8,9 @@
      overallMaterialCompletion()（Single Source，本 Sprint 新增，重用既有
      materialCompletion() 而非另外發明第二套完成度定義），不需要學生額外
      做「餵食」操作，隨時打開首頁就是最新狀態。
-   - 寵物圖案：本專案沒有任何寵物美術素材，沿用 js/core/Qiaoqiao.js 的
-     角色識別做法（純 CSS/SVG 繪製，見 js/core/PetArt.js），不捏造/不外
-     部引用不存在的圖檔。
+   - 寵物圖案：PO 續提供正式插畫素材（老虎／恐龍，各 10 張 10%~100%
+     成長階段圖，見 js/core/PetArt.js 的 assets/pets/ 引用），取代先前
+     （尚無素材時）暫代用的 CSS/SVG 畫法。
    - 提供固定的幾種寵物圖案讓學生選擇（一次性選擇，可在 Widget 內重選），
      選擇結果透過 AHS.PersistenceAdapter 依 Workspace 隔離持久化。
 
@@ -24,24 +24,37 @@ AHS.PetRuntime = (function () {
 
   var STORAGE_KEY = "pet";
 
-  /* 4 種固定寵物圖案，讓學生選擇 — id 對應 js/core/PetArt.js 實際繪製的
-     圖形，name 為顯示用中文名稱。沒有任何外部圖檔依賴。 */
+  /* 2 種固定寵物圖案，讓學生選擇（先以 2 種測試選擇流程）— id 對應
+     js/core/PetArt.js 實際引用的 assets/pets/{id}-XXX.png 素材，name 為
+     顯示用中文名稱。 */
   var SPECIES = [
-    { id: "cat", name: "貓咪" },
-    { id: "dog", name: "小狗" },
-    { id: "rabbit", name: "兔子" },
-    { id: "bird", name: "小鳥" }
+    { id: "tiger", name: "老虎" },
+    { id: "dinosaur", name: "恐龍" }
   ];
 
-  /* 成長階段門檻，直接對應 overallMaterialCompletion() 的 0-100 百分比
-     （與 materialCompletion() 自身 0/20/60/100 的分段精神一致，但這裡
-     是寵物飼養主題的 4 個階段，不是同一份資料的重複顯示）。 */
+  /* 10 個成長階段門檻，直接對應 overallMaterialCompletion() 的 0-100
+     百分比，逐 10% 一個階段，與 assets/pets/ 的 10 張素材一一對應（PO
+     提供的素材本身就是這 10 個離散階段：蛋・1/2、幼年・1/2/3、成長・
+     1/2/3、成熟・1/2）。 */
   var STAGES = [
-    { max: 24, label: "蛋", hint: "還在孵蛋，快去完成教材讓牠孵化吧！" },
-    { max: 49, label: "幼年", hint: "剛孵化的幼年期，繼續完成教材餵養牠！" },
-    { max: 74, label: "成長期", hint: "長大不少了，再加把勁就要成熟了！" },
-    { max: 100, label: "成熟期", hint: "已經成熟茁壯，繼續維持每天的學習習慣吧！" }
+    { max: 10, label: "蛋・1", group: "蛋" },
+    { max: 20, label: "蛋・2", group: "蛋" },
+    { max: 30, label: "幼年・1", group: "幼年" },
+    { max: 40, label: "幼年・2", group: "幼年" },
+    { max: 50, label: "幼年・3", group: "幼年" },
+    { max: 60, label: "成長・1", group: "成長" },
+    { max: 70, label: "成長・2", group: "成長" },
+    { max: 80, label: "成長・3", group: "成長" },
+    { max: 90, label: "成熟・1", group: "成熟" },
+    { max: 100, label: "成熟・2", group: "成熟" }
   ];
+
+  var GROUP_HINTS = {
+    蛋: "還在孵蛋，快去完成教材讓牠孵化吧！",
+    幼年: "剛孵化的幼年期，繼續完成教材餵養牠！",
+    成長: "長大不少了，再加把勁就要成熟了！",
+    成熟: "已經成熟茁壯，繼續維持每天的學習習慣吧！"
+  };
 
   function defaultState() { return { speciesId: null }; }
 
@@ -73,9 +86,12 @@ AHS.PetRuntime = (function () {
 
   function stageFor(percent) {
     for (var i = 0; i < STAGES.length; i += 1) {
-      if (percent <= STAGES[i].max) { return { index: i, label: STAGES[i].label, hint: STAGES[i].hint }; }
+      if (percent <= STAGES[i].max) {
+        return { index: i, label: STAGES[i].label, hint: GROUP_HINTS[STAGES[i].group] };
+      }
     }
-    return { index: STAGES.length - 1, label: STAGES[STAGES.length - 1].label, hint: STAGES[STAGES.length - 1].hint };
+    var last = STAGES[STAGES.length - 1];
+    return { index: STAGES.length - 1, label: last.label, hint: GROUP_HINTS[last.group] };
   }
 
   /* growth() — 唯一對外的成長狀態讀取入口：percent 直接來自

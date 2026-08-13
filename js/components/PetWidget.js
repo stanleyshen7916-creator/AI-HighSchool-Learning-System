@@ -19,9 +19,13 @@ AHS.PetWidget = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* 選寵物畫面的預覽圖固定用 40%（幼年・2）— 兩種寵物在這個階段都已經
+     孵化、體態最可愛討喜，比顯示蛋（10%）更適合當作選擇畫面的預覽圖。 */
+  var OPTION_PREVIEW_PERCENT = 40;
+
   function speciesOption(species, onPick) {
     var btn = el("button", { type: "button", class: "pet-widget__option" }, [
-      el("span", { class: "pet-widget__option-art", html: AHS.PetArt.render(species.id, 1) }),
+      el("span", { class: "pet-widget__option-art", html: AHS.PetArt.render(species.id, OPTION_PREVIEW_PERCENT) }),
       el("span", { class: "pet-widget__option-name", text: species.name })
     ]);
     btn.addEventListener("click", function () { onPick(species.id); });
@@ -65,7 +69,7 @@ AHS.PetWidget = (function () {
     changeBtn.addEventListener("click", function () { refresh(body, true); });
 
     body.appendChild(el("div", { class: "pet-widget__stage" }, [
-      el("span", { class: "pet-widget__stage-art", html: AHS.PetArt.render(growth.speciesId, growth.stageIndex) }),
+      el("span", { class: "pet-widget__stage-art", html: AHS.PetArt.render(growth.speciesId, growth.percent) }),
       el("div", { class: "pet-widget__stage-info" }, [
         el("strong", { class: "pet-widget__stage-name",
           text: AHS.PetArt.speciesLabel(growth.speciesId) + "・" + growth.stageLabel }),

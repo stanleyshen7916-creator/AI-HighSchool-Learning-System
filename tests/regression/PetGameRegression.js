@@ -7,8 +7,8 @@
    - 成長機制：被動即時反映 — 寵物成長狀態直接對應
      AHS.StatisticsRuntime.overallMaterialCompletion()，不需要學生額外
      操作「餵食」。
-   - 寵物圖案：本專案沒有寵物美術素材，改用純 CSS/SVG 繪製
-     （js/core/PetArt.js），提供 4 種固定圖案讓學生選擇。
+   - 寵物圖案：PO 續提供正式插畫素材（老虎／恐龍，各 10 張 10%~100%
+     成長階段圖，見 js/core/PetArt.js），先以 2 種圖案測試選擇流程。
    - 巧巧老師的小提醒：選了寵物後，首頁 Hero Card 既有的提醒泡泡文字
      改為寵物飼養主題（真實依當下完成度變化，不是固定文字）。
 
@@ -16,11 +16,11 @@
    - AHS.StatisticsRuntime.overallMaterialCompletion()：Single Source —
      直接重用既有 materialCompletion()，對真實材料集合取平均、四捨五入；
      沒有教材時誠實回傳 0。
-   - AHS.PetRuntime：4 種固定寵物圖案、選擇/持久化（跨頁面重新載入仍
+   - AHS.PetRuntime：2 種固定寵物圖案、選擇/持久化（跨頁面重新載入仍
      保留，且依 Workspace 隔離的既有 PersistenceAdapter 樣式）、無效
      id 被拒絕、growth() 的 percent 與 stageIndex 皆與
      overallMaterialCompletion() 完全一致（不是另外一套算法）。
-   - AHS.PetWidget（真實 DOM 互動）：尚未選寵物時顯示 4 選項圖卡，點擊
+   - AHS.PetWidget（真實 DOM 互動）：尚未選寵物時顯示 2 選項圖卡，點擊
      即選定並立即切換為成長畫面；「換一隻寵物」能回到選擇畫面重選。
    - Hero Card 巧巧老師提醒泡泡：選寵物前維持原本通用文案，選了寵物後
      真實變成寵物飼養主題（含寵物名稱與真實完成度百分比）。
@@ -120,28 +120,28 @@ console.log("\n[1] AHS.StatisticsRuntime.overallMaterialCompletion() — 對真�
 }
 
 /* ---- 2. AHS.PetRuntime — 寵物圖案選擇與持久化 -------------------------- */
-console.log("\n[2] AHS.PetRuntime — 4 種固定寵物圖案，選擇後依 Workspace 持久化，無效 id 被拒絕");
+console.log("\n[2] AHS.PetRuntime — 2 種固定寵物圖案，選擇後依 Workspace 持久化，無效 id 被拒絕");
 {
   const { window } = loadPage("index.html");
   const AHS = window.AHS;
 
   const species = AHS.PetRuntime.listSpecies();
-  check("真實提供 4 種寵物圖案", species.length === 4);
+  check("真實提供 2 種寵物圖案", species.length === 2);
   const ids = species.map((s) => s.id).sort();
-  check("圖案 id 真實為 cat/dog/rabbit/bird", JSON.stringify(ids) === JSON.stringify(["bird", "cat", "dog", "rabbit"]));
+  check("圖案 id 真實為 tiger/dinosaur", JSON.stringify(ids) === JSON.stringify(["dinosaur", "tiger"]));
 
   check("尚未選擇前，getSelectedSpecies() 誠實為 null", AHS.PetRuntime.getSelectedSpecies() === null);
 
-  check("selectSpecies('cat') 真實成功", AHS.PetRuntime.selectSpecies("cat") === true);
-  check("選擇後 getSelectedSpecies() 真實變為 'cat'", AHS.PetRuntime.getSelectedSpecies() === "cat");
+  check("selectSpecies('tiger') 真實成功", AHS.PetRuntime.selectSpecies("tiger") === true);
+  check("選擇後 getSelectedSpecies() 真實變為 'tiger'", AHS.PetRuntime.getSelectedSpecies() === "tiger");
 
   check("selectSpecies('dragon')（不存在的圖案）真實被拒絕", AHS.PetRuntime.selectSpecies("dragon") === false);
-  check("無效選擇不影響先前已選定的寵物", AHS.PetRuntime.getSelectedSpecies() === "cat");
+  check("無效選擇不影響先前已選定的寵物", AHS.PetRuntime.getSelectedSpecies() === "tiger");
 
   const carried = carriedSession(window);
   const { window: win2 } = loadPage("index.html", { seedSession: carried });
-  check("重新載入頁面（真實跨 Session 持久化）後，選擇的寵物仍是 'cat'",
-    win2.AHS.PetRuntime.getSelectedSpecies() === "cat");
+  check("重新載入頁面（真實跨 Session 持久化）後，選擇的寵物仍是 'tiger'",
+    win2.AHS.PetRuntime.getSelectedSpecies() === "tiger");
 }
 
 /* ---- 3. growth() — percent/stageIndex 與 overallMaterialCompletion() 完全一致 -- */
@@ -150,7 +150,7 @@ console.log("\n[3] AHS.PetRuntime.growth() — percent 與既有 overallMaterial
   function stageCase(label, buildMaterials, expectedPercent, expectedStage) {
     const { window } = loadPage("index.html");
     const AHS = window.AHS;
-    AHS.PetRuntime.selectSpecies("dog");
+    AHS.PetRuntime.selectSpecies("tiger");
     buildMaterials(AHS);
     const growth = AHS.PetRuntime.growth();
     check(label + " — percent 與 overallMaterialCompletion() 一致（" + growth.percent + "%）",
@@ -158,43 +158,43 @@ console.log("\n[3] AHS.PetRuntime.growth() — percent 與既有 overallMaterial
     check(label + " — stageIndex 正確（" + growth.stageLabel + "）", growth.stageIndex === expectedStage);
   }
 
-  stageCase("20%（蛋，<=24%）", (AHS) => {
+  stageCase("20%（蛋・2，10 階段第 1 格）", (AHS) => {
     const m = AHS.MaterialRuntime.add({ title: "m", subject: "math", grade: "高一", category: "講義" });
     AHS.MaterialRuntime.startLearning(m.id, { progress: 100 });
-  }, 20, 0);
+  }, 20, 1);
 
-  stageCase("40%（幼年，25-49%）", (AHS) => {
+  stageCase("40%（幼年・2，10 階段第 3 格）", (AHS) => {
     const a = AHS.MaterialRuntime.add({ title: "a", subject: "math", grade: "高一", category: "講義" });
     const b = AHS.MaterialRuntime.add({ title: "b", subject: "math", grade: "高一", category: "講義" });
     AHS.MaterialRuntime.startLearning(b.id, { progress: 100 });
     const c = AHS.MaterialRuntime.add({ title: "c", subject: "math", grade: "高一", category: "講義" });
     AHS.MaterialRuntime.startLearning(c.id, { progress: 100 });
     AHS.HistoryRuntime.record({ examId: "teaching_material_" + c.id, subject: "math", title: "t", chapter: "c", score: 100, accuracy: 100, correctCount: 1, totalCount: 1 });
-  }, 40, 1);
+  }, 40, 3);
 
-  stageCase("60%（成長期，50-74%）", (AHS) => {
+  stageCase("60%（成長・1，10 階段第 5 格）", (AHS) => {
     const a = AHS.MaterialRuntime.add({ title: "a", subject: "math", grade: "高一", category: "講義" });
     AHS.MaterialRuntime.startLearning(a.id, { progress: 100 });
     const b = AHS.MaterialRuntime.add({ title: "b", subject: "math", grade: "高一", category: "講義" });
     AHS.MaterialRuntime.startLearning(b.id, { progress: 100 });
     AHS.HistoryRuntime.record({ examId: "teaching_material_" + b.id, subject: "math", title: "t", chapter: "c", score: 100, accuracy: 100, correctCount: 1, totalCount: 1 });
-  }, 60, 2);
+  }, 60, 5);
 
-  stageCase("100%（成熟期，75-100%）", (AHS) => {
+  stageCase("100%（成熟・2，10 階段第 9 格）", (AHS) => {
     const a = AHS.MaterialRuntime.add({ title: "a", subject: "math", grade: "高一", category: "講義" });
     AHS.MaterialRuntime.startLearning(a.id, { progress: 100 });
     AHS.HistoryRuntime.record({ examId: "teaching_material_" + a.id, subject: "math", title: "t", chapter: "c", score: 100, accuracy: 100, correctCount: 1, totalCount: 1 });
-  }, 100, 3);
+  }, 100, 9);
 }
 
 /* ---- 4. AHS.PetWidget — 真實 DOM 互動：選擇畫面 <-> 成長畫面 ------------ */
-console.log("\n[4] AHS.PetWidget（首頁）— 尚未選寵物顯示 4 選項，點擊即選定並切換成長畫面，可換一隻重選");
+console.log("\n[4] AHS.PetWidget（首頁）— 尚未選寵物顯示 2 選項，點擊即選定並切換成長畫面，可換一隻重選");
 {
   const { window, consoleErrors } = loadPage("index.html");
   const doc = window.document;
 
   const options = doc.querySelectorAll(".pet-widget__option");
-  check("尚未選寵物時，真實顯示 4 個可選圖案", options.length === 4);
+  check("尚未選寵物時，真實顯示 2 個可選圖案", options.length === 2);
   check("尚未選寵物時，不顯示成長畫面", doc.querySelectorAll(".pet-widget__stage").length === 0);
 
   const bubbleTitleBeforePick = doc.querySelector(".hero-card__bubble-title").textContent;
@@ -212,7 +212,7 @@ console.log("\n[4] AHS.PetWidget（首頁）— 尚未選寵物顯示 4 選項�
   const changeBtn = doc.querySelector(".pet-widget__change");
   check("成長畫面真實提供「換一隻寵物」按鈕", !!changeBtn);
   click(changeBtn);
-  check("點擊「換一隻寵物」後，真實回到 4 選項的選擇畫面", doc.querySelectorAll(".pet-widget__option").length === 4);
+  check("點擊「換一隻寵物」後，真實回到 2 選項的選擇畫面", doc.querySelectorAll(".pet-widget__option").length === 2);
 
   check("Console errors = 0", consoleErrors.length === 0);
 }
@@ -225,7 +225,7 @@ console.log("\n[5] Hero Card 巧巧老師的小提醒 — 選寵物前維持原�
   check("尚未選寵物時，提醒泡泡標題維持原本通用文案「巧巧老師的小提醒」",
     !!bubbleTitleBefore && bubbleTitleBefore.textContent === "巧巧老師的小提醒");
 
-  winBefore.AHS.PetRuntime.selectSpecies("rabbit");
+  winBefore.AHS.PetRuntime.selectSpecies("dinosaur");
   const carried = carriedSession(winBefore);
   const { window: winAfter, consoleErrors } = loadPage("index.html", { seedSession: carried });
   const doc = winAfter.document;
@@ -233,7 +233,7 @@ console.log("\n[5] Hero Card 巧巧老師的小提醒 — 選寵物前維持原�
   const bubbleText = doc.querySelector(".hero-card__bubble-text");
   check("選了寵物並重新載入後，提醒泡泡標題真實改為寵物飼養主題",
     !!bubbleTitle && bubbleTitle.textContent === "巧巧老師的每日飼養提醒");
-  check("提醒泡泡內文真實包含寵物名稱「兔子」", !!bubbleText && bubbleText.textContent.indexOf("兔子") !== -1);
+  check("提醒泡泡內文真實包含寵物名稱「恐龍」", !!bubbleText && bubbleText.textContent.indexOf("恐龍") !== -1);
   check("提醒泡泡內文真實包含當下完成度百分比文字", !!bubbleText && bubbleText.textContent.indexOf("教材完成度") !== -1);
   check("Console errors = 0", consoleErrors.length === 0);
 }

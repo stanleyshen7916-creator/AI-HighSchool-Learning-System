@@ -623,12 +623,12 @@
   background: var(--card); cursor: pointer; transition: border-color .15s ease, transform .15s ease;
 }
 .pet-widget__option:hover { border-color: var(--brand); transform: translateY(-2px); }
-.pet-widget__option-art { width: 56px; height: 56px; }
-.pet-widget__option-art svg { width: 100%; height: 100%; }
+.pet-widget__option-art { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+.pet-widget__option-art img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .pet-widget__option-name { font-size: 12px; font-weight: 700; color: var(--text); }
 .pet-widget__stage { display: flex; align-items: center; gap: 16px; }
-.pet-widget__stage-art { flex: 0 0 auto; width: 84px; height: 84px; }
-.pet-widget__stage-art svg { width: 100%; height: 100%; }
+.pet-widget__stage-art { flex: 0 0 auto; width: 84px; height: 84px; display: flex; align-items: center; justify-content: center; }
+.pet-widget__stage-art img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .pet-widget__stage-info { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
 .pet-widget__stage-name { font-size: 15px; font-weight: 800; color: var(--text); }
 .pet-widget__stage-pct { font-size: 12px; color: var(--text-muted); }
