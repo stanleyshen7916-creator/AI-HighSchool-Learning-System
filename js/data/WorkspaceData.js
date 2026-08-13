@@ -27,9 +27,9 @@
 window.AHS = window.AHS || {};
 AHS.WorkspaceData = {
   students: [
-    { id: "admin", name: "Admin", role: "ADMIN", password: "admin2026" },
-    { id: "student_a", name: "Student A", role: "STUDENT", password: "studentA2026" },
-    { id: "student_b", name: "Student B", role: "STUDENT", password: "studentB2026" }
+    { id: "admin", name: "Admin", role: "ADMIN", password: "admin" },
+    { id: "student_a", name: "Student A", role: "STUDENT", password: "A" },
+    { id: "student_b", name: "Student B", role: "STUDENT", password: "B" }
   ],
   schools: [
     { id: "cjsh", name: "長榮中學" }

@@ -113,13 +113,13 @@ console.log("\n[2] 密碼錯誤 — 真實顯示錯誤訊息，AHS.WorkspaceRunt
 }
 
 /* ---- 3. 密碼正確：真實呼叫 setCurrent()，isLoggedIn() 變 true -------- */
-console.log("\n[3] 密碼正確（Student A：studentA2026）— 真實呼叫 setCurrent()，isLoggedIn() 變為 true");
+console.log("\n[3] 密碼正確（Student A：A）— 真實呼叫 setCurrent()，isLoggedIn() 變為 true");
 {
   const { window } = loadPage("login.html");
   const doc = window.document;
   goToPasswordStep(doc, "Student A", "長榮中學", "高一下學期");
 
-  doc.querySelector(".login-password__input").value = "studentA2026";
+  doc.querySelector(".login-password__input").value = "A";
   click(doc.querySelector(".login-enter-btn"));
 
   check("密碼正確後，AHS.WorkspaceRuntime.isLoggedIn() 真實變為 true", window.AHS.WorkspaceRuntime.isLoggedIn() === true);
@@ -134,21 +134,21 @@ console.log("\n[4] 密碼互不相通 — Student B 的密碼對 Student A 的�
   const { window: winA } = loadPage("login.html");
   const docA = winA.document;
   goToPasswordStep(docA, "Student A", "長榮中學", "高一下學期");
-  docA.querySelector(".login-password__input").value = "studentB2026";
+  docA.querySelector(".login-password__input").value = "B";
   click(docA.querySelector(".login-enter-btn"));
   check("用 Student B 的密碼登入 Student A 真實失敗（不同學生密碼互不相通）", winA.AHS.WorkspaceRuntime.isLoggedIn() === false);
 
   const { window: winB } = loadPage("login.html");
   const docB = winB.document;
   goToPasswordStep(docB, "Student B", "長榮中學", "高一下學期");
-  docB.querySelector(".login-password__input").value = "studentA2026";
+  docB.querySelector(".login-password__input").value = "A";
   click(docB.querySelector(".login-enter-btn"));
   check("用 Student A 的密碼登入 Student B 真實失敗", winB.AHS.WorkspaceRuntime.isLoggedIn() === false);
 
   const { window: winAdmin } = loadPage("login.html");
   const docAdmin = winAdmin.document;
   goToPasswordStep(docAdmin, "Admin", "長榮中學", "高一下學期");
-  docAdmin.querySelector(".login-password__input").value = "admin2026";
+  docAdmin.querySelector(".login-password__input").value = "admin";
   click(docAdmin.querySelector(".login-enter-btn"));
   check("Admin 用自己真實的密碼登入成功", winAdmin.AHS.WorkspaceRuntime.isLoggedIn() === true);
 }
@@ -177,7 +177,7 @@ console.log("\n[6] 密碼欄位按下 Enter 鍵也能真實觸發提交（非只
   goToPasswordStep(doc, "Student A", "長榮中學", "高一下學期");
 
   const input = doc.querySelector(".login-password__input");
-  input.value = "studentA2026";
+  input.value = "A";
   input.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 
   check("按下 Enter 鍵後，AHS.WorkspaceRuntime.isLoggedIn() 真實變為 true（等同點擊按鈕）",

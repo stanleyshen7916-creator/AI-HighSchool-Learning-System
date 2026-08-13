@@ -47,7 +47,7 @@ function collectErrors(page) {
 /* AI-133：js/data/WorkspaceData.js 的真實 Mock 密碼（每個學生各自一組，
    見該檔案自身標頭的誠實揭露：純前端明碼比對，只是門禁用途，非真正
    資安等級保護）——這裡直接對應同一份資料，不是另外發明一組。 */
-const STUDENT_PASSWORDS = { Admin: "admin2026", "Student A": "studentA2026", "Student B": "studentB2026" };
+const STUDENT_PASSWORDS = { Admin: "admin", "Student A": "A", "Student B": "B" };
 
 async function loginAs(page, studentLabel, schoolLabel, semesterLabels) {
   await page.goto(fileUrl("login.html"));
