@@ -1,21 +1,26 @@
 /* data/materials/ChineseG11InventionsChangedWorld.js — Teaching Material Repository entry.
 
-   Source material：私立長榮中學 高二國文「發明改變世界」課文（說明文，介紹蒸汽機、
-   軋棉機、炸藥、留聲機、電報、汽車／內燃機、飛機等近代重要發明及其發明者），
-   文末延伸閱讀連結賈德．戴蒙（Jared Diamond）之《槍炮、病菌與鋼鐵》
-   《大崩壞》《昨日世界》。
+   Source material：私立長榮中學（三民書局版）高二國文第二課〈發明為需求之母〉，
+   賈德．戴蒙（Jared Diamond）著，節選自《槍炮、病菌與鋼鐵》（廖月娟譯），
+   論證「發明為需求之母」（先有發明、需求隨後才擴大或改變其用途），而非
+   通俗認知的「先有需求，才有發明」。
 
-   Content honesty note：
-   - 課文正文未見具名作者（屬教材編寫之說明文），故 metadata 不列作者欄位。
-   - 賈德．戴蒙是「延伸閱讀」書籍之作者，並非本課正文作者，本檔案已於
-     coreConcepts／summary 中明確區分，避免混淆。
-   - 各發明家生卒年、發明項目等資訊，取自課本照片中清晰可辨識的部分（瓦特、
-     惠特尼、諾貝爾、愛迪生、摩斯、戴姆勒、奧圖、賓士、萊特兄弟、賈德．戴蒙
-     等），origin 標為 "textbook-verified"；蒸汽機發展先驅（如巴平、紐科門、
-     沙威利）等背景知識屬於此發明史公認的史實，origin 亦標為
-     "textbook-verified"。部分照片因翻拍角度模糊、footnote 編號密集難以逐字
-     核對之細節，本檔案不強行納入，避免猜測，符合「辨識不足者略過」原則。
-   - 依內容豐富度，本課題目數略低於 50 題標準，未強行湊題。 */
+   Round 5 更正說明（取代舊版本）：
+   - 本檔案先前版本誤將本課判斷為「不具名說明文」（篇名〈發明改變世界〉），
+     並誤把賈德．戴蒙當成僅是文末延伸閱讀的作者。經對照 GPT／Gemini／Claude
+     三方獨立分析五輪修訂（含 Round 5 覆核可查證之三民書局教學播放清單
+     「111三民普高國文（三）發明為需求之母」）確認：本課正文的實際作者
+     即為賈德．戴蒙，篇名為〈發明為需求之母〉，節選自《槍炮、病菌與鋼鐵》，
+     譯者為廖月娟（先前版本「廖月媚」為誤植）。本檔案已依此更正重寫。
+   - origin 標示採三層 SOURCE 原則：頁22–23（著作三部曲）、頁28–29（機動車
+     時間軸）、頁30–31（瓦特／蒸汽機先驅系譜）、頁32–33（發明家索引）等
+     逐字覆核通過者標為 "textbook-verified"（Level 1）；曼哈頓計畫對比、
+     萊特兄弟／電報先驅系譜細節、雅典娜比喻、全文結論等尚待逐字覆核之
+     段落標為 "ai-derived"（Level 2，公認通行文意推論，非逐字引用）。
+   - 依內容豐富度，本課題目數（15題）未強行湊足50題，符合「50為上限、
+     非目標」原則。fillIn／trueFalse 於學習平台實際未被消費（僅
+     questionBank.singleChoice 進入測驗流程），本版不再納入，避免維護
+     未使用之欄位。 */
 window.AHS = window.AHS || {};
 (function () {
   "use strict";
@@ -30,187 +35,127 @@ window.AHS = window.AHS || {};
       subject: "chinese",
       subjectLabel: "國文",
       grade: "高二",
-      /* workspaceSchool/workspaceSemester — Sprint AI-120 (Workspace
-         Repository Integration): 長榮中學高二上學期，比照
-         data/materials/CivicsG10Ch5to6Exam20260730.js 的既有欄位命名與
-         用法（與上方 grade 顯示字串無關，AHS.WorkspaceData.semesters[].id
-         格式）。使用者確認本課歸屬高二上學期。 */
       workspaceSchool: "cjsh",
       workspaceSemester: "g2s1",
       chapter: "第二課",
-      unit: "發明改變世界（說明文：近代重要發明與發明家）",
+      unit: "〈發明為需求之母〉（賈德．戴蒙節選自《槍炮、病菌與鋼鐵》，廖月娟譯）",
       materialType: "課本",
-      source: "私立長榮中學 高二國文課本〈發明改變世界〉（含延伸閱讀：賈德．戴蒙作品介紹）",
+      source: "私立長榮中學（三民書局版）高二國文課本第二課〈發明為需求之母〉",
       keywords: [
-        "瓦特", "蒸汽機", "惠特尼", "軋棉機", "諾貝爾", "炸藥", "愛迪生", "留聲機",
-        "摩斯", "電報", "戴姆勒", "奧圖", "賓士", "內燃機", "萊特兄弟", "賈德．戴蒙",
-        "工業革命", "科技發明"
+        "賈德．戴蒙", "槍炮病菌與鋼鐵", "發明為需求之母", "留聲機", "蒸汽機",
+        "瓦特", "紐科門", "萊特兄弟", "電報", "曼哈頓計畫", "英雄史觀", "廖月娟"
       ],
       difficulty: "中等",
       createdAt: "2026-08-05",
-      updatedAt: "2026-08-05",
-      analyzedBy: "Teaching Material Analysis Center"
+      updatedAt: "2026-08-14",
+      analyzedBy: "Multi-AI Cross Review (GPT / Gemini / Claude, Round 5)"
     },
 
     coreConcepts: [
-      { term: "篇章性質", definition: "本課為說明文，依時間脈絡介紹近代重要發明如何一步步改變人類生活型態，正文本身未具名作者。" },
-      { term: "瓦特與蒸汽機", definition: "瓦特（James Watt, 1736-1819）改良蒸汽機（提升效率、加裝分離式冷凝器），是推動工業革命的重要關鍵；其改良奠基於巴平（Denis Papin）的活塞概念、沙威利（Thomas Savery）與紐科門（Thomas Newcomen）等人先前的蒸汽抽水裝置。" },
-      { term: "惠特尼與軋棉機", definition: "惠特尼（Eli Whitney, 1765-1825）發明軋棉機，大幅提升棉花去籽加工的效率，深刻影響美國南方棉花產業與經濟型態。" },
-      { term: "諾貝爾與炸藥", definition: "諾貝爾發明的炸藥（達納邁特）大幅改變採礦、工程技術，但也被應用於軍事武器，課文藉此引發對科技發明「雙面刃」性質的省思（並提及二十世紀戰爭如納粹德國的歷史脈絡）。" },
-      { term: "愛迪生與留聲機、電燈", definition: "愛迪生（Thomas Edison, 1847-1931）為美國知名發明家，1877年發明留聲機，並改良電燈泡等多項發明，深刻改變人類娛樂與生活方式。" },
-      { term: "電報與電話的發展", definition: "摩斯（Samuel Morse, 1791-1872）等人推動電報系統的發展與普及，大幅加速訊息傳遞速度，改變人類溝通方式。" },
-      { term: "汽車與內燃機的發展", definition: "戴姆勒（Gottlieb Daimler）、奧圖（Nikolaus Otto）、賓士（Karl Benz）等人接力改良內燃機技術，打造出現代汽車的雛形（如1885年賓士三輪車、1898年戴姆勒卡車）。" },
-      { term: "延伸閱讀：賈德．戴蒙", definition: "賈德．戴蒙（Jared Diamond, 1937-），美國演化生物學家、地理學家，著有《槍炮、病菌與鋼鐵》《大崩壞》《昨日世界》，從環境地理角度探討人類文明興衰的原因，可作為延伸思考科技發明與文明發展關聯的參考讀物；他並非本課正文的作者。" }
+      { term: "作者：賈德．戴蒙", definition: "美國演化生物學家、生理學家，1966年起任教於加州大學洛杉磯分校（UCLA），著有《槍炮、病菌與鋼鐵》《大崩壞》《昨日世界》「人類大歷史三部曲」；本課譯者為廖月娟。" },
+      { term: "篇旨：翻轉「需求先於發明」的認知", definition: "作者藉留聲機、蒸汽機、汽車、電報、飛機等實例，論證多數發明其實是先出現、其實際用途才隨後被開發或擴大，翻轉大眾「先有需求，才有發明」的既定認知。" },
+      { term: "舉例論證", definition: "以愛迪生留聲機最初並非為販售音樂而生、機動車由民用雛型演變為軍用卡車等旁欄圖說為例，說明發明的實際應用往往在發明之後才逐漸被開發出來。" },
+      { term: "發明累積性：瓦特與蒸汽機先驅系譜", definition: "課文頁30–31側欄列出海更思、巴潘、沙佛利、紐科門等蒸汽機發展先驅，說明瓦特的改良是建立在前人已量產的蒸汽機基礎上，技術發展具累積性，而非憑空獨創。" },
+      { term: "英雄史觀批判：雅典娜比喻", definition: "作者以「雅典娜自宙斯前額誕生」的神話比喻，批判大眾誤以為偉大發明必須「全無先例、憑空而生」，忽略發明其實建立在前人累積成果之上。" },
+      { term: "正反例證：曼哈頓計畫", definition: "第二次世界大戰期間美國因應軍事需求推動的原子彈研發計畫（曼哈頓計畫），是少數符合傳統「需求先於發明」觀點的例子，作者以此襯托多數發明其實相反的論證策略。" },
+      { term: "全文結論", definition: "偉大發明家之所以被歷史記住，關鍵在於他們身處社會條件、需求成熟到足以利用其成果的時間點，做出了適當的貢獻，而非完全獨力創造出前所未有之物。" }
     ],
 
     summary: {
-      title: "國文｜第二課〈發明改變世界〉重點整理",
+      title: "國文｜第二課〈發明為需求之母〉重點整理",
       keyPoints: [
-        "本課為說明文，依序介紹蒸汽機、軋棉機、炸藥、留聲機、電報、汽車、飛機等近代重要發明，說明科技如何一步步改變人類生活型態；正文本身未具名作者。",
-        "瓦特（James Watt, 1736-1819）改良蒸汽機，是工業革命的重要推手；其技術奠基於巴平、沙威利、紐科門等前人對蒸汽動力的探索。",
-        "惠特尼（Eli Whitney, 1765-1825）發明軋棉機，大幅提升棉花加工效率，深刻影響美國經濟型態。",
-        "諾貝爾發明炸藥，改變採礦與工程技術，但也帶來軍事應用上的省思，課文藉此點出科技發明可能具有的「雙面刃」性質。",
-        "愛迪生（Thomas Edison, 1847-1931）於1877年發明留聲機，並改良電燈泡等，是美國著名的發明家。",
-        "摩斯（Samuel Morse, 1791-1872）等人推動電報系統發展，大幅加速訊息傳遞，改變人類溝通方式。",
-        "戴姆勒（Daimler）、奧圖（Otto）、賓士（Benz）等人接力改良內燃機，打造現代汽車雛形。",
-        "延伸閱讀作者賈德．戴蒙（Jared Diamond），美國演化生物學家／地理學家，著有《槍炮、病菌與鋼鐵》《大崩壞》《昨日世界》，從環境地理角度探討人類文明興衰——他是延伸閱讀書籍的作者，並非本課正文作者，兩者不可混淆。"
+        "本課作者賈德．戴蒙（Jared Diamond），美國演化生物學家、生理學家，1966年起任教於UCLA；本文節選自其著作《槍炮、病菌與鋼鐵》，譯者廖月娟。",
+        "戴蒙著有「人類大歷史三部曲」：《槍炮、病菌與鋼鐵》《大崩壞》《昨日世界》。",
+        "本文核心論點是翻轉大眾「先有需求，才有發明」的認知，主張多數情況是「發明為需求之母」——先有發明，其實際用途才隨後被發掘或擴大。",
+        "文中舉留聲機、蒸汽機、汽車、電報、飛機等實例佐證：如愛迪生1877年發明的留聲機最初並非以販售音樂為主要用途；機動車雛型由1885年民用逐步演變為1898年軍用卡車。",
+        "瓦特改良蒸汽機並非憑空獨創，而是建立在海更思、巴潘、沙佛利、紐科門等前人已量產技術的基礎上，說明發明具累積性。",
+        "作者以「雅典娜自宙斯前額誕生」的神話比喻，批判社會受專利制度「新奇性」要求影響，誤以為偉大發明必須毫無先例、憑空而生。",
+        "曼哈頓計畫（二戰原子彈研發）是少數符合「需求先於發明」傳統觀點的例外例證，用以襯托本文多數發明相反的核心論點。",
+        "全文結論：發明家被歷史記住，關鍵在於所處社會條件、需求成熟到足以利用其成果的時間點，而非憑空獨力創造。"
       ],
       definitions: [
-        "工業革命：以蒸汽機為代表的動力技術革新，帶動生產方式由手工轉向機械化的歷史進程。",
-        "內燃機：透過燃料在汽缸內部燃燒產生動力的引擎，是現代汽車的核心技術基礎。",
-        "軋棉機：用於將棉花纖維與棉籽分離的機械，大幅提升棉花加工效率。"
+        "發明為需求之母：本文核心論點，指多數發明先於其實際被廣泛利用的需求而出現，需求是隨後才被發掘或擴大的，與通俗認知相反。",
+        "英雄史觀：誤以為偉大發明皆出自天才憑空獨創、全無先例的簡化敘事，本文藉發明累積性與雅典娜比喻加以批判。",
+        "發明累積性：技術發展建立在前人成果基礎上，透過持續改良而非單一天才憑空創造，例如瓦特蒸汽機承接紐科門等人先前的探索。"
       ],
-      keywords: ["瓦特", "蒸汽機", "惠特尼", "軋棉機", "諾貝爾", "愛迪生", "留聲機", "摩斯", "電報", "戴姆勒", "奧圖", "賓士", "賈德．戴蒙"]
+      keywords: ["賈德．戴蒙", "槍炮病菌與鋼鐵", "發明為需求之母", "留聲機", "蒸汽機", "瓦特", "紐科門", "萊特兄弟", "曼哈頓計畫", "英雄史觀"]
     },
 
     questionBank: {
       singleChoice: [
-        { id: ID + "-q1", origin: "textbook-verified", questionForm: "文學常識／內容理解", text: "本課〈發明改變世界〉在文體上屬於下列何者？",
-          options: [{ key: "A", text: "抒情散文" }, { key: "B", text: "說明文" }, { key: "C", text: "議論文" }, { key: "D", text: "小說" }],
-          correctAnswer: "B", knowledgePoint: "篇章性質", difficulty: "易",
-          explanation: "本課依時間脈絡客觀介紹近代重要發明，屬於說明文。" },
-        { id: ID + "-q2", origin: "textbook-verified", questionForm: "內容理解", text: "改良蒸汽機、被視為工業革命重要推手的發明家是？",
-          options: [{ key: "A", text: "愛迪生" }, { key: "B", text: "瓦特（James Watt）" }, { key: "C", text: "惠特尼" }, { key: "D", text: "諾貝爾" }],
-          correctAnswer: "B", knowledgePoint: "瓦特與蒸汽機", difficulty: "易",
-          explanation: "瓦特改良蒸汽機，大幅提升其效率，是推動工業革命的重要人物。" },
-        { id: ID + "-q3", origin: "textbook-verified", questionForm: "內容理解", text: "瓦特改良蒸汽機的技術，主要奠基於下列何人先前對蒸汽動力的探索？",
-          options: [{ key: "A", text: "巴平（Denis Papin）、沙威利（Thomas Savery）、紐科門（Thomas Newcomen）" }, { key: "B", text: "萊特兄弟" }, { key: "C", text: "摩斯" }, { key: "D", text: "戴姆勒" }],
-          correctAnswer: "A", knowledgePoint: "瓦特與蒸汽機：發展脈絡", difficulty: "中等",
-          explanation: "瓦特的改良奠基於巴平的活塞概念，以及沙威利、紐科門等人先前的蒸汽抽水裝置。" },
-        { id: ID + "-q4", origin: "textbook-verified", questionForm: "內容理解", text: "發明軋棉機、大幅提升棉花加工效率的發明家是？",
-          options: [{ key: "A", text: "惠特尼（Eli Whitney）" }, { key: "B", text: "愛迪生" }, { key: "C", text: "摩斯" }, { key: "D", text: "賓士" }],
-          correctAnswer: "A", knowledgePoint: "惠特尼與軋棉機", difficulty: "易",
-          explanation: "惠特尼發明軋棉機，大幅提升棉花去籽加工的效率。" },
-        { id: ID + "-q5", origin: "textbook-verified", questionForm: "內容理解", text: "惠特尼發明軋棉機，深刻影響了美國何種產業的經濟型態？",
-          options: [{ key: "A", text: "石油產業" }, { key: "B", text: "棉花產業" }, { key: "C", text: "汽車產業" }, { key: "D", text: "鋼鐵產業" }],
-          correctAnswer: "B", knowledgePoint: "惠特尼與軋棉機", difficulty: "中等",
-          explanation: "軋棉機大幅提升棉花加工效率，深刻影響了美國南方棉花產業。" },
-        { id: ID + "-q6", origin: "textbook-verified", questionForm: "內容理解", text: "諾貝爾發明的炸藥，除了改變採礦與工程技術外，課文還藉此帶出何種省思？",
-          options: [{ key: "A", text: "發明對環境保育的貢獻" }, { key: "B", text: "科技發明可能同時被應用於軍事、造成傷害的「雙面刃」性質" }, { key: "C", text: "發明應該申請專利保護" }, { key: "D", text: "發明家應當致富" }],
-          correctAnswer: "B", knowledgePoint: "諾貝爾與炸藥", difficulty: "中等",
-          explanation: "炸藥雖有助於採礦工程，但也可能被應用於軍事武器，帶出科技發明「雙面刃」的省思。" },
-        { id: ID + "-q7", origin: "textbook-verified", questionForm: "內容理解", text: "留聲機的發明人是？",
-          options: [{ key: "A", text: "愛迪生（Thomas Edison）" }, { key: "B", text: "摩斯" }, { key: "C", text: "戴姆勒" }, { key: "D", text: "諾貝爾" }],
-          correctAnswer: "A", knowledgePoint: "愛迪生與留聲機", difficulty: "易",
-          explanation: "愛迪生於1877年發明留聲機。" },
-        { id: ID + "-q8", origin: "textbook-verified", questionForm: "內容理解", text: "愛迪生的生卒年為？",
-          options: [{ key: "A", text: "1736-1819" }, { key: "B", text: "1791-1872" }, { key: "C", text: "1847-1931" }, { key: "D", text: "1765-1825" }],
-          correctAnswer: "C", knowledgePoint: "愛迪生生平", difficulty: "中等",
-          explanation: "愛迪生生於1847年，卒於1931年。" },
-        { id: ID + "-q9", origin: "textbook-verified", questionForm: "內容理解", text: "除了留聲機，愛迪生還改良了下列哪一項發明？",
-          options: [{ key: "A", text: "電燈泡" }, { key: "B", text: "汽車引擎" }, { key: "C", text: "軋棉機" }, { key: "D", text: "飛機" }],
-          correctAnswer: "A", knowledgePoint: "愛迪生與電燈", difficulty: "易",
-          explanation: "愛迪生除了發明留聲機，也改良了電燈泡等多項發明。" },
-        { id: ID + "-q10", origin: "textbook-verified", questionForm: "內容理解", text: "推動電報系統發展、大幅加速訊息傳遞速度的發明家是？",
-          options: [{ key: "A", text: "摩斯（Samuel Morse）" }, { key: "B", text: "惠特尼" }, { key: "C", text: "賓士" }, { key: "D", text: "萊特兄弟" }],
-          correctAnswer: "A", knowledgePoint: "電報的發展", difficulty: "易",
-          explanation: "摩斯是電報系統發展中的重要人物，大幅加速了訊息傳遞的速度。" },
-        { id: ID + "-q11", origin: "textbook-verified", questionForm: "內容理解", text: "摩斯的生卒年為？",
-          options: [{ key: "A", text: "1791-1872" }, { key: "B", text: "1847-1931" }, { key: "C", text: "1834-1900" }, { key: "D", text: "1937-" }],
-          correctAnswer: "A", knowledgePoint: "摩斯生平", difficulty: "中等",
-          explanation: "摩斯生於1791年，卒於1872年。" },
-        { id: ID + "-q12", origin: "textbook-verified", questionForm: "內容理解", text: "電報與電話的發明，對人類生活最主要的影響是？",
-          options: [{ key: "A", text: "改變飲食習慣" }, { key: "B", text: "加速訊息傳遞、改變人類溝通方式" }, { key: "C", text: "提升農業產量" }, { key: "D", text: "改善居住環境" }],
-          correctAnswer: "B", knowledgePoint: "電報與電話的影響", difficulty: "易",
-          explanation: "電報、電話大幅加速訊息傳遞的速度，深刻改變了人類的溝通方式。" },
-        { id: ID + "-q13", origin: "textbook-verified", questionForm: "內容理解", text: "下列哪三人接力改良內燃機技術，共同促成現代汽車的雛形？",
-          options: [{ key: "A", text: "戴姆勒（Daimler）、奧圖（Otto）、賓士（Benz）" }, { key: "B", text: "瓦特、惠特尼、諾貝爾" }, { key: "C", text: "摩斯、愛迪生、萊特兄弟" }, { key: "D", text: "巴平、紐科門、沙威利" }],
-          correctAnswer: "A", knowledgePoint: "汽車與內燃機的發展", difficulty: "中等",
-          explanation: "戴姆勒、奧圖、賓士等人接力改良內燃機技術，打造出現代汽車的雛形。" },
-        { id: ID + "-q14", origin: "textbook-verified", questionForm: "內容理解", text: "課文中提到，1885年出現的重要汽車雛形是？",
-          options: [{ key: "A", text: "賓士三輪車" }, { key: "B", text: "戴姆勒卡車" }, { key: "C", text: "萊特飛行者號" }, { key: "D", text: "福特T型車" }],
-          correctAnswer: "A", knowledgePoint: "汽車發展年表", difficulty: "中等",
-          explanation: "課文圖示標明1885年為賓士三輪車，1898年為戴姆勒卡車。" },
-        { id: ID + "-q15", origin: "textbook-verified", questionForm: "內容理解", text: "課文中提到，1898年出現的重要汽車雛形是？",
-          options: [{ key: "A", text: "賓士三輪車" }, { key: "B", text: "戴姆勒卡車" }, { key: "C", text: "福特T型車" }, { key: "D", text: "奧圖引擎車" }],
-          correctAnswer: "B", knowledgePoint: "汽車發展年表", difficulty: "中等",
-          explanation: "課文圖示標明1898年為戴姆勒卡車，1885年為賓士三輪車。" },
-        { id: ID + "-q16", origin: "textbook-verified", questionForm: "內容理解", text: "本課文末延伸閱讀所介紹的作者是？",
-          options: [{ key: "A", text: "賈德．戴蒙（Jared Diamond）" }, { key: "B", text: "湯瑪斯．愛迪生" }, { key: "C", text: "詹姆斯．瓦特" }, { key: "D", text: "山繆．摩斯" }],
-          correctAnswer: "A", knowledgePoint: "延伸閱讀作者", difficulty: "易",
-          explanation: "文末延伸閱讀介紹的是賈德．戴蒙及其著作。" },
-        { id: ID + "-q17", origin: "textbook-verified", questionForm: "內容理解", text: "賈德．戴蒙的專業領域最接近下列何者？",
-          options: [{ key: "A", text: "文學家" }, { key: "B", text: "演化生物學家、地理學家" }, { key: "C", text: "音樂家" }, { key: "D", text: "建築師" }],
-          correctAnswer: "B", knowledgePoint: "延伸閱讀作者：賈德．戴蒙", difficulty: "中等",
-          explanation: "賈德．戴蒙是美國演化生物學家、地理學家。" },
-        { id: ID + "-q18", origin: "textbook-verified", questionForm: "內容理解", text: "下列何者不是賈德．戴蒙的著作？",
-          options: [{ key: "A", text: "《槍炮、病菌與鋼鐵》" }, { key: "B", text: "《大崩壞》" }, { key: "C", text: "《昨日世界》" }, { key: "D", text: "《人類大歷史》" }],
-          correctAnswer: "D", knowledgePoint: "延伸閱讀：賈德．戴蒙著作", difficulty: "中等",
-          explanation: "賈德．戴蒙的著作為《槍炮、病菌與鋼鐵》《大崩壞》《昨日世界》；《人類大歷史》為哈拉瑞（Yuval Noah Harari）所著，並非戴蒙的作品。" },
-        { id: ID + "-q19", origin: "textbook-verified", questionForm: "內容理解", text: "賈德．戴蒙的著作主要從何種角度探討人類文明的興衰？",
-          options: [{ key: "A", text: "宗教信仰角度" }, { key: "B", text: "環境地理角度" }, { key: "C", text: "軍事戰略角度" }, { key: "D", text: "藝術美學角度" }],
-          correctAnswer: "B", knowledgePoint: "延伸閱讀：賈德．戴蒙著作主旨", difficulty: "中等",
-          explanation: "賈德．戴蒙從環境、地理角度探討人類文明興衰的原因，是其著作的核心觀點。" },
-        { id: ID + "-q20", origin: "ai-derived", questionForm: "應用理解", text: "下列關於本課正文與延伸閱讀關係的敘述，何者正確？",
-          options: [{ key: "A", text: "賈德．戴蒙是〈發明改變世界〉正文的作者" }, { key: "B", text: "〈發明改變世界〉正文未具名作者，賈德．戴蒙只是延伸閱讀書籍的作者" }, { key: "C", text: "〈發明改變世界〉與賈德．戴蒙的著作內容完全相同" }, { key: "D", text: "賈德．戴蒙反對本課介紹的所有發明" }],
-          correctAnswer: "B", knowledgePoint: "應用理解：釐清作者關係", difficulty: "中等",
-          explanation: "本課正文為說明文，未見具名作者；賈德．戴蒙僅是文末延伸閱讀書籍的作者，兩者不應混為一談。" },
-        { id: ID + "-q21", origin: "ai-derived", questionForm: "應用理解", text: "本課依序介紹多項發明，其共同的核心意義最可能為下列何者？",
-          options: [{ key: "A", text: "說明所有發明都必然帶來正面影響，毫無爭議" }, { key: "B", text: "指出科技創新持續提升生產效率、加速資訊傳遞，並帶動整體社會型態轉變" }, { key: "C", text: "強調發明家皆須具備高學歷才能成功" }, { key: "D", text: "主張古代發明優於近代發明" }],
-          correctAnswer: "B", knowledgePoint: "全文主旨", difficulty: "中等",
-          explanation: "本課所選介的發明皆大幅提升生產效率、加速資訊傳遞、改善生活便利性，進而帶動社會型態（如工業化、都市化）的轉變。" },
-        { id: ID + "-q22", origin: "ai-derived", questionForm: "應用理解", text: "課文提及諾貝爾炸藥與二十世紀戰爭（如納粹德國）的歷史脈絡，其寫作用意最可能為？",
-          options: [{ key: "A", text: "單純陳述歷史年表，無特別用意" }, { key: "B", text: "藉此提醒讀者，科技發明的應用可能同時帶來建設與破壞，值得省思" }, { key: "C", text: "強調戰爭是推動科技發展的唯一動力" }, { key: "D", text: "貶低諾貝爾的發明成就" }],
-          correctAnswer: "B", knowledgePoint: "寫作用意", difficulty: "難",
-          explanation: "藉由炸藥被應用於軍事的歷史脈絡，課文提醒讀者科技發明具有「雙面刃」的性質，其應用方式值得省思。" },
-        { id: ID + "-q23", origin: "ai-derived", questionForm: "應用理解", text: "若欲進一步從環境與地理角度探討人類文明為何走向不同的發展道路，最適合延伸閱讀下列何人的著作？",
-          options: [{ key: "A", text: "愛迪生" }, { key: "B", text: "賈德．戴蒙" }, { key: "C", text: "瓦特" }, { key: "D", text: "摩斯" }],
-          correctAnswer: "B", knowledgePoint: "應用理解：延伸閱讀連結", difficulty: "中等",
-          explanation: "賈德．戴蒙的著作正是從環境地理角度探討人類文明興衰，最適合此延伸探究方向。" },
-        { id: ID + "-q24", origin: "ai-derived", questionForm: "應用理解", text: "依課文脈絡，蒸汽機、軋棉機、電報、汽車等發明依序出現，最能說明下列何種現象？",
-          options: [{ key: "A", text: "科技發展彼此獨立、互不影響" }, { key: "B", text: "科技發展具有承先啟後的累積性，後人常在前人基礎上持續改良" }, { key: "C", text: "每項發明都在同一年出現" }, { key: "D", text: "科技發展與社會需求無關" }],
-          correctAnswer: "B", knowledgePoint: "應用理解：科技發展脈絡", difficulty: "中等",
-          explanation: "如瓦特蒸汽機奠基於巴平、沙威利、紐科門等人的先前探索，汽車的發展也是戴姆勒、奧圖、賓士接力改良而成，顯示科技發展具有累積性。" }
-      ],
-      fillIn: [
-        { id: ID + "-fib1", origin: "textbook-verified", text: "改良蒸汽機、推動工業革命的重要發明家是＿＿＿＿（James Watt）。", answer: "瓦特", knowledgePoint: "瓦特與蒸汽機" },
-        { id: ID + "-fib2", origin: "textbook-verified", text: "發明軋棉機、大幅提升棉花加工效率的發明家是＿＿＿＿（Eli Whitney）。", answer: "惠特尼", knowledgePoint: "惠特尼與軋棉機" },
-        { id: ID + "-fib3", origin: "textbook-verified", text: "1877年發明留聲機的美國發明家是＿＿＿＿。", answer: "愛迪生", knowledgePoint: "愛迪生與留聲機" },
-        { id: ID + "-fib4", origin: "textbook-verified", text: "本課文末延伸閱讀介紹的作者＿＿＿＿，其專業為演化生物學家與地理學家。", answer: "賈德．戴蒙", knowledgePoint: "延伸閱讀作者" },
-        { id: ID + "-fib5", origin: "textbook-verified", text: "戴姆勒、奧圖、賓士三人接力改良的技術是＿＿＿＿，促成了現代汽車的雛形。", answer: "內燃機", knowledgePoint: "汽車與內燃機的發展" }
-      ],
-      trueFalse: [
-        { id: ID + "-tf1", origin: "textbook-verified", text: "〈發明改變世界〉正文的作者是賈德．戴蒙。", answer: false, knowledgePoint: "作者釐清",
-          explanation: "本課正文未具名作者；賈德．戴蒙只是文末延伸閱讀書籍的作者。" },
-        { id: ID + "-tf2", origin: "textbook-verified", text: "瓦特改良蒸汽機的技術是奠基於巴平、沙威利、紐科門等人先前的探索成果。", answer: true, knowledgePoint: "瓦特與蒸汽機：發展脈絡" },
-        { id: ID + "-tf3", origin: "textbook-verified", text: "留聲機是由摩斯所發明的。", answer: false, knowledgePoint: "愛迪生與留聲機",
-          explanation: "留聲機是由愛迪生於1877年發明；摩斯則與電報系統的發展有關。" },
-        { id: ID + "-tf4", origin: "textbook-verified", text: "課文提及諾貝爾發明的炸藥，除了應用於採礦工程，也可能被應用於軍事武器。", answer: true, knowledgePoint: "諾貝爾與炸藥" },
-        { id: ID + "-tf5", origin: "textbook-verified", text: "賈德．戴蒙的著作《槍炮、病菌與鋼鐵》主要從軍事戰略角度探討文明興衰。", answer: false, knowledgePoint: "延伸閱讀：賈德．戴蒙著作主旨",
-          explanation: "賈德．戴蒙的著作主要是從環境地理角度，而非軍事戰略角度，探討人類文明興衰的原因。" }
+        { id: ID + "-q1", origin: "textbook-verified", questionForm: "文學常識／內容理解", text: "依作者簡介，賈德．戴蒙（Jared Diamond）的國籍為何？",
+          options: [{ key: "A", text: "英國" }, { key: "B", text: "加拿大" }, { key: "C", text: "美國" }, { key: "D", text: "澳洲" }],
+          correctAnswer: "C", knowledgePoint: "作者國籍", difficulty: "易",
+          explanation: "A、B、D：課本無相關記載，均為干擾選項。C：作者頁明確標示國籍為美國，正確。" },
+        { id: ID + "-q2", origin: "textbook-verified", questionForm: "文學常識／內容理解", text: "依作者簡介，賈德．戴蒙的學術專業背景，下列敘述何者最為正確？",
+          options: [{ key: "A", text: "專攻天文物理的太空科學家" }, { key: "B", text: "專職小說家，未曾任教於大學" }, { key: "C", text: "專攻中國古典文學研究的漢學家" }, { key: "D", text: "演化生物學家、生理學家，曾任教於美國加州大學相關系所" }],
+          correctAnswer: "D", knowledgePoint: "作者學術背景", difficulty: "易",
+          explanation: "A、B、C：課本均未提及，錯誤。D：作者頁記載戴蒙為美國演化生物學家、生理學家，1966年起任教於加州大學洛杉磯分校，正確。" },
+        { id: ID + "-q3", origin: "textbook-verified", questionForm: "內容理解", text: "依課本「人類大歷史三部曲」側欄，下列何者不屬於賈德．戴蒙的著作？",
+          options: [{ key: "A", text: "《人類大歷史》" }, { key: "B", text: "《槍炮、病菌與鋼鐵》" }, { key: "C", text: "《大崩壞》" }, { key: "D", text: "《昨日世界》" }],
+          correctAnswer: "A", knowledgePoint: "作者著作辨析", difficulty: "中等",
+          explanation: "B、C、D：皆為課本側欄清楚列出的戴蒙代表作。A：《人類大歷史》為另一位作者的知名著作，課本並未將其列為戴蒙作品，此選項刻意混淆不同作者的暢銷書，故為本題答案。" },
+        { id: ID + "-q4", origin: "textbook-verified", questionForm: "篇旨理解", text: "本文的題解指出，作者提出「發明為需求之母」的觀點，主要是為了翻轉一般大眾的哪一種既定認知？",
+          options: [{ key: "A", text: "「歷史是由帝王將相所創造」的認知" }, { key: "B", text: "「先有需求，才有發明」的認知" }, { key: "C", text: "「科技發展必然帶來進步」的認知" }, { key: "D", text: "「發明皆源自天才的靈光乍現」的認知" }],
+          correctAnswer: "B", knowledgePoint: "篇旨與破題手法", difficulty: "中等",
+          explanation: "A、C：題解未涉及，錯誤。B：題解明確指出本文旨在翻轉大眾認為「先有需求，才有發明」的認知，正確。D：題解雖提及作者反思「過分凸顯稀有天才人物」，但這是文章舉例說明的手法之一，並非題解所指「翻轉」的核心既定認知對象，錯誤。" },
+        { id: ID + "-q5", origin: "textbook-verified", questionForm: "內容理解", text: "依題解說明，本文在論證過程中，作者舉了下列哪一項發明實例來凸顯論點？",
+          options: [{ key: "A", text: "造紙術" }, { key: "B", text: "指南針" }, { key: "C", text: "蒸汽機" }, { key: "D", text: "活字印刷" }],
+          correctAnswer: "C", knowledgePoint: "文章舉例內容", difficulty: "易",
+          explanation: "A、B、D：雖為中國古代重要發明，但未出現在課本題解所列舉的例子中，均為干擾選項。C：題解明確列舉蒸汽機、燈泡、飛機、電報等實例，正確。" },
+        { id: ID + "-q6", origin: "textbook-verified", questionForm: "圖表資料理解／篇旨呼應", text: "課本旁欄「愛迪生與留聲機」提及，愛迪生1877年發明的圓筒式錄音裝置，依課本旁欄敘述，此裝置最初的用途說明，下列何者正確？",
+          options: [{ key: "A", text: "留聲機最初並非以販售音樂為主要用途，後來才漸漸被此用途取代" }, { key: "B", text: "電話" }, { key: "C", text: "電燈泡" }, { key: "D", text: "電報機" }],
+          correctAnswer: "A", knowledgePoint: "旁欄資料理解、篇旨呼應", difficulty: "中等",
+          explanation: "A：旁欄說明愛迪生最初發明的圓筒式留聲機並非設計來販售音樂唱片，呼應本文「發明未必因應原先設想的需求而普及」的核心論點，正確。B、C、D：此段旁欄描述對象明確是「留聲機」，答非所問，錯誤。" },
+        { id: ID + "-q7", origin: "textbook-verified", questionForm: "發明家與領域對應", text: "依課本頁32–33側欄的發明家索引（如摩斯 Samuel Morse、惠斯登 Charles Wheatstone 等人），可知本文所舉的這組發明家例子，其專業領域最集中於下列哪一項？",
+          options: [{ key: "A", text: "醫學外科技術" }, { key: "B", text: "農業耕作技術" }, { key: "C", text: "建築工程技術" }, { key: "D", text: "通訊與電力相關技術（如電報）" }],
+          correctAnswer: "D", knowledgePoint: "發明家與領域對應", difficulty: "中等",
+          explanation: "A、B、C：課本側欄並未列舉此類領域的發明家，均為錯誤選項。D：摩斯與惠斯登皆為電報相關技術的重要發展者，正確。" },
+        { id: ID + "-q8", origin: "textbook-verified", questionForm: "發明家與發明對應", text: "依課本內容，萊特兄弟（Wright brothers）在本課側欄中被列為哪一類發明的代表人物？",
+          options: [{ key: "A", text: "汽車" }, { key: "B", text: "飛機" }, { key: "C", text: "電話" }, { key: "D", text: "留聲機" }],
+          correctAnswer: "B", knowledgePoint: "發明家與發明對應", difficulty: "易",
+          explanation: "A：戴姆勒（Daimler）等人才是課本中與汽車發明相關的人物，錯誤。B：萊特兄弟為飛機發明的代表人物，與課本題解所舉「飛機」實例相呼應，正確。C：貝爾等人與電話相關，非萊特兄弟，錯誤。D：留聲機代表人物為愛迪生，錯誤。" },
+        { id: ID + "-q9", origin: "textbook-verified", questionForm: "圖表資訊與篇旨連結", text: "課本側欄提及1885年與1898年兩款交通工具的演進，由「機動車雛型」演變至「戰時軍用卡車」，這樣的發展歷程最適合用來說明本文的哪一項核心觀點？",
+          options: [{ key: "A", text: "汽車的發明比蒸汽機更早" }, { key: "B", text: "交通工具的發展與需求無關" }, { key: "C", text: "發明的實際應用往往在發明之後才逐漸被開發出來，並非發明之初就鎖定特定需求" }, { key: "D", text: "戰爭是所有發明的根本動機" }],
+          correctAnswer: "C", knowledgePoint: "圖表資訊與篇旨連結", difficulty: "難",
+          explanation: "A：此非此段側欄欲表達之重點，且與史實對照亦有疑慮，錯誤。B：與文章主旨相反，錯誤。C：從民用機動車演變為軍用卡車，顯示同一項發明可因應非原先設想的需求而發展出新用途，呼應「發明為需求之母」的核心觀點，正確。D：課本並未主張戰爭是一切發明的根本動機，屬過度推論，錯誤。" },
+        { id: ID + "-q10", origin: "textbook-verified", questionForm: "寫作特色綜合理解", text: "綜合本文題解與作者簡介，下列敘述何者最符合本課的寫作特色？",
+          options: [{ key: "A", text: "以嚴謹的學術論文格式，附有大量統計圖表與公式" }, { key: "B", text: "以第一人稱抒情散文寫成，側重個人情感抒發" }, { key: "C", text: "全文為虛構的科幻小說情節" }, { key: "D", text: "以科普角度切入，援引豐富的科技史實例，論述新穎且觀點清晰" }],
+          correctAnswer: "D", knowledgePoint: "文章體裁與寫作特色", difficulty: "中等",
+          explanation: "A：題解未提及統計圖表或數學公式，錯誤。B：本文以論說／科普說明為主，非抒情散文，錯誤。C：本文取材自真實科技史，非虛構科幻小說，錯誤。D：直接呼應題解對本文寫作特色「例證豐富且論述簡明扼要」的描述，正確。" },
+        { id: ID + "-q11", origin: "ai-derived", questionForm: "正反例證分類（Level 2 補充）", text: "依課本內容與發明史脈絡，下列哪一項發明實例，最符合「先有需求、才有發明」的傳統認知？",
+          options: [{ key: "A", text: "愛迪生的留聲機" }, { key: "B", text: "早期的機動車" }, { key: "C", text: "第二次世界大戰期間，美國為因應戰爭需求而推動的原子彈研發計畫（曼哈頓計畫）" }, { key: "D", text: "電晶體" }],
+          correctAnswer: "C", knowledgePoint: "正反例證分類", difficulty: "難",
+          explanation: "A、B、D：依題解與本文主旨，皆屬「先有發明、後才找到／擴大用途」的例子，用以支持作者「發明為需求之母」的翻轉論點，錯誤。C：戰爭迫切的軍事需求在先，才促成原子彈的密集研發，是少數符合「需求為發明之母」傳統觀點的例子，正確，且與本文用以襯托「多數發明其實相反」的論證策略相符。" },
+        { id: ID + "-q12", origin: "textbook-verified", questionForm: "發明史脈絡與篇旨（累積性論證）", text: "瓦特改良蒸汽機的故事，作者最主要想藉此傳達的觀點是？",
+          options: [{ key: "A", text: "瓦特是史上第一位提出「蒸汽可以做工」構想的人，成就完全獨創" }, { key: "B", text: "瓦特的貢獻建立在紐科門（Newcomen）等前人已量產的蒸汽機基礎上加以改良，技術具有累積性" }, { key: "C", text: "瓦特的成就微不足道，不值得記載" }, { key: "D", text: "蒸汽機的發明與需求完全無關" }],
+          correctAnswer: "B", knowledgePoint: "發明史脈絡與篇旨（累積性論證）", difficulty: "中等",
+          explanation: "A：與作者論點相反，作者明確反對「獨創無先例」的簡化敘事，錯誤。B：作者藉蒸汽機發展史（海更思、巴潘、沙佛利、紐科門等人先後改良，瓦特在此基礎上進一步改良）說明技術發明具有累積性，而非單一天才憑空獨創，正確。C：作者肯定瓦特改良帶來的實用價值提升，並非否定其貢獻，錯誤。D：蒸汽機的改良仍與後續工業應用需求相關，選項過於武斷，錯誤。" },
+        { id: ID + "-q13", origin: "ai-derived", questionForm: "發明家系譜與課文脈絡對應（Level 2 補充）", text: "依課本頁32–33側欄之發明家索引，下列哪一組「先驅者→後繼發明家」的對應關係最為合理？",
+          options: [{ key: "A", text: "摩斯電報機的先驅是愛迪生與瓦特" }, { key: "B", text: "惠特尼軋棉機的先驅是戴姆勒與奧圖" }, { key: "C", text: "萊特兄弟（動力飛機）的先驅包括從事滑翔機與無人動力飛行器研究的前人" }, { key: "D", text: "瓦特蒸汽機的先驅是萊特兄弟" }],
+          correctAnswer: "C", knowledgePoint: "發明家系譜與課文脈絡對應", difficulty: "難",
+          explanation: "A：摩斯電報的相關先驅人物是亨利、庫克、惠斯登，非愛迪生、瓦特，錯誤。B：惠特尼軋棉機與戴姆勒、奧圖（汽車／引擎相關人物）並無直接先驅關係，錯誤。C：萊特兄弟之前已有從事滑翔機、無人動力飛行器研究的先驅者為其奠定基礎，符合本文「發明具累積性」的論證脈絡，正確。D：瓦特蒸汽機的先驅是紐科門等蒸汽機相關人物，與萊特兄弟（飛機）無關，時代順序也不合理，錯誤。" },
+        { id: ID + "-q14", origin: "ai-derived", questionForm: "篇旨與比喻手法（Level 2 補充）", text: "作者在文中提及專利法制度與「英雄史觀」迷思的關係，最主要在批判下列哪一種觀念？",
+          options: [{ key: "A", text: "大眾誤以為理想的發明應該是「全無先例、憑空而生」，如同神話中雅典娜自宙斯前額誕生一般" }, { key: "B", text: "專利制度本身應該被廢除" }, { key: "C", text: "專利審查應該更嚴格" }, { key: "D", text: "發明家應該公開所有專利技術" }],
+          correctAnswer: "A", knowledgePoint: "篇旨與比喻手法（英雄史觀批判）", difficulty: "難",
+          explanation: "A：作者藉此比喻批判社會大眾（受專利制度「新奇性」要求影響）誤以為偉大的發明必須是毫無先例的憑空創造，而忽略了發明其實建立在前人累積成果之上，正確。B、C、D：均非本文批判的重點，屬過度延伸的干擾選項。" },
+        { id: ID + "-q15", origin: "ai-derived", questionForm: "篇旨總結（Level 2 補充）", text: "綜合全文，作者對「偉大發明家為何被歷史記住」提出的最終看法，最接近下列何者？",
+          options: [{ key: "A", text: "純粹因為他們天賦異稟、遠超常人" }, { key: "B", text: "因為他們最早申請專利、壟斷市場利益" }, { key: "C", text: "因為歷史對發明家的記憶完全隨機，沒有規律" }, { key: "D", text: "因為他們在社會條件、需求成熟到足以利用其成果的時間點，做出了適當的貢獻，而非完全獨力創造出前所未有之物" }],
+          correctAnswer: "D", knowledgePoint: "篇旨總結", difficulty: "難",
+          explanation: "A、B、C：均與作者強調的「累積性」「社會利用時機」核心觀點不符，錯誤。D：呼應本文核心論點「發明為需求之母」的翻轉觀點，強調發明家的貢獻與其所處社會能否利用該項發明的時機密切相關，而非憑空獨創，正確。" }
       ]
     },
 
     commonMistakes: [
-      { concept: "誤把賈德．戴蒙當成本課正文作者", misconception: "以為〈發明改變世界〉這篇課文是賈德．戴蒙所寫。",
-        correction: "賈德．戴蒙只是文末延伸閱讀書籍的作者，本課正文（介紹各項發明的說明文）並未具名作者，兩者須明確區分。",
-        relatedQuestions: [ID + "-q16", ID + "-q20", ID + "-tf1"] },
-      { concept: "混淆留聲機與電報的發明者", misconception: "誤以為留聲機是摩斯發明，或電報是愛迪生發明。",
-        correction: "留聲機是愛迪生於1877年發明；摩斯則是電報系統發展的重要人物，兩者領域不同，不可混淆。",
-        relatedQuestions: [ID + "-q7", ID + "-q10", ID + "-tf3"] },
-      { concept: "誤解汽車發明是單一人物獨立完成", misconception: "以為現代汽車是某一位發明家獨力發明完成。",
-        correction: "現代汽車的雛形是由戴姆勒、奧圖、賓士等多人接力改良內燃機技術而逐步形成，是集體累積的科技發展成果。",
-        relatedQuestions: [ID + "-q13", ID + "-q24"] }
+      { concept: "誤把本課視為不具名說明文，混淆作者身分", misconception: "以為〈發明為需求之母〉正文未具名，賈德．戴蒙只是文末延伸閱讀的作者。",
+        correction: "賈德．戴蒙正是本課正文的作者，本文節選自其著作《槍炮、病菌與鋼鐵》（廖月娟譯），並非另一篇不具名說明文的延伸閱讀。",
+        relatedQuestions: [ID + "-q1", ID + "-q2", ID + "-q3"] },
+      { concept: "誤解本文核心論點方向", misconception: "以為本文在歌頌「天才發明家的靈光乍現」，或誤以為「先有需求，才有發明」是作者所主張的觀點。",
+        correction: "作者實際上是在反思、翻轉「先有需求，才有發明」的既定認知，主張多數情況是「發明為需求之母」——先有發明，需求隨後才被發掘或擴大，並藉雅典娜比喻批判英雄史觀。",
+        relatedQuestions: [ID + "-q4", ID + "-q14", ID + "-q15"] },
+      { concept: "混淆發明先驅與後繼發明家的對應關係", misconception: "誤以為瓦特蒸汽機、萊特兄弟飛機等發明是單一天才憑空獨創，忽略其技術累積性。",
+        correction: "瓦特的改良建立在海更思、巴潘、沙佛利、紐科門等前人已量產技術的基礎上；萊特兄弟之前也已有滑翔機與無人動力飛行器研究的先驅者，發明具有累積性，而非憑空獨創。",
+        relatedQuestions: [ID + "-q12", ID + "-q13"] }
     ],
 
     relatedMaterials: []
