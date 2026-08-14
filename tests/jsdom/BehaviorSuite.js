@@ -1068,22 +1068,10 @@ console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個�
   check("③ AI 練習題：顯示題數", !!questionSection && /共 6 題/.test(questionSection.textContent));
   check("③ AI 練習題：顯示難度／考點", !!questionSection && /難度：/.test(questionSection.textContent) && /考點：/.test(questionSection.textContent));
 
-  /* HOTFIX-004 第二階段: a Repository-sourced material's real summary/
-     question data now renders directly here too — Gateway sections no
-     longer require a (permanently failing, no real backend exists) live
-     network call before showing real content. */
-  const gwSummarySection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 重點整理"]');
-  check("④ AI Gateway 重點整理：直接顯示真實內容（無需「尚未建立」按鈕流程）",
-    !!gwSummarySection && !/尚未建立 Gateway 重點整理/.test(gwSummarySection.textContent) && /所有權的排他性/.test(gwSummarySection.textContent));
-
-  const gwQuizSection = overlay.querySelector('.mat-summary[aria-label="AI Gateway 練習題"]');
-  check("⑤ AI Gateway 練習題：直接顯示真實題目（無需「尚未建立」按鈕流程）",
-    !!gwQuizSection && !/尚未建立 Gateway 練習題/.test(gwQuizSection.textContent) && gwQuizSection.querySelectorAll(".mat-question__card").length === 6);
-
   check("Console errors = 0（HOTFIX-003）", consoleErrors.length === 0);
 
   /* 一般上傳教材（無 Repository 來源）行為完全不變 — 既有 AITutorService
-     流程／honest empty state／Gateway「尚未建立」idle 文案皆未受影響。 */
+     流程／honest empty state 皆未受影響。 */
   const regular = A.MaterialRuntime.add({ subject: "math", title: "一般上傳教材", chapter: "測試章節" });
   const regularOverlay = A.MaterialPreview.open(regular, function () {});
   doc.body.appendChild(regularOverlay);
@@ -1091,12 +1079,6 @@ console.log("\n[25] HOTFIX-003 — Material Detail Content Integration：五個�
   check("一般上傳教材（無內容）：仍誠實顯示空狀態，未受影響", !!regularContent && /此教材目前尚無可顯示的內容/.test(regularContent.textContent));
   const regularSummary = regularOverlay.querySelector('.mat-summary[aria-label="AI 重點整理"]');
   check("一般上傳教材：AI 重點整理仍保留「開始 AI 分析」按鈕，未受影響", !!regularSummary && !!regularSummary.querySelector(".mat-summary__btn"));
-  const regularGwSummary = regularOverlay.querySelector('.mat-summary[aria-label="AI Gateway 重點整理"]');
-  check("一般上傳教材：AI Gateway 重點整理仍誠實顯示「尚未建立」，未受影響",
-    !!regularGwSummary && /尚未建立 Gateway 重點整理/.test(regularGwSummary.textContent) && !!regularGwSummary.querySelector(".mat-summary__btn"));
-  const regularGwQuiz = regularOverlay.querySelector('.mat-summary[aria-label="AI Gateway 練習題"]');
-  check("一般上傳教材：AI Gateway 練習題仍誠實顯示「尚未建立」，未受影響",
-    !!regularGwQuiz && /尚未建立 Gateway 練習題/.test(regularGwQuiz.textContent) && !!regularGwQuiz.querySelector(".mat-summary__btn"));
 }
 
 console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration（PAT 修正回歸測試）");
@@ -1222,17 +1204,25 @@ console.log("\n[27] HOTFIX-004 第二階段 — Material Detail 資料未顯示�
   const resolved = A.MaterialDetailRepositorySource.resolve(rt2.id);
   check("resolve()：即使 Loader 的 initialized 旗標被重置，仍自動完成初始化並回傳真實資料", !!resolved && Array.isArray(resolved.sections) && resolved.sections.length > 0);
 
-  /* Requirement 3/4: all five Material Detail sections have real data for
-     the real Civics material — combined sanity check across the whole
-     modal at once, not just per-section as in [25]. */
+  /* Requirement 3/4: all three Material Detail sections have real data
+     for the real Civics material — combined sanity check across the
+     whole modal at once, not just per-section as in [25]. Sprint AI-136
+     (教材中心重點整理/練習題合併): the duplicate AI Gateway 重點整理／
+     練習題 sections (Sprint AI-101C) were removed from MaterialPreview —
+     for a Repository-sourced material they showed exactly the same
+     content as AI 重點整理/AI 練習題 (reshaped fields only), and for any
+     other material they could only ever show a permanently-failing
+     "尚未設定 endpoint" error, since no real Gateway backend exists in
+     this static prototype (AppConfig.aiGateway.endpoint is empty by
+     design). AI 重點整理/AI 練習題 remain the sole, real, working path. */
   const overlay = A.MaterialPreview.open(rt2, function () {});
   window.document.body.appendChild(overlay);
-  const sectionLabels = ["教材內容", "AI 重點整理", "AI 練習題", "AI Gateway 重點整理", "AI Gateway 練習題"];
+  const sectionLabels = ["教材內容", "AI 重點整理", "AI 練習題"];
   const allHaveData = sectionLabels.every(label => {
     const node = overlay.querySelector('[aria-label="' + label + '"]');
     return !!node && !/尚無|尚未建立|尚無可/.test(node.textContent);
   });
-  check("五個區塊皆有真實資料，無任何空白／尚未建立文案", allHaveData);
+  check("三個區塊皆有真實資料，無任何空白／尚未建立文案", allHaveData);
 }
 
 console.log("\n[28] 學習總結 — 重點關鍵字紅色標示");
