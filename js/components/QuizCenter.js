@@ -1044,8 +1044,56 @@ AHS.QuizCenter = (function () {
      single material is already drilled into — filterMaterialId gates
      the whole Repository section already, see repoEntries below). Every
      existing caller that omits this 7th param keeps this view's exact
-     prior behavior. */
-  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor, difficulty, onOpenCombine) {
+     prior behavior.
+     onBack() / onDifficultyChange(nextDifficulty) — Sprint AI-136:
+     once filterMaterialId is set (drilled into a single material, from
+     either the Repository catalog above or a materialId deep link),
+     the student was previously stuck — no way back to the catalog / no
+     way to change the difficulty they picked in 巧巧老師出題引導 without
+     losing their place. Both are optional and rendered together as one
+     toolbar, ABOVE every section (including the empty state) whenever
+     filterMaterialId is set and at least one of them is provided —
+     never gated on there being real questions to show, so a genuinely
+     empty drill-down is still escapable, not a dead end. Every existing
+     caller that omits these two trailing params keeps this view's
+     exact prior behavior (no toolbar at all). */
+  /* buildPracticeToolbar(onBack, difficulty, onDifficultyChange) —
+     Sprint AI-136: the "回到選擇畫面" + "難易度" controls shown once a
+     single material is drilled into (see buildPracticeListView's own
+     call). Difficulty buttons reuse 巧巧老師出題引導's exact `qguide__diff`
+     look (js/components/QuestionGuide.js) so the two pickers read as
+     one system; unlike that picker, this one is never locked — clicking
+     a different pill re-filters in place via onDifficultyChange, no
+     re-navigation needed. "全部難度" (empty string) clears the filter,
+     matching filterByDifficulty()'s own falsy-means-unfiltered contract. */
+  function buildPracticeToolbar(onBack, difficulty, onDifficultyChange) {
+    var children = [];
+    if (typeof onBack === "function") {
+      var backBtn = el("button", { type: "button", class: "quiz-practice__back", text: "← 返回上一步" });
+      backBtn.addEventListener("click", onBack);
+      children.push(backBtn);
+    }
+    if (typeof onDifficultyChange === "function") {
+      var options = [
+        { value: "", label: "全部難度" },
+        { value: "easy", label: "易" },
+        { value: "medium", label: "中等" },
+        { value: "hard", label: "難" }
+      ];
+      var buttons = options.map(function (opt) {
+        var isActive = (opt.value || null) === (difficulty || null);
+        var b = el("button", {
+          type: "button", class: "qguide__diff" + (isActive ? " is-active" : ""), text: opt.label
+        });
+        b.addEventListener("click", function () { onDifficultyChange(opt.value || null); });
+        return b;
+      });
+      children.push(el("div", { class: "qguide__diffs quiz-practice__diffs", "aria-label": "難易度篩選" }, buttons));
+    }
+    return el("div", { class: "quiz-practice__toolbar" }, children);
+  }
+
+  function buildPracticeListView(onPractice, filterMaterialId, onRepoDrillDown, onRealPractice, statusFor, difficulty, onOpenCombine, onBack, onDifficultyChange) {
     var runtime = AHS.LearningQuestionRuntime;
     var allItems = (runtime && typeof runtime.list === "function") ? runtime.list() : [];
     var items = filterMaterialId
@@ -1088,11 +1136,18 @@ AHS.QuizCenter = (function () {
           function (q) { return difficultyRank(resolveRealQuestionDifficulty(q)); })
       : [];
 
+    var toolbar = (filterMaterialId && (typeof onBack === "function" || typeof onDifficultyChange === "function"))
+      ? buildPracticeToolbar(onBack, difficulty, onDifficultyChange)
+      : null;
+
     if (!items.length && !repoEntries.length && !realQuestions.length) {
-      return el("div", { class: "quiz-practice" }, [practiceEmptyState(filterMaterialId)]);
+      var emptyChildren = [practiceEmptyState(filterMaterialId)];
+      if (toolbar) { emptyChildren.unshift(toolbar); }
+      return el("div", { class: "quiz-practice" }, emptyChildren);
     }
 
     var sections = [];
+    if (toolbar) { sections.push(toolbar); }
 
     if (repoEntries.length) {
       var repoRows = repoEntries.map(function (entry) {
@@ -2157,15 +2212,41 @@ AHS.QuizCenter = (function () {
        exactly this Sprint's own pre-existing, unchanged behavior. */
     var practiceDifficulty = null;
 
+    /* showPracticeList(materialId) — Sprint AI-136: drilling into a
+       single material (filterMaterialId truthy, whichever way it got
+       set) now always offers a way back out, instead of stranding the
+       student once they've clicked in:
+         - arrived via the unfiltered Repository catalog (practiceMaterialId
+           itself is falsy — no URL-fixed material) -> "back" re-shows
+           that catalog (showPracticeList(null)).
+         - arrived via a materialId deep link (巧巧老師出題引導 already ran
+           and locked in a difficulty) -> "back" re-opens the guide so
+           the difficulty pick can be redone, instead of being permanent
+           for the rest of the session.
+       practiceDifficulty itself is also no longer write-once: the
+       toolbar's own difficulty pills call back in here with a new value
+       and re-render the SAME scoped material, so changing your mind
+       about 易/中等/難 never requires leaving the list at all. */
     function showPracticeList(materialId) {
       var scopedMaterialId = materialId !== undefined ? materialId : practiceMaterialId;
+      var onBack;
+      if (scopedMaterialId && !practiceMaterialId) {
+        onBack = function () { showPracticeList(null); };
+      } else if (scopedMaterialId && practiceMaterialId && AHS.QuestionGuide) {
+        onBack = function () { showQuestionGuide(); };
+      }
       AHS.UI.mount(practiceRoot, buildPracticeListView(
         showPracticeQuestion, scopedMaterialId,
         function (drillMaterialId) { showPracticeList(drillMaterialId); },
         showRealPracticeQuestion,
         answerStatusFor,
         practiceDifficulty,
-        openCombinePracticePicker
+        openCombinePracticePicker,
+        onBack,
+        scopedMaterialId ? function (nextDifficulty) {
+          practiceDifficulty = nextDifficulty;
+          showPracticeList(scopedMaterialId);
+        } : undefined
       ));
     }
 
