@@ -12,10 +12,19 @@
    AHS.QuestionRuntime/AHS.QuestionBankRuntime data, never a hardcoded
    question count.
 
+   Since the 高二上（g2s1）workspace now also carries a real 英文 chapter
+   (data/materials/EnglishG11DayIBrokeTheRules.js), the Picker's own
+   subject-tab UI is exercised too: the tests below verify the Picker
+   correctly shows 2 subject tabs, defaults to 國文 (registration order),
+   and only the checkboxes within the currently active subject tab are
+   selected/combined — the underlying "同一科目、三課" combined-review
+   scenario this file was written to verify is otherwise unchanged.
+
    Verifies:
    - 平時練習 (Exam Mode) list shows a real "選擇多課合併複習" action;
-     opens a real chapter-picker overlay (openChapterPicker) listing all
-     3 real chinese chapters as checkable rows.
+     opens a real chapter-picker overlay (openChapterPicker) defaulting to
+     the 國文 subject tab, listing all 3 real chinese chapters as
+     checkable rows.
    - Checking >=1 chapter and confirming starts ONE real combined
      ExamRuntime session (tryCombinedExamEntry) whose question count is
      the real sum of each selected chapter's own drawCycle() draw
@@ -123,11 +132,11 @@ console.log("\n[1] 平時練習列表 — 真實顯示「選擇多課合併複�
   check("點擊後真實開啟課別複選 Picker（進入平時練習前，先跳出複選畫面）", !!overlay);
 
   const subjectChips = doc.querySelectorAll(".qpick-subject");
-  check("Picker 只顯示 1 個科目（國文）— 本次 Workspace 範圍內確實只有這個科目", subjectChips.length === 1);
-  check("科目名稱真實為「國文」", subjectChips[0].textContent === "國文");
+  check("Picker 真實顯示 2 個科目（國文＋英文，本次 Workspace 範圍內的真實科目數）", subjectChips.length === 2);
+  check("預設開啟的科目分頁真實為「國文」（依 Repository 註冊順序，國文教材先於英文教材載入）", subjectChips[0].textContent === "國文");
 
   const rows = doc.querySelectorAll(".qpick-row");
-  check("真實列出 3 個可複選課別（第一課／第二課／第三課／近體詩選）", rows.length === 3);
+  check("預設國文分頁真實列出 3 個可複選課別（第一課／第二課／第三課／近體詩選）", rows.length === 3);
 
   const checkboxes = doc.querySelectorAll(".qpick-row input[type='checkbox']");
   check("每個課別 checkbox 都帶有真實 examId（可追溯回真實 QuestionRuntime exam）",
