@@ -1666,12 +1666,27 @@ console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10�
   };
   const pages = ["materials.html", "summary.html", "quiz.html", "wrongbook.html", "review.html"];
 
+  /* Sprint AI-138: showTutorSuggestions now defaults to false (AI Tutor
+     has no real API connected yet) — explicitly seeded true here so this
+     block keeps proving the tip's own real rendering behavior when a
+     user (or a future re-enable) turns it back on; the new default-off
+     behavior itself is covered separately below. */
   pages.forEach(function (page) {
-    const { window, consoleErrors } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+    const { window, consoleErrors } = loadPage(page, {
+      seedSession: { "ahs:wrongBookRuntime": wrongBookSeed, "ahs:settings": { showTutorSuggestions: true } }
+    });
     const tip = window.document.querySelector(".tutor-tip");
     check(page + "：Tutor Context Tip 渲染真實建議（與首頁/AI Tutor 同一組真實資料來源）",
       !!tip && tip.textContent.includes("題錯題待複習") && tip.getAttribute("href") === "tutor.html");
     check(page + "：Console errors = 0（Tutor Context Tip）", consoleErrors.length === 0);
+  });
+
+  /* Sprint AI-138: default (no seeded settings) — AI Tutor 尚未串接真實
+     API，PO 決定 Tutor Context Tip 暫時隱藏，即使有真實待複習資料也一樣。 */
+  pages.forEach(function (page) {
+    const { window } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+    check(page + "：預設（showTutorSuggestions 未設定）Tutor Context Tip 不渲染（AI Tutor 暫時隱藏）",
+      !window.document.querySelector(".tutor-tip"));
   });
 
   /* Honesty check: with genuinely no real data anywhere, the tip must
@@ -1744,8 +1759,13 @@ console.log("\n[39] Sprint AI-113 AI-808 — AI Tutor Context 依「目前教材
     }],
     folders: [], seq: 1, folderSeq: 0
   };
+  /* Sprint AI-138: showTutorSuggestions now defaults to false, so the
+     .tutor-tip check below needs it explicitly seeded true — the
+     underlying A.TutorMessage.build() call is unaffected either way
+     (that gate only lives in TutorContextTip.js's caller, not in
+     TutorMessage itself). */
   const { window } = loadPage("summary.html", {
-    seedSession: { "ahs:materialRuntime": materialSeed },
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:settings": { showTutorSuggestions: true } },
     url: "summary.html?materialId=rt_1"
   });
   const A = window.AHS;
