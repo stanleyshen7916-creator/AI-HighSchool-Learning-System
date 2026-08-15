@@ -121,8 +121,11 @@ test.describe("PAT-124-①", () => {
     /* Sprint AI-138: AI Tutor 尚未串接真實 API，showTutorSuggestions 現在
        預設 false，.tutor-card 不再是「首次登入必render」清單的一員——
        改由 ux-hotfix-122.spec.js 的新測試／LearningFlowRegression.js §9
-       專門驗證這個預設隱藏行為，這裡不重複斷言。 */
-    await expect(page.locator(".home-kpi__item")).toHaveCount(8);
+       專門驗證這個預設隱藏行為，這裡不重複斷言。
+       Sprint AI-141：同一個開關也讓「學習成效總覽」的「AI Tutor 建議」
+       KPI 卡預設不掛載，8 張變 7 張——knowledge-engine.spec.js 自己的
+       測試專門驗證這件事，這裡同樣不重複斷言，只反映真實預設數量。 */
+    await expect(page.locator(".home-kpi__item")).toHaveCount(7);
 
     /* AI-124 PAT-01 (Project Owner PAT FAIL): real root cause was
        index.html never <script>-tagging js/data/TeachingMaterialData.js

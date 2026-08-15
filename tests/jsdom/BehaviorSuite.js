@@ -2024,6 +2024,28 @@ console.log("\n[44] HOTFIX-008 — Topbar 顯示名稱/年級跨頁與重新整�
     !!guestName && guestName.textContent === "Student A");
 }
 
+console.log("\n[45] Sprint AI-141 — 學習成效總覽「AI Tutor 建議」KPI 卡預設隱藏（AI Tutor 尚未串接真實 API）");
+{
+  const { window: defaultWin, consoleErrors: defaultErrors } = loadPage("index.html", {});
+  const defaultBoard = defaultWin.document.querySelector(".home-kpi");
+  check("預設（未設定 showTutorSuggestions）：學習成效總覽只剩 7 張 KPI 卡",
+    !!defaultBoard && defaultBoard.querySelectorAll(".home-kpi__item").length === 7);
+  check("預設：「AI Tutor 建議」卡片不存在",
+    !defaultBoard.querySelector('[data-kpi="tutorSuggestion"]'));
+  check("Console errors = 0（預設隱藏）", defaultErrors.length === 0);
+
+  const { window: onWin, consoleErrors: onErrors } = loadPage("index.html", {
+    seedSession: { "ahs:settings": { showTutorSuggestions: true } }
+  });
+  const onBoard = onWin.document.querySelector(".home-kpi");
+  check("showTutorSuggestions:true 時：學習成效總覽恢復 8 張 KPI 卡",
+    !!onBoard && onBoard.querySelectorAll(".home-kpi__item").length === 8);
+  check("showTutorSuggestions:true 時：「AI Tutor 建議」卡片存在",
+    !!onBoard.querySelector('[data-kpi="tutorSuggestion"]'));
+  check("Console errors = 0（開啟後）", onErrors.length === 0);
+}
+
+
 console.log("\n==============================");
 console.log("PASS: " + pass + "   FAIL: " + fail);
 if (failures.length) { console.log("Failures:"); failures.forEach(f => console.log(" - " + f)); process.exit(1); }

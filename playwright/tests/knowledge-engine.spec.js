@@ -32,13 +32,14 @@ function collectErrors(page) {
   return errors;
 }
 
-test("AI-121：首頁學習成效總覽（.home-kpi）真實顯示 8 個 KPI，尚無資料時誠實顯示「尚無資料」", async ({ page }) => {
+test("AI-121：首頁學習成效總覽（.home-kpi）真實顯示 7 個 KPI（AI Tutor 建議因尚未串接真實 API 預設隱藏，見 Sprint AI-141），尚無資料時誠實顯示「尚無資料」", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(fileUrl("home"));
   const board = page.locator(".home-kpi");
   await expect(board).toBeVisible();
   const items = board.locator(".home-kpi__item");
-  await expect(items).toHaveCount(8);
+  await expect(items).toHaveCount(7);
+  await expect(board.locator('[data-kpi="tutorSuggestion"]')).toHaveCount(0);
   await expect(board.locator('[data-kpi="accuracyToday"] .home-kpi__value')).toHaveText("尚無資料");
   await expect(board.locator('[data-kpi="knowledgeMastery"] .home-kpi__value')).toHaveText("尚無資料");
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);

@@ -53,6 +53,13 @@ AHS.HomeKpiBoard = (function () {
       AHS.TutorMessage && typeof AHS.TutorMessage.build === "function" &&
       AHS.TutorMessage.build(AHS.StatisticsRuntime.learningContext(), { page: "home" }));
 
+    /* Sprint AI-141（PO 回報）: 同 Sprint AI-138 的 showTutorSuggestions
+       開關（AI Tutor 尚未串接真實 API）——這張 KPI 卡本身就是「有沒有新的
+       AI Tutor 建議」的指標，開關關閉時沒有理由還留著，直接從 8 張縮成
+       7 張，而不是留一張永遠顯示「尚無建議」的空卡。 */
+    var showTutor = !(AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function" &&
+      AHS.SettingsRuntime.get().showTutorSuggestions === false);
+
     var growthTone = typeof kpis.knowledgeGrowthToday === "number"
       ? (kpis.knowledgeGrowthToday > 0 ? "up" : kpis.knowledgeGrowthToday < 0 ? "down" : null)
       : null;
@@ -69,8 +76,8 @@ AHS.HomeKpiBoard = (function () {
       kpiCard("knowledgeGrowth", "Knowledge Growth", formatDelta(kpis.knowledgeGrowthToday), growthTone, growthSub),
       kpiCard("newWeaknesses", "今日新增弱點", String(kpis.newWeaknessesToday), kpis.newWeaknessesToday > 0 ? "warn" : null),
       kpiCard("resolvedWeaknesses", "今日解除弱點", String(kpis.resolvedWeaknessesToday), kpis.resolvedWeaknessesToday > 0 ? "up" : null),
-      kpiCard("tutorSuggestion", "AI Tutor 建議", hasTutorSuggestion ? "有新建議" : "尚無建議", hasTutorSuggestion ? "up" : null)
-    ]);
+      showTutor ? kpiCard("tutorSuggestion", "AI Tutor 建議", hasTutorSuggestion ? "有新建議" : "尚無建議", hasTutorSuggestion ? "up" : null) : null
+    ].filter(Boolean));
 
     return el("section", { class: "card home-kpi", "aria-label": "學習成效總覽" }, [
       el("div", { class: "card__head" }, [
