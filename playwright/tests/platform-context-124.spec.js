@@ -118,7 +118,10 @@ test.describe("PAT-124-①", () => {
     await expect(page.locator(".home-kpi")).toBeVisible();        // 學習成效總覽／Statistics KPI
     await expect(page.locator(".recent-materials")).toBeVisible(); // 最新教材
     await expect(page.locator(".workspace-folder")).toBeVisible(); // 教材資料夾
-    await expect(page.locator(".tutor-card")).toBeVisible();      // AI Tutor
+    /* Sprint AI-138: AI Tutor 尚未串接真實 API，showTutorSuggestions 現在
+       預設 false，.tutor-card 不再是「首次登入必render」清單的一員——
+       改由 ux-hotfix-122.spec.js 的新測試／LearningFlowRegression.js §9
+       專門驗證這個預設隱藏行為，這裡不重複斷言。 */
     await expect(page.locator(".home-kpi__item")).toHaveCount(8);
 
     /* AI-124 PAT-01 (Project Owner PAT FAIL): real root cause was

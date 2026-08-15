@@ -97,7 +97,18 @@ test("Assessment Scenario：原始試卷／AI 練習分流 -> Random Exam -> Sta
   }, setup.sessionCarry);
 
   await page.goto(fileUrl("wrongbook"));
-  await expect(page.locator("body")).toContainText("Assessment 測試");
+  /* Sprint AI-138: the exam/session title (item.title) only ever rendered
+     in the Detail Panel (AI-122-04) — never in the row list itself — so
+     this always needed a click to see it. Before this Sprint, the same
+     text happened to also appear for free in the Tutor Suggestion banner
+     (AHS.TutorContextTip, showTutorSuggestions defaulted true), which is
+     what this assertion was actually reading; now that AI Tutor suggestions
+     default to hidden (no real API connected yet), that coincidental path
+     is gone. Click the row and read the real Detail Panel instead — the
+     correct, real way this title has always been surfaced, and one that
+     doesn't depend on an unrelated Settings toggle. */
+  await page.locator(".wb-row").first().click();
+  await expect(page.locator(".wb-detail__material")).toContainText("Assessment 測試");
 
   await page.goto(fileUrl("review"));
   const dueCount = await page.evaluate(() => window.AHS.StatisticsRuntime.dueForReview().length);

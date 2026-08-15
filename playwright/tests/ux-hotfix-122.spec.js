@@ -348,6 +348,11 @@ test("PAT-122-07：首頁 CTA 一致化 — 教材資料夾「前往考前總複
 
 test("PAT-122-08：首頁資訊排序與單一目的 — 無重複資訊，區塊順序符合 Hero→今日任務→學習成果總覽→最近新增教材→教材資料夾→AI Tutor", async ({ page }) => {
   const errors = collectErrors(page);
+  /* Sprint AI-138: showTutorSuggestions now defaults to false (AI Tutor
+     暫無真實 API，PO 決定暫時隱藏) — seeded true here so this PAT keeps
+     proving the real block-ordering rule still holds when the card is
+     enabled; default-hidden behavior is covered by the next test. */
+  await seedSession(page, { "ahs:settings": { showTutorSuggestions: true } });
   await page.goto(fileUrl("home"));
 
   // 首頁不再自動掛載 ReviewWidget（與 學習成效總覽/今日任務 資訊重複）。
@@ -376,5 +381,13 @@ test("PAT-122-08：首頁資訊排序與單一目的 — 無重複資訊，區�
   });
   expect(order).toEqual(["hero", "today", "kpi", "recent", "folder", "tutor"]);
 
+  expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+});
+
+test("Sprint AI-138：AI Tutor 尚未串接真實 API，首頁預設（showTutorSuggestions 未設定）不掛載卡片", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto(fileUrl("home"));
+  await expect(page.locator(".tutor-card")).toHaveCount(0);
+  await expect(page.locator(".sidebar__item", { hasText: "AI Tutor" })).toHaveCount(0);
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
