@@ -210,7 +210,16 @@
   background: var(--brand-soft);
   color: var(--text);
   font-size: 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
 }
+.mat-question__option:hover { border-color: var(--brand-line); }
+/* Sprint AI-139: 同 css/pages/wrongbook.css 既有 .wb-detail__option
+   is-correct／is-wrong 色彩語言，不另外發明新配色。 */
+.mat-question__option.is-correct { border-color: #b7ecd2; background-color: #f0fbf5; cursor: default; }
+.mat-question__option.is-correct .mat-question__optletter { color: var(--ok); }
+.mat-question__option.is-wrong { border-color: #f6c9c4; background-color: #fdf1f0; cursor: default; }
+.mat-question__option.is-wrong .mat-question__optletter { color: var(--subj-history); }
 .mat-question__optletter {
   font-weight: 600;
   color: var(--brand-ink);

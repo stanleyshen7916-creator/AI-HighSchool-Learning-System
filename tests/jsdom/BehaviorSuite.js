@@ -919,14 +919,23 @@ console.log("\n[22] EO-S8.3.006 — AI 練習題 UI 串接（Material Preview）
   revealBtn.click();
   check("再按可隱藏答案", answerBox.hasAttribute("hidden"));
 
-  /* 重新產生題目 — 不重新分析教材 */
+  /* Sprint AI-139（PO 回報）：選項改為真正可點選作答，不再是純文字列表。 */
+  const optionNodes = [...card0.querySelectorAll(".mat-question__option")];
+  check("每個選項皆可點選（role=button／tabindex=0）",
+    optionNodes.every(n => n.getAttribute("role") === "button" && n.getAttribute("tabindex") === "0"));
+  optionNodes[0].click();
+  check("點擊選項後立即標示 is-correct 或 is-wrong",
+    optionNodes[0].classList.contains("is-correct") || optionNodes[0].classList.contains("is-wrong"));
+  check("恰有一個選項標示為正確答案（答錯時同時標出正解）",
+    optionNodes.filter(n => n.classList.contains("is-correct")).length === 1);
+  optionNodes[1].click();
+  check("一題只能作答一次，之後點其他選項不再有反應",
+    !optionNodes[1].classList.contains("is-correct") && !optionNodes[1].classList.contains("is-wrong"));
+
+  /* Sprint AI-139（PO 回報）：「重新產生題目」先隱藏——Repository 教材本來
+     就直接短路回傳同一份 quiz，force=true 也不會有任何不同結果。 */
   const reloadBtn = section.querySelector(".mat-question__reload");
-  check("提供「重新產生題目」按鈕", !!reloadBtn && reloadBtn.textContent === "重新產生題目");
-  const kgBefore = A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length;
-  reloadBtn.click();
-  check("重新產生後仍有題目", section.querySelectorAll(".mat-question__card").length >= 1);
-  check("重新產生不改變知識圖譜（不重新分析教材）",
-    A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length === kgBefore);
+  check("「重新產生題目」按鈕已隱藏（目前對 Repository 教材無實際作用）", !reloadBtn);
 
   window.setTimeout = realSetTimeout;
   check("AI 題目 UI 全流程 Console errors = 0", consoleErrors.length === 0);
