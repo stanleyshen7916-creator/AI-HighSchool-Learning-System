@@ -85,7 +85,7 @@ window.AHS = window.AHS || {};
 
     questionBank: {
       singleChoice: [
-        { id: ID + "-q1", origin: "textbook-verified", questionForm: "字詞注釋", text: "依課文注釋，「諳」字在文中的意思最接近下列何者？",
+        { id: ID + "-q1", origin: "textbook-verified", questionForm: "字詞注釋", text: "課文：「弟子在家，未諳此苦。」句中「諳」字的意思最接近下列何者？",
           options: [{ key: "A", text: "安穩" }, { key: "B", text: "熟悉、經歷" }, { key: "C", text: "詢問" }, { key: "D", text: "歌詠" }],
           correctAnswer: "B", knowledgePoint: "字詞注釋", difficulty: "易",
           explanation: "注釋明確標示「諳」意為熟悉，原文「弟子在家，未諳此苦」，此處指經歷、體驗過某種辛勞。「安穩」與「諳」字形近但意義無關；「詢問」「歌詠」皆與字義無關。" },
@@ -93,7 +93,7 @@ window.AHS = window.AHS || {};
           options: [{ key: "A", text: "這趟前來不會造成任何負擔" }, { key: "B", text: "這趟前來一定要打敗別人" }, { key: "C", text: "這趟前來絕不欠任何人債務" }, { key: "D", text: "這趟前來絕不會辜負求道的初衷" }],
           correctAnswer: "D", knowledgePoint: "字詞注釋／句式", difficulty: "中等",
           explanation: "「負」在此作動詞「辜負」解，「此來為不負也」即「不負此來」，不辜負這趟入山求道之行。「負」雖有「負擔」「欠債」等其他義項，但脈絡是求道之行，非金錢或負擔往來，文中亦無與人爭勝的語境。" },
-        { id: ID + "-q3", origin: "textbook-verified", questionForm: "內容理解", text: "王生希望向道士學習的法術，依課文所述是哪一種能力？",
+        { id: ID + "-q3", origin: "textbook-verified", questionForm: "內容理解", text: "王生對道士說：「每見師行處，牆壁所不能隔，但得此法足矣。」依此，王生希望向道士學習的是哪一種能力？",
           options: [{ key: "A", text: "穿牆而行、不受牆壁阻隔的法術" }, { key: "B", text: "呼風喚雨的法術" }, { key: "C", text: "使人隱形的法術" }, { key: "D", text: "治病延壽的法術" }],
           correctAnswer: "A", knowledgePoint: "內容理解", difficulty: "易",
           explanation: "王生說：「每見師行處，牆壁所不能隔，但得此法足矣。」求的正是穿牆術；課文並未提及呼風喚雨、隱形或治病延壽等其他選項內容。" },
@@ -113,7 +113,7 @@ window.AHS = window.AHS || {};
           options: [{ key: "A", text: "因為他順利穿牆成功，證明自己學會了法術" }, { key: "B", text: "因為道士答應教他更多法術" }, { key: "C", text: "因為道士免除了他的雜役工作" }, { key: "D", text: "因為他即將返鄉與家人團聚" }],
           correctAnswer: "A", knowledgePoint: "內容理解", difficulty: "易",
           explanation: "課文「王果去牆數步，奔而入，及牆，虛若無物，回視，果在牆外矣。大喜，入謝」，清楚交代穿牆成功後回頭確認自己已在牆外，故欣喜道謝。" },
-        { id: ID + "-q8", origin: "textbook-verified", questionForm: "內容理解", text: "依課文脈絡，道士最後「助資斧遣之歸」的行為，顯示道士對王生的態度是？",
+        { id: ID + "-q8", origin: "textbook-verified", questionForm: "內容理解", text: "道士最後「助資斧遣之歸」的行為，顯示道士對王生的態度是？",
           options: [{ key: "A", text: "對王生極度不滿，故意打發他離開" }, { key: "B", text: "因王生表現優異，賜予豐厚獎賞" }, { key: "C", text: "雖僅授以小技，仍體恤其返鄉路途，予以資助" }, { key: "D", text: "純粹基於買賣關係，收取酬金後打發他走" }],
           correctAnswer: "C", knowledgePoint: "內容理解", difficulty: "中等",
           explanation: "課文客觀敘述道士提供路費，符合師徒情誼中體恤弟子的合理描寫；課文並無不滿或打發的負面語氣線索，前文也已言明僅授「小技」，並非買賣交易。" },
