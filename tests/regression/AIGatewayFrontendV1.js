@@ -265,7 +265,14 @@ httpClientChain.then(function () {
   check("既有 SummaryAdapter.generate() 行為不變（真實資料端對端）", SA.generate(mat.id).subject === "math");
 
   console.log("\n[原始碼靜態掃描 — 真實 fetch() 僅限 HttpApiClient.js 一個檔案]");
-  const SCAN_FILES = ["js/ai/GatewayIntegration.js", "js/ai/SummaryAdapter.js", "js/ai/QuestionAdapter.js", "js/ui/AIGatewayPanel.js", "js/data/AppConfig.js"];
+  /* Sprint AI-136（教材中心重點整理/練習題合併）：js/ui/AIGatewayPanel.js
+     已移除——它是 MaterialPreview.js 裡「AI Gateway 重點整理／練習題」的
+     UI 層，對 Repository 教材只是把 AI 重點整理／AI 練習題的同一份資料
+     重新包裝顯示，對其餘教材則因 AppConfig.aiGateway.endpoint 恆為空字串
+     而保證失敗，純屬重複／失效。本檔案其餘驗證的 GatewayIntegration／
+     SummaryAdapter／QuestionAdapter Runtime 層完全未變動，故不掃描此
+     已刪除的檔案。 */
+  const SCAN_FILES = ["js/ai/GatewayIntegration.js", "js/ai/SummaryAdapter.js", "js/ai/QuestionAdapter.js", "js/data/AppConfig.js"];
   let leaks = 0;
   SCAN_FILES.forEach(p => {
     const src = fs.readFileSync(path.join(ROOT, p), "utf8")
@@ -274,7 +281,7 @@ httpClientChain.then(function () {
     if (/\bXMLHttpRequest\b/.test(src)) { leaks++; console.log("    UNEXPECTED XMLHttpRequest in " + p); }
     if (/apiKey\s*:\s*["'][^"']+["']|sk-[a-zA-Z0-9]{10,}/.test(src)) { leaks++; console.log("    UNEXPECTED hardcoded key in " + p); }
   });
-  check("真實 fetch()/XMLHttpRequest 僅存在於 HttpApiClient.js，五個 Platform 檔案零 fetch/XHR/硬編碼金鑰", leaks === 0);
+  check("真實 fetch()/XMLHttpRequest 僅存在於 HttpApiClient.js，四個 Platform 檔案零 fetch/XHR/硬編碼金鑰", leaks === 0);
   const gatewaySrc = fs.readFileSync(path.join(ROOT, "ai-engine/src/gateway/HttpApiClient.js"), "utf8");
   check("HttpApiClient.js 確實包含真實 fetch()（此 Sprint 唯一授權的網路呼叫點）", /\bfetch\s*\(/.test(gatewaySrc));
   check("AppConfig.aiGateway 無 apiKey 欄位（前端從未持有金鑰）", AHS.AppConfig.aiGateway.apiKey === undefined);

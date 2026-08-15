@@ -21,6 +21,20 @@ AHS.QuizCenter = (function () {
 
   var DIFF_TONE = { "易": "#22b573", "易~中等": "#22b573", "中等": "#f59e0b", "難": "#ef4444" };
 
+  /* difficultyBadge(label) — Sprint AI-137: a small colored pill (reuses
+     the existing `.chip` visual treatment, same DIFF_TONE palette
+     quizRow() above already uses for Exam Mode) shown on each practice
+     question row so 易/中等/難 is identifiable at a glance without
+     opening the question. null (renders nothing) when the record
+     genuinely carries no difficulty text — never fabricates one. */
+  function difficultyBadge(label) {
+    if (!label) { return null; }
+    var tone = DIFF_TONE[label] || "#6b7280";
+    return el("span", {
+      class: "chip quiz-practice__row-diff", style: "color:" + tone + ";background-color:" + tone + "1a"
+    }, [el("span", { text: label })]);
+  }
+
   /* 平時練習（原正式測驗）每次固定抽題數 — 與 AHS.QuestionBankRuntime.
      drawCycle() 搭配，一份題庫題數不足 10 題時誠實只給實際題數，不湊數。 */
   var FORMAL_EXAM_QUESTION_COUNT = 10;
@@ -1185,6 +1199,7 @@ AHS.QuizCenter = (function () {
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
           }, [el("span", { text: subj.name })]),
+          difficultyBadge(resolveRealQuestionDifficulty(q)),
           el("span", { class: "quiz-practice__row-q", text: q.text }),
           el("span", { class: "quiz-practice__row-meta", text: q.knowledgePoint || "" }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
@@ -1208,6 +1223,7 @@ AHS.QuizCenter = (function () {
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
           }, [el("span", { text: subj.name })]),
+          difficultyBadge(record.difficulty),
           el("span", { class: "quiz-practice__row-q", text: record.question || "（尚無題目）" }),
           el("span", { class: "quiz-practice__row-meta", text: record.knowledgePoint || record.chapter || "" }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
