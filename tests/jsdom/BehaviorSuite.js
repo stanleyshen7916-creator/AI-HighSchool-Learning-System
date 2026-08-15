@@ -919,14 +919,23 @@ console.log("\n[22] EO-S8.3.006 — AI 練習題 UI 串接（Material Preview）
   revealBtn.click();
   check("再按可隱藏答案", answerBox.hasAttribute("hidden"));
 
-  /* 重新產生題目 — 不重新分析教材 */
+  /* Sprint AI-139（PO 回報）：選項改為真正可點選作答，不再是純文字列表。 */
+  const optionNodes = [...card0.querySelectorAll(".mat-question__option")];
+  check("每個選項皆可點選（role=button／tabindex=0）",
+    optionNodes.every(n => n.getAttribute("role") === "button" && n.getAttribute("tabindex") === "0"));
+  optionNodes[0].click();
+  check("點擊選項後立即標示 is-correct 或 is-wrong",
+    optionNodes[0].classList.contains("is-correct") || optionNodes[0].classList.contains("is-wrong"));
+  check("恰有一個選項標示為正確答案（答錯時同時標出正解）",
+    optionNodes.filter(n => n.classList.contains("is-correct")).length === 1);
+  optionNodes[1].click();
+  check("一題只能作答一次，之後點其他選項不再有反應",
+    !optionNodes[1].classList.contains("is-correct") && !optionNodes[1].classList.contains("is-wrong"));
+
+  /* Sprint AI-139（PO 回報）：「重新產生題目」先隱藏——Repository 教材本來
+     就直接短路回傳同一份 quiz，force=true 也不會有任何不同結果。 */
   const reloadBtn = section.querySelector(".mat-question__reload");
-  check("提供「重新產生題目」按鈕", !!reloadBtn && reloadBtn.textContent === "重新產生題目");
-  const kgBefore = A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length;
-  reloadBtn.click();
-  check("重新產生後仍有題目", section.querySelectorAll(".mat-question__card").length >= 1);
-  check("重新產生不改變知識圖譜（不重新分析教材）",
-    A.KnowledgeGraphRuntime.queryByMaterial(mat.id).length === kgBefore);
+  check("「重新產生題目」按鈕已隱藏（目前對 Repository 教材無實際作用）", !reloadBtn);
 
   window.setTimeout = realSetTimeout;
   check("AI 題目 UI 全流程 Console errors = 0", consoleErrors.length === 0);
@@ -1666,12 +1675,27 @@ console.log("\n[37] Platform Refactor Master — Tutor Context Tip（PAT 8/9/10�
   };
   const pages = ["materials.html", "summary.html", "quiz.html", "wrongbook.html", "review.html"];
 
+  /* Sprint AI-138: showTutorSuggestions now defaults to false (AI Tutor
+     has no real API connected yet) — explicitly seeded true here so this
+     block keeps proving the tip's own real rendering behavior when a
+     user (or a future re-enable) turns it back on; the new default-off
+     behavior itself is covered separately below. */
   pages.forEach(function (page) {
-    const { window, consoleErrors } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+    const { window, consoleErrors } = loadPage(page, {
+      seedSession: { "ahs:wrongBookRuntime": wrongBookSeed, "ahs:settings": { showTutorSuggestions: true } }
+    });
     const tip = window.document.querySelector(".tutor-tip");
     check(page + "：Tutor Context Tip 渲染真實建議（與首頁/AI Tutor 同一組真實資料來源）",
       !!tip && tip.textContent.includes("題錯題待複習") && tip.getAttribute("href") === "tutor.html");
     check(page + "：Console errors = 0（Tutor Context Tip）", consoleErrors.length === 0);
+  });
+
+  /* Sprint AI-138: default (no seeded settings) — AI Tutor 尚未串接真實
+     API，PO 決定 Tutor Context Tip 暫時隱藏，即使有真實待複習資料也一樣。 */
+  pages.forEach(function (page) {
+    const { window } = loadPage(page, { seedSession: { "ahs:wrongBookRuntime": wrongBookSeed } });
+    check(page + "：預設（showTutorSuggestions 未設定）Tutor Context Tip 不渲染（AI Tutor 暫時隱藏）",
+      !window.document.querySelector(".tutor-tip"));
   });
 
   /* Honesty check: with genuinely no real data anywhere, the tip must
@@ -1744,8 +1768,13 @@ console.log("\n[39] Sprint AI-113 AI-808 — AI Tutor Context 依「目前教材
     }],
     folders: [], seq: 1, folderSeq: 0
   };
+  /* Sprint AI-138: showTutorSuggestions now defaults to false, so the
+     .tutor-tip check below needs it explicitly seeded true — the
+     underlying A.TutorMessage.build() call is unaffected either way
+     (that gate only lives in TutorContextTip.js's caller, not in
+     TutorMessage itself). */
   const { window } = loadPage("summary.html", {
-    seedSession: { "ahs:materialRuntime": materialSeed },
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:settings": { showTutorSuggestions: true } },
     url: "summary.html?materialId=rt_1"
   });
   const A = window.AHS;

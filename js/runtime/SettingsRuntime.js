@@ -19,9 +19,16 @@ AHS.SettingsRuntime = (function () {
 
   var STORAGE_KEY = "settings";
 
+  /* Sprint AI-138：showTutorSuggestions 預設改為 false — AI Tutor 尚未
+     串接真實 API，PO 決定 AiTutorHomeCard（首頁卡片）與 TutorContextTip
+     （教材中心/學習總結/測驗中心/知識弱點/複習中心的建議 Banner）暫時隱藏。
+     這是這兩個元件本來就有的既有真實開關（見 js/pages/AppHome.js／
+     js/ui/TutorContextTip.js 對這個欄位的讀取），只是把預設值反過來，
+     Settings > Learning 的「顯示 AI 巧巧老師建議卡片」開關仍在，使用者
+     （或日後重新啟用時）仍可自行打開，不是刪除功能。 */
   var DEFAULTS = {
     profile: { name: "同學", grade: "高中生" },
-    showTutorSuggestions: true,
+    showTutorSuggestions: false,
     aiGatewayEnabled: false
   };
 

@@ -118,13 +118,18 @@ AHS.AppConfig = {
        stated only for 複習中心 (AI-118-03), not learning.html. */
   nav: {
     active: "home",
+    /* Sprint AI-138：AI Tutor 尚未串接真實 API（僅本地規則引擎/罐頭回覆），
+       PO 決定暫時隱藏此入口，故從 Sidebar 移除 "tutor" 項目——tutor.html
+       本身與 js/pages/AppTutor.js／js/components/AiTutor.js 皆保留、仍可
+       直接以網址造訪，之後真的串接 API 時只要把這一行加回來即可，不是
+       刪除功能。ROUTES.tutor（AppShell.js）也保持不變，因為它只在真的有
+       對應 nav item 時才會被用到。 */
     items: [
       { id: "home", label: "首頁", icon: "home" },
       { id: "materials", label: "教材中心", icon: "book" },
       { id: "summary", label: "學習總結", icon: "summary" },
       { id: "quiz", label: "測驗中心", icon: "quiz" },
-      { id: "wrongbook", label: "知識弱點", icon: "wrong" },
-      { id: "tutor", label: "AI Tutor", icon: "tutor" }
+      { id: "wrongbook", label: "知識弱點", icon: "wrong" }
     ],
     /* Bottom Navigation stays capped at 5 slots (this repo's own existing
        mobile-nav convention, unchanged by this Sprint) — AI Tutor is

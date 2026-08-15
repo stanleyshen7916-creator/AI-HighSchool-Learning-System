@@ -238,7 +238,17 @@ window.AHS = window.AHS || {};
          (School/Semester already fixed by the Workspace itself), each
          linking straight into 學習總結/考前練習。 */
       (AHS.WorkspaceFolder ? AHS.WorkspaceFolder.create() : null),
-      AHS.AiTutorHomeCard.create(buildAiTutorModel())
+      /* Sprint AI-138: AiTutorHomeCard.create() never returns null on its
+         own — with no model it still renders the card shell (title/
+         avatar/"AI 老師尚無建議" Empty State), so gating buildAiTutorModel()
+         alone (existing showTutorSuggestions check inside it) was never
+         enough to actually hide the card; the whole section is now
+         omitted here too when the toggle is off, same "return null so
+         .filter(Boolean) drops it" pattern already used for
+         WorkspaceFolder/HomeKpiBoard above. */
+      (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function" &&
+        AHS.SettingsRuntime.get().showTutorSuggestions === false)
+        ? null : AHS.AiTutorHomeCard.create(buildAiTutorModel())
     ].filter(Boolean));
 
     return el("div", { class: "home" }, [main]);

@@ -43,15 +43,44 @@ AHS.MaterialQuestionCard = (function () {
       metaBits.length ? el("p", { class: "mat-question__meta", text: metaBits.join("　") }) : null
     ]));
 
+    /* Sprint AI-139: 選項改為真正可點選作答（原本只是純文字列表，點了
+       沒有任何反應）— 沿用 js/components/WrongBook.js buildReviewInteraction()
+       既有的 role="button"/tabindex 互動慣例，一題只能選一次：點下後立即
+       用 is-correct／is-wrong 標示（答錯時同時標出正確選項），不再需要另
+       外的「提交」步驟，因為這裡本來就只是預覽用途，不寫入任何 Runtime。 */
     var options = Array.isArray(question.options) ? question.options : [];
     var LETTERS = ["A", "B", "C", "D", "E", "F"];
-    card.appendChild(el("ul", { class: "mat-question__options" },
-      options.map(function (opt, i) {
-        return el("li", { class: "mat-question__option" }, [
-          el("span", { class: "mat-question__optletter", text: (LETTERS[i] || String(i + 1)) + "." }),
-          el("span", { class: "mat-question__opttext", text: String(opt) })
-        ]);
-      })));
+    var correctText = String(question.answer || "");
+    var answered = false;
+    var optionNodes = [];
+    var optionsList = el("ul", { class: "mat-question__options" });
+    options.forEach(function (opt, i) {
+      var optText = String(opt);
+      var isAnswer = optText === correctText;
+      var li = el("li", {
+        class: "mat-question__option", role: "button", tabindex: "0", "aria-pressed": "false"
+      }, [
+        el("span", { class: "mat-question__optletter", text: (LETTERS[i] || String(i + 1)) + "." }),
+        el("span", { class: "mat-question__opttext", text: optText })
+      ]);
+      function pick() {
+        if (answered) { return; }
+        answered = true;
+        li.classList.add(isAnswer ? "is-correct" : "is-wrong");
+        li.setAttribute("aria-pressed", "true");
+        if (!isAnswer) {
+          var correctLi = optionNodes.filter(function (n) { return n.isAnswer; })[0];
+          if (correctLi) { correctLi.el.classList.add("is-correct"); }
+        }
+      }
+      li.addEventListener("click", pick);
+      li.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); }
+      });
+      optionNodes.push({ el: li, isAnswer: isAnswer });
+      optionsList.appendChild(li);
+    });
+    card.appendChild(optionsList);
 
     /* 查看答案 — reveals the real answer + existing explanation only. */
     var answerBox = el("div", { class: "mat-question__answer", hidden: "hidden" }, [
@@ -104,12 +133,17 @@ AHS.MaterialQuestionCard = (function () {
         section.appendChild(el("p", { class: "mat-question__count", text: "共 " + set.questions.length + " 題" }));
         section.appendChild(el("div", { class: "mat-question__list" },
           set.questions.map(function (q, i) { return questionCard(q, i); })));
-        /* 重新產生題目 — regenerates from the same graph, no re-analysis. */
+        /* Sprint AI-139（PO 回報）: 「重新產生題目」先隱藏、暫不使用 ——
+           Repository-sourced 教材（repoQuiz() 命中時）本來就直接短路回傳
+           同一份 quiz，force=true 也不會產生任何不同結果，按了等於沒按；
+           AI 產生流程本身也還是 stub（見 CLAUDE.md parser/ 說明），同樣
+           沒有真正「重新」產生的效果。保留 generate(true) 這條路徑本身
+           （reloadBtn 只是不掛進畫面），未來真的接上會變化的來源時可以
+           直接恢復，不必重寫。 */
         var reloadBtn = el("button", {
           type: "button", class: "mat-summary__btn mat-question__reload", text: "重新產生題目"
         });
         reloadBtn.addEventListener("click", function () { generate(true); });
-        section.appendChild(reloadBtn);
         return;
       }
 

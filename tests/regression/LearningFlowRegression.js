@@ -123,11 +123,15 @@ console.log("\n[1] Navigation — 固定順序，複習中心／我的學習已�
   const { window, consoleErrors } = loadPage("index.html", {});
   const doc = window.document;
   const sidebarLabels = [...doc.querySelectorAll(".sidebar__item")].map((n) => n.textContent.trim());
-  check("Sidebar 依序為 首頁/教材中心/學習總結/測驗中心/知識弱點/AI Tutor（+設定/登出，AI-121-08 錯題本更名）",
-    ["首頁", "教材中心", "學習總結", "測驗中心", "知識弱點", "AI Tutor"].every((label) =>
+  check("Sidebar 依序為 首頁/教材中心/學習總結/測驗中心/知識弱點（+設定/登出，AI-121-08 錯題本更名）",
+    ["首頁", "教材中心", "學習總結", "測驗中心", "知識弱點"].every((label) =>
       sidebarLabels.some((t) => t.includes(label))));
   check("Sidebar 不再有「複習中心」", !sidebarLabels.some((t) => t.includes("複習中心")));
   check("Sidebar 不再有「我的學習」", !sidebarLabels.some((t) => t.includes("我的學習")));
+  /* Sprint AI-138: AI Tutor 尚未串接真實 API，PO 決定暫時從 Sidebar 移除
+     這個入口（js/data/AppConfig.js 的 nav.items，非刪除 tutor.html 本身）。 */
+  check("Sidebar 不再有「AI Tutor」（AI-138：尚未串接真實 API，暫時隱藏）",
+    !sidebarLabels.some((t) => t.includes("AI Tutor")));
 
   const hrefs = [...doc.querySelectorAll(".sidebar__item, .bottom-nav__item")]
     .map((n) => n.getAttribute("href")).filter(Boolean);
@@ -237,8 +241,15 @@ console.log("\n[6] 錯題本 — 今日待複習（StatisticsRuntime.dueForRevie
 /* ---- 7. AI Tutor 推薦流程（AI-118-08） ---- */
 console.log("\n[7] AI Tutor — 首頁建議卡片的每個動作皆連向真實下一步，不得跳脫流程");
 {
+  /* Sprint AI-138: showTutorSuggestions now defaults to false (AI Tutor
+     暫無真實 API，PO 決定暫時隱藏) — explicitly seeded true here so this
+     section keeps proving the card's own real recommendation-flow logic
+     still works when a user (or a future re-enable) turns it back on. */
   const { window, consoleErrors } = loadPage("index.html", {
-    seedSession: { "ahs:wrongBookRuntime": wrongBookSeed, "ahs:materialRuntime": materialSeed }
+    seedSession: {
+      "ahs:wrongBookRuntime": wrongBookSeed, "ahs:materialRuntime": materialSeed,
+      "ahs:settings": { showTutorSuggestions: true }
+    }
   });
   const doc = window.document;
   const tiles = [...doc.querySelectorAll(".tutor-card__tile")];
@@ -257,8 +268,13 @@ console.log("\n[7] AI Tutor — 首頁建議卡片的每個動作皆連向真實
    教材/學習成效總覽並排而非接續其後）。 */
 console.log("\n[8] 首頁重新整理（AI-122-08）— Hero→今日任務→學習成果總覽→最近新增教材→教材資料夾→AI Tutor，單一直向順序，無重複資訊");
 {
+  /* Sprint AI-138: showTutorSuggestions now defaults to false — seeded
+     true here so this section keeps proving the real block-ordering
+     rule (AI Tutor card still exists and still slots in last when
+     enabled); the new default-hidden behavior is covered separately
+     below. */
   const { window, consoleErrors } = loadPage("index.html", {
-    seedSession: { "ahs:materialRuntime": materialSeed }
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:settings": { showTutorSuggestions: true } }
   });
   const doc = window.document;
   const main = doc.querySelector(".home__main");
@@ -293,6 +309,20 @@ console.log("\n[8] 首頁重新整理（AI-122-08）— Hero→今日任務→�
   check("不再有獨立「繼續學習」區塊（與最近教材/今日任務重複的第二種呈現）",
     !doc.querySelector(".continue-learning, [class*='continue-learning']"));
   check("Console errors = 0（首頁重新整理）", consoleErrors.length === 0);
+}
+
+/* ---- 9. AI Tutor 預設隱藏（Sprint AI-138）---- */
+console.log("\n[9] AI Tutor — 尚未串接真實 API，PO 決定預設（未設定 showTutorSuggestions 時）整個卡片不掛載");
+{
+  const { window, consoleErrors } = loadPage("index.html", {
+    seedSession: { "ahs:materialRuntime": materialSeed, "ahs:wrongBookRuntime": wrongBookSeed }
+  });
+  const doc = window.document;
+  check("首頁預設不再掛載 AI Tutor 卡片（非僅內容清空，整個 .tutor-card 區塊都不存在）",
+    !doc.querySelector(".tutor-card"));
+  check("Sidebar 預設也不再有「AI Tutor」項目",
+    ![...doc.querySelectorAll(".sidebar__item")].some((n) => n.textContent.trim().includes("AI Tutor")));
+  check("Console errors = 0（首頁 AI Tutor 預設隱藏）", consoleErrors.length === 0);
 }
 
 console.log("\nLearningFlowRegression: " + pass + " PASS / " + fail + " FAIL");
