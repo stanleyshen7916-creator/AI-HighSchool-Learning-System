@@ -710,8 +710,14 @@ AHS.WrongBook = (function () {
        AHS.TutorEngine can resolve back to this exact WrongBookRuntime
        record on tutor.html) via AHS.PlatformContext.toQuery(), the same
        shared Context every other cross-page link already uses (never a
-       second, ad-hoc query-string builder). */
-    var askTutorLink = el("a", {
+       second, ad-hoc query-string builder).
+       Sprint AI-138: gated behind the same real showTutorSuggestions
+       toggle AiTutorHomeCard/TutorContextTip already honor (now default
+       false — AI Tutor has no real API connected yet) — null here, then
+       filtered out of wb-detail__actions below, instead of a second,
+       ad-hoc "hidden" flag. */
+    var askTutorLink = (AHS.SettingsRuntime && typeof AHS.SettingsRuntime.get === "function" &&
+        AHS.SettingsRuntime.get().showTutorSuggestions === false) ? null : el("a", {
       class: "wb-detail__btn wb-detail__btn--ghost",
       href: "tutor.html" + (AHS.PlatformContext ? AHS.PlatformContext.toQuery({ questionId: item.id }) : "")
     }, [
@@ -789,7 +795,7 @@ AHS.WrongBook = (function () {
         el("span", { class: "wb-detail__kp-chip", text: item.knowledgePoint })
       ]),
       el("div", { class: "wb-detail__explain" }, [explainToggle, explainText]),
-      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink])
+      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink].filter(Boolean))
     ]);
 
     if (autoStartReview && itemOptions.length) { startReview(); }

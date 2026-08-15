@@ -144,8 +144,14 @@ console.log("\n[3] AHS.Qiaoqiao — randomBust()/randomFull() 真實存在，且
 /* ---- 4. TutorContextTip — 徽章改為巧巧老師本人（非通用圖示） ----------- */
 console.log("\n[4] TutorContextTip — 提示徽章真實換成巧巧老師本人的 bust，不再是通用 AHS.Icons.tutor() 圖示");
 {
+  /* Sprint AI-138: showTutorSuggestions now defaults to false (AI Tutor
+     暫無真實 API，PO 決定暫時隱藏) — explicitly seeded true so this test
+     keeps proving TutorContextTip's own real rendering behavior. */
   const { window } = loadPage("quiz.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] } }
+    seedSession: {
+      "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] },
+      "ahs:settings": { showTutorSuggestions: true }
+    }
   });
   const AHS = window.AHS;
   // Seed a real wrong item so StatisticsRuntime.learningContext() has a
