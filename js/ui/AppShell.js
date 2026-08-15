@@ -305,10 +305,6 @@ AHS.AppShell = (function () {
       el("div", { class: "topbar__tools" }, [
         wsChip ? el("div", { class: "topbar__menu-slot" }, [wsChip, wsPanel]) : null,
         el("div", { class: "topbar__menu-slot" }, [bellBtn, notifPanel]),
-        el("button", {
-          type: "button", class: "topbar__icon-btn",
-          "aria-label": "訊息", html: AHS.Icons.chat()
-        }),
         el("div", { class: "topbar__menu-slot" }, [userBtn, profMenu])
       ].filter(Boolean))
     ]);
