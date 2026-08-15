@@ -247,7 +247,12 @@ AHS.MaterialCard = (function () {
     }, [
       cover,
       el("h3", { class: "mat-card__title", text: item.title }),
-      el("p", { class: "mat-card__meta", text: (item.grade || "") + subj.name + "｜" + item.chapter }),
+      /* Sprint AI-140（PO 回報）: 教材分類（item.category，上傳時 教材分類 *
+         必填欄位，見 js/ui/MaterialUploadDialog.js）先前只存在於資料裡，
+         卡片上完全看不到，使用者無從分辨/確認每筆教材實際被歸到哪一類——
+         現在併入既有 meta 行一起顯示，不新增卡片版位。 */
+      el("p", { class: "mat-card__meta", text: (item.grade || "") + subj.name + "｜" + item.chapter +
+        (item.category ? "｜" + item.category : "") }),
       fileInfo,
       el("p", { class: "mat-card__intro", text: item.content || "" }),
       el("div", { class: "mat-card__progress-block" }, [

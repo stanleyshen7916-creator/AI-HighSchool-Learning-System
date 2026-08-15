@@ -162,7 +162,8 @@ AHS.LearningStateRuntime = (function () {
     inProgress.forEach(function (m) {
       tasks.push({
         subject: m.subject, title: "繼續閱讀《" + m.title + "》",
-        done: Math.round(m.progress || 0), total: 100, priority: 3, kind: "material"
+        done: Math.round(m.progress || 0), total: 100, priority: 3, kind: "material",
+        materialId: m.id
       });
     });
 
@@ -170,7 +171,8 @@ AHS.LearningStateRuntime = (function () {
     notStarted.forEach(function (m) {
       tasks.push({
         subject: m.subject, title: "開始閱讀《" + m.title + "》",
-        done: 0, total: 100, priority: 4, kind: "recommend"
+        done: 0, total: 100, priority: 4, kind: "recommend",
+        materialId: m.id
       });
     });
 

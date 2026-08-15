@@ -273,6 +273,18 @@
   transform: rotate(45deg);
 }
 
+/* Sprint AI-140: each row's chip/title/counter is wrapped in a real
+   <a href> (or a plain <span> when the task has no honest destination)
+   so it lays out exactly like the old flat row while being clickable. */
+.today-task__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
 .today-task__unit { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 600; }
 .today-task__count { flex: 0 0 auto; font-size: 13px; font-weight: 700; color: var(--text-faint); }
 .today-task.is-done .today-task__unit { color: var(--text-faint); text-decoration: line-through; }

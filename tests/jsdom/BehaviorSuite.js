@@ -631,6 +631,8 @@ console.log("\n[15] HF-8.2.001 · HF-001 — Material Center 首次進入即顯�
   const cards = doc.querySelectorAll(".mat-card");
   check("首次載入即渲染全部教材卡片（2 張，無需切換）", cards.length === 2);
   check("教材標題正確顯示", /牛頓運動定律/.test(doc.body.textContent));
+  check("Sprint AI-140：教材分類（category）真實顯示於卡片上（非只存在資料裡看不到）",
+    [...doc.querySelectorAll(".mat-card__meta")].some(n => n.textContent.includes("課本")));
   check("Empty State 未誤顯示", !doc.querySelector(".mat-empty:not([hidden]) .mat-empty__title"));
   check("Console errors = 0（首次載入）", consoleErrors.length === 0);
   if (consoleErrors.length) console.log("   errors:", consoleErrors.slice(0, 3));
@@ -1908,6 +1910,32 @@ console.log("\n[42] Sprint AI-114 AI-903 — Daily Task Engine（首頁今日任
   const taskCard = window.document.querySelector(".today-card");
   check("首頁今日任務卡片真實渲染任務列（非既有空狀態文案）",
     !!taskCard && !taskCard.textContent.includes("今天沒有安排學習任務"));
+
+  /* Sprint AI-140（PO 回報）：今日任務每一列真正可點擊。 */
+  check("kind=material/recommend 的任務帶有真實 materialId（給前端組出連結用）",
+    tasks.filter(t => t.kind === "material" || t.kind === "recommend").every(t => !!t.materialId));
+  const rows = [...taskCard.querySelectorAll(".today-task")];
+  check("每一列都渲染出來（與 tasks 陣列數量一致）", rows.length === tasks.length);
+  rows.forEach((row, i) => {
+    const t = tasks[i];
+    const link = row.querySelector(".today-task__link");
+    if (t.kind === "material" || t.kind === "recommend") {
+      check("kind=" + t.kind + " 的任務列是真實 <a href> 連結，導向該教材的重點整理",
+        link && link.tagName === "A" && link.getAttribute("href") === "summary.html?materialId=" + encodeURIComponent(t.materialId));
+    } else if (t.kind === "review") {
+      check("kind=review 的任務列導向複習中心", link && link.tagName === "A" && link.getAttribute("href") === "review.html");
+    } else if (t.kind === "wrongbook") {
+      check("kind=wrongbook 的任務列導向知識弱點", link && link.tagName === "A" && link.getAttribute("href") === "wrongbook.html");
+    }
+  });
+  const materialRow = rows.filter((row, i) => tasks[i].kind === "material" || tasks[i].kind === "recommend")[0];
+  if (materialRow) {
+    const beforeCount = A.MaterialRuntime.getById(tasks.filter(t => t.kind === "material" || t.kind === "recommend")[0].materialId).learningCount || 0;
+    materialRow.querySelector(".today-task__link").dispatchEvent(new window.Event("click", { bubbles: true, cancelable: true }));
+    const afterCount = A.MaterialRuntime.getById(tasks.filter(t => t.kind === "material" || t.kind === "recommend")[0].materialId).learningCount || 0;
+    check("點擊「開始/繼續閱讀」任務列，真實觸發 MaterialRuntime.startLearning()（與教材中心「開始學習」同一個 Runtime 方法）",
+      afterCount === beforeCount + 1);
+  }
   check("Console errors = 0（Daily Task Engine）", consoleErrors.length === 0);
 
   const { window: emptyWin } = loadPage("index.html", { excludeScripts: ["data/materials/", "js/data/TeachingMaterialData.js"] });
