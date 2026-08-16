@@ -46,6 +46,15 @@ function loadPage(htmlFile) {
     virtualConsole: vconsole
   });
   const { window } = dom;
+  /* Sprint AI-142: jsdom has no window.fetch — now that real Supabase
+     config is committed (js/data/SupabaseConfig.js), any code path that
+     reaches AHS.SupabaseClient would otherwise throw a synchronous
+     ReferenceError instead of the graceful network-failure rejection
+     the real code already handles via .catch(). Stub it to fail
+     immediately so every test stays offline/deterministic (this sandbox
+     has no real outbound access to Supabase anyway) without touching
+     any Supabase source file. */
+  window.fetch = function () { return Promise.reject(new Error("fetch disabled in test environment")); };
   window.sessionStorage.setItem("ahs:workspace", JSON.stringify(DEFAULT_WORKSPACE));
   const scripts = [...dom.window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
   scripts.forEach((src) => {

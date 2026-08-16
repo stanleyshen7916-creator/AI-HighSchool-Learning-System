@@ -22,6 +22,19 @@ window.sessionStorage = {
 };
 
 require(path.join(REPO, "js/data/SupabaseConfig.js"));
+/* Sprint AI-142: js/data/SupabaseConfig.js now ships real, committed
+   Project Owner-supplied credentials (GitHub Pages has no other way to
+   reach a real Supabase project — see that file's own header). This
+   file's entire, still-valuable purpose is proving every Runtime's
+   "not configured" fallback path is honest and safe (§ header above) —
+   a scenario worth testing regardless of what the real file now
+   contains — and this is a plain-Node test (real global fetch exists,
+   unlike jsdom), so leaving the real credentials wired in here would
+   risk actually reaching the live production Supabase project during a
+   normal `npm test` run. Force this one in-memory copy back to blank
+   right after require; the real committed values themselves are
+   verified separately by RepositoryLayerRegression.js's own §5. */
+AHS.SupabaseConfig = { url: "", anonKey: "" };
 require(path.join(REPO, "js/core/PersistenceAdapter.js"));
 require(path.join(REPO, "js/core/SupabaseClient.js"));
 require(path.join(REPO, "js/repository/Repository.js"));

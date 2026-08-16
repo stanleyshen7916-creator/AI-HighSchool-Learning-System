@@ -61,20 +61,23 @@ repo.read("subjects", "code=eq.math").then(function (result) {
   check("repo.read(...) returns exactly what SupabaseClient.read resolved (no re-wrapping)", result.data[0].spy === true);
   AHS.SupabaseClient.read = originalRead;
 
-  console.log("\n[5] Ships with SupabaseConfig intentionally blank — never fabricated/guessed credentials");
-  check("AHS.SupabaseConfig.url is empty (Project Owner has not supplied it yet)", AHS.SupabaseConfig.url === "");
-  check("AHS.SupabaseConfig.anonKey is empty (Project Owner has not supplied it yet)", AHS.SupabaseConfig.anonKey === "");
-  check("AHS.SupabaseClient.isConfigured() honestly reports false while blank", AHS.SupabaseClient.isConfigured() === false);
+  console.log("\n[5] Sprint AI-142（PO 從 Supabase Dashboard 親自提供，非猜測/虛構）: AHS.SupabaseConfig 現在攜帶真實值——GitHub Pages 正式站沒有 SupabaseConfig.local.js 可讀，唯有把真實值提交進這個檔案，正式站才有東西可連");
+  check("AHS.SupabaseConfig.url 為真實、非空的 Supabase Project URL", typeof AHS.SupabaseConfig.url === "string" && AHS.SupabaseConfig.url.indexOf("https://") === 0 && AHS.SupabaseConfig.url.indexOf(".supabase.co") !== -1);
+  check("AHS.SupabaseConfig.anonKey 為真實、非空的 publishable/anon key（非 service_role，見本檔案自身註解的禁止事項）", typeof AHS.SupabaseConfig.anonKey === "string" && AHS.SupabaseConfig.anonKey.length > 0);
+  check("AHS.SupabaseClient.isConfigured() 如實回報 true", AHS.SupabaseClient.isConfigured() === true);
 
   console.log("\n[6] Sprint AI-126B Final PAT — git-ignored SupabaseConfig.local.js override precedence (in-memory only, no file touched)");
   check("AHS.SupabaseConfigLocal is undefined by default (no local file present in this test run)", AHS.SupabaseConfigLocal === undefined);
   AHS.SupabaseConfigLocal = { url: "https://local-override-test.supabase.co", anonKey: "local-anon-key" };
   check("SupabaseClient.isConfigured() becomes true once a real-looking local override is set", AHS.SupabaseClient.isConfigured() === true);
+  const committedUrl = AHS.SupabaseConfig.url, committedAnonKey = AHS.SupabaseConfig.anonKey;
   AHS.SupabaseConfigLocal = { url: "", anonKey: "" };
-  check("A local override with a blank url does NOT take priority (falls back to AHS.SupabaseConfig, still blank)", AHS.SupabaseClient.isConfigured() === false);
+  check("A local override with a blank url does NOT take priority (falls back to the real committed AHS.SupabaseConfig, unchanged)",
+    AHS.SupabaseClient.isConfigured() === true && AHS.SupabaseConfig.url === committedUrl);
   delete AHS.SupabaseConfigLocal;
-  check("Removing the local override restores the exact same blank-config behavior as before", AHS.SupabaseClient.isConfigured() === false);
-  check("AHS.SupabaseConfig itself is untouched by the local-override mechanism (still the committed blank placeholder)", AHS.SupabaseConfig.url === "" && AHS.SupabaseConfig.anonKey === "");
+  check("Removing the local override restores the exact same committed-config behavior as before", AHS.SupabaseClient.isConfigured() === true);
+  check("AHS.SupabaseConfig itself is untouched by the local-override mechanism (still the real committed value)",
+    AHS.SupabaseConfig.url === committedUrl && AHS.SupabaseConfig.anonKey === committedAnonKey);
 
   console.log("\nRepositoryLayerRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);
