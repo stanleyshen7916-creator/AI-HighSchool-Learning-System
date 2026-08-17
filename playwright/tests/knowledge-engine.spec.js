@@ -112,37 +112,30 @@ test("AI-121：複習中心 Review Mode 題數選單真實存在（AI-121-06）"
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("AI-121：每日 AI 練習 — 從真實 QuestionBank 隨機抽 10 題開始一個真實 Exam Session（AI-121-05）", async ({ page }) => {
+test("AI-121：再次測試 — 從真實 QuestionBank 隨機抽 10 題開始一個真實 Exam Session（AI-121-07）", async ({ page }) => {
   const errors = collectErrors(page);
-  /* Sprint AI-122: the previous version seeded via page.evaluate()
-     (AHS.QuestionRuntime.importQuestions()/AHS.QuestionBankRuntime.
-     ensureBank()) on a first page.goto(), then navigated a SECOND time
-     to read it back — under CPU contention this occasionally lost the
-     ensureBank() write (same root-cause class already found and fixed
-     for AHS.WrongBookRuntime.sync() elsewhere this Sprint: an evaluate()
-     promise resolving back to Node can race ahead of the write actually
-     committing in the browser process before the next navigation).
-     AHS.QuestionRuntime.importQuestions() itself was redundant here
-     anyway — startDrawnSession() (mode=daily's own real handler) always
-     re-imports fresh from the Bank itself, never depends on a prior
-     page's own QuestionRuntime state (which is page-lifetime, in-memory
-     only, and wouldn't survive the navigation regardless). Seeding
-     AHS.QuestionBankRuntime's own real sessionStorage shape directly via
-     seedSession() (page.addInitScript(), runs before ANY page script)
-     sidesteps the whole evaluate()+navigate race entirely — the exact
-     pattern already established for every other Runtime in this suite. */
+  /* Sprint AI-143: 每日 AI 練習（mode=daily）已移除（與平時練習實質重複，
+     且從未有真正的入口按鈕）——這個測試改為驗證 mode=retest（再次測試），
+     它與 mode=daily 原本共用同一個 startDrawnSession()/drawRandom() 機制，
+     是唯一還在使用這個真實隨機抽題路徑的入口，需要保留這條 Playwright
+     覆蓋率，不能隨著 mode=daily 一起消失。
+     Sprint AI-122: seeded via page.addInitScript()（seedSession()）before
+     ANY page script runs — sidesteps a real evaluate()+navigate race this
+     Sprint already found/fixed elsewhere (an evaluate() promise resolving
+     back to Node can race ahead of the write actually committing in the
+     browser process before the next navigation). */
   const questions = [];
   for (let i = 1; i <= 15; i++) {
     questions.push({
-      id: "dq" + i, index: i, subject: "math", text: "每日練習題 " + i, type: "single_choice",
+      id: "rq" + i, index: i, subject: "math", text: "再次測試題 " + i, type: "single_choice",
       options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
-      knowledgePoint: "kp_daily", questionSource: "ORIGINAL", origin: "x"
+      knowledgePoint: "kp_retest", questionSource: "ORIGINAL", origin: "x"
     });
   }
   await seedSession(page, {
-    "ahs:questionBankRuntime": { banks: { "teaching_material_daily_test": questions } }
+    "ahs:questionBankRuntime": { banks: { "teaching_material_retest_test": questions } }
   });
-  await page.goto(fileUrl("quiz") + "?mode=daily&examId=" + encodeURIComponent("teaching_material_daily_test"));
+  await page.goto(fileUrl("quiz") + "?mode=retest&examId=" + encodeURIComponent("teaching_material_retest_test"));
   // Wait for the real exam view to actually render before reading Runtime
   // state — under parallel-worker CPU contention, page.goto()'s own load
   // event can resolve a beat before this page's many synchronous <script>
@@ -152,6 +145,6 @@ test("AI-121：每日 AI 練習 — 從真實 QuestionBank 隨機抽 10 題開�
   const session = await page.evaluate(() => window.AHS.ExamRuntime.getCurrent());
   expect(session).toBeTruthy();
   expect(session.status).toBe("running");
-  expect(session.totalQuestions).toBe(10); // Bank 有 15 題，每日練習真實抽 10 題
+  expect(session.totalQuestions).toBe(10); // Bank 有 15 題，再次測試真實抽 10 題
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });

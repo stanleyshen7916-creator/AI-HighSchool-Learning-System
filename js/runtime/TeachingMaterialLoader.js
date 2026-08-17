@@ -446,6 +446,19 @@ AHS.TeachingMaterialLoader = (function () {
      data/materials/CivicsG10Ch5to6Exam20260730.js, not guessed). Kept
      fully separate from the Package-shaped functions above. */
 
+  /* Sprint AI-143（PO 回報）: 教材分類 must be one of Material Center's
+     own real category values (js/ui/MaterialUploadDialog.js's
+     CATEGORIES: 課本/講義/考卷/筆記/補充資料/影片/其他) — this used to
+     read meta.unit (a chapter/exam-period description like "114學年度
+     第二學期第三次段考"), which never matched any of those, so every
+     category filter tab silently showed zero Repository-track
+     materials. Every real data/materials/*.js record already carries a
+     real meta.materialType (課本 for the Chinese/English lesson
+     materials, 考卷 for the Civics exam-paper one) — this just never
+     read it. Falls back to leaving category unset, never to meta.unit,
+     when materialType is missing/invalid — an honest gap beats a
+     wrong-but-present one. */
+  var REPO_VALID_CATEGORIES = ["課本", "講義", "考卷", "筆記", "補充資料", "影片", "其他"];
   function repoMaterialPartial(record) {
     var meta = record.metadata || {};
     var summary = record.summary || {};
@@ -453,7 +466,7 @@ AHS.TeachingMaterialLoader = (function () {
     if (meta.subject) { partial.subject = meta.subject; } /* already an AHS.Subjects key, e.g. "civics" — this Repository's own convention, unlike the Package track's Chinese-name convention */
     if (meta.grade) { partial.grade = meta.grade; }
     if (meta.chapter) { partial.chapter = meta.chapter; }
-    if (meta.unit) { partial.category = meta.unit; }
+    if (meta.materialType && REPO_VALID_CATEGORIES.indexOf(meta.materialType) !== -1) { partial.category = meta.materialType; }
     /* Sprint AI-122 AI-122-06: meta.createdAt was only ever copied into
        partial.date (display-only field, js/ui/MaterialCard.js etc.) —
        never into MaterialRuntime's own real partial.createdAt, so

@@ -87,10 +87,10 @@ AHS.QuestionBankRuntime = (function () {
 
   /* drawRandom(examId, n) — a real random redraw of up to n questions
      from the already-built, permanent bank (Fisher-Yates on a clone; the
-     stored bank's own order is never mutated). This is the "每日 AI 練習
-     從 QuestionBank 隨機抽 10 題" / "再次測試隨機抽 10 題" mechanism
-     (AI-121-05/AI-121-07) — never more questions than the bank honestly
-     has (a 6-question bank asked for 10 returns all 6, not padded). */
+     stored bank's own order is never mutated). This is the "再次測試
+     隨機抽 10 題" mechanism (AI-121-07) — never more questions than the
+     bank honestly has (a 6-question bank asked for 10 returns all 6,
+     not padded). */
   function drawRandom(examId, n) {
     var bank = getBank(examId);
     for (var i = bank.length - 1; i > 0; i--) {

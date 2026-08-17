@@ -2106,22 +2106,12 @@ AHS.QuizCenter = (function () {
          AHS.Subjects key, unlike meta's own eventual "other" default,
          which downstream chip-rendering has no fallback for. */
       if (!meta && drawn[0] && drawn[0].subject) {
-        meta = { subject: drawn[0].subject, title: suffix === "__daily" ? "每日 AI 練習" : "再次測試" };
+        meta = { subject: drawn[0].subject, title: "再次測試" };
       }
       var session = AHS.ExamRuntime.startFromExam(derivedExamId, meta || {});
       if (!session) { return null; }
       showExam(session.examId);
       return session.examId;
-    }
-
-    /* tryDailyPracticeEntry(examId) — AI-121-05: 每日 AI 練習, a fresh
-       random 10-question draw every time (not cached — each call
-       re-imports a fresh drawRandom() result under the same derived
-       examId, matching "每日" — daily — literally: every entry redraws). */
-    function tryDailyPracticeEntry(examId) {
-      var started = startDrawnSession(examId, "__daily");
-      if (!started) { showList(); }
-      return started;
     }
 
     /* tryRetestEntry(examId) — AI-121-07: 再次測試 (renamed from 重新測試)
@@ -2170,11 +2160,11 @@ AHS.QuizCenter = (function () {
        material to show. AI-121's real QuestionBank/QuestionRuntime now
        gives it real content (see buildPracticeListView's own
        realQuestions below), so that workaround is no longer honest to
-       keep. mode=daily/retest (AI-121-05/07) are unaffected — those are
-       real, separate, already-working entry points. */
-    if (directExamId && initialMode === "daily") {
-      tryDailyPracticeEntry(directExamId);
-    } else if (directExamId && initialMode === "retest") {
+       keep. mode=retest (AI-121-07) is unaffected — a real, separate,
+       already-working entry point. (mode=daily／每日 AI 練習 removed —
+       Sprint AI-143: same underlying QuestionBank as 平時練習, just a
+       different draw algorithm, and never had a promoted entry point.) */
+    if (directExamId && initialMode === "retest") {
       tryRetestEntry(directExamId);
     } else if (directExamId && initialMode !== "practice") {
       tryDirectExamEntry(directExamId);

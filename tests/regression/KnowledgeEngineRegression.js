@@ -9,7 +9,8 @@
    rewrite/priority-sorted dueForReview() (AI-121-13/17/19),
    AHS.ReviewRuntime.startSession(count) (AI-121-06), AHS.TutorMessage's
    real Knowledge-only priority branch (AI-121-15/16), and QuizCenter's
-   mode=daily/mode=retest real random-draw entry points (AI-121-05/07).
+   mode=retest real random-draw entry point (AI-121-07 — mode=daily／
+   每日 AI 練習 removed in Sprint AI-143, see §8's own comment).
 
    Run: node tests/regression/KnowledgeEngineRegression.js */
 "use strict";
@@ -337,8 +338,8 @@ console.log("\n[7] TutorMessage — 真實、可追溯、Knowledge-only 建議�
     a.label === "重新閱讀摘要" && a.href === "summary.html?materialId=mat_bio"));
 }
 
-/* ---- 8. QuizCenter — mode=daily／mode=retest 真實隨機抽題入口 --------- */
-console.log("\n[8] QuizCenter — mode=daily／mode=retest 從真實 QuestionBank 隨機抽 10 題（AI-121-05/07）");
+/* ---- 8. QuizCenter — mode=retest 真實隨機抽題入口 --------- */
+console.log("\n[8] QuizCenter — mode=retest 從真實 QuestionBank 隨機抽 10 題（AI-121-07）");
 {
   const { window } = loadPage("quiz.html");
   const A = window.AHS;
@@ -354,23 +355,13 @@ console.log("\n[8] QuizCenter — mode=daily／mode=retest 從真實 QuestionBan
   A.QuestionBankRuntime.ensureBank("teaching_material_rt_daily", bankQuestions);
   const carry = dumpSession(window);
 
-  const { window: wDaily } = loadPage("quiz.html", {
-    url: "quiz.html?mode=daily&examId=" + encodeURIComponent("teaching_material_rt_daily"),
-    seedSession: carry
-  });
-  const dailySession = wDaily.AHS.ExamRuntime.getCurrent();
-  check("mode=daily 真實啟動一個 Exam Session（從 QuestionBank 隨機抽題）", !!dailySession && dailySession.status === "running");
-  check("每日 AI 練習真實抽 10 題（Bank 有 20 題，10 題上限生效）", dailySession && dailySession.totalQuestions === 10);
-
   const { window: wRetest } = loadPage("quiz.html", {
     url: "quiz.html?mode=retest&examId=" + encodeURIComponent("teaching_material_rt_daily"),
     seedSession: carry
   });
   const retestSession = wRetest.AHS.ExamRuntime.getCurrent();
   check("mode=retest 真實啟動一個獨立 Exam Session", !!retestSession && retestSession.status === "running");
-  check("再次測試同樣真實抽 10 題", retestSession && retestSession.totalQuestions === 10);
-  check("每日練習與再次測試使用不同的 derived examId（互不干擾）",
-    dailySession.examId !== retestSession.examId);
+  check("再次測試真實抽 10 題（Bank 有 20 題，10 題上限生效）", retestSession && retestSession.totalQuestions === 10);
 }
 
 console.log("\n==============================");

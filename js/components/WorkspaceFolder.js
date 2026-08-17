@@ -44,13 +44,17 @@ AHS.WorkspaceFolder = (function () {
   }
 
   /* Sprint AI-122 AI-122-07 (教材資料夾定義為唯一教材入口): the PO's own
-     flow — 教材資料夾→教材→學習總結→考前練習→每日 AI 練習 — names 教材
+     flow — 教材資料夾→教材→學習總結→考前總複習 — names 教材
      as its own real step between the folder and 學習總結. The title used
      to be a plain <span> (no way to open the material itself from here),
      skipping straight to 學習總結 — a real gap given this widget is now
      the flow's own documented starting point. materials.html?id=<id> is
      the same already-real deep link HomeRecentMaterials.js's own card
-     uses (HOTFIX-009-1), reused here rather than inventing a second one. */
+     uses (HOTFIX-009-1), reused here rather than inventing a second one.
+     Sprint AI-143（PO 回報：「每日 AI 練習」與「平時練習」實質重複——
+     兩者題目都來自同一份 QuestionBank，只是抽法不同，且「每日 AI 練習」
+     從未有真正被推廣使用）：移除這顆連結，保留「平時練習」作為唯一的
+     隨機抽題練習入口。 */
   function materialRow(m) {
     return el("li", { class: "workspace-folder__material" }, [
       el("a", {
@@ -69,14 +73,6 @@ AHS.WorkspaceFolder = (function () {
           class: "workspace-folder__link",
           href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + m.id),
           text: "前往考前總複習"
-        }),
-        /* Sprint AI-121 AI-121-05: 每日 AI 練習 — real entry into
-           QuizCenter's mode=daily branch (random 10 from this material's
-           real, permanent QuestionBank, redrawn fresh each visit). */
-        el("a", {
-          class: "workspace-folder__link",
-          href: "quiz.html?mode=daily&examId=" + encodeURIComponent("teaching_material_" + m.id),
-          text: "每日 AI 練習"
         })
       ])
     ]);

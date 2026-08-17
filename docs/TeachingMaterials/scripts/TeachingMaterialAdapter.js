@@ -32,10 +32,19 @@
       real data, just terse. Flagged, not silently decided either way.
 
    2. convertMaterial()'s `category` is mapped from Package metadata's
-      `unit` field. This reuses Sprint AI-103's ImportRuntime.js
-      precedent exactly (`category: resolveField(metadata, header,
-      "unit", "unit")`) rather than inventing a new mapping (e.g. from
-      `materialType`) — consistent prior art beats a fresh guess.
+      `source` field (Sprint AI-143 revision — was previously mapped
+      from `unit`, following Sprint AI-103's ImportRuntime.js precedent;
+      that turned out to be a real bug the PO caught: `unit` holds a
+      chapter/exam-period description like "114學年度下學期 高一第三次
+      段考", not one of Material Center's own real 教材分類 values
+      (課本／講義／考卷／筆記／補充資料／影片／其他, see js/ui/
+      MaterialUploadDialog.js's CATEGORIES) — every category filter tab
+      silently showed zero Package-track materials as a result. Every
+      real tm_1~4 metadata.json already carries a real, correct
+      `"source": "考卷"` — this Adapter simply never read it. Falls back
+      to leaving category unset, never to `unit`, when `source` is
+      missing or not one of the real category values — an honest gap
+      beats a wrong-but-present one.
 
    3. convertMaterial() never sets `content`, `fileName`, `fileType`,
       `fileSize`, or `file`. The Package has no single extracted-text
@@ -128,6 +137,16 @@ const { spawnSync } = require("child_process");
 
 const ROOT = path.join(__dirname, "..");
 
+/* Mirrors js/ui/MaterialUploadDialog.js's own CATEGORIES exactly — the
+   only real, valid 教材分類 values Material Center's category filter
+   tabs actually match against (js/components/MaterialCenter.js's
+   `item.category === currentCategory`). Kept as a literal copy, not a
+   shared import, since this Node script and the browser-only js/ tree
+   don't share a module system (see this repo's own "no bundler"
+   constraint) — if MaterialUploadDialog.js's list ever changes, this
+   one needs a matching manual update. */
+const VALID_CATEGORIES = ["課本", "講義", "考卷", "筆記", "補充資料", "影片", "其他"];
+
 function isPlainObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -151,7 +170,7 @@ function convertMaterial(metadata) {
   if (metadata.subject) { partial.subject = metadata.subject; }
   if (metadata.grade) { partial.grade = metadata.grade; }
   if (metadata.chapter) { partial.chapter = metadata.chapter; }
-  if (metadata.unit) { partial.category = metadata.unit; }
+  if (metadata.source && VALID_CATEGORIES.indexOf(metadata.source) !== -1) { partial.category = metadata.source; }
   if (metadata.uploadDate) { partial.date = metadata.uploadDate; }
   var title = deriveTitle(metadata);
   if (title) { partial.title = title; }
