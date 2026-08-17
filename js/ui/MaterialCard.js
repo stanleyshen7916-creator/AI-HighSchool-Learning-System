@@ -170,8 +170,8 @@ AHS.MaterialCard = (function () {
 
     var practiceLink = el("a", {
       class: "mat-card__act mat-card__practice-link",
-      href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + item.id),
-      "aria-label": "前往考前總複習", "data-tip": "前往考前總複習",
+      href: "quiz.html?examId=" + encodeURIComponent("teaching_material_" + item.id),
+      "aria-label": "前往平時練習", "data-tip": "前往平時練習",
       html: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
         'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'

@@ -219,8 +219,8 @@ AHS.TutorMessage = (function () {
         context.weakestSubject.percent + "%，是目前較弱的科目。"
       );
       actions.push({
-        icon: "quiz", label: "前往考前總複習", desc: subjectName(context.weakestSubject.subject),
-        href: "quiz.html?mode=practice"
+        icon: "quiz", label: "前往平時練習", desc: subjectName(context.weakestSubject.subject),
+        href: "quiz.html"
       });
     }
 

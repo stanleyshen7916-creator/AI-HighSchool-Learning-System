@@ -111,7 +111,7 @@ test("PAT-122-01：立即重做 Session Reset — 完整重置作答狀態，不
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-122-02：所有「前往考前總複習」皆進入 Practice Mode，不得再導向平時練習", async ({ page }) => {
+test("PAT-122-02：quiz.html?mode=practice&materialId=... 仍真實進入 Practice Mode（AI-144：CTA 已改連平時練習，但 mode=practice 這個 URL 機制本身仍是真實、獨立存在的功能）", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto(fileUrl("quiz"));
   await page.evaluate(() => {
@@ -319,29 +319,34 @@ test("PAT-122-06：最近新增教材 = 近三日新增教材（CreatedAt >= Tod
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
-test("PAT-122-07：首頁 CTA 一致化 — 教材資料夾「前往考前總複習」真實導向 Practice Mode", async ({ page }) => {
+test("PAT-122-07（AI-144 重寫）：首頁教材資料夾「前往平時練習」真實導向平時練習（drawCycle／Formal Exam），不再是 Practice Mode", async ({ page }) => {
   const errors = collectErrors(page);
-  await seedSession(page, {
-    "ahs:materialRuntime": {
-      materials: [{
-        id: "pat122_07", order: 1, subject: "math", title: "PAT-122-07 教材",
-        chapter: "第一章", grade: "高一", category: "課本", date: todayStr(), views: "1", content: "",
-        createdAt: todayStr(), progress: 0, lastOpenedAt: null, lastLearningAt: null,
-        learningTime: 0, learningCount: 0, favorite: false, fileName: "", fileType: "FILE",
-        fileSize: "", folderId: null
-      }],
-      folders: [], seq: 1, folderSeq: 0
-    }
-  });
+  /* Uses the real, already-registered data/materials/*.js Repository
+     entry (civics-g10-ch5-6-exam-20260730, workspaceSchool/Semester
+     cjsh/g1s2 — the same default test Workspace the shared fixture
+     already logs in as), rather than a hand-seeded ahs:materialRuntime
+     record: TeachingMaterialLoader.load() only ever pairs real
+     AHS.QuestionRuntime content (hasExam/QuestionBankRuntime) with a
+     real, catalog-resolvable examId for materials it itself loaded —
+     a plain hand-seeded MaterialRuntime record was never part of that
+     catalog, so manually importing fake QuestionRuntime data for it
+     would fabricate a state (real questions, no resolvable Subject/
+     title meta) this app can never actually reach in production. This
+     real Repository material gives both halves together, honestly. */
   await page.goto(fileUrl("home"));
 
-  const folderRow = page.locator(".workspace-folder__material", { hasText: "PAT-122-07 教材" });
+  const folderRow = page.locator(".workspace-folder__material", { hasText: "公民與社會｜所有權" });
   await expect(folderRow).toBeVisible();
-  await folderRow.locator(".workspace-folder__link", { hasText: "前往考前總複習" }).click();
+  await folderRow.locator(".workspace-folder__link", { hasText: "前往平時練習" }).click();
 
-  await expect(page).toHaveURL(/quiz\.html\?mode=practice&examId=/);
-  await expect(page.locator(".qcard")).toHaveCount(0);
-  await expect(page.locator(".quiz-practice-root")).not.toHaveAttribute("hidden", "");
+  // Real proof it's 平時練習（drawCycle/Formal Exam）now, never Practice
+  // Mode: .qcard (Formal Exam's own real question card) renders,
+  // .qguide (Practice Mode's own entry) never mounts. URL no longer
+  // carries mode=practice.
+  await expect(page).toHaveURL(/quiz\.html\?examId=/);
+  await expect(page).not.toHaveURL(/mode=practice/);
+  await expect(page.locator(".qcard")).toBeVisible();
+  await expect(page.locator('.qguide[aria-label="巧巧老師出題引導"]')).toHaveCount(0);
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });

@@ -174,8 +174,8 @@ test("PAT-124-②：AHS.PlatformContext 為唯一 Context 讀取／傳遞方式�
   expect(resolved.examId).toBe("teaching_material_ai124_pc__ai");
   expect(resolved.mode).toBe("practice");
 
-  // examId-only links (e.g. WorkspaceFolder.js's own 前往考前總複習) must
-  // still resolve a real materialId via the same shared convention.
+  // examId-only links (e.g. WorkspaceFolder.js's own 前往平時練習, AI-144)
+  // must still resolve a real materialId via the same shared convention.
   const fromExamOnly = await page.evaluate(() =>
     window.AHS.PlatformContext.resolve("?examId=teaching_material_ai124_pc2__original"));
   expect(fromExamOnly.materialId).toBe("ai124_pc2");

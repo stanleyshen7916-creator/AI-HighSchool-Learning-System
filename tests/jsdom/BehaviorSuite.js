@@ -389,8 +389,8 @@ console.log("\n[5] summary.html — Task 003: auto-switch to REAL five sections 
   check("Pending block absent when real content exists", !doc.querySelector(".sum-section--pending"));
   check("Real core concept text rendered", /正弦定理/.test(doc.body.textContent));
   const dl = doc.querySelector(".sum-footer__quiz");
-  check("開始 AI 練習 link → quiz.html?mode=practice&materialId=rt_1 (Summary→Guide→Practice)",
-    !!dl && dl.getAttribute("href") === "quiz.html?mode=practice&materialId=rt_1");
+  check("前往平時練習 link → quiz.html?materialId=rt_1 (AI-144: Summary→平時練習/drawCycle)",
+    !!dl && dl.getAttribute("href") === "quiz.html?materialId=rt_1");
 }
 
 console.log("\n[6] Task 002 regression — download mechanism audit (jsdom-verifiable parts)");

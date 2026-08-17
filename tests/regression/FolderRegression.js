@@ -72,8 +72,8 @@ console.log("\n[1] 教材資料夾 — School／Semester／Subject／Material �
   const groups = doc.querySelectorAll(".workspace-folder__group");
   check("依 Subject 分組（非單一清單）", groups.length >= 1);
   const links = doc.querySelectorAll(".workspace-folder__link");
-  check("每筆教材皆有真實連結（前往學習總結／前往考前總複習）",
-    [...links].some((a) => a.textContent === "前往學習總結") && [...links].some((a) => a.textContent === "前往考前總複習"));
+  check("每筆教材皆有真實連結（前往學習總結／前往平時練習，AI-144 更名）",
+    [...links].some((a) => a.textContent === "前往學習總結") && [...links].some((a) => a.textContent === "前往平時練習"));
   const firstSummaryLink = [...links].find((a) => a.textContent === "前往學習總結");
   check("連結真實指向 summary.html?materialId=（非假連結）", !!firstSummaryLink && /^summary\.html\?materialId=/.test(firstSummaryLink.getAttribute("href")));
   check("Console errors = 0", consoleErrors.length === 0);

@@ -54,7 +54,13 @@ AHS.WorkspaceFolder = (function () {
      Sprint AI-143（PO 回報：「每日 AI 練習」與「平時練習」實質重複——
      兩者題目都來自同一份 QuestionBank，只是抽法不同，且「每日 AI 練習」
      從未有真正被推廣使用）：移除這顆連結，保留「平時練習」作為唯一的
-     隨機抽題練習入口。 */
+     隨機抽題練習入口。
+     Sprint AI-144（PO 回報：畫面上「前往考前總複習」入口實際上應該導向
+     真正的平時練習——月考前的總複習是另一個獨立情境，此處每日/每次練習
+     完課程後的入口應改名並改連結行為，不只是換文字）：移除 href 的
+     mode=practice 參數，讓 QuizCenter.js 既有的
+     directExamId && initialMode !== "practice" 分支接手，
+     真正進入 drawCycle 平時練習模式；label 同步改為「前往平時練習」。 */
   function materialRow(m) {
     return el("li", { class: "workspace-folder__material" }, [
       el("a", {
@@ -71,8 +77,8 @@ AHS.WorkspaceFolder = (function () {
         }),
         el("a", {
           class: "workspace-folder__link",
-          href: "quiz.html?mode=practice&examId=" + encodeURIComponent("teaching_material_" + m.id),
-          text: "前往考前總複習"
+          href: "quiz.html?examId=" + encodeURIComponent("teaching_material_" + m.id),
+          text: "前往平時練習"
         })
       ])
     ]);

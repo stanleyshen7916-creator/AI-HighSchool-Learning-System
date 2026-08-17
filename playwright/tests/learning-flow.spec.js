@@ -129,21 +129,41 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前總複
     await expect(page).toHaveURL(/summary\.html\?materialId=rt_1/);
   });
 
-  await test.step("學習總結 — 重點整理/易錯觀念/AI Tutor 建議齊全，前往考前總複習（真實點擊）", async () => {
+  await test.step("學習總結 — 重點整理/易錯觀念/AI Tutor 建議齊全，前往平時練習（真實點擊，AI-144：CTA 已改為前往平時練習）", async () => {
     await expect(page.locator("body")).toContainText("AI-118 核心概念");
     await expect(page.locator("body")).toContainText("AI-118 易錯點");
     await expect(page.locator(".sum-footer__exam")).toHaveCount(0); // 前往平時練習已移除
+    await expect(page.locator(".sum-footer__quiz")).toContainText("前往平時練習");
     await page.locator(".sum-footer__quiz").click();
-    await expect(page).toHaveURL(/quiz\.html\?mode=practice&materialId=rt_1/);
+    /* AI-144: href 不再帶 mode=practice。rt_1 此刻在 QuestionRuntime
+       尚無真實 Exam-mode 題目（要等下面「平時練習」那個 step 才手動匯
+       入），所以 directExamId 誠實解析為 null；rt_1 也不是真實 Repository
+       catalog 的一員，showScopedList() 找不到可篩選的項目，誠實 fallback
+       回未篩選的「平時練習」列表 — 分頁載入時「平時練習」分頁為預設
+       active，而非改版前固定進入的 Practice Mode。 */
+    await expect(page).toHaveURL(/quiz\.html\?materialId=rt_1/);
+    await expect(page).not.toHaveURL(/mode=practice/);
+    await expect(page.locator(".quiz-mode__tab", { hasText: "平時練習" })).toHaveClass(/is-active/);
   });
 
   await test.step("考前總複習 — 真實作答（答錯），立即看到詳解，非正式成績", async () => {
     const practiceTab = page.locator(".quiz-mode__tab", { hasText: "考前總複習" });
+    // AI-144: CTA 已不再自動進入 Practice Mode（見上一個 step），這裡改
+    // 用真實點擊「考前總複習」分頁籤切換過去 — Practice Mode 本身（連結
+    // 到 rt_1 這個真實 materialId 的內容）完全未變。
+    await practiceTab.click();
     await expect(practiceTab).toHaveClass(/is-active/);
-    const diffBtn = page.locator(".qguide__diff").first();
-    if (await diffBtn.count()) {
-      await diffBtn.click();
-      await page.locator(".qguide__start").click();
+    /* AI-144: 巧巧老師出題引導的難易度選擇畫面只在 startOnPractice（初次
+       載入即 mode=practice）時出現（見 QuizCenter.js 的
+       `startOnPractice && practiceMaterialId && AHS.QuestionGuide` 判斷）。
+       這裡是事後點擊分頁籤切換過去，practiceRoot 一開始就直接是題目列表
+       （.qguide__diff 這個 class 名稱同時也被列表自己的難易度篩選列重
+       用，見 QuizCenter.js 附近註解），所以改用 .qguide__start 是否存在
+       來判斷究竟是引導畫面還是已經在列表上，兩種情境都誠實處理。 */
+    const startBtn = page.locator(".qguide__start");
+    if (await startBtn.count()) {
+      await page.locator(".qguide__diff").first().click();
+      await startBtn.click();
     }
     const row = page.locator(".quiz-practice__row").first();
     await expect(row).toBeVisible();
