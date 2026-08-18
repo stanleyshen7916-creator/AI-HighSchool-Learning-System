@@ -49,7 +49,8 @@ require(path.join(REPO, "js/runtime/KnowledgeMasteryRuntime.js"));
 require(path.join(REPO, "js/runtime/SettingsRuntime.js"));
 
 let pass = 0, fail = 0;
-var originalIsConfigured, originalGetSession, originalRepositoryFactoryCreate; /* section [11] restore-after-use, hoisted since it's set and restored in separate chained .then() callbacks */
+var originalIsConfigured, originalGetSession, originalRepositoryFactoryCreate; /* sections [11]/[12] restore-after-use, hoisted since they're set and restored in separate chained .then() callbacks */
+var insertedWrongBookRows, insertedMasteryRows; /* section [12], same hoisting reason */
 function check(name, cond) {
   if (cond) { pass++; console.log("  PASS  " + name); }
   else { fail++; console.log("  FAIL  " + name); }
@@ -259,6 +260,103 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   AHS.SupabaseClient.isConfigured = originalIsConfigured;
   AHS.SupabaseClient.getSession = originalGetSession;
   AHS.RepositoryFactory.create = originalRepositoryFactoryCreate;
+  AHS.WrongBookRuntime.reset();
+  AHS.KnowledgeMasteryRuntime.reset();
+
+  /* [12] Sprint AI-150（使用者需求：知識弱點的內容必須依照學年、科目加以
+     分開，目前於高二年級，卻看到高一的知識弱點——追到底的真正根因）:
+     public.wrong_book / public.knowledge_mastery 的資料庫設計，原本只用
+     student_profile_id 區分資料——而 student_profiles.mock_student_key
+     是 UNIQUE 的，同一個學生不管切到哪個學期，永遠只有這唯一一筆 profile
+     可用。等於背景同步只要一撈，就會把這個學生「所有學期」的錯題/知識點
+     全部撈回來，混進目前正在看的這個學期畫面——不管 Topbar 學期切換本身
+     有沒有正常運作（該功能已在 workspace.spec.js PAT③ 獨立以真實瀏覽器
+     驗證過，運作正常，問題出在後面這一步）。這裡驗證新加上的
+     school_code/semester_code：(a) 真實寫入時，會帶上「目前 Workspace」
+     的學校/學期，不是憑空造的；(b) 真實下載時，查詢會真的帶上這兩個篩選
+     條件，讓「不屬於目前學期」的真實遠端資料，真的被擋在下載這一步，而
+     不是下載回來又顯示出來——mock RepositoryFactory 會依查詢字串真的過
+     濾資料列，模擬 PostgREST 的真實行為，不是照單全收。 */
+  console.log("\n[12] wrong_book/knowledge_mastery push/pull 依 Workspace 學校＋學期真實過濾（Sprint AI-150）");
+  originalIsConfigured = AHS.SupabaseClient.isConfigured;
+  originalGetSession = AHS.SupabaseClient.getSession;
+  originalRepositoryFactoryCreate = AHS.RepositoryFactory.create;
+  AHS.SupabaseClient.isConfigured = function () { return true; };
+  AHS.SupabaseClient.getSession = function () { return { user: { id: "u_150" } }; };
+  AHS.SyncBridge.cacheIdentity("u_150", "sp_150");
+  AHS.WorkspaceRuntime.setCurrent({ studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] });
+  check("Workspace 目前為單一、明確的 g2s1（高二上）學期", JSON.stringify(AHS.WorkspaceRuntime.getCurrent().semesterIds) === JSON.stringify(["g2s1"]));
+
+  insertedWrongBookRows = [];
+  insertedMasteryRows = [];
+  var REMOTE_WRONG_BOOK_ROWS = [
+    { id: "wb-g2s1-150", student_profile_id: "sp_150", question_id: "", material_id: "", subject_id: "", knowledge_point: "kp150_g2s1",
+      question_text: "高二上 真實題目", your_answer: "A", correct_answer: "B", explanation: "",
+      error_count: 1, correct_streak: 0, mastered_at: null, bookmarked: false, archived: false,
+      first_error_at: "2026-08-01", last_error_at: "2026-08-01", school_code: "cjsh", semester_code: "g2s1" },
+    { id: "wb-g1s2-150", student_profile_id: "sp_150", question_id: "", material_id: "", subject_id: "", knowledge_point: "kp150_g1s2",
+      question_text: "高一下 真實題目（不得混進高二畫面）", your_answer: "A", correct_answer: "B", explanation: "",
+      error_count: 1, correct_streak: 0, mastered_at: null, bookmarked: false, archived: false,
+      school_code: "cjsh", semester_code: "g1s2" }
+  ];
+
+  function applyEqFilters(rows, query) {
+    var parts = (query || "").split("&").filter(Boolean);
+    return rows.filter(function (row) {
+      return parts.every(function (p) {
+        var idx = p.indexOf("=eq.");
+        if (idx === -1) { return true; }
+        var key = p.slice(0, idx);
+        var val = decodeURIComponent(p.slice(idx + 4));
+        return String(row[key]) === val;
+      });
+    });
+  }
+
+  AHS.RepositoryFactory.create = function () {
+    return {
+      read: function (table, query) {
+        if (table === "subjects") { return Promise.resolve({ data: [{ id: "subj-uuid-math", code: "math" }], error: null }); }
+        if (table === "wrong_book") { return Promise.resolve({ data: applyEqFilters(REMOTE_WRONG_BOOK_ROWS, query), error: null }); }
+        if (table === "knowledge_mastery") { return Promise.resolve({ data: [], error: null }); } /* existence-check: always empty -> forces insert path below */
+        return Promise.resolve({ data: [], error: null });
+      },
+      insert: function (table, row) {
+        if (table === "wrong_book") { insertedWrongBookRows.push(row); }
+        if (table === "knowledge_mastery") { insertedMasteryRows.push(row); }
+        return Promise.resolve({ data: [Object.assign({ id: "new-" + table }, row)], error: null });
+      },
+      update: function (table, query, row) { return Promise.resolve({ data: [row], error: null }); }
+    };
+  };
+
+  AHS.WrongBookRuntime.reset();
+  var graded150 = {
+    subject: "math", title: "AI-150 Test", chapter: "Ch1",
+    wrong: [{ questionId: "q150push", knowledgePoint: "kp150push", text: "Q", options: [], yourAnswer: "A", correctAnswer: "B", explanation: "", materialId: "" }]
+  };
+  AHS.WrongBookRuntime.sync(graded150);
+  AHS.KnowledgeMasteryRuntime.reset();
+  AHS.KnowledgeMasteryRuntime.recordAttempt("kp150mastery", false, "math", "");
+
+  return new Promise(function (resolve) { setTimeout(resolve, 20); });
+}).then(function () {
+  check("真實寫入 wrong_book 時，帶上目前 Workspace 的真實 school_code（\"cjsh\"）", insertedWrongBookRows.length === 1 && insertedWrongBookRows[0].school_code === "cjsh");
+  check("真實寫入 wrong_book 時，帶上目前 Workspace 的真實 semester_code（\"g2s1\"），不是憑空造的", insertedWrongBookRows.length === 1 && insertedWrongBookRows[0].semester_code === "g2s1");
+  check("真實寫入 knowledge_mastery 時，同樣帶上真實 school_code/semester_code", insertedMasteryRows.length === 1 && insertedMasteryRows[0].school_code === "cjsh" && insertedMasteryRows[0].semester_code === "g2s1");
+
+  AHS.WrongBookRuntime.reset();
+  return AHS.WrongBookRuntime.pullFromRepository();
+}).then(function (pullResult) {
+  check("pullFromRepository() 只真的下載回目前學期（g2s1）的那一筆，不是全部下載回來再顯示", pullResult.pulled === 1);
+  var list = AHS.WrongBookRuntime.list();
+  check("下載回來的錯題，確實是「高二上」那一筆", list.some(function (r) { return r.knowledgePoint === "kp150_g2s1"; }));
+  check("「高一下」那一筆真實被查詢過濾擋下，沒有混進高二上的畫面（這正是使用者回報「目前於高二年級卻看到高一知識弱點」的真正根因）", !list.some(function (r) { return r.knowledgePoint === "kp150_g1s2"; }));
+
+  AHS.SupabaseClient.isConfigured = originalIsConfigured;
+  AHS.SupabaseClient.getSession = originalGetSession;
+  AHS.RepositoryFactory.create = originalRepositoryFactoryCreate;
+  AHS.WorkspaceRuntime.logout();
   AHS.WrongBookRuntime.reset();
   AHS.KnowledgeMasteryRuntime.reset();
 

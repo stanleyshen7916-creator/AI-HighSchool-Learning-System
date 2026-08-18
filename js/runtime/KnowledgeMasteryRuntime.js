@@ -117,8 +117,26 @@ AHS.KnowledgeMasteryRuntime = (function () {
         wrong_count: wrongCount,
         last_attempt_at: lastAttempt ? lastAttempt.ts : new Date().toISOString()
       };
+      /* Sprint AI-150（同 WrongBookRuntime.pushRecord() 的根因修正）:
+         knowledge_mastery 舊有 unique(student_profile_id, knowledge_point)
+         把同一個知識點在「所有學期」的作答通通疊在同一列——這就是切換學
+         年後，知識弱點還是看得到別的學年資料的真正源頭。只在目前
+         Workspace 是單一、明確的學期時才加上 school_code/semester_code
+         （見同一段判斷邏輯），並讓下面的查重比對也一起帶上，這樣同一個
+         知識點在不同學期才會落在不同列，不會互相覆寫或疊加。複選/沒有
+         Workspace 時維持既有行為（不誤植假資料）。 */
+      var currentWs = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function")
+        ? AHS.WorkspaceRuntime.getCurrent() : null;
+      var scoped = !!(currentWs && currentWs.schoolId && currentWs.semesterIds && currentWs.semesterIds.length === 1);
+      var lookupQuery = "student_profile_id=eq." + identity.studentProfileId + "&knowledge_point=eq." + encodeURIComponent(knowledgePoint);
+      if (scoped) {
+        row.school_code = currentWs.schoolId;
+        row.semester_code = currentWs.semesterIds[0];
+        lookupQuery += "&school_code=eq." + encodeURIComponent(currentWs.schoolId) +
+          "&semester_code=eq." + encodeURIComponent(currentWs.semesterIds[0]);
+      }
       AHS.SyncBridge.pushFireAndForget(function () {
-        return repo.read("knowledge_mastery", "student_profile_id=eq." + identity.studentProfileId + "&knowledge_point=eq." + encodeURIComponent(knowledgePoint)).then(function (readResult) {
+        return repo.read("knowledge_mastery", lookupQuery).then(function (readResult) {
           if (readResult.error) { return readResult; }
           if (readResult.data && readResult.data.length) {
             return repo.update("knowledge_mastery", "id=eq." + readResult.data[0].id, row);
@@ -145,7 +163,18 @@ AHS.KnowledgeMasteryRuntime = (function () {
     var identity = AHS.SyncBridge.identity();
     if (!identity) { return Promise.resolve({ pulled: 0 }); }
     var repo = AHS.RepositoryFactory.create();
-    return repo.read("knowledge_mastery", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+    /* Sprint AI-150（同 WrongBookRuntime.pullFromRepository() 的根因修
+       正）: 只在單一、明確學期的 Workspace 才加上 school_code/
+       semester_code 篩選，把「不屬於目前這個學期」的真實雲端資料真的擋
+       在下載這一步。 */
+    var currentWs = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function")
+      ? AHS.WorkspaceRuntime.getCurrent() : null;
+    var query = "student_profile_id=eq." + identity.studentProfileId;
+    if (currentWs && currentWs.schoolId && currentWs.semesterIds && currentWs.semesterIds.length === 1) {
+      query += "&school_code=eq." + encodeURIComponent(currentWs.schoolId) +
+        "&semester_code=eq." + encodeURIComponent(currentWs.semesterIds[0]);
+    }
+    return repo.read("knowledge_mastery", query).then(function (result) {
       if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
       var pulled = 0;
       var subjectLookups = [];

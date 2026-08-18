@@ -80,6 +80,29 @@ AHS.WrongBookRuntime = (function () {
         bookmarked: !!record.bookmarked,
         archived: !!record.archived
       };
+      /* Sprint AI-150（使用者需求：知識弱點的內容必須依照學年加以分開，
+         目前於高二年級卻看到高一的知識弱點——根因追查到底：wrong_book
+         這張表的資料庫設計原本完全沒有學期/學校欄位，student_profile_id
+         是「同一個學生、橫跨所有學期共用一筆」，pullFromRepository() 只
+         能用這個唯一 id 去撈，等於把該學生「所有學期」的錯題全部撈回
+         來，混進目前正在看的這個學期畫面）: school_code/semester_code
+         隨每一筆真實寫入時的目前 Workspace 一起送出（此 Runtime 的 store
+         本身就是依 Workspace 命名空間隔離的，所以寫入當下的 Workspace 一
+         定就是這筆紀錄真正發生的那個學期，不是猜的）。需要
+         supabase/migrations/ 裡新增的 school_code/semester_code 欄位存在
+         才會真的寫入；欄位不存在時 Supabase 會拒絕未知欄位，所以只在真
+         的能拿到目前 Workspace 時才加這兩個欄位，拿不到就完全不送（維持
+         Migration 套用前的既有行為，不破壞既有寫入）。 */
+      /* Only when EXACTLY ONE semester is active: a multi-select combined
+         Workspace (§5 支援複選) has no single真正歸屬的學期可以誠實歸類
+         這筆紀錄屬於複選中的哪一個學期，寧可留白（維持既有行為）也不亂
+         猜一個。 */
+      var currentWs = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function")
+        ? AHS.WorkspaceRuntime.getCurrent() : null;
+      if (currentWs && currentWs.schoolId && currentWs.semesterIds && currentWs.semesterIds.length === 1) {
+        row.school_code = currentWs.schoolId;
+        row.semester_code = currentWs.semesterIds[0];
+      }
       /* AI-126C persistence hotfix: wrong_book.question_id and
          wrong_book.material_id are nullable UUID foreign keys, but the
          Runtime previously omitted both fields. That severed the real
@@ -128,7 +151,22 @@ AHS.WrongBookRuntime = (function () {
     var identity = AHS.SyncBridge.identity();
     if (!identity) { return Promise.resolve({ pulled: 0 }); }
     var repo = AHS.RepositoryFactory.create();
-    return repo.read("wrong_book", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+    /* Sprint AI-150（根因修正）: student_profile_id 是同一個學生橫跨所有
+       學期共用的唯一一筆，光靠它去撈只會把這個學生「所有學期」的錯題全
+       部撈回來，不管目前 Workspace 是哪個學期。只在真的有一個明確、單一
+       學期的 Workspace（見 pushRecord() 同一段判斷）時，才加上
+       school_code／semester_code 篩選，把「不屬於目前這個學期」的真實
+       雲端資料真的擋在下載這一步，而不是下載回來又顯示出來。沒有明確單
+       一學期（例如複選 Workspace，或這個頁面根本沒有 WorkspaceRuntime）
+       時維持既有查詢，不誤篩掉東西。 */
+    var currentWs = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function")
+      ? AHS.WorkspaceRuntime.getCurrent() : null;
+    var query = "student_profile_id=eq." + identity.studentProfileId;
+    if (currentWs && currentWs.schoolId && currentWs.semesterIds && currentWs.semesterIds.length === 1) {
+      query += "&school_code=eq." + encodeURIComponent(currentWs.schoolId) +
+        "&semester_code=eq." + encodeURIComponent(currentWs.semesterIds[0]);
+    }
+    return repo.read("wrong_book", query).then(function (result) {
       if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
       var bySupabaseId = {};
       store.items.forEach(function (item) { if (item.supabaseId) { bySupabaseId[item.supabaseId] = item; } });
