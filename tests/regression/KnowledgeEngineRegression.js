@@ -429,6 +429,70 @@ console.log("\n[9] QuizCenter — 平時練習完成後「再次出題」真實�
   }
 }
 
+/* ---- 10. QuizCenter — 背景 Repository Pull 重新渲染時不得蓋掉正在跑的
+   Exam Session（Sprint AI-146，PO 回報：點「開始測驗」畫面又跳回列表，
+   之後永久卡住，重新整理才恢復）------------------------------------- */
+console.log("\n[10] QuizCenter — create() 被迫重新呼叫時（模擬 ahs:repository-pulled 觸發的 guardedInit() 重新渲染），真實 Running Session 必須被接續顯示，不得被 showList() 蓋掉（AI-146）");
+{
+  const { window } = loadPage("quiz.html");
+  const A = window.AHS;
+  const examId = "teaching_material_rt_resume146";
+  const bankQuestions = [];
+  for (let i = 1; i <= 5; i++) {
+    bankQuestions.push({
+      id: "rs" + i, index: i, subject: "math", text: "t" + i, type: "single_choice",
+      options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
+      knowledgePoint: "kp", materialId: "rt_resume146"
+    });
+  }
+  A.QuestionRuntime.importQuestions(examId, bankQuestions);
+  A.QuestionBankRuntime.ensureBank(examId, bankQuestions);
+
+  const doc = window.document;
+  // 第一次 create()：真實透過 examId 進入 Exam Session（等同使用者剛點了
+  // 「開始測驗」）。
+  const mount1 = A.QuizCenter.create(undefined, undefined, undefined, examId);
+  doc.body.appendChild(mount1);
+  const sessionAfterFirstCreate = A.ExamRuntime.getCurrent();
+  check("第一次 create() 真實啟動一個 Running Exam Session", !!sessionAfterFirstCreate && sessionAfterFirstCreate.status === "running");
+
+  // 第二次 create()：AppQuiz.js 的 ahs:repository-pulled 監聽器會在背景
+  // pull() resolve 後，用完全相同的參數（URL 從未改變）再呼叫一次
+  // AHS.QuizCenter.create()，並用 AHS.UI.mount(app, ...) 整個換掉
+  // #app —— 這裡直接重現同樣的呼叫，換掉 DOM，模擬那個時機點。
+  doc.body.innerHTML = "";
+  const mount2 = A.QuizCenter.create(undefined, undefined, undefined, examId);
+  doc.body.appendChild(mount2);
+
+  check("重新呼叫 create() 後，Running Session 真實被接續顯示（.qcard 仍在），不是掉回列表",
+    !!doc.querySelector(".qcard"));
+  check("重新呼叫 create() 後，不再誠實顯示未篩選的教材列表（.quiz-row 不存在）",
+    !doc.querySelector(".quiz-row"));
+  const sessionAfterSecondCreate = A.ExamRuntime.getCurrent();
+  check("同一個 Session 被接續（examId 不變，不是重新抽了一次新的）",
+    !!sessionAfterSecondCreate && sessionAfterSecondCreate.examId === sessionAfterFirstCreate.examId);
+
+  // 真實答完並完成測驗後，Session 正常結束（activeExamId 被清空）——證明
+  // 這個修正只在「真的有 Session 在跑」時才接續顯示，不是無論如何都鎖死
+  // 在同一個畫面。
+  const questions = A.QuestionRuntime.getSet(sessionAfterSecondCreate.examId);
+  questions.forEach((q) => A.AnswerRuntime.saveAnswer(sessionAfterSecondCreate.examId, q.id, "A"));
+  A.ExamRuntime.finish(sessionAfterSecondCreate.examId);
+  check("測驗完成後，ExamRuntime 誠實回報已無 Running Session", !A.ExamRuntime.getCurrent());
+
+  // 這正是 PO 回報的「永久卡住」症狀本身：完成一次之後，再次點「開始
+  // 測驗」（等同再呼叫一次 create()，帶同一個 examId）必須真實成功開始
+  // 一個新的 Session，而不是被卡住的舊 Session 擋下、掉回列表。
+  doc.body.innerHTML = "";
+  const mount3 = A.QuizCenter.create(undefined, undefined, undefined, examId);
+  doc.body.appendChild(mount3);
+  check("完成測驗後再次進入同一教材：真實成功開始新的 Exam Session（.qcard 顯示），不是永久卡住掉回列表",
+    !!doc.querySelector(".qcard"));
+  const sessionAfterThirdCreate = A.ExamRuntime.getCurrent();
+  check("這是一個全新的 Session（examId 與剛完成的那次不同，非同一組題目重複顯示）",
+    !!sessionAfterThirdCreate && sessionAfterThirdCreate.examId !== sessionAfterSecondCreate.examId);
+}
+
 console.log("\n==============================");
 console.log("KnowledgeEngineRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);

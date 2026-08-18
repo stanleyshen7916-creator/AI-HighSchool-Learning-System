@@ -2217,7 +2217,29 @@ AHS.QuizCenter = (function () {
        already-working entry point. (mode=daily／每日 AI 練習 removed —
        Sprint AI-143: same underlying QuestionBank as 平時練習, just a
        different draw algorithm, and never had a promoted entry point.) */
-    if (directExamId && initialMode === "retest") {
+    /* Sprint AI-146（PO 回報：點「開始測驗」畫面又跳回列表，且之後永久卡
+       住，重新整理才會恢復）：根因是 js/pages/AppQuiz.js 既有的
+       window.addEventListener("ahs:repository-pulled", guardedInit) —
+       Sprint AI-142 補上真實 Supabase 憑證後，js/repository/
+       RepositorySync.js 的背景 pull() 第一次真的需要跑一趟真實網路（先前
+       Supabase 未設定時，pull() 在第一行就直接 return，這個事件從未真正
+       發出過）。pull() resolve 的時間點與使用者點「開始測驗」的時間點
+       一旦重疊，guardedInit() 會整頁重新呼叫 AHS.QuizCenter.create()——
+       這裡原本的路由邏輯只看 URL 參數，從未檢查「這個分頁其實已經有一個
+       AHS.ExamRuntime 正在跑的 Session」，於是直接依 URL 掉回 showList()
+       蓋掉剛剛才顯示的作答畫面；而 ExamRuntime 本身「同時間只能有一個
+       Session 在跑」的防呆機制（js/runtime/ExamRuntime.js 的
+       activeExamId 仍是 RUNNING，記憶體內狀態沒有被清掉，因為只有整頁真
+       正重新載入才會重置）從此擋下任何後續 startFromExam()，導致同一頁
+       之後永遠卡在 showList()——這正是「永久卡住、F5 才恢復」的機制。
+       真正的修正是讓 create() 每次被呼叫時，先誠實檢查是否已經有一個真
+       實在跑的 Session，有的話就接續顯示它，而不是無條件依 URL 參數重新
+       路由一次——這樣無論 create() 是第一次載入呼叫，還是背景 pull 完成
+       後被迫再次呼叫，畫面都不會把使用者正在作答的東西蓋掉。 */
+    var resumeSession = AHS.ExamRuntime.getCurrent();
+    if (resumeSession) {
+      showExam(resumeSession.examId);
+    } else if (directExamId && initialMode === "retest") {
       tryRetestEntry(directExamId);
     } else if (directExamId && initialMode !== "practice") {
       tryDirectExamEntry(directExamId);
