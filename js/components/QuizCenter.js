@@ -916,6 +916,9 @@ AHS.QuizCenter = (function () {
             el("span", { class: "qreview__item-index", text: "第 " + q.index + " 題" })
           ]),
           el("p", { class: "qreview__item-text", text: q.text }),
+          /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
+             only, same discipline as QuestionCard.js's own qcard__figure. */
+          q.figureSvg ? el("div", { class: "qreview__item-figure", html: q.figureSvg }) : null,
           el("div", { class: "qreview__item-answers" }, [
             el("span", { text: "你的答案：" + (q.yourAnswer || "未作答") }),
             el("span", { style: "color:" + toneHex + ";font-weight:700",

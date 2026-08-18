@@ -80,7 +80,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.97,
         "needsReview": false,
-        "knowledgePoint": "和角公式的幾何證明"
+        "knowledgePoint": "和角公式的幾何證明",
+        "figureSvg": "<svg viewBox=\"0 0 320 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"160\" y1=\"30\" x2=\"70\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"70\" y1=\"150\" x2=\"160\" y2=\"230\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"160\" y1=\"230\" x2=\"250\" y2=\"140\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"250\" y1=\"140\" x2=\"160\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"160\" y1=\"30\" x2=\"160\" y2=\"230\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/>\n<rect x=\"78\" y=\"132\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"#333\" stroke-width=\"1.3\" transform=\"rotate(-52 85 139)\"/>\n<rect x=\"222\" y=\"134\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"#333\" stroke-width=\"1.3\" transform=\"rotate(38 229 141)\"/>\n<circle cx=\"160\" cy=\"30\" r=\"2.5\" fill=\"#333\"/><circle cx=\"70\" cy=\"150\" r=\"2.5\" fill=\"#333\"/>\n<circle cx=\"160\" cy=\"230\" r=\"2.5\" fill=\"#333\"/><circle cx=\"250\" cy=\"140\" r=\"2.5\" fill=\"#333\"/>\n<text x=\"160\" y=\"20\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text>\n<text x=\"55\" y=\"152\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text>\n<text x=\"160\" y=\"250\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">D</text>\n<text x=\"266\" y=\"144\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">C</text>\n<text x=\"118\" y=\"60\" font-size=\"13\" fill=\"#7c5cff\">θ</text>\n<text x=\"97\" y=\"98\" font-size=\"12\" fill=\"#555\">a</text>\n<text x=\"98\" y=\"196\" font-size=\"12\" fill=\"#555\">b</text>\n</svg>"
       },
       {
         "id": "tm_1_q2",
@@ -104,7 +105,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "三角函數定義、坐標法求角"
+        "knowledgePoint": "三角函數定義、坐標法求角",
+        "figureSvg": "<svg viewBox=\"0 0 300 240\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"60\" y1=\"200\" x2=\"60\" y2=\"60\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"60\" y1=\"200\" x2=\"220\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"60\" y1=\"60\" x2=\"220\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"60\" y1=\"200\" x2=\"140\" y2=\"200\" stroke=\"#7c5cff\" stroke-width=\"2\"/>\n<line x1=\"60\" y1=\"60\" x2=\"140\" y2=\"200\" stroke=\"#7c5cff\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/>\n<rect x=\"60\" y=\"186\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"#333\" stroke-width=\"1.3\"/>\n<circle cx=\"140\" cy=\"200\" r=\"3\" fill=\"#7c5cff\"/>\n<text x=\"45\" y=\"55\" font-size=\"15\" font-weight=\"700\">A</text>\n<text x=\"42\" y=\"216\" font-size=\"15\" font-weight=\"700\">B</text>\n<text x=\"228\" y=\"205\" font-size=\"15\" font-weight=\"700\">C</text>\n<text x=\"140\" y=\"220\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\" fill=\"#7c5cff\">D</text>\n<text x=\"150\" y=\"130\" font-size=\"12\" fill=\"#555\">√2</text>\n<text x=\"90\" y=\"215\" font-size=\"11\" fill=\"#999\">中點</text>\n</svg>"
       },
       {
         "id": "tm_1_q3",
@@ -128,7 +130,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.97,
         "needsReview": false,
-        "knowledgePoint": "正弦定理、圓內接四邊形"
+        "knowledgePoint": "正弦定理、圓內接四邊形",
+        "figureSvg": "<svg viewBox=\"0 0 300 300\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<circle cx=\"150\" cy=\"150\" r=\"110\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"1.5\"/>\n<circle cx=\"150\" cy=\"40\" r=\"3\" fill=\"#333\"/>\n<circle cx=\"52\" cy=\"128\" r=\"3\" fill=\"#333\"/>\n<circle cx=\"95\" cy=\"252\" r=\"3\" fill=\"#333\"/>\n<circle cx=\"248\" cy=\"128\" r=\"3\" fill=\"#333\"/>\n<line x1=\"150\" y1=\"40\" x2=\"52\" y2=\"128\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<line x1=\"52\" y1=\"128\" x2=\"95\" y2=\"252\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<line x1=\"95\" y1=\"252\" x2=\"248\" y2=\"128\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<line x1=\"248\" y1=\"128\" x2=\"150\" y2=\"40\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<line x1=\"150\" y1=\"40\" x2=\"95\" y2=\"252\" stroke=\"#7c5cff\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/>\n<line x1=\"52\" y1=\"128\" x2=\"248\" y2=\"128\" stroke=\"#22b573\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/>\n<text x=\"150\" y=\"28\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text>\n<text x=\"34\" y=\"126\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text>\n<text x=\"88\" y=\"272\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">C</text>\n<text x=\"264\" y=\"126\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">D</text>\n<text x=\"132\" y=\"160\" font-size=\"11\" fill=\"#7c5cff\">30°</text>\n<text x=\"80\" y=\"120\" font-size=\"11\" fill=\"#22b573\">45°</text>\n<text x=\"170\" y=\"200\" font-size=\"12\" fill=\"#555\">CD=2</text>\n</svg>"
       },
       {
         "id": "tm_1_q4",
@@ -218,7 +221,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.96,
         "needsReview": false,
-        "knowledgePoint": "正弦定理（圓內弦與圓周角）"
+        "knowledgePoint": "正弦定理（圓內弦與圓周角）",
+        "figureSvg": "<svg viewBox=\"0 0 280 280\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<circle cx=\"140\" cy=\"140\" r=\"100\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"1.5\"/>\n<circle cx=\"90\" cy=\"55\" r=\"3\" fill=\"#333\"/>\n<circle cx=\"190\" cy=\"55\" r=\"3\" fill=\"#333\"/>\n<circle cx=\"60\" cy=\"200\" r=\"3\" fill=\"#7c5cff\"/>\n<line x1=\"90\" y1=\"55\" x2=\"190\" y2=\"55\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<line x1=\"60\" y1=\"200\" x2=\"90\" y2=\"55\" stroke=\"#7c5cff\" stroke-width=\"1.5\"/>\n<line x1=\"60\" y1=\"200\" x2=\"190\" y2=\"55\" stroke=\"#7c5cff\" stroke-width=\"1.5\"/>\n<text x=\"90\" y=\"42\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text>\n<text x=\"190\" y=\"42\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">C</text>\n<text x=\"45\" y=\"205\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#7c5cff\">P</text>\n<text x=\"140\" y=\"46\" text-anchor=\"middle\" font-size=\"12\" fill=\"#555\">BC=1</text>\n<text x=\"60\" y=\"130\" font-size=\"11\" fill=\"#999\">直徑=3</text>\n</svg>"
       },
       {
         "id": "tm_1_qB",
@@ -254,7 +258,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.96,
         "needsReview": false,
-        "knowledgePoint": "角平分線與三角形面積"
+        "knowledgePoint": "角平分線與三角形面積",
+        "figureSvg": "<svg viewBox=\"0 0 300 220\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"150\" y1=\"30\" x2=\"40\" y2=\"190\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"150\" y1=\"30\" x2=\"260\" y2=\"190\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"40\" y1=\"190\" x2=\"260\" y2=\"190\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"150\" y1=\"30\" x2=\"150\" y2=\"190\" stroke=\"#7c5cff\" stroke-width=\"2\"/>\n<circle cx=\"150\" cy=\"190\" r=\"3\" fill=\"#7c5cff\"/>\n<text x=\"150\" y=\"20\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text>\n<text x=\"25\" y=\"200\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text>\n<text x=\"275\" y=\"200\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">C</text>\n<text x=\"150\" y=\"205\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\" fill=\"#7c5cff\">D</text>\n<text x=\"118\" y=\"75\" font-size=\"11\" fill=\"#7c5cff\">60°</text>\n<text x=\"168\" y=\"75\" font-size=\"11\" fill=\"#7c5cff\">60°</text>\n<text x=\"80\" y=\"120\" font-size=\"12\" fill=\"#555\">AB=6</text>\n<text x=\"195\" y=\"120\" font-size=\"12\" fill=\"#555\">AC=3</text>\n</svg>"
       },
       {
         "id": "tm_1_qD",
@@ -470,7 +475,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "顳窩與羊膜動物親緣關係"
+        "knowledgePoint": "顳窩與羊膜動物親緣關係",
+        "figureSvg": "<svg viewBox=\"0 0 660 300\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"40\" y1=\"260\" x2=\"100\" y2=\"170\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"100\" y1=\"170\" x2=\"170\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"100\" y1=\"170\" x2=\"600\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"100\" y1=\"170\" x2=\"290\" y2=\"110\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"290\" y1=\"110\" x2=\"250\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"290\" y1=\"110\" x2=\"380\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"290\" y1=\"110\" x2=\"480\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><circle cx=\"100\" cy=\"170\" r=\"3\" fill=\"#333\"/><circle cx=\"290\" cy=\"110\" r=\"3\" fill=\"#333\"/><text x=\"15\" y=\"280\" font-size=\"12\" font-weight=\"700\">羊膜動物祖先</text><text x=\"170\" y=\"42\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#ef4444\">龜鱉類（無顳窩）</text><text x=\"250\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#7c5cff\">鱷魚（雙顳窩）</text><text x=\"380\" y=\"42\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#7c5cff\">蜥蜴與蛇（雙顳窩）</text><text x=\"480\" y=\"20\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\" fill=\"#7c5cff\">翼龍與恐龍(已滅絕)／鳥類</text><text x=\"600\" y=\"42\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#22b573\">哺乳類（單顳窩）</text><text x=\"150\" y=\"158\" font-size=\"11\" fill=\"#999\">無顳窩分支</text><text x=\"300\" y=\"88\" font-size=\"11\" fill=\"#999\">雙顳窩分支（雙孔類）</text><text x=\"490\" y=\"125\" font-size=\"11\" fill=\"#999\">單顳窩分支</text></svg>"
       },
       {
         "id": "tm_2_q4",
@@ -962,7 +968,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.93,
         "needsReview": false,
-        "knowledgePoint": "支序分類學的證據"
+        "knowledgePoint": "支序分類學的證據",
+        "figureSvg": "<svg viewBox=\"0 0 460 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"40\" y1=\"230\" x2=\"90\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"60\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"150\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"230\" y2=\"90\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"200\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"290\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"420\" y2=\"60\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"380\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"440\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<circle cx=\"90\" cy=\"150\" r=\"3\" fill=\"#333\"/><circle cx=\"230\" cy=\"90\" r=\"3\" fill=\"#333\"/><circle cx=\"420\" cy=\"60\" r=\"3\" fill=\"#333\"/>\n<text x=\"60\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">真菌界</text>\n<text x=\"150\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">植物界</text>\n<text x=\"200\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">原口動物</text>\n<text x=\"290\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">後口動物</text>\n<text x=\"380\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">爬行動物</text>\n<text x=\"440\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">哺乳動物</text>\n<text x=\"15\" y=\"248\" font-size=\"12\" font-weight=\"700\">共同祖先</text>\n<text x=\"230\" y=\"115\" font-size=\"10\" fill=\"#999\">動物界</text>\n<text x=\"330\" y=\"80\" font-size=\"10\" fill=\"#999\">脊椎動物</text>\n</svg>"
       },
       {
         "id": "tm_2_q25",
@@ -1152,7 +1159,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "鳥類與爬蟲類親緣關係重建"
+        "knowledgePoint": "鳥類與爬蟲類親緣關係重建",
+        "figureSvg": "<svg viewBox=\"0 0 460 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"30\" y1=\"230\" x2=\"80\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"80\" y1=\"150\" x2=\"50\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"80\" y1=\"150\" x2=\"220\" y2=\"80\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"220\" y1=\"80\" x2=\"180\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"220\" y1=\"80\" x2=\"330\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"330\" y1=\"40\" x2=\"430\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<circle cx=\"80\" cy=\"150\" r=\"3\" fill=\"#333\"/><circle cx=\"220\" cy=\"80\" r=\"3\" fill=\"#333\"/><circle cx=\"330\" cy=\"40\" r=\"3\" fill=\"#333\"/>\n<text x=\"20\" y=\"245\" font-size=\"11\" font-weight=\"700\">共同祖先</text>\n<text x=\"50\" y=\"28\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">兩生類</text>\n<text x=\"180\" y=\"28\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#22b573\">哺乳類（毛）</text>\n<text x=\"330\" y=\"28\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">爬蟲類</text>\n<text x=\"430\" y=\"8\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#ef4444\">鳥類（羽毛）</text>\n<text x=\"100\" y=\"115\" font-size=\"10\" fill=\"#999\">羊膜／鱗片</text>\n<text x=\"360\" y=\"35\" font-size=\"10\" fill=\"#ef4444\">有羽恐龍</text>\n</svg>"
       },
       {
         "id": "tm_2_q33",
@@ -3233,7 +3241,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "人類發展指數（HDI）區域差異"
+        "knowledgePoint": "人類發展指數（HDI）區域差異",
+        "figureSvg": "<svg viewBox=\"0 0 320 220\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"40\" y1=\"180\" x2=\"300\" y2=\"180\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<rect x=\"60\" y=\"98\" width=\"50\" height=\"82\" fill=\"#7c5cff\" opacity=\"0.75\"/>\n<rect x=\"150\" y=\"68\" width=\"50\" height=\"112\" fill=\"#22b573\" opacity=\"0.75\"/>\n<rect x=\"240\" y=\"30\" width=\"50\" height=\"150\" fill=\"#ef4444\" opacity=\"0.75\"/>\n<text x=\"85\" y=\"92\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">77.4</text>\n<text x=\"175\" y=\"62\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">83</text>\n<text x=\"265\" y=\"24\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">90+</text>\n<text x=\"85\" y=\"196\" text-anchor=\"middle\" font-size=\"11\">墨西哥全國</text>\n<text x=\"175\" y=\"196\" text-anchor=\"middle\" font-size=\"11\">墨西哥市</text>\n<text x=\"265\" y=\"196\" text-anchor=\"middle\" font-size=\"11\">市內特定區</text>\n<text x=\"30\" y=\"185\" text-anchor=\"end\" font-size=\"10\" fill=\"#999\">HDI</text>\n</svg>"
       },
       {
         "id": "tm_4_q32",
@@ -3440,7 +3449,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "海陸分布對氣溫的影響（東北亞）"
+        "knowledgePoint": "海陸分布對氣溫的影響（東北亞）",
+        "figureSvg": "<svg viewBox=\"0 0 440 240\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"20\" y1=\"120\" x2=\"420\" y2=\"120\" stroke=\"#ccc\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"20\" y1=\"170\" x2=\"420\" y2=\"170\" stroke=\"#ccc\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><path d=\"M60,40 L90,60 L80,110 L60,150 L70,190 L50,200\" fill=\"none\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"50\" y=\"35\" font-size=\"12\" font-weight=\"700\">朝鮮半島</text><path d=\"M180,80 Q210,70 230,90 Q250,110 230,140 Q250,160 240,190\" fill=\"none\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"180\" y=\"70\" font-size=\"12\" font-weight=\"700\">日本群島</text><line x1=\"20\" y1=\"170\" x2=\"420\" y2=\"170\" stroke=\"#7c5cff\" stroke-width=\"2\"/><text x=\"290\" y=\"165\" font-size=\"11\" fill=\"#7c5cff\">日本1月0℃等溫線</text><line x1=\"20\" y1=\"120\" x2=\"420\" y2=\"120\" stroke=\"#ef4444\" stroke-width=\"2\"/><text x=\"280\" y=\"115\" font-size=\"11\" fill=\"#ef4444\">朝鮮半島1月0℃等溫線</text><line x1=\"400\" y1=\"120\" x2=\"400\" y2=\"170\" stroke=\"#333\" stroke-width=\"1\"/><text x=\"408\" y=\"148\" font-size=\"11\" fill=\"#333\">約5°緯度</text></svg>"
       },
       {
         "id": "tm_4_q41",
@@ -3486,7 +3496,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "三角貿易與不平等交換"
+        "knowledgePoint": "三角貿易與不平等交換",
+        "figureSvg": "<svg viewBox=\"0 0 320 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<circle cx=\"160\" cy=\"40\" r=\"28\" fill=\"#7c5cff\" opacity=\"0.15\" stroke=\"#7c5cff\" stroke-width=\"1.5\"/>\n<circle cx=\"50\" cy=\"200\" r=\"28\" fill=\"#22b573\" opacity=\"0.15\" stroke=\"#22b573\" stroke-width=\"1.5\"/>\n<circle cx=\"270\" cy=\"200\" r=\"28\" fill=\"#ef4444\" opacity=\"0.15\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n<text x=\"160\" y=\"45\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">歐洲（核心）</text>\n<text x=\"50\" y=\"205\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">非洲</text>\n<text x=\"270\" y=\"205\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">美洲</text>\n<line x1=\"140\" y1=\"60\" x2=\"70\" y2=\"180\" stroke=\"#333\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n<line x1=\"75\" y1=\"195\" x2=\"245\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n<line x1=\"255\" y1=\"180\" x2=\"180\" y2=\"60\" stroke=\"#333\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/>\n<text x=\"80\" y=\"115\" font-size=\"11\" fill=\"#555\">Ⅰ 工業製品</text>\n<text x=\"160\" y=\"228\" font-size=\"11\" fill=\"#555\">Ⅱ 奴隸</text>\n<text x=\"235\" y=\"115\" font-size=\"11\" fill=\"#555\">Ⅲ 原料／農產品</text>\n<defs><marker id=\"arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L6,3 L0,6 Z\" fill=\"#333\"/></marker></defs>\n</svg>"
       },
       {
         "id": "tm_4_q43",
@@ -3601,7 +3612,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.6,
         "needsReview": true,
-        "knowledgePoint": "蘭嶼達悟族飛魚文化"
+        "knowledgePoint": "蘭嶼達悟族飛魚文化",
+        "figureSvg": "<svg viewBox=\"0 0 340 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<rect x=\"30\" y=\"20\" width=\"280\" height=\"200\" fill=\"none\" stroke=\"#ccc\" stroke-width=\"1\"/>\n<line x1=\"30\" y1=\"120\" x2=\"310\" y2=\"120\" stroke=\"#eee\" stroke-width=\"1\"/>\n<line x1=\"170\" y1=\"20\" x2=\"170\" y2=\"220\" stroke=\"#eee\" stroke-width=\"1\"/>\n<circle cx=\"90\" cy=\"60\" r=\"6\" fill=\"#999\"/><text x=\"90\" y=\"45\" text-anchor=\"middle\" font-size=\"12\">(A)</text>\n<circle cx=\"240\" cy=\"90\" r=\"6\" fill=\"#999\"/><text x=\"240\" y=\"75\" text-anchor=\"middle\" font-size=\"12\">(B)</text>\n<circle cx=\"200\" cy=\"130\" r=\"7\" fill=\"#22b573\"/><text x=\"200\" y=\"115\" text-anchor=\"middle\" font-size=\"12\" fill=\"#22b573\" font-weight=\"700\">(C) 答案</text>\n<circle cx=\"120\" cy=\"180\" r=\"6\" fill=\"#999\"/><text x=\"120\" y=\"200\" text-anchor=\"middle\" font-size=\"12\">(D)</text>\n<text x=\"200\" y=\"150\" text-anchor=\"middle\" font-size=\"10\" fill=\"#22b573\">北緯22°／東經121.5°</text>\n<text x=\"20\" y=\"15\" font-size=\"10\" fill=\"#999\">示意座標圖（非精確海岸線）</text>\n</svg>"
       },
       {
         "id": "tm_4_q48",
@@ -3647,7 +3659,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "南島語族分布範圍"
+        "knowledgePoint": "南島語族分布範圍",
+        "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<circle cx=\"190\" cy=\"40\" r=\"6\" fill=\"#22b573\"/><text x=\"190\" y=\"26\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">臺灣（起源）</text>\n<circle cx=\"120\" cy=\"90\" r=\"5\" fill=\"#ef4444\"/><text x=\"90\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#ef4444\">越南（非南島）</text>\n<circle cx=\"150\" cy=\"150\" r=\"5\" fill=\"#7c5cff\"/><text x=\"150\" y=\"170\" text-anchor=\"middle\" font-size=\"11\" fill=\"#7c5cff\">蘇門答臘</text>\n<circle cx=\"300\" cy=\"230\" r=\"5\" fill=\"#7c5cff\"/><text x=\"300\" y=\"248\" text-anchor=\"middle\" font-size=\"11\" fill=\"#7c5cff\">紐西蘭</text>\n<circle cx=\"230\" cy=\"190\" r=\"5\" fill=\"#ef4444\"/><text x=\"260\" y=\"200\" text-anchor=\"middle\" font-size=\"11\" fill=\"#ef4444\">澳大利亞（非南島）</text>\n<circle cx=\"330\" cy=\"90\" r=\"5\" fill=\"#7c5cff\"/><text x=\"330\" y=\"75\" text-anchor=\"middle\" font-size=\"11\" fill=\"#7c5cff\">馬紹爾群島</text>\n<text x=\"20\" y=\"15\" font-size=\"10\" fill=\"#999\">示意分布圖（藍＝南島語族／紅＝非南島語族）</text>\n</svg>"
       },
       {
         "id": "tm_4_q50",

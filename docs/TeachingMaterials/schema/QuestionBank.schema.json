@@ -51,6 +51,10 @@
           "difficulty": {
             "type": "string",
             "description": "選填，此題本身的難度（區別於 metadata.json 的教材整體 difficulty）。同上，格式化既有真實用法，未新增資料。"
+          },
+          "figureSvg": {
+            "type": "string",
+            "description": "選填。Sprint AI-147（使用者需求：題目附圖）: 一段內嵌 SVG 字串，供題幹提到「如圖／附圖」但原始照片本身未數位化保存的題目使用。只在該題的幾何/數據/關係已能從題幹或詳解文字完整、無歧義還原時才附上；原始照片本身已被標註不清晰/無法覆核的題目一律不附。絕不是原始考卷照片的掃描重製，而是根據題目自身已核實文字內容繪製的示意圖。"
           }
         },
         "additionalProperties": false

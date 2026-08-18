@@ -269,6 +269,10 @@ AHS.WrongBookRuntime = (function () {
           yourAnswer: w.yourAnswer,
           correctAnswer: w.correctAnswer,
           explanation: w.explanation,
+          /* Sprint AI-147（使用者需求：題目附圖）: real passthrough only,
+             same discipline as materialId above — "" when the source
+             question genuinely has no figure. */
+          figureSvg: w.figureSvg || "",
           errorCount: 1,
           lastError: formatDate(now),
           /* AI-121-12/19: real, immutable creation date — never updated

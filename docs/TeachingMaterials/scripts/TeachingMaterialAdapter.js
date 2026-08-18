@@ -242,6 +242,14 @@ function convertQuestions(questionBank, materialRuntimeId) {
        track's own real material already has per question. */
     if (q.knowledgePoint) { converted.knowledgePoint = q.knowledgePoint; }
     if (q.difficulty) { converted.difficulty = q.difficulty; }
+    /* Sprint AI-147（使用者需求：題目附圖）: real passthrough only,
+       omitted when absent — same discipline as knowledgePoint/difficulty
+       above. figureSvg is an inline SVG string authored by hand from this
+       question's own真實、已核實的題幹/詳解內容（非猜測原始考卷照片的樣
+       子）— never attached to a question whose figure content was itself
+       flagged unclear/unverifiable from the source photo (see this
+       Package's own questionbank.json comments). */
+    if (q.figureSvg) { converted.figureSvg = q.figureSvg; }
     return converted;
   });
 }

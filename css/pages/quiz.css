@@ -216,6 +216,14 @@
    actually has them — reuses the same muted small-text treatment as
    .qcard__index, no new Design Token. */
 .qcard__meta { margin: 0; font-size: 13px; color: var(--text-muted); }
+/* Sprint AI-147（使用者需求：題目附圖）: bounded, centered container for
+   an inline SVG figure — the figure's own viewBox controls its real
+   aspect ratio, this just caps how wide/tall it can ever render. */
+.qcard__figure {
+  display: flex; justify-content: center; padding: 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-md); background-color: var(--bg);
+}
+.qcard__figure svg { max-width: 100%; height: auto; max-height: 320px; }
 .qcard__options { display: flex; flex-direction: column; gap: 10px; }
 .qcard-option {
   display: flex; align-items: center; gap: 12px;
@@ -278,6 +286,13 @@
 .qreview__mark svg { width: 15px; height: 15px; }
 .qreview__item-index { font-size: 12px; font-weight: 700; color: var(--text-muted); }
 .qreview__item-text { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.6; }
+/* Sprint AI-147（使用者需求：題目附圖）: same bounded container as
+   .qcard__figure above. */
+.qreview__item-figure {
+  display: flex; justify-content: center; padding: 10px;
+  border: 1px solid var(--line); border-radius: var(--radius-md); background-color: var(--bg);
+}
+.qreview__item-figure svg { max-width: 100%; height: auto; max-height: 280px; }
 .qreview__item-answers { display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
 .qreview__item-explain { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 .qreview__actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }

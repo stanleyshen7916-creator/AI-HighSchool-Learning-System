@@ -493,6 +493,96 @@ console.log("\n[10] QuizCenter — create() 被迫重新呼叫時（模擬 ahs:r
     !!sessionAfterThirdCreate && sessionAfterThirdCreate.examId !== sessionAfterSecondCreate.examId);
 }
 
+/* ---- 11. 題目附圖（Sprint AI-147，使用者需求：詳解裡「依附圖」卻沒有
+   圖可看，能否提供圖片詳解）------------------------------------------ */
+console.log("\n[11] 題目附圖 — 真實 figureSvg 從 Package 一路傳到考試畫面／檢討畫面／知識弱點（AI-147）");
+{
+  const { window } = loadPage("quiz.html");
+  const A = window.AHS;
+  A.TeachingMaterialLoader.initialize();
+
+  /* 真實資料：docs/TeachingMaterials/materials/tm_2/questionbank.json 的
+     tm_2_q3（顳窩與羊膜動物親緣關係）本來就有 figureSvg；同一份題庫裡
+     其他大多數題目沒有，用來確認「沒有附圖的題目誠實不顯示附圖區塊」。 */
+  const materials = A.MaterialRuntime.list();
+  const figMaterial = materials.find((m) =>
+    A.QuestionRuntime.hasExam("teaching_material_" + m.id) &&
+    A.QuestionRuntime.getSet("teaching_material_" + m.id).some((q) => q.id === "tm_2_q3"));
+  check("真實找到含 tm_2_q3（顳窩附圖題）的教材", !!figMaterial);
+
+  if (figMaterial) {
+    const doc = window.document;
+    var fullExamId = "teaching_material_" + figMaterial.id;
+    var fullSet = A.QuestionRuntime.getSet(fullExamId);
+
+    /* tryDirectExamEntry()/drawCycle() only ever shows FORMAL_EXAM_QUESTION_
+       COUNT（10）questions drawn at random from this real material's full
+       bank (currently 32+ real questions) — a genuinely random 10-question
+       subset that may or may not include tm_2_q3 on any given draw. To
+       keep this check deterministic without touching that real drawCycle()
+       mechanism at all, this test instead imports the SAME real question
+       objects (tm_2_q3's own real figureSvg included, verbatim, nothing
+       fabricated) under a fresh, controlled examId and starts a normal
+       ExamRuntime session directly — the exact same rendering path
+       (QuestionCard.js/buildReviewView()/WrongBookRuntime.sync()) a real
+       drawn session would use, just with a guaranteed, real question set. */
+    var qDirect = fullSet.find((q) => q.id === "tm_2_q3");
+    var qPlain = fullSet.find((q) => q.id !== "tm_2_q3" && !q.figureSvg);
+    check("真實題庫中同時找得到附圖題與一般題（供對照）", !!qDirect && !!qPlain);
+
+    var controlledExamId = "teaching_material_fig147_controlled";
+    var controlledSet = [qDirect, qPlain].filter(Boolean);
+    A.QuestionRuntime.importQuestions(controlledExamId, controlledSet);
+    /* ensureBank() so tryDirectExamEntry() takes its normal drawCycle()
+       path (real subject "biology" on both real questions carries
+       through drawCycle's own real fallback — see js/components/
+       QuizCenter.js's Sprint AI-145 comment) — the exact same path real
+       materials go through, not a second/parallel one. */
+    A.QuestionBankRuntime.ensureBank(controlledExamId, controlledSet);
+    const mount = A.QuizCenter.create(undefined, undefined, undefined, controlledExamId);
+    doc.body.appendChild(mount);
+
+    var sawFigureOnFigureQuestion = false;
+    var sawNoFigureOnPlainQuestion = false;
+    var sawSvgCircleOrPath = false;
+    for (var i = 0; i < 5; i++) {
+      var session = A.ExamRuntime.getCurrent();
+      var currentQ = A.QuestionRuntime.getSet(session.examId)[session.currentIndex];
+      var figureBox = doc.querySelector(".qcard__figure");
+      if (currentQ.id === "tm_2_q3") {
+        sawFigureOnFigureQuestion = !!figureBox;
+        sawSvgCircleOrPath = !!(figureBox && figureBox.querySelector("svg"));
+      } else if (!currentQ.figureSvg) {
+        sawNoFigureOnPlainQuestion = !figureBox;
+      }
+      var next = doc.querySelector(".qnav__next");
+      if (!next) { break; }
+      next.click();
+    }
+    check("考試作答畫面：tm_2_q3 真實顯示附圖區塊（.qcard__figure）", sawFigureOnFigureQuestion);
+    check("附圖區塊內真實含有 SVG 內容", sawSvgCircleOrPath);
+    check("沒有附圖的題目誠實不顯示附圖區塊（非空框）", sawNoFigureOnPlainQuestion);
+
+    // 故意在附圖題答錯，完成測驗，確認檢討畫面／錯題本都真的接住了 figureSvg。
+    var finalSession = A.ExamRuntime.getCurrent();
+    var qs = A.QuestionRuntime.getSet(finalSession.examId);
+    qs.forEach((q) => {
+      var wrongKey = q.options[0].key === q.correctAnswer ? (q.options[1] || q.options[0]).key : q.options[0].key;
+      A.AnswerRuntime.saveAnswer(finalSession.examId, q.id, q.id === "tm_2_q3" ? wrongKey : q.correctAnswer);
+    });
+    const finishBtn = doc.querySelector(".qnav__finish");
+    if (finishBtn) { finishBtn.click(); }
+
+    var figureReviewItems = [...doc.querySelectorAll(".qreview__item")]
+      .filter((el) => el.textContent.indexOf("顳窩") !== -1);
+    check("檢討畫面（.qreview）中，顳窩附圖題真實顯示附圖", figureReviewItems.length > 0 &&
+      !!figureReviewItems[0].querySelector(".qreview__item-figure svg"));
+
+    var wbItem = A.WrongBookRuntime.list().find((it) => it.questionId === "tm_2_q3");
+    check("答錯後，AHS.WrongBookRuntime 的真實錯題紀錄也帶有 figureSvg", !!wbItem && !!wbItem.figureSvg);
+  }
+}
+
 console.log("\n==============================");
 console.log("KnowledgeEngineRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);

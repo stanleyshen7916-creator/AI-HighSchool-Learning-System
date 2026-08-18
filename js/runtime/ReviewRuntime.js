@@ -142,7 +142,9 @@ AHS.ReviewRuntime = (function () {
           yourAnswer: r.yourAnswer,
           correctAnswer: r.correctAnswer,
           isCorrect: r.isCorrect,
-          explanation: r.explanation
+          explanation: r.explanation,
+          /* Sprint AI-147（使用者需求：題目附圖）: real passthrough only. */
+          figureSvg: r.figureSvg || ""
         };
       })
     };

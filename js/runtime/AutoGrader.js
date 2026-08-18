@@ -58,6 +58,10 @@ AHS.AutoGrader = (function () {
            changing this function's own return shape for any existing
            consumer (every field before this one is untouched). */
         materialId: q.materialId || "",
+        /* Sprint AI-147（使用者需求：題目附圖）: same real passthrough
+           discipline as materialId above — "" when the source question
+           genuinely has no figure, never fabricated. */
+        figureSvg: q.figureSvg || "",
         yourAnswer: yourAnswer,
         correctAnswer: q.correctAnswer,
         isCorrect: isCorrect

@@ -309,7 +309,12 @@ AHS.TeachingMaterialLoader = (function () {
         materialId: runtimeMaterialId,
         questionSource: q.questionSource,
         origin: q.origin,
-        page: q.page
+        page: q.page,
+        /* Sprint AI-147（使用者需求：題目附圖）: real passthrough only —
+           js/data/TeachingMaterialData.js already carries figureSvg for
+           the questions that genuinely have one (see
+           TeachingMaterialAdapter.js's own identical passthrough). */
+        figureSvg: q.figureSvg || ""
       });
     });
     return compatible;

@@ -66,6 +66,10 @@ AHS.QuestionCard = (function () {
       ]),
       el("h2", { class: "qcard__text", text: question.text }),
       metaBits.length ? el("p", { class: "qcard__meta", text: metaBits.join("　") }) : null,
+      /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
+         only — a plain, honest empty (no element at all) when this
+         question genuinely has no figureSvg, never a placeholder box. */
+      question.figureSvg ? el("div", { class: "qcard__figure", html: question.figureSvg }) : null,
       el("div", { class: "qcard__options" }, optionButtons)
     ]);
   }
