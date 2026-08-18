@@ -762,6 +762,25 @@ AHS.QuizCenter = (function () {
     return String(examId || "").replace(/__original$|__ai$/, "");
   }
 
+  /* baseFormalExamId(examId) — Sprint AI-145 (使用者需求：平時練習需支援
+     當日多次進行，且不是同一組題目重複做): tryDirectExamEntry()'s own
+     drawCycle branch (below) always derives its running examId as
+     "<realExamId>__formal_<Date.now()>" before calling showExam() — the
+     one place that suffix is ever produced. Recovering the original,
+     undecorated examId from it (and ONLY it — returns null for any other
+     shape, e.g. Mock catalog exams, __original/__ai Assessment Mode
+     sessions, or __retest sessions) lets the Review screen offer a real
+     "再次出題" action: call tryDirectExamEntry() again with that same
+     real examId, which draws the NEXT batch from QuestionBankRuntime's
+     already-persisted shuffled bag (drawCycle()'s own "never repeats
+     until every question has been drawn once" guarantee) — never
+     re-showing the exact same set on purpose, and never a second/parallel
+     draw mechanism of its own. */
+  function baseFormalExamId(examId) {
+    var m = /^(.+)__formal_\d+$/.exec(String(examId || ""));
+    return m ? m[1] : null;
+  }
+
   /* assessmentModeToggle(session, onSwitchMode) — Sprint AI-117 AI-117-08
      Assessment Mode. Renders "□ 原始試卷 □ AI 練習" ONLY when this exam's
      base id genuinely has both real variants loaded (AHS.QuestionRuntime.
@@ -850,8 +869,16 @@ AHS.QuizCenter = (function () {
   }
 
   /* ---- Review view --------------------------------------------------------
-     review: ReviewRuntime view-model. onBack(): return to the exam list. */
-  function buildReviewView(review, onBack) {
+     review: ReviewRuntime view-model. onBack(): return to the exam list.
+     onRetry() — Sprint AI-145, optional/additive: every existing caller
+     that omits it keeps this view's exact prior behavior (只有返回測驗
+     中心一個按鈕). When provided (finishExam()/finishExamEarly() below
+     only ever pass it for a real drawCycle-drawn 平時練習 session — see
+     baseFormalExamId() above), renders a second "再次出題" button so a
+     student can immediately start another round the same day without
+     leaving Quiz Center, using the exact same bank instead of a second,
+     independently-invented draw. */
+  function buildReviewView(review, onBack, onRetry) {
     var subj = AHS.Subjects[review.subject];
 
     var summary = el("section", { class: "card qreview__summary" }, [
@@ -903,7 +930,17 @@ AHS.QuizCenter = (function () {
     ]);
     backBtn.addEventListener("click", onBack);
 
-    return el("div", { class: "qreview" }, [summary, list, backBtn]);
+    var retryBtn = null;
+    if (typeof onRetry === "function") {
+      retryBtn = el("button", { type: "button", class: "qreview__retry" }, [
+        el("span", { text: "再次出題" })
+      ]);
+      retryBtn.addEventListener("click", onRetry);
+    }
+
+    var actions = el("div", { class: "qreview__actions" }, [retryBtn, backBtn].filter(Boolean));
+
+    return el("div", { class: "qreview" }, [summary, list, actions]);
   }
 
   /* create(model?) — model defaults to AHS.AppConfig.quiz. Owns view
@@ -1891,7 +1928,9 @@ AHS.QuizCenter = (function () {
       }
       var review = AHS.ReviewRuntime.build(examId);
       if (!review) { showList(); return; }
-      AHS.UI.mount(root, buildReviewView(review, showList));
+      var retryExamId = baseFormalExamId(examId);
+      AHS.UI.mount(root, buildReviewView(review, showList,
+        retryExamId ? function () { tryDirectExamEntry(retryExamId); } : undefined));
     }
 
     /* finishExamEarly(examId) — 完成測試 hotfix (user requirement #2):
@@ -1933,7 +1972,9 @@ AHS.QuizCenter = (function () {
       }
       var review = AHS.ReviewRuntime.build(examId);
       if (!review) { showList(); return; }
-      AHS.UI.mount(root, buildReviewView(review, showList));
+      var retryExamId = baseFormalExamId(examId);
+      AHS.UI.mount(root, buildReviewView(review, showList,
+        retryExamId ? function () { tryDirectExamEntry(retryExamId); } : undefined));
     }
 
     /* Sprint v1.6 Module C: a real initialExamId tries direct entry into
@@ -1964,6 +2005,18 @@ AHS.QuizCenter = (function () {
         AHS.QuestionRuntime.importQuestions(derivedExamId, drawn);
         var drawnMeta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
           ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
+        /* Sprint AI-145: real, defensive fallback (never fabricated) —
+           same precedent as startDrawnSession() below. Every material a
+           real bank exists for was, by construction, already loaded via
+           TeachingMaterialLoader's own loadQuestions()/ensureBank() pair,
+           so resolveExamMeta() should always succeed for it in
+           production; this only guards the rare case it can't (e.g. the
+           bank's own idMap entry has since been cleared) so the drawn
+           questions' own real subject still renders instead of crashing
+           on an unrecognized "other" Subject key. */
+        if (!drawnMeta && drawn[0] && drawn[0].subject) {
+          drawnMeta = { subject: drawn[0].subject, title: "平時練習" };
+        }
         var drawnSession = AHS.ExamRuntime.startFromExam(derivedExamId, drawnMeta || {});
         if (!drawnSession) { showList(); return null; }
         showExam(drawnSession.examId);

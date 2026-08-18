@@ -280,12 +280,21 @@
 .qreview__item-text { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.6; }
 .qreview__item-answers { display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
 .qreview__item-explain { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.qreview__actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .qreview__back {
-  align-self: center; border: 0; border-radius: var(--radius-pill);
+  border: 0; border-radius: var(--radius-pill);
   padding: 12px 28px; font: inherit; font-size: 14px; font-weight: 700;
   background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); cursor: pointer;
 }
 .qreview__back:hover { background-color: var(--brand-strong); }
+/* Sprint AI-145：「再次出題」— 平時練習當日可重複進行，用外框樣式與
+   「返回測驗中心」的實心按鈕做視覺區分，同一排並列不搶主要動作的重點。 */
+.qreview__retry {
+  border: 2px solid var(--brand); border-radius: var(--radius-pill);
+  padding: 10px 26px; font: inherit; font-size: 14px; font-weight: 700;
+  background-color: transparent; color: var(--brand); cursor: pointer;
+}
+.qreview__retry:hover { background-color: var(--brand); color: #ffffff; }
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {

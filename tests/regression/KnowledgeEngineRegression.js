@@ -364,6 +364,71 @@ console.log("\n[8] QuizCenter — mode=retest 從真實 QuestionBank 隨機抽 1
   check("再次測試真實抽 10 題（Bank 有 20 題，10 題上限生效）", retestSession && retestSession.totalQuestions === 10);
 }
 
+/* ---- 9. QuizCenter — 平時練習「再次出題」，當日可重複進行且非同一組題目
+   （Sprint AI-145，使用者需求）--------------------------------------- */
+console.log("\n[9] QuizCenter — 平時練習完成後「再次出題」真實再抽一組不同題目（AI-145）");
+{
+  const { window } = loadPage("quiz.html");
+  const A = window.AHS;
+  const examId = "teaching_material_rt_retry";
+  const bankQuestions = [];
+  for (let i = 1; i <= 25; i++) {
+    bankQuestions.push({
+      id: "rq" + i, index: i, subject: "math", text: "t" + i, type: "single_choice",
+      options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
+      knowledgePoint: "kp", materialId: "rt_retry"
+    });
+  }
+  A.QuestionRuntime.importQuestions(examId, bankQuestions);
+  A.QuestionBankRuntime.ensureBank(examId, bankQuestions);
+
+  const doc = window.document;
+  const mount = A.QuizCenter.create(undefined, undefined, undefined, examId);
+  doc.body.appendChild(mount);
+
+  const firstSession = A.ExamRuntime.getCurrent();
+  check("進入即真實抽出一組 Exam Session（非清單）", !!firstSession && firstSession.status === "running");
+  check("每次固定抽 FORMAL_EXAM_QUESTION_COUNT（10）題（Bank 有 25 題）",
+    firstSession && firstSession.totalQuestions === 10);
+  const firstExamId = firstSession.examId;
+  const firstIds = A.QuestionRuntime.getSet(firstExamId).map((q) => q.id).sort();
+
+  /* Real click-through, same as a student would: save each answer via
+     the exact same AnswerRuntime call QuestionCard's own onSelect uses
+     (this file's own gradeQuestions() helper does the same, above),
+     then click 下一題 until the last question's 完成測驗 button appears,
+     then click it — the one real path that reaches finishExam()'s own
+     onFinish handler and mounts the real 檢討 (Review) screen. */
+  for (let guard = 0; guard < 20; guard++) {
+    const current = A.ExamRuntime.getCurrent();
+    if (!current) { break; }
+    const q = A.QuestionRuntime.getSet(firstExamId)[current.currentIndex];
+    A.AnswerRuntime.saveAnswer(firstExamId, q.id, "A");
+    const finishBtn = doc.querySelector(".qnav__finish");
+    if (finishBtn) { finishBtn.click(); break; }
+    const nextBtn = doc.querySelector(".qnav__next");
+    if (!nextBtn) { break; }
+    nextBtn.click();
+  }
+
+  const retryBtn = doc.querySelector(".qreview__retry");
+  check("完成後的檢討畫面真實提供「再次出題」按鈕", !!retryBtn);
+  check("同時仍保留「返回測驗中心」按鈕（非取代，AI-145 僅是新增選項）",
+    !!doc.querySelector(".qreview__back"));
+
+  if (retryBtn) {
+    retryBtn.click();
+    const secondSession = A.ExamRuntime.getCurrent();
+    check("點擊「再次出題」真實再啟動一個新的 Exam Session", !!secondSession && secondSession.status === "running");
+    check("新 Session 的 examId 與第一次不同（同一天可重複進行，非同一組再顯示一次）",
+      secondSession && secondSession.examId !== firstExamId);
+    const secondIds = secondSession ? A.QuestionRuntime.getSet(secondSession.examId).map((q) => q.id).sort() : [];
+    check("Bank 25 題遠大於每次抽 10 題，「再次出題」真實抽到不同題目組合（非同一組題目重複做）",
+      JSON.stringify(secondIds) !== JSON.stringify(firstIds));
+    check("兩次都誠實只抽 10 題（drawCycle 上限不變）", secondIds.length === 10);
+  }
+}
+
 console.log("\n==============================");
 console.log("KnowledgeEngineRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);
