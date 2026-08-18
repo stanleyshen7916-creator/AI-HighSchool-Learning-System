@@ -18,6 +18,7 @@ window.AHS = window.AHS || {};
 
   var IDENTITY_KEY = "supabase.identity";
   var subjectIdCache = null; /* { code: id, ... } — resolved lazily, once per page load */
+  var subjectCodeCache = null; /* { id: code, ... } — the reverse of subjectIdCache, same lazy-once-per-page-load cache discipline */
 
   /* Sprint AI-126E Task 1 (Runtime Mode Enable): "memory" mode disables
      every domain's background sync outright — every existing pushX()/
@@ -79,6 +80,37 @@ window.AHS = window.AHS || {};
       var id = (!result.error && result.data && result.data[0]) ? result.data[0].id : null;
       subjectIdCache[code] = id;
       return id;
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  /* subjectCodeFor(id) — Sprint AI-149（使用者需求：知識弱點的科目顯示為
+     空白「科目」佔位字，選擇科目篩選時，資料時有時無）: the reverse of
+     subjectIdFor() above. WrongBookRuntime.pullFromRepository() /
+     KnowledgeMasteryRuntime.pullFromRepository() both merge real remote
+     rows that only ever carry subject_id (a Supabase FK) — subjectIdFor()
+     alone can resolve a local code -> real id for pushing, but nothing
+     resolved a pulled row's real id back into this app's own local
+     subject code ("math"／"biology"…), so every record that ever entered
+     local state via a pull (a fresh device/session) was permanently
+     stuck with subject "". Same real, AI-126A-seeded `subjects` table,
+     same "cached in memory for the lifetime of the current page, re-
+     resolved fresh on every page navigation" discipline as subjectIdFor()
+     — never fabricates a code, returns null (never overwrites a real
+     local value) if the id isn't a real seeded subject or the read
+     fails. */
+  function subjectCodeFor(id) {
+    if (!id || !isConfigured()) { return Promise.resolve(null); }
+    if (subjectCodeCache && Object.prototype.hasOwnProperty.call(subjectCodeCache, id)) {
+      return Promise.resolve(subjectCodeCache[id]);
+    }
+    var repo = AHS.RepositoryFactory.create();
+    return repo.read("subjects", "id=eq." + encodeURIComponent(id)).then(function (result) {
+      subjectCodeCache = subjectCodeCache || {};
+      var code = (!result.error && result.data && result.data[0]) ? result.data[0].code : null;
+      subjectCodeCache[id] = code;
+      return code;
     }).catch(function () {
       return null;
     });
@@ -196,6 +228,7 @@ window.AHS = window.AHS || {};
     identity: identity,
     cacheIdentity: cacheIdentity,
     subjectIdFor: subjectIdFor,
+    subjectCodeFor: subjectCodeFor,
     pushFireAndForget: pushFireAndForget,
     flushQueue: flushQueue,
     queueSize: queueSize

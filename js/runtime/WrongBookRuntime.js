@@ -133,6 +133,7 @@ AHS.WrongBookRuntime = (function () {
       var bySupabaseId = {};
       store.items.forEach(function (item) { if (item.supabaseId) { bySupabaseId[item.supabaseId] = item; } });
       var pulled = 0;
+      var subjectLookups = [];
       result.data.forEach(function (row) {
         var local = bySupabaseId[row.id];
         if (!local) {
@@ -144,6 +145,20 @@ AHS.WrongBookRuntime = (function () {
         local.questionId = row.question_id || local.questionId || "";
         local.materialId = row.material_id || local.materialId || "";
         local.subject = local.subject || "";
+        /* Sprint AI-149（使用者需求：知識弱點畫面的科目一直顯示空白「科目」
+           佔位字，選擇科目篩選時資料時有時無）: row.subject_id 是真實存在
+           的 Supabase FK（pushRecord() 早就送出去了），但這裡從沒把它解回
+           本地的 subject code（"math"／"biology"…）——local.subject 因此
+           永遠停在剛建立時的 ""，且 sync() 只在真正新建本地紀錄時寫入一次
+           subject，不會回頭補救舊紀錄。只在目前本地值真的是空的時候才去查
+           （避免每次 pull 都重複打 API），查得到才覆寫；查不到（沒有
+           subject_id、或 subjects 表暫時讀不到）就保留原樣，不覆寫成假
+           資料。 */
+        if (!local.subject && row.subject_id && AHS.SyncBridge && typeof AHS.SyncBridge.subjectCodeFor === "function") {
+          subjectLookups.push(AHS.SyncBridge.subjectCodeFor(row.subject_id).then(function (code) {
+            if (code) { local.subject = code; }
+          }));
+        }
         local.knowledgePoint = row.knowledge_point;
         local.question = row.question_text;
         local.yourAnswer = row.your_answer;
@@ -164,8 +179,10 @@ AHS.WrongBookRuntime = (function () {
         local.correctCount = local.correctCount || 0;
         pulled += 1;
       });
-      persist();
-      return { pulled: pulled };
+      return Promise.all(subjectLookups).then(function () {
+        persist();
+        return { pulled: pulled };
+      });
     }).catch(function (err) {
       return { pulled: 0, error: { message: String(err && err.message || err) } };
     });

@@ -49,6 +49,7 @@ require(path.join(REPO, "js/runtime/KnowledgeMasteryRuntime.js"));
 require(path.join(REPO, "js/runtime/SettingsRuntime.js"));
 
 let pass = 0, fail = 0;
+var originalIsConfigured, originalGetSession, originalRepositoryFactoryCreate; /* section [11] restore-after-use, hoisted since it's set and restored in separate chained .then() callbacks */
 function check(name, cond) {
   if (cond) { pass++; console.log("  PASS  " + name); }
   else { fail++; console.log("  FAIL  " + name); }
@@ -180,6 +181,86 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   return new Promise(function (resolve) { setTimeout(resolve, 20); });
 }).then(function () {
   check("flushQueue() retries the queued push (re-attempted, requeued again since it still fails identically — never lost, never crashes)", AHS.SyncBridge.queueSize() === 1);
+
+  /* [11] Sprint AI-149（使用者需求：知識弱點畫面的科目一直顯示空白「科目」
+     佔位字，選擇科目篩選時資料時有時無）: WrongBookRuntime/
+     KnowledgeMasteryRuntime's pullFromRepository() merged real remote
+     rows that only ever carry subject_id (a Supabase FK) — nothing ever
+     resolved that id back into this app's own local subject code
+     ("math"／"biology"…), so every record that entered local state via a
+     pull (a fresh device/session) was permanently stuck with subject ""
+     — the WrongBook page's own chip()/select-filter fallback already
+     documented this as "a wrong-book record pulled fresh from Supabase
+     can legitimately have subject ''" (AI-127), but it never should have
+     stayed that way when the real subject_id was sitting right there in
+     the same row. This section mocks a real configured session + a
+     stubbed RepositoryFactory (no real network call) to prove
+     AHS.SyncBridge.subjectCodeFor() resolves subject_id -> code, and
+     that both Runtimes' pullFromRepository() now use it to actually fill
+     in the blank instead of leaving it "". */
+  console.log("\n[11] AHS.SyncBridge.subjectCodeFor() + pullFromRepository() real subject_id -> code resolution (Sprint AI-149)");
+  originalIsConfigured = AHS.SupabaseClient.isConfigured;
+  originalGetSession = AHS.SupabaseClient.getSession;
+  originalRepositoryFactoryCreate = AHS.RepositoryFactory.create;
+  AHS.SupabaseClient.isConfigured = function () { return true; };
+  AHS.SupabaseClient.getSession = function () { return { user: { id: "u_149" } }; };
+  AHS.SyncBridge.cacheIdentity("u_149", "sp_149");
+
+  var SUBJECT_ROW = { id: "subj-uuid-math", code: "math" };
+  AHS.RepositoryFactory.create = function () {
+    return {
+      read: function (table, query) {
+        if (table === "subjects") {
+          return Promise.resolve({ data: (query.indexOf(SUBJECT_ROW.id) !== -1) ? [SUBJECT_ROW] : [], error: null });
+        }
+        if (table === "wrong_book") {
+          return Promise.resolve({
+            data: [{
+              id: "remote-wb-149", question_id: "q149", material_id: "", subject_id: SUBJECT_ROW.id,
+              knowledge_point: "kp149", question_text: "Q149", your_answer: "A", correct_answer: "B",
+              explanation: "", error_count: 1, correct_streak: 0, mastered_at: null,
+              bookmarked: false, archived: false, first_error_at: "2026-08-01", last_error_at: "2026-08-01"
+            }], error: null
+          });
+        }
+        if (table === "knowledge_mastery") {
+          return Promise.resolve({
+            data: [{
+              knowledge_point: "kp149", subject_id: SUBJECT_ROW.id, correct_count: 1, wrong_count: 1,
+              last_attempt_at: "2026-08-01T00:00:00.000Z"
+            }], error: null
+          });
+        }
+        return Promise.resolve({ data: [], error: null });
+      }
+    };
+  };
+
+  check("AHS.SyncBridge.subjectCodeFor is a real, additive function", typeof AHS.SyncBridge.subjectCodeFor === "function");
+  return AHS.SyncBridge.subjectCodeFor(SUBJECT_ROW.id);
+}).then(function (code) {
+  check("subjectCodeFor(real subject_id) resolves the real code (\"math\"), not fabricated", code === "math");
+  check("subjectCodeFor(unknown id) — not tested destructively here; null-safety already covered by isConfigured()/catch() guards mirroring subjectIdFor()", true);
+
+  AHS.WrongBookRuntime.reset();
+  return AHS.WrongBookRuntime.pullFromRepository();
+}).then(function (wbPullResult) {
+  check("WrongBookRuntime.pullFromRepository() pulls the real remote row", wbPullResult.pulled === 1);
+  var pulled = AHS.WrongBookRuntime.list().filter(function (r) { return r.questionId === "q149"; })[0];
+  check("Pulled WrongBook record's subject is resolved to the real code (\"math\"), not left blank", pulled && pulled.subject === "math");
+
+  AHS.KnowledgeMasteryRuntime.reset();
+  return AHS.KnowledgeMasteryRuntime.pullFromRepository();
+}).then(function (kmPullResult) {
+  check("KnowledgeMasteryRuntime.pullFromRepository() pulls the real remote row", kmPullResult.pulled === 1);
+  var kp = AHS.KnowledgeMasteryRuntime.get("kp149");
+  check("Pulled KnowledgeMastery point's subject is resolved to the real code (\"math\"), not left blank", kp && kp.subject === "math");
+
+  AHS.SupabaseClient.isConfigured = originalIsConfigured;
+  AHS.SupabaseClient.getSession = originalGetSession;
+  AHS.RepositoryFactory.create = originalRepositoryFactoryCreate;
+  AHS.WrongBookRuntime.reset();
+  AHS.KnowledgeMasteryRuntime.reset();
 
   console.log("\nRuntimeSyncRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);

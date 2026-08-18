@@ -148,16 +148,29 @@ AHS.KnowledgeMasteryRuntime = (function () {
     return repo.read("knowledge_mastery", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
       if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
       var pulled = 0;
+      var subjectLookups = [];
       result.data.forEach(function (row) {
         if (store.points[row.knowledge_point]) { return; }
         var attempts = [];
         for (var i = 0; i < row.correct_count; i++) { attempts.push({ correct: true, day: dayKey(new Date(row.last_attempt_at)), ts: row.last_attempt_at }); }
         for (var j = 0; j < row.wrong_count; j++) { attempts.push({ correct: false, day: dayKey(new Date(row.last_attempt_at)), ts: row.last_attempt_at }); }
-        store.points[row.knowledge_point] = { subject: "", materialId: "", attempts: attempts };
+        var point = { subject: "", materialId: "", attempts: attempts };
+        store.points[row.knowledge_point] = point;
+        /* Sprint AI-149（同 WrongBookRuntime.pullFromRepository() 的根因
+           修正）: row.subject_id 是真實的 Supabase FK，之前從未解回本地
+           的 subject code，這個新建的 point 因此永遠停在空字串。查得到
+           才覆寫，查不到就照舊保持誠實的空字串，不覆寫成假資料。 */
+        if (row.subject_id && AHS.SyncBridge && typeof AHS.SyncBridge.subjectCodeFor === "function") {
+          subjectLookups.push(AHS.SyncBridge.subjectCodeFor(row.subject_id).then(function (code) {
+            if (code) { point.subject = code; }
+          }));
+        }
         pulled += 1;
       });
-      if (pulled) { persist(); }
-      return { pulled: pulled };
+      return Promise.all(subjectLookups).then(function () {
+        if (pulled) { persist(); }
+        return { pulled: pulled };
+      });
     }).catch(function (err) {
       return { pulled: 0, error: { message: String(err && err.message || err) } };
     });
