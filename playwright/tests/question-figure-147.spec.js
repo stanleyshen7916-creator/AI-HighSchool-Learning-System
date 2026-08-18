@@ -115,3 +115,40 @@ test("AI-147：知識弱點 Detail Panel 真實顯示錯題附圖（原本「依
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
+
+test("AI-148：舊有錯題紀錄（本身沒有 figureSvg，早於此功能上線就建立）在知識弱點也真實補回附圖", async ({ page }) => {
+  const errors = collectErrors(page);
+  /* 真實情境：這筆錯題紀錄是「題目附圖」（Sprint AI-147）上線前就存在的
+     舊資料——WrongBookRuntime.sync() 只在第一次寫入該題時記下
+     figureSvg，既有紀錄不會被回頭補上新欄位（同一份 discipline 也適用於
+     question/options/explanation，故意不覆寫）。故意不在這筆種子資料放
+     figureSvg，驗證 js/components/WrongBook.js 的 resolveFigureSvg() 真
+     的會在畫面渲染當下，從 js/data/TeachingMaterialData.js 這個真實、
+     已經內含 tm_1_q3 真實 figureSvg 的靜態資料補回來。 */
+  await seedSession(page, {
+    "ahs:wrongBookRuntime": {
+      items: [{
+        id: "wb_148_1", questionId: "tm_1_q3", subject: "math", title: "AI-148 舊紀錄測試教材", chapter: "第一章",
+        materialId: "", knowledgePoint: "正弦定理、圓內接四邊形",
+        question: "如下圖，設圓內接四邊形ABCD中∠CAD=30°，∠ACB=45°，CD=2，則 AB=?",
+        options: [{ key: "1", text: "(1) 2" }, { key: "2", text: "(2) 2√2" }],
+        yourAnswer: "1", correctAnswer: "2", explanation: "依附圖，CD所對圓周角∠CAD=30°...",
+        // 刻意不設定 figureSvg —— 模擬舊紀錄。
+        errorCount: 1, lastError: todayStr(), firstError: todayStr(), masteredAt: null,
+        bookmarked: false, archived: false, correctStreak: 0
+      }], seq: 1
+    }
+  });
+  await page.goto(fileUrl("wrongbook"));
+
+  const row = page.locator(".wb-row", { hasText: "圓內接四邊形ABCD" });
+  await expect(row).toBeVisible();
+  await row.click();
+
+  await expect(page.locator(".wb-detail__figure")).toBeVisible();
+  await expect(page.locator(".wb-detail__figure svg")).toBeVisible();
+  // 這是 tm_1_q3 真實附圖裡才有的內容，證明真的是補回真實資料，不是隨便一張圖。
+  await expect(page.locator(".wb-detail__figure")).toContainText("CD=2");
+
+  expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+});

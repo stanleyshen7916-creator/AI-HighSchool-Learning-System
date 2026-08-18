@@ -62,6 +62,13 @@
   <script src="js/parser/WrongBookGenerator.js"></script>
   <script src="js/runtime/WrongBookSession.js"></script>
   <script src="js/runtime/ReviewQueue.js"></script>
+  <!-- Sprint AI-148（使用者需求：舊有錯題紀錄的「依附圖」詳解看不到圖，
+       因為這筆紀錄是在題目附圖功能上線前建立的，WrongBookRuntime.sync()
+       不會回頭幫既有紀錄補上新欄位）: 純靜態資料，本身無任何依賴，js/
+       components/WrongBook.js 用它在畫面渲染當下即時補回真實 figureSvg，
+       不需要載入整條 TeachingMaterialLoader／QuestionRuntime／
+       MaterialRuntime 鏈路。 -->
+  <script src="js/data/TeachingMaterialData.js"></script>
   <script src="js/components/WrongBook.js"></script>
   <script src="js/pages/AppWrongBook.js"></script>
 </body>

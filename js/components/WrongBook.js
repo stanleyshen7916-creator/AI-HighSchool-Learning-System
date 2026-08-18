@@ -21,6 +21,34 @@ AHS.WrongBook = (function () {
     return "簡單";
   }
 
+  /* resolveFigureSvg(item) — Sprint AI-148（使用者需求：舊有錯題紀錄的
+     「依附圖」詳解看不到圖）: item.figureSvg already covers every wrong
+     answer recorded AFTER Sprint AI-147 shipped (WrongBookRuntime.sync()
+     writes it straight from the real graded question). A record created
+     BEFORE that never gets this field retroactively — sync()'s own
+     "existing record" update path intentionally never rewrites
+     question/options/explanation either, same discipline, so this isn't
+     a gap unique to figures. Rather than mutate old stored records (which
+     would also require rewriting question/explanation to stay honest, out
+     of scope here) or wire the full TeachingMaterialLoader/QuestionRuntime
+     chain onto wrongbook.html/review.html just for this, this resolves
+     the SAME real, already-generated figureSvg at render time straight
+     from js/data/TeachingMaterialData.js (plain static data, no Runtime,
+     no dependency — see those two pages' own script tags) by matching the
+     record's own real questionId. Returns "" (never fabricated) when no
+     match exists — most questions genuinely have no figure at all. */
+  function resolveFigureSvg(item) {
+    if (item.figureSvg) { return item.figureSvg; }
+    if (!item.questionId || !Array.isArray(window.AHS.TeachingMaterialData)) { return ""; }
+    var found = null;
+    window.AHS.TeachingMaterialData.forEach(function (entry) {
+      if (found || !entry || !Array.isArray(entry.questions)) { return; }
+      var match = entry.questions.filter(function (q) { return q.id === item.questionId; })[0];
+      if (match && match.figureSvg) { found = match.figureSvg; }
+    });
+    return found || "";
+  }
+
   /* WS-001: Mastered Rule — three consecutive correct reviews -> 已精熟.
      Sprint AI-111 AI-610: now backed by WrongBookRuntime's own real,
      persisted `correctStreak` field (see that file's recordRetry(),
@@ -776,9 +804,10 @@ AHS.WrongBook = (function () {
       ]),
       statsBlock,
       el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
-      /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
-         only, same discipline as QuestionCard.js's own qcard__figure. */
-      item.figureSvg ? el("div", { class: "wb-detail__figure", html: item.figureSvg }) : null,
+      /* Sprint AI-147/AI-148（使用者需求：題目附圖，含舊紀錄補圖）:
+         resolveFigureSvg() falls back to js/data/TeachingMaterialData.js
+         when this record predates figureSvg — see its own header above. */
+      resolveFigureSvg(item) ? el("div", { class: "wb-detail__figure", html: resolveFigureSvg(item) }) : null,
       options,
       el("div", { class: "wb-detail__answers" }, [
         el("div", { class: "wb-detail__answer" }, [
@@ -1035,9 +1064,9 @@ AHS.WrongBook = (function () {
           el("p", { class: "wb-review-session__progress", text: "複習進度：" + (index + 1) + " / " + queue.length }),
           el("h2", { class: "wb-detail__title", text: item.title }),
           el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
-          /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
-             only, same discipline as the main Detail Panel above. */
-          item.figureSvg ? el("div", { class: "wb-detail__figure", html: item.figureSvg }) : null,
+          /* Sprint AI-147/AI-148: resolveFigureSvg() also covers records
+             created before figureSvg existed — see its own header above. */
+          resolveFigureSvg(item) ? el("div", { class: "wb-detail__figure", html: resolveFigureSvg(item) }) : null,
           interaction
         ]));
       }
