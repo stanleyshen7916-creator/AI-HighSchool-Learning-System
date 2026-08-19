@@ -74,6 +74,16 @@ AHS.WrongBookRuntime = (function () {
         your_answer: record.yourAnswer || null,
         correct_answer: record.correctAnswer || null,
         explanation: record.explanation || "",
+        /* Sprint AI-152（使用者QA回報：知識弱點「全部重新練習」彈窗，題目
+           下面完全沒有選項可以選，卡住無法往下作答）: wrong_book 這張表
+           的資料庫設計，從一開始就沒有 options 欄位——record.options 本
+           來就只存在本地（sync() 當下由 AutoGrader 真實傳遞），從未真的
+           送上雲端，也就從未真的被下載回來過。任何「這個瀏覽器分頁本身
+           沒有這筆紀錄的原始作答記憶」的情況（跨裝置、清過 sessionStorage
+           後的全新 session）—— pullFromRepository() 建立的本地紀錄就會是
+           空的 options，複習作答互動（buildReviewInteraction()）因此渲染
+           出零個選項，使用者完全卡住。真實傳遞，不是憑空造的選項。 */
+        options: Array.isArray(record.options) ? record.options : [],
         error_count: record.errorCount,
         correct_streak: record.correctStreak || 0,
         mastered_at: record.masteredAt || null,
@@ -196,6 +206,12 @@ AHS.WrongBookRuntime = (function () {
           subjectLookups.push(AHS.SyncBridge.subjectCodeFor(row.subject_id).then(function (code) {
             if (code) { local.subject = code; }
           }));
+        }
+        /* Sprint AI-152（同上 pushRecord() 的根因修正）: 只在本地目前真的
+           沒有選項時才用遠端資料補上，查不到（欄位還不存在、或這筆紀錄
+           是 migration 套用前寫入的舊資料）就保持原樣，不覆寫成空陣列。 */
+        if ((!Array.isArray(local.options) || !local.options.length) && Array.isArray(row.options) && row.options.length) {
+          local.options = row.options;
         }
         local.knowledgePoint = row.knowledge_point;
         local.question = row.question_text;
