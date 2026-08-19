@@ -49,6 +49,34 @@ AHS.WrongBook = (function () {
     return found || "";
   }
 
+  /* resolveOptions(item) — Sprint AI-152（同 resolveFigureSvg() 的根因/
+     precedent，使用者 QA 回報：「全部重新練習」複習彈窗，題目下面完全
+     沒有選項可以選，無法提交答案）: item.options already covers every
+     wrong-book record synced/pulled AFTER Sprint AI-152 shipped
+     (WrongBookRuntime 現在真的把 options 存進雲端、下載回來)。這筆紀錄
+     若是在那之前就已經存在（本地或雲端任一邊當時都還沒有 options 欄
+     位），就永遠補不回真正的選項——這裡改成跟 resolveFigureSvg() 一樣，
+     在畫面渲染當下，從 js/data/TeachingMaterialData.js 這個真實、已核
+     實過的靜態資料，用 item.questionId 直接找回真正的原始選項（Package
+     格式是純字串陣列，換成跟 AHS.QuestionRuntime 一致的 {key,text} 形
+     狀，對應規則與 TeachingMaterialLoader.js 的 buildExamCompatibleQuestions()
+     完全一致，不是另外發明一套）。找不到（非 Package 教材題目、或這筆
+     紀錄本身就不是真的考卷題目）就誠實回傳空陣列，不是憑空造選項。 */
+  var WB_OPTION_KEYS = ["A", "B", "C", "D", "E", "F"];
+  function resolveOptions(item) {
+    if (Array.isArray(item.options) && item.options.length) { return item.options; }
+    if (!item.questionId || !Array.isArray(window.AHS.TeachingMaterialData)) { return []; }
+    var found = null;
+    window.AHS.TeachingMaterialData.forEach(function (entry) {
+      if (found || !entry || !Array.isArray(entry.questions)) { return; }
+      var match = entry.questions.filter(function (q) { return q.id === item.questionId; })[0];
+      if (match && Array.isArray(match.options) && match.options.length) {
+        found = match.options.map(function (text, i) { return { key: WB_OPTION_KEYS[i] || String(i), text: text }; });
+      }
+    });
+    return found || [];
+  }
+
   /* WS-001: Mastered Rule — three consecutive correct reviews -> 已精熟.
      Sprint AI-111 AI-610: now backed by WrongBookRuntime's own real,
      persisted `correctStreak` field (see that file's recordRetry(),
@@ -587,9 +615,10 @@ AHS.WrongBook = (function () {
      wrap it in a Review Session + Result screen — see WS-003). */
   function buildReviewInteraction(item, onSubmit) {
     var selectedKey = null;
-    /* AI-127 hotfix: same missing-options guard as renderDetail() —
-       a record pulled from Supabase never has item.options. */
-    var optionEls = (Array.isArray(item.options) ? item.options : []).map(function (o) {
+    /* AI-127/AI-152: resolveOptions() falls back to js/data/TeachingMaterialData.js
+       for a record whose own options were never captured (see that
+       function's own header). */
+    var optionEls = resolveOptions(item).map(function (o) {
       var li = el("li", { class: "wb-detail__option", role: "button", tabindex: "0" }, [
         el("span", { class: "wb-detail__option-key", text: o.key }),
         el("span", { class: "wb-detail__option-text", text: o.text })
@@ -634,16 +663,16 @@ AHS.WrongBook = (function () {
     var subj = AHS.Subjects[item.subject];
     var isCorrectNow = item.yourAnswer === item.correctAnswer;
 
-    /* AI-127 hotfix: wrong_book has no `options` column at all (see
-       supabase/migrations/20260807000004_learning_tables.sql) — a record
-       hydrated purely from WrongBookRuntime.pullFromRepository() (i.e.
-       every cross-session/cross-device record) never has item.options.
-       Only a record still in this session's memory from a real sync()
-       carries it. Guard to [] rather than assume it's always an array;
-       an empty option list renders honestly empty instead of crashing
-       (which previously aborted the whole Detail Panel + Question List
-       render before either could mount). */
-    var itemOptions = Array.isArray(item.options) ? item.options : [];
+    /* AI-127: wrong_book didn't originally have an `options` column at
+       all — AI-152 added one (supabase/migrations/20260819000002_wrong_
+       book_options.sql), so pullFromRepository() now really carries it
+       for a record synced/pulled since. resolveOptions() covers the
+       remaining gap for a record from before that (see its own header),
+       falling back to [] (never fabricated) only when genuinely
+       unresolvable — an empty option list renders honestly empty instead
+       of crashing (which previously aborted the whole Detail Panel +
+       Question List render before either could mount). */
+    var itemOptions = resolveOptions(item);
     var options = itemOptions.length ? el("ol", { class: "wb-detail__options" },
       itemOptions.map(function (o) {
         var mods = "";
@@ -954,7 +983,7 @@ AHS.WrongBook = (function () {
           subject: pair.item.subject, title: pair.item.title, chapter: pair.item.chapter,
           wrong: [{
             questionId: pair.item.questionId, knowledgePoint: pair.item.knowledgePoint,
-            text: pair.item.question, options: pair.item.options,
+            text: pair.item.question, options: resolveOptions(pair.item),
             yourAnswer: selectedKey, correctAnswer: pair.item.correctAnswer,
             explanation: pair.item.explanation
           }]

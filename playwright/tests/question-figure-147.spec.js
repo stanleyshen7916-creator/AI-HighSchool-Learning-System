@@ -152,3 +152,46 @@ test("AI-148：舊有錯題紀錄（本身沒有 figureSvg，早於此功能上�
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
+
+test("AI-152：舊有錯題紀錄（本身沒有 options，早於此欄位上線就建立）「全部重新練習」也真實補回選項，不再卡住無法作答", async ({ page }) => {
+  const errors = collectErrors(page);
+  /* 真實情境（使用者 QA 回報）：點「全部重新練習」，複習彈窗顯示題目，
+     但題目下面完全沒有選項可以選，卡在「提交答案」按不下去。根因：
+     wrong_book 這張表原本沒有 options 欄位（AI-152 補上），任何在這之前
+     就已經存在的紀錄，本地/雲端兩邊都沒有真正的選項資料可以下載回來。
+     故意在這筆種子資料把 options 留空，模擬修正上線前就已存在的舊紀
+     錄，驗證 js/components/WrongBook.js 的 resolveOptions() 真的會在畫
+     面渲染當下，從 js/data/TeachingMaterialData.js 這個真實、已核實過
+     的靜態資料（tm_1_q1 本尊）補回真正的選項——不是隨便湊幾個假選項。 */
+  await seedSession(page, {
+    "ahs:wrongBookRuntime": {
+      items: [{
+        id: "wb_152_1", questionId: "tm_1_q1", subject: "math", title: "AI-152 舊紀錄測試教材", chapter: "第一章",
+        materialId: "", knowledgePoint: "正弦定理",
+        question: "如圖，∠BAC=θ，∠ABD=∠ACD=90°，AB=a，BD=b，下列選項何者可以表示 CD？",
+        options: [],
+        yourAnswer: "A", correctAnswer: "E", explanation: "由∠ABD=90°、∠ACD=90°可推得...",
+        errorCount: 1, lastError: todayStr(), firstError: todayStr(), masteredAt: null,
+        bookmarked: false, archived: false, correctStreak: 0
+      }], seq: 1
+    }
+  });
+  await page.goto(fileUrl("wrongbook"));
+
+  await page.locator(".wb-action--primary", { hasText: "全部重新練習" }).click();
+  await expect(page.locator(".wb-review-session__progress")).toContainText("1 / 1");
+
+  const options = page.locator(".wb-detail__options--interactive .wb-detail__option");
+  await expect(options.first()).toBeVisible();
+  await expect(options).toHaveCount(5);
+  // 這是 tm_1_q1 真實選項裡才有的內容，證明真的是補回真實資料，不是隨便湊的。
+  await expect(options.first()).toContainText("a sinθ + b cosθ");
+  await expect(options.last()).toContainText("a sinθ − b cosθ");
+
+  // 真的能選、真的能提交，不再卡住。
+  await options.first().click();
+  await page.locator(".wb-detail__btn--primary", { hasText: "提交答案" }).click();
+  await expect(page.locator(".wb-detail__title", { hasText: "複習結果" })).toBeVisible();
+
+  expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+});
