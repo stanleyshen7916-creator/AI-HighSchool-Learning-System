@@ -583,6 +583,60 @@ console.log("\n[11] 題目附圖 — 真實 figureSvg 從 Package 一路傳到�
   }
 }
 
+/* ---- 12. 題組題（Sprint AI-151，使用者需求：題組題應歸為一類，單獨
+   出題時看不到共用的題幹資料，導致無法作答）----------------------------
+   真實情境：tm_2/tm_3 的原始考卷裡，部分題目是「題組」——一段共用的題幹
+   資料（如非洲豬瘟病原體檔案、阿誠與小錦的財產清冊）只出現在題組第一題
+   自己的文字裡，後面的題目只用「資料見第26題」這種文字指回去。平時練習
+   每次固定隨機抽 10 題（AHS.QuestionBankRuntime.drawCycle()），完全可能
+   抽到依賴題卻沒抽到它依賴的那一題——畫面上的問題就會「看不懂在問什
+   麼」。修法：把真實、已核實的共用題幹資料，直接複製進每一題依賴題自己
+   的文字裡，讓每一題無論被單獨抽到哪一題，都能誠實地自己回答，不需要
+   另一題才能作答。tm_3_q45/q46（【題組一】）本身是 fill_blank 類型，
+   TeachingMaterialLoader.js 的既有規則本來就只把 single_choice 題目餵進
+   Exam Mode（見該檔案自己的說明），從未真正進入平時練習，所以不在這裡
+   驗證範圍內。另外也真實發現 tm_3_q49/q50 原本標示「情境見第48題」/
+   「情境見第48-49題」，但第48題內容其實與49/50題完全無關（48題是勞動
+   參與率政策，49/50題是阿誠與小錦的財產清冊）——這是原始考卷數位化時的
+   標籤錯誤，已一併修正標籤，不是憑空改動。 */
+console.log("\n[12] 題組題 — 依賴題真實內含共用題幹資料，單獨抽到也能作答（AI-151）");
+{
+  const { window } = loadPage("quiz.html");
+  const A = window.AHS;
+  A.TeachingMaterialLoader.initialize();
+
+  function realSetFor(materialTitleContains) {
+    const materials = A.MaterialRuntime.list();
+    const m = materials.find((mm) => mm.title.indexOf(materialTitleContains) !== -1 &&
+      A.QuestionRuntime.hasExam("teaching_material_" + mm.id));
+    return m ? A.QuestionRuntime.getSet("teaching_material_" + m.id) : [];
+  }
+
+  const bioSet = realSetFor("生物全ch3");
+  const q25 = bioSet.find((q) => q.id === "tm_2_q25");
+  const q27 = bioSet.find((q) => q.id === "tm_2_q27");
+  check("真實找到生物教材的題組依賴題 tm_2_q25／tm_2_q27", !!q25 && !!q27);
+  if (q25) {
+    check("tm_2_q25 不再指向「見第24題」，題幹資料已真實內含在自己的文字裡", q25.text.indexOf("見第") === -1);
+    check("tm_2_q25 真的包含單系群的定義（真實複製自 tm_2_q24，非憑空杜撰）", q25.text.indexOf("單系群") !== -1 && q25.text.indexOf("並系群") !== -1);
+  }
+  if (q27) {
+    check("tm_2_q27 不再指向「資料見第26題」，題幹資料已真實內含在自己的文字裡", q27.text.indexOf("見第") === -1);
+    check("tm_2_q27 真的包含非洲豬瘟病原體檔案（真實複製自 tm_2_q26，非憑空杜撰）", q27.text.indexOf("非洲豬瘟") !== -1 && q27.text.indexOf("宿主") !== -1);
+  }
+
+  const civicsSet = realSetFor("所有權與物權");
+  const q49 = civicsSet.find((q) => q.id === "tm_3_q49");
+  const q50 = civicsSet.find((q) => q.id === "tm_3_q50");
+  check("真實找到公民教材的題組依賴題 tm_3_q49／tm_3_q50", !!q49 && !!q50);
+  if (q49) {
+    check("tm_3_q49 原本錯誤指向「情境見第48題」（第48題其實與此題無關）已修正，不再誤導", q49.text.indexOf("見第48題") === -1);
+  }
+  if (q50) {
+    check("tm_3_q50 不再只指向「情境見第48-49題」，真的內含阿誠與小錦的財產清冊資料", q50.text.indexOf("見第") === -1 && q50.text.indexOf("財產清冊") !== -1);
+  }
+}
+
 console.log("\n==============================");
 console.log("KnowledgeEngineRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);
