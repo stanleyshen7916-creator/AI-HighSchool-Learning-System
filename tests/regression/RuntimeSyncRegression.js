@@ -290,7 +290,7 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   insertedWrongBookRows = [];
   insertedMasteryRows = [];
   var REMOTE_WRONG_BOOK_ROWS = [
-    { id: "wb-g2s1-150", student_profile_id: "sp_150", question_id: "", material_id: "", subject_id: "", knowledge_point: "kp150_g2s1",
+    { id: "wb-g2s1-150", student_profile_id: "sp_150", question_id: "", local_question_id: "tm_x_q1", material_id: "", subject_id: "", knowledge_point: "kp150_g2s1",
       question_text: "高二上 真實題目", your_answer: "A", correct_answer: "B", explanation: "",
       options: [{ key: "A", text: "選項A" }, { key: "B", text: "選項B" }],
       error_count: 1, correct_streak: 0, mastered_at: null, bookmarked: false, archived: false,
@@ -350,6 +350,7 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   check("真實寫入 wrong_book 時，帶上目前 Workspace 的真實 semester_code（\"g2s1\"），不是憑空造的", insertedWrongBookRows.length === 1 && insertedWrongBookRows[0].semester_code === "g2s1");
   check("真實寫入 knowledge_mastery 時，同樣帶上真實 school_code/semester_code", insertedMasteryRows.length === 1 && insertedMasteryRows[0].school_code === "cjsh" && insertedMasteryRows[0].semester_code === "g2s1");
   check("真實寫入 wrong_book 時，帶上題目自己真實的 options（Sprint AI-152：wrong_book 原本沒有 options 欄位，複習作答彈窗因此渲染不出任何選項，卡住無法作答）", insertedWrongBookRows.length === 1 && JSON.stringify(insertedWrongBookRows[0].options) === JSON.stringify(graded150.wrong[0].options));
+  check("真實寫入 wrong_book 時，帶上題目自己真實的 local_question_id（\"q150push\"）（Sprint AI-152 hotfix：questionId 這類非 UUID 的本地字串 id，過去只在剛好是 UUID 時才會送出，教材題目 id 如 \"tm_1_q1\" 從未真的送上雲端過，导致全新 session 撈回來的紀錄永遠對不回 TeachingMaterialData.js）", insertedWrongBookRows.length === 1 && insertedWrongBookRows[0].local_question_id === "q150push");
 
   AHS.WrongBookRuntime.reset();
   return AHS.WrongBookRuntime.pullFromRepository();
@@ -360,6 +361,7 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   check("「高一下」那一筆真實被查詢過濾擋下，沒有混進高二上的畫面（這正是使用者回報「目前於高二年級卻看到高一知識弱點」的真正根因）", !list.some(function (r) { return r.knowledgePoint === "kp150_g1s2"; }));
   var pulled150 = list.filter(function (r) { return r.knowledgePoint === "kp150_g2s1"; })[0];
   check("下載回來的錯題，真實帶有選項（Sprint AI-152：新裝置/新 Session 第一次下載到的紀錄，之前選項永遠是空的，複習作答彈窗因此卡住）", pulled150 && Array.isArray(pulled150.options) && pulled150.options.length === 2 && pulled150.options[0].key === "A");
+  check("下載回來的錯題，questionId 真實從 local_question_id 還原（\"tm_x_q1\"）（Sprint AI-152 hotfix：這是全新 session 第一次下載這筆紀錄——本地端完全沒有既有記憶可以退回去用——resolveOptions()/resolveFigureSvg() 靠的正是這個值才能反查 TeachingMaterialData.js，不是靠 options 欄位本身）", pulled150 && pulled150.questionId === "tm_x_q1");
 
   AHS.SupabaseClient.isConfigured = originalIsConfigured;
   AHS.SupabaseClient.getSession = originalGetSession;

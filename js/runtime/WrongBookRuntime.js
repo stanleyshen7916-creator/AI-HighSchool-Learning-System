@@ -133,6 +133,21 @@ AHS.WrongBookRuntime = (function () {
          known yet" rather than a fabricated/wrong one. */
       if (record.questionId && isUuid(record.questionId)) { row.question_id = record.questionId; }
       if (record.materialId && isUuid(record.materialId)) { row.material_id = record.materialId; }
+      /* Sprint AI-152 hotfix（使用者 QA 回報：無痕視窗/清過 sessionStorage
+         的全新 session，「全部重新練習」複習彈窗仍舊完全沒有選項可選）:
+         row.question_id 上面那行只在 questionId 是真正的 UUID 時才送出
+         （因為那欄位是 UUID 外鍵），教材題目的 questionId（如
+         "tm_1_q1"）從來就不是 UUID，於是從未真的送上雲端——任何本地端
+         沒有這筆紀錄原始記憶的情況，pullFromRepository() 撈回來的
+         questionId 就一定是空字串，resolveOptions()/resolveFigureSvg()
+         （js/components/WrongBook.js）兩者都是靠這個 questionId 去
+         TeachingMaterialData.js 反查真實選項/附圖，因此雙雙失效——不是
+         options 欄位本身的問題，是這個字串 id 從一開始就沒有真正的管道
+         能完整往返雲端。local_question_id 是純文字欄位（不受 UUID 外鍵
+         限制），直接把這個字串原封不動送出去，讓下一次從任何裝置/全新
+         session 撈回來時，resolveOptions()/resolveFigureSvg() 真的能重新
+         找到題目。 */
+      if (record.questionId) { row.local_question_id = record.questionId; }
       if (record.supabaseId) {
         AHS.SyncBridge.pushFireAndForget(function () { return repo.update("wrong_book", "id=eq." + record.supabaseId, row); });
         return;
@@ -186,11 +201,16 @@ AHS.WrongBookRuntime = (function () {
         var local = bySupabaseId[row.id];
         if (!local) {
           store.seq += 1;
-          local = { id: "wb_" + store.seq, questionId: row.question_id || "", materialId: row.material_id || "" };
+          local = { id: "wb_" + store.seq, questionId: row.local_question_id || row.question_id || "", materialId: row.material_id || "" };
           store.items.push(local);
         }
         local.supabaseId = row.id;
-        local.questionId = row.question_id || local.questionId || "";
+        /* Sprint AI-152 hotfix: local_question_id (plain text) is the
+           authoritative round-trip for a Package-track question's own
+           real local id ("tm_1_q1", ...) — see pushRecord()'s own
+           comment above. row.question_id (the UUID FK) is kept only as a
+           secondary fallback for a genuinely UUID-linked record. */
+        local.questionId = row.local_question_id || row.question_id || local.questionId || "";
         local.materialId = row.material_id || local.materialId || "";
         local.subject = local.subject || "";
         /* Sprint AI-149（使用者需求：知識弱點畫面的科目一直顯示空白「科目」
