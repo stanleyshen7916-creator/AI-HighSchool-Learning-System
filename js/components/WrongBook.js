@@ -21,6 +21,44 @@ AHS.WrongBook = (function () {
     return "簡單";
   }
 
+  /* findMaterialQuestion(item) — Sprint AI-153 hotfix: resolveFigureSvg()/
+     resolveOptions() below both need to look this record's real question
+     back up in js/data/TeachingMaterialData.js. Matching by item.questionId
+     is the precise, preferred path — but wrong_book.question_id is a UUID
+     foreign key that can never hold a Package-track question's own local
+     id ("tm_1_q1"), so pushRecord() only started actually sending that id
+     through a NEW local_question_id text column this same Sprint
+     (js/runtime/WrongBookRuntime.js). Any record that was already sitting
+     in Supabase BEFORE this Sprint shipped has local_question_id == null
+     forever — there is no migration that can retroactively invent it. For
+     exactly those already-broken remote rows, item.question (the real
+     question text, faithfully stored since day one via
+     WrongBookRuntime's own question_text column) is itself already a
+     precise enough match: falls back to an exact string match against
+     TeachingMaterialData.js's own question text only when the id lookup
+     comes up empty — never a fuzzy/partial match, so it never risks
+     resolving to the WRONG question. */
+  function findMaterialQuestion(item) {
+    if (!Array.isArray(window.AHS.TeachingMaterialData)) { return null; }
+    var found = null;
+    if (item.questionId) {
+      window.AHS.TeachingMaterialData.forEach(function (entry) {
+        if (found || !entry || !Array.isArray(entry.questions)) { return; }
+        var match = entry.questions.filter(function (q) { return q.id === item.questionId; })[0];
+        if (match) { found = match; }
+      });
+      if (found) { return found; }
+    }
+    if (item.question) {
+      window.AHS.TeachingMaterialData.forEach(function (entry) {
+        if (found || !entry || !Array.isArray(entry.questions)) { return; }
+        var match = entry.questions.filter(function (q) { return q.question === item.question; })[0];
+        if (match) { found = match; }
+      });
+    }
+    return found;
+  }
+
   /* resolveFigureSvg(item) — Sprint AI-148（使用者需求：舊有錯題紀錄的
      「依附圖」詳解看不到圖）: item.figureSvg already covers every wrong
      answer recorded AFTER Sprint AI-147 shipped (WrongBookRuntime.sync()
@@ -34,19 +72,13 @@ AHS.WrongBook = (function () {
      chain onto wrongbook.html/review.html just for this, this resolves
      the SAME real, already-generated figureSvg at render time straight
      from js/data/TeachingMaterialData.js (plain static data, no Runtime,
-     no dependency — see those two pages' own script tags) by matching the
-     record's own real questionId. Returns "" (never fabricated) when no
+     no dependency — see those two pages' own script tags) via
+     findMaterialQuestion() above. Returns "" (never fabricated) when no
      match exists — most questions genuinely have no figure at all. */
   function resolveFigureSvg(item) {
     if (item.figureSvg) { return item.figureSvg; }
-    if (!item.questionId || !Array.isArray(window.AHS.TeachingMaterialData)) { return ""; }
-    var found = null;
-    window.AHS.TeachingMaterialData.forEach(function (entry) {
-      if (found || !entry || !Array.isArray(entry.questions)) { return; }
-      var match = entry.questions.filter(function (q) { return q.id === item.questionId; })[0];
-      if (match && match.figureSvg) { found = match.figureSvg; }
-    });
-    return found || "";
+    var match = findMaterialQuestion(item);
+    return (match && match.figureSvg) || "";
   }
 
   /* resolveOptions(item) — Sprint AI-152（同 resolveFigureSvg() 的根因/
@@ -57,24 +89,20 @@ AHS.WrongBook = (function () {
      若是在那之前就已經存在（本地或雲端任一邊當時都還沒有 options 欄
      位），就永遠補不回真正的選項——這裡改成跟 resolveFigureSvg() 一樣，
      在畫面渲染當下，從 js/data/TeachingMaterialData.js 這個真實、已核
-     實過的靜態資料，用 item.questionId 直接找回真正的原始選項（Package
-     格式是純字串陣列，換成跟 AHS.QuestionRuntime 一致的 {key,text} 形
-     狀，對應規則與 TeachingMaterialLoader.js 的 buildExamCompatibleQuestions()
-     完全一致，不是另外發明一套）。找不到（非 Package 教材題目、或這筆
-     紀錄本身就不是真的考卷題目）就誠實回傳空陣列，不是憑空造選項。 */
+     實過的靜態資料，透過 findMaterialQuestion() 直接找回真正的原始選項
+     （Package 格式是純字串陣列，換成跟 AHS.QuestionRuntime 一致的
+     {key,text} 形狀，對應規則與 TeachingMaterialLoader.js 的
+     buildExamCompatibleQuestions() 完全一致，不是另外發明一套）。找不到
+     （非 Package 教材題目、或這筆紀錄本身就不是真的考卷題目）就誠實回
+     傳空陣列，不是憑空造選項。 */
   var WB_OPTION_KEYS = ["A", "B", "C", "D", "E", "F"];
   function resolveOptions(item) {
     if (Array.isArray(item.options) && item.options.length) { return item.options; }
-    if (!item.questionId || !Array.isArray(window.AHS.TeachingMaterialData)) { return []; }
-    var found = null;
-    window.AHS.TeachingMaterialData.forEach(function (entry) {
-      if (found || !entry || !Array.isArray(entry.questions)) { return; }
-      var match = entry.questions.filter(function (q) { return q.id === item.questionId; })[0];
-      if (match && Array.isArray(match.options) && match.options.length) {
-        found = match.options.map(function (text, i) { return { key: WB_OPTION_KEYS[i] || String(i), text: text }; });
-      }
-    });
-    return found || [];
+    var match = findMaterialQuestion(item);
+    if (match && Array.isArray(match.options) && match.options.length) {
+      return match.options.map(function (text, i) { return { key: WB_OPTION_KEYS[i] || String(i), text: text }; });
+    }
+    return [];
   }
 
   /* WS-001: Mastered Rule — three consecutive correct reviews -> 已精熟.

@@ -195,3 +195,44 @@ test("AI-152：舊有錯題紀錄（本身沒有 options，早於此欄位上線
 
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
+
+test("AI-153：questionId 是空字串的舊有雲端錯題紀錄（Sprint AI-152 上線前就已推上雲端，local_question_id 永遠補不回來），用題目文字比對一樣能真實補回選項", async ({ page }) => {
+  const errors = collectErrors(page);
+  /* 真實情境（使用者在無痕視窗重測，症狀依舊）：wrong_book.question_id
+     是 UUID 外鍵，教材題目的本地 id（如 "tm_1_q1"）從未真的送上雲端過
+     ——AI-153 新增 local_question_id 這個純文字欄位修正「之後」的推送/
+     下載，但「之前」就已經存在雲端的紀錄，這個欄位永遠是 null，任何
+     無痕視窗/新裝置撈回來的 questionId 就是空字串，永遠對不回
+     TeachingMaterialData.js。這裡刻意把 questionId 留空字串（模擬這種
+     已經回不去的舊雲端紀錄），只給題目文字（跟 wrong_book.question_text
+     一樣，從第一天就忠實保存），驗證 findMaterialQuestion() 的文字比對
+     備援路徑真的能補回真實選項——不是只靠 questionId 才行。 */
+  await seedSession(page, {
+    "ahs:wrongBookRuntime": {
+      items: [{
+        id: "wb_153_1", questionId: "", subject: "math", title: "AI-153 舊雲端紀錄測試教材", chapter: "第一章",
+        materialId: "", knowledgePoint: "正弦定理",
+        question: "如圖，∠BAC=θ，∠ABD=∠ACD=90°，AB=a，BD=b，下列選項何者可以表示 CD？（圖形為四邊形ABDC：B、C分別是以AD為斜邊的兩個直角三角形之直角頂點，∠ABD、∠ACD皆為直角）",
+        options: [],
+        yourAnswer: "A", correctAnswer: "E", explanation: "由∠ABD=90°、∠ACD=90°可推得...",
+        errorCount: 1, lastError: todayStr(), firstError: todayStr(), masteredAt: null,
+        bookmarked: false, archived: false, correctStreak: 0
+      }], seq: 1
+    }
+  });
+  await page.goto(fileUrl("wrongbook"));
+
+  await page.locator(".wb-action--primary", { hasText: "全部重新練習" }).click();
+  await expect(page.locator(".wb-review-session__progress")).toContainText("1 / 1");
+
+  const options153 = page.locator(".wb-detail__options--interactive .wb-detail__option");
+  await expect(options153.first()).toBeVisible();
+  await expect(options153).toHaveCount(5);
+  await expect(options153.first()).toContainText("a sinθ + b cosθ");
+
+  await options153.first().click();
+  await page.locator(".wb-detail__btn--primary", { hasText: "提交答案" }).click();
+  await expect(page.locator(".wb-detail__title", { hasText: "複習結果" })).toBeVisible();
+
+  expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
+});
