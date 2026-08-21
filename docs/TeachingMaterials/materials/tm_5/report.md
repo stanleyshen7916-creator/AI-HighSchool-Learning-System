@@ -8,7 +8,7 @@ generator after any Repository change and this file regenerates with it.
 - 年級：高二
 - 章節：細胞膜構造與物質運輸（擴散、滲透作用、滲透壓、膨壓） / 長榮中學高二第一次月考 生物補充資料
 - 教材類型：HANDOUT
-- 版本：1
+- 版本：2
 
 ## Package Status
 - Manifest status：complete
