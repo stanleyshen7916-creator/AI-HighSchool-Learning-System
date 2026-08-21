@@ -1,0 +1,61 @@
+{
+  "materialId": "tm_5",
+  "knowledgePoints": [
+    {
+      "name": "促進性擴散與主動運輸的判斷依據",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "水分子的特性",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "溶液濃度與植物細胞形狀（膨壓）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "滲透作用中水分子淨移動方向的判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "滲透壓與溶質濃度的關係",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物質通過細胞膜的運輸方式",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "物質運輸是否耗能",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細胞壁對細胞在低張溶液中的保護作用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細胞壁的構造與功能",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細胞膜的基本構造",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "膨壓",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-08-21T13:07:58.417Z"
+}
