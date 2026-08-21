@@ -1,0 +1,20 @@
+{
+  "materialId": "tm_5",
+  "school": "cjsh",
+  "semester": "g2s1",
+  "subject": "生物",
+  "grade": "高二",
+  "publisher": null,
+  "chapter": "細胞膜構造與物質運輸（擴散、滲透作用、滲透壓、膨壓）",
+  "unit": "長榮中學高二第一次月考 生物補充資料",
+  "keywords": [
+    "細胞壁", "細胞膜", "雙層磷脂質", "被動運輸", "主動運輸", "促進性擴散",
+    "胞吞作用", "胞吐作用", "水分子的極性", "氫鍵", "滲透作用", "滲透壓",
+    "等張溶液", "高張溶液", "低張溶液", "膨壓", "質壁分離"
+  ],
+  "difficulty": null,
+  "source": "教師補充教材",
+  "uploadDate": "2026-08-21T00:00:00Z",
+  "version": "1",
+  "materialType": "HANDOUT"
+}
