@@ -3925,6 +3925,7 @@ AHS.TeachingMaterialData = [
       "subject": "生物",
       "grade": "高二",
       "chapter": "細胞膜構造與物質運輸（擴散、滲透作用、滲透壓、膨壓）",
+      "category": "補充資料",
       "date": "2026-08-21T00:00:00Z",
       "title": "細胞膜構造與物質運輸（擴散、滲透作用、滲透壓、膨壓） 長榮中學高二第一次月考 生物補充資料",
       "school": "cjsh",
