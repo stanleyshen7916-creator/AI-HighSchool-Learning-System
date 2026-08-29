@@ -19,11 +19,13 @@ scoring any deliverable — don't rely on memory for those lists.
 
 ## The two rules that override everything else
 
-1. **A formal deliverable is not done until it exists as a `.md` file.** Chat output alone,
-   "see above," a summary-only version, or "I'll assemble the .md later" do not satisfy this.
-   If the user's request matches one of the deliverable types in the description above, your
-   job isn't finished until you've written the file (via the Write tool) and can point to its
-   path.
+1. **A formal deliverable is not done until it exists as a `.md` file.** None of the following
+   satisfy this, no matter how it's phrased: chat output alone with "see above"; a summary-only
+   version; "I'll assemble the .md later"; a blank or incomplete `.md`; a GitHub path/link
+   offered in place of the file; or skipping `.md` delivery because another AI platform (GPT,
+   Gemini) can't read GitHub — that is never grounds to cancel this AI's own `.md`. If the
+   user's request matches one of the deliverable types in the description above, your job isn't
+   finished until you've written the file (via the Write tool) and can point to its path.
 2. **When AI outputs disagree, go back to SOURCE — never settle by majority vote.** Two AIs
    agreeing and one disagreeing tells you nothing about who's right. The only tiebreaker is
    re-checking the original source material referenced in the SOURCE field.

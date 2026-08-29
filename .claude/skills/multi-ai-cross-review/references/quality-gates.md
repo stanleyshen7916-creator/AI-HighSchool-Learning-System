@@ -53,16 +53,30 @@ revision has something concrete to fix.
 
 ## Pre-delivery checklist
 
-Before handing off any formal `.md` (Round 1, Cross Review, or Final), confirm:
+Before handing off any formal `.md` (Round 1, Cross Review, or Final), confirm every item below
+— this is the full v1.1 §11 list, kept as separate checks rather than merged, so nothing gets
+silently skipped:
 
 - [ ] The `.md` file actually exists on disk (written via a file-write tool, not just printed
-      to chat)
-- [ ] Content is complete for the requested deliverable type — no "see chat above" gaps
-- [ ] Header block is filled with real values (title, AI, 版本, 日期, 科目, 單元, SOURCE,
-      執行階段, Self-QA, Cross Review, Final Score, 狀態)
-- [ ] SOURCE is stated, and every claim traces to a source tier (Level 1/2/3) or is marked
-      `【需確認】`
-- [ ] Self-QA score is present and honestly reflects the applicable gate above
-- [ ] No fabricated citations, sources, or media references anywhere in the file
+      to chat) — `.md` 檔案確實建立
+- [ ] Content is complete for the requested deliverable type — no "see chat above" gaps —
+      內容完整
+- [ ] The `.md` matches the actual work performed — not a summary, reinterpretation, or
+      abridged stand-in for it — 與正式成果一致
+- [ ] The `# [文件標題]` title is correct and specific to this deliverable — 標題正確
+- [ ] The header's `AI：` field correctly identifies the producing AI (`Claude`, unless
+      assembling on behalf of another platform's supplied output) — AI 身份正確
+- [ ] The header's `版本：` field correctly reflects the stage (`Round 1` / `Cross Review` /
+      `Final`) — 版本正確
+- [ ] SOURCE is stated, and every claim traces to a source tier (Level 1/2/3) — SOURCE 有標示
+- [ ] Self-QA score is present and honestly reflects the applicable gate above — Self-QA 有標示
+- [ ] The header's `Cross Review：` field is set to a real, current value (`PENDING` /
+      `IN_PROGRESS` / `COMPLETE` / `N/A`), not left stale from a template — Cross Review 狀態有標示
+- [ ] The header's `Final Score：` field is set to a real, current value (score, `PENDING`, or
+      `N/A`) — Final Score 有標示
+- [ ] Every claim that can't be confirmed against SOURCE is explicitly marked `【需確認】` inline
+      — 不確定內容有標示
+- [ ] No fabricated citations, sources, or media references anywhere in the file — 沒有捏造來源
 - [ ] Nothing from Level 2/3 material is presented as if it were Level 1 (textbook) content
-- [ ] Nothing the PO explicitly asked to be included has been trimmed for length
+- [ ] Nothing the PO explicitly asked to be included has been trimmed or omitted for length —
+      沒有遺漏 Project Owner 指定內容
