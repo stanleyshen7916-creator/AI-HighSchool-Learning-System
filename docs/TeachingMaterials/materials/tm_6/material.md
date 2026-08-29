@@ -19,6 +19,10 @@
 4. Claude 依 Cross Review 結論整合出 Final 版本；Project Owner 其後又提供 GPT、Gemini 各自提交、自稱「Final」的第二輪文件，Claude 逐項核實後（未原樣採信其自評分數，並具體指出兩者皆非真正三方整合、Gemini 版本有一項可驗證的自評錯誤等問題）吸收其中可驗證的新增內容，完成 `HIST_Ch1EuroChristianTradition_Final.md`（v3，Self-QA 99/100，零 HARD FAIL）。
 5. 本 Package 的 `summary.json`／`questionbank.json` 即依該 Final v3 內容轉換為本 Repository 的 Package Standard 格式。
 
+## 版本異動記錄
+
+- **v2**（Existing Material 更新）：Project Owner 回報首版上傳的35題練習題未區分「易／中／難」難度。已依 `QuestionBank.schema.json` 選填的逐題 `difficulty` 欄位補上（易12題／中等13題／難10題，分類依據：易＝單一事實或定義的直接回憶；中等＝需比較兩個概念或掌握單一因果關係；難＝需跨多個概念綜合判斷、或辨析多組容易混淆的史實組合），`metadata.json`／`manifest.json` 之版本號同步由 `"1"` 升級為 `"2"`，依 Import Rule 更新既有 `tm_6`，未建立新的 `materialId`。
+
 ## 判斷提醒（Flagged, not silently decided）
 
 - **`materialType` 判定為 `TEXTBOOK` 而非 `EXAM`**：原始上傳檔案是課本內容的照片掃描，不是考卷，因此不適用 Original Question Rule；本 Package 的 35 題練習題皆為 Claude 依課本內容原創設計並附完整詳解，`questionSource` 誠實標為 `AI_GENERATED`／`origin: "AI"`，而非冒充 `ORIGINAL`。

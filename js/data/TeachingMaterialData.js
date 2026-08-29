@@ -4293,9 +4293,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 4,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "序篇：讀歷史的功用"
+        "knowledgePoint": "序篇：讀歷史的功用",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q2",
@@ -4314,9 +4315,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 8,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希臘文明的興起"
+        "knowledgePoint": "希臘文明的興起",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q3",
@@ -4335,9 +4337,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 9,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "城邦的興衰"
+        "knowledgePoint": "城邦的興衰",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q4",
@@ -4356,9 +4359,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 14,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希臘三哲思想核心"
+        "knowledgePoint": "希臘三哲思想核心",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q5",
@@ -4377,9 +4381,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 14,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希臘三哲師承"
+        "knowledgePoint": "希臘三哲師承",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q6",
@@ -4398,9 +4403,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 15,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希臘化時代"
+        "knowledgePoint": "希臘化時代",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q7",
@@ -4419,9 +4425,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 15,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希臘化時代學術中心"
+        "knowledgePoint": "希臘化時代學術中心",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q8",
@@ -4440,9 +4447,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 15,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "斯多噶學派與伊比鳩魯學派"
+        "knowledgePoint": "斯多噶學派與伊比鳩魯學派",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q9",
@@ -4461,9 +4469,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 16,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "羅馬政治發展"
+        "knowledgePoint": "羅馬政治發展",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q10",
@@ -4482,9 +4491,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 18,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "羅馬法演變層次"
+        "knowledgePoint": "羅馬法演變層次",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q11",
@@ -4503,9 +4513,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 19,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希伯來人的流離"
+        "knowledgePoint": "希伯來人的流離",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q12",
@@ -4524,9 +4535,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 21,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "早期基督教的發展"
+        "knowledgePoint": "早期基督教的發展",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q13",
@@ -4545,9 +4557,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 22,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "基督教成為國教"
+        "knowledgePoint": "基督教成為國教",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q14",
@@ -4566,9 +4579,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 23,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "教會組織的形成"
+        "knowledgePoint": "教會組織的形成",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q15",
@@ -4587,9 +4601,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 24,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "中古西歐封建莊園"
+        "knowledgePoint": "中古西歐封建莊園",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q16",
@@ -4608,9 +4623,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 25,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "西歐的政教合作"
+        "knowledgePoint": "西歐的政教合作",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q17",
@@ -4629,9 +4645,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 25,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "查理曼加冕"
+        "knowledgePoint": "查理曼加冕",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q18",
@@ -4650,9 +4667,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 27,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "政教衝突與大分裂"
+        "knowledgePoint": "政教衝突與大分裂",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q19",
@@ -4671,9 +4689,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 29,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "基督教東西教會分裂"
+        "knowledgePoint": "基督教東西教會分裂",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q20",
@@ -4692,9 +4711,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 29,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "兩次教會分裂辨異"
+        "knowledgePoint": "兩次教會分裂辨異",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q21",
@@ -4713,9 +4733,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 28,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "拜占庭政教合一"
+        "knowledgePoint": "拜占庭政教合一",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q22",
@@ -4734,9 +4755,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 28,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "聖像破壞運動"
+        "knowledgePoint": "聖像破壞運動",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q23",
@@ -4755,9 +4777,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 31,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "經院哲學"
+        "knowledgePoint": "經院哲學",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q24",
@@ -4776,9 +4799,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 32,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "文藝復興的定義"
+        "knowledgePoint": "文藝復興的定義",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q25",
@@ -4797,9 +4821,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 32,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "人文主義精神"
+        "knowledgePoint": "人文主義精神",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q26",
@@ -4818,9 +4843,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 32,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "義大利人文主義代表人物"
+        "knowledgePoint": "義大利人文主義代表人物",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q27",
@@ -4839,9 +4865,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 33,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "文藝復興人物著作配對"
+        "knowledgePoint": "文藝復興人物著作配對",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q28",
@@ -4860,9 +4887,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 34,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "文藝復興藝術技法"
+        "knowledgePoint": "文藝復興藝術技法",
+        "difficulty": "易"
       },
       {
         "id": "tm_6_q29",
@@ -4881,9 +4909,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 38,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "義大利與北方文藝復興比較"
+        "knowledgePoint": "義大利與北方文藝復興比較",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q30",
@@ -4902,9 +4931,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 2,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "單元整體脈絡"
+        "knowledgePoint": "單元整體脈絡",
+        "difficulty": "中等"
       },
       {
         "id": "tm_6_q31",
@@ -4923,9 +4953,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 15,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "希臘化時代學術與哲學綜合"
+        "knowledgePoint": "希臘化時代學術與哲學綜合",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q32",
@@ -4944,9 +4975,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 18,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "羅馬法整體發展脈絡"
+        "knowledgePoint": "羅馬法整體發展脈絡",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q33",
@@ -4965,9 +4997,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 31,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "經院哲學與人文主義辨析"
+        "knowledgePoint": "經院哲學與人文主義辨析",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q34",
@@ -4986,9 +5019,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 25,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "中古教會的社會政治角色"
+        "knowledgePoint": "中古教會的社會政治角色",
+        "difficulty": "難"
       },
       {
         "id": "tm_6_q35",
@@ -5007,9 +5041,10 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": 30,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
-        "knowledgePoint": "十字軍東征與學術復甦"
+        "knowledgePoint": "十字軍東征與學術復甦",
+        "difficulty": "中等"
       }
     ],
     "related": []

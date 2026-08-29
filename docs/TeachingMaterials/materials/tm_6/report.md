@@ -8,7 +8,7 @@ generator after any Repository change and this file regenerates with it.
 - 年級：高二
 - 章節：序篇：從臺灣走向世界／第1章：歐洲文化與基督教傳統（第1節 古代神話與哲學、第2節 基督教與中古歐洲、第3節 復古與創新兼具的文藝復興） / 課本第2～39頁
 - 教材類型：TEXTBOOK
-- 版本：1
+- 版本：2
 
 ## Package Status
 - Manifest status：complete
