@@ -2,99 +2,222 @@
   "materialId": "tm_5",
   "questions": [
     {
-      "questionId": "tm_5_q1", "materialId": "tm_5", "questionNumber": "1", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q1",
+      "materialId": "tm_5",
+      "questionNumber": "1",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "下列哪一種物質通過細胞膜的方式不需消耗ATP？",
-      "options": ["(A)主動運輸", "(B)促進性擴散", "(C)胞吞作用", "(D)胞吐作用"],
+      "options": [
+        "(A)主動運輸",
+        "(B)促進性擴散",
+        "(C)胞吞作用",
+        "(D)胞吐作用"
+      ],
       "answer": "(B)促進性擴散",
       "explanation": "促進性擴散屬於被動運輸的一種，藉由膜上蛋白通道順濃度梯度運輸水溶性分子或離子，不需消耗ATP；主動運輸、胞吞作用與胞吐作用皆需消耗ATP。",
-      "page": 1, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "物質通過細胞膜的運輸方式"
+      "page": 1,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "物質通過細胞膜的運輸方式",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q2", "materialId": "tm_5", "questionNumber": "2", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q2",
+      "materialId": "tm_5",
+      "questionNumber": "2",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "若甲溶液的溶質濃度高於乙溶液，下列敘述何者正確？",
-      "options": ["(A)甲溶液的滲透壓小於乙溶液", "(B)甲溶液的滲透壓大於乙溶液", "(C)水分子會由甲溶液往乙溶液淨移動", "(D)甲、乙兩溶液的滲透壓相同"],
+      "options": [
+        "(A)甲溶液的滲透壓小於乙溶液",
+        "(B)甲溶液的滲透壓大於乙溶液",
+        "(C)水分子會由甲溶液往乙溶液淨移動",
+        "(D)甲、乙兩溶液的滲透壓相同"
+      ],
       "answer": "(B)甲溶液的滲透壓大於乙溶液",
       "explanation": "滲透壓與溶質濃度成正比，溶質濃度愈高，滲透壓愈大；水分子會由濃度低（滲透壓小）之乙溶液往濃度高（滲透壓大）之甲溶液淨移動，而非(C)所述方向。",
-      "page": 2, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "滲透壓與溶質濃度的關係"
+      "page": 2,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "滲透壓與溶質濃度的關係",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q3", "materialId": "tm_5", "questionNumber": "3", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q3",
+      "materialId": "tm_5",
+      "questionNumber": "3",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "將植物細胞置於高張溶液中，最可能觀察到下列何種現象？",
-      "options": ["(A)細胞大量吸水而破裂", "(B)細胞膜與細胞壁分離（質壁分離）", "(C)細胞膨壓持續增加", "(D)細胞形狀與大小完全不受影響"],
+      "options": [
+        "(A)細胞大量吸水而破裂",
+        "(B)細胞膜與細胞壁分離（質壁分離）",
+        "(C)細胞膨壓持續增加",
+        "(D)細胞形狀與大小完全不受影響"
+      ],
       "answer": "(B)細胞膜與細胞壁分離（質壁分離）",
       "explanation": "高張溶液中細胞水分淨流出，植物細胞的原生質（細胞膜）因失水而收縮，與具剛性的細胞壁分離，即質壁分離；此時細胞膨壓最小，並非(C)持續增加，細胞壁也不會使細胞「完全不受影響」。",
-      "page": 2, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "溶液濃度與植物細胞形狀（膨壓）"
+      "page": 2,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "溶液濃度與植物細胞形狀（膨壓）",
+      "difficulty": "中等"
     },
     {
-      "questionId": "tm_5_q4", "materialId": "tm_5", "questionNumber": "4", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q4",
+      "materialId": "tm_5",
+      "questionNumber": "4",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "下列有關水分子特性的敘述，何者正確？",
-      "options": ["(A)水分子不具有極性", "(B)水分子間可形成氫鍵，使水的比熱較大", "(C)水約占細胞重量的30%", "(D)水分子的極性與物質運輸無關"],
+      "options": [
+        "(A)水分子不具有極性",
+        "(B)水分子間可形成氫鍵，使水的比熱較大",
+        "(C)水約占細胞重量的30%",
+        "(D)水分子的極性與物質運輸無關"
+      ],
       "answer": "(B)水分子間可形成氫鍵，使水的比熱較大",
       "explanation": "水分子因電荷分布不均而具有極性，分子間可形成氫鍵，使水具有較大的比熱，有助於調節生物體溫並協助代謝與物質運輸；水約占細胞重量的70%，並非30%。",
-      "page": 1, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "水分子的特性"
+      "page": 1,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "水分子的特性",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q5", "materialId": "tm_5", "questionNumber": "5", "type": "true_false",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q5",
+      "materialId": "tm_5",
+      "questionNumber": "5",
+      "type": "true_false",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "主動運輸與胞吞、胞吐作用皆需消耗ATP，屬於耗能的物質運輸方式。",
       "answer": "true",
       "explanation": "主動運輸可逆濃度梯度運輸小分子，胞吞／胞吐作用則用於大分子的運輸，兩者皆需消耗細胞內的ATP，故敘述正確。",
-      "page": 1, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "物質運輸是否耗能"
+      "page": 1,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "物質運輸是否耗能",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q6", "materialId": "tm_5", "questionNumber": "6", "type": "true_false",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q6",
+      "materialId": "tm_5",
+      "questionNumber": "6",
+      "type": "true_false",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "動物細胞（如紅血球）因沒有細胞壁，置於低張溶液中比植物細胞更容易因大量吸水而膨脹甚至破裂。",
       "answer": "true",
       "explanation": "植物細胞有細胞壁限制細胞過度膨脹，置於低張溶液中主要表現為膨壓增加而非破裂；動物細胞缺乏細胞壁保護，大量吸水後容易膨脹甚至破裂（如紅血球溶血），故敘述正確。",
-      "page": 2, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "細胞壁對細胞在低張溶液中的保護作用"
+      "page": 2,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "細胞壁對細胞在低張溶液中的保護作用",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q7", "materialId": "tm_5", "questionNumber": "7", "type": "fill_blank",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q7",
+      "materialId": "tm_5",
+      "questionNumber": "7",
+      "type": "fill_blank",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "細胞膜由雙層＿＿＿＿構成，其中鑲嵌有具運輸、受體、辨識等功能的蛋白質。",
       "answer": "磷脂質",
       "explanation": "細胞膜的基本骨架為雙層磷脂質（磷脂雙分子層），蛋白質鑲嵌其中形成流動鑲嵌模型的結構。",
-      "page": 1, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "細胞膜的基本構造"
+      "page": 1,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "細胞膜的基本構造",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q8", "materialId": "tm_5", "questionNumber": "8", "type": "fill_blank",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q8",
+      "materialId": "tm_5",
+      "questionNumber": "8",
+      "type": "fill_blank",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "植物細胞內液體向外對細胞壁所施加的壓力稱為＿＿＿＿，在低張溶液中此數值最大。",
       "answer": "膨壓",
       "explanation": "膨壓是植物細胞維持形態、避免萎凋的重要機制；細胞置於低張溶液中大量吸水，膨壓隨之增加至最大。",
-      "page": 2, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "膨壓"
+      "page": 2,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "膨壓",
+      "difficulty": "易"
     },
     {
-      "questionId": "tm_5_q9", "materialId": "tm_5", "questionNumber": "9", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q9",
+      "materialId": "tm_5",
+      "questionNumber": "9",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "有關植物細胞細胞壁的敘述，下列何者正確？",
-      "options": ["(A)細胞壁的主要成分是磷脂質", "(B)相鄰細胞間可藉原生質絲（胞間連絲）交流物質與訊息", "(C)所有植物細胞皆具有次生細胞壁", "(D)細胞壁具有流動性，可自由變形"],
+      "options": [
+        "(A)細胞壁的主要成分是磷脂質",
+        "(B)相鄰細胞間可藉原生質絲（胞間連絲）交流物質與訊息",
+        "(C)所有植物細胞皆具有次生細胞壁",
+        "(D)細胞壁具有流動性，可自由變形"
+      ],
       "answer": "(B)相鄰細胞間可藉原生質絲（胞間連絲）交流物質與訊息",
       "explanation": "細胞壁主要成分為纖維素與果膠質（而非磷脂質，磷脂質是細胞膜的主要成分）；植物細胞皆具初生細胞壁，僅部分細胞另具次生細胞壁；細胞壁具剛性，可限制細胞過度膨脹，不具流動性；相鄰細胞的細胞壁間則有原生質絲，作為物質與訊息交流的通道。",
-      "page": 1, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "細胞壁的構造與功能"
+      "page": 1,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "細胞壁的構造與功能",
+      "difficulty": "中等"
     },
     {
-      "questionId": "tm_5_q10", "materialId": "tm_5", "questionNumber": "10", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q10",
+      "materialId": "tm_5",
+      "questionNumber": "10",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "細胞膜上的通道蛋白協助葡萄糖等水溶性小分子順濃度梯度進出細胞，此過程不消耗ATP。關於此運輸方式的判斷，下列敘述何者正確？",
-      "options": ["(A)因為有膜蛋白參與，此運輸方式屬於主動運輸", "(B)此運輸方式屬於促進性擴散，是被動運輸的一種", "(C)只要運輸過程使用膜蛋白，就必定消耗ATP", "(D)此運輸方式與胞吞作用相同，皆需形成囊胞"],
+      "options": [
+        "(A)因為有膜蛋白參與，此運輸方式屬於主動運輸",
+        "(B)此運輸方式屬於促進性擴散，是被動運輸的一種",
+        "(C)只要運輸過程使用膜蛋白，就必定消耗ATP",
+        "(D)此運輸方式與胞吞作用相同，皆需形成囊胞"
+      ],
       "answer": "(B)此運輸方式屬於促進性擴散，是被動運輸的一種",
       "explanation": "是否使用膜蛋白不能單獨用來判斷運輸方式屬於主動或被動；促進性擴散雖需通道蛋白／載體蛋白協助，但仍順濃度梯度移動且不消耗ATP，屬於被動運輸的一種，與需消耗ATP的主動運輸不同，也與需形成囊胞的胞吞作用不同。",
-      "page": 1, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "促進性擴散與主動運輸的判斷依據"
+      "page": 1,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "促進性擴散與主動運輸的判斷依據",
+      "difficulty": "中等"
     },
     {
-      "questionId": "tm_5_q11", "materialId": "tm_5", "questionNumber": "11", "type": "single_choice",
-      "questionSource": "AI_GENERATED", "origin": "AI",
+      "questionId": "tm_5_q11",
+      "materialId": "tm_5",
+      "questionNumber": "11",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
       "question": "若題目描述「水分子往濃度較高的一側移動」，在判斷水分子實際移動方向前，最需要先確認的是下列何者？",
-      "options": ["(A)確認該濃度是指水分子本身的濃度，還是溶質的濃度", "(B)確認該側細胞是否具有細胞壁", "(C)確認該運輸過程是否消耗ATP", "(D)確認該溶液的溫度是否高於室溫"],
+      "options": [
+        "(A)確認該濃度是指水分子本身的濃度，還是溶質的濃度",
+        "(B)確認該側細胞是否具有細胞壁",
+        "(C)確認該運輸過程是否消耗ATP",
+        "(D)確認該溶液的溫度是否高於室溫"
+      ],
       "answer": "(A)確認該濃度是指水分子本身的濃度，還是溶質的濃度",
       "explanation": "水分子淨移動方向是由水分子濃度高處往水分子濃度低處（即溶質濃度低處往溶質濃度高處）；題目若僅寫「濃度較高」而未說明是水分子濃度或溶質濃度，容易導致方向判斷相反，故須先釐清濃度所指對象，而非直接套用ATP或細胞壁等其他條件判斷。",
-      "page": 2, "version": "1", "createdDate": "2026-08-21T00:00:00Z", "knowledgePoint": "滲透作用中水分子淨移動方向的判斷"
+      "page": 2,
+      "version": "1",
+      "createdDate": "2026-08-21T00:00:00Z",
+      "knowledgePoint": "滲透作用中水分子淨移動方向的判斷",
+      "difficulty": "難"
     }
   ]
 }

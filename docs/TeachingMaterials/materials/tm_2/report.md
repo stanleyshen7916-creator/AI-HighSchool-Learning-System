@@ -8,7 +8,7 @@ generator after any Repository change and this file regenerates with it.
 - 年級：高一
 - 章節：生物全ch3（演化與生物分類：拉馬克與達爾文學說、天擇、同源／同功構造、五界說／三域說、病毒特性） / 114學年度第二學期第三次段考
 - 教材類型：EXAM
-- 版本：1
+- 版本：2
 
 ## Package Status
 - Manifest status：pending_review

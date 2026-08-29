@@ -1,8 +1,8 @@
 {
   "materialId": "tm_2",
-  "packageVersion": "1",
+  "packageVersion": "2",
   "createdDate": "2026-08-03T00:00:00Z",
-  "updatedDate": "2026-08-03T00:00:00Z",
+  "updatedDate": "2026-08-29T02:00:00Z",
   "repositoryVersion": "EO-S1.1-003",
   "analysisEngine": "Claude",
   "status": "pending_review"

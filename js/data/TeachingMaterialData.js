@@ -428,7 +428,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.96,
         "needsReview": false,
-        "knowledgePoint": "演化學說比較"
+        "knowledgePoint": "演化學說比較",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q2",
@@ -451,7 +452,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "古菌與真細菌的差異"
+        "knowledgePoint": "古菌與真細菌的差異",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q3",
@@ -476,6 +478,7 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.9,
         "needsReview": false,
         "knowledgePoint": "顳窩與羊膜動物親緣關係",
+        "difficulty": "難",
         "figureSvg": "<svg viewBox=\"0 0 660 300\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"40\" y1=\"260\" x2=\"100\" y2=\"170\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"100\" y1=\"170\" x2=\"170\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"100\" y1=\"170\" x2=\"600\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"100\" y1=\"170\" x2=\"290\" y2=\"110\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"290\" y1=\"110\" x2=\"250\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"290\" y1=\"110\" x2=\"380\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"290\" y1=\"110\" x2=\"480\" y2=\"55\" stroke=\"#333\" stroke-width=\"2\"/><circle cx=\"100\" cy=\"170\" r=\"3\" fill=\"#333\"/><circle cx=\"290\" cy=\"110\" r=\"3\" fill=\"#333\"/><text x=\"15\" y=\"280\" font-size=\"12\" font-weight=\"700\">羊膜動物祖先</text><text x=\"170\" y=\"42\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#ef4444\">龜鱉類（無顳窩）</text><text x=\"250\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#7c5cff\">鱷魚（雙顳窩）</text><text x=\"380\" y=\"42\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#7c5cff\">蜥蜴與蛇（雙顳窩）</text><text x=\"480\" y=\"20\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\" fill=\"#7c5cff\">翼龍與恐龍(已滅絕)／鳥類</text><text x=\"600\" y=\"42\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#22b573\">哺乳類（單顳窩）</text><text x=\"150\" y=\"158\" font-size=\"11\" fill=\"#999\">無顳窩分支</text><text x=\"300\" y=\"88\" font-size=\"11\" fill=\"#999\">雙顳窩分支（雙孔類）</text><text x=\"490\" y=\"125\" font-size=\"11\" fill=\"#999\">單顳窩分支</text></svg>"
       },
       {
@@ -500,7 +503,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "突變與天擇"
+        "knowledgePoint": "突變與天擇",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q5",
@@ -524,7 +528,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "天擇與人擇的區別"
+        "knowledgePoint": "天擇與人擇的區別",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q6",
@@ -548,7 +553,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "達爾文天擇說核心概念"
+        "knowledgePoint": "達爾文天擇說核心概念",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q7",
@@ -572,7 +578,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.8,
         "needsReview": true,
-        "knowledgePoint": "斑馬條紋演化假說（實驗數據判讀）"
+        "knowledgePoint": "斑馬條紋演化假說（實驗數據判讀）",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q8",
@@ -596,7 +603,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "演化學說比較"
+        "knowledgePoint": "演化學說比較",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q9",
@@ -619,7 +627,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.96,
         "needsReview": false,
-        "knowledgePoint": "分子演化證據"
+        "knowledgePoint": "分子演化證據",
+        "difficulty": "易"
       },
       {
         "id": "tm_2_q10",
@@ -642,7 +651,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.96,
         "needsReview": false,
-        "knowledgePoint": "古菌與真細菌的差異"
+        "knowledgePoint": "古菌與真細菌的差異",
+        "difficulty": "易"
       },
       {
         "id": "tm_2_q11",
@@ -665,7 +675,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.96,
         "needsReview": false,
-        "knowledgePoint": "同源構造與同功構造"
+        "knowledgePoint": "同源構造與同功構造",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q12",
@@ -688,7 +699,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "生物分類系統發展史"
+        "knowledgePoint": "生物分類系統發展史",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q13",
@@ -711,7 +723,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "痕跡器官與演化"
+        "knowledgePoint": "痕跡器官與演化",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q14",
@@ -734,7 +747,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "病毒的一般特性"
+        "knowledgePoint": "病毒的一般特性",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q15",
@@ -758,7 +772,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "抗藥性演化"
+        "knowledgePoint": "抗藥性演化",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q16",
@@ -781,7 +796,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "病毒套膜的形成"
+        "knowledgePoint": "病毒套膜的形成",
+        "difficulty": "易"
       },
       {
         "id": "tm_2_q17",
@@ -804,7 +820,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "SARS-CoV-2 病毒特性"
+        "knowledgePoint": "SARS-CoV-2 病毒特性",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q18",
@@ -827,7 +844,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "三域系統親緣關係"
+        "knowledgePoint": "三域系統親緣關係",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q19",
@@ -850,7 +868,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.93,
         "needsReview": false,
-        "knowledgePoint": "同源構造判斷"
+        "knowledgePoint": "同源構造判斷",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q20",
@@ -873,7 +892,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.7,
         "needsReview": true,
-        "knowledgePoint": "生物分類特徵判斷"
+        "knowledgePoint": "生物分類特徵判斷",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q21",
@@ -896,7 +916,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "天擇與演化的作用單位"
+        "knowledgePoint": "天擇與演化的作用單位",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q22",
@@ -920,7 +941,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.92,
         "needsReview": false,
-        "knowledgePoint": "三域六界系統與五界系統比較"
+        "knowledgePoint": "三域六界系統與五界系統比較",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q23",
@@ -944,7 +966,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "病毒的核酸與構造"
+        "knowledgePoint": "病毒的核酸與構造",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q24",
@@ -969,6 +992,7 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.93,
         "needsReview": false,
         "knowledgePoint": "支序分類學的證據",
+        "difficulty": "難",
         "figureSvg": "<svg viewBox=\"0 0 460 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"40\" y1=\"230\" x2=\"90\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"60\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"150\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"230\" y2=\"90\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"200\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"290\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"420\" y2=\"60\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"380\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"440\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<circle cx=\"90\" cy=\"150\" r=\"3\" fill=\"#333\"/><circle cx=\"230\" cy=\"90\" r=\"3\" fill=\"#333\"/><circle cx=\"420\" cy=\"60\" r=\"3\" fill=\"#333\"/>\n<text x=\"60\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">真菌界</text>\n<text x=\"150\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">植物界</text>\n<text x=\"200\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">原口動物</text>\n<text x=\"290\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">後口動物</text>\n<text x=\"380\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">爬行動物</text>\n<text x=\"440\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">哺乳動物</text>\n<text x=\"15\" y=\"248\" font-size=\"12\" font-weight=\"700\">共同祖先</text>\n<text x=\"230\" y=\"115\" font-size=\"10\" fill=\"#999\">動物界</text>\n<text x=\"330\" y=\"80\" font-size=\"10\" fill=\"#999\">脊椎動物</text>\n</svg>"
       },
       {
@@ -993,7 +1017,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "單系群、並系群判斷"
+        "knowledgePoint": "單系群、並系群判斷",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q26",
@@ -1016,7 +1041,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.93,
         "needsReview": false,
-        "knowledgePoint": "病毒核酸水解產物（非洲豬瘟）"
+        "knowledgePoint": "病毒核酸水解產物（非洲豬瘟）",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q27",
@@ -1039,7 +1065,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "非洲豬瘟病毒的宿主特性"
+        "knowledgePoint": "非洲豬瘟病毒的宿主特性",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q28",
@@ -1063,7 +1090,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "脊椎動物胚胎學證據"
+        "knowledgePoint": "脊椎動物胚胎學證據",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q29",
@@ -1087,7 +1115,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.93,
         "needsReview": false,
-        "knowledgePoint": "達爾文天擇說的形成背景"
+        "knowledgePoint": "達爾文天擇說的形成背景",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q30",
@@ -1111,7 +1140,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "生物分類系統演變原因"
+        "knowledgePoint": "生物分類系統演變原因",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q31",
@@ -1135,7 +1165,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "同源器官證據判斷"
+        "knowledgePoint": "同源器官證據判斷",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q32",
@@ -1160,6 +1191,7 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.85,
         "needsReview": true,
         "knowledgePoint": "鳥類與爬蟲類親緣關係重建",
+        "difficulty": "難",
         "figureSvg": "<svg viewBox=\"0 0 460 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"30\" y1=\"230\" x2=\"80\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"80\" y1=\"150\" x2=\"50\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"80\" y1=\"150\" x2=\"220\" y2=\"80\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"220\" y1=\"80\" x2=\"180\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"220\" y1=\"80\" x2=\"330\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"330\" y1=\"40\" x2=\"430\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<circle cx=\"80\" cy=\"150\" r=\"3\" fill=\"#333\"/><circle cx=\"220\" cy=\"80\" r=\"3\" fill=\"#333\"/><circle cx=\"330\" cy=\"40\" r=\"3\" fill=\"#333\"/>\n<text x=\"20\" y=\"245\" font-size=\"11\" font-weight=\"700\">共同祖先</text>\n<text x=\"50\" y=\"28\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">兩生類</text>\n<text x=\"180\" y=\"28\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#22b573\">哺乳類（毛）</text>\n<text x=\"330\" y=\"28\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">爬蟲類</text>\n<text x=\"430\" y=\"8\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#ef4444\">鳥類（羽毛）</text>\n<text x=\"100\" y=\"115\" font-size=\"10\" fill=\"#999\">羊膜／鱗片</text>\n<text x=\"360\" y=\"35\" font-size=\"10\" fill=\"#ef4444\">有羽恐龍</text>\n</svg>"
       },
       {
@@ -1184,7 +1216,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "人擇與天擇的區分"
+        "knowledgePoint": "人擇與天擇的區分",
+        "difficulty": "中等"
       },
       {
         "id": "tm_2_q34",
@@ -1208,7 +1241,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.65,
         "needsReview": true,
-        "knowledgePoint": "麗魚體色與棲地天擇"
+        "knowledgePoint": "麗魚體色與棲地天擇",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q35",
@@ -1232,7 +1266,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "五界分類法依據"
+        "knowledgePoint": "五界分類法依據",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q36",
@@ -1256,7 +1291,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.88,
         "needsReview": true,
-        "knowledgePoint": "三域物種特性比較表"
+        "knowledgePoint": "三域物種特性比較表",
+        "difficulty": "難"
       },
       {
         "id": "tm_2_q37",
@@ -1280,7 +1316,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.9,
         "needsReview": false,
-        "knowledgePoint": "分類系統界域比較"
+        "knowledgePoint": "分類系統界域比較",
+        "difficulty": "難"
       }
     ],
     "related": []
@@ -3989,7 +4026,8 @@ AHS.TeachingMaterialData = [
         "page": 1,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "物質通過細胞膜的運輸方式"
+        "knowledgePoint": "物質通過細胞膜的運輸方式",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q2",
@@ -4010,7 +4048,8 @@ AHS.TeachingMaterialData = [
         "page": 2,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "滲透壓與溶質濃度的關係"
+        "knowledgePoint": "滲透壓與溶質濃度的關係",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q3",
@@ -4031,7 +4070,8 @@ AHS.TeachingMaterialData = [
         "page": 2,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "溶液濃度與植物細胞形狀（膨壓）"
+        "knowledgePoint": "溶液濃度與植物細胞形狀（膨壓）",
+        "difficulty": "中等"
       },
       {
         "id": "tm_5_q4",
@@ -4052,7 +4092,8 @@ AHS.TeachingMaterialData = [
         "page": 1,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "水分子的特性"
+        "knowledgePoint": "水分子的特性",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q5",
@@ -4068,7 +4109,8 @@ AHS.TeachingMaterialData = [
         "page": 1,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "物質運輸是否耗能"
+        "knowledgePoint": "物質運輸是否耗能",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q6",
@@ -4084,7 +4126,8 @@ AHS.TeachingMaterialData = [
         "page": 2,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "細胞壁對細胞在低張溶液中的保護作用"
+        "knowledgePoint": "細胞壁對細胞在低張溶液中的保護作用",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q7",
@@ -4100,7 +4143,8 @@ AHS.TeachingMaterialData = [
         "page": 1,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "細胞膜的基本構造"
+        "knowledgePoint": "細胞膜的基本構造",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q8",
@@ -4116,7 +4160,8 @@ AHS.TeachingMaterialData = [
         "page": 2,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "膨壓"
+        "knowledgePoint": "膨壓",
+        "difficulty": "易"
       },
       {
         "id": "tm_5_q9",
@@ -4137,7 +4182,8 @@ AHS.TeachingMaterialData = [
         "page": 1,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "細胞壁的構造與功能"
+        "knowledgePoint": "細胞壁的構造與功能",
+        "difficulty": "中等"
       },
       {
         "id": "tm_5_q10",
@@ -4158,7 +4204,8 @@ AHS.TeachingMaterialData = [
         "page": 1,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "促進性擴散與主動運輸的判斷依據"
+        "knowledgePoint": "促進性擴散與主動運輸的判斷依據",
+        "difficulty": "中等"
       },
       {
         "id": "tm_5_q11",
@@ -4179,7 +4226,8 @@ AHS.TeachingMaterialData = [
         "page": 2,
         "version": "1",
         "createdDate": "2026-08-21T00:00:00Z",
-        "knowledgePoint": "滲透作用中水分子淨移動方向的判斷"
+        "knowledgePoint": "滲透作用中水分子淨移動方向的判斷",
+        "difficulty": "難"
       }
     ],
     "related": []
