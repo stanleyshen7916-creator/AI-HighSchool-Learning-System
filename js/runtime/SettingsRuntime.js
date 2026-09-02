@@ -90,6 +90,7 @@ AHS.SettingsRuntime = (function () {
     });
     persist();
     pushSettings();
+    pushProfile();
     return get();
   }
 
@@ -100,12 +101,12 @@ AHS.SettingsRuntime = (function () {
   }
 
   /* pushSettings() — Sprint AI-126B Part 2, Task 7. public.user_settings
-     holds only show_tutor_suggestions/ai_gateway_enabled (profile.name/
-     grade already live on student_profiles — see that table's own
-     comment and this file's real Single Source header above; never
-     duplicated here). Read-then-upsert by the table's own real unique
-     (student_profile_id) constraint. Fire-and-forget; never changes
-     update()'s own already-returned value above. */
+     holds only show_tutor_suggestions/ai_gateway_enabled — profile.name/
+     grade live on student_profiles instead, pushed separately by
+     pushProfile() below (see that function's own header for why). Read-
+     then-upsert by the table's own real unique (student_profile_id)
+     constraint. Fire-and-forget; never changes update()'s own
+     already-returned value above. */
   function pushSettings() {
     if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
     var identity = AHS.SyncBridge.identity();
@@ -128,24 +129,80 @@ AHS.SettingsRuntime = (function () {
     });
   }
 
-  /* pullFromRepository() — additive, new async method. Only the two
-     real toggles this table owns are merged in (profile.name/grade stay
-     locally sourced from AHS.WorkspaceRuntime/student_profiles, per the
-     Single Source split documented above — never overwritten here). */
+  /* pushProfile() — real PO report (帳號修改後資料不同步／關閉瀏覽器後
+     還原): profile.name/grade used to live ONLY in AHS.PersistenceAdapter
+     (sessionStorage, namespaced per exact Workspace — studentId +
+     schoolId + semesterIds). Two real, observed consequences: (1) the
+     same real student editing their name under one School/Semester
+     combination never showed it under a different one (or on this
+     Runtime's next page load) — different parts of the same logged-in
+     session showing two different names — and (2) sessionStorage is
+     cleared when the browser itself is closed (see
+     js/core/PersistenceAdapter.js's own header — 100% by design for the
+     Learning State it otherwise owns), so a renamed profile silently
+     reverted to the seed default on the next visit. student_profiles
+     (Sprint AI-126A's real "User Mapping" — display_name/grade columns,
+     AHS.AuthRepository.ensureOwnProfile() already creates this exact row
+     at login) is the one real, per-STUDENT (not per-Workspace) backend
+     record this data already has a home in. Pushing/pulling it here,
+     the same fire-and-forget pattern pushSettings()/pullFromRepository()
+     already use for user_settings, makes it survive a real browser
+     restart and stay consistent across every Workspace for this student
+     — a true no-op (silently skipped, exactly like pushSettings()) when
+     Supabase isn't configured, so nothing changes for that case. */
+  function pushProfile() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity) { return; }
+    var repo = AHS.RepositoryFactory.create();
+    var row = { display_name: store.profile.name, grade: store.profile.grade };
+    AHS.SyncBridge.pushFireAndForget(function () {
+      return repo.update("student_profiles", "id=eq." + identity.studentProfileId, row);
+    });
+  }
+
+  /* pullFromRepository() — additive, new async method. Merges both real
+     tables profile/preferences already live on: user_settings (the two
+     toggles) and, since the fix above, student_profiles' own
+     display_name/grade — the real, per-student Single Source that now
+     overrides whatever this Workspace's local sessionStorage cache
+     happened to hold, so a rename made under any Workspace/device is
+     visible everywhere on the next page load (RepositorySync.js already
+     calls this on every page load for every domain, this Runtime
+     included). */
   function pullFromRepository() {
     if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve({ pulled: 0 }); }
     var identity = AHS.SyncBridge.identity();
     if (!identity) { return Promise.resolve({ pulled: 0 }); }
     var repo = AHS.RepositoryFactory.create();
-    return repo.read("user_settings", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
-      if (result.error || !result.data || !result.data.length) { return { pulled: 0, error: result.error }; }
+    var pulled = 0;
+    var firstError = null;
+
+    var settingsPull = repo.read("user_settings", "student_profile_id=eq." + identity.studentProfileId).then(function (result) {
+      if (result.error) { firstError = firstError || result.error; return; }
+      if (!result.data || !result.data.length) { return; }
       var row = result.data[0];
       store.showTutorSuggestions = row.show_tutor_suggestions;
       store.aiGatewayEnabled = row.ai_gateway_enabled;
-      persist();
-      return { pulled: 1 };
+      pulled += 1;
+    });
+
+    var profilePull = repo.read("student_profiles", "id=eq." + identity.studentProfileId).then(function (result) {
+      if (result.error) { firstError = firstError || result.error; return; }
+      if (!result.data || !result.data.length) { return; }
+      var row = result.data[0];
+      if (row.display_name) { store.profile.name = row.display_name; }
+      if (row.grade) { store.profile.grade = row.grade; }
+      pulled += 1;
+    });
+
+    return Promise.all([settingsPull, profilePull]).then(function () {
+      if (pulled > 0) { persist(); }
+      var out = { pulled: pulled };
+      if (pulled === 0 && firstError) { out.error = firstError; }
+      return out;
     }).catch(function (err) {
-      return { pulled: 0, error: { message: String(err && err.message || err) } };
+      return { pulled: pulled, error: { message: String(err && err.message || err) } };
     });
   }
 

@@ -78,24 +78,25 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 8 筆真實 Repository 教材
+/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 9 筆真實 Repository 教材
    （國文教材三課，workspaceSemester: "g2s1" —— 第三課／近體詩選的三首詩
    已合併為單一教材／單一測驗；另加上英文教材第一課 The Day I Broke the
    Rules；tm_5（長榮中學高二第一次月考 生物補充資料）匯入後同樣標記
    g2s1，為第 5 筆；生物第1章《生物的起源與演化》
    data/materials/BiologyG11OriginAndEvolutionOfLife.js 同樣標記 g2s1，
    為第 6 筆；tm_6（長榮中學高二世界史 序篇＋第1章「歐洲文化與基督教傳統」，
-   Package materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 7 筆；tm_7
-   （長榮中學高二數學 第1章「三角函數」，Package materialType=TEXTBOOK）
-   匯入後同樣標記 g2s1，為第 8 筆），不得出現高一下（g1s2）教材，兩學期
-   互相隔離 --- */
-console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 8 筆教材（國文3＋英文1＋生物2＋歷史1＋數學1，不得出現高一下教材）");
+   Package materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 7 筆；生物第1章
+   講義版 data/materials/BiologyG11Ch1HandoutReview.js 同樣標記 g2s1，為第
+   8 筆；tm_7（長榮中學高二數學 第1章「三角函數」，Package
+   materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 9 筆），不得出現高一下
+   （g1s2）教材，兩學期互相隔離 --- */
+console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 9 筆教材（國文3＋英文1＋生物3＋歷史1＋數學1，不得出現高一下教材）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實看到 8 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物、tm_6 世界史、tm_7 三角函數）", materials.length === 8);
+  check("高二上真實看到 9 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_6 世界史、tm_7 三角函數）", materials.length === 9);
   check("皆為國文科、英文科、生物科、歷史科或數學科（無高一下的 civics/geography 教材混入）",
     materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math"));
   check("包含國文第一課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
@@ -105,6 +106,8 @@ console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到�
     materials.some((m) => (m.title || "").indexOf("The Day I Broke the Rules") !== -1));
   check("包含生物第1章教材（生物的起源與演化）",
     materials.some((m) => (m.title || "").indexOf("生物的起源與演化") !== -1));
+  check("包含生物第1章講義版教材（選修生物II教學講義）",
+    materials.some((m) => (m.title || "").indexOf("選修生物II") !== -1));
   check("包含歷史 tm_6 教材（序篇＋第1章 歐洲文化與基督教傳統）",
     materials.some((m) => (m.title || "").indexOf("歐洲文化與基督教傳統") !== -1));
   check("包含數學 tm_7 教材（第1章 三角函數）",

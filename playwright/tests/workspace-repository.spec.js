@@ -64,16 +64,17 @@ test("AI-120 PAT①(續)：Student A -> 高二上 -> 教材中心只看到高二
   /* Sprint AI-132（國文教材上傳）之後，再加上英文第一課教材上架
      （data/materials/EnglishG11DayIBrokeTheRules.js）、tm_5（生物補充
      資料）匯入、生物第1章教材上架
-     （data/materials/BiologyG11OriginAndEvolutionOfLife.js），高二上
-     （g2s1）真的有 6 筆真實 Repository 教材（國文第一課／第二課／第三課
-     ＋英文第一課＋生物2筆）——「誠實顯示空狀態」的原始假設已經不成立，
-     這裡改為驗證真正的重點：這 6 筆是「高二上自己的」真實教材，且完全
-     不包含任何高一下（tm_1~4／civics）的教材，Workspace 過濾仍然誠實、
-     正確。 */
+     （data/materials/BiologyG11OriginAndEvolutionOfLife.js）、tm_6（世界史
+     序篇＋第1章「歐洲文化與基督教傳統」）匯入、生物第1章講義版教材上架
+     （data/materials/BiologyG11Ch1HandoutReview.js），高二上（g2s1）真的
+     有 8 筆真實 Repository 教材（國文第一課／第二課／第三課＋英文第一課
+     ＋生物3筆＋歷史1筆）——「誠實顯示空狀態」的原始假設已經不成立，這裡
+     改為驗證真正的重點：這 8 筆是「高二上自己的」真實教材，且完全不包含
+     任何高一下（tm_1~4／civics）的教材，Workspace 過濾仍然誠實、正確。 */
   const errors = collectErrors(page);
   await loginAs(page, "Student A", "長榮中學", ["高二上學期"]);
   await page.goto(fileUrl("materials"));
-  await expect(page.locator(".mat-card")).toHaveCount(6);
+  await expect(page.locator(".mat-card")).toHaveCount(8);
   await expect(page.locator("body")).toContainText("國文");
   const g1s2OnlyTitles = ["三角函數", "演化與生物分類", "所有權與物權", "全球化與國際分工"];
   for (const title of g1s2OnlyTitles) {
@@ -112,9 +113,9 @@ test("AI-120 PAT③：Workspace 切換 高一下 -> 高二上 -> 教材中心立
   await page.locator(".shell").waitFor({ state: "visible" });
 
   await page.goto(fileUrl("materials"));
-  /* 同上（PAT①續）：高二上現在真的有 6 筆真實教材，切換後應立即同步
-     成這 6 筆，而不是延續切換前高一下的 5 筆／或誠實空狀態。 */
-  await expect(page.locator(".mat-card")).toHaveCount(6);
+  /* 同上（PAT①續）：高二上現在真的有 8 筆真實教材，切換後應立即同步
+     成這 8 筆，而不是延續切換前高一下的 5 筆／或誠實空狀態。 */
+  await expect(page.locator(".mat-card")).toHaveCount(8);
   await expect(page.locator("body")).toContainText("國文");
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
