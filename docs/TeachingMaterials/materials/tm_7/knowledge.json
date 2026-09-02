@@ -1,0 +1,121 @@
+{
+  "materialId": "tm_7",
+  "knowledgePoints": [
+    {
+      "name": "1-1 弧度量：度數轉弧度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-1 弧度量：弧度轉度數",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-1 弧度量：弧長公式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-1 弧度量：扇形面積公式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-1 弧度量：由弧長與半徑求圓心角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-2 三角函數的圖形：一般正弦函數振幅與週期",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-2 三角函數的圖形：平移組合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-2 三角函數的圖形：正切函數性質",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-2 三角函數的圖形：由極值求參數",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-2 三角函數的圖形：餘弦函數振幅與週期",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-3 倍角公式：二倍角計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-3 兩直線夾角公式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-3 半角公式：象限判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-3 和角公式：已知函數值求和角值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-3 和角公式：特殊角精確值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-3 差角公式：特殊角與有理化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：含負係數求最小值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：基本疊合求最大值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：求振幅r值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：求最大值與對應x值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：疊合振幅與週期",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：表示為(r,α)數對",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "1-4 正餘弦疊合：限定區間求極值",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-09-02T13:54:38.697Z"
+}
