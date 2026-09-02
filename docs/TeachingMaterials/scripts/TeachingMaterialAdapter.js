@@ -88,18 +88,30 @@
       Rule; a future Quiz Center Runtime/UI (this EO's own "Display
       Contract for a future Runtime") needs them to still be present.
 
-   7. convertSummary() drops Package Summary.json's `keywords` and
-      `keyPoints` fields. SummaryRuntime's schema (coreConcepts/
-      definitions/pitfalls/memorize/reviewSuggestions) has no keywords
-      field — same honest gap Sprint AI-103's ImportRuntime.js already
-      flagged for a different import format's Keywords field ("an
-      honest gap, not fabricated content"). Unlike that Sprint, this
-      Adapter does NOT fold `keyPoints` into `coreConcepts` either,
-      because Package Summary.json already has its own explicit
-      `coreConcepts` field — folding a second, differently-named list
-      into it here would duplicate/mislabel, not just fill a gap.
-      `memorize` / `reviewSuggestions` are left unset (Package has no
-      equivalent data) so SummaryRuntime.add()'s own `[]` defaults apply.
+   7. convertSummary() drops Package Summary.json's `keywords` field.
+      SummaryRuntime's schema (coreConcepts/definitions/pitfalls/
+      memorize/reviewSuggestions) has no keywords field — same honest
+      gap Sprint AI-103's ImportRuntime.js already flagged for a
+      different import format's Keywords field ("an honest gap, not
+      fabricated content").
+      `keyPoints` -> `memorize`, corrected: this file's original
+      revision left `memorize` unset here, reasoning Package Summary.json
+      had "no equivalent data" for it — but `keyPoints` IS that
+      equivalent: it is the exact same 「必背重點」 concept
+      Summary.schema.json describes it as, and the sibling function one
+      layer up (js/runtime/TeachingMaterialLoader.js's own
+      repoSummaryRecord(), for the data/materials/ track) already maps
+      `summary.keyPoints -> memorize` for the identical reason. Leaving
+      it unset here meant every Package-track material's 「④ 必背重點」
+      section in Summary Center silently rendered empty (discovered via
+      a real Project Owner report against tm_7). This Adapter still does
+      NOT fold `keyPoints` into `coreConcepts` — Package Summary.json
+      already has its own explicit `coreConcepts` field, and folding a
+      second, differently-named list into it would duplicate/mislabel,
+      not just fill a gap; `memorize` is the correct, purpose-built
+      target instead. `reviewSuggestions` is left unset when genuinely
+      absent (Package has no equivalent data for it) so SummaryRuntime.
+      add()'s own `[]` default applies, same as before.
 
    8. Both convertSummary() and convertQuestions() accept an optional
       `materialRuntimeId` parameter, used in place of the Package's own
@@ -188,7 +200,9 @@ function convertSummary(summary, metadata, materialRuntimeId) {
     materialId: materialRuntimeId || summary.materialId,
     coreConcepts: Array.isArray(summary.coreConcepts) ? summary.coreConcepts.slice() : [],
     definitions: Array.isArray(summary.definitions) ? summary.definitions.slice() : [],
-    pitfalls: Array.isArray(summary.pitfalls) ? summary.pitfalls.slice() : []
+    pitfalls: Array.isArray(summary.pitfalls) ? summary.pitfalls.slice() : [],
+    /* keyPoints -> memorize: see judgment call (7) above. */
+    memorize: Array.isArray(summary.keyPoints) ? summary.keyPoints.slice() : []
   };
   /* AI-112 AI-702/AI-706: real passthrough only — reviewSuggestions is
      omitted entirely (not an empty array) when the Package genuinely has
