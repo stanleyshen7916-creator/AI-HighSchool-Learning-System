@@ -126,7 +126,8 @@ async function main() {
   AHS_A.WrongBookRuntime.sync(secondWrong);
   AHS_A.KnowledgeMasteryRuntime.recordAttempt("cross_device_kp", true, "math", "");
   AHS_A.SettingsRuntime.update({ showTutorSuggestions: false });
-  report("Device A writes", "PASS", "WrongBook.sync() (x2, 新增) + KnowledgeMastery.recordAttempt() + Settings.update() called");
+  AHS_A.SettingsRuntime.update({ profile: { name: "Cross Device Name", grade: "高二" } });
+  report("Device A writes", "PASS", "WrongBook.sync() (x2, 新增) + KnowledgeMastery.recordAttempt() + Settings.update() (toggles + profile) called");
 
   /* Task 2: 修改 (recordRetry — real correctStreak progress) + 刪除
      (archive — the only real "removal" this Runtime's own LOCK design
@@ -191,9 +192,11 @@ async function main() {
   report("KnowledgeMastery data matches after pull", (kmRecord && kmRecord.attemptCount >= 1) ? "PASS" : "FAIL", JSON.stringify(kmRecord));
 
   const settingsPull = await AHS_B.SettingsRuntime.pullFromRepository();
-  report("Settings pull", settingsPull.pulled === 1 ? "PASS" : "FAIL", JSON.stringify(settingsPull));
+  report("Settings pull (user_settings + student_profiles)", settingsPull.pulled === 2 ? "PASS" : "FAIL", JSON.stringify(settingsPull));
   const settings = AHS_B.SettingsRuntime.get();
-  report("Settings data matches after pull", settings.showTutorSuggestions === false ? "PASS" : "FAIL", JSON.stringify(settings));
+  report("Settings toggle data matches after pull", settings.showTutorSuggestions === false ? "PASS" : "FAIL", JSON.stringify(settings));
+  report("Settings profile data matches after pull (帳號修改跨裝置/重新登入同步)",
+    (settings.profile.name === "Cross Device Name" && settings.profile.grade === "高二") ? "PASS" : "FAIL", JSON.stringify(settings.profile));
 
   if (crossDeviceOriginKey) {
     const materialPull = await AHS_B.MaterialRuntime.pullFromRepository();
@@ -216,7 +219,8 @@ async function main() {
   /* Task 6: End-to-End summary — Device B, after one real pull round per
      domain (no manual per-record wiring), genuinely has every domain's
      real data present at once. */
-  const e2ePass = wbList.length >= 2 && kmRecord && kmRecord.attemptCount >= 1 && settings.showTutorSuggestions === false && kpis.knowledgeMasteryAvg === 100;
+  const e2ePass = wbList.length >= 2 && kmRecord && kmRecord.attemptCount >= 1 && settings.showTutorSuggestions === false &&
+    settings.profile.name === "Cross Device Name" && kpis.knowledgeMasteryAvg === 100;
   report("Task 6 End-to-End：登入→教材→學習→錯題→統計→重新登入→資料仍存在", e2ePass ? "PASS" : "FAIL", "WrongBook/KnowledgeMastery/Settings/Statistics 全部在重新登入後真實存在");
 
   console.log("\nCrossDeviceSmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");
