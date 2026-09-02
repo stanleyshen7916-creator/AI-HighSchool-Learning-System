@@ -45,9 +45,10 @@
      Package track's own questions already store answer as plain text
      directly, no resolution needed.
    - difficulty/knowledgePoint are included only when the source record
-     actually has them (MaterialRepository's singleChoice entries do;
-     this branch's own Package questions.json schema has no difficulty
-     field at all) — never fabricated when absent. */
+     actually has them — never fabricated when absent. Both tracks'
+     questions.json schemas carry an optional per-question `difficulty`
+     field (QuestionBank.schema.json); Package-track materials tm_2
+     onward populate it. */
 window.AHS = window.AHS || {};
 AHS.MaterialDetailRepositorySource = (function () {
   "use strict";
@@ -152,8 +153,8 @@ AHS.MaterialDetailRepositorySource = (function () {
         options: Array.isArray(q.options) ? q.options.slice() : [],
         answer: q.answer || "",
         explanation: q.explanation || "",
-        difficulty: "",
-        knowledgePoint: material.chapter || ""
+        difficulty: q.difficulty || "",
+        knowledgePoint: q.knowledgePoint || material.chapter || ""
       };
     });
 
