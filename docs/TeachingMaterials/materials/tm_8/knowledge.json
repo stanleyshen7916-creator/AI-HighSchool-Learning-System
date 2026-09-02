@@ -1,0 +1,81 @@
+{
+  "materialId": "tm_8",
+  "knowledgePoints": [
+    {
+      "name": "第1節 機會成本計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第1節 稀少性定義",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第1節 誘因分類：金錢正向",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第1節 誘因分類：非金錢負向",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 PPC凹向原點原因",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 PPC線上點意涵",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 PPC線內移判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 機會成本計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 比較利益法則應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 絕對利益vs比較利益辨析",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 絕對利益判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 成本效益分析：淨效益",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 政治考量判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 環境永續考量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 累進稅率定義",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-09-02T14:12:14.984Z"
+}

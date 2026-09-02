@@ -1,0 +1,81 @@
+{
+  "materialId": "tm_9",
+  "knowledgePoints": [
+    {
+      "name": "第1節 市場定義判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 市場需求量加總計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 正常財與劣等財判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 消費者偏好改變辨析",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 需求法則判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 需求變動：預期未來供應",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第2節 願付價格概念",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 供給變動：原料成本上升",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 市場供給量加總計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 生產上互補品方向判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 生產上替代品方向判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 生產替代vs互補方向比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第3節 願售價格與機會成本",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第4節 七日猶豫期合理例外",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "第4節 定型化契約審閱期",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-09-02T14:12:14.985Z"
+}
