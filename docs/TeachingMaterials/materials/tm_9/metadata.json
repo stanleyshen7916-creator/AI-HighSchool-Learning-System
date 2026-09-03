@@ -2,7 +2,7 @@
   "materialId": "tm_9",
   "school": "cjsh",
   "semester": "g2s1",
-  "subject": "公民",
+  "subject": "公民與社會",
   "grade": "高二",
   "publisher": null,
   "chapter": "第2章：需求與供給（第1節 市場中的交易、第2節 需求、第3節 供給、第4節 消費行為的保障與限制）",
@@ -15,8 +15,8 @@
     "七日猶豫期", "定型化契約", "審閱期", "平等互惠原則"
   ],
   "difficulty": "中等",
-  "source": "教科書",
+  "source": "課本",
   "uploadDate": "2026-09-02T00:00:00Z",
-  "version": "1",
+  "version": "2",
   "materialType": "TEXTBOOK"
 }

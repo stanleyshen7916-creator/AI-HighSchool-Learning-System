@@ -1482,8 +1482,8 @@ console.log("\n[33] Sprint AI-109 — Learning Runtime Integration（AI-601/602/
     /100%/.test(repoRow3.querySelector(".quiz-row__metric-val").textContent) &&
     repoRow3.querySelector(".quiz-row__metric-strong").textContent !== "0%");
 
-  check("AI-604: 科目篩選 chips 依 Repository 動態新增「公民」，不再固定寫死清單",
-    [...p3.window.document.querySelectorAll(".quiz-filter__subject")].some(b => b.textContent === "公民"));
+  check("AI-604: 科目篩選 chips 依 Repository 動態新增「公民與社會」，不再固定寫死清單",
+    [...p3.window.document.querySelectorAll(".quiz-filter__subject")].some(b => b.textContent === "公民與社會"));
 
   check("Console errors = 0（Sprint AI-109 跨頁流程）", p1.consoleErrors.length === 0 && p2.consoleErrors.length === 0 && p3.consoleErrors.length === 0);
 }

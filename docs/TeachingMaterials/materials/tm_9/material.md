@@ -6,24 +6,27 @@
 - **原始檔案**（`source/`，共7份，保留原始檔名與檔案內容，涵蓋課本第28～55頁的連續跨頁掃描）：
   `161b7d32-CIV_H2____p2831.pdf`（P.28-31）、`084dd612-CIV_H2____p3235.pdf`（P.32-35）、`406bc3b3-CIV_H2____p3639.pdf`（P.36-39）、`dc5d1f4a-CIV_H2____p4043.pdf`（P.40-43）、`981da9c2-CIV_H2____p4447.pdf`（P.44-47）、`4274e4d1-CIV_H2____p4851.pdf`（P.48-51）、`45d318e7-CIV_H2____p5255.pdf`（P.52-55）
 
-## 本 Package 的產出過程（誠實揭露）
+## 本 Package 的產出過程（誠實揭露，含第二輪 Cross Review）
 
-依《AI Study Council｜Multi-AI Cross Review Skill v1.1》流程完整走過三階段：
+依《AI Study Council｜Multi-AI Cross Review Skill v1.1》流程完整走過三階段，並於上架後再經一輪 Cross Review 修訂：
 
 1. Claude 依課本原始照片（P.28–55）獨立完成 Round 1 重點整理＋題庫（15題）＋詳解＋錯題本（`Claude_CIV_Ch2_Round1.md`，Self-QA 96/100，定稿前主動發現並修正3題答案表格與計算不一致之處）。
 2. Project Owner 另提供 GPT、Gemini 兩個 AI 平台各自獨立完成的 Round 1 成果，Claude 進行 Cross Review：發現 GPT 版本「消保法七日猶豫期合理例外情事」清單有誤（誤植課本沒有的「有時效性的票券」、遺漏課本明確記載的「國際航空客運服務（機票）」）；GPT「30題」聲稱與實際內容不符（Q25缺答案、Q40僅有標題），實際完整題目僅28題；Gemini 之 Self-QA Scorecard「答案分布」自評聲稱與實際不符（`CIV_Ch2_CrossReview.md`）。
-3. Claude 依 Cross Review 結論整合出 Final 版本（`CIV_Ch2_Final.md`，Self-QA 98/100，FINAL_PASS）：七日猶豫期合理例外情事清單已改採 Claude／Gemini 一致且經課本原文核對無誤的7項版本；①核心概念額外涵蓋 GPT/Gemini 皆未觸及的 P.54/P.55 互動單元（忠實呈現課本問題本身，不代為虛構標準答案）。
-4. 本 Package 的 `summary.json`／`questionbank.json` 即依該 Final 版本（15題）內容轉換為本 Repository 的 Package Standard 格式，並依 Sprint 慣例逐題補上 `difficulty`（易／中等／難）欄位。
+3. Claude 依 Cross Review 結論整合出 v1 Final（`CIV_Ch2_Final.md`，Self-QA 98/100，FINAL_PASS，15題）並上架為本 Package 初版。
+4. **【第二輪，2026-09-03】** Project Owner 再提供 GPT 重新整理版與 Gemini Final（皆自評高分），Claude 逐題重新驗算（不採信自評分數），確認12題 Gemini 新題中有5題屬於既有 Final 真實缺口：①將①核心概念中既有但從未出題的 ABCDE 願付價格數據轉為實際測驗題、②審閱期棄權＋價格誘因陷阱、③平等互惠原則新情境（原創，非課本P.54原題）、④供給面因果分析（限定測驗課本已載明的歷史成因，非代答P.55開放式預測判讀）、⑤猶豫期例外≠瑕疵擔保責任豁免；其餘7題因與既有內容重複而未採用。整合為 `CIV_Ch2_Final_v2.md`（Self-QA 99/100，FINAL_PASS，20題），完整增修對照表見該檔案 ⑭——**特別重申**：P.54「議起思考」、P.55「議起判讀」兩個課本開放式互動單元本身依然不代為虛構標準答案，第二輪新增題目一律改用原創情境或限定測驗範圍。
+5. 本 Package 的 `summary.json`／`questionbank.json` 依 v2 Final（20題）內容轉換為本 Repository 的 Package Standard 格式，並逐題補上 `difficulty`（易／中等／難）欄位；`metadata.json` 的 `version` 同步由 `1` 增為 `2`（Import Rule：原地更新版本，不重複建立 materialId）。
 
 ## 判斷提醒（Flagged, not silently decided）
 
-- **`materialType` 判定為 `TEXTBOOK` 而非 `EXAM`**：原始上傳檔案是課本內容的照片掃描，不是考卷，因此不適用 Original Question Rule；本 Package 的 15 題練習題皆為原創設計並附完整詳解，`questionSource` 誠實標為 `AI_GENERATED`／`origin: "AI"`。
+- **`materialType` 判定為 `TEXTBOOK` 而非 `EXAM`**：原始上傳檔案是課本內容的照片掃描，不是考卷，因此不適用 Original Question Rule；本 Package 的 20 題練習題皆為原創設計並附完整詳解，`questionSource` 誠實標為 `AI_GENERATED`／`origin: "AI"`。
 - **第一章與第二章分開建立 Package（`tm_8`／`tm_9`）**：Project Owner 明確要求「第一章與第二章必須分開」，故未合併為單一 Package，各自獨立產出 Round1／Cross Review／Final 與各自的 materialId。
-- **P.54「議起思考」、P.55「議起判讀」互動單元未納入題庫**：課本這兩個單元本身為開放式思辨/資料判讀活動，未提供標準答案；`summary.json` 之 `coreConcepts` 已誠實描述其存在與情境，但依 SOURCE 優先原則不代為虛構單一標準答案冒充教材原文，故未轉換為 `questionbank.json` 中的可判分題目。
-- **逐題 `difficulty` 欄位**：本教材上架時即依 Sprint 跟進慣例（tm_2、tm_5、tm_6、tm_8 之逐題難度補正／初版即納入）直接於初版納入，15題依實際內容逐題標註「易／中等／難」，分布為易3／中等8／難4（本章「生產上替代品vs互補品方向判斷」相關的4題方向性辨析題為公認最容易出錯的題型，故標為難）。`metadata.json` 的教材整體 `difficulty` 標為「中等」。
-- **`semester` 標示為 `g2s1`（高二上學期）**：依內容判斷（緊接第1章之後，屬同一冊教材前段）且與既有慣例一致。此分類會使 `tests/regression/MaterialCenterRegression.js` 原有的高二上教材筆數斷言需要同步更新，屬於正常維護，已於本次匯入一併完成。
+- **P.54「議起思考」、P.55「議起判讀」互動單元本身仍未納入題庫**：課本這兩個單元本身為開放式思辨/資料判讀活動，未提供標準答案；`summary.json` 之 `coreConcepts` 已誠實描述其存在與情境；第二輪新增的 Q18／Q19 雖取材背景與這兩個單元相關，但皆改用全新原創情境或限定測驗課本已載明的歷史因果，並在詳解中明確加註「非課本原題官方解答」，避免與課本刻意留白的開放式提問混淆。
+- **`subject` 由「公民」改為「公民與社會」（Project Owner 明確要求）**：`js/core/Icons.js` 的 `AHS.Subjects.civics.name` 與本 Package `metadata.json` 之 `subject` 欄位已同步更新；`tm_3`（既有公民考卷 Package）之 `subject` 亦一併同步更新以維持平台內科目名稱一致。
+- **`source` 由「教科書」修正為「課本」（分類 bug 修正）**：先前 `tm_6`／`tm_7`／`tm_8`／`tm_9` 誤填「教科書」（不在 Material Center 既有7個真實分類值內），導致這4筆教材在平台上全部靜默 fallback 顯示分類「其他」，本次一併修正。
+- **逐題 `difficulty` 欄位**：20題依實際內容逐題標註「易／中等／難」，分布為易3／中等10／難7。`metadata.json` 的教材整體 `difficulty` 標為「中等」。
+- **`semester` 標示為 `g2s1`（高二上學期）**：依內容判斷（緊接第1章之後，屬同一冊教材前段）且與既有慣例一致。
 
-## 練習題總覽（15題，完整題幹／選項／詳解見 `questionbank.json`）
+## 練習題總覽（20題，完整題幹／選項／詳解見 `questionbank.json`；Q16-20 為第二輪新增）
 
 | 題號 | 題目重點 | 難度 | 答案 |
 |---|---|---|---|
@@ -42,3 +45,8 @@
 | 13 | 生產替代品vs互補品方向比較 | 難 | 生產替代品使供給減少；生產互補品使供給增加 |
 | 14 | 七日猶豫期合理例外（客製化商品） | 中等 | 客製化商品屬合理例外情事，不得主張猶豫期退貨 |
 | 15 | 定型化契約審閱期判斷 | 中等 | 該條款違反不得記載拋棄審閱期間之規定，應屬無效 |
+| 16【新增】 | 市場需求量加總（ABCDE願付價格） | 中等 | 3個 |
+| 17【新增】 | 審閱期棄權＋價格誘因陷阱（健身俱樂部） | 難 | 拋棄審閱期條款無效，即使搭配價格誘因 |
+| 18【新增】 | 平等互惠原則：瑕疵擔保排除條款（原創情境） | 難 | 違反平等互惠原則，顯失公平 |
+| 19【新增】 | 供給面因果分析（飼料成本＋禽流感） | 中等 | 兩項成因皆使供給減少，供給曲線左移 |
+| 20【新增】 | 猶豫期例外≠瑕疵擔保責任豁免 | 難 | 業者仍須負瑕疵擔保責任，概不退換條款無效 |

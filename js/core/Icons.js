@@ -13,7 +13,7 @@ AHS.Subjects = {
   biology: { name: "生物", varName: "--subj-biology", hex: "#10b981" },
   history: { name: "歷史", varName: "--subj-history", hex: "#ef4444" },
   geography: { name: "地理", varName: "--subj-geography", hex: "#06b6d4" },
-  civics: { name: "公民", varName: "--subj-civics", hex: "#ec4899" }
+  civics: { name: "公民與社會", varName: "--subj-civics", hex: "#ec4899" }
 };
 
 AHS.Icons = (function () {
