@@ -1,101 +1,96 @@
 {
-  "materialId": "tm_8",
+  "materialId": "tm_10",
   "knowledgePoints": [
     {
-      "name": "第1節 會計利潤vs經濟利潤",
+      "name": "1-1 A類計算：標準差與不確定度",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第1節 機會成本計算",
+      "name": "1-1 A類評估定義",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第1節 稀少性定義",
+      "name": "1-1 B類評估公式",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第1節 誘因分類：金錢正向",
+      "name": "1-1 有效數字判斷",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第1節 誘因分類：非金錢負向",
+      "name": "1-1 樣本標準差n-1原因",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第1節 誘因四象限綜合應用",
+      "name": "1-1 誤差vs不確定度",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 PPC凹向原點原因",
+      "name": "1-1 進位規則綜合應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 PPC線上點意涵",
+      "name": "1-2 A、B類組合",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 PPC線內移判斷",
+      "name": "1-2 B類評估：電壓表",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 機會成本計算",
+      "name": "1-2 乘法組合",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 比較利益法則應用",
+      "name": "1-2 加法組合",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 絕對利益vs比較利益辨析",
+      "name": "1-2 加減法組合示範",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 絕對利益判斷",
+      "name": "1-2 除法組合：密度",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 雙產品雙廠商比較利益綜合應用",
+      "name": "1-3 因次分析推導：彈簧週期",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 光電農地政策：效率vs永續取捨",
+      "name": "1-3 因次推導：單擺週期",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 成本效益分析：淨效益",
+      "name": "1-3 因次辨識",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 政治考量判斷",
+      "name": "1-3 因次：功",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 環境永續考量",
-      "source": "question",
-      "refCount": 1
-    },
-    {
-      "name": "第3節 累進稅率定義",
+      "name": "1-3 因次：動量",
       "source": "question",
       "refCount": 1
     }
   ],
-  "generatedAt": "2026-09-03T06:49:27.558Z"
+  "generatedAt": "2026-09-03T06:49:27.556Z"
 }

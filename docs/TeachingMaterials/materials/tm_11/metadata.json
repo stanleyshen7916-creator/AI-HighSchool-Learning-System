@@ -1,0 +1,20 @@
+{
+  "materialId": "tm_11",
+  "school": "cjsh",
+  "semester": "g2s1",
+  "subject": "物理",
+  "grade": "高二",
+  "publisher": null,
+  "chapter": "第2章：直線運動（2-1 運動學簡介、2-2 物體運動圖、2-3 等加速運動、實驗1、2-4 相對運動）",
+  "unit": "課本第12～24頁",
+  "keywords": [
+    "位移", "路徑長", "平均速度", "瞬時速度", "平均速率", "加速度",
+    "x-t圖", "v-t圖", "a-t圖", "等加速運動", "自由落體", "鉛直上拋",
+    "打點計時器", "相對位移", "相對速度", "相對加速度"
+  ],
+  "difficulty": "中等",
+  "source": "課本",
+  "uploadDate": "2026-09-03T00:00:00Z",
+  "version": "1",
+  "materialType": "TEXTBOOK"
+}

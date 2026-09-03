@@ -1,106 +1,121 @@
 {
-  "materialId": "tm_9",
+  "materialId": "tm_11",
   "knowledgePoints": [
     {
-      "name": "第1節 市場定義判斷",
+      "name": "2-1 位移與路徑長",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 市場需求量加總計算",
+      "name": "2-1 平均速度與平均速率",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 市場需求量加總（願付價格）",
+      "name": "2-1/2-3 拋物線位置函數分析",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 正常財與劣等財判斷",
+      "name": "2-2 a-t圖含初速度",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 消費者偏好改變辨析",
+      "name": "2-2 a-t圖面積",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 需求法則判斷",
+      "name": "2-2 v-t圖面積",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 需求變動：預期未來供應",
+      "name": "2-2 x-t圖斜率",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第2節 願付價格概念",
+      "name": "2-3 無時間公式",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 供給變動：原料成本上升",
+      "name": "2-3 煞車減速",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 供給面因果分析：飼料成本＋禽流感",
+      "name": "2-3 等加速位移公式",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 市場供給量加總計算",
+      "name": "2-3 等加速末速公式",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 生產上互補品方向判斷",
+      "name": "2-3 自由落體",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 生產上替代品方向判斷",
+      "name": "2-3 自由落體最後一秒",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 生產替代vs互補方向比較",
+      "name": "2-3 鉛直上拋上升時間",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第3節 願售價格與機會成本",
+      "name": "2-3 鉛直上拋對稱性",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第4節 七日猶豫期合理例外",
+      "name": "2-3 鉛直上拋最高點加速度概念",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第4節 定型化契約審閱期",
+      "name": "2-3 鉛直上拋最高點高度",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第4節 審閱期棄權＋誘因陷阱",
+      "name": "2-3 鉛直上拋綜合應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第4節 平等互惠原則：瑕疵擔保排除條款",
+      "name": "2-4 相對速度反向",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "第4節 猶豫期例外≠瑕疵擔保豁免",
+      "name": "2-4 相對速度同向",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "2-4 相對速度雙視角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "實驗1 打點計時器平均速度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "實驗1 求加速度最少點痕數",
       "source": "question",
       "refCount": 1
     }
   ],
-  "generatedAt": "2026-09-03T06:49:27.558Z"
+  "generatedAt": "2026-09-03T06:49:27.556Z"
 }

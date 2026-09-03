@@ -78,7 +78,7 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 11 筆真實 Repository 教材
+/* ---- 2a. Student A + 長榮中學 + 高二上：現已有 13 筆真實 Repository 教材
    （國文教材三課，workspaceSemester: "g2s1" —— 第三課／近體詩選的三首詩
    已合併為單一教材／單一測驗；另加上英文教材第一課 The Day I Broke the
    Rules；tm_5（長榮中學高二第一次月考 生物補充資料）匯入後同樣標記
@@ -92,16 +92,19 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
    公民與社會 第1章「社會資源的分配」，Package materialType=TEXTBOOK）匯入後
    同樣標記 g2s1，為第 10 筆；tm_9（長榮中學高二公民與社會 第2章「需求與
    供給」，Package materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 11
-   筆），不得出現高一下（g1s2）教材，兩學期互相隔離 --- */
-console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 11 筆教材（國文3＋英文1＋生物3＋歷史1＋數學1＋公民2，不得出現高一下教材）");
+   筆；tm_10（長榮中學高二物理 第1章「測量與不確定度」，Package
+   materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 12 筆；tm_11（長榮中學
+   高二物理 第2章「直線運動」，Package materialType=TEXTBOOK）匯入後同樣
+   標記 g2s1，為第 13 筆），不得出現高一下（g1s2）教材，兩學期互相隔離 --- */
+console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 13 筆教材（國文3＋英文1＋生物3＋歷史1＋數學1＋公民2＋物理2，不得出現高一下教材）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實看到 11 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_6 世界史、tm_7 三角函數、tm_8/tm_9 公民與社會）", materials.length === 11);
-  check("皆為國文科、英文科、生物科、歷史科、數學科或公民科（無高一下的 geography 教材混入）",
-    materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math" || m.subject === "civics"));
+  check("高二上真實看到 13 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_6 世界史、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理）", materials.length === 13);
+  check("皆為國文科、英文科、生物科、歷史科、數學科、公民科或物理科（無高一下的 geography 教材混入）",
+    materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math" || m.subject === "civics" || m.subject === "physics"));
   check("包含國文第一課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
   check("包含國文第三課合併教材（近體詩選：杜甫、李商隱、黃庭堅）",
     materials.some((m) => (m.title || "").indexOf("近體詩選") !== -1));
@@ -119,6 +122,10 @@ console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到�
     materials.some((m) => (m.title || "").indexOf("社會資源的分配") !== -1));
   check("包含公民 tm_9 教材（第2章 需求與供給）",
     materials.some((m) => (m.title || "").indexOf("需求與供給") !== -1));
+  check("包含物理 tm_10 教材（第1章 測量與不確定度）",
+    materials.some((m) => (m.title || "").indexOf("測量與不確定度") !== -1));
+  check("包含物理 tm_11 教材（第2章 直線運動）",
+    materials.some((m) => (m.title || "").indexOf("直線運動") !== -1));
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
