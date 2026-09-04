@@ -1,253 +1,253 @@
 {
-  "materialId": "tm_3",
+  "materialId": "tm_12",
   "knowledgePoints": [
     {
-      "name": "侵權行為與損害賠償",
+      "name": "分子反應圖判讀、倍比定律",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "個別勞動權與集體勞動權",
+      "name": "分解反應途徑比較",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "公營事業工會與團體協商權",
+      "name": "化學式推導",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "剩餘財產分配請求權計算",
+      "name": "化學計量換算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "剩餘財產分配請求權計算（題組三）",
+      "name": "卡計原理、溶解熱計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "勞動三權",
-      "source": "both",
-      "refCount": 1
-    },
-    {
-      "name": "勞動三權（團體協商權）",
+      "name": "卡計實驗器材選用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "勞動參與率的國際比較",
+      "name": "反應熱位能圖",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "反應熱位能圖判讀",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "勞動基準法的最低標準性質",
+      "name": "反應熱倍數關係",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "勞動基準法（工時）",
+      "name": "反應熱概念辨析",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "勞動安全與個別勞動權",
+      "name": "反應熱與生活應用計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "勞動教育與工會自主",
+      "name": "各類反應熱正負值判斷",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "團體協約的效力",
+      "name": "同素異形體、赫斯定律",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "外送平臺勞動權益爭議",
+      "name": "富勒烯結構、氫化熱計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "夫妻財產制聲請統計圖表判讀",
+      "name": "氣體體積比＝莫耳比",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "夫妻財產制與剩餘財產分配",
+      "name": "氧化物成分莫耳比計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "女性勞動參與率統計資料判讀",
+      "name": "氧化還原反應辨識",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "家務勞動的價值",
+      "name": "沉澱滴定當量點分析",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "家務外包與勞動市場",
+      "name": "混合氣體燃燒熱計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "工會代表性與協商力量",
+      "name": "混合氣體燃燒產物分析",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "工會自主性",
+      "name": "熱化學反應式應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "工讀生的勞動基準法保障",
+      "name": "熱化學反應式書寫",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "性別勞動參與率差異原因（題組二）",
+      "name": "燃燒計量、生活應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "所有權特性的定義配對",
+      "name": "物質狀態對反應熱的影響",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "所有權的物權特性（一物一權）",
+      "name": "物質狀態與熱含量",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "所有權的特性",
-      "source": "both",
-      "refCount": 1
+      "name": "生質能量、赫斯定律應用",
+      "source": "question",
+      "refCount": 2
     },
     {
-      "name": "所有權的限制（公益）",
+      "name": "產率計算",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "當量換算計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "所有權移轉的要件（交付／登記）",
+      "name": "能量形式與轉換",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "莫耳燃燒熱應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "改善女性勞動參與率的政策",
+      "name": "莫耳燃燒熱計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "改善性別勞動參與率差異之政策（題組三）",
+      "name": "莫耳生成熱定義辨析",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "法定夫妻財產制",
-      "source": "both",
-      "refCount": 1
-    },
-    {
-      "name": "法定繼承人與繼承順位",
+      "name": "莫耳生成熱與汽化熱組合計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "法定繼承人身分（題組一）",
+      "name": "莫耳生成熱與莫耳燃燒熱定義",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "物上請求權三類型配對",
+      "name": "莫耳生成熱計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "物上請求權（妨害除去）",
+      "name": "莫耳生成熱／燃燒熱為零的條件",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "赫斯定律、莫耳燃燒熱與生成熱轉換",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "物上請求權（浮覆地案例）",
+      "name": "赫斯定律、莫耳生成熱組合",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "物權優先於債權（一物數賣）",
+      "name": "赫斯定律代數關係",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "物權與債權的區別",
+      "name": "赫斯定律加成性",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "特留分與遺產繼承計算",
+      "name": "赫斯定律比較放熱量",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "特留分計算",
+      "name": "赫斯定律綜合計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "特留分計算（題組一）",
+      "name": "赫斯定律計算",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "赫斯定律計算莫耳生成熱",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "產假制度與性別平等",
+      "name": "金屬與酸反應計量",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "約定共同財產制",
+      "name": "限量試劑、化學計量",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "約定共同財產制之特有財產範圍（題組三）",
+      "name": "限量試劑、合金成分計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "經濟學對勞動的定義",
+      "name": "限量試劑、沉澱量計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "職場霸凌",
+      "name": "限量試劑判斷",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "自由處分金與夫妻財產各自獨立原則",
-      "source": "question",
-      "refCount": 1
-    },
-    {
-      "name": "跟蹤騷擾防制法",
-      "source": "question",
-      "refCount": 1
-    },
-    {
-      "name": "醫療勞權與勞動基準法",
-      "source": "question",
-      "refCount": 1
-    },
-    {
-      "name": "釋字第726號解釋（責任制核備）",
+      "name": "非絕熱卡計、線性外插求絕熱溫度",
       "source": "question",
       "refCount": 1
     }
