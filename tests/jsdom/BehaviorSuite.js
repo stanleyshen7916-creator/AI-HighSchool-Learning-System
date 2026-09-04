@@ -78,7 +78,12 @@ function todayStr() {
 const AHS_TEST_WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] };
 const AHS_TEST_NS = "student_a__cjsh__g1s2";
 function namespacedKey(k) {
-  if (k === "ahs:workspace") { return k; }
+  /* "ahs:workspace" (existing) and "ahs:supabase.session"/"ahs:supabase.identity"
+     (added for the Profile-loading-flash regression below) are all real
+     *Global, non-Workspace-namespaced keys per js/core/PersistenceAdapter.js's
+     own saveGlobal()/loadGlobal() — a seedSession entry for any of them
+     must stay bare, never get this Workspace's namespace prefix inserted. */
+  if (k === "ahs:workspace" || k === "ahs:supabase.session" || k === "ahs:supabase.identity") { return k; }
   const nsPrefix = "ahs:" + AHS_TEST_NS + ":";
   if (k.indexOf(nsPrefix) === 0) { return k; }
   if (k.indexOf("ahs:") === 0) { return "ahs:" + AHS_TEST_NS + ":" + k.slice(4); }
@@ -2052,6 +2057,52 @@ console.log("\n[45] Sprint AI-141 — 學習成效總覽「AI Tutor 建議」KPI
   check("showTutorSuggestions:true 時：「AI Tutor 建議」卡片存在",
     !!onBoard.querySelector('[data-kpi="tutorSuggestion"]'));
   check("Console errors = 0（開啟後）", onErrors.length === 0);
+}
+
+console.log("\n[46] 真實 PO 回報（螢幕錄影 + DevTools Network）— 重新登入時 Topbar 短暫顯示舊名字，改用 Loading 骨架取代可能錯誤的預設名字");
+{
+  /* 真實情境：改名成功後，全新瀏覽器分頁重新登入，第一個頁面的 Topbar
+     會先顯示改名前的舊預設名字（"Student A"），大約 1 秒後背景 Pull
+     完成才自動換成真正的名字——資料本身有正確同步，只是那段空窗期畫面
+     上顯示了一個「尚未證實」的本機值。AHS.SettingsRuntime.
+     isProfileUnconfirmed()／js/ui/AppShell.js 的 nameMeta() 改為在這個
+     窄縫裡顯示 Loading 骨架（.topbar__skeleton），而不是可能錯誤的舊名
+     字；假造的 Supabase session/identity 透過 *Global（非 Workspace
+     命名空間）的 "ahs:supabase.session"／"ahs:supabase.identity" 直接
+     seed，模擬「真的已經登入、真的有一個 Pull 在飛」的狀態（window.fetch
+     本身仍被 loadPage() 短路掉，這裡驗證的是渲染當下、Pull 完成前那一
+     刻的畫面，不需要真的等 Pull resolve）。 */
+  const FAKE_SESSION = { access_token: "fake", user: { id: "u_flash" } };
+  const FAKE_IDENTITY = { userId: "u_flash", studentProfileId: "sp_flash" };
+
+  const { window: flashWin, consoleErrors: flashErrors } = loadPage("index.html", {
+    seedSession: { "ahs:supabase.session": FAKE_SESSION, "ahs:supabase.identity": FAKE_IDENTITY }
+  });
+  const flashMeta = flashWin.document.querySelector(".topbar__user-meta");
+  check("本機從未存過自訂名稱 + 真的有 Pull 在飛時，Topbar 改顯示 Loading 骨架（.topbar__skeleton），不是可能錯誤的舊預設名字",
+    !!flashMeta && flashMeta.querySelectorAll(".topbar__skeleton").length === 2);
+  check("Loading 骨架狀態下，不會同時把舊名字文字也印出來（真的被換掉，不是疊加）",
+    !flashMeta.querySelector("strong") || flashMeta.querySelector("strong").textContent === "");
+  check("Console errors = 0（Loading 骨架渲染）", flashErrors.length === 0);
+
+  const { window: noIdentityWin } = loadPage("index.html", {});
+  const noIdentityName = noIdentityWin.document.querySelector(".topbar__user-meta strong");
+  check("沒有任何真實 identity（一般情況、也是本檔案既有 [44] 的預設情境）時，完全不受影響，立即正常顯示名稱，不會被誤判成 Loading",
+    !!noIdentityName && noIdentityName.textContent === "Student A" &&
+    !noIdentityWin.document.querySelector(".topbar__user-meta .topbar__skeleton"));
+
+  const alreadySyncedSettings = { profile: { name: "已同步過的真名", grade: "高二" } };
+  const { window: alreadySyncedWin } = loadPage("index.html", {
+    seedSession: {
+      "ahs:settings": alreadySyncedSettings,
+      "ahs:supabase.session": FAKE_SESSION,
+      "ahs:supabase.identity": FAKE_IDENTITY
+    }
+  });
+  const alreadySyncedName = alreadySyncedWin.document.querySelector(".topbar__user-meta strong");
+  check("本機已經有真實自訂名稱（前一次 Pull／Settings 儲存留下的）時，即使這次又有新 Pull 在飛，也立即正常顯示，不會退回 Loading 骨架（最常見的重複瀏覽路徑完全不受影響）",
+    !!alreadySyncedName && alreadySyncedName.textContent === "已同步過的真名" &&
+    !alreadySyncedWin.document.querySelector(".topbar__user-meta .topbar__skeleton"));
 }
 
 

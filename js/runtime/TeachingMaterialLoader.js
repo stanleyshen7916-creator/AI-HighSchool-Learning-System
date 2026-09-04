@@ -184,6 +184,28 @@ AHS.TeachingMaterialLoader = (function () {
     return record.id;
   }
 
+  /* isCurrentUserAdmin() — real PO report (DevTools Network showed 11
+     `materials` requests failing with 403 on every single Student page
+     load): materials is genuinely Admin Only per RLS
+     (20260807000005_rls_policies.sql), so pushMaterial() below was
+     already expected/documented to fail for every mock student session
+     — but it still fired the real network request first and let RLS
+     reject it, on every one of this Loader's ~10 Package materials, on
+     every page load, for every non-admin student. The current mock
+     student's role is already known locally (AHS.WorkspaceRuntime — the
+     same Single Source js/pages/AppLogin.js itself reads to label a
+     picker row "管理者" vs "學生"), so a non-admin session can now skip
+     the doomed request entirely instead of sending it just to watch RLS
+     turn it down. Admin sessions are completely unaffected — same
+     push/read-then-upsert path as before this fix, byte for byte. */
+  function isCurrentUserAdmin() {
+    if (!AHS.WorkspaceRuntime || typeof AHS.WorkspaceRuntime.getCurrent !== "function") { return false; }
+    var current = AHS.WorkspaceRuntime.getCurrent();
+    var student = current && typeof AHS.WorkspaceRuntime.findStudent === "function"
+      ? AHS.WorkspaceRuntime.findStudent(current.studentId) : null;
+    return !!(student && student.role === "ADMIN");
+  }
+
   /* pushMaterial(originKey, materialForRuntime, sourceTrack) — Sprint
      AI-126B Part 2 v1.1, Task 1 (Material Repository). Fire-and-forget
      read-then-upsert to public.materials, keyed by this material's own
@@ -193,20 +215,21 @@ AHS.TeachingMaterialLoader = (function () {
      ordinary Mock/demo Material Center upload — see this file's own
      header on why only real content flows through this Loader at all).
      Honest limitation, not a bug: materials is an Admin Only write per
-     RLS (20260807000005_rls_policies.sql) and no mock client-side
-     account holds is_admin, so this Insert/Update attempt will fail
-     (silently, via SyncBridge.pushFireAndForget's own error-swallowing)
-     for every mock student session today — Task 2's real Material
-     Migration (supabase/seed/0002_materials.sql, applied via elevated
-     --linked access) is the actual mechanism that populates materials
-     with real rows. This client-side path exists so the capability is
-     genuinely wired (Task 1's own "Read/Insert/Update/Delete" ask) and
-     so a future real-admin session can maintain materials without a
-     separate code path. */
+     RLS (20260807000005_rls_policies.sql) — a non-admin session skips
+     this via isCurrentUserAdmin() above (real PO report: 11 doomed
+     403s per page load) rather than sending a request RLS was always
+     going to reject. Task 2's real Material Migration
+     (supabase/seed/0002_materials.sql, applied via elevated --linked
+     access) is the actual mechanism that populates materials with real
+     rows. This client-side path exists so the capability is genuinely
+     wired (Task 1's own "Read/Insert/Update/Delete" ask) and so a real
+     admin session can maintain materials without a separate code
+     path. */
   function pushMaterial(originKey, materialForRuntime, sourceTrack) {
     if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return; }
     var identity = AHS.SyncBridge.identity();
     if (!identity) { return; }
+    if (!isCurrentUserAdmin()) { return; }
     AHS.SyncBridge.subjectIdFor(materialForRuntime.subject).then(function (subjectId) {
       if (!subjectId) { return; }
       var repo = AHS.RepositoryFactory.create();
