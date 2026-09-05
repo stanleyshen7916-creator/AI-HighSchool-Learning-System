@@ -1,121 +1,121 @@
 {
-  "materialId": "tm_11",
+  "materialId": "tm_13",
   "knowledgePoints": [
     {
-      "name": "2-1 位移與路徑長",
+      "name": "化學計量、質量比例",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-1 平均速度與平均速率",
+      "name": "反應熱基本性質",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-1/2-3 拋物線位置函數分析",
+      "name": "氣體反應體積變化",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-2 a-t圖含初速度",
+      "name": "氧化數變化、氧化還原產物判斷",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-2 a-t圖面積",
+      "name": "氧化還原反應判斷、物質鑑定",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-2 v-t圖面積",
+      "name": "氧化還原反應式平衡",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "混合氣體燃燒計量",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-2 x-t圖斜率",
+      "name": "濃度變化與反應式係數",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 無時間公式",
+      "name": "熱分解反應、氧化還原、生活情境應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 煞車減速",
+      "name": "燃燒反應與空氣比例",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 等加速位移公式",
+      "name": "燃燒反應計量",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 等加速末速公式",
+      "name": "產率計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 自由落體",
+      "name": "純物質與混合物判別",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 自由落體最後一秒",
+      "name": "色層分析法、比移值Rf",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 鉛直上拋上升時間",
+      "name": "色層分析法應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 鉛直上拋對稱性",
+      "name": "莫耳生成熱、赫斯定律",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 鉛直上拋最高點加速度概念",
+      "name": "莫耳生成熱與燃燒熱定義辨析",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 鉛直上拋最高點高度",
+      "name": "赫斯定律、同素異形體",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-3 鉛直上拋綜合應用",
+      "name": "赫斯定律綜合應用",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-4 相對速度反向",
+      "name": "限量試劑、產率計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-4 相對速度同向",
+      "name": "限量試劑、金屬硫化反應",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "2-4 相對速度雙視角",
+      "name": "離子鑑定、觀察推理",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "實驗1 打點計時器平均速度",
-      "source": "question",
-      "refCount": 1
-    },
-    {
-      "name": "實驗1 求加速度最少點痕數",
+      "name": "電石反應、化學計量、生活情境應用",
       "source": "question",
       "refCount": 1
     }
   ],
-  "generatedAt": "2026-09-05T14:11:38.885Z"
+  "generatedAt": "2026-09-05T14:11:38.886Z"
 }

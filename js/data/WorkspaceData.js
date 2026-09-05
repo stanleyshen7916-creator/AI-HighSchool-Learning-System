@@ -7,6 +7,11 @@
    demo accounts, "保留未來新增" —更多學生留待未來新增，不在此 Sprint 憑空
    捏造), 1 School（長榮中學）, 5 Semesters（高一下～高三下）.
 
+   09/05 新增第二間學校「竹圍高中」(zwsh)：因平台開始收錄竹圍高中高二化學
+   課本教材（tm_13），新增 student_c（僅授權 zwsh／g2s1，示範跨校資料完全
+   隔離）；Admin 同步取得 zwsh 存取權限，Student A／Student B 維持原本僅
+   長榮中學（cjsh）的授權範圍不變。
+
    permissions — §6 "登入後，僅顯示：具有權限之 School／Semester"，
    §20 PAT②「Student B 不得看到 Student A 任何資料」的示範資料：
    Student A 被授權 高一下 + 高二上（示範複選、示範跨學期切換）；
@@ -29,10 +34,12 @@ AHS.WorkspaceData = {
   students: [
     { id: "admin", name: "Admin", role: "ADMIN", password: "1234" },
     { id: "student_a", name: "Student A", role: "STUDENT", password: "1234" },
-    { id: "student_b", name: "Student B", role: "STUDENT", password: "1234" }
+    { id: "student_b", name: "Student B", role: "STUDENT", password: "1234" },
+    { id: "student_c", name: "Student C", role: "STUDENT", password: "1234" }
   ],
   schools: [
-    { id: "cjsh", name: "長榮中學" }
+    { id: "cjsh", name: "長榮中學" },
+    { id: "zwsh", name: "竹圍高中" }
   ],
   semesters: [
     { id: "g1s2", name: "高一下學期", order: 1 },
@@ -42,8 +49,9 @@ AHS.WorkspaceData = {
     { id: "g3s2", name: "高三下學期", order: 5 }
   ],
   permissions: {
-    admin: { schoolIds: ["cjsh"], semesterIds: ["g1s2", "g2s1", "g2s2", "g3s1", "g3s2"] },
+    admin: { schoolIds: ["cjsh", "zwsh"], semesterIds: ["g1s2", "g2s1", "g2s2", "g3s1", "g3s2"] },
     student_a: { schoolIds: ["cjsh"], semesterIds: ["g1s2", "g2s1"] },
-    student_b: { schoolIds: ["cjsh"], semesterIds: ["g1s2"] }
+    student_b: { schoolIds: ["cjsh"], semesterIds: ["g1s2"] },
+    student_c: { schoolIds: ["zwsh"], semesterIds: ["g2s1"] }
   }
 };
