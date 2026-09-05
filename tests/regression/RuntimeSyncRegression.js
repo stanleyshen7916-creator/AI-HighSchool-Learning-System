@@ -370,6 +370,44 @@ AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", rol
   AHS.WrongBookRuntime.reset();
   AHS.KnowledgeMasteryRuntime.reset();
 
+  /* [13] 真實 PO 回報（螢幕錄影 + DevTools Network）：改名成功後，全新
+     瀏覽器分頁重新登入的第一個頁面，Topbar 會先短暫顯示舊的預設名字
+     （"Student A"），大約 1 秒後才自動變成真正改過的名字——證實推
+     送/下載本身都正常，只是背景 Pull 完成前的那段空窗期，畫面上顯示的
+     是「尚未證實」的本機預設值。AHS.SettingsRuntime.isProfileUnconfirmed()
+     即為修正：只在「本機從未存過真實自訂名稱」且「這次真的會有一個
+     Pull 在飛」的那個窄縫裡才回傳 true，js/ui/AppShell.js 的 nameMeta()
+     據此換成 Loading 骨架，而不是可能錯誤的舊名字。 */
+  console.log("\n[13] AHS.SettingsRuntime.isProfileUnconfirmed() — Profile 名稱「尚未證實」旗標（真實 PO 回報：重新登入後，Topbar 短暫顯示舊的預設名字才變成真正的名字）");
+  check("未設定 Supabase 時，isProfileUnconfirmed() 恆為 false（不受任何本機狀態影響，GitHub Pages 未接 Supabase 時行為完全不變）", AHS.SettingsRuntime.isProfileUnconfirmed() === false);
+
+  AHS.SupabaseClient.isConfigured = function () { return true; };
+  AHS.SupabaseClient.getSession = function () { return { user: { id: "u_13" } }; };
+  check("已設定 Supabase 但尚未有真實 identity 時，isProfileUnconfirmed() 仍為 false（沒有東西可以等，不會無故卡在 Loading）", AHS.SettingsRuntime.isProfileUnconfirmed() === false);
+
+  AHS.SyncBridge.cacheIdentity("u_13", "sp_13");
+  check("真實已設定 + 已有 identity + 本機從未存過自訂名稱時，isProfileUnconfirmed() 變為 true（正是螢幕錄影看到的那個空窗期）", AHS.SettingsRuntime.isProfileUnconfirmed() === true);
+
+  AHS.RepositoryFactory.create = function () {
+    return {
+      read: function (table) {
+        if (table === "student_profiles") {
+          return Promise.resolve({ data: [{ id: "sp_13", display_name: "真實同步後的名字", grade: "高二" }], error: null });
+        }
+        return Promise.resolve({ data: [], error: null });
+      }
+    };
+  };
+  return AHS.SettingsRuntime.pullFromRepository();
+}).then(function (pullResult) {
+  check("pullFromRepository() 真實拉回 student_profiles 這一筆", pullResult.pulled >= 1);
+  check("拉回後 profile.name 真的變成後端真實值（不是繼續留著舊的預設值）", AHS.SettingsRuntime.get().profile.name === "真實同步後的名字");
+  check("拉回完成後，isProfileUnconfirmed() 變回 false（Topbar 不會再顯示 Loading 骨架，換回真正的名字，對應螢幕錄影中約 1 秒後的自動修正）", AHS.SettingsRuntime.isProfileUnconfirmed() === false);
+
+  AHS.SupabaseClient.isConfigured = originalIsConfigured;
+  AHS.SupabaseClient.getSession = originalGetSession;
+  AHS.RepositoryFactory.create = originalRepositoryFactoryCreate;
+
   console.log("\nRuntimeSyncRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail === 0 ? 0 : 1);
 }).catch(function (err) {
