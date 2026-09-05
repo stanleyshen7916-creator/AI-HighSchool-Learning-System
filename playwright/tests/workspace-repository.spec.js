@@ -61,22 +61,25 @@ test("AI-120 PAT①：Student A -> 高一下 -> 教材中心只看到高一下�
 });
 
 test("AI-120 PAT①(續)：Student A -> 高二上 -> 教材中心只看到高二上的真實教材（不得出現高一下教材）", async ({ page }) => {
-  /* Sprint AI-132（國文教材上傳）之後，再加上英文第一課教材上架
-     （data/materials/EnglishG11DayIBrokeTheRules.js）、tm_5（生物補充
-     資料）匯入、生物第1章教材上架
-     （data/materials/BiologyG11OriginAndEvolutionOfLife.js）、tm_6（世界史
-     序篇＋第1章「歐洲文化與基督教傳統」）匯入、生物第1章講義版教材上架
-     （data/materials/BiologyG11Ch1HandoutReview.js），高二上（g2s1）真的
-     有 8 筆真實 Repository 教材（國文第一課／第二課／第三課＋英文第一課
-     ＋生物3筆＋歷史1筆）——「誠實顯示空狀態」的原始假設已經不成立，這裡
-     改為驗證真正的重點：這 8 筆是「高二上自己的」真實教材，且完全不包含
-     任何高一下（tm_1~4／civics）的教材，Workspace 過濾仍然誠實、正確。 */
+  /* Sprint AI-132（國文教材上傳）之後陸續再上架 tm_5（生物補充資料）／
+     tm_6（世界史）／tm_7（數學：三角函數）／tm_8、tm_9（公民與社會）／
+     tm_10、tm_11（物理）／tm_12（化學）8 筆 Package-track 教材，加上既有
+     6 筆 Repository-track 教材（國文第一／二／三課、英文第一課、生物起源
+     與演化、生物第1章講義版），高二上（g2s1）真的有 14 筆真實教材——
+     「誠實顯示空狀態」的原始假設已經不成立，這裡改為驗證真正的重點：
+     這 14 筆是「高二上自己的」真實教材，且完全不包含任何高一下
+     （tm_1~4／civics）的教材，Workspace 過濾仍然誠實、正確。 */
   const errors = collectErrors(page);
   await loginAs(page, "Student A", "長榮中學", ["高二上學期"]);
   await page.goto(fileUrl("materials"));
-  await expect(page.locator(".mat-card")).toHaveCount(8);
+  await expect(page.locator(".mat-card")).toHaveCount(14);
   await expect(page.locator("body")).toContainText("國文");
-  const g1s2OnlyTitles = ["三角函數", "演化與生物分類", "所有權與物權", "全球化與國際分工"];
+  /* 「三角函數」本身不再是唯一辨識字串：tm_7（高二上，數學第1章）自己
+     的章節標題也真的含有「三角函數」——這是高一、高二課綱本來就都教三角
+     函數的真實巧合，不是回歸。改用 tm_1（高一下）章節裡更完整、tm_7 不
+     會出現的原始片語「三角函數的性質」來辨識，才是真正驗證「高一下教材
+     沒有洩漏進高二上畫面」，而非誤判高二上自己真實擁有的 tm_7。 */
+  const g1s2OnlyTitles = ["三角函數的性質", "演化與生物分類", "所有權與物權", "全球化與國際分工"];
   for (const title of g1s2OnlyTitles) {
     await expect(page.locator("body")).not.toContainText(title);
   }
@@ -113,9 +116,9 @@ test("AI-120 PAT③：Workspace 切換 高一下 -> 高二上 -> 教材中心立
   await page.locator(".shell").waitFor({ state: "visible" });
 
   await page.goto(fileUrl("materials"));
-  /* 同上（PAT①續）：高二上現在真的有 8 筆真實教材，切換後應立即同步
-     成這 8 筆，而不是延續切換前高一下的 5 筆／或誠實空狀態。 */
-  await expect(page.locator(".mat-card")).toHaveCount(8);
+  /* 同上（PAT①續）：高二上現在真的有 14 筆真實教材，切換後應立即同步
+     成這 14 筆，而不是延續切換前高一下的 5 筆／或誠實空狀態。 */
+  await expect(page.locator(".mat-card")).toHaveCount(14);
   await expect(page.locator("body")).toContainText("國文");
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
