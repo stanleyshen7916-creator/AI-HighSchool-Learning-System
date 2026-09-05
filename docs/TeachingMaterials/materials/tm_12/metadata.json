@@ -1,0 +1,20 @@
+{
+  "materialId": "tm_12",
+  "school": "cjsh",
+  "semester": "g2s1",
+  "subject": "化學",
+  "grade": "高二",
+  "publisher": null,
+  "chapter": "第一章：化學計量與反應熱（1-1 化學反應式的平衡及應用、1-2 化學反應中的能量變化、實驗活動1 化學反應熱）",
+  "unit": "講義第1～19頁",
+  "keywords": [
+    "化學反應式平衡", "化學計量", "限量試劑", "產率",
+    "能量形式與轉換", "熱含量H", "反應熱ΔH", "熱化學反應式",
+    "莫耳生成熱", "莫耳燃燒熱", "赫斯定律", "卡計原理"
+  ],
+  "difficulty": "中等",
+  "source": "講義",
+  "uploadDate": "2026-09-04T00:00:00Z",
+  "version": "1",
+  "materialType": "TEXTBOOK"
+}
