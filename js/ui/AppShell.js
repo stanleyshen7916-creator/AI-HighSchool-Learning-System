@@ -173,6 +173,34 @@ AHS.AppShell = (function () {
        display label changes. */
     var userName = (profile && profile.name) || (user && user.name) || "Guest";
 
+    /* profileUnconfirmed — real PO report (screen recording + DevTools
+       Network): right after a real rename, the first page load of a
+       fresh browser session showed the OLD seed default name for about
+       a second before the real name (already saved to student_profiles)
+       came back from the background pull and replaced it — a real,
+       if brief and self-correcting, wrong-name flash. AHS.SettingsRuntime.
+       isProfileUnconfirmed() is true only in that exact narrow window
+       (a real pull is genuinely in flight AND the name about to be shown
+       is still the unconfirmed seed default, never for an already-known
+       real name) — nameMeta() below renders a lightweight loading
+       placeholder instead of momentarily showing a name that might not
+       be this student's real one. Every other page load (Supabase not
+       configured, no identity yet, or a real name already cached from
+       an earlier pull/save this session — the overwhelmingly common
+       case) is completely unaffected. */
+    var profileUnconfirmed = !!(AHS.SettingsRuntime && typeof AHS.SettingsRuntime.isProfileUnconfirmed === "function" &&
+      AHS.SettingsRuntime.isProfileUnconfirmed());
+
+    function nameMeta(nameText, subText) {
+      if (!profileUnconfirmed) {
+        return [el("strong", { text: nameText }), el("small", { text: subText })];
+      }
+      return [
+        el("strong", { class: "topbar__skeleton topbar__skeleton--name", "aria-hidden": "true" }),
+        el("small", { class: "topbar__skeleton topbar__skeleton--sub", "aria-hidden": "true" })
+      ];
+    }
+
     var badge = el("span", { class: "topbar__badge" });
     function unreadCount() {
       var n = 0;
@@ -217,10 +245,8 @@ AHS.AppShell = (function () {
         "aria-label": "目前 Workspace：" + userName + "・" + wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、")
       }, [
         el("span", { class: "topbar__workspace-chip-icon", html: AHS.Icons.book ? AHS.Icons.book() : "" }),
-        el("span", { class: "topbar__workspace-chip-text" }, [
-          el("strong", { text: userName }),
-          el("small", { text: wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、") })
-        ])
+        el("span", { class: "topbar__workspace-chip-text" },
+          nameMeta(userName, wsLabel.schoolName + "・" + wsLabel.semesterNames.join("、")))
       ]);
       wsChip.addEventListener("click", function (e) {
         e.stopPropagation();
@@ -270,10 +296,7 @@ AHS.AppShell = (function () {
         class: "topbar__avatar qiaoqiao-bust qiaoqiao-bust--sm",
         html: AHS.Qiaoqiao.bust("gentle")
       }),
-      el("span", { class: "topbar__user-meta" }, [
-        el("strong", { text: userName }),
-        el("small", { text: userGrade })
-      ])
+      el("span", { class: "topbar__user-meta" }, nameMeta(userName, userGrade))
     ]);
     function toggleProfileMenu() {
       var willOpen = profMenu.hasAttribute("hidden");

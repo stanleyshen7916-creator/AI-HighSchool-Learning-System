@@ -119,7 +119,7 @@ console.log("\n[2] AI Tutor — 高二上（尚無教材/錯題）不得推薦�
 console.log("\n[3] tutor.html — 依 Current Workspace 正常渲染，無錯誤");
 {
   const { window, consoleErrors } = loadPage("tutor.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_b", schoolId: "cjsh", semesterIds: ["g1s2"] } }
+    seedSession: { "ahs:workspace": { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] } }
   });
   check(".shell 正常渲染", !!window.document.querySelector(".shell"));
   check("Console errors = 0", consoleErrors.length === 0);

@@ -8,16 +8,23 @@
    捏造), 1 School（長榮中學）, 5 Semesters（高一下～高三下）.
 
    09/05 新增第二間學校「竹圍高中」(zwsh)：因平台開始收錄竹圍高中高二化學
-   課本教材（tm_13），新增 student_c（僅授權 zwsh／g2s1，示範跨校資料完全
-   隔離）；Admin 同步取得 zwsh 存取權限，Student A／Student B 維持原本僅
-   長榮中學（cjsh）的授權範圍不變。
+   課本教材（tm_13），一度新增獨立的第 4 位學生 student_c（僅授權
+   zwsh／g2s1）。真實 PO 回報：登入頁一次出現 4 位學生造成混淆，且平台
+   已在今天開始真實使用（Student A 已有真實練習紀錄）——依 PO 明確指示
+   整併回 3 位登入帳號：**id 仍是 "student_c"**（保留其已建立的真實
+   Supabase 帳號/資料，不重新指派 id，避免任何已產生的紀錄跟錯帳號)，
+   只把顯示名稱從 "Student C" 改回 "Student B"；原本的長榮中學版
+   student_b（cjsh／g1s2）條目直接移除。竹圍高中（zwsh）本身、tm_13
+   教材皆保留不動，Admin 仍同時擁有 cjsh／zwsh 存取權限。這代表 Student B
+   現在示範的是「跨校」資料隔離（長榮 vs 竹圍），不再是「同校不同學期」
+   隔離——原本 Student A／Student B 都在長榮中學、僅學期範圍不同的示範
+   場景已不存在，這是 PO 明確要求整併帳號數量的直接結果，非回歸。
 
-   permissions — §6 "登入後，僅顯示：具有權限之 School／Semester"，
-   §20 PAT②「Student B 不得看到 Student A 任何資料」的示範資料：
-   Student A 被授權 高一下 + 高二上（示範複選、示範跨學期切換）；
-   Student B 僅被授權 高一下（示範同一 School 下、依然被 Semester
-   權限完全隔開，看不到高二上）。Admin 授權全部 Semester，供 PAT 全流程
-   驗證使用。這是 Mock Data，不是真實帳號權限系統。
+   permissions — §6 "登入後，僅顯示：具有權限之 School／Semester"。
+   Student A 被授權長榮中學 高一下 + 高二上（示範複選、示範跨學期切換）；
+   Student B（id: student_c）僅被授權竹圍高中 高二上（示範跨校資料完全
+   隔離，看不到長榮中學任何內容）。Admin 授權全部 School／Semester，供
+   PAT 全流程驗證使用。這是 Mock Data，不是真實帳號權限系統。
 
    password — Sprint AI-133（使用者需求：登入流程選完學生/學校/學期後，
    按下「進入平台」前，需輸入密碼才可進入）。測試期間統一改為 "1234"
@@ -34,8 +41,7 @@ AHS.WorkspaceData = {
   students: [
     { id: "admin", name: "Admin", role: "ADMIN", password: "1234" },
     { id: "student_a", name: "Student A", role: "STUDENT", password: "1234" },
-    { id: "student_b", name: "Student B", role: "STUDENT", password: "1234" },
-    { id: "student_c", name: "Student C", role: "STUDENT", password: "1234" }
+    { id: "student_c", name: "Student B", role: "STUDENT", password: "1234" }
   ],
   schools: [
     { id: "cjsh", name: "長榮中學" },
@@ -51,7 +57,6 @@ AHS.WorkspaceData = {
   permissions: {
     admin: { schoolIds: ["cjsh", "zwsh"], semesterIds: ["g1s2", "g2s1", "g2s2", "g3s1", "g3s2"] },
     student_a: { schoolIds: ["cjsh"], semesterIds: ["g1s2", "g2s1"] },
-    student_b: { schoolIds: ["cjsh"], semesterIds: ["g1s2"] },
     student_c: { schoolIds: ["zwsh"], semesterIds: ["g2s1"] }
   }
 };

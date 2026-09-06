@@ -102,9 +102,9 @@ console.log("\n[2] Workspace 切換 -> Analytics 立即同步為新 Workspace �
 console.log("\n[3] Student B 的 Analytics 與 Student A 完全獨立");
 {
   const { window } = loadPage("quiz.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_b", schoolId: "cjsh", semesterIds: ["g1s2"] } }
+    seedSession: { "ahs:workspace": { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] } }
   });
-  check("Student B 在高一下學期的 dueForReview() = 0（Student A 的錯題不會外洩）",
+  check("Student B（竹圍高中）在自己的 Workspace 下 dueForReview() = 0（Student A 的錯題不會外洩）",
     window.AHS.StatisticsRuntime.dueForReview().length === 0);
 }
 

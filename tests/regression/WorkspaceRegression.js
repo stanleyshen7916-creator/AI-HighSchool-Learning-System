@@ -80,17 +80,22 @@ console.log("\n[1] WorkspaceData／WorkspaceRuntime — Student/School/Semester 
 {
   const { window } = loadPage("login.html");
   const A = window.AHS;
-  check("4 位 Student（Admin/Student A/Student B/Student C）", A.WorkspaceRuntime.students().length === 4);
+  /* 真實 PO 回報（2026-09-05）：曾短暫存在 4 位獨立學生（新增 student_c
+     示範竹圍高中），登入頁一次出現 4 位造成混淆，且平台當時已開始真實
+     使用——依 PO 明確指示整併回 3 位登入帳號：id 仍是 "student_c"（保留
+     其已建立的真實 Supabase 帳號，不重新指派 id），只把顯示名稱改回
+     "Student B"；原本長榮中學版的 student_b（cjsh／g1s2）條目移除。
+     "Student B" 現在示範的是跨「校」隔離（長榮 vs 竹圍），不再是跨「學期」
+     隔離——原本 student_a/student_b 都在長榮中學、僅學期範圍不同的示範
+     場景已不存在，這是帳號數量整併的直接結果，非回歸。 */
+  check("3 位 Student（Admin/Student A/Student B）", A.WorkspaceRuntime.students().length === 3);
   check("2 所 School（長榮中學／竹圍高中）", A.WorkspaceRuntime.schools().length === 2);
   check("5 個 Semester（高一下～高三下）", A.WorkspaceRuntime.semesters().length === 5);
   check("Admin 被授權全部 5 個 Semester", A.WorkspaceRuntime.semestersFor("admin").length === 5);
   check("Student A 被授權 2 個 Semester（示範複選/跨學期）", A.WorkspaceRuntime.semestersFor("student_a").length === 2);
-  check("Student B 僅被授權 1 個 Semester（示範隔離）", A.WorkspaceRuntime.semestersFor("student_b").length === 1);
-  check("Student B 看不到「高二上學期」（Student A 才有的授權）",
-    !A.WorkspaceRuntime.semestersFor("student_b").some((s) => s.id === "g2s1"));
-  check("Student C 僅被授權「竹圍高中」1 所學校（跨校資料完全隔離）",
+  check("Student B（id: student_c）僅被授權「竹圍高中」1 所學校（跨校資料完全隔離）",
     A.WorkspaceRuntime.schoolsFor("student_c").length === 1 && A.WorkspaceRuntime.schoolsFor("student_c")[0].id === "zwsh");
-  check("Student C 看不到「長榮中學」（Student A/B 才有的授權）",
+  check("Student B（id: student_c）看不到「長榮中學」（Student A 才有的授權）",
     !A.WorkspaceRuntime.schoolsFor("student_c").some((s) => s.id === "cjsh"));
 }
 
@@ -105,8 +110,8 @@ console.log("\n[2] AHS.WorkspaceRuntime.setCurrent() — 真實權限驗證");
   A.WorkspaceRuntime.logout();
   const badSchool = A.WorkspaceRuntime.setCurrent({ studentId: "student_a", schoolId: "not_a_real_school", semesterIds: ["g1s2"] });
   check("未授權 School 直接拒絕（回傳 null，不寫入）", badSchool === null && !A.WorkspaceRuntime.isLoggedIn());
-  const badSemester = A.WorkspaceRuntime.setCurrent({ studentId: "student_b", schoolId: "cjsh", semesterIds: ["g2s1"] });
-  check("Student B 選擇未授權的「高二上」直接拒絕（Student B 只有高一下）", badSemester === null && !A.WorkspaceRuntime.isLoggedIn());
+  const badSchool2 = A.WorkspaceRuntime.setCurrent({ studentId: "student_c", schoolId: "cjsh", semesterIds: ["g2s1"] });
+  check("Student B（id: student_c）選擇未授權的「長榮中學」直接拒絕（Student B 只有竹圍高中）", badSchool2 === null && !A.WorkspaceRuntime.isLoggedIn());
   const mixed = A.WorkspaceRuntime.setCurrent({ studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2", "g3s2"] });
   check("部分合法/部分越權：僅濾掉越權的 Semester，合法子集仍登入成功", !!mixed && mixed.semesterIds.length === 1 && mixed.semesterIds[0] === "g1s2");
 }
@@ -154,35 +159,23 @@ console.log("\n[5] Login Flow（login.html）— Step1 學生/Step2 學校/Step3
   const { window, consoleErrors } = loadPage("login.html");
   const doc = window.document;
   const step1Options = [...doc.querySelectorAll(".login-option__label")].map((n) => n.textContent);
-  check("Step 1 顯示全部 4 位學生", step1Options.length === 4 && step1Options.includes("Student B") && step1Options.includes("Student C"));
+  check("Step 1 顯示全部 3 位學生", step1Options.length === 3 && step1Options.includes("Student B"));
+  /* Student B（真實 id 仍是 student_c，帳號整併後只改了顯示名稱——見上方
+     [1] 的說明）現在示範的是跨「校」隔離：僅授權竹圍高中／高二上學期，
+     完全看不到長榮中學／高一下學期。 */
   const studentBBtn = [...doc.querySelectorAll(".login-option")].find((b) => b.textContent.includes("Student B"));
   studentBBtn.click();
   const step2Options = [...doc.querySelectorAll(".login-option__label")].map((n) => n.textContent);
-  check("Step 2（Student B）僅顯示其被授權的「長榮中學」", step2Options.length === 1 && step2Options[0] === "長榮中學");
+  check("Step 2（Student B）僅顯示其被授權的「竹圍高中」（看不到長榮中學）",
+    step2Options.length === 1 && step2Options[0] === "竹圍高中");
   doc.querySelector(".login-option").click();
   const step3Labels = [...doc.querySelectorAll(".login-option__label")].map((n) => n.textContent);
-  check("Step 3（Student B）僅顯示其被授權的「高一下學期」，看不到「高二上學期」",
-    step3Labels.length === 1 && step3Labels[0] === "高一下學期");
+  check("Step 3（Student B）僅顯示其被授權的「高二上學期」",
+    step3Labels.length === 1 && step3Labels[0] === "高二上學期");
   const enterBtn = doc.querySelector(".login-enter-btn");
   check("未勾選任何學期前，「進入平台」為 disabled", enterBtn.hasAttribute("disabled"));
   doc.querySelector(".login-option--check").click();
   check("勾選學期後，「進入平台」變為可點擊", !doc.querySelector(".login-enter-btn").hasAttribute("disabled"));
-}
-
-/* ---- 5b. Login Flow — Student C（竹圍高中）同樣真實依權限過濾，與長榮中學學生完全隔離 ---- */
-console.log("\n[5b] Login Flow（login.html）— Student C 僅看到「竹圍高中」與「高二上學期」");
-{
-  const { window, consoleErrors } = loadPage("login.html");
-  const doc = window.document;
-  const studentCBtn = [...doc.querySelectorAll(".login-option")].find((b) => b.textContent.includes("Student C"));
-  studentCBtn.click();
-  const step2Options = [...doc.querySelectorAll(".login-option__label")].map((n) => n.textContent);
-  check("Step 2（Student C）僅顯示其被授權的「竹圍高中」（看不到長榮中學）",
-    step2Options.length === 1 && step2Options[0] === "竹圍高中");
-  doc.querySelector(".login-option").click();
-  const step3Labels = [...doc.querySelectorAll(".login-option__label")].map((n) => n.textContent);
-  check("Step 3（Student C）僅顯示其被授權的「高二上學期」",
-    step3Labels.length === 1 && step3Labels[0] === "高二上學期");
   check("Console errors = 0（Login Flow 全程）", consoleErrors.length === 0);
 }
 

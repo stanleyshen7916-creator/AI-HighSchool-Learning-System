@@ -83,7 +83,7 @@ console.log("\n[1] login.html 選擇學生 — 曾在某 Workspace 下自訂過�
   const { window, consoleErrors } = loadPage("login.html", { seedSession: SEED });
 
   const labels = studentRowLabels(window);
-  check("選擇學生列表真實存在 4 位（Admin／Student A／Student B／Student C）", labels.length === 4);
+  check("選擇學生列表真實存在 3 位（Admin／Student A／Student B）", labels.length === 3);
   check("student_a 這一列真實顯示使用者自訂過的名稱「愛因斯坦」，不是固定的 demo 名稱「Student A」",
     labels.indexOf("愛因斯坦") !== -1 && labels.indexOf("Student A") === -1);
   check("其他從未自訂過名稱的學生，仍誠實顯示真實的 demo 名稱（Admin／Student B），不是被改壞",
@@ -105,10 +105,10 @@ console.log("\n[2] login.html 選擇學生 — 完全沒有任何自訂記錄時
 /* ---- 3. 同一位學生在「不同」Workspace 下改過名稱，也找得到（跨命名空間） */
 console.log("\n[3] login.html 選擇學生 — 自訂名稱是存在另一個學校/學期組合下時，仍找得到真實記錄");
 {
-  const SEED = { "ahs:student_b__cjsh__g2s1:settings": { profile: { name: "小明", grade: "高二" }, showTutorSuggestions: true, aiGatewayEnabled: false } };
+  const SEED = { "ahs:student_c__zwsh__g2s1:settings": { profile: { name: "小明", grade: "高二" }, showTutorSuggestions: true, aiGatewayEnabled: false } };
   const { window, consoleErrors } = loadPage("login.html", { seedSession: SEED });
   const labels = studentRowLabels(window);
-  check("student_b 顯示在另一個 Workspace 命名空間下真實存過的自訂名稱「小明」",
+  check("student_c（Student B）顯示在另一個 Workspace 命名空間下真實存過的自訂名稱「小明」",
     labels.indexOf("小明") !== -1 && labels.indexOf("Student B") === -1);
   check("Console errors = 0", consoleErrors.length === 0);
 }

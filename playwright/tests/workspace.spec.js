@@ -98,7 +98,7 @@ test("Workspace PAT②：Student B 在同一分頁登入後，完全看不到 St
   // 同一個分頁：登出，改用 Student B 登入（不得看到剛才 Student A 的資料）。
   await page.locator(".sidebar__item", { hasText: "登出" }).click();
   await expect(page).toHaveURL(/login\.html$/);
-  await loginAs(page, "Student B", "長榮中學", ["高一下學期"]);
+  await loginAs(page, "Student B", "竹圍高中", ["高二上學期"]);
   await page.goto(fileUrl("materials"));
   await expect(page.locator("body")).not.toContainText("只有 Student A 看得到的教材");
 
@@ -107,7 +107,7 @@ test("Workspace PAT②：Student B 在同一分頁登入後，完全看不到 St
     ns: window.AHS.WorkspaceRuntime.storageNamespace()
   }));
   expect(isolation.materials).not.toContain("只有 Student A 看得到的教材");
-  expect(isolation.ns).toBe("student_b__cjsh__g1s2");
+  expect(isolation.ns).toBe("student_c__zwsh__g2s1");
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
@@ -168,7 +168,7 @@ test("Workspace PAT④/⑤：Analytics／AI Tutor 僅分析 Current Workspace，
 
   // 換 Student B（同一分頁，真實登出/登入）：Analytics/Tutor 必須是全新、空的，不得混入 Student A 的錯題。
   await page.locator(".sidebar__item", { hasText: "登出" }).click();
-  await loginAs(page, "Student B", "長榮中學", ["高一下學期"]);
+  await loginAs(page, "Student B", "竹圍高中", ["高二上學期"]);
   const bStats = await page.evaluate(() => ({
     dueForReview: window.AHS.StatisticsRuntime.dueForReview().length,
     wrongBook: window.AHS.WrongBookRuntime.list().length
