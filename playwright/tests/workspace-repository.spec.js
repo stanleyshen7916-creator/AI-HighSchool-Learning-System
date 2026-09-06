@@ -96,7 +96,7 @@ test("AI-120 PAT②：Student B 登入教材中心，不得看到 Student A 手�
   await expect(page.locator("body")).toContainText("AI-120 只有 Student A 看得到");
 
   await page.locator(".sidebar__item", { hasText: "登出" }).click();
-  await loginAs(page, "Student B", "長榮中學", ["高一下學期"]);
+  await loginAs(page, "Student B", "竹圍高中", ["高二上學期"]);
   await page.goto(fileUrl("materials"));
   await expect(page.locator("body")).not.toContainText("AI-120 只有 Student A 看得到");
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);

@@ -163,7 +163,7 @@ console.log("\n[4] 統一密碼 — Student A/Student B/Admin 皆用同一組密
 
   const { window: winB } = loadPage("login.html");
   const docB = winB.document;
-  goToPasswordStep(docB, "Student B", "長榮中學", "高一下學期");
+  goToPasswordStep(docB, "Student B", "竹圍高中", "高二上學期");
   docB.querySelector(".login-password__input").value = "1234";
   click(docB.querySelector(".login-enter-btn"));
   check("Student B 用 1234 登入成功", winB.AHS.WorkspaceRuntime.isLoggedIn() === true);
