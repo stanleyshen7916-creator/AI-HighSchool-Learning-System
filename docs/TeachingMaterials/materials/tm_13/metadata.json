@@ -1,0 +1,20 @@
+{
+  "materialId": "tm_13",
+  "school": "zwsh",
+  "semester": "g2s1",
+  "subject": "化學",
+  "grade": "高二",
+  "publisher": null,
+  "chapter": "第一章：物質的特性與化學反應（物質特性與鑑定、化學反應式平衡與化學計量、反應熱與熱化學方程式），課本第9～52頁",
+  "unit": "課本第9～52頁",
+  "keywords": [
+    "純物質與混合物", "色層分析", "比移值Rf", "化學反應式平衡",
+    "質量守恆", "電荷守恆", "電子守恆", "限量試劑", "產率",
+    "反應熱", "莫耳生成熱", "莫耳燃燒熱", "赫斯定律"
+  ],
+  "difficulty": "中等",
+  "source": "課本",
+  "uploadDate": "2026-09-05T00:00:00Z",
+  "version": "1",
+  "materialType": "TEXTBOOK"
+}

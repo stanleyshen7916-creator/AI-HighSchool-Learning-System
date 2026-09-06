@@ -83,7 +83,7 @@ console.log("\n[1] login.html 選擇學生 — 曾在某 Workspace 下自訂過�
   const { window, consoleErrors } = loadPage("login.html", { seedSession: SEED });
 
   const labels = studentRowLabels(window);
-  check("選擇學生列表真實存在 3 位（Admin／Student A／Student B）", labels.length === 3);
+  check("選擇學生列表真實存在 4 位（Admin／Student A／Student B／Student C）", labels.length === 4);
   check("student_a 這一列真實顯示使用者自訂過的名稱「愛因斯坦」，不是固定的 demo 名稱「Student A」",
     labels.indexOf("愛因斯坦") !== -1 && labels.indexOf("Student A") === -1);
   check("其他從未自訂過名稱的學生，仍誠實顯示真實的 demo 名稱（Admin／Student B），不是被改壞",
