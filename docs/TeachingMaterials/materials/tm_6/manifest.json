@@ -5,5 +5,6 @@
   "updatedDate": "2026-08-29T01:00:00Z",
   "repositoryVersion": "EO-S1.1-003",
   "analysisEngine": "Claude",
-  "status": "complete"
+  "status": "complete",
+  "archived": true
 }

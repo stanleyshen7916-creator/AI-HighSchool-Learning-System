@@ -84,27 +84,29 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
    Rules；tm_5（長榮中學高二第一次月考 生物補充資料）匯入後同樣標記
    g2s1，為第 5 筆；生物第1章《生物的起源與演化》
    data/materials/BiologyG11OriginAndEvolutionOfLife.js 同樣標記 g2s1，
-   為第 6 筆；tm_6（長榮中學高二世界史 序篇＋第1章「歐洲文化與基督教傳統」，
-   Package materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 7 筆；生物第1章
+   為第 6 筆；tm_14／tm_15（長榮中學高二世界史「序篇：從臺灣走向世界」／
+   「第1章：歐洲文化與基督教傳統」，2026-09-07 由原 tm_6 依章節拆分為兩筆
+   獨立教材，比照物理/化學/公民「一個章節＝一筆教材」慣例；原 tm_6 已標記
+   archived，不再計入）匯入後同樣標記 g2s1，為第 7、8 筆；生物第1章
    講義版 data/materials/BiologyG11Ch1HandoutReview.js 同樣標記 g2s1，為第
-   8 筆；tm_7（長榮中學高二數學 第1章「三角函數」，Package
-   materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 9 筆；tm_8（長榮中學高二
+   9 筆；tm_7（長榮中學高二數學 第1章「三角函數」，Package
+   materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 10 筆；tm_8（長榮中學高二
    公民與社會 第1章「社會資源的分配」，Package materialType=TEXTBOOK）匯入後
-   同樣標記 g2s1，為第 10 筆；tm_9（長榮中學高二公民與社會 第2章「需求與
-   供給」，Package materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 11
+   同樣標記 g2s1，為第 11 筆；tm_9（長榮中學高二公民與社會 第2章「需求與
+   供給」，Package materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 12
    筆；tm_10（長榮中學高二物理 第1章「測量與不確定度」，Package
-   materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 12 筆；tm_11（長榮中學
+   materialType=TEXTBOOK）匯入後同樣標記 g2s1，為第 13 筆；tm_11（長榮中學
    高二物理 第2章「直線運動」，Package materialType=TEXTBOOK）匯入後同樣
-   標記 g2s1，為第 13 筆；tm_12（長榮中學高二化學 第一章「化學計量與反應熱」，
+   標記 g2s1，為第 14 筆；tm_12（長榮中學高二化學 第一章「化學計量與反應熱」，
    Package materialType=TEXTBOOK，source=講義）匯入後同樣標記 g2s1，為第
-   14 筆），不得出現高一下（g1s2）教材，兩學期互相隔離 --- */
-console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 14 筆教材（國文3＋英文1＋生物3＋歷史1＋數學1＋公民2＋物理2＋化學1，不得出現高一下教材）");
+   15 筆），不得出現高一下（g1s2）教材，兩學期互相隔離 --- */
+console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 15 筆教材（國文3＋英文1＋生物3＋歷史2＋數學1＋公民2＋物理2＋化學1，不得出現高一下教材）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實看到 14 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_6 世界史、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理、tm_12 化學）", materials.length === 14);
+  check("高二上真實看到 15 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_14/tm_15 世界史（原 tm_6 拆分）、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理、tm_12 化學）", materials.length === 15);
   check("皆為國文科、英文科、生物科、歷史科、數學科、公民科、物理科或化學科（無高一下的 geography 教材混入）",
     materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math" || m.subject === "civics" || m.subject === "physics" || m.subject === "chemistry"));
   check("包含國文第一課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
@@ -116,7 +118,9 @@ console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到�
     materials.some((m) => (m.title || "").indexOf("生物的起源與演化") !== -1));
   check("包含生物第1章講義版教材（選修生物II教學講義）",
     materials.some((m) => (m.title || "").indexOf("選修生物II") !== -1));
-  check("包含歷史 tm_6 教材（序篇＋第1章 歐洲文化與基督教傳統）",
+  check("包含歷史 tm_14 教材（序篇：從臺灣走向世界，原 tm_6 拆分）",
+    materials.some((m) => (m.title || "").indexOf("從臺灣走向世界") !== -1));
+  check("包含歷史 tm_15 教材（第1章 歐洲文化與基督教傳統，原 tm_6 拆分）",
     materials.some((m) => (m.title || "").indexOf("歐洲文化與基督教傳統") !== -1));
   check("包含數學 tm_7 教材（第1章 三角函數）",
     materials.some((m) => (m.title || "").indexOf("三角函數") !== -1));
