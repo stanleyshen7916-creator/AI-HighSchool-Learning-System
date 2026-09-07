@@ -49,17 +49,38 @@ AHS.SettingsRuntime = (function () {
     return (label && label.studentName) ? label.studentName : DEFAULTS.profile.name;
   }
 
+  /* usedSeedDefaultName — real PO report (screen recording, DevTools
+     Network): right after a real rename, the very first page load of a
+     fresh browser session shows the OLD seed default name (e.g.
+     "Student A") for about a second before the real, already-pushed
+     name pulled back from student_profiles replaces it — a real,
+     if brief and self-correcting, "wrong name" flash. This flag records
+     whether THIS page's local cache had no real customized name to seed
+     from (hydrate()'s own two "never actually saved" branches below) —
+     the one case a pending pull can actually change the visible name.
+     A page whose local cache already holds a real, previously-pulled or
+     previously-saved name (the overwhelmingly common case — every page
+     navigation after the first one in a session) never sets this, so
+     isProfileUnconfirmed() below stays false and nothing changes for
+     it: no new flash, no new loading state, zero risk to the already-
+     correct common path. */
+  var usedSeedDefaultName = false;
+
   function hydrate() {
     var loaded = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function")
       ? AHS.PersistenceAdapter.load(STORAGE_KEY) : null;
     if (!loaded || typeof loaded !== "object") {
       var seeded = clone(DEFAULTS);
       seeded.profile.name = defaultProfileName();
+      usedSeedDefaultName = true;
       return seeded;
     }
     var merged = clone(DEFAULTS);
     merged.profile = Object.assign({}, DEFAULTS.profile, loaded.profile || {});
-    if (!loaded.profile || !loaded.profile.name) { merged.profile.name = defaultProfileName(); }
+    if (!loaded.profile || !loaded.profile.name) {
+      merged.profile.name = defaultProfileName();
+      usedSeedDefaultName = true;
+    }
     if (typeof loaded.showTutorSuggestions === "boolean") { merged.showTutorSuggestions = loaded.showTutorSuggestions; }
     if (typeof loaded.aiGatewayEnabled === "boolean") { merged.aiGatewayEnabled = loaded.aiGatewayEnabled; }
     return merged;
@@ -73,6 +94,23 @@ AHS.SettingsRuntime = (function () {
   }
 
   var store = hydrate();
+
+  /* profilePulled — flips true once this page's own pullFromRepository()
+     has actually attempted the student_profiles read (found a row or
+     not, succeeded or not — "attempted" is what matters: it means we no
+     longer need to guess). isProfileUnconfirmed() only ever returns true
+     while this is false AND a real pull is genuinely about to happen
+     (AHS.SyncBridge.isConfigured() && identity() both true) AND the name
+     currently in `store` is the unconfirmed seed default above — so a
+     page where Supabase isn't configured, or where this student has no
+     cached identity yet, or that already has a real name cached, is
+     never affected. */
+  var profilePulled = false;
+
+  function isProfileUnconfirmed() {
+    if (!usedSeedDefaultName || profilePulled) { return false; }
+    return !!(AHS.SyncBridge && AHS.SyncBridge.isConfigured() && AHS.SyncBridge.identity());
+  }
 
   function get() { return clone(store); }
 
@@ -188,10 +226,11 @@ AHS.SettingsRuntime = (function () {
     });
 
     var profilePull = repo.read("student_profiles", "id=eq." + identity.studentProfileId).then(function (result) {
+      profilePulled = true;
       if (result.error) { firstError = firstError || result.error; return; }
       if (!result.data || !result.data.length) { return; }
       var row = result.data[0];
-      if (row.display_name) { store.profile.name = row.display_name; }
+      if (row.display_name) { store.profile.name = row.display_name; usedSeedDefaultName = false; }
       if (row.grade) { store.profile.grade = row.grade; }
       pulled += 1;
     });
@@ -206,5 +245,8 @@ AHS.SettingsRuntime = (function () {
     });
   }
 
-  return { get: get, update: update, reset: reset, pullFromRepository: pullFromRepository };
+  return {
+    get: get, update: update, reset: reset, pullFromRepository: pullFromRepository,
+    isProfileUnconfirmed: isProfileUnconfirmed
+  };
 })();

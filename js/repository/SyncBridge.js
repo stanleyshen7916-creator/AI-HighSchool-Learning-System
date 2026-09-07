@@ -39,7 +39,29 @@ window.AHS = window.AHS || {};
      yet resolved. Cached per real user_id (via AHS.PersistenceAdapter's
      *Global, non-Workspace-namespaced storage — a Supabase identity is
      a different concept from this app's Mock Workspace) so switching
-     which real account is signed in never reuses a stale profile id. */
+     which real account is signed in never reuses a stale profile id.
+
+     Real PO report (帳號改名字串到錯的學校/學生)：AHS.SupabaseClient's own
+     real Auth session (SESSION_KEY, set by signIn/signUp on success only)
+     and this cached identity are BOTH *Global, not scoped to "which mock
+     student is this". If a brand-new mock student's real signUp/signIn
+     ever fails (no access_token — e.g. a genuinely new account hitting
+     "Confirm email", a transient network error) AHS.SupabaseClient never
+     calls setSession(), so the PREVIOUS student's real session silently
+     stays active; `cached.userId === userId` then still matches (it's
+     the same, unchanged real session), so this used to happily hand back
+     the PREVIOUS student's real studentProfileId while the local
+     Workspace/UI already believed a DIFFERENT mock student was signed
+     in — every push/pull for that page load then silently read/wrote
+     the wrong real student's row (this is how one real student's saved
+     display name ended up attached to a different student/school).
+     Fix: cacheIdentity() now also records which mock_student_key this
+     identity belongs to; identity() refuses to hand it back unless that
+     key still matches the CURRENTLY active local Workspace's own
+     studentId (AHS.WorkspaceRuntime.getCurrent()) — a stale/foreign
+     identity now returns null (an honest "not resolved yet", same as
+     "not configured") instead of silently cross-linking two different
+     students' real data. */
   function identity() {
     if (!isConfigured()) { return null; }
     var session = AHS.SupabaseClient.getSession();
@@ -47,18 +69,25 @@ window.AHS = window.AHS || {};
     if (!userId) { return null; }
     var cached = (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.loadGlobal === "function")
       ? AHS.PersistenceAdapter.loadGlobal(IDENTITY_KEY) : null;
-    if (cached && cached.userId === userId && cached.studentProfileId) {
-      return { userId: userId, studentProfileId: cached.studentProfileId };
+    if (!cached || cached.userId !== userId || !cached.studentProfileId) { return null; }
+    var currentWs = (AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function")
+      ? AHS.WorkspaceRuntime.getCurrent() : null;
+    if (currentWs && cached.mockStudentKey && cached.mockStudentKey !== currentWs.studentId) {
+      return null;
     }
-    return null;
+    return { userId: userId, studentProfileId: cached.studentProfileId };
   }
 
-  /* cacheIdentity(userId, studentProfileId) — called once by
-     AHS.AuthRepository right after it resolves (find-or-creates) the
-     signed-in account's own student_profiles row. */
-  function cacheIdentity(userId, studentProfileId) {
+  /* cacheIdentity(userId, studentProfileId, mockStudentKey) — called once
+     by AHS.AuthRepository right after it resolves (find-or-creates) the
+     signed-in account's own student_profiles row. mockStudentKey (the
+     real AHS.WorkspaceData student id this login was actually for, e.g.
+     "student_a") is optional for backward compatibility with any old
+     caller that doesn't pass it — identity()'s own mismatch check above
+     simply never triggers in that case (same as before this fix). */
+  function cacheIdentity(userId, studentProfileId, mockStudentKey) {
     if (!AHS.PersistenceAdapter || typeof AHS.PersistenceAdapter.saveGlobal !== "function") { return; }
-    AHS.PersistenceAdapter.saveGlobal(IDENTITY_KEY, { userId: userId, studentProfileId: studentProfileId });
+    AHS.PersistenceAdapter.saveGlobal(IDENTITY_KEY, { userId: userId, studentProfileId: studentProfileId, mockStudentKey: mockStudentKey || null });
   }
 
   /* subjectIdFor(code) — real subjects.id for a given subject code

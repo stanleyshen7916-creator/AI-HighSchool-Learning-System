@@ -151,17 +151,17 @@ console.log("\n[2b] Student A／長榮中學／高二下學期 — 尚無教材�
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
-/* ---- 3. Student B + 長榮中學 + 高一下：與 Student A 讀到相同 Repository
-   內容（Repository 教材是共享資料，不是 Student 私有資料）但兩者各自的
-   MaterialRuntime namespace 彼此獨立 -------------------------------- */
-console.log("\n[3] Student B／長榮中學／高一下學期 — 與 Student A 讀到相同 Repository 教材，但各自 namespace 獨立");
+/* ---- 3. Student B（id: student_c）+ 竹圍高中 + 高二上：讀到自己學校的
+   Repository 教材，namespace 與 Student A 彼此獨立（跨校資料隔離—Student B
+   已不再與 Student A 同校，見 WorkspaceData.js 整併說明） -------------- */
+console.log("\n[3] Student B／竹圍高中／高二上學期 — 讀到自己學校的 Repository 教材，namespace 與 Student A 完全獨立");
 {
   const { window } = loadPage("materials.html", {
-    seedSession: { "ahs:workspace": { studentId: "student_b", schoolId: "cjsh", semesterIds: ["g1s2"] } }
+    seedSession: { "ahs:workspace": { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] } }
   });
-  check("Student B 同樣看到已遷移至高一下學期的 5 筆 Repository 教材", window.AHS.MaterialRuntime.list().length === 5);
-  check("命名空間與 Student A 不同（storageNamespace 真實反映 Student B）",
-    window.AHS.WorkspaceRuntime.storageNamespace() === "student_b__cjsh__g1s2");
+  check("Student B（竹圍高中）看到自己學校的 1 筆 Repository 教材（tm_13 化學）", window.AHS.MaterialRuntime.list().length === 1);
+  check("命名空間與 Student A 不同（storageNamespace 真實反映 Student B／竹圍高中）",
+    window.AHS.WorkspaceRuntime.storageNamespace() === "student_c__zwsh__g2s1");
 }
 
 /* ---- 4. 未登入（無 Workspace）：向下相容，不因此崩潰 ------------------ */

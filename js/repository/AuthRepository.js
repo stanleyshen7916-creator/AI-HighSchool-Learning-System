@@ -95,7 +95,7 @@ window.AHS = window.AHS || {};
     return repo.read("student_profiles", "user_id=eq." + userId).then(function (readResult) {
       if (readResult.error) { return readResult; }
       if (readResult.data && readResult.data.length) {
-        if (AHS.SyncBridge) { AHS.SyncBridge.cacheIdentity(userId, readResult.data[0].id); }
+        if (AHS.SyncBridge) { AHS.SyncBridge.cacheIdentity(userId, readResult.data[0].id, student.id); }
         return { data: readResult.data[0], error: null };
       }
       return repo.insert("student_profiles", {
@@ -106,7 +106,7 @@ window.AHS = window.AHS || {};
         role: student.role === "ADMIN" ? "ADMIN" : "STUDENT"
       }).then(function (insertResult) {
         if (insertResult.error || !insertResult.data || !insertResult.data[0]) { return insertResult; }
-        if (AHS.SyncBridge) { AHS.SyncBridge.cacheIdentity(userId, insertResult.data[0].id); }
+        if (AHS.SyncBridge) { AHS.SyncBridge.cacheIdentity(userId, insertResult.data[0].id, student.id); }
         return { data: insertResult.data[0], error: null };
       });
     });
