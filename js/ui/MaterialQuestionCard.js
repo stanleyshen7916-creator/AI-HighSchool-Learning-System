@@ -29,11 +29,13 @@ AHS.MaterialQuestionCard = (function () {
      read from the question record; nothing is generated here.
      HOTFIX-003 AI-304: 難度/考點 shown when the record actually has them
      (Repository-sourced questions may; AI-generated ones may not) —
-     never fabricated when absent. */
+     never fabricated when absent. 章節 (question.section, populated from
+     tm_15 onward) added the same way. */
   function questionCard(question, index) {
     var card = el("div", { class: "mat-question__card" });
 
     var metaBits = [];
+    if (question.section) { metaBits.push("章節：" + question.section); }
     if (question.difficulty) { metaBits.push("難度：" + question.difficulty); }
     if (question.knowledgePoint) { metaBits.push("考點：" + question.knowledgePoint); }
 

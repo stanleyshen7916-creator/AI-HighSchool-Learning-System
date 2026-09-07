@@ -1512,7 +1512,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "氧化還原反應辨識",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q2",
@@ -1537,7 +1538,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "化學計量換算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q3",
@@ -1562,7 +1564,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "產率計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q4",
@@ -1587,7 +1590,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "氣體體積比＝莫耳比",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q5",
@@ -1612,7 +1616,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "限量試劑、合金成分計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q6",
@@ -1636,7 +1641,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "限量試劑判斷",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用（7-8題組）"
       },
       {
         "id": "tm_12_q7",
@@ -1661,7 +1667,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.82,
         "needsReview": true,
         "knowledgePoint": "產率計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用（7-8題組）"
       },
       {
         "id": "tm_12_q8",
@@ -1685,7 +1692,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.9,
         "needsReview": true,
         "knowledgePoint": "限量試劑、化學計量",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q9",
@@ -1704,7 +1712,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "限量試劑、沉澱量計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1 化學反應式的平衡及應用"
       },
       {
         "id": "tm_12_q10",
@@ -1729,7 +1738,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "能量形式與轉換",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "1-2.1 能量的形式及轉換"
       },
       {
         "id": "tm_12_q11",
@@ -1754,7 +1764,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "能量形式與轉換",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "1-2.1 能量的形式及轉換"
       },
       {
         "id": "tm_12_q12",
@@ -1779,7 +1790,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "熱化學反應式書寫",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-2.2 反應熱與影響反應熱的因素"
       },
       {
         "id": "tm_12_q13",
@@ -1802,6 +1814,7 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "反應熱位能圖",
         "difficulty": "中等",
+        "section": "1-2.2 反應熱與影響反應熱的因素",
         "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">H2(g)+1/2O2(g)</text>\n<line x1=\"40\" y1=\"140\" x2=\"220\" y2=\"140\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"145\" font-size=\"13\">H2O(g)</text>\n<line x1=\"40\" y1=\"220\" x2=\"220\" y2=\"220\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"225\" font-size=\"13\">H2O(l)</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"140\" stroke=\"#7c5cff\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"306\" y=\"94\" fill=\"#7c5cff\">242kJ</text>\n<line x1=\"330\" y1=\"140\" x2=\"330\" y2=\"220\" stroke=\"#22b573\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"336\" y=\"184\" fill=\"#22b573\">44kJ</text>\n<text x=\"10\" y=\"130\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 130)\">熱含量H →</text>\n</svg>"
       },
       {
@@ -1825,6 +1838,7 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "反應熱位能圖",
         "difficulty": "中等",
+        "section": "1-2.2 反應熱與影響反應熱的因素",
         "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">Z</text>\n<line x1=\"40\" y1=\"140\" x2=\"220\" y2=\"140\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"145\" font-size=\"13\">Y</text>\n<line x1=\"40\" y1=\"220\" x2=\"220\" y2=\"220\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"225\" font-size=\"13\">X</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"140\" stroke=\"#7c5cff\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"306\" y=\"94\" fill=\"#7c5cff\">37kJ</text>\n<line x1=\"330\" y1=\"140\" x2=\"330\" y2=\"220\" stroke=\"#22b573\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"336\" y=\"184\" fill=\"#22b573\">85kJ</text>\n<text x=\"10\" y=\"130\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 130)\">熱含量H →</text>\n</svg>"
       },
       {
@@ -1850,7 +1864,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "反應熱概念辨析",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-2.2 反應熱與影響反應熱的因素"
       },
       {
         "id": "tm_12_q16",
@@ -1875,7 +1890,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.88,
         "needsReview": true,
         "knowledgePoint": "物質狀態對反應熱的影響",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-2.2 反應熱與影響反應熱的因素"
       },
       {
         "id": "tm_12_q17",
@@ -1899,7 +1915,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "物質狀態與熱含量",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-2.2 反應熱與影響反應熱的因素"
       },
       {
         "id": "tm_12_q18",
@@ -1922,7 +1939,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.93,
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱與莫耳燃燒熱定義",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-2.3 常見的反應熱種類"
       },
       {
         "id": "tm_12_q19",
@@ -1947,7 +1965,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱／燃燒熱為零的條件",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-2.3 常見的反應熱種類"
       },
       {
         "id": "tm_12_q20",
@@ -1972,7 +1991,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.88,
         "needsReview": true,
         "knowledgePoint": "赫斯定律加成性",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-2.4 赫斯定律"
       },
       {
         "id": "tm_12_q21",
@@ -1997,7 +2017,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱定義辨析",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q22",
@@ -2022,7 +2043,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "反應熱與生活應用計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q23",
@@ -2047,7 +2069,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.94,
         "needsReview": false,
         "knowledgePoint": "熱化學反應式應用",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q24",
@@ -2072,7 +2095,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "混合氣體燃燒熱計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q25",
@@ -2097,7 +2121,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.9,
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q26",
@@ -2122,7 +2147,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "赫斯定律計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q27",
@@ -2147,7 +2173,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "反應熱倍數關係",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q28",
@@ -2171,7 +2198,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "莫耳燃燒熱計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習（8-9題組）"
       },
       {
         "id": "tm_12_q29",
@@ -2195,7 +2223,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱與汽化熱組合計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習（8-9題組）"
       },
       {
         "id": "tm_12_q30",
@@ -2220,7 +2249,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "赫斯定律計算",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q31",
@@ -2245,7 +2275,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "赫斯定律代數關係",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q32",
@@ -2269,7 +2300,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "赫斯定律綜合計算",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q33",
@@ -2293,7 +2325,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "赫斯定律比較放熱量",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q34",
@@ -2318,7 +2351,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱／燃燒熱為零的條件",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q35",
@@ -2344,6 +2378,7 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "反應熱位能圖判讀",
         "difficulty": "中等",
+        "section": "1-1、1-2 單元練習",
         "figureSvg": "<svg viewBox=\"0 0 340 200\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">C(g)+D(g)</text>\n<line x1=\"40\" y1=\"180\" x2=\"220\" y2=\"180\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"185\" font-size=\"13\">A(g)+2B(g)</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"180\" stroke=\"#7c5cff\" stroke-width=\"1.5\"/>\n<text x=\"306\" y=\"114\" fill=\"#7c5cff\">250kJ</text>\n<text x=\"10\" y=\"110\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 110)\">熱含量H →</text>\n</svg>"
       },
       {
@@ -2369,7 +2404,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.94,
         "needsReview": false,
         "knowledgePoint": "各類反應熱正負值判斷",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q37",
@@ -2394,7 +2430,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.93,
         "needsReview": false,
         "knowledgePoint": "生質能量、赫斯定律應用",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q38",
@@ -2419,7 +2456,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.93,
         "needsReview": false,
         "knowledgePoint": "赫斯定律、莫耳生成熱組合",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q39",
@@ -2438,7 +2476,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "莫耳燃燒熱應用",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q40",
@@ -2457,7 +2496,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "赫斯定律計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q41",
@@ -2476,7 +2516,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "赫斯定律計算莫耳生成熱",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "1-1、1-2 單元練習"
       },
       {
         "id": "tm_12_q42",
@@ -2500,7 +2541,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "卡計原理、溶解熱計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "實驗活動1：化學反應熱"
       },
       {
         "id": "tm_12_q43",
@@ -2525,7 +2567,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "卡計實驗器材選用",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "實驗活動1：化學反應熱"
       },
       {
         "id": "tm_12_q44",
@@ -2550,7 +2593,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "氧化物成分莫耳比計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q45",
@@ -2575,7 +2619,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "當量換算計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q46",
@@ -2600,7 +2645,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "混合氣體燃燒產物分析",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q47",
@@ -2625,7 +2671,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "燃燒計量、生活應用",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q48",
@@ -2650,7 +2697,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "化學式推導",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q49",
@@ -2675,7 +2723,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.97,
         "needsReview": false,
         "knowledgePoint": "金屬與酸反應計量",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q50",
@@ -2700,7 +2749,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.95,
         "needsReview": false,
         "knowledgePoint": "富勒烯結構、氫化熱計算",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q51",
@@ -2726,6 +2776,7 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分子反應圖判讀、倍比定律",
         "difficulty": "難",
+        "section": "大考風向（歷屆試題）",
         "figureSvg": "<svg viewBox=\"0 0 360 160\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<circle cx=\"50\" cy=\"50\" r=\"12\" fill=\"#333\"/><circle cx=\"82\" cy=\"50\" r=\"12\" fill=\"#333\"/><line x1=\"62\" y1=\"50\" x2=\"70\" y2=\"50\" stroke=\"#333\" stroke-width=\"3\"/>\n<circle cx=\"50\" cy=\"110\" r=\"12\" fill=\"#333\"/><circle cx=\"82\" cy=\"110\" r=\"12\" fill=\"#333\"/><line x1=\"62\" y1=\"110\" x2=\"70\" y2=\"110\" stroke=\"#333\" stroke-width=\"3\"/>\n<text x=\"30\" y=\"30\" font-size=\"12\" fill=\"#666\">反應物：2個●-●雙原子分子</text>\n<line x1=\"140\" y1=\"80\" x2=\"190\" y2=\"80\" stroke=\"#333\" stroke-width=\"2\" marker-end=\"url(#arrow2)\"/>\n<circle cx=\"230\" cy=\"50\" r=\"10\" fill=\"#fff\" stroke=\"#333\" stroke-width=\"2\"/><circle cx=\"258\" cy=\"50\" r=\"12\" fill=\"#333\"/><circle cx=\"286\" cy=\"50\" r=\"10\" fill=\"#fff\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"240\" y1=\"50\" x2=\"248\" y2=\"50\" stroke=\"#333\" stroke-width=\"3\"/><line x1=\"270\" y1=\"50\" x2=\"276\" y2=\"50\" stroke=\"#333\" stroke-width=\"3\"/>\n<circle cx=\"258\" cy=\"110\" r=\"10\" fill=\"#fff\" stroke=\"#333\" stroke-width=\"2\"/>\n<text x=\"205\" y=\"30\" font-size=\"12\" fill=\"#666\">生成物：○-●-○ 與單一 ○</text>\n<text x=\"0\" y=\"150\" font-size=\"11\" fill=\"#999\">●＝其中一元素　○＝另一元素（依原講義示意圖重繪，非原始照片掃描）</text>\n</svg>"
       },
       {
@@ -2751,7 +2802,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "赫斯定律、莫耳燃燒熱與生成熱轉換",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q53",
@@ -2776,7 +2828,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.96,
         "needsReview": false,
         "knowledgePoint": "同素異形體、赫斯定律",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q54",
@@ -2801,7 +2854,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.94,
         "needsReview": false,
         "knowledgePoint": "沉澱滴定當量點分析",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q55",
@@ -2826,7 +2880,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.93,
         "needsReview": false,
         "knowledgePoint": "生質能量、赫斯定律應用",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q56",
@@ -2845,7 +2900,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.8,
         "needsReview": true,
         "knowledgePoint": "分解反應途徑比較",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "大考風向（歷屆試題）"
       },
       {
         "id": "tm_12_q57",
@@ -2864,7 +2920,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.94,
         "needsReview": false,
         "knowledgePoint": "非絕熱卡計、線性外插求絕熱溫度",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "大考風向（歷屆試題）"
       }
     ],
     "related": []
@@ -2948,7 +3005,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.6,
         "needsReview": true,
-        "knowledgePoint": "色層分析法、比移值Rf"
+        "knowledgePoint": "色層分析法、比移值Rf",
+        "section": "色層分析法"
       },
       {
         "id": "tm_13_q2",
@@ -2966,7 +3024,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.6,
         "needsReview": true,
-        "knowledgePoint": "色層分析法應用"
+        "knowledgePoint": "色層分析法應用",
+        "section": "色層分析法"
       },
       {
         "id": "tm_13_q3",
@@ -2984,7 +3043,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "限量試劑、產率計算"
+        "knowledgePoint": "限量試劑、產率計算",
+        "section": "限量試劑與產率計算"
       },
       {
         "id": "tm_13_q4",
@@ -3002,7 +3062,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "莫耳生成熱、赫斯定律"
+        "knowledgePoint": "莫耳生成熱、赫斯定律",
+        "section": "莫耳生成熱計算"
       },
       {
         "id": "tm_13_q5",
@@ -3020,7 +3081,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "赫斯定律、同素異形體"
+        "knowledgePoint": "赫斯定律、同素異形體",
+        "section": "同素異形體轉化熱（赫斯定律）"
       },
       {
         "id": "tm_13_q6",
@@ -3038,7 +3100,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "純物質與混合物判別"
+        "knowledgePoint": "純物質與混合物判別",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q7",
@@ -3056,7 +3119,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "氧化還原反應式平衡"
+        "knowledgePoint": "氧化還原反應式平衡",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q8",
@@ -3074,7 +3138,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "氧化數變化、氧化還原產物判斷"
+        "knowledgePoint": "氧化數變化、氧化還原產物判斷",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q9",
@@ -3092,7 +3157,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "氧化還原反應式平衡"
+        "knowledgePoint": "氧化還原反應式平衡",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q10",
@@ -3110,7 +3176,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.7,
         "needsReview": true,
-        "knowledgePoint": "燃燒反應計量"
+        "knowledgePoint": "燃燒反應計量",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q11",
@@ -3128,7 +3195,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.5,
         "needsReview": true,
-        "knowledgePoint": "化學計量、質量比例"
+        "knowledgePoint": "化學計量、質量比例",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q12",
@@ -3146,7 +3214,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "濃度變化與反應式係數"
+        "knowledgePoint": "濃度變化與反應式係數",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q13",
@@ -3164,7 +3233,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.7,
         "needsReview": true,
-        "knowledgePoint": "混合氣體燃燒計量"
+        "knowledgePoint": "混合氣體燃燒計量",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q14",
@@ -3182,7 +3252,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.6,
         "needsReview": true,
-        "knowledgePoint": "燃燒反應與空氣比例"
+        "knowledgePoint": "燃燒反應與空氣比例",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q15",
@@ -3200,7 +3271,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "氣體反應體積變化"
+        "knowledgePoint": "氣體反應體積變化",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q16",
@@ -3218,7 +3290,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "產率計算"
+        "knowledgePoint": "產率計算",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q17",
@@ -3236,7 +3309,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "限量試劑、金屬硫化反應"
+        "knowledgePoint": "限量試劑、金屬硫化反應",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q18",
@@ -3254,7 +3328,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "反應熱基本性質"
+        "knowledgePoint": "反應熱基本性質",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q19",
@@ -3272,7 +3347,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.5,
         "needsReview": true,
-        "knowledgePoint": "赫斯定律綜合應用"
+        "knowledgePoint": "赫斯定律綜合應用",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q20",
@@ -3290,7 +3366,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.5,
         "needsReview": true,
-        "knowledgePoint": "莫耳生成熱與燃燒熱定義辨析"
+        "knowledgePoint": "莫耳生成熱與燃燒熱定義辨析",
+        "section": "選擇題"
       },
       {
         "id": "tm_13_q21",
@@ -3308,7 +3385,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.7,
         "needsReview": true,
-        "knowledgePoint": "離子鑑定、觀察推理"
+        "knowledgePoint": "離子鑑定、觀察推理",
+        "section": "綜合題與實驗題"
       },
       {
         "id": "tm_13_q22",
@@ -3326,7 +3404,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "氧化還原反應判斷、物質鑑定"
+        "knowledgePoint": "氧化還原反應判斷、物質鑑定",
+        "section": "綜合題與實驗題"
       },
       {
         "id": "tm_13_q23",
@@ -3344,7 +3423,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "熱分解反應、氧化還原、生活情境應用"
+        "knowledgePoint": "熱分解反應、氧化還原、生活情境應用",
+        "section": "素養題"
       },
       {
         "id": "tm_13_q24",
@@ -3362,7 +3442,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-05T00:00:00Z",
         "ocrConfidence": 0.8,
         "needsReview": true,
-        "knowledgePoint": "電石反應、化學計量、生活情境應用"
+        "knowledgePoint": "電石反應、化學計量、生活情境應用",
+        "section": "素養題"
       }
     ],
     "related": []
@@ -3421,7 +3502,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "序篇：讀歷史的功用",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "序篇：從臺灣走向世界"
       }
     ],
     "related": [
@@ -3551,7 +3633,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希臘文明的興起",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q2",
@@ -3573,7 +3656,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "城邦的興衰",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q3",
@@ -3595,7 +3679,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希臘三哲思想核心",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q4",
@@ -3617,7 +3702,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希臘三哲師承",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q5",
@@ -3639,7 +3725,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希臘化時代",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q6",
@@ -3661,7 +3748,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希臘化時代學術中心",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q7",
@@ -3683,7 +3771,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "斯多噶學派與伊比鳩魯學派",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q8",
@@ -3705,7 +3794,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "羅馬政治發展",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q9",
@@ -3727,7 +3817,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "羅馬法演變層次",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q10",
@@ -3749,7 +3840,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希伯來人的流離",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q11",
@@ -3771,7 +3863,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "早期基督教的發展",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q12",
@@ -3793,7 +3886,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "基督教成為國教",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q13",
@@ -3815,7 +3909,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "教會組織的形成",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q14",
@@ -3837,7 +3932,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "中古西歐封建莊園",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q15",
@@ -3859,7 +3955,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "西歐的政教合作",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q16",
@@ -3881,7 +3978,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "查理曼加冕",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q17",
@@ -3903,7 +4001,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "政教衝突與大分裂",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q18",
@@ -3925,7 +4024,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "基督教東西教會分裂",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q19",
@@ -3947,7 +4047,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "兩次教會分裂辨異",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q20",
@@ -3969,7 +4070,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "拜占庭政教合一",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q21",
@@ -3991,7 +4093,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "聖像破壞運動",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q22",
@@ -4013,7 +4116,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "經院哲學",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q23",
@@ -4035,7 +4139,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "文藝復興的定義",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第3節：復古與創新兼具的文藝復興"
       },
       {
         "id": "tm_15_q24",
@@ -4057,7 +4162,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "人文主義精神",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第3節：復古與創新兼具的文藝復興"
       },
       {
         "id": "tm_15_q25",
@@ -4079,7 +4185,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "義大利人文主義代表人物",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第3節：復古與創新兼具的文藝復興"
       },
       {
         "id": "tm_15_q26",
@@ -4101,7 +4208,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "文藝復興人物著作配對",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第3節：復古與創新兼具的文藝復興"
       },
       {
         "id": "tm_15_q27",
@@ -4123,7 +4231,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "文藝復興藝術技法",
-        "difficulty": "易"
+        "difficulty": "易",
+        "section": "第1章第3節：復古與創新兼具的文藝復興"
       },
       {
         "id": "tm_15_q28",
@@ -4145,7 +4254,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "義大利與北方文藝復興比較",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第3節：復古與創新兼具的文藝復興"
       },
       {
         "id": "tm_15_q29",
@@ -4167,7 +4277,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "單元整體脈絡",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章：綜合複習"
       },
       {
         "id": "tm_15_q30",
@@ -4189,7 +4300,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "希臘化時代學術與哲學綜合",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q31",
@@ -4211,7 +4323,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "羅馬法整體發展脈絡",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第1節：古代神話與哲學"
       },
       {
         "id": "tm_15_q32",
@@ -4233,7 +4346,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "經院哲學與人文主義辨析",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q33",
@@ -4255,7 +4369,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "中古教會的社會政治角色",
-        "difficulty": "難"
+        "difficulty": "難",
+        "section": "第1章第2節：基督教與中古歐洲"
       },
       {
         "id": "tm_15_q34",
@@ -4277,7 +4392,8 @@ AHS.TeachingMaterialData = [
         "version": "2",
         "createdDate": "2026-08-29T00:00:00Z",
         "knowledgePoint": "十字軍東征與學術復甦",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "section": "第1章第2節：基督教與中古歐洲"
       }
     ],
     "related": [

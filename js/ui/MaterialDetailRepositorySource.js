@@ -16,7 +16,7 @@
        shape js/ui/MaterialSummaryCard.js already renders, matching
        AHS.AITutorService.getLearningSummary()'s own output shape
      - quiz: { questions: [{question, options, answer, explanation,
-       difficulty, knowledgePoint}] } — the EXACT shape
+       difficulty, knowledgePoint, section}] } — the EXACT shape
        js/ui/MaterialQuestionCard.js already renders
 
    Never modifies js/runtime/TeachingMaterialLoader.js (this Hotfix's own
@@ -44,11 +44,16 @@
      whose questionBank stores {key,text} options + a key answer; the
      Package track's own questions already store answer as plain text
      directly, no resolution needed.
-   - difficulty/knowledgePoint are included only when the source record
-     actually has them — never fabricated when absent. Both tracks'
-     questions.json schemas carry an optional per-question `difficulty`
-     field (QuestionBank.schema.json); Package-track materials tm_2
-     onward populate it. */
+   - difficulty/knowledgePoint/section are included only when the source
+     record actually has them — never fabricated when absent. Both
+     tracks' questions.json schemas carry an optional per-question
+     `difficulty` field (QuestionBank.schema.json); Package-track
+     materials tm_2 onward populate it. `section` is QuestionBank.
+     schema.json's own optional continuity field — populated from
+     tm_15 onward (2026-09-07, per-question chapter/節 classification;
+     see tm_15's material.md) for materials whose source content spans
+     multiple named 節/單元, empty string for materials that never
+     recorded it. */
 window.AHS = window.AHS || {};
 AHS.MaterialDetailRepositorySource = (function () {
   "use strict";
@@ -116,7 +121,8 @@ AHS.MaterialDetailRepositorySource = (function () {
         answer: matched ? matched.text : "",
         explanation: q.explanation || "",
         difficulty: q.difficulty || "",
-        knowledgePoint: q.knowledgePoint || meta.chapter || ""
+        knowledgePoint: q.knowledgePoint || meta.chapter || "",
+        section: q.section || ""
       };
     });
 
@@ -154,7 +160,8 @@ AHS.MaterialDetailRepositorySource = (function () {
         answer: q.answer || "",
         explanation: q.explanation || "",
         difficulty: q.difficulty || "",
-        knowledgePoint: q.knowledgePoint || material.chapter || ""
+        knowledgePoint: q.knowledgePoint || material.chapter || "",
+        section: q.section || ""
       };
     });
 

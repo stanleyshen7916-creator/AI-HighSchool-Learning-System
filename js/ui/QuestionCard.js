@@ -29,11 +29,31 @@ AHS.QuestionCard = (function () {
     return match ? (match.difficulty || "") : "";
   }
 
+  /* resolveSection() — same gap/same fix as resolveDifficulty() above:
+     TeachingMaterialLoader.js's buildExamCompatibleQuestions()/
+     repoExamCompatibleQuestions() reshape never carries a question's own
+     `section` field (QuestionBank.schema.json's optional per-question
+     節/單元 label, populated from tm_15 onward — see its material.md)
+     into QuestionRuntime's stored shape, so it's resolved here the same
+     read-only way, via the real Repository record, matched by question
+     id. Returns "" (not fabricated) when unresolvable. */
+  function resolveSection(question) {
+    if (question.section) { return question.section; }
+    if (!question.materialId || !AHS.MaterialDetailRepositorySource ||
+        typeof AHS.MaterialDetailRepositorySource.resolve !== "function") { return ""; }
+    var repo = AHS.MaterialDetailRepositorySource.resolve(question.materialId);
+    if (!repo || !repo.quiz || !Array.isArray(repo.quiz.questions)) { return ""; }
+    var match = repo.quiz.questions.filter(function (q) { return q.id === question.id; })[0];
+    return match ? (match.section || "") : "";
+  }
+
   /* create(question, selectedKey, onSelect) */
   function create(question, selectedKey, onSelect) {
     var subj = AHS.Subjects[question.subject];
     var difficulty = resolveDifficulty(question);
+    var section = resolveSection(question);
     var metaBits = [];
+    if (section) { metaBits.push("章節：" + section); }
     if (difficulty) { metaBits.push("難度：" + difficulty); }
     if (question.knowledgePoint) { metaBits.push("考點：" + question.knowledgePoint); }
 

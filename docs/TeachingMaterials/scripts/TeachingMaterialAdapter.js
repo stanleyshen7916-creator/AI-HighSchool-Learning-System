@@ -256,6 +256,15 @@ function convertQuestions(questionBank, materialRuntimeId) {
        track's own real material already has per question. */
     if (q.knowledgePoint) { converted.knowledgePoint = q.knowledgePoint; }
     if (q.difficulty) { converted.difficulty = q.difficulty; }
+    /* 2026-09-07（PO 回報：歷史課本章節分類未呈現在練習題中）: same real
+       passthrough gap difficulty had before AI-112 AI-702/706 closed it
+       above — section (QuestionBank.schema.json's optional per-question
+       節/單元 continuity field, populated from tm_15 onward) was being
+       silently dropped here, so js/ui/QuestionCard.js's resolveSection()
+       runtime workaround never had real data to resolve either. Closed
+       at the source the same way, js/ui/QuestionCard.js's resolver kept
+       as the same defensive fallback resolveDifficulty() still is. */
+    if (q.section) { converted.section = q.section; }
     /* Sprint AI-147（使用者需求：題目附圖）: real passthrough only,
        omitted when absent — same discipline as knowledgePoint/difficulty
        above. figureSvg is an inline SVG string authored by hand from this

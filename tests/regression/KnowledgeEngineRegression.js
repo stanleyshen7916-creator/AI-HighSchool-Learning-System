@@ -637,6 +637,60 @@ console.log("\n[12] 題組題 — 依賴題真實內含共用題幹資料，單�
   }
 }
 
+/* ---- 13. 練習題章節標籤（PO 回報 2026-09-07：歷史課本練習題中沒有呈現
+   章節內容）——tm_15（世界史第1章，2026-09-07 由 tm_6 依章節拆分而來）
+   的每一題已在 questionbank.json 補上真實的 section 欄位（第1/2/3節）；
+   TeachingMaterialAdapter.js 的 convertQuestions() 原本會把這個欄位直接
+   丟棄（difficulty/knowledgePoint 也曾有過同樣的缺口，AI-112 AI-702/706
+   已修過），已比照同一方式把 section 也真實傳遞出來，並在
+   js/ui/QuestionCard.js（考試作答畫面）／js/ui/MaterialQuestionCard.js
+   （教材詳情內的 AI 練習題列表）補上「章節：」的顯示——這裡直接驗證考試
+   作答畫面（真實使用者看到的畫面）確實顯示得出來，不是只有資料存在而已。 ---- */
+console.log("\n[13] 練習題章節標籤 — tm_15 的真實 section 從 Package 一路傳到考試作答畫面（PO 回報 2026-09-07）");
+{
+  /* tm_15 標記 semester=g2s1（高二上），DEFAULT_WORKSPACE 是 g1s2（高一
+     下）——必須換成 g2s1 的 Workspace，否則 tm_15 會被誠實過濾掉，不是
+     bug。 */
+  const { window } = loadPage("quiz.html", {
+    seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
+  });
+  const A = window.AHS;
+  A.TeachingMaterialLoader.initialize();
+
+  const idMap = A.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {};
+  const runtimeId = idMap.tm_15;
+  check("真實找到 tm_15（世界史第1章）對應的 Runtime 教材 id", !!runtimeId);
+
+  if (runtimeId) {
+    const fullExamId = "teaching_material_" + runtimeId;
+    check("tm_15 真實已匯入題庫", A.QuestionRuntime.hasExam(fullExamId));
+    const fullSet = A.QuestionRuntime.getSet(fullExamId);
+
+    /* 直接用真實題目建立一個受控 examId（同 [11] 節做法），確保這裡看到
+       的一定是「達文西《最後的晚餐》」這一題（原 tm_6 第27題／拆分後
+       tm_15 第27題，section＝「第1章第3節：復古與創新兼具的文藝復興」），
+       不依賴 drawCycle() 隨機抽題。 */
+    const qDaVinci = fullSet.find((q) => q.text && q.text.indexOf("最後的晚餐") !== -1);
+    check("真實題庫中找得到「達文西《最後的晚餐》」這一題（PO 截圖的原題）", !!qDaVinci);
+
+    if (qDaVinci) {
+      const controlledExamId = "teaching_material_section_controlled";
+      A.QuestionRuntime.importQuestions(controlledExamId, [qDaVinci]);
+      A.QuestionBankRuntime.ensureBank(controlledExamId, [qDaVinci]);
+      const doc = window.document;
+      const mount = A.QuizCenter.create(undefined, undefined, undefined, controlledExamId);
+      doc.body.appendChild(mount);
+
+      const metaText = (doc.querySelector(".qcard__meta") || {}).textContent || "";
+      check("考試作答畫面（.qcard__meta）真實顯示「章節：」，不再只有難度/考點", metaText.indexOf("章節：") !== -1);
+      check("顯示的章節內容真實是「第1章第3節：復古與創新兼具的文藝復興」（非捏造）",
+        metaText.indexOf("第1章第3節：復古與創新兼具的文藝復興") !== -1);
+      check("難度／考點仍然照常一起顯示（新增章節沒有擠掉既有欄位）",
+        metaText.indexOf("難度：") !== -1 && metaText.indexOf("考點：") !== -1);
+    }
+  }
+}
+
 console.log("\n==============================");
 console.log("KnowledgeEngineRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail === 0 ? 0 : 1);
