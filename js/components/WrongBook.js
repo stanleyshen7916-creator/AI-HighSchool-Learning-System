@@ -585,7 +585,14 @@ AHS.WrongBook = (function () {
       bm,
       menuWrap
     ]);
-    row.addEventListener("click", function () { onSelect(item, row); });
+    /* 2026-09-08（PO 回報）: clicking the row itself now opens straight
+       into 立即重做（autoStartReview=true）instead of 查看詳情（answer
+       revealed immediately）— the student should attempt the question
+       before seeing the correct answer. The explicit 更多選項 -> 查看詳情
+       menu item above (line ~543, same onSelect but WITHOUT this third
+       arg) is untouched: a user who deliberately picks a menu item
+       labelled "查看詳情" still gets the literal answer-revealed view. */
+    row.addEventListener("click", function () { onSelect(item, row, true); });
     row.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onSelect(item, row); }
     });

@@ -276,8 +276,13 @@ console.log("\n[7] AI-129 bugfix — 清除篩選真的能重置篩選下拉選�
     subjectSelect.selectedIndex === 0);
 }
 
-/* ---- 8. 立即重做（startReview）流程仍與 Modal／詳解收合機制相容 -------- */
-console.log("\n[8] 立即重做流程仍正常運作（在 Modal 內，不受詳解收合機制影響）");
+/* ---- 8. 立即重做（startReview）流程仍與 Modal／詳解收合機制相容 --------
+   2026-09-08（PO 回報）：點擊列表中的題目列（.wb-row）現在會直接進入
+   立即重做狀態（autoStartReview=true），不再先顯示查看詳情（答案已揭曉）
+   ——見 questionRow() 內 row 的 click handler。這裡驗證的正是這個新預設
+   行為本身，而非再手動點一次「立即重做」按鈕（該按鈕此時已因自動觸發而
+   disabled，這是預期行為，非退化）。 */
+console.log("\n[8] 點擊題目列直接進入立即重做狀態（PO 回報：不應一開始就顯示答案），且仍與 Modal／詳解收合機制相容");
 {
   const { window: qWin } = loadPage("quiz.html");
   seedWrongItem(qWin);
@@ -287,15 +292,52 @@ console.log("\n[8] 立即重做流程仍正常運作（在 Modal 內，不受詳
   window.document.body.appendChild(window.AHS.WrongBook.create());
   window.document.querySelector(".wb-row").click();
 
-  const reviewBtn = window.document.querySelector(".wb-detail__btn--primary");
-  check("立即重做按鈕存在且可點擊（有真實選項資料）", !!reviewBtn && !reviewBtn.disabled);
-  reviewBtn.click();
   const interaction = window.document.querySelector(".wb-detail__review");
-  check("點擊後真實進入重新作答互動介面（仍在同一個 Modal 內，未關閉再重開）", !!interaction);
+  check("點擊題目列後（有真實選項資料時）真實直接進入重新作答互動介面，不必再手動點「立即重做」", !!interaction);
+  const reviewBtn = window.document.querySelector(".wb-detail__btn--primary");
+  check("立即重做按鈕因已自動觸發而真實 disabled（防止重複觸發，非壞掉）", !!reviewBtn && reviewBtn.disabled === true);
   check("Modal 本身仍維持開啟（同一個 overlay，未被關閉重建）", !!window.document.querySelector(".wb-modal__overlay"));
+  const answersWrap = window.document.querySelector(".wb-detail__answers");
+  check("一開始就不顯示「你的答案／正確答案」區塊（真正做到先作答、不先洩題）",
+    !answersWrap || answersWrap.hasAttribute("hidden"));
   const explainWrap = window.document.querySelector(".wb-detail__explain");
   check("重做期間詳解區塊整個隱藏（不會透過收合機制偷看到答案）",
     !explainWrap || explainWrap.hasAttribute("hidden"));
+
+  /* 提交答案後，答案／詳解區塊才誠實地重新出現（onReviewSubmit ->
+     selectItem() 重新渲染，這次不再帶 autoStartReview，回到一般查看態）。 */
+  const firstOption = window.document.querySelector(".wb-detail__option");
+  firstOption.click();
+  const submitBtn = window.document.querySelector(".wb-detail__btn--primary");
+  submitBtn.click();
+  const answersAfterSubmit = window.document.querySelector(".wb-detail__answers");
+  check("提交答案後，「你的答案／正確答案」區塊真實重新顯示", !!answersAfterSubmit && !answersAfterSubmit.hasAttribute("hidden"));
+
+  check("Console errors = 0", consoleErrors.length === 0);
+}
+
+/* ---- 8b. 更多選項選單的「查看詳情」仍是明確的純檢視模式，不受本次變更
+   影響 —— 使用者明確點選「查看詳情」時，語意上就是要直接看答案，不應被
+   自動改成互動重做。 ------------------------------------------------- */
+console.log("\n[8b] 更多選項 -> 查看詳情 仍維持答案直接顯示（不受列項預設變更影響）");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItem(qWin);
+  const carry = dumpSession(qWin);
+
+  const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: carry });
+  window.document.body.appendChild(window.AHS.WrongBook.create());
+  window.document.querySelector(".wb-row__more").click();
+  const viewMenuItem = [...window.document.querySelectorAll(".wb-row__menu-item")]
+    .find((b) => b.textContent === "查看詳情");
+  check("真實找到「查看詳情」選單項目", !!viewMenuItem);
+  if (viewMenuItem) { viewMenuItem.click(); }
+
+  check("透過「查看詳情」開啟時，不會自動進入重做互動介面（沒有 .wb-detail__review）",
+    !window.document.querySelector(".wb-detail__review"));
+  const answersWrap = window.document.querySelector(".wb-detail__answers");
+  check("透過「查看詳情」開啟時，答案區塊直接顯示（維持既有「查看詳情」的語意）",
+    !!answersWrap && !answersWrap.hasAttribute("hidden"));
 
   check("Console errors = 0", consoleErrors.length === 0);
 }
