@@ -20,7 +20,7 @@
   --line: #eceef3;
   --line-strong: #e2e5ec;
 
-  /* subject colors (九科) */
+  /* subject colors (十科) */
   --subj-chinese: #6366f1;   /* 國文 */
   --subj-english: #22b573;   /* 英文 */
   --subj-math: #7c5cff;      /* 數學 */
@@ -30,6 +30,7 @@
   --subj-history: #ef4444;   /* 歷史 */
   --subj-geography: #06b6d4; /* 地理 */
   --subj-civics: #ec4899;    /* 公民 */
+  --subj-earthscience: #92400e; /* 地球科學 */
 
   /* status */
   --ok: #22b573;

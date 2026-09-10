@@ -42,7 +42,7 @@ AHS.AppConfig = {
     grades: ["高一", "高二", "高三"],
     sorts: ["最新上傳", "最多觀看", "閱讀進度"],
     formats: ["全部格式", "PDF", "PPT", "PPTX", "DOC", "DOCX", "XLS", "XLSX", "TXT", "MP4", "MP3", "JPG", "JPEG", "PNG", "GIF", "WEBP", "其他"],
-    /* subjectCounts is a template of the nine fixed subjects; the REAL
+    /* subjectCounts is a template of the ten fixed subjects; the REAL
        per-subject counts are computed from AHS.MaterialRuntime at page
        init (MaterialCenter) — never faked here. */
     subjectCounts: [
@@ -50,7 +50,7 @@ AHS.AppConfig = {
       { subject: "math", count: 0 }, { subject: "physics", count: 0 },
       { subject: "chemistry", count: 0 }, { subject: "biology", count: 0 },
       { subject: "history", count: 0 }, { subject: "geography", count: 0 },
-      { subject: "civics", count: 0 }
+      { subject: "civics", count: 0 }, { subject: "earthscience", count: 0 }
     ]
   },
 
@@ -74,7 +74,7 @@ AHS.AppConfig = {
     title: "知識弱點",
     subtitle: "整理錯題，釐清觀念，強化弱點！",
     bannerTip: "每一次錯誤，都是進步的線索！再試一次，你一定可以更好！",
-    subjectOptions: ["全部科目", "國文", "英文", "數學", "物理", "化學", "生物", "歷史", "地理", "公民與社會"],
+    subjectOptions: ["全部科目", "國文", "英文", "數學", "物理", "化學", "生物", "歷史", "地理", "公民與社會", "地球科學"],
     knowledgeOptions: ["全部知識點"],
     difficultyOptions: ["全部難易度", "簡單", "中等", "困難"],
     statusOptions: ["全部狀態", "待複習", "複習中", "已精熟", "已封存"],

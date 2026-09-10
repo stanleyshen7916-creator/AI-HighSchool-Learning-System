@@ -142,8 +142,8 @@ console.log("\n[1] 平時練習列表 — 真實顯示「選擇多課合併複�
 
   const subjectChips = doc.querySelectorAll(".qpick-subject");
   const subjectChipNames = Array.prototype.map.call(subjectChips, (c) => c.textContent);
-  check("Picker 真實顯示 8 個科目（生物＋國文＋英文＋歷史＋數學＋公民與社會＋物理＋化學，本次 Workspace 範圍內的真實科目數，含 tm_5、tm_14/tm_15（原 tm_6 拆分）、tm_7、tm_8、tm_9、tm_10、tm_11、tm_12）",
-    subjectChips.length === 8 && ["生物", "國文", "英文", "歷史", "數學", "公民與社會", "物理", "化學"].every((s) => subjectChipNames.indexOf(s) !== -1));
+  check("Picker 真實顯示 9 個科目（生物＋國文＋英文＋歷史＋數學＋公民與社會＋物理＋化學＋地球科學，本次 Workspace 範圍內的真實科目數，含 tm_5、tm_14/tm_15/tm_16（原 tm_6 拆分＋新增第2章）、tm_7、tm_8、tm_9、tm_10、tm_11、tm_12、tm_17（地球科學，平台第10個科目首筆教材））",
+    subjectChips.length === 9 && ["生物", "國文", "英文", "歷史", "數學", "公民與社會", "物理", "化學", "地球科學"].every((s) => subjectChipNames.indexOf(s) !== -1));
 
   /* tm_5（生物，Package track）現為此 Workspace 內註冊順序最早的教材，
      成為預設分頁 — 不再假設「國文」永遠是第一個分頁，改為明確點擊「國文」

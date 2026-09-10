@@ -1,121 +1,126 @@
 {
-  "materialId": "tm_13",
+  "materialId": "tm_17",
   "knowledgePoints": [
     {
-      "name": "化學計量、質量比例",
+      "name": "亮度與光度",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "反應熱基本性質",
+      "name": "包裹體定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "半衰期比例反推",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "氣體反應體積變化",
+      "name": "四季變化的主因",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "氧化數變化、氧化還原產物判斷",
+      "name": "地球的分層構造",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "氧化還原反應判斷、物質鑑定",
+      "name": "均變說",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "大氣三階段演變",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "大霹靂學說的證據",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "氧化還原反應式平衡",
-      "source": "question",
-      "refCount": 2
-    },
-    {
-      "name": "混合氣體燃燒計量",
+      "name": "太陽星雲學說",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "濃度變化與反應式係數",
+      "name": "太陽演化的顏色變化",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "熱分解反應、氧化還原、生活情境應用",
+      "name": "宇宙學紅移與都卜勒紅移",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "燃燒反應與空氣比例",
+      "name": "帶狀鐵礦與氧氣累積",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "燃燒反應計量",
+      "name": "彗星離子尾方向",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "產率計算",
+      "name": "恆星日與太陽日",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "純物質與混合物判別",
+      "name": "恆星顏色與行星顏色成因",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "色層分析法、比移值Rf",
+      "name": "放射性定年法的極限",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "色層分析法應用",
+      "name": "星等差與亮度倍率",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "莫耳生成熱、赫斯定律",
+      "name": "柯伊伯帶與歐特雲",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "莫耳生成熱與燃燒熱定義辨析",
+      "name": "極圈緯度計算",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "赫斯定律、同素異形體",
+      "name": "標準化石與指相化石",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "赫斯定律綜合應用",
+      "name": "海洋形成年代的推知方式",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "限量試劑、產率計算",
+      "name": "生物上陸與臭氧層",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "限量試劑、金屬硫化反應",
+      "name": "視星等與絕對星等、距離模數",
       "source": "question",
       "refCount": 1
     },
     {
-      "name": "離子鑑定、觀察推理",
-      "source": "question",
-      "refCount": 1
-    },
-    {
-      "name": "電石反應、化學計量、生活情境應用",
-      "source": "question",
+      "name": "除碳作用",
+      "source": "both",
       "refCount": 1
     }
   ],
-  "generatedAt": "2026-09-10T06:35:06.379Z"
+  "generatedAt": "2026-09-10T06:35:06.381Z"
 }

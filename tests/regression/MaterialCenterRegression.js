@@ -102,16 +102,21 @@ console.log("\n[1] Student A／長榮中學／高一下學期 — 真實看到�
    15 筆；tm_16（長榮中學高二歷史 第2章「歐洲自由與民主的發展」，2026-09-09
    整合 Claude Round1 與 ChatGPT(Web)/Gemini(Web) Tri-Web Council 三方內容
    重新比對 SOURCE 產出之 Final 版，Package materialType=TEXTBOOK）匯入後
-   同樣標記 g2s1，為第 16 筆），不得出現高一下（g1s2）教材，兩學期互相隔離 --- */
-console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 16 筆教材（國文3＋英文1＋生物3＋歷史3＋數學1＋公民2＋物理2＋化學1，不得出現高一下教材）");
+   同樣標記 g2s1，為第 16 筆；tm_17（長榮中學高二地球科學講義「地球的歷史」
+   ＋「天文」，2026-09-10 同樣整合 Claude Round1 與 Tri-Web Council 三方內容
+   之 Final 版，Package materialType=TEXTBOOK——本教材同時是「地球科學」
+   正式成為平台第10個支援科目後的第一筆教材，AHS.Subjects 已新增
+   earthscience 項目）匯入後同樣標記 g2s1，為第 17 筆），不得出現高一下
+   （g1s2）教材，兩學期互相隔離 --- */
+console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到已標記 g2s1 的 17 筆教材（國文3＋英文1＋生物3＋歷史3＋數學1＋公民2＋物理2＋化學1＋地球科學1，不得出現高一下教材）");
 {
   const { window, consoleErrors } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實看到 16 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_14/tm_15/tm_16 世界史（原 tm_6 拆分＋新增第2章）、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理、tm_12 化學）", materials.length === 16);
-  check("皆為國文科、英文科、生物科、歷史科、數學科、公民科、物理科或化學科（無高一下的 geography 教材混入）",
-    materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math" || m.subject === "civics" || m.subject === "physics" || m.subject === "chemistry"));
+  check("高二上真實看到 17 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_14/tm_15/tm_16 世界史（原 tm_6 拆分＋新增第2章）、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理、tm_12 化學、tm_17 地球科學）", materials.length === 17);
+  check("皆為國文科、英文科、生物科、歷史科、數學科、公民科、物理科、化學科或地球科學科（無高一下的 geography 教材混入）",
+    materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math" || m.subject === "civics" || m.subject === "physics" || m.subject === "chemistry" || m.subject === "earthscience"));
   check("包含國文第一課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
   check("包含國文第三課合併教材（近體詩選：杜甫、李商隱、黃庭堅）",
     materials.some((m) => (m.title || "").indexOf("近體詩選") !== -1));
@@ -127,6 +132,8 @@ console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到�
     materials.some((m) => (m.title || "").indexOf("歐洲文化與基督教傳統") !== -1));
   check("包含歷史 tm_16 教材（第2章 歐洲自由與民主的發展，Round1+Tri-Web Council 整合 Final）",
     materials.some((m) => (m.title || "").indexOf("歐洲自由與民主的發展") !== -1));
+  check("包含地球科學 tm_17 教材（地球的歷史＋天文講義，平台第10個科目首筆教材）",
+    materials.some((m) => m.subject === "earthscience" && (m.title || "").indexOf("地球的歷史") !== -1));
   check("包含數學 tm_7 教材（第1章 三角函數）",
     materials.some((m) => (m.title || "").indexOf("三角函數") !== -1));
   check("包含公民 tm_8 教材（第1章 社會資源的分配）",
