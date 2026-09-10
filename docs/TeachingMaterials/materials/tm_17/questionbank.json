@@ -537,6 +537,29 @@
       "knowledgePoint": "極圈緯度計算",
       "difficulty": "中等",
       "section": "主題11：四季變化"
+    },
+    {
+      "questionId": "tm_17_q25",
+      "materialId": "tm_17",
+      "questionNumber": "25",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "教材「太陽系的行星」比較表中提到「自轉軸傾斜25度，傾斜角度與地球相近」，這是在描述哪一顆行星？",
+      "options": [
+        "火星",
+        "地球",
+        "金星",
+        "木星"
+      ],
+      "answer": "火星",
+      "explanation": "依教材第26頁「太陽系的行星」比較表，「自轉軸傾斜25度、與地球一樣有四季變化、地表覆蓋許多氧化鐵所以呈現紅色」這整段描述的對象是火星，而非地球；地球在該表格中僅以「我們住的這一顆」一語帶過，並未列出數值。地球自身的自轉軸傾角（黃赤交角）固定為23.5度，與火星的25度相近但不相同，是本教材常考的辨析重點。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-09-10T00:00:00Z",
+      "knowledgePoint": "八大行星特點——火星自轉軸傾角",
+      "difficulty": "中等",
+      "section": "主題4：太陽系"
     }
   ]
 }
