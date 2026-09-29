@@ -32,7 +32,10 @@ function walk(dir, exts, rules) {
     /* strip comments — the project's own file headers legitimately
        DOCUMENT the forbidden APIs; only real code counts. */
     src = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
-    const rel = path.relative(ROOT, p);
+    /* POSIX-style separators so the KNOWN_ISSUES/AUTHORIZED_EXCEPTIONS keys
+       (written with "/") also match on Windows, where path.relative()
+       returns "js\core\...". */
+    const rel = path.relative(ROOT, p).split(path.sep).join("/");
     for (const r of rules) {
       if (!r.test(src)) continue;
       if (KNOWN_ISSUES[rel] && KNOWN_ISSUES[rel].some(k => String(r) === String(k))) {

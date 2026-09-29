@@ -43,6 +43,25 @@ const OUTPUT_FILE = path.join(REPO_ROOT, "js", "data", "TeachingMaterialData.js"
    genuinely empty until real material exists (never pre-populated). */
 const INDEX_FILE = path.join(__dirname, "..", "index.json");
 
+/* writeIfChanged(file, content) — every generated file below carries a
+   generatedAt/updatedAt timestamp. Rewriting them on every run (including
+   every `npm test`, whose pipeline regressions drive this generator
+   against the real Repository) left ~18 tracked files dirty with
+   timestamp-only diffs. Only write when something other than those two
+   timestamp fields changed, so an unchanged Repository regenerates
+   byte-for-byte unchanged. Returns true when the file was written. */
+const TIMESTAMP_FIELD = /"(generatedAt|updatedAt)": "[^"]*"/g;
+function normalizeForCompare(text) {
+  return String(text).replace(/\r\n/g, "\n").replace(TIMESTAMP_FIELD, "\"$1\": \"\"");
+}
+function writeIfChanged(file, content) {
+  var existing = null;
+  try { existing = fs.readFileSync(file, "utf8"); } catch (e) { existing = null; }
+  if (existing !== null && normalizeForCompare(existing) === normalizeForCompare(content)) { return false; }
+  fs.writeFileSync(file, content, "utf8");
+  return true;
+}
+
 function listMaterialIds() {
   if (!fs.existsSync(MATERIALS_DIR)) { return []; }
   return fs.readdirSync(MATERIALS_DIR, { withFileTypes: true })
@@ -162,10 +181,10 @@ function writeKnowledgeAndReport(entries) {
   entries.forEach(function (e) {
     var dir = path.join(MATERIALS_DIR, e.materialId);
     var knowledge = buildKnowledgeIndex(e.materialId, e.pkg);
-    fs.writeFileSync(path.join(dir, "knowledge.json"), JSON.stringify(knowledge, null, 2) + "\n", "utf8");
+    writeIfChanged(path.join(dir, "knowledge.json"), JSON.stringify(knowledge, null, 2) + "\n");
     var stage = lifecycle.resolveStage(e.materialId);
     var report = buildReportMarkdown(e.materialId, e.pkg, e.validation, stage);
-    fs.writeFileSync(path.join(dir, "report.md"), report, "utf8");
+    writeIfChanged(path.join(dir, "report.md"), report);
   });
 }
 
@@ -220,7 +239,7 @@ function generate(options) {
   var body = "window.AHS = window.AHS || {};\n" +
     "AHS.TeachingMaterialData = " + JSON.stringify(dataEntries, null, 2) + ";\n";
 
-  fs.writeFileSync(OUTPUT_FILE, header + body, "utf8");
+  writeIfChanged(OUTPUT_FILE, header + body);
   console.log("Generated " + path.relative(REPO_ROOT, OUTPUT_FILE) + " — " + entries.length + " material(s) included (" + ids.length + " scanned).");
 
   writeIndex(entries);
@@ -257,7 +276,7 @@ function writeRepositoryStatus() {
   ].join("\n");
   var body = "window.AHS = window.AHS || {};\n" +
     "AHS.RepositoryStatus = " + JSON.stringify({ counts: counts, generatedAt: new Date().toISOString() }, null, 2) + ";\n";
-  fs.writeFileSync(outFile, header + body, "utf8");
+  writeIfChanged(outFile, header + body);
   console.log("Generated " + path.relative(REPO_ROOT, outFile) + " — " + JSON.stringify(counts));
 }
 
@@ -295,7 +314,7 @@ function writeIndex(entries) {
       };
     })
   };
-  fs.writeFileSync(INDEX_FILE, JSON.stringify(index, null, 2) + "\n", "utf8");
+  writeIfChanged(INDEX_FILE, JSON.stringify(index, null, 2) + "\n");
   console.log("Generated " + path.relative(REPO_ROOT, INDEX_FILE) + " — " + index.materials.length + " material(s) indexed.");
 }
 
@@ -305,6 +324,7 @@ if (require.main === module) {
 
 module.exports = {
   generate: generate,
+  writeIfChanged: writeIfChanged,
   listMaterialIds: listMaterialIds,
   buildEntry: buildEntry,
   writeRepositoryStatus: writeRepositoryStatus,

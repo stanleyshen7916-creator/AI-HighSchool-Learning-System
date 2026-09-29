@@ -37,6 +37,31 @@ function collectErrors(page) {
    資安等級保護）——這裡直接對應同一份資料，不是另外發明一組。 */
 const STUDENT_PASSWORDS = { Admin: "1234", "Student A": "1234", "Student B": "1234" };
 
+/* expectedMaterialCount(page) — the number of real materials the current
+   Workspace should see, counted straight from the two static data sources
+   (AHS.TeachingMaterialData package track + AHS.MaterialRepository
+   repository track) by school/semester. Hard-coded counts (5, then 14)
+   went stale every time a new material was published (tm_15~17 made
+   高二上 17), turning CI red without any real regression. */
+async function expectedMaterialCount(page) {
+  return page.evaluate(() => {
+    const ws = window.AHS.WorkspaceRuntime.getCurrent();
+    const allowed = (school, semester) =>
+      (!school || school === ws.schoolId) && (!semester || ws.semesterIds.indexOf(semester) !== -1);
+    const pkg = (window.AHS.TeachingMaterialData || [])
+      .filter((e) => allowed(e.material.school, e.material.semester)).length;
+    const repo = (window.AHS.MaterialRepository ? window.AHS.MaterialRepository.list() : [])
+      .filter((r) => allowed((r.metadata || {}).workspaceSchool, (r.metadata || {}).workspaceSemester)).length;
+    return pkg + repo;
+  });
+}
+
+async function expectCardsMatchWorkspace(page, minimum) {
+  const expected = await expectedMaterialCount(page);
+  expect(expected).toBeGreaterThanOrEqual(minimum);
+  await expect(page.locator(".mat-card")).toHaveCount(expected);
+}
+
 async function loginAs(page, studentLabel, schoolLabel, semesterLabels) {
   await page.goto(fileUrl("login.html"));
   await page.locator(".login-option", { hasText: studentLabel }).first().click();
@@ -55,8 +80,8 @@ test("AI-120 PAT①：Student A -> 高一下 -> 教材中心只看到高一下�
   const errors = collectErrors(page);
   await loginAs(page, "Student A", "長榮中學", ["高一下學期"]);
   await page.goto(fileUrl("materials"));
-  const cards = page.locator(".mat-card");
-  await expect(cards).toHaveCount(5); // 4 Package track (tm_1~4) + 1 Repository track (civics)，全數已遷移至高一下學期
+  // 4 Package track (tm_1~4) + 1 Repository track (civics)，全數已遷移至高一下學期
+  await expectCardsMatchWorkspace(page, 5);
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
 
@@ -65,14 +90,15 @@ test("AI-120 PAT①(續)：Student A -> 高二上 -> 教材中心只看到高二
      tm_6（世界史）／tm_7（數學：三角函數）／tm_8、tm_9（公民與社會）／
      tm_10、tm_11（物理）／tm_12（化學）8 筆 Package-track 教材，加上既有
      6 筆 Repository-track 教材（國文第一／二／三課、英文第一課、生物起源
-     與演化、生物第1章講義版），高二上（g2s1）真的有 14 筆真實教材——
-     「誠實顯示空狀態」的原始假設已經不成立，這裡改為驗證真正的重點：
-     這 14 筆是「高二上自己的」真實教材，且完全不包含任何高一下
+     與演化、生物第1章講義版），高二上（g2s1）當時有 14 筆真實教材，之後
+     tm_14~17 再上架，數量會持續增加——所以不再寫死筆數，改由
+     expectedMaterialCount() 從資料來源算出應有筆數（至少 14），並驗證
+     這些是「高二上自己的」真實教材，且完全不包含任何高一下
      （tm_1~4／civics）的教材，Workspace 過濾仍然誠實、正確。 */
   const errors = collectErrors(page);
   await loginAs(page, "Student A", "長榮中學", ["高二上學期"]);
   await page.goto(fileUrl("materials"));
-  await expect(page.locator(".mat-card")).toHaveCount(14);
+  await expectCardsMatchWorkspace(page, 14);
   await expect(page.locator("body")).toContainText("國文");
   /* 「三角函數」本身不再是唯一辨識字串：tm_7（高二上，數學第1章）自己
      的章節標題也真的含有「三角函數」——這是高一、高二課綱本來就都教三角
@@ -109,16 +135,16 @@ test("AI-120 PAT③：Workspace 切換 高一下 -> 高二上 -> 教材中心立
   const errors = collectErrors(page);
   await loginAs(page, "Student A", "長榮中學", ["高一下學期"]);
   await page.goto(fileUrl("materials"));
-  await expect(page.locator(".mat-card")).toHaveCount(5);
+  await expectCardsMatchWorkspace(page, 5);
 
   await page.locator(".topbar__workspace-chip").click();
   await page.locator(".workspace-menu__item", { hasText: "高二上學期" }).click();
   await page.locator(".shell").waitFor({ state: "visible" });
 
   await page.goto(fileUrl("materials"));
-  /* 同上（PAT①續）：高二上現在真的有 14 筆真實教材，切換後應立即同步
-     成這 14 筆，而不是延續切換前高一下的 5 筆／或誠實空狀態。 */
-  await expect(page.locator(".mat-card")).toHaveCount(14);
+  /* 同上（PAT①續）：切換後應立即同步成高二上自己的全部真實教材，而不是
+     延續切換前高一下的筆數／或誠實空狀態。 */
+  await expectCardsMatchWorkspace(page, 14);
   await expect(page.locator("body")).toContainText("國文");
   expect(errors, "Console errors: " + errors.join(" | ")).toEqual([]);
 });
