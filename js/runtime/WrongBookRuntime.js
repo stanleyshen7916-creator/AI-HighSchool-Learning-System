@@ -86,6 +86,12 @@ AHS.WrongBookRuntime = (function () {
         options: Array.isArray(record.options) ? record.options : [],
         error_count: record.errorCount,
         correct_streak: record.correctStreak || 0,
+        /* 2026-09-29（PO 回報：知識弱點「對 0 次」有誤）: correctCount 原本
+           只存在本地 sessionStorage，換裝置／重新登入從雲端撈回來一律變 0，
+           與「複習中」（correctStreak ≥ 1）互相矛盾。現在隨每次寫入一起同步
+           （需 20260929000001_wrong_book_correct_count.sql；欄位尚未建立時
+           writeRow() 會自動略過此欄，不影響其他欄位的同步）。 */
+        correct_count: record.correctCount || 0,
         mastered_at: record.masteredAt || null,
         bookmarked: !!record.bookmarked,
         archived: !!record.archived
@@ -148,12 +154,19 @@ AHS.WrongBookRuntime = (function () {
          session 撈回來時，resolveOptions()/resolveFigureSvg() 真的能重新
          找到題目。 */
       if (record.questionId) { row.local_question_id = record.questionId; }
+      /* 2026-09-29: last_error_at was never sent, so the cloud kept the
+         first-mistake time forever (the column's insert default) and a
+         fresh session showed a stale 最近答錯日期. Local dates are
+         "YYYY/MM/DD" (formatDate); send them as ISO dates. */
+      if (record.lastError) { row.last_error_at = toIsoDate(record.lastError); }
       if (record.supabaseId) {
-        AHS.SyncBridge.pushFireAndForget(function () { return repo.update("wrong_book", "id=eq." + record.supabaseId, row); });
+        AHS.SyncBridge.pushFireAndForget(function () {
+          return writeRow(row, function (r) { return repo.update("wrong_book", "id=eq." + record.supabaseId, r); });
+        });
         return;
       }
       AHS.SyncBridge.pushFireAndForget(function () {
-        return repo.insert("wrong_book", row).then(function (result) {
+        return writeRow(row, function (r) { return repo.insert("wrong_book", r); }).then(function (result) {
           if (!result.error && result.data && result.data[0]) {
             record.supabaseId = result.data[0].id;
             persist();
@@ -240,17 +253,21 @@ AHS.WrongBookRuntime = (function () {
         local.explanation = row.explanation;
         local.errorCount = row.error_count;
         local.correctStreak = row.correct_streak;
-        local.masteredAt = row.mastered_at;
+        /* 2026-09-29: remote timestamps ("2026-09-06T02:06:43.775+00:00")
+           were stored verbatim — shown raw on 知識弱點, and never equal to
+           StatisticsRuntime's "YYYY/MM/DD" today, so 今日新增／解除弱點
+           miscounted. Normalize to this Runtime's own local date format. */
+        local.masteredAt = toLocalDate(row.mastered_at);
         local.bookmarked = row.bookmarked;
         local.archived = row.archived;
-        local.firstError = local.firstError || row.first_error_at;
-        local.lastError = row.last_error_at;
-        /* AI-128: no wrong_book column for this yet — a remote row never
-           carries it, so preserve whatever this session's own local
-           value already is (0 for a record that only just got created
-           by the `!local` branch above) instead of letting a remote
-           pull silently wipe real local progress. */
-        local.correctCount = local.correctCount || 0;
+        local.firstError = toLocalDate(local.firstError || row.first_error_at);
+        local.lastError = toLocalDate(row.last_error_at);
+        /* 2026-09-29: correct_count now round-trips (see pushRecord()).
+           Keep the larger of local and remote (a push may still be in
+           flight), and never below correct_streak — a cumulative count
+           can't be smaller than the current consecutive run; this also
+           repairs rows written before the column existed. */
+        local.correctCount = Math.max(local.correctCount || 0, row.correct_count || 0, row.correct_streak || 0);
         pulled += 1;
       });
       return Promise.all(subjectLookups).then(function () {
@@ -386,12 +403,9 @@ AHS.WrongBookRuntime = (function () {
              unlike correctStreak (which tracks only the current
              consecutive run and resets to 0 on a miss). Added so the
              Detail Panel can honestly show "正確幾次" as a real total,
-             not a proxy for something else. Local-only (no wrong_book
-             column for this yet — same non-blocking pattern already used
-             for anything this Sprint doesn't have Supabase schema
-             authorization to add); pullFromRepository() below preserves
-             whatever local value already exists rather than resetting it
-             to 0 on every pull. */
+             not a proxy for something else. Synced as wrong_book.
+             correct_count since 2026-09-29 (it used to be local-only and
+             reset to 0 on every fresh session — see pushRecord()). */
           correctCount: 0
         };
         store.items.push(record);
@@ -491,6 +505,36 @@ AHS.WrongBookRuntime = (function () {
   function formatDate(d) {
     function pad(n) { return n < 10 ? "0" + n : String(n); }
     return d.getFullYear() + "/" + pad(d.getMonth() + 1) + "/" + pad(d.getDate());
+  }
+
+  /* toLocalDate(value) — a remote timestamptz (or an older raw value
+     already persisted locally) -> "YYYY/MM/DD" in the student's own time
+     zone; an already-local date passes through unchanged. */
+  function toLocalDate(value) {
+    if (!value) { return value || null; }
+    if (/^\d{4}\/\d{2}\/\d{2}$/.test(value)) { return value; }
+    var d = new Date(value);
+    return isNaN(d.getTime()) ? value : formatDate(d);
+  }
+
+  /* toIsoDate("YYYY/MM/DD") -> "YYYY-MM-DD" for a timestamptz column. */
+  function toIsoDate(value) {
+    return String(value).replace(/\//g, "-");
+  }
+
+  /* writeRow(row, write) — write(row) with a one-time retry without
+     correct_count when the column doesn't exist yet (PostgREST PGRST204
+     "Could not find the 'correct_count' column"), so deploying this
+     code before the migration runs never breaks the rest of the sync. */
+  function writeRow(row, write) {
+    return write(row).then(function (result) {
+      var e = result && result.error;
+      var text = e ? String(e.message || "") + " " + JSON.stringify(e.raw || "") : "";
+      if (!e || text.indexOf("correct_count") === -1) { return result; }
+      var fallback = {};
+      Object.keys(row).forEach(function (k) { if (k !== "correct_count") { fallback[k] = row[k]; } });
+      return write(fallback);
+    });
   }
 
   function clone(value) {
