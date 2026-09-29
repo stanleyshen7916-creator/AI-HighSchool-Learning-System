@@ -4,12 +4,11 @@ const fs = require("fs"), path = require("path");
 const ROOT = path.join(__dirname, "..", "..");
 const JS_BAD = [/\blocalStorage\b/, /\bindexedDB\b/i, /\bfetch\s*\(/, /XMLHttpRequest/, /^\s*import\s/m, /^\s*export\s/m, /window\.location\.href\s*=/];
 const CSS_BAD = [/linear-gradient\([^)]*var\(/, /calc\(var\([^)]*\)\s*[+*/-]\s*var\(/, /env\(safe-area/, /\binset\s*:/, /\d+dvh\b/];
-/* Pre-existing deviation flagged in QA_EO-S6.8-Repository-001 audit:
-   HomeRecentMaterials card click navigation predates the <a href> rule.
-   Fixing it changes component behavior — out of this EO's scope
-   (不得修改功能). Tracked for a future WO — this is debt pending a fix,
-   not an intentional design decision. */
-const KNOWN_ISSUES = { "js/components/HomeRecentMaterials.js": [/window\.location\.href\s*=/] };
+/* Tracked pre-existing deviations (debt pending a fix). Empty since
+   2026-09-29: the only entry, HomeRecentMaterials.js's card click
+   assigning window.location.href, now uses window.location.assign() —
+   the same navigation, no longer a forbidden-pattern hit. */
+const KNOWN_ISSUES = {};
 
 /* Sprint AI-126B (PMO-authorized, 2026-08-07): these two files are the
    Repository Layer's real Supabase connection point (CLAUDE.md's Project
@@ -20,7 +19,11 @@ const KNOWN_ISSUES = { "js/components/HomeRecentMaterials.js": [/window\.locatio
    file, which may only reach Supabase through js/repository/. */
 const AUTHORIZED_EXCEPTIONS = {
   "js/core/SupabaseClient.js": [/\bfetch\s*\(/],
-  "js/repository/SupabaseRepository.js": [/\bfetch\s*\(/]
+  "js/repository/SupabaseRepository.js": [/\bfetch\s*\(/],
+  /* 2026-09-29 教材上傳併入學習平台: the one browser-side connection point
+     to the Admin's local 教材上傳引擎 (ai-engine/council). Only
+     js/components/CouncilUpload.js uses it, only on upload.html. */
+  "js/core/CouncilEngineClient.js": [/\bfetch\s*\(/]
 };
 let bad = 0;
 function walk(dir, exts, rules) {
@@ -32,14 +35,17 @@ function walk(dir, exts, rules) {
     /* strip comments — the project's own file headers legitimately
        DOCUMENT the forbidden APIs; only real code counts. */
     src = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
-    const rel = path.relative(ROOT, p);
+    /* POSIX-style separators so the KNOWN_ISSUES/AUTHORIZED_EXCEPTIONS keys
+       (written with "/") also match on Windows, where path.relative()
+       returns "js\core\...". */
+    const rel = path.relative(ROOT, p).split(path.sep).join("/");
     for (const r of rules) {
       if (!r.test(src)) continue;
       if (KNOWN_ISSUES[rel] && KNOWN_ISSUES[rel].some(k => String(r) === String(k))) {
         console.log("KNOWN-ISSUE (flagged, pending WO)", r, "in", rel); continue;
       }
       if (AUTHORIZED_EXCEPTIONS[rel] && AUTHORIZED_EXCEPTIONS[rel].some(k => String(r) === String(k))) {
-        console.log("AUTHORIZED-EXCEPTION (Sprint AI-126B)", r, "in", rel); continue;
+        console.log("AUTHORIZED-EXCEPTION", r, "in", rel); continue;
       }
       bad++; console.log("FORBIDDEN", r, "in", rel);
     }

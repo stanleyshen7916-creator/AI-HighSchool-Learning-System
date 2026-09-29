@@ -1,0 +1,469 @@
+/* js/components/CouncilUpload.js — 2026-09-29 教材上傳併入學習平台.
+
+   Admin-only page component for upload.html. Replaces AI-Study-Council's
+   own localhost web UI and adds the step that used to be done by hand:
+
+     1 教材資訊        school/semester/subject from the platform's own data
+     2 上傳原始檔      OCR via the engine (MinerU → Tesseract fallback);
+                       originals are kept for the package's source/
+     3 三方初稿        paste ChatGPT/Gemini/Claude (Web) drafts
+     4 交叉審議        engine job → Final.md (or pick an existing Final)
+     5 建立教材包草稿  Final.md → docs/TeachingMaterials/materials/tm_N
+                       (draft — students can't see it), preview, then
+                       發布 (runs the repo's own import) or 刪除
+
+   All engine I/O goes through AHS.CouncilEngineClient. Nothing here
+   touches an existing material: the engine only ever creates a new tm_N
+   and only publishes/deletes drafts it created itself.
+
+   create({ client, isAdmin }) -> root element. */
+window.AHS = window.AHS || {};
+
+AHS.CouncilUpload = (function () {
+  "use strict";
+
+  var el;
+  var MATERIAL_TYPES = [
+    { id: "TEXTBOOK", name: "課本" },
+    { id: "HANDOUT", name: "講義" },
+    { id: "REFERENCE", name: "補充資料" }
+  ];
+  var GRADES = ["高一", "高二", "高三"];
+  var COUNCIL_SECTIONS = [
+    "①核心概念", "②章節摘要", "③重點詞彙", "④文意理解", "⑤修辭手法",
+    "⑥文化脈絡", "⑦作者背景", "⑧段落結構", "⑨延伸思考", "⑩易混淆概念",
+    "⑪常考題型", "⑫易錯陷阱", "⑬跨課連結", "⑭Cross Review", "⑮Final Score"
+  ];
+  var POLL_MS = 3000;
+
+  function card(title, hint, children) {
+    return el("section", { class: "card upl-card" }, [
+      el("div", { class: "card__head" }, [el("h2", { class: "card__title", text: title })]),
+      hint ? el("p", { class: "upl-hint", text: hint }) : null
+    ].concat(children));
+  }
+
+  function field(label, control) {
+    return el("label", { class: "upl-field" }, [el("span", { class: "upl-field__label", text: label }), control]);
+  }
+
+  function select(options, value) {
+    var node = el("select", { class: "upl-input" });
+    options.forEach(function (o) {
+      var opt = el("option", { value: o.id, text: o.name });
+      if (o.id === value) { opt.selected = true; }
+      node.appendChild(opt);
+    });
+    return node;
+  }
+
+  function button(text, variant, onClick) {
+    var node = el("button", { type: "button", class: "upl-btn" + (variant ? " upl-btn--" + variant : ""), text: text });
+    node.addEventListener("click", onClick);
+    return node;
+  }
+
+  function status(node, text, kind) {
+    node.textContent = text || "";
+    node.className = "upl-status" + (kind ? " upl-status--" + kind : "");
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) { return navigator.clipboard.writeText(text); }
+    var temp = el("textarea", { class: "upl-offscreen" });
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+    return Promise.resolve();
+  }
+
+  // 與引擎 buildMaterialId() 相同的命名規則（MinerU 圖片目錄、Final.md 檔名前綴）。
+  function sanitizeSegment(value) {
+    var cleaned = String(value == null ? "" : value).trim().replace(/[^\p{L}\p{N}_-]/gu, "_");
+    return cleaned || "unknown";
+  }
+
+  function adminOnly() {
+    return el("div", { class: "upl-page" }, [
+      card("教材上傳", null, [
+        el("p", { class: "upl-hint", text: "此頁僅限管理者使用。請以 Admin 帳號登入後再開啟。" })
+      ])
+    ]);
+  }
+
+  function create(options) {
+    el = AHS.UI.el;
+    if (!options || !options.isAdmin) { return adminOnly(); }
+    var client = options.client;
+    var data = AHS.WorkspaceData || { schools: [], semesters: [] };
+    var state = { sessionId: null, finalFilename: null, draft: null, polling: false };
+
+    /* ---- 0. 引擎狀態 --------------------------------------------------- */
+    var engineStatus = el("p", { class: "upl-status" });
+    var engineUrl = el("input", { class: "upl-input", type: "url", value: client.displayUrl() });
+    function checkEngine() {
+      status(engineStatus, "檢查中…");
+      client.health().then(function (r) {
+        if (r.error) { status(engineStatus, r.error.message, "error"); return; }
+        status(engineStatus,
+          "已連線（引擎 v" + r.data.version + "）· MinerU OCR：" + (r.data.mineru ? "運作中" : "未啟動，改用 Tesseract") +
+          " · 本地 Qwen 裁決：" + (r.data.ollama ? "運作中" : "未啟動，將以規則拼接並標示需人工覆核"),
+          r.data.ollama && r.data.mineru ? "ok" : "warn");
+        refreshCatalog();
+        refreshDrafts();
+      });
+    }
+    var engineControls = client.servedByEngine()
+      ? [el("p", { class: "upl-hint", text: "本頁由教材上傳引擎直接提供（" + client.displayUrl() + "）。" })]
+      : [
+        field("引擎網址", engineUrl),
+        el("p", { class: "upl-hint", text: "建議改從 http://localhost:3000/upload.html 開啟本頁（由引擎直接提供，不受瀏覽器跨網域限制）。" })
+      ];
+    var engineCard = card("教材上傳引擎", "教材的 OCR 與 AI 交叉審議在這台電腦的 Docker 內執行（原 AI-Study-Council）。尚未啟動請先執行 ai-engine\\council\\啟動教材上傳引擎.bat。",
+      engineControls.concat([
+        el("div", { class: "upl-actions" }, [button("重新檢查連線", null, function () {
+          if (!client.servedByEngine()) { client.setBaseUrl(engineUrl.value); }
+          checkEngine();
+        })]),
+        engineStatus
+      ]));
+
+    /* ---- 1. 教材資訊 ---------------------------------------------------- */
+    var schoolSel = select(data.schools, data.schools[0] && data.schools[0].id);
+    var semesterSel = select(data.semesters, "g2s1");
+    var subjectSel = select(Object.keys(AHS.Subjects || {}).map(function (k) {
+      return { id: AHS.Subjects[k].name, name: AHS.Subjects[k].name };
+    }));
+    var gradeSel = select(GRADES.map(function (g) { return { id: g, name: g }; }), "高二");
+    var chapterInput = el("input", { class: "upl-input", type: "text", placeholder: "例如：第一章 三角函數" });
+    var unitInput = el("input", { class: "upl-input", type: "text", placeholder: "例如：1-1 弧度量（可空白）" });
+    var typeSel = select(MATERIAL_TYPES, "TEXTBOOK");
+    function schoolName() {
+      var s = data.schools.filter(function (x) { return x.id === schoolSel.value; })[0];
+      return s ? s.name : schoolSel.value;
+    }
+    function typeName() {
+      return MATERIAL_TYPES.filter(function (t) { return t.id === typeSel.value; })[0].name;
+    }
+    function councilMeta() {
+      return {
+        school: schoolName(), grade: gradeSel.value, subject: subjectSel.value,
+        unit: [chapterInput.value.trim(), unitInput.value.trim()].filter(Boolean).join(" "),
+        category: typeName()
+      };
+    }
+    function platformMeta() {
+      return {
+        school: schoolSel.value, semester: semesterSel.value, subject: subjectSel.value, grade: gradeSel.value,
+        chapter: chapterInput.value.trim(), unit: unitInput.value.trim(), materialType: typeSel.value
+      };
+    }
+    var metaCard = card("1　教材資訊", "決定教材上架後出現在哪個學校、學期與科目。", [
+      el("div", { class: "upl-grid" }, [
+        field("學校", schoolSel), field("學期", semesterSel), field("科目", subjectSel), field("年級", gradeSel),
+        field("章節", chapterInput), field("單元", unitInput), field("教材類型", typeSel)
+      ])
+    ]);
+
+    /* ---- 2. 上傳原始檔 --------------------------------------------------- */
+    var fileInput = el("input", { class: "upl-input", type: "file", multiple: "multiple", accept: ".pdf,.png,.jpg,.jpeg,.md,.txt" });
+    var uploadStatus = el("p", { class: "upl-status" });
+    var sourceText = el("textarea", { class: "upl-textarea", rows: "10", placeholder: "上傳後會出現解析出的教材本文，可直接修正 OCR 錯字；也可以直接貼上 MinerU 解析好的 Markdown。" });
+    var imagesSlot = el("div", { class: "upl-images" });
+    function refreshImages() {
+      var id = sanitizeSegment(councilMeta().school) + "_" + [councilMeta().grade, councilMeta().subject, councilMeta().unit, councilMeta().category].map(sanitizeSegment).join("_");
+      client.images(id).then(function (r) {
+        AHS.UI.mount(imagesSlot, el("span"));
+        if (r.error || !r.data || !r.data.count) { return; }
+        AHS.UI.mount(imagesSlot, el("a", {
+          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip），可拖進三方 AI 對話框"
+        }));
+      });
+    }
+    var uploadBtn = button("上傳並解析", "primary", function () {
+      if (!fileInput.files || !fileInput.files.length) { status(uploadStatus, "請先選擇檔案。", "error"); return; }
+      uploadBtn.disabled = true;
+      status(uploadStatus, "解析中…掃描檔會交給 MinerU OCR，每頁可能需要一分鐘以上。");
+      client.upload(fileInput.files).then(function (r) {
+        uploadBtn.disabled = false;
+        if (r.error) { status(uploadStatus, r.error.message, "error"); return; }
+        state.sessionId = r.data.sessionId;
+        sourceText.value = r.data.text || "";
+        status(uploadStatus, "完成：" + r.data.files.map(function (f) { return f.filename + "（" + f.length + " 字）"; }).join("、") +
+          "。原始檔已保存，建立教材包時會放進 source/。", "ok");
+        refreshImages();
+      });
+    });
+    var promptStatus = el("p", { class: "upl-status" });
+    function buildPrompt() {
+      var m = councilMeta();
+      return [
+        "你是一位資深學科教材編審 AI，請依照以下規範，針對提供的教材本文進行深度分析，並產出完整的十五大章節結構文件。",
+        "",
+        "【15 大章節架構】（請依序完整輸出，標題請完全比照下列格式，含圈號數字）"
+      ].concat(COUNCIL_SECTIONS).concat([
+        "",
+        "【練習題格式】（學習平台會自動匯入題庫，格式請務必一致）",
+        "請在⑪常考題型中，另外出 10 題單選練習題，每題格式如下：",
+        "**Q1.** 題幹",
+        "(A) 選項　(B) 選項　(C) 選項　(D) 選項",
+        "答案：B",
+        "詳解：解題說明",
+        "",
+        "【自評規範】",
+        "- 完成全部十五章節後，請針對本次輸出進行嚴格自我審查（是否有遺漏、錯誤、內容空泛等問題）。",
+        "- 於⑮Final Score章節，以「Self-QA: XX/100」格式標註自評分數，且必須達到 95 分（含）以上；若初次自評未達 95 分，請自行修正後再輸出最終版本。",
+        "- 教材本文沒有的資訊（作者、出版社、課綱版本等）請寫「SOURCE 未提供」，不得自行推測。",
+        "",
+        "【教材 metadata】",
+        "學校：" + m.school, "年級：" + m.grade, "科目：" + m.subject, "單元：" + m.unit, "教材類別：" + m.category,
+        "",
+        "【教材本文（SOURCE）】",
+        "<<<",
+        sourceText.value.trim() || "（尚未提供教材本文）",
+        ">>>",
+        "",
+        "【多模態圖片對齊指引】",
+        "若有附上教材圖片，請依據圖片幾何資訊解題，並於輸出時以 ![圖號](images/檔名.png) 標註。",
+        "",
+        "請開始依序輸出完整十五章節內容。"
+      ]).join("\n");
+    }
+    var uploadCard = card("2　上傳原始檔", "支援 PDF、圖片（掃描或拍照的課本頁）與 MinerU 解析好的 .md／.txt；多個檔案依檔名順序合併。", [
+      field("選擇檔案", fileInput),
+      el("div", { class: "upl-actions" }, [uploadBtn]),
+      uploadStatus,
+      field("教材本文（SOURCE）", sourceText),
+      imagesSlot,
+      el("div", { class: "upl-actions" }, [button("複製三方 AI 專用 Prompt", null, function () {
+        copyText(buildPrompt()).then(function () {
+          status(promptStatus, "已複製。請分別貼到 ChatGPT、Gemini、Claude 網頁版，再把三方輸出貼到下一步。", "ok");
+        }, function () { status(promptStatus, "瀏覽器不允許複製，請改用 Ctrl+C。", "error"); });
+      })]),
+      promptStatus
+    ]);
+
+    /* ---- 3. 三方初稿 ---------------------------------------------------- */
+    var drafts = {
+      chatgpt: el("textarea", { class: "upl-textarea", rows: "12" }),
+      gemini: el("textarea", { class: "upl-textarea", rows: "12" }),
+      claude: el("textarea", { class: "upl-textarea", rows: "12" })
+    };
+    var draftsCard = card("3　三方初稿", "把三個網頁版 AI 依 Prompt 產出的完整內容分別貼上。", [
+      el("div", { class: "upl-drafts" }, [
+        field("ChatGPT (Web)", drafts.chatgpt), field("Gemini (Web)", drafts.gemini), field("Claude (Web)", drafts.claude)
+      ])
+    ]);
+
+    /* ---- 4. 交叉審議 ---------------------------------------------------- */
+    var councilStatus = el("p", { class: "upl-status" });
+    var finalSlot = el("div", { class: "upl-final" });
+    var catalogSel = el("select", { class: "upl-input" });
+    function showFinal(filename, gate, score) {
+      state.finalFilename = filename;
+      AHS.UI.mount(finalSlot, el("div", {}, [
+        el("p", { class: "upl-final__name" }, [
+          el("strong", { text: "Final：" }), filename,
+          gate ? el("span", { class: "upl-gate upl-gate--" + (gate === "PASS" ? "ok" : "warn"), text: gate + (score != null ? " · " + score : "") }) : null
+        ]),
+        gate && gate !== "PASS" ? el("p", { class: "upl-hint upl-hint--warn", text: "Quality Gate 不是 PASS：建立草稿後請特別仔細檢查擷取結果再決定是否發布。" }) : null
+      ]));
+      client.finalContent(filename).then(function (r) {
+        if (r.error) { return; }
+        finalSlot.appendChild(el("details", { class: "upl-details" }, [
+          el("summary", { text: "預覽 Final.md" }),
+          el("pre", { class: "upl-pre", text: r.data.content })
+        ]));
+      });
+    }
+    function poll(jobId) {
+      client.getJob(jobId).then(function (r) {
+        if (r.error) { state.polling = false; status(councilStatus, r.error.message, "error"); return; }
+        var job = r.data;
+        if (job.status === "queued" || job.status === "running") {
+          status(councilStatus, "審議中（" + job.status + "）…本地 Qwen 完整裁決可能需要數分鐘，請勿關閉本頁。");
+          setTimeout(function () { poll(jobId); }, POLL_MS);
+          return;
+        }
+        state.polling = false;
+        runBtn.disabled = false;
+        if (job.status === "failed") { status(councilStatus, "審議失敗：" + job.error, "error"); return; }
+        var entry = job.result.catalogEntry;
+        status(councilStatus, "審議完成。", job.status === "completed" ? "ok" : "warn");
+        showFinal(job.result.filename, entry.qualityGate, entry.finalScore);
+        refreshCatalog();
+      });
+    }
+    var runBtn = button("執行三方交叉審議", "primary", function () {
+      if (state.polling) { return; }
+      var m = councilMeta();
+      if (!m.unit) { status(councilStatus, "請先在步驟 1 填寫章節。", "error"); return; }
+      if (!drafts.chatgpt.value.trim() || !drafts.gemini.value.trim() || !drafts.claude.value.trim()) {
+        status(councilStatus, "請先貼上三方初稿。", "error"); return;
+      }
+      runBtn.disabled = true;
+      state.polling = true;
+      status(councilStatus, "送出中…");
+      client.createJob({
+        school: m.school, grade: m.grade, subject: m.subject, unit: m.unit, category: m.category,
+        sourceText: sourceText.value,
+        drafts: { chatgpt: drafts.chatgpt.value, gemini: drafts.gemini.value, claude: drafts.claude.value }
+      }).then(function (r) {
+        if (r.error) { state.polling = false; runBtn.disabled = false; status(councilStatus, r.error.message, "error"); return; }
+        poll(r.data.jobId);
+      });
+    });
+    function refreshCatalog() {
+      client.catalog().then(function (r) {
+        var items = (r.data && r.data.items) || [];
+        AHS.UI.mount(catalogSel, el("option", { value: "", text: items.length ? "（選擇既有的 Final.md）" : "（尚無既有 Final.md）" }));
+        items.slice().reverse().forEach(function (item) {
+          catalogSel.appendChild(el("option", { value: item.filename, text: item.filename + (item.qualityGate ? "　[" + item.qualityGate + "]" : "") }));
+        });
+      });
+    }
+    var councilCard = card("4　交叉審議產出 Final.md", "由本地 Qwen 逐條對照教材本文裁決三方內容；未通過驗證的陳述不會進入 Final。", [
+      el("div", { class: "upl-actions" }, [runBtn]),
+      councilStatus,
+      el("div", { class: "upl-or" }, [
+        field("或使用既有的 Final.md（例如 AI-Study-Council 之前產出、尚未上架的）", catalogSel),
+        button("使用這份 Final", null, function () {
+          if (!catalogSel.value) { return; }
+          var item = catalogSel.options[catalogSel.selectedIndex].text.match(/\[(.+)\]$/);
+          showFinal(catalogSel.value, item ? item[1] : null, null);
+        })
+      ]),
+      finalSlot
+    ]);
+
+    /* ---- 5. 建立教材包草稿 → 預覽 → 發布 ------------------------------ */
+    var draftStatus = el("p", { class: "upl-status" });
+    var previewSlot = el("div", { class: "upl-preview" });
+    var draftsList = el("div", { class: "upl-draft-list" });
+
+    function gitCommands(result) {
+      return [
+        "git add " + result.changedPaths.join(" "),
+        "git commit -m \"" + result.materialId + "｜" + (result.metadata.subject || "") + " " + (result.metadata.chapter || "") + " 教材上架（教材上傳）\"",
+        "git push"
+      ].join("\n");
+    }
+
+    function renderPreview(d, published) {
+      state.draft = d;
+      var q = d.questions || [];
+      var s = d.summary || {};
+      var body = [
+        el("div", { class: "upl-preview__head" }, [
+          el("strong", { text: d.materialId }),
+          el("span", { class: "upl-gate upl-gate--" + (d.stage === "IMPORTED" ? "ok" : "warn"), text: d.stage === "IMPORTED" ? "已上架（IMPORTED）" : "草稿（學生看不到）" }),
+          d.qualityGate ? el("span", { class: "upl-gate upl-gate--" + (d.qualityGate === "PASS" ? "ok" : "warn"), text: "Quality Gate " + d.qualityGate }) : null
+        ]),
+        el("p", { class: "upl-hint", text: [d.metadata.subject, d.metadata.grade, d.metadata.chapter, d.metadata.unit].filter(Boolean).join(" · ") +
+          "　｜　source/：" + (d.sourceFiles || []).join("、") })
+      ];
+      if ((d.warnings || []).length) {
+        body.push(el("ul", { class: "upl-warnings" }, d.warnings.map(function (w) { return el("li", { text: w }); })));
+      }
+      body.push(el("h3", { class: "upl-subtitle", text: "核心概念（" + (s.coreConcepts || []).length + "）" }));
+      body.push(el("ul", { class: "upl-list" }, (s.coreConcepts || []).map(function (c) { return el("li", { text: c }); })));
+      body.push(el("p", { class: "upl-hint", text: "重點詞彙 " + (s.keywords || []).length + "、重點 " + (s.keyPoints || []).length + "、易錯 " + (s.pitfalls || []).length + "、複習建議 " + (s.reviewSuggestions || []).length }));
+      body.push(el("h3", { class: "upl-subtitle", text: "練習題（" + q.length + " 題，皆標示為 AI 出題）" }));
+      body.push(el("ol", { class: "upl-questions" }, q.map(function (item) {
+        return el("li", { class: "upl-question" }, [
+          el("p", { class: "upl-question__stem", text: item.question }),
+          el("ul", { class: "upl-question__options" }, item.options.map(function (opt) {
+            return el("li", { class: opt === item.answer ? "is-answer" : null, text: opt + (opt === item.answer ? "　✓" : "") });
+          })),
+          item.explanation ? el("p", { class: "upl-hint", text: "詳解：" + item.explanation }) : null
+        ]);
+      })));
+
+      if (published) {
+        var cmds = gitCommands(d);
+        body.push(el("div", { class: "upl-success" }, [
+          el("p", { text: d.materialId + " 已匯入平台資料。學生端要等你把下列變更 commit 並 push、GitHub Pages 重新部署後才看得到：" }),
+          el("pre", { class: "upl-pre", text: cmds }),
+          button("複製指令", null, function () { copyText(cmds); })
+        ]));
+      } else if (d.stage !== "IMPORTED" && d.status === "draft") {
+        body.push(el("div", { class: "upl-actions" }, [
+          button("確認發布到平台", "primary", function () {
+            if (!window.confirm("確定要把 " + d.materialId + " 發布到平台嗎？發布後這份教材包就不能再從這裡刪除。")) { return; }
+            status(draftStatus, "發布中…（驗證並重新產生平台教材資料）");
+            client.publishDraft(d.materialId).then(function (r) {
+              if (r.error) { status(draftStatus, r.error.message, "error"); return; }
+              status(draftStatus, "發布完成。", "ok");
+              renderPreview(r.data, true);
+              refreshDrafts();
+            });
+          }),
+          button("刪除草稿", "danger", function () {
+            if (!window.confirm("確定刪除草稿 " + d.materialId + "？")) { return; }
+            client.deleteDraft(d.materialId).then(function (r) {
+              if (r.error) { status(draftStatus, r.error.message, "error"); return; }
+              status(draftStatus, d.materialId + " 已刪除。", "ok");
+              AHS.UI.mount(previewSlot, el("span"));
+              refreshDrafts();
+            });
+          })
+        ]));
+      }
+      AHS.UI.mount(previewSlot, el("div", { class: "upl-preview__body" }, body));
+    }
+
+    function refreshDrafts() {
+      client.listDrafts().then(function (r) {
+        var list = (r.data && r.data.drafts) || [];
+        if (!list.length) { AHS.UI.mount(draftsList, el("p", { class: "upl-hint", text: "目前沒有由教材上傳建立的教材包。" })); return; }
+        AHS.UI.mount(draftsList, el("ul", { class: "upl-list" }, list.map(function (d) {
+          return el("li", { class: "upl-draft-row" }, [
+            el("span", { text: d.materialId + "　" + (d.status === "published" ? "已發布" : "草稿") + "　" + d.finalFilename }),
+            button("預覽", null, function () {
+              client.getDraft(d.materialId).then(function (g) {
+                if (g.error) { status(draftStatus, g.error.message, "error"); return; }
+                renderPreview(g.data, false);
+              });
+            })
+          ]);
+        })));
+      });
+    }
+
+    var createBtn = button("建立教材包草稿", "primary", function () {
+      if (!state.finalFilename) { status(draftStatus, "請先完成步驟 4，或選擇一份既有的 Final.md。", "error"); return; }
+      var meta = platformMeta();
+      if (!meta.chapter) { status(draftStatus, "請先在步驟 1 填寫章節。", "error"); return; }
+      createBtn.disabled = true;
+      status(draftStatus, "建立中…");
+      client.createDraft({ finalFilename: state.finalFilename, uploadSessionId: state.sessionId, metadata: meta }).then(function (r) {
+        createBtn.disabled = false;
+        if (r.error) { status(draftStatus, r.error.message, "error"); return; }
+        status(draftStatus, r.data.materialId + " 草稿已建立（學生看不到）。請檢查下方擷取結果，確認無誤再發布。", "ok");
+        renderPreview(r.data, false);
+        refreshDrafts();
+      });
+    });
+    var packageCard = card("5　建立教材包並發布", "把 Final.md 轉成平台教材包：只會新增一個新的教材編號，不會改動任何已上架的教材。擷取不到的內容會列在警告裡，不會自動補寫。", [
+      el("div", { class: "upl-actions" }, [createBtn]),
+      draftStatus,
+      previewSlot,
+      el("h3", { class: "upl-subtitle", text: "教材上傳紀錄" }),
+      draftsList
+    ]);
+
+    var root = el("div", { class: "upl-page" }, [
+      el("header", { class: "upl-head" }, [
+        el("h1", { class: "upl-head__title", text: "教材上傳" }),
+        el("p", { class: "upl-head__sub", text: "上傳課本或講義 → 三方 AI 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" })
+      ]),
+      engineCard, metaCard, uploadCard, draftsCard, councilCard, packageCard
+    ]);
+    checkEngine();
+    return root;
+  }
+
+  return { create: create };
+})();

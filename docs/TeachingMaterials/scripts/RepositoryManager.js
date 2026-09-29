@@ -191,10 +191,10 @@ function prepare() {
     const pkg = adapter.loadPackage(id);
     const dir = path.join(MATERIALS_DIR, id);
     const knowledge = generator.buildKnowledgeIndex(id, pkg);
-    fs.writeFileSync(path.join(dir, "knowledge.json"), JSON.stringify(knowledge, null, 2) + "\n", "utf8");
+    generator.writeIfChanged(path.join(dir, "knowledge.json"), JSON.stringify(knowledge, null, 2) + "\n");
     const validation = adapter.validatePackage(id);
     const report_ = generator.buildReportMarkdown(id, pkg, validation, lifecycle.resolveStage(id));
-    fs.writeFileSync(path.join(dir, "report.md"), report_, "utf8");
+    generator.writeIfChanged(path.join(dir, "report.md"), report_);
     advanced.push(id);
   });
   return advanced;

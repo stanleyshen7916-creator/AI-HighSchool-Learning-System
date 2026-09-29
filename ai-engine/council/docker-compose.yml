@@ -1,0 +1,67 @@
+# 教材上傳引擎 Runtime（2026-09-29 由 AI-Study-Council 併入學習平台）。
+# 啟動：雙擊同目錄的「啟動教材上傳引擎.bat」，或
+#   docker compose -f ai-engine/council/docker-compose.yml up -d --build
+#
+# COUNCIL_DATA_DIR：執行期資料（Final.md、上傳原始檔、MinerU 佇列、Ollama 模型、MinerU
+# 模型快取）。未設定時為 ai-engine/council/data（已列入 .gitignore）。把它指向舊的
+# AI-Study-Council 資料夾即可沿用既有的模型與 Final.md，不必搬移或重新下載。
+name: ahs-council
+
+services:
+  council-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /platform/ai-engine/council
+    volumes:
+      - ../..:/platform
+      # 以映像內（Linux）的 node_modules 為準，不使用主機上的 node_modules
+      - /platform/ai-engine/council/node_modules
+      - ${COUNCIL_DATA_DIR:-./data}:/data
+    environment:
+      - PORT=3000
+      - COUNCIL_DATA_DIR=/data
+      - PLATFORM_ROOT=/platform
+      - OLLAMA_URL=http://ollama:11434
+      - MINERU_QUEUE_INPUTS_DIR=/data/mineru_inputs
+      - MINERU_QUEUE_OUTPUTS_DIR=/data/mineru_outputs
+    # 只綁本機：引擎沒有登入機制，不能開放給區網其他裝置
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - ollama
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ${COUNCIL_DATA_DIR:-./data}/ollama_data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    environment:
+      - OLLAMA_KEEP_ALIVE=5m
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  mineru-parser:
+    # MinerU 沒有可直接 pull 的公開 image，沿用本地建置（見 Dockerfile.mineru）。
+    # 不保留 GPU：GPU 僅 6GB 且已由 Ollama 使用，MinerU 走 CPU pipeline。
+    build:
+      context: .
+      dockerfile: Dockerfile.mineru
+    environment:
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    volumes:
+      - ${COUNCIL_DATA_DIR:-./data}/mineru_inputs:/data/inputs
+      - ${COUNCIL_DATA_DIR:-./data}/mineru_outputs:/data/outputs
+      - ./tools/mineru_watch.sh:/usr/local/bin/mineru_watch.sh:ro
+      - ${COUNCIL_DATA_DIR:-./data}/mineru_model_cache:/root/.cache

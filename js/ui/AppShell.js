@@ -18,7 +18,8 @@ AHS.AppShell = (function () {
     review: "review.html",
     learning: "learning.html",
     tutor: "tutor.html",
-    dashboard: "dashboard.html"
+    dashboard: "dashboard.html",
+    upload: "upload.html"
   };
 
   /* ---- Notification menu (HOME-F009) ------------------------------------
@@ -333,9 +334,20 @@ AHS.AppShell = (function () {
     ]);
   }
 
+  /* 2026-09-29: nav.adminItems (教材上傳) are appended only for the ADMIN
+     role — the same role field MaterialCenter's review queue uses. */
+  function currentIsAdmin() {
+    var ws = AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function"
+      ? AHS.WorkspaceRuntime.getCurrent() : null;
+    var student = ws && typeof AHS.WorkspaceRuntime.findStudent === "function"
+      ? AHS.WorkspaceRuntime.findStudent(ws.studentId) : null;
+    return !!(student && student.role === "ADMIN");
+  }
+
   function sidebar(nav, active, onNavigate, openSettings) {
     var list = el("ul", { class: "sidebar__list" });
-    nav.items.forEach(function (item) {
+    var items = nav.items.concat(currentIsAdmin() ? (nav.adminItems || []) : []);
+    items.forEach(function (item) {
       var isActive = item.id === active;
       var route = ROUTES[item.id];
       var inner = [

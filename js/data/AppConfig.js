@@ -131,6 +131,11 @@ AHS.AppConfig = {
       { id: "quiz", label: "測驗中心", icon: "quiz" },
       { id: "wrongbook", label: "知識弱點", icon: "wrong" }
     ],
+    /* 2026-09-29 教材上傳：只有 ADMIN 角色會在 Sidebar 看到（AppShell.js
+       sidebar() 依 AHS.WorkspaceData.students[].role 判斷），不佔底部導覽。 */
+    adminItems: [
+      { id: "upload", label: "教材上傳", icon: "upload" }
+    ],
     /* Bottom Navigation stays capped at 5 slots (this repo's own existing
        mobile-nav convention, unchanged by this Sprint) — AI Tutor is
        reachable from the Sidebar/every page's own real entry points

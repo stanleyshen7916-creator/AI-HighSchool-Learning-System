@@ -9,7 +9,7 @@
    Exam↔Practice scoping, js/components/WrongBook.js's Detail sync,
    js/utils/TutorMessage.js's material-scoped AI Tutor). */
 "use strict";
-const { test, expect } = require("../helpers/fixtures.js");
+const { test, expect, TEST_PASSWORD } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 const { seedSession } = require("../helpers/seed.js");
 
@@ -55,10 +55,9 @@ function collectErrors(page) {
 /* Same real Login flow driver playwright/tests/workspace.spec.js already
    established (real clicks through login.html's 選擇學生/學校/學期 steps),
    reused here for AI-124-01's own "真實首次登入" proof. */
-/* AI-133：js/data/WorkspaceData.js 的真實 Mock 密碼（測試期間統一為 "1234"，
-   見該檔案自身標頭的誠實揭露：純前端明碼比對，只是門禁用途，非真正
-   資安等級保護）——這裡直接對應同一份資料，不是另外發明一組。 */
-const STUDENT_PASSWORDS = { Admin: "1234", "Student A": "1234", "Student B": "1234" };
+/* AI-133 登入密碼。2026-09-29 起正式站由 Supabase Auth 驗證密碼；
+   helpers/fixtures.js 模擬的 Auth 端點只接受 TEST_PASSWORD。 */
+const STUDENT_PASSWORDS = { Admin: TEST_PASSWORD, "Student A": TEST_PASSWORD, "Student B": TEST_PASSWORD };
 
 async function loginAs(page, studentLabel, schoolLabel, semesterLabels) {
   await page.goto(fileUrl("login.html"));

@@ -42,6 +42,14 @@ jobs:
       - name: npm test (BehaviorSuite + PipelineRegression + RepositoryFoundation + MaterialPipelineRegression)
         run: npm test
 
+      # 2026-09-29: 教材上傳引擎（ai-engine/council，原 AI-Study-Council）自己的
+      # Jest 測試——OCR／交叉審議（Ollama 以 mock 取代）與 Final.md → 教材包，
+      # 教材包相關測試只在學習平台的暫存副本上寫入。
+      - name: Council engine tests (ai-engine/council)
+        run: |
+          npm ci --prefix ai-engine/council
+          npm run test:engine
+
       - name: Install Playwright browsers
         timeout-minutes: 10
         run: npx playwright install --with-deps chromium

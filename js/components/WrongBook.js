@@ -594,7 +594,9 @@ AHS.WrongBook = (function () {
        labelled "查看詳情" still gets the literal answer-revealed view. */
     row.addEventListener("click", function () { onSelect(item, row, true); });
     row.addEventListener("keydown", function (ev) {
-      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onSelect(item, row); }
+      /* Keyboard activation must match the click above (立即重做, answer
+         hidden) — it used to open 查看詳情 and reveal the answer. */
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onSelect(item, row, true); }
     });
     return row;
   }

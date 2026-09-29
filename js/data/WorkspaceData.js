@@ -26,16 +26,12 @@
    隔離，看不到長榮中學任何內容）。Admin 授權全部 School／Semester，供
    PAT 全流程驗證使用。這是 Mock Data，不是真實帳號權限系統。
 
-   password — Sprint AI-133（使用者需求：登入流程選完學生/學校/學期後，
-   按下「進入平台」前，需輸入密碼才可進入）。測試期間統一改為 "1234"
-   （使用者確認方案），由 js/pages/AppLogin.js 新增的第 4 步驟
-   （stepPassword）在瀏覽器端比對。誠實揭露：這個專案是純前端靜態
-   Prototype，沒有後端資料庫可驗證帳密，這裡的密碼必然明文寫在前端
-   程式碼裡、由瀏覽器端 JavaScript 比對——技術上任何看得到原始碼或開啟
-   開發者工具的人都能繞過，不是真正資安等級的保護，只能當作「一般訪客
-   擋門」的門禁（使用者已明確確認接受此定位，見 Sprint AI-133 對話紀錄）。
-   刻意不做任何雜湊/混淆假裝安全——明碼比隱藏起來看似安全但其實一樣能
-   被繞過更誠實。 */
+   password — 僅限「離線／本機開發模式」（未設定 Supabase：file://、
+   jsdom／Playwright 測試）使用的本機開發密碼，由 js/pages/AppLogin.js
+   的第 4 步驟在瀏覽器端比對；該模式沒有任何雲端資料。正式站（已設定
+   Supabase）完全不看這個欄位：密碼由 Supabase Auth 驗證，由管理者以
+   scripts/maintenance/SetAccountPasswords.js 為每個帳號設定（2026-09-29
+   資安修正，見 js/repository/AuthRepository.js 標頭）。 */
 window.AHS = window.AHS || {};
 AHS.WorkspaceData = {
   students: [

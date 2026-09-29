@@ -6,7 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A static, client-side prototype of a Chinese-language high-school AI learning platform (`index.html`, `materials.html`, `quiz.html`, `wrongbook.html`, `summary.html`, `learning.html`, `tutor.html`, `dashboard.html`, `review.html`, `qiaoqiao-gallery.html`). Pure HTML5 / CSS3 / vanilla JavaScript — **no framework, no bundler, no Node server, no Docker**. All Runtime/UI/page data is still Mock Data. Must keep working over `file://` and on GitHub Pages.
 
-**Sprint AI-126B exception (PMO-authorized, 2026-08-07)**: the project now has exactly one real backend connection point — `js/repository/` + `js/core/SupabaseClient.js` (the Repository Layer, talking to the real Supabase project provisioned in Sprint AI-126A). This is a narrow, explicit exception, not a general relaxation: every Runtime/UI/page file is still Mock Data only and still fully bound by every rule below (including the `fetch(`/`XMLHttpRequest` ban) until a future, separately-authorized Runtime Integration phase wires a Runtime to the Repository Layer. See `scripts/verify/VerifyForbiddenPatterns.js`'s `AUTHORIZED_EXCEPTIONS` for the exact two files this covers.
+**Sprint AI-126B exception (PMO-authorized, 2026-08-07)**: the project now has exactly one real backend connection point — `js/repository/` + `js/core/SupabaseClient.js` (the Repository Layer, talking to the real Supabase project provisioned in Sprint AI-126A). This is a narrow, explicit exception, not a general relaxation: every Runtime/UI/page file is still Mock Data only and still fully bound by every rule below (including the `fetch(`/`XMLHttpRequest` ban) until a future, separately-authorized Runtime Integration phase wires a Runtime to the Repository Layer. See `scripts/verify/VerifyForbiddenPatterns.js`'s `AUTHORIZED_EXCEPTIONS` for the exact files this covers.
+
+**教材上傳 (2026-09-29, PO-authorized)**: `upload.html` (Admin only) talks to the local 教材上傳引擎 in `ai-engine/council/` (the former AI-Study-Council Node/Docker server, see its README) through `js/core/CouncilEngineClient.js` — the third authorized `fetch(` exception. The engine creates new teaching-material packages as drafts and publishes them through the existing `docs/TeachingMaterials/scripts` import flow; it must never modify an existing `tm_*` package.
+
+**Login (2026-09-29 security fix)**: on the live site the password typed on login.html is verified by Supabase Auth (`AHS.AuthRepository.login()`); account passwords are set with `scripts/maintenance/SetAccountPasswords.js`. Never derive credentials in browser code or re-add a sign-up fallback. `WorkspaceData` passwords only apply in offline/dev mode (Supabase not configured).
 
 ## Commands
 
@@ -14,6 +18,7 @@ A static, client-side prototype of a Chinese-language high-school AI learning pl
 npm test              # jsdom BehaviorSuite + Learning Pipeline regression (tests/jsdom, tests/regression)
 npm run verify         # VerifyPaths (broken/legacy href-src refs) + VerifyForbiddenPatterns (banned APIs)
 npm run validate:html  # html5validator over every root HTML page (requires html5validator + Java installed separately, not via npm)
+npm run test:engine    # ai-engine/council Jest suite (requires `npm ci --prefix ai-engine/council` first)
 npm run test:supabase  # Sprint AI-126B Repository Smoke Test — the one test making a real network call to Supabase; requires js/data/SupabaseConfig.js url/anonKey to be set, reports SKIP (not FAIL) otherwise; not part of npm test's default chain
 ```
 
@@ -41,11 +46,11 @@ Rule of thumb for `components/` vs `ui/`: if it's tied to one page's feature it'
 `base/` (tokens.css, layout.css) — `components/` (shared component CSS) — `pages/` (one kebab-case file per page, never mixed across pages) — `utilities/` (reserved for helper/animation/spacing classes; stays empty until something actually needs it — don't pre-create files here).
 
 ### Placeholder directories — do not populate without explicit instruction
-`ai-engine/`, `platform/`, `shared/` exist only as empty `.gitkeep` scaffolding for a future real backend/AI-engine layer. They are not wired into any page and are not part of the current runtime. Do not add code to them speculatively.
+`platform/`, `shared/` and the rest of `ai-engine/` exist only as scaffolding for a future real backend/AI-engine layer. They are not wired into any page. Do not add code to them speculatively. Exception: `ai-engine/council/` is the real, running 教材上傳引擎 (Node/Express/Jest — the browser-side rules below do not apply inside it).
 
 ### Naming and forbidden patterns (enforced by `npm run verify`)
 - JS: PascalCase filenames. CSS: kebab-case. Markdown docs: `PMO_` / `EO_` / `QA_` / `PAT_` / `Decision_` / `Release_` / `Architecture_` prefixes.
-- Forbidden in production JS: `localStorage`, `indexedDB`, `fetch(`, `XMLHttpRequest`, `import`/`export` statements, `window.location.href =` (one pre-existing, tracked exception in `HomeRecentMaterials.js`). **`fetch(` exception (Sprint AI-126B, PMO-authorized)**: `js/core/SupabaseClient.js` and `js/repository/SupabaseRepository.js` only — these two files exist specifically to talk to the real Supabase backend; every other file remains fully forbidden from `fetch(`/`XMLHttpRequest`, including every Runtime and every `js/pages/`/`js/components/`/`js/ui/` file.
+- Forbidden in production JS: `localStorage`, `indexedDB`, `fetch(`, `XMLHttpRequest`, `import`/`export` statements, `window.location.href =` (use `window.location.assign()`). **`fetch(` exception (Sprint AI-126B, PMO-authorized)**: `js/core/SupabaseClient.js` and `js/repository/SupabaseRepository.js` (Supabase), plus `js/core/CouncilEngineClient.js` (local 教材上傳引擎); every other file remains fully forbidden from `fetch(`/`XMLHttpRequest`, including every Runtime and every `js/pages/`/`js/components/`/`js/ui/` file.
 - Forbidden in CSS: `linear-gradient(...var(...))`, `calc(var(...) +/- var(...))`, `env(safe-area...)`, `inset:`, `NNdvh`.
 - Every `src=`/`href=` in every root HTML page must resolve to a real file; references to legacy pre-v2.0 paths (`js/services/`, `css/layout/`, `assets/illustrations/`, `archive/`, `prototype/`, `developer/`) fail verification.
 - Full structural rules are LOCKed in `docs/Architecture/Architecture_Repository_Structure_v2.1.md` — read it before restructuring anything; changes to the top-level structure require PMO sign-off per that doc.

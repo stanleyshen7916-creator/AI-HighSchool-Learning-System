@@ -78,7 +78,11 @@ test("PAT-122-01：立即重做 Session Reset — 完整重置作答狀態，不
   });
   const row = page.locator(".wb-row", { hasText: "PAT-122-01 測試題目" });
   await expect(row).toBeVisible();
-  await row.click();
+  /* 2026-09-08（PO 回報）: clicking the row now opens straight into 立即重做
+     with the answer hidden. The answer-revealed starting state this test
+     needs is the explicit 更多選項 -> 查看詳情 entry. */
+  await row.locator(".wb-row__more").click();
+  await page.locator(".wb-row__menu-item", { hasText: "查看詳情" }).click();
 
   // Before redo: previous answer/explanation are honestly visible.
   await expect(page.locator(".wb-detail__answers")).toBeVisible();

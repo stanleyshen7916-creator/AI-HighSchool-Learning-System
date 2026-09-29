@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+# opencv-python（mineru 的間接依賴）在精簡版 Debian image 上需要這些系統動態函式庫，
+# 否則 `import cv2` 會因為缺少 libxcb.so.1 等共享函式庫而直接失敗（已實測重現）。
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libxcb1 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# mineru 的 [pipeline] extras 缺了一個宣告依賴 `six`，首次真正執行時會立即
+# ModuleNotFoundError（已於 ef84367 記錄並確認）；這裡明確一併安裝。
+RUN pip install --no-cache-dir 'mineru[pipeline]' six
+
+WORKDIR /data
+
+CMD ["bash", "/usr/local/bin/mineru_watch.sh"]

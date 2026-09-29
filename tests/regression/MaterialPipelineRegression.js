@@ -23,6 +23,7 @@
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
 const path = require("path");
+require("./GeneratedFilesGuard.js").guard();
 
 const REPO = path.join(__dirname, "..", "..");
 const TM_ROOT = path.join(REPO, "docs/TeachingMaterials");

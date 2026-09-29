@@ -61,9 +61,9 @@ check("AHS.SyncBridge.isConfigured() === false (SupabaseConfig ships blank)", AH
 check("AHS.SyncBridge.identity() === null when not configured", AHS.SyncBridge.identity() === null);
 check("AHS.AuthRepository.getSession() === null when not configured", AHS.AuthRepository.getSession() === null);
 
-console.log("\n[2] AHS.AuthRepository.loginForMockStudent() — honest no-op, never throws, never fabricates a session");
-AHS.AuthRepository.loginForMockStudent({ id: "student_a", name: "Student A", role: "STUDENT" }).then(function (result) {
-  check("loginForMockStudent() resolves { skipped: true } when not configured", result && result.skipped === true);
+console.log("\n[2] AHS.AuthRepository.login() — honest no-op when not configured, never throws, never fabricates a session");
+AHS.AuthRepository.login({ id: "student_a", name: "Student A", role: "STUDENT" }, "any-password").then(function (result) {
+  check("login() resolves { skipped: true } when not configured", result && result.skipped === true);
 
   console.log("\n[3] WrongBookRuntime — existing sync() behavior byte-for-byte unchanged, new methods additive");
   AHS.WrongBookRuntime.reset();

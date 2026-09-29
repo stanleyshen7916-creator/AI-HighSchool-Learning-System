@@ -17,6 +17,10 @@ const base = require("@playwright/test");
 
 const AHS_TEST_WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] };
 const AHS_TEST_NS = "student_a__cjsh__g1s2";
+/* The password every spec types on login.html. Only accepted by the
+   emulated Supabase Auth route below — it is not any real account's
+   password. */
+const TEST_PASSWORD = "1234";
 
 const test = base.test.extend({
   skipDefaultLogin: [false, { option: true }],
@@ -50,6 +54,29 @@ const test = base.test.extend({
       contentType: "application/json",
       body: "[]"
     }));
+    /* 2026-09-29: login.html now verifies the typed password with Supabase
+       Auth (js/repository/AuthRepository.js login()) instead of comparing
+       it in the browser. Emulate just the password grant — registered
+       after the catch-all above, so it takes precedence — issuing a
+       session for TEST_PASSWORD and Supabase's real "invalid login
+       credentials" 400 for anything else. Still no real request leaves
+       the browser. */
+    await page.route("https://*.supabase.co/auth/v1/token?grant_type=password", (route) => {
+      const body = JSON.parse(route.request().postData() || "{}");
+      if (body.password !== TEST_PASSWORD) {
+        return route.fulfill({
+          status: 400, contentType: "application/json",
+          body: JSON.stringify({ error: "invalid_grant", error_description: "Invalid login credentials" })
+        });
+      }
+      return route.fulfill({
+        status: 200, contentType: "application/json",
+        body: JSON.stringify({
+          access_token: "playwright-access-token", refresh_token: "playwright-refresh-token",
+          token_type: "bearer", expires_in: 3600, user: { id: "playwright-" + body.email, email: body.email }
+        })
+      });
+    });
     if (!skipDefaultLogin) {
       await page.addInitScript((ws) => {
         window.sessionStorage.setItem("ahs:workspace", JSON.stringify(ws));
@@ -59,4 +86,4 @@ const test = base.test.extend({
   }
 });
 
-module.exports = { test, expect: base.expect, AHS_TEST_WORKSPACE, AHS_TEST_NS };
+module.exports = { test, expect: base.expect, AHS_TEST_WORKSPACE, AHS_TEST_NS, TEST_PASSWORD };

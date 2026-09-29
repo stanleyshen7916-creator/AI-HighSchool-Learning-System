@@ -9,7 +9,7 @@ window.AHS = window.AHS || {};
 
   var el;
   var state = {
-    step: 1, studentId: null, schoolId: null, semesterIds: [], loginPromise: null,
+    step: 1, studentId: null, schoolId: null, semesterIds: [],
     /* Sprint AI-133（使用者需求：選完學生/學校/學期後，按下「進入平台」
        前需輸入密碼）。password 只在單次表單提交時短暫存在於記憶體，never
        persisted — 見 stepPassword() 自身的誠實揭露：純前端明碼比對，非
@@ -81,24 +81,6 @@ window.AHS = window.AHS || {};
         state.schoolId = null;
         state.semesterIds = [];
         state.step = 2;
-        /* Sprint AI-126B Part 2, Task 2 / AI Supabase Persistence Root
-           Cause Fix (Root Cause C): real Supabase Auth login, fired
-           invisibly the moment this Student is picked (no UI change —
-           see js/repository/AuthRepository.js's own header for why this
-           is the only way "真實 Email Login" + "保持目前 Login UI" can
-           both hold). loginForMockStudent() always resolves (its own
-           internal .catch() turns a real failure into a resolved
-           { error } result, never a rejection) — state.loginPromise is
-           therefore a real completion signal, not a fire-and-forget void
-           call: stepSemester()'s "進入平台" now waits on this exact
-           Promise before navigating away (see that handler's own
-           comment), closing the race where a full-page navigation could
-           fire before AHS.SyncBridge.cacheIdentity() ever ran. null when
-           Supabase isn't configured — "進入平台" then behaves exactly as
-           before this fix (no wait). */
-        state.loginPromise = (AHS.AuthRepository && typeof AHS.AuthRepository.loginForMockStudent === "function")
-          ? AHS.AuthRepository.loginForMockStudent(s).catch(function () { /* never rejects in practice; defensive only */ })
-          : null;
         render();
       }));
     });
@@ -176,14 +158,15 @@ window.AHS = window.AHS || {};
   }
 
   /* stepPassword() — Sprint AI-133（真實 PO 需求："首頁登入畫面後，需輸入
-     密碼，才可進入本平台使用"）。密碼統一為 "1234"（測試期間使用者確認
-     方案，見 AHS.WorkspaceData.students[].password），選完學生/學校/學期、按下
-     「進入平台」後才要求輸入，答對才真的呼叫 AHS.WorkspaceRuntime.
-     setCurrent() 並導向 index.html——這一步之前，setCurrent() 完全不會
-     被呼叫，即使跳過畫面直接改網址也一樣（AppShell.create() 本來就會在
-     沒有有效 Workspace 時導回 login.html，這裡沒有新增/修改那個既有把關）。
-     誠實揭露：純前端明碼比對，技術上可被繞過，只作為一般訪客擋門用途
-     （使用者已在需求討論中明確確認接受這個定位，非真正資安等級保護）。 */
+     密碼，才可進入本平台使用"）。選完學生/學校/學期、按下「進入平台」後才
+     要求輸入，驗證通過才呼叫 AHS.WorkspaceRuntime.setCurrent() 並導向
+     index.html。
+
+     2026-09-29 資安修正：正式站（已設定 Supabase）改由 Supabase Auth 驗證
+     使用者輸入的密碼（AHS.AuthRepository.login()），瀏覽器端不再存放或比對
+     密碼；密碼由管理者以 scripts/maintenance/SetAccountPasswords.js 設定。
+     只有未設定 Supabase 的離線／本機開發模式（file://、測試），才沿用
+     AHS.WorkspaceData 的本機開發密碼——該模式沒有任何雲端資料可保護。 */
   function stepPassword() {
     var passwordInput = el("input", {
       type: "password", class: "login-password__input", placeholder: "請輸入密碼",
@@ -212,15 +195,13 @@ window.AHS = window.AHS || {};
 
     var enterBtn = el("button", { type: "button", class: "login-enter-btn", text: "進入平台" });
 
-    function submit() {
-      var student = AHS.WorkspaceRuntime.findStudent(state.studentId);
-      var expected = student && student.password;
-      if (!expected || passwordInput.value !== expected) {
-        state.password = "";
-        state.passwordError = "密碼錯誤，請再試一次。";
-        render();
-        return;
-      }
+    function fail(message) {
+      state.password = "";
+      state.passwordError = message;
+      render();
+    }
+
+    function enter() {
       var ws = AHS.WorkspaceRuntime.setCurrent({
         studentId: state.studentId, schoolId: state.schoolId, semesterIds: state.semesterIds
       });
@@ -229,16 +210,35 @@ window.AHS = window.AHS || {};
         render();
         return;
       }
-      /* AI Supabase Persistence Root Cause Fix (Root Cause C)：同既有邏輯
-         （原本掛在選學期步驟的「進入平台」上），等待真實 Supabase Auth
-         登入鏈完成後才導向，避免整頁刷新時遺失尚未寫入的 identity cache。
-         state.loginPromise 未設定 Supabase 時為 null，Promise.resolve(null)
-         下一個 microtask 就會 resolve，行為等同立即導向。 */
-      enterBtn.disabled = true;
-      passwordInput.disabled = true;
-      Promise.resolve(state.loginPromise).then(function () {
-        window.location.assign("index.html");
-      });
+      window.location.assign("index.html");
+    }
+
+    function submit() {
+      if (enterBtn.disabled) { return; }
+      var student = AHS.WorkspaceRuntime.findStudent(state.studentId);
+      var typed = passwordInput.value;
+      var auth = AHS.AuthRepository;
+
+      if (auth && typeof auth.isConfigured === "function" && auth.isConfigured()) {
+        /* 等待真實 Supabase Auth 登入（含 ensureOwnProfile() 寫入 identity
+           cache）完成後才導向，避免整頁刷新時遺失尚未寫入的 identity。 */
+        enterBtn.disabled = true;
+        passwordInput.disabled = true;
+        auth.login(student, typed).then(function (result) {
+          if (result && result.ok) { enter(); return; }
+          fail(result && result.reason === "network"
+            ? "無法連線到登入伺服器，請確認網路後再試一次。"
+            : "密碼錯誤，請再試一次。");
+        });
+        return;
+      }
+
+      var expected = student && student.password;
+      if (!expected || typed !== expected) {
+        fail("密碼錯誤，請再試一次。");
+        return;
+      }
+      enter();
     }
 
     enterBtn.addEventListener("click", submit);

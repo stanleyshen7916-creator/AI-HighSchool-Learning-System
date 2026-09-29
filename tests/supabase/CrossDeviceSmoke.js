@@ -111,9 +111,22 @@ async function main() {
 
   const testStudent = { id: "cross_device_smoke_" + Date.now(), name: "Cross Device Smoke", role: "STUDENT" };
 
+  /* A throwaway account with a random per-run password. The app itself no
+     longer signs anyone up (2026-09-29 security fix), so this smoke test
+     provisions its own account explicitly — same as RepositorySmoke.js.
+     If sign-ups are disabled on the project (recommended), this reports
+     FAIL with Supabase's own message. */
+  const testPassword = "Smoke-" + Math.random().toString(36).slice(2) + "-" + Date.now();
+
   console.log("--- Device A: sign up + write real data ---");
-  const loginA = await AHS_A.AuthRepository.loginForMockStudent(testStudent);
-  if (loginA.skipped || loginA.error) {
+  const signUp = await AHS_A.SupabaseClient.signUp(AHS_A.AuthRepository.accountEmail(testStudent.id), testPassword);
+  if (signUp.error) {
+    report("Device A sign-up", "FAIL", signUp.error.message);
+    console.log("\nCrossDeviceSmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");
+    process.exit(1);
+  }
+  const loginA = await AHS_A.AuthRepository.login(testStudent, testPassword);
+  if (!loginA.ok) {
     report("Device A login", "FAIL", loginA.error ? loginA.error.message : JSON.stringify(loginA));
     console.log("\nCrossDeviceSmoke: " + pass + " PASS / " + fail + " FAIL / " + skip + " SKIP");
     process.exit(1);
@@ -168,8 +181,8 @@ async function main() {
   console.log("\n--- Device B: independent fresh state, same real account, pull ---");
   const deviceBStorage = freshDeviceState();
   const AHS_B = loadAhsInto(deviceBStorage);
-  const loginB = await AHS_B.AuthRepository.loginForMockStudent(testStudent);
-  if (loginB.skipped || loginB.error) {
+  const loginB = await AHS_B.AuthRepository.login(testStudent, testPassword);
+  if (!loginB.ok) {
     report("Device B login", "FAIL", loginB.error ? loginB.error.message : JSON.stringify(loginB));
   } else {
     report("Device B login", "PASS", "same real account, independent client state");

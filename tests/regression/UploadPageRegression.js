@@ -1,0 +1,182 @@
+/* tests/regression/UploadPageRegression.js — 2026-09-29 教材上傳併入學習平台.
+
+   upload.html against a fake 教材上傳引擎 (window.fetch stub that
+   records every request):
+   - 學生：Sidebar 沒有「教材上傳」，頁面只顯示僅限管理者，且完全不呼叫引擎。
+   - Admin：Sidebar 出現「教材上傳」；引擎狀態顯示已連線。
+   - 完整流程：三方初稿 → 交叉審議 job → Final → 建立草稿（送出平台的學校/
+     學期/科目代碼與上傳批次）→ 預覽題目與答案 → 發布 → 顯示 git 指令。
+   - 引擎沒啟動時顯示明確的啟動提示，不拋錯。
+
+   Run: node tests/regression/UploadPageRegression.js */
+"use strict";
+const { JSDOM } = require("jsdom");
+const fs = require("fs");
+const path = require("path");
+
+const REPO = path.join(__dirname, "..", "..");
+let pass = 0, fail = 0;
+function check(name, cond) {
+  if (cond) { pass++; console.log("  PASS  " + name); }
+  else { fail++; console.log("  FAIL  " + name); }
+}
+
+const FINAL = "長榮中學_高二_數學_第一章_課本_Final.md";
+const DRAFT = {
+  materialId: "tm_18", status: "draft", stage: "ANALYZING", qualityGate: "PASS",
+  warnings: ["Q3：找不到答案或答案不在選項中，未收錄"],
+  metadata: { subject: "數學", grade: "高二", chapter: "第一章" },
+  summary: { coreConcepts: ["弧度的定義"], keywords: [], keyPoints: [], pitfalls: [], reviewSuggestions: [] },
+  questions: [{ question: "5π/6 弳是幾度？", options: ["120°", "150°"], answer: "150°", explanation: "乘以 180/π" }],
+  sourceFiles: [FINAL, "課本.pdf"]
+};
+
+function fakeEngine(window, log, mode) {
+  function reply(status, body) {
+    const text = JSON.stringify(body);
+    return Promise.resolve({ ok: status < 300, status: status, text: () => Promise.resolve(text) });
+  }
+  return function (url, init) {
+    const method = (init && init.method) || "GET";
+    const body = init && typeof init.body === "string" ? JSON.parse(init.body) : null;
+    log.push({ url: String(url), method: method, body: body });
+    if (mode === "down") { return Promise.reject(new window.Error("connection refused")); }
+    const u = String(url).replace(/^https?:\/\/[^/]+/, "");
+    if (u === "/api/health") { return reply(200, { engine: "ahs-council", version: "1.1.0", mineru: true, ollama: true }); }
+    if (u === "/api/catalog") { return reply(200, { items: [{ filename: "舊的_Final.md", qualityGate: "PASS" }] }); }
+    if (u.indexOf("/api/finals/") === 0) { return reply(200, { filename: FINAL, content: "# Final" }); }
+    if (u === "/api/assemble-council/jobs" && method === "POST") { return reply(202, { jobId: "job-1", status: "running" }); }
+    if (u === "/api/assemble-council/jobs/job-1") {
+      return reply(200, { status: "completed", result: { filename: FINAL, catalogEntry: { qualityGate: "PASS", finalScore: 98 } } });
+    }
+    if (u === "/api/platform/drafts" && method === "GET") { return reply(200, { drafts: [] }); }
+    if (u === "/api/platform/drafts" && method === "POST") { return reply(201, DRAFT); }
+    if (u === "/api/platform/drafts/tm_18/publish") {
+      return reply(200, Object.assign({}, DRAFT, {
+        status: "published", stage: "IMPORTED",
+        changedPaths: ["docs/TeachingMaterials/materials/tm_18/", "js/data/TeachingMaterialData.js"]
+      }));
+    }
+    if (u.indexOf("/api/materials/") === 0) { return reply(200, { count: 0, images: [] }); }
+    return reply(404, { error: "not found" });
+  };
+}
+
+function loadUpload(studentId, mode) {
+  const html = fs.readFileSync(path.join(REPO, "upload.html"), "utf8");
+  const vconsole = new (require("jsdom").VirtualConsole)();
+  const consoleErrors = [];
+  vconsole.on("error", (m) => consoleErrors.push(String(m)));
+  vconsole.on("jsdomError", (e) => {
+    const s = String((e && e.message) || e);
+    if (/Could not load link|Could not parse CSS|not implemented/i.test(s)) { return; }
+    consoleErrors.push(s);
+  });
+  const dom = new JSDOM(html, { url: "https://ahs.test/upload.html", runScripts: "outside-only", pretendToBeVisual: true, virtualConsole: vconsole });
+  const { window } = dom;
+  const log = [];
+  window.fetch = fakeEngine(window, log, mode);
+  window.confirm = () => true;
+  window.sessionStorage.setItem("ahs:workspace", JSON.stringify({ studentId: studentId, schoolId: "cjsh", semesterIds: ["g2s1"] }));
+  [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
+    const p = path.join(REPO, src);
+    if (!fs.existsSync(p)) { return; }
+    window.eval(fs.readFileSync(p, "utf8"));
+    /* engine I/O only: keep the committed Supabase config out of the way */
+    if (/^js\/data\/SupabaseConfig(\.local)?\.js$/.test(src)) {
+      window.AHS.SupabaseConfig = { url: "", anonKey: "" };
+      window.AHS.SupabaseConfigLocal = null;
+    }
+  });
+  window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
+  return { window, doc: window.document, log, consoleErrors };
+}
+
+function settle() { return new Promise((r) => setTimeout(r, 30)); }
+function click(node) { node.dispatchEvent(new node.ownerDocument.defaultView.MouseEvent("click", { bubbles: true })); }
+function buttonByText(doc, text) { return [...doc.querySelectorAll("button")].find((b) => b.textContent.trim() === text); }
+function fieldByLabel(doc, label) {
+  const f = [...doc.querySelectorAll(".upl-field")].find((x) => x.querySelector(".upl-field__label").textContent === label);
+  return f && f.querySelector("input, select, textarea");
+}
+function sidebarLabels(doc) { return [...doc.querySelectorAll(".sidebar__label")].map((n) => n.textContent); }
+
+async function main() {
+  console.log("Upload Page Regression — 教材上傳（Admin only）");
+
+  console.log("\n[1] 學生帳號：看不到入口，頁面只顯示僅限管理者，不呼叫引擎");
+  {
+    const { doc, log, consoleErrors } = loadUpload("student_a");
+    await settle();
+    check("Sidebar 沒有「教材上傳」", sidebarLabels(doc).indexOf("教材上傳") === -1);
+    check("顯示「僅限管理者」", doc.body.textContent.indexOf("此頁僅限管理者使用") !== -1);
+    check("沒有任何上傳表單", !doc.querySelector(".upl-textarea"));
+    check("完全沒有呼叫引擎", log.length === 0);
+    check("Console errors = 0", consoleErrors.length === 0);
+  }
+
+  console.log("\n[2] Admin：入口與引擎狀態");
+  const { window, doc, log, consoleErrors } = loadUpload("admin");
+  await settle();
+  check("Sidebar 出現「教材上傳」", sidebarLabels(doc).indexOf("教材上傳") !== -1);
+  check("六個區塊（引擎＋步驟 1～5）", doc.querySelectorAll(".upl-card").length === 6);
+  check("引擎狀態顯示已連線", doc.body.textContent.indexOf("已連線（引擎 v1.1.0）") !== -1);
+  check("學校選單來自平台資料（長榮中學 cjsh）", [...fieldByLabel(doc, "學校").options].some((o) => o.value === "cjsh" && o.textContent === "長榮中學"));
+  check("科目選單含平台所有科目（含地球科學）", [...fieldByLabel(doc, "科目").options].some((o) => o.value === "地球科學"));
+  check("教材類型不提供「考卷」（AI 出題不能標為原題考卷）", [...fieldByLabel(doc, "教材類型").options].every((o) => o.value !== "EXAM"));
+
+  console.log("\n[3] 未填必要欄位時不送出");
+  click(buttonByText(doc, "執行三方交叉審議"));
+  await settle();
+  check("未填章節：提示且不建立 job", doc.body.textContent.indexOf("請先在步驟 1 填寫章節") !== -1 && !log.some((c) => c.url.indexOf("/jobs") !== -1));
+  click(buttonByText(doc, "建立教材包草稿"));
+  await settle();
+  check("沒有 Final：提示且不建立草稿", !log.some((c) => c.method === "POST" && /\/api\/platform\/drafts$/.test(c.url)));
+
+  console.log("\n[4] 審議 → 建立草稿 → 預覽");
+  fieldByLabel(doc, "科目").value = "數學";
+  fieldByLabel(doc, "章節").value = "第一章";
+  fieldByLabel(doc, "ChatGPT (Web)").value = "①核心概念\nA";
+  fieldByLabel(doc, "Gemini (Web)").value = "①核心概念\nB";
+  fieldByLabel(doc, "Claude (Web)").value = "①核心概念\nC";
+  click(buttonByText(doc, "執行三方交叉審議"));
+  await settle();
+  const job = log.find((c) => c.method === "POST" && /\/api\/assemble-council\/jobs$/.test(c.url));
+  check("送出審議 job，含三方初稿與 Council 用的學校名稱", !!job && job.body.school === "長榮中學" && job.body.drafts.claude === "①核心概念\nC" && job.body.unit === "第一章");
+  check("審議完成後顯示 Final 檔名與 Quality Gate", doc.body.textContent.indexOf(FINAL) !== -1 && doc.body.textContent.indexOf("PASS · 98") !== -1);
+
+  click(buttonByText(doc, "建立教材包草稿"));
+  await settle();
+  const create = log.find((c) => c.method === "POST" && /\/api\/platform\/drafts$/.test(c.url));
+  check("建立草稿送出平台代碼（cjsh / g2s1 / 數學 / TEXTBOOK）",
+    !!create && create.body.finalFilename === FINAL && create.body.metadata.school === "cjsh" &&
+    create.body.metadata.semester === "g2s1" && create.body.metadata.subject === "數學" && create.body.metadata.materialType === "TEXTBOOK");
+  check("預覽顯示草稿狀態（學生看不到）", doc.body.textContent.indexOf("草稿（學生看不到）") !== -1);
+  check("預覽顯示轉換警告", doc.body.textContent.indexOf("Q3：找不到答案") !== -1);
+  check("預覽標出正確答案", !!doc.querySelector(".upl-question__options .is-answer") && doc.querySelector(".upl-question__options .is-answer").textContent.indexOf("150°") === 0);
+
+  console.log("\n[5] 發布");
+  click(buttonByText(doc, "確認發布到平台"));
+  await settle();
+  check("呼叫 publish", log.some((c) => c.method === "POST" && /\/api\/platform\/drafts\/tm_18\/publish$/.test(c.url)));
+  check("顯示已上架與 git 指令", doc.body.textContent.indexOf("已上架（IMPORTED）") !== -1 && doc.querySelector(".upl-success .upl-pre").textContent.indexOf("git add docs/TeachingMaterials/materials/tm_18/ js/data/TeachingMaterialData.js") === 0);
+  check("發布後不再顯示發布／刪除按鈕", !buttonByText(doc, "確認發布到平台") && !buttonByText(doc, "刪除草稿"));
+  check("Console errors = 0", consoleErrors.length === 0);
+  window.close();
+
+  console.log("\n[6] 引擎未啟動");
+  {
+    const { doc: d2, consoleErrors: e2 } = loadUpload("admin", "down");
+    await settle();
+    check("顯示啟動提示", d2.body.textContent.indexOf("請先在這台電腦執行「啟動教材上傳引擎.bat」") !== -1);
+    check("Console errors = 0", e2.length === 0);
+  }
+
+  console.log("\nUploadPageRegression: " + pass + " PASS / " + fail + " FAIL");
+  process.exit(fail > 0 ? 1 : 0);
+}
+
+main().catch((err) => {
+  console.log("  FAIL  unexpected error: " + (err && err.stack || err));
+  process.exit(1);
+});

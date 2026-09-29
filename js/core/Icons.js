@@ -49,6 +49,7 @@ AHS.Icons = (function () {
     plus: '<path d="M12 5v14M5 12h14"/>',
     doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>',
     download: '<path d="M12 3v12M8 11l4 4 4-4"/><path d="M5 21h14"/>',
+    upload: '<path d="M12 21V9M8 13l4-4 4 4"/><path d="M5 3h14"/>',
     camera: '<path d="M4 8h4l2-2h4l2 2h4v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
     refresh: '<path d="M20 11a8 8 0 1 0-1 5"/><path d="M20 4v5h-5"/>',
     aa: '<path d="M4 18l4-11 4 11M5.5 14h5"/><path d="M14 18l3-8 3 8M15 15h4"/>',

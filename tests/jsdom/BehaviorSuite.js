@@ -422,7 +422,7 @@ console.log("\n[6] Task 002 regression — download mechanism audit (jsdom-verif
 }
 
 console.log("\n[7] Full-page console error sweep (all entry pages)");
-for (const page of ["index.html", "materials.html", "summary.html", "quiz.html", "wrongbook.html", "review.html", "learning.html", "dashboard.html", "tutor.html"]) {
+for (const page of ["index.html", "materials.html", "summary.html", "quiz.html", "wrongbook.html", "review.html", "learning.html", "dashboard.html", "tutor.html", "upload.html"]) {
   try {
     const { consoleErrors } = loadPage(page, {});
     check(page + " console errors = 0", consoleErrors.length === 0);
