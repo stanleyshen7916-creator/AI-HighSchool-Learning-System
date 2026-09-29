@@ -110,7 +110,17 @@ async function main(argv) {
     console.error("Usage: SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/SetAccountPasswords.js --file <passwords.json> [--dry-run]");
     return 2;
   }
-  const passwords = JSON.parse(fs.readFileSync(argv[fileIdx + 1], "utf8"));
+  let passwords;
+  try {
+    // Notepad may save UTF-8 with a BOM; strip it before parsing.
+    passwords = JSON.parse(fs.readFileSync(argv[fileIdx + 1], "utf8").replace(/^﻿/, ""));
+  } catch (err) {
+    // Never echo the file contents — they are real passwords.
+    console.error("密碼檔不是正確的 JSON（" + err.message.replace(/"[^"]*"/g, '"…"') + "）。\n" +
+      "格式必須是：{ \"admin\": \"…\", \"student_a\": \"…\", \"student_c\": \"…\" }\n" +
+      "請確認：最外層有 { }、引號與冒號都是半形、最後一項後面沒有逗號。沒有修改任何帳號。");
+    return 2;
+  }
   const results = await setPasswords({
     url: process.env.SUPABASE_URL || defaultSupabaseUrl(),
     serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
