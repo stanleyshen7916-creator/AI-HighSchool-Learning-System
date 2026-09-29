@@ -20,3 +20,7 @@ js/data/SupabaseConfig.local.js
 /playwright/report/test-results/
 /playwright/report/screenshots/
 /playwright/report/results.json
+
+# 2026-09-29: input file for scripts/maintenance/SetAccountPasswords.js —
+# real account passwords, never committed.
+*.passwords.json
