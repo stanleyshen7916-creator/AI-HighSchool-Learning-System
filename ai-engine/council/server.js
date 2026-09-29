@@ -103,6 +103,8 @@ const upload = multer({
 async function ocrImage(imageSource) {
   // cachePath：traineddata 放在資料目錄（AI-Study-Council 根目錄原本就有這兩個檔案），
   // 指向舊資料夾時可直接沿用，不必重新下載。
+  // tesseract.js 固定 6.0.1：7.0.0 載入多語言（chi_tra+eng）時第二個語言會以亂碼檔名
+  // 載入失敗，實際只用 chi_tra 辨識（2026-09-29 以真實掃描頁在容器內實測）。
   const { data } = await Tesseract.recognize(imageSource, 'chi_tra+eng', { cachePath: DATA_DIR });
   const boxText = (data.words || []).map((word) => word.text).join(' ');
   return [data.text, boxText].filter(Boolean).join('\n').trim();
@@ -116,8 +118,12 @@ async function ocrImage(imageSource) {
 // 個位數個字母，跟真正一頁課文（幾十到幾百個中文字）差距懸殊，比單純比較字串長度更抗雜訊。
 const PDF_MEANINGFUL_CHAR_THRESHOLD = 8;
 
+// 頁碼章戳（「-- 1 of 4 --」）先移除再計數：每頁的「of」算 2 個字母，4 頁以上的純掃描
+// PDF 就會湊滿門檻、被誤判成「有文字層」而不走 OCR（2026-09-29 以真實 4 頁掃描檔實測發現）。
+const PAGE_MARKER = /--\s*\d+\s+of\s+\d+\s*--/gi;
+
 function countMeaningfulChars(text) {
-  return (String(text ?? '').match(/\p{L}/gu) || []).length;
+  return (String(text ?? '').replace(PAGE_MARKER, '').match(/\p{L}/gu) || []).length;
 }
 
 // 可用環境變數覆寫（例如測試環境指向隔離的 tmp 目錄）：這台機器上曾經實測遇到真正的

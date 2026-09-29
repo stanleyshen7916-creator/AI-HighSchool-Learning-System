@@ -794,6 +794,14 @@ describe('countMeaningfulChars（判斷 PDF 內嵌文字層是否「幾乎是空
     expect(countMeaningfulChars('-- 1 of 2 --\n\n\n\n-- 2 of 2 --')).toBeLessThan(PDF_MEANINGFUL_CHAR_THRESHOLD);
   });
 
+  // 真實 4 頁掃描 PDF：舊版把 4 個「of」算成 8 個字母，剛好達到門檻而沒有改走 OCR。
+  test('頁數再多，頁碼章戳也不計入（4 頁、20 頁掃描檔都必須判定為沒有文字層）', () => {
+    const pages = (n) => Array.from({ length: n }, (_, i) => `-- ${i + 1} of ${n} --`).join('\n\n');
+    expect(countMeaningfulChars(pages(4))).toBe(0);
+    expect(countMeaningfulChars(pages(20))).toBe(0);
+    expect(countMeaningfulChars(`${pages(4)}\n每個人都喜歡聽故事`)).toBe('每個人都喜歡聽故事'.length);
+  });
+
   test('純空白／換行：0', () => {
     expect(countMeaningfulChars('\n\n   \n\n')).toBe(0);
   });
