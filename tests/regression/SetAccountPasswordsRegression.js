@@ -81,6 +81,30 @@ async function main() {
     check("dry-run 回報 would-update", results[0].status === "would-update");
   }
 
+  console.log("\n[4] --create-missing — 只替不存在的帳號新建，既有帳號照常只改密碼");
+  {
+    const log = [];
+    const results = await setPasswords({
+      url: "https://x.supabase.co", serviceKey: "k", createMissing: true,
+      passwords: { student_a: "New-Pass-A1", ghost: "New-Pass-Ghost1" }, fetchImpl: fakeFetch(log)
+    });
+    const posts = log.filter((c) => c.method === "POST");
+    check("只 POST 一次（ghost）", posts.length === 1 && /\/auth\/v1\/admin\/users$/.test(posts[0].url));
+    check("新帳號 email 正確且已確認", posts[0].body.email === "ghost@ahs-mock.local" && posts[0].body.email_confirm === true);
+    check("既有帳號仍只 PUT 密碼", log.filter((c) => c.method === "PUT").length === 1);
+    check("沒有任何 DELETE 或 /rest/v1", log.every((c) => c.method !== "DELETE" && c.url.indexOf("/rest/v1") === -1));
+    check("回報 created", results.find((r) => r.key === "ghost").status === "created");
+    check("列出密碼檔以外的平台帳號", results.others.join(",") === "student_c@ahs-mock.local,admin@ahs-mock.local");
+  }
+  {
+    const log = [];
+    const results = await setPasswords({
+      url: "https://x.supabase.co", serviceKey: "k", createMissing: true, dryRun: true,
+      passwords: { ghost: "New-Pass-Ghost1" }, fetchImpl: fakeFetch(log)
+    });
+    check("dry-run + create-missing 只有 GET，回報 would-create", log.every((c) => c.method === "GET") && results[0].status === "would-create");
+  }
+
   console.log("\nSetAccountPasswordsRegression: " + pass + " PASS / " + fail + " FAIL");
   if (fail > 0) { process.exit(1); }
 }

@@ -17,6 +17,9 @@
 
      SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/SetAccountPasswords.js --file <passwords.json>
      SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/SetAccountPasswords.js --file <passwords.json> --dry-run
+     SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/SetAccountPasswords.js --file <passwords.json> --create-missing
+   (--create-missing: also create accounts that have never existed — never
+   touches an existing account or any data row)
 
    <passwords.json> maps mock_student_key -> new password, e.g.
      { "student_a": "…", "student_c": "…", "admin": "…" }
@@ -126,7 +129,28 @@ async function setPasswords(options) {
     const email = key + "@" + EMAIL_DOMAIN;
     const user = users.find(function (u) { return String(u.email || "").toLowerCase() === email; });
     if (!user) {
-      results.push({ key: key, email: email, status: "missing", detail: "no such account — nothing changed" });
+      /* --create-missing: an account that never signed in under the old
+         auto-sign-up flow has no auth user at all. Creating it adds a new,
+         empty account (email pre-confirmed); its student_profiles row is
+         created by AuthRepository.ensureOwnProfile() on first login. It
+         cannot touch any existing account or data row. */
+      if (!options.createMissing) {
+        results.push({ key: key, email: email, status: "missing", detail: "no such account — nothing changed (use --create-missing to create it)" });
+        continue;
+      }
+      if (options.dryRun) {
+        results.push({ key: key, email: email, status: "would-create", detail: "new account" });
+        continue;
+      }
+      const created = await fetchImpl(options.url + "/auth/v1/admin/users", {
+        method: "POST",
+        headers: Object.assign(authHeaders(options.serviceKey), { "Content-Type": "application/json" }),
+        body: JSON.stringify({ email: email, password: options.passwords[key], email_confirm: true })
+      });
+      const createdBody = created.ok ? await created.json() : null;
+      results.push(created.ok
+        ? { key: key, email: email, status: "created", detail: "user id " + (createdBody && createdBody.id) }
+        : { key: key, email: email, status: "failed", detail: "HTTP " + created.status + " " + (await created.text()) });
       continue;
     }
     if (options.dryRun) {
@@ -142,13 +166,20 @@ async function setPasswords(options) {
       ? { key: key, email: email, status: "updated", detail: "user id " + user.id + " (unchanged)" }
       : { key: key, email: email, status: "failed", detail: "HTTP " + res.status + " " + (await res.text()) });
   }
+  /* Other platform accounts in the project (only @ahs-mock.local — no
+     real person's email), so a dry run shows e.g. an old student_b account
+     before anyone creates a duplicate. */
+  const listed = Object.keys(options.passwords).map(function (k) { return k + "@" + EMAIL_DOMAIN; });
+  results.others = users
+    .map(function (u) { return String(u.email || "").toLowerCase(); })
+    .filter(function (e) { return e.endsWith("@" + EMAIL_DOMAIN) && listed.indexOf(e) === -1; });
   return results;
 }
 
 async function main(argv) {
   const fileIdx = argv.indexOf("--file");
   if (fileIdx === -1 || !argv[fileIdx + 1]) {
-    console.error("Usage: SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/SetAccountPasswords.js --file <passwords.json> [--dry-run]");
+    console.error("Usage: SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/SetAccountPasswords.js --file <passwords.json> [--dry-run] [--create-missing]");
     return 2;
   }
   let passwords;
@@ -166,9 +197,11 @@ async function main(argv) {
     url: process.env.SUPABASE_URL || defaultSupabaseUrl(),
     serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     passwords: passwords,
-    dryRun: argv.indexOf("--dry-run") !== -1
+    dryRun: argv.indexOf("--dry-run") !== -1,
+    createMissing: argv.indexOf("--create-missing") !== -1
   });
   results.forEach(function (r) { console.log(r.status.padEnd(12) + " " + r.email + " — " + r.detail); });
+  console.log("其他平台帳號（不在密碼檔內，不會變動）：" + (results.others.length ? results.others.join("、") : "無"));
   return results.some(function (r) { return r.status === "failed" || r.status === "missing"; }) ? 1 : 0;
 }
 
