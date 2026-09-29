@@ -1,7 +1,13 @@
 # AI High School Learning System — Prototype v0.1
 
-高中生 AI 學習平台原型。純 HTML5 / CSS3 / Vanilla JavaScript，全部 Mock Data，
-無後端 / 無 API / 無 build 工具，相容 file:// 與 GitHub Pages。
+高中生 AI 學習平台。前端是純 HTML5 / CSS3 / Vanilla JavaScript，沒有 build 工具，可直接在 file:// 開啟，也部署在 GitHub Pages。
+
+> 2026-09-29 更新：本檔以下「全部 Mock Data／無後端」的描述是初版原型當時的狀態，現在已經不適用：
+> - **學習資料**：登入後，錯題本、考試、學習進度、設定會同步到 Supabase。登入密碼由 Supabase Auth 驗證，帳號密碼用 `scripts/maintenance/SetAccountPasswords.js` 設定。
+> - **教材**：17 份以上的真實教材放在 `docs/TeachingMaterials/`，已不是 Mock Data。
+> - **教材上傳**（`upload.html`，僅管理者可見）：搭配在管理者電腦執行的教材上傳引擎 [`ai-engine/council/`](ai-engine/council/README.md)（原 AI-Study-Council），完成 OCR、三方 AI 交叉審議，把 Final.md 轉成教材包後上架。
+>
+> 開發規則以 `CLAUDE.md` 為準。
 
 ## 進度：全部頁面完成 ✔
 

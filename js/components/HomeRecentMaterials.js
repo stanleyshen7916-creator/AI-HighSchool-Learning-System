@@ -106,12 +106,12 @@ AHS.HomeRecentMaterials = (function () {
     ]);
 
     cardEl.addEventListener("click", function () {
-      window.location.href = href;
+      window.location.assign(href);
     });
     cardEl.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        window.location.href = href;
+        window.location.assign(href);
       }
     });
 

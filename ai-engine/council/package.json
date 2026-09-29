@@ -1,0 +1,33 @@
+{
+  "name": "ahs-council-engine",
+  "version": "1.1.0",
+  "private": true,
+  "description": "教材上傳引擎（原 AI-Study-Council）：OCR、三方 AI 交叉審議、Final.md → 學習平台教材包",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest",
+    "test:e2e:qwen": "node tests/qwen_real_e2e.js"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^2.4.5",
+    "tesseract.js": "^7.0.0",
+    "undici": "^6.28.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setupDataDir.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/tests/qwen_real_e2e.js"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+# 容器內執行的腳本必須是 LF（Windows 的 CRLF 會讓 bash 失敗）；啟動器維持 CRLF。
+*.sh text eol=lf
+Dockerfile* text eol=lf
+*.bat text eol=crlf

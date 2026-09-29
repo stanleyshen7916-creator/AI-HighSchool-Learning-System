@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7c5cff">
+  <meta name="color-scheme" content="light">
+  <title>AI 高中學習系統 · 教材上傳</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="css/base/tokens.css">
+  <link rel="stylesheet" href="css/components/qiaoqiao.css">
+  <link rel="stylesheet" href="css/components/settings-panel.css">
+  <link rel="stylesheet" href="css/base/layout.css">
+  <link rel="stylesheet" href="css/pages/upload.css">
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="js/core/UI.js"></script>
+  <script src="js/core/Icons.js"></script>
+  <script src="js/core/PersistenceAdapter.js"></script>
+  <script src="js/data/SupabaseConfig.js"></script>
+  <script src="js/data/SupabaseConfig.local.js"></script>
+  <script src="js/data/RuntimeModeConfig.js"></script>
+  <script src="js/core/SupabaseClient.js"></script>
+  <script src="js/repository/Repository.js"></script>
+  <script src="js/repository/SupabaseRepository.js"></script>
+  <script src="js/repository/RepositoryFactory.js"></script>
+  <script src="js/repository/SyncBridge.js"></script>
+  <script src="js/repository/AuthRepository.js"></script>
+  <script src="js/core/PlatformContext.js"></script>
+  <script src="js/data/WorkspaceData.js"></script>
+  <script src="js/runtime/WorkspaceRuntime.js"></script>
+  <script src="js/core/DocumentExport.js"></script>
+  <script src="js/runtime/SettingsRuntime.js"></script>
+  <script src="js/ui/SettingsPanel.js"></script>
+  <script src="js/data/AppConfig.js"></script>
+  <script src="js/data/RepositoryStatus.js"></script>
+  <script src="js/core/Qiaoqiao.js"></script>
+  <script src="js/ui/AppShell.js"></script>
+  <!-- 2026-09-29 教材上傳：本機教材上傳引擎（ai-engine/council）的唯一連線點 -->
+  <script src="js/core/CouncilEngineClient.js"></script>
+  <script src="js/components/CouncilUpload.js"></script>
+  <script src="js/pages/AppUpload.js"></script>
+</body>
+</html>

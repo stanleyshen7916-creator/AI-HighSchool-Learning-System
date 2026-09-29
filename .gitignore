@@ -24,3 +24,6 @@ js/data/SupabaseConfig.local.js
 # 2026-09-29: input file for scripts/maintenance/SetAccountPasswords.js —
 # real account passwords, never committed.
 *.passwords.json
+
+# 2026-09-29: 教材上傳引擎的執行期資料（上傳原始檔、Final.md、MinerU 佇列、模型快取）
+ai-engine/council/data/
