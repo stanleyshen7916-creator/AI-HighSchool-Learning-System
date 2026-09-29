@@ -55,13 +55,54 @@ function validatePasswords(passwords) {
   return problems;
 }
 
+/* Legacy service_role keys are JWTs and go in both headers. The newer
+   sb_secret_… keys are not JWTs and are rejected as a Bearer token, so
+   they are sent in the apikey header only. */
+function authHeaders(serviceKey) {
+  const h = { apikey: serviceKey };
+  if (/^eyJ/.test(serviceKey)) { h.Authorization = "Bearer " + serviceKey; }
+  return h;
+}
+
+/* describeKey(key, url) — explains a 401 without ever printing the key:
+   its kind (secret / publishable / legacy JWT role) and, for a JWT, which
+   project it belongs to (the project ref is public — it is in the URL). */
+function describeKey(serviceKey, url) {
+  const key = String(serviceKey || "");
+  const notes = [];
+  if (key !== key.trim()) { notes.push("金鑰前後有空白或換行"); }
+  if (/^["']|["']$/.test(key.trim())) { notes.push("金鑰含引號，請只貼金鑰本身"); }
+  const k = key.trim().replace(/^["']|["']$/g, "");
+  const projectRef = (/^https:\/\/([a-z0-9]+)\.supabase\.co/.exec(url || "") || [])[1];
+  if (/^sb_publishable_/.test(k)) {
+    notes.push("這是 publishable 金鑰（公開金鑰），請改用 secret 金鑰");
+  } else if (/^sb_secret_/.test(k)) {
+    notes.push("金鑰種類：secret（正確種類）。仍被拒絕代表它不屬於專案 " + projectRef + "，或複製不完整");
+  } else if (/^eyJ/.test(k)) {
+    try {
+      const payload = JSON.parse(Buffer.from(k.split(".")[1], "base64url").toString("utf8"));
+      notes.push("金鑰種類：舊版 JWT，role = " + payload.role + "，所屬專案 = " + payload.ref);
+      if (payload.role !== "service_role") { notes.push("role 不是 service_role，請改用 service_role 金鑰"); }
+      if (projectRef && payload.ref && payload.ref !== projectRef) {
+        notes.push("這把金鑰屬於另一個專案（" + payload.ref + "），平台使用的是 " + projectRef);
+      }
+    } catch (e) { notes.push("JWT 格式不完整，可能複製時被截斷"); }
+  } else {
+    notes.push("無法辨識的金鑰格式（應以 sb_secret_ 或 eyJ 開頭）");
+  }
+  return notes.join("；");
+}
+
 async function listUsers(url, serviceKey, fetchImpl) {
   const users = [];
   for (let page = 1; page < 100; page++) {
     const res = await fetchImpl(url + "/auth/v1/admin/users?page=" + page + "&per_page=200", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
+      headers: authHeaders(serviceKey)
     });
-    if (!res.ok) { throw new Error("listing users failed: HTTP " + res.status + " " + (await res.text())); }
+    if (!res.ok) {
+      const hint = res.status === 401 || res.status === 403 ? "\n金鑰檢查：" + describeKey(serviceKey, url) : "";
+      throw new Error("listing users failed: HTTP " + res.status + " " + (await res.text()) + hint + "\n沒有修改任何帳號。");
+    }
     const body = await res.json();
     const batch = Array.isArray(body) ? body : (body.users || []);
     users.push.apply(users, batch);
@@ -94,7 +135,7 @@ async function setPasswords(options) {
     }
     const res = await fetchImpl(options.url + "/auth/v1/admin/users/" + encodeURIComponent(user.id), {
       method: "PUT",
-      headers: { apikey: options.serviceKey, Authorization: "Bearer " + options.serviceKey, "Content-Type": "application/json" },
+      headers: Object.assign(authHeaders(options.serviceKey), { "Content-Type": "application/json" }),
       body: JSON.stringify({ password: options.passwords[key] })
     });
     results.push(res.ok
@@ -132,10 +173,13 @@ async function main(argv) {
 }
 
 if (require.main === module) {
-  main(process.argv.slice(2)).then(function (code) { process.exit(code); }, function (err) {
+  /* exitCode instead of process.exit(): exiting while fetch's keep-alive
+     socket is still closing trips a libuv assertion on Windows
+     ("Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)"). */
+  main(process.argv.slice(2)).then(function (code) { process.exitCode = code; }, function (err) {
     console.error(err.message);
-    process.exit(1);
+    process.exitCode = 1;
   });
 }
 
-module.exports = { setPasswords: setPasswords, validatePasswords: validatePasswords, EMAIL_DOMAIN: EMAIL_DOMAIN };
+module.exports = { setPasswords: setPasswords, validatePasswords: validatePasswords, describeKey: describeKey, authHeaders: authHeaders, EMAIL_DOMAIN: EMAIL_DOMAIN };
