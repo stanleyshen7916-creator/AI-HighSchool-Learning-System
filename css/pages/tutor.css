@@ -94,7 +94,8 @@
 
 /* ---- 查觀念 results ----------------------------------------------- */
 .tutor-msg__note { font-size: 12px; color: var(--text-faint); }
-.tutor-results { margin: 6px 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+.tutor-results { margin: 6px 0; padding-left: 22px; }
+.tutor-results__item + .tutor-results__item { margin-top: 10px; }
 .tutor-results__text { margin: 0; }
 .tutor-results__source { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 2px; font-size: 12px; color: var(--text-muted); }
 .tutor-results__tag { font-weight: 700; color: var(--brand-ink); background-color: var(--brand-soft); border-radius: var(--radius-pill); padding: 1px 8px; }
@@ -150,6 +151,23 @@
   box-shadow: var(--shadow-btn);
 }
 .tutor-start:hover { background-color: var(--brand-strong); }
+
+/* ---- 我哪裡弱／今天讀什麼 --------------------------------------------- */
+.tutor-weak, .tutor-plan { margin: 6px 0; padding-left: 22px; }
+.tutor-weak__item + .tutor-weak__item, .tutor-plan__step + .tutor-plan__step { margin-top: 12px; }
+.tutor-weak__item, .tutor-plan__step, .tutor-results__item { display: list-item; list-style: decimal outside; }
+.tutor-weak__item::marker, .tutor-plan__step::marker, .tutor-results__item::marker { color: var(--brand); font-weight: 800; }
+.tutor-weak__item > *, .tutor-plan__step > * { display: block; margin-top: 4px; }
+.tutor-weak__item > .tutor-msg__menu, .tutor-plan__step > .tutor-msg__menu { display: flex; }
+.tutor-weak__kp { font-size: 14px; }
+.tutor-weak__facts { font-size: 12px; color: var(--text-muted); }
+.tutor-status-card { display: flex; flex-direction: column; gap: 10px; }
+.tutor-status-card__actions { display: flex; gap: 8px; }
+.tutor-status-card__btn {
+  flex: 1 1 0; border: 1px solid var(--brand-line); border-radius: var(--radius-pill); padding: 10px 12px;
+  background-color: var(--brand-soft); color: var(--brand-ink); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.tutor-status-card__btn:hover { background-color: var(--brand); color: #ffffff; }
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {

@@ -6,7 +6,9 @@
 
      Left  hero + chat. 查觀念: type a concept, get the materials' own
            sentences with their source; 出題考我: in-chat quiz cards.
-     Right 出題考我 settings, 「你可以這樣問」 topics taken from the real
+     Right 我的學習狀況（我哪裡弱／今天讀什麼 — from the student's own
+           知識弱點 and mastery records), 出題考我 settings,
+           「你可以這樣問」 topics taken from the real
            question banks, and — only when the student arrived from a
            specific 知識弱點 question (pageContext.questionId) — the two
            AHS.TutorEngine intents for that question.
@@ -187,6 +189,10 @@ AHS.AiTutor = (function () {
       }
       if (reply.type === "text") {
         push(bubble({ role: "assistant", text: reply.message }));
+      } else if (reply.type === "weak") {
+        push(aiBubble(weakNodes(reply.weakness)));
+      } else if (reply.type === "plan") {
+        push(aiBubble(planNodes(reply.plan)));
       } else if (reply.type === "quiz") {
         runQuiz({ subject: chatSubject.value || undefined, count: 5, weakFirst: true });
       } else if (reply.type === "search") {
@@ -196,6 +202,73 @@ AHS.AiTutor = (function () {
         if (reply.topics && reply.topics.length) { nodes.push(topicChips(reply.topics)); }
         push(aiBubble(nodes, reply.actions, sendMessage));
       }
+    }
+
+    /* ---- 我哪裡弱／今天讀什麼 ------------------------------------------ */
+    function actionButton(label, onClick) {
+      var b = el("button", { type: "button", class: "tutor-msg__menu-item", text: label });
+      b.addEventListener("click", onClick);
+      return b;
+    }
+
+    function searchAction(query) {
+      return actionButton("查觀念", function () { sendMessage(query); });
+    }
+
+    function quizAction(label, opts) {
+      return actionButton(label, function () {
+        push(bubble({ role: "user", text: label }));
+        runQuiz(opts);
+      });
+    }
+
+    function weakNodes(w) {
+      if (!w.total) {
+        return textLines("目前沒有未精熟的知識弱點。可以先做一次「出題考我」，答錯的題目會自動記下來，我再幫你整理。")
+          .concat([el("div", { class: "tutor-msg__menu" }, [quizAction("出題考我", { count: 5 })])]);
+      }
+      var list = el("ol", { class: "tutor-weak" }, w.points.map(function (p) {
+        var facts = [p.subjectName, "錯 " + p.errors + " 次", p.questions + " 題"];
+        if (p.mastery !== null) { facts.push("掌握度 " + p.mastery + "%"); }
+        var actions = [searchAction(p.knowledgePoint)];
+        if (p.practicable) {
+          actions.push(quizAction("練習「" + p.knowledgePoint + "」", { knowledgePoint: p.knowledgePoint, count: Math.min(5, p.practicable) }));
+        }
+        return el("li", { class: "tutor-weak__item" }, [
+          el("strong", { class: "tutor-weak__kp", text: p.knowledgePoint }),
+          el("span", { class: "tutor-weak__facts", text: facts.join("・") }),
+          el("div", { class: "tutor-msg__menu" }, actions)
+        ]);
+      }));
+      var nodes = [el("span", { class: "tutor-msg__line", text: "你目前有 " + w.total + " 題還沒精熟的知識弱點，錯最多的是：" }), list];
+      if (w.stale) {
+        nodes.push(el("span", { class: "tutor-msg__line", text: "其中 " + w.stale + " 題已經超過 7 天沒複習。" }));
+        nodes.push(el("div", { class: "tutor-msg__menu" }, [el("a", { class: "tutor-msg__menu-item", href: "wrongbook.html", text: "前往知識弱點重做" })]));
+      }
+      return nodes;
+    }
+
+    function planNodes(p) {
+      var intro = p.empty
+        ? "你還沒有作答紀錄，今天先從這一步開始："
+        : "依你目前的 " + p.total + " 題知識弱點，今天建議這樣讀：";
+      var steps = el("ol", { class: "tutor-plan" }, p.steps.map(function (s) {
+        var a = s.action;
+        var buttons = [];
+        if (s.search) { buttons.push(searchAction(s.search)); }
+        if (a.type === "wrongbook") {
+          buttons.push(el("a", { class: "tutor-msg__menu-item", href: "wrongbook.html", text: "前往知識弱點" }));
+        } else if (a.type === "quiz") {
+          buttons.push(quizAction(a.knowledgePoint ? "練習「" + a.knowledgePoint + "」" : "開始練習", { knowledgePoint: a.knowledgePoint, count: a.count, weakFirst: a.weakFirst }));
+        } else if (a.type === "search" && !s.search) {
+          buttons.push(searchAction(a.query));
+        }
+        return el("li", { class: "tutor-plan__step" }, [
+          el("span", { class: "tutor-plan__text", text: s.text }),
+          el("div", { class: "tutor-msg__menu" }, buttons)
+        ]);
+      }));
+      return [el("span", { class: "tutor-msg__line", text: intro }), steps];
     }
 
     function topicChips(list) {
@@ -257,7 +330,17 @@ AHS.AiTutor = (function () {
       topicSlot
     ]);
 
-    var railCards = [quizCard, topicsCard];
+    var statusCard = el("section", { class: "card tutor-status-card", "aria-label": "我的學習狀況" }, [
+      el("h2", { class: "card__title", text: "我的學習狀況" }),
+      el("p", { class: "tutor-card-hint", text: "根據你的知識弱點與作答紀錄整理，不是猜的。" }),
+      el("div", { class: "tutor-status-card__actions" }, ["我哪裡弱？", "今天讀什麼？"].map(function (label) {
+        var b = el("button", { type: "button", class: "tutor-status-card__btn", text: label });
+        b.addEventListener("click", function () { sendMessage(label); });
+        return b;
+      }))
+    ]);
+
+    var railCards = [statusCard, quizCard, topicsCard];
     /* 從知識弱點的「問巧巧老師」進來時：針對那一題的兩個 AHS.TutorEngine 選項 */
     if (ctx.questionId && AHS.TutorEngine && AHS.TutorEngine.resolveQuestion(ctx)) {
       railCards.unshift(el("section", { class: "card tutor-suggest", "aria-label": "針對這一題" }, [

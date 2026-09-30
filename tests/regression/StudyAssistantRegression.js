@@ -167,5 +167,57 @@ console.log("\n[6] 從知識弱點的某一題進來：仍可看那一題的詳�
   check("同一頁仍可查其他觀念", lastAi(doc).querySelectorAll(".tutor-results__item").length > 0);
 }
 
+console.log("\n[7] 我哪裡弱／今天讀什麼：沒有資料時誠實說明");
+{
+  const { doc } = loadTutor();
+  check("右欄有「我的學習狀況」", !!doc.querySelector(".tutor-status-card"));
+  click([...doc.querySelectorAll(".tutor-status-card__btn")].find((b) => b.textContent === "我哪裡弱？"));
+  check("沒有知識弱點時說明沒有、並提供出題", lastAi(doc).textContent.indexOf("目前沒有未精熟的知識弱點") !== -1);
+  click([...doc.querySelectorAll(".tutor-status-card__btn")].find((b) => b.textContent === "今天讀什麼？"));
+  check("沒有作答紀錄時建議先練習", lastAi(doc).textContent.indexOf("你還沒有作答紀錄") !== -1);
+}
+
+console.log("\n[8] 我哪裡弱／今天讀什麼：依知識弱點整理");
+{
+  function daysAgo(n) {
+    const d = new Date(); d.setDate(d.getDate() - n);
+    const p = (x) => (x < 10 ? "0" + x : String(x));
+    return d.getFullYear() + "/" + p(d.getMonth() + 1) + "/" + p(d.getDate());
+  }
+  function wb(id, qid, kp, errors, last, streak) {
+    return {
+      id: id, questionId: qid, subject: "earthscience", title: "t", chapter: "c", materialId: "",
+      knowledgePoint: kp, question: "q-" + qid, options: [], yourAnswer: "B", correctAnswer: "A", explanation: "",
+      errorCount: errors, lastError: last, firstError: last, masteredAt: null,
+      bookmarked: false, archived: false, correctStreak: streak || 0, correctCount: 0
+    };
+  }
+  const items = [
+    wb("wb_1", "tm_17_q1", "地球的分層構造", 2, daysAgo(10)),
+    wb("wb_2", "tm_17_q99", "地球的分層構造", 1, daysAgo(1)),
+    wb("wb_3", "tm_17_q2", "大氣三階段演變", 1, daysAgo(0)),
+    wb("wb_4", "tm_17_q3", "已精熟的點", 5, daysAgo(0), 3)
+  ];
+  const { window, doc } = loadTutor({ seed: { wrongBookRuntime: { items: items, seq: 4 } } });
+  send(doc, "我哪裡弱");
+  const ai = lastAi(doc);
+  const kps = [...ai.querySelectorAll(".tutor-weak__kp")].map((n) => n.textContent);
+  check("列出未精熟的 3 題、2 個知識點（已精熟的不列）", ai.textContent.indexOf("3 題還沒精熟") !== -1 && kps.length === 2 && kps.indexOf("已精熟的點") === -1);
+  check("錯最多的「地球的分層構造」排第一（錯 3 次、2 題）", kps[0] === "地球的分層構造" && ai.querySelector(".tutor-weak__facts").textContent.indexOf("錯 3 次・2 題") !== -1);
+  check("提醒 1 題超過 7 天沒複習", ai.textContent.indexOf("1 題已經超過 7 天沒複習") !== -1);
+  const practice = [...ai.querySelectorAll("button")].find((b) => b.textContent === "練習「地球的分層構造」");
+  check("有「練習該知識點」按鈕", !!practice);
+  click(practice);
+  const stems = [...doc.querySelectorAll(".tutor-quiz__stem")].map((n) => n.textContent);
+  const bankKp = window.AHS.StudyAssistant.sources().flatMap((s) => s.questions).filter((q) => stems.indexOf(q.text) !== -1);
+  check("出的題目都是「地球的分層構造」", bankKp.length > 0 && bankKp.every((q) => q.knowledgePoint === "地球的分層構造"));
+
+  send(doc, "今天讀什麼？");
+  const steps = [...lastAi(doc).querySelectorAll(".tutor-plan__text")].map((n) => n.textContent);
+  check("第一步：先重做超過 7 天沒複習的題目", /先到知識弱點重做 1 題/.test(steps[0] || ""));
+  check("接著複習最弱的知識點", steps.some((t) => t.indexOf("複習「地球的分層構造」") === 0));
+  check("最後一步是混合練習", /混合練習/.test(steps[steps.length - 1] || ""));
+}
+
 console.log("\nStudyAssistantRegression: " + pass + " PASS / " + fail + " FAIL");
 if (fail > 0) { process.exit(1); }

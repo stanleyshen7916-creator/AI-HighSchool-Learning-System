@@ -92,22 +92,63 @@ function collectBullets(sections, keywords, max, exclude) {
   return unique(findSections(sections, keywords, exclude).flatMap((s) => bullets(s.body)), max);
 }
 
-// 沒有條列時的退路：章節內的一般段落（略過「Claude 認為：」這類標籤行、標題、表格、分隔線）。
+// 表格列：網頁版 AI 的輸出貼上後常是 Tab 分隔，或 Markdown 的「| a | b |」表格。
+// 每一列資料轉成「第一欄：第二欄；其餘欄」。每個連續表格區塊的第一列是表頭，略過；
+// Markdown 分隔線略過；儲存格內跳脫的「\|」（例如絕對值 |a|）保留為「|」。
+function isTableSeparator(line) {
+  return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/.test(line);
+}
+
+function tableCells(line) {
+  if (/^\s*\|/.test(line)) {
+    if (isTableSeparator(line)) return [];
+    return line.replace(/\\\|/g, '\u0000').split('|').slice(1, -1)
+      .map((c) => cleanInline(c.replace(/\u0000/g, '|')));
+  }
+  if (line.indexOf('\t') !== -1) return line.split('\t').map((c) => cleanInline(c));
+  return null;
+}
+
+function tableRows(body) {
+  const rows = [];
+  let inTable = false;
+  String(body).split(/\r?\n/).forEach((line) => {
+    const cells = tableCells(line);
+    if (!cells) { inTable = false; return; }
+    if (!cells.length) return; // separator line
+    if (!inTable) { inTable = true; return; } // header row
+    const filled = cells.filter(Boolean);
+    if (filled.length >= 2) rows.push(filled);
+  });
+  return rows;
+}
+
+function tableItems(body) {
+  return tableRows(body).map((c) => cleanInline(c[0] + '：' + c.slice(1).join('；')));
+}
+
+// 沒有條列、表格時的退路：章節內的一般段落（略過「Claude 認為：」這類標籤行、標題、分隔線）。
+// 練習題的題幹、選項、答案、詳解屬於題庫，不當成摘要段落。
+const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析)\s*(\*\*)?\s*[:：]/;
+
 function paragraphs(body) {
   return String(body).split(/\r?\n/)
+    .filter((line) => !tableCells(line) && !QUESTION_LINE.test(line))
     .map((line) => line.trim())
     .filter((line) => line && !/^(#|\||-{3,}|>)/.test(line) && !/[：:]$/.test(line))
     .map(cleanInline)
     .filter(Boolean);
 }
 
-function collectItems(sections, keywords, max) {
-  const found = collectBullets(sections, keywords, max);
+// 條列與表格優先；兩者都沒有時才用段落（本地 Qwen 裁決的 Final 多半是段落）。
+function collectItems(sections, keywords, max, exclude) {
+  const matched = findSections(sections, keywords, exclude);
+  const found = unique(matched.flatMap((s) => bullets(s.body).concat(tableItems(s.body))), max);
   if (found.length) return found;
-  return unique(findSections(sections, keywords).flatMap((s) => paragraphs(s.body)), max);
+  return unique(matched.flatMap((s) => paragraphs(s.body)), max);
 }
 
-// 關鍵字：條列項目冒號／破折號前的詞，或粗體標出的詞。
+// 關鍵字：條列項目冒號／破折號前的詞、表格第一欄，或粗體標出的詞。
 function keywordTerms(sections) {
   const terms = [];
   findSections(sections, ['重點詞彙', '關鍵字', '重要定義']).forEach((s) => {
@@ -116,8 +157,9 @@ function keywordTerms(sections) {
       const head = item.split(/[：:—－=（(]/)[0].trim();
       if (head && head.length <= 20) terms.push(head);
     });
+    tableRows(s.body).forEach((c) => { if (c[0].length <= 20) terms.push(c[0]); });
   });
-  return unique(terms.filter((t) => !/[：:]$/.test(t)), 40);
+  return unique(terms.filter((t) => !/[：:]$/.test(t) && !/觀點$/.test(t)), 40);
 }
 
 // ---- 題目 -------------------------------------------------------------------
@@ -279,11 +321,11 @@ function parseFinal(markdown) {
 
   const summary = {
     coreConcepts: collectItems(sections, ['核心概念'], 20),
-    definitions: collectBullets(sections, ['重要定義', '重點詞彙', '關鍵字'], 30),
+    definitions: collectItems(sections, ['重要定義', '重點詞彙', '關鍵字'], 40),
     keywords: keywordTerms(sections),
-    keyPoints: collectBullets(sections, ['章節摘要', '常考', '重點整理', '需熟記'], 30, ['易錯']),
-    pitfalls: collectBullets(sections, ['易錯', '易混淆'], 20),
-    reviewSuggestions: collectBullets(sections, ['複習建議', '延伸思考'], 15),
+    keyPoints: collectItems(sections, ['章節摘要', '常考', '重點整理', '需熟記', '文意理解', '跨課連結'], 40, ['易錯']),
+    pitfalls: collectItems(sections, ['易錯', '易混淆'], 25),
+    reviewSuggestions: collectItems(sections, ['複習建議', '延伸思考'], 15),
   };
   if (!summary.coreConcepts.length) warnings.push('「核心概念」章節沒有可擷取的條列內容');
 

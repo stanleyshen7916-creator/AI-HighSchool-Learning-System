@@ -31,6 +31,9 @@ AHS.StudyAssistant = (function () {
     "請解釋", "解釋一下", "解釋", "說明一下", "說明", "介紹一下", "介紹", "的意思", "意思", "的定義", "定義",
     "告訴我", "我想知道", "幫我", "一下", "嗎", "呢", "啊", "吧"];
   var QUIZ_WORDS = ["出題", "考我", "考考我", "測驗", "練習題", "做題"];
+  var WEAK_WORDS = ["哪裡弱", "我的弱點", "弱點在哪", "不熟", "錯最多", "最弱"];
+  var PLAN_WORDS = ["今天讀什麼", "今天要讀", "讀什麼", "讀書計畫", "複習計畫", "今日計畫", "今天做什麼", "今天複習", "今天要複習"];
+  var STALE_DAYS = 7;
   var TUTOR_ENGINE_LABELS = ["解題步驟詳解", "概念解釋"];
   var KIND_WEIGHT = { "核心概念": 0.6, "定義": 0.6, "重點": 0.4, "易錯": 0.4, "複習建議": 0.2, "題目詳解": 0.2 };
 
@@ -307,6 +310,9 @@ AHS.StudyAssistant = (function () {
       if (opts.subject && s.subject !== opts.subject) { return; }
       pool = pool.concat(s.questions);
     });
+    if (opts.knowledgePoint) {
+      pool = pool.filter(function (q) { return q.knowledgePoint === opts.knowledgePoint; });
+    }
     var picked = [];
     var fromWeak = 0;
     if (opts.weakFirst) {
@@ -374,11 +380,82 @@ AHS.StudyAssistant = (function () {
     };
   }
 
+  /* ---- 我哪裡弱／今天讀什麼 --------------------------------------------- */
+
+  function daysSince(localDate) {
+    var m = /^(\d{4})\/(\d{2})\/(\d{2})$/.exec(localDate || "");
+    if (!m) { return null; }
+    var then = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((today - then) / 86400000);
+  }
+
+  /* weakness(limit) — the student's open 知識弱點 (not archived, not yet
+     mastered) grouped by knowledge point, most mistakes first.
+     Returns { total, stale, points: [{ knowledgePoint, subject,
+     subjectName, questions, errors, lastError, mastery, practicable }] }.
+     `practicable` = how many bank questions exist for that point. */
+  function weakness(limit) {
+    var items = weakItems();
+    var groups = {};
+    var stale = 0;
+    items.forEach(function (w) {
+      var kp = w.knowledgePoint || "（未分類）";
+      var g = groups[kp] || (groups[kp] = { knowledgePoint: kp, subject: w.subject, questions: 0, errors: 0, lastError: "" });
+      g.questions += 1;
+      g.errors += w.errorCount || 1;
+      if ((w.lastError || "") > g.lastError) { g.lastError = w.lastError || ""; }
+      var d = daysSince(w.lastError);
+      if (d !== null && d >= STALE_DAYS) { stale += 1; }
+    });
+    var bank = {};
+    sources().forEach(function (s) { s.questions.forEach(function (q) { bank[q.knowledgePoint] = (bank[q.knowledgePoint] || 0) + 1; }); });
+    var mastery = AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.get === "function" ? AHS.KnowledgeMasteryRuntime : null;
+    var points = Object.keys(groups).map(function (kp) {
+      var g = groups[kp];
+      var m = mastery ? mastery.get(kp) : null;
+      g.subjectName = subjectName(g.subject);
+      g.mastery = m && typeof m.mastery === "number" ? m.mastery : null;
+      g.practicable = bank[kp] || 0;
+      return g;
+    }).sort(function (a, b) {
+      return (b.errors - a.errors) || (b.questions - a.questions) ||
+        ((a.mastery === null ? 101 : a.mastery) - (b.mastery === null ? 101 : b.mastery));
+    });
+    return { total: items.length, stale: stale, points: points.slice(0, limit || 5) };
+  }
+
+  /* plan() — 今天讀什麼: a short, ordered plan built only from the
+     student's own data. steps: [{ text, action: { type, ... } }] where
+     action.type is "wrongbook" | "search" | "quiz". */
+  function plan() {
+    var w = weakness(2);
+    if (!w.total) {
+      return { empty: true, steps: [{ text: "先做 5 題混合練習，找出你還不熟的地方。", action: { type: "quiz", count: 5 } }] };
+    }
+    var steps = [];
+    if (w.stale) {
+      steps.push({ text: "先到知識弱點重做 " + w.stale + " 題超過 " + STALE_DAYS + " 天沒複習的題目。", action: { type: "wrongbook" } });
+    }
+    w.points.forEach(function (p) {
+      steps.push({
+        text: "複習「" + p.knowledgePoint + "」（" + p.subjectName + "，錯 " + p.errors + " 次）：先查觀念，再練習" + (p.practicable ? " " + Math.min(5, p.practicable) + " 題" : "") + "。",
+        action: p.practicable ? { type: "quiz", knowledgePoint: p.knowledgePoint, count: 5 } : { type: "search", query: p.knowledgePoint },
+        search: p.knowledgePoint
+      });
+    });
+    steps.push({ text: "最後做 5 題混合練習（優先出知識弱點），確認今天的複習成果。", action: { type: "quiz", count: 5, weakFirst: true } });
+    return { empty: false, total: w.total, steps: steps };
+  }
+
   /* ---- 對話路由 ---------------------------------------------------------- */
 
   /* reply(text, ctx) — ctx.subject (filter), ctx.questionId (arrived from a
      知識弱點 question). Returns one of:
        { type: "text", message }                 AHS.TutorEngine's answer
+       { type: "plan", plan }                    今天讀什麼 (see plan())
+       { type: "weak", weakness }                我哪裡弱 (see weakness())
        { type: "quiz" }                          the student asked to be quizzed
        { type: "search", query, results }        results found
        { type: "none", query, message, topics, actions? } nothing found */
@@ -392,7 +469,10 @@ AHS.StudyAssistant = (function () {
       var r = engine.reply(trimmed, ctx);
       if (typeof r === "string") { return { type: "text", message: r }; }
     }
-    if (QUIZ_WORDS.some(function (w) { return trimmed.indexOf(w) !== -1; })) { return { type: "quiz" }; }
+    function has(words) { return words.some(function (w) { return trimmed.indexOf(w) !== -1; }); }
+    if (has(PLAN_WORDS)) { return { type: "plan", plan: plan() }; }
+    if (has(WEAK_WORDS)) { return { type: "weak", weakness: weakness(5) }; }
+    if (has(QUIZ_WORDS)) { return { type: "quiz" }; }
     var found = search(trimmed, { subject: ctx.subject });
     if (found.results.length) { return { type: "search", query: found.query, results: found.results }; }
     var none = {
@@ -415,6 +495,8 @@ AHS.StudyAssistant = (function () {
     topics: topics,
     pickQuiz: pickQuiz,
     answer: answer,
+    weakness: weakness,
+    plan: plan,
     reply: reply,
     cleanQuery: cleanQuery,
     reset: reset
