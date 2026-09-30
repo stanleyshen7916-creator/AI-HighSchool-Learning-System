@@ -43,7 +43,7 @@ const PAGES = [
   { key: "wrongbook", label: "知識弱點", titleIncludes: "知識弱點" },
   { key: "review", label: "複習中心", titleIncludes: "複習中心" },
   { key: "learning", label: "我的學習", titleIncludes: "我的學習" },
-  { key: "tutor", label: "AI Tutor", titleIncludes: "AI Tutor" }
+  { key: "tutor", label: "學習助教", titleIncludes: "學習助教" }
 ];
 
 for (const p of PAGES) {

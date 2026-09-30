@@ -652,10 +652,18 @@ AHS.TeachingMaterialLoader = (function () {
     initialized = false;
   }
 
+  /* runtimeIdFor(sourceId) — 2026-09-30 學習助教: the MaterialRuntime id a
+     source material (tm_N / repository id) was loaded as, for linking to
+     materials.html?id=… ; null when it hasn't been loaded. */
+  function runtimeIdFor(sourceId) {
+    return loadIdMap()[sourceId] || null;
+  }
+
   return {
     initialize: load,
     load: load,
     resolveExamMeta: resolveExamMeta,
+    runtimeIdFor: runtimeIdFor,
     reset: reset,
     /* Sprint AI-117 AI-117-08: exposed so
        tests/regression/AnalyticsRegression.js can exercise the real

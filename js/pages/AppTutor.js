@@ -115,7 +115,18 @@ window.AHS = window.AHS || {};
      resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
      and rebuilds #app every call), so simply calling it again is enough —
      no Runtime Public API change, no UI file needs a Promise. */
+  /* 2026-09-30 學習助教: a re-render would wipe an ongoing conversation or
+     quiz, so it only happens until the student first interacts with the
+     page (the pull usually resolves within the first second anyway). */
+  var interacted = false;
+  if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+    ["click", "keydown"].forEach(function (type) {
+      document.addEventListener(type, function () { interacted = true; }, true);
+    });
+  }
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-    window.addEventListener("ahs:repository-pulled", guardedInit);
+    window.addEventListener("ahs:repository-pulled", function () {
+      if (!interacted) { guardedInit(); }
+    });
   }
 })();
