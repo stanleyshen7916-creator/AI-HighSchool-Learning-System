@@ -77,6 +77,31 @@ describe('FinalParser', () => {
   });
 });
 
+describe('FinalParser：表格與段落（學習助教可搜尋的內容）', () => {
+  const md = [
+    '## ③重點詞彙', '', '**ChatGPT (Web) 觀點**：', '',
+    '詞彙\t定義\t補充', '半衰期\t母元素剩一半所需時間\t放射性定年核心', '疊置定律\t上新下老\t判斷岩層先後', '',
+    '## ⑫易錯陷阱', '', '| 易錯點 | 正確觀念 |', '|---|---|', '| 振幅 | 振幅是 \\|a\\| 不是 a |', '',
+    '## ⑪常考題型', '', 'Claude 認為：', '常考半衰期換算與定年極限。', '',
+    '**Q1.** 題目', '(A) 甲　(B) 乙', '答案：A', '',
+  ].join('\n');
+  const s = parseFinal(md).summary;
+
+  test('Tab 表格：跳過表頭，轉成「詞彙：定義；補充」並收入關鍵字', () => {
+    expect(s.definitions).toEqual(['半衰期：母元素剩一半所需時間；放射性定年核心', '疊置定律：上新下老；判斷岩層先後']);
+    expect(s.keywords).toEqual(expect.arrayContaining(['半衰期', '疊置定律']));
+    expect(s.keywords).not.toContain('詞彙');
+  });
+
+  test('Markdown 表格：跳過表頭與分隔線，保留儲存格內的 |a|', () => {
+    expect(s.pitfalls).toEqual(['振幅：振幅是 |a| 不是 a']);
+  });
+
+  test('沒有條列時擷取段落，但不把練習題的題幹、選項、答案當成重點', () => {
+    expect(s.keyPoints).toEqual(['常考半衰期換算與定年極限。']);
+  });
+});
+
 describe('PackageBuilder', () => {
   const dataDir = fs.mkdtempSync(path.join(DATA_DIR, 'builder-'));
   const builder = createPackageBuilder({ platformRoot: PLATFORM, dataDir });
