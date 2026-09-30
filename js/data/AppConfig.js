@@ -81,22 +81,19 @@ AHS.AppConfig = {
     perPage: 6
   },
 
+  /* 2026-09-30：「AI Tutor」改為「學習助教」——不使用任何 AI API，只根據
+     目前學期的教材回答（js/runtime/StudyAssistant.js）。示範用的對話紀錄
+     與檔案清單已移除。suggestions 只在從知識弱點的某一題進來時顯示
+     （js/utils/TutorEngine.js 針對那一題的兩個意圖）。 */
   aiTutorPage: {
-    title: "巧巧老師 AI Tutor",
-    tagline: "有問題儘管問我，我會陪你一起思考、一起進步！",
-    badge: "AI 助教",
-    messages: [],       /* 假對話已移除 — 對話從空白開始 */
-    /* AI Tutor Rule-Based 引擎 Phase 1：只保留真正有真實資料可回答的
-       兩個意圖（js/utils/TutorEngine.js）。「類題練習」「重點整理」
-       「考卷解析」「換個主題」原本點下去也只是固定台詞（cannedReplies，
-       已於 EO 報告 Flag 過的 Prototype 限制），現在移除——不留使用者
-       點了卻拿不到真實答案的選項。 */
+    title: "巧巧老師・學習助教",
+    tagline: "查觀念、出題考你，答案全部來自你這學期的教材；找不到就老實說。",
+    badge: "只根據教材回答，不使用 AI",
+    messages: [],
     suggestions: [
-      { icon: "summary", label: "解題步驟詳解", desc: "請詳細解題" },
-      { icon: "chat", label: "概念解釋", desc: "用簡單的方式說明" }
-    ],
-    history: [],        /* 假對話紀錄已移除 */
-    resources: []       /* 假檔案清單已移除 */
+      { icon: "summary", label: "解題步驟詳解", desc: "這一題的詳解" },
+      { icon: "chat", label: "概念解釋", desc: "這一題的知識點" }
+    ]
   },
 
   /* Sprint AI-118 AI-118-01/AI-118-09 · Learning Experience (LX) Refactor:
@@ -129,7 +126,10 @@ AHS.AppConfig = {
       { id: "materials", label: "教材中心", icon: "book" },
       { id: "summary", label: "學習總結", icon: "summary" },
       { id: "quiz", label: "測驗中心", icon: "quiz" },
-      { id: "wrongbook", label: "知識弱點", icon: "wrong" }
+      { id: "wrongbook", label: "知識弱點", icon: "wrong" },
+      /* 2026-09-30：Sprint AI-138 因「尚未串接真實 AI」而隱藏此入口；改為
+         只根據教材回答的「學習助教」後恢復（PO 同意）。 */
+      { id: "tutor", label: "學習助教", icon: "tutor" }
     ],
     /* 2026-09-29 教材上傳：只有 ADMIN 角色會在 Sidebar 看到（AppShell.js
        sidebar() 依 AHS.WorkspaceData.students[].role 判斷），不佔底部導覽。 */

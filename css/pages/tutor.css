@@ -1,4 +1,4 @@
-/* css/tutor.css — AI Tutor (巧巧老師) chat page. BEM. RWD. */
+/* css/pages/tutor.css — 學習助教（巧巧老師）page. BEM. RWD. */
 
 .tutor-layout {
   display: grid;
@@ -32,7 +32,7 @@
 .tutor-chat { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
 .tutor-thread {
   display: flex; flex-direction: column; gap: 14px;
-  max-height: 460px; overflow-y: auto; padding: 4px;
+  max-height: 560px; overflow-y: auto; padding: 4px;
 }
 .tutor-thread__day { align-self: center; font-size: 12px; color: var(--text-faint);
   background-color: var(--bg); padding: 4px 12px; border-radius: var(--radius-pill); }
@@ -49,13 +49,6 @@
 .tutor-msg--user .tutor-msg__bubble { background-color: var(--brand); color: #ffffff; border-bottom-right-radius: 4px; }
 .tutor-msg--ai .tutor-msg__bubble { background-color: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
 .tutor-msg__line { display: block; }
-.tutor-msg__time { font-size: 11px; color: var(--text-faint); }
-.tutor-msg__foot { display: flex; align-items: center; gap: 10px; }
-.tutor-msg__actions { display: flex; gap: 2px; }
-.tutor-msg__act { width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: var(--text-faint); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.tutor-msg__act svg { width: 15px; height: 15px; }
-.tutor-msg__act:hover { background-color: var(--bg); color: var(--brand); }
-
 /* AHS.TutorEngine's off-topic menu — every item leads to a real answer
    (never a dead end), rendered as small pill chips under the reply. */
 .tutor-msg__menu { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -99,26 +92,64 @@
 .tutor-suggest__label { font-size: 14px; font-weight: 700; }
 .tutor-suggest__desc { font-size: 12px; color: var(--text-faint); }
 
-/* ---- History --------------------------------------------------------- */
-.tutor-history__list { display: flex; flex-direction: column; gap: 2px; }
-.tutor-history__item { display: flex; gap: 10px; padding: 10px 8px; border: 0; border-radius: 12px; background: transparent; cursor: pointer; text-align: left; font: inherit; width: 100%; }
-.tutor-history__item:hover { background-color: var(--bg); }
-.tutor-history__icon { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px; background-color: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; }
-.tutor-history__icon svg { width: 17px; height: 17px; }
-.tutor-history__meta { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.tutor-history__title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.tutor-history__title { font-size: 14px; font-weight: 700; }
-.tutor-history__time { font-size: 11px; color: var(--text-faint); flex: 0 0 auto; }
-.tutor-history__sub { font-size: 12px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* ---- 查觀念 results ----------------------------------------------- */
+.tutor-msg__note { font-size: 12px; color: var(--text-faint); }
+.tutor-results { margin: 6px 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+.tutor-results__text { margin: 0; }
+.tutor-results__source { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 2px; font-size: 12px; color: var(--text-muted); }
+.tutor-results__tag { font-weight: 700; color: var(--brand-ink); background-color: var(--brand-soft); border-radius: var(--radius-pill); padding: 1px 8px; }
+.tutor-results__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 280px; }
+.tutor-results__link { color: var(--brand); font-weight: 700; }
 
-/* ---- Resources ------------------------------------------------------- */
-.tutor-res__list { display: flex; flex-direction: column; gap: 2px; }
-.tutor-res__item { display: flex; align-items: center; gap: 10px; padding: 10px 6px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; text-align: left; font: inherit; width: 100%; }
-.tutor-res__item:hover { background-color: var(--bg); }
-.tutor-res__badge { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
-.tutor-res__name { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tutor-res__dl { flex: 0 0 auto; color: var(--text-faint); display: flex; }
-.tutor-res__dl svg { width: 18px; height: 18px; }
+/* ---- Topic chips ------------------------------------------------------ */
+.tutor-topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.tutor-topics__chip {
+  border: 1px solid var(--brand-line); border-radius: var(--radius-pill); padding: 6px 12px;
+  background-color: var(--card); color: var(--brand-ink); font: inherit; font-size: 13px; cursor: pointer;
+}
+.tutor-topics__chip:hover { background-color: var(--brand-soft); }
+
+/* ---- 出題考我 ---------------------------------------------------------- */
+.tutor-quiz__meta { margin: 0; font-size: 12px; color: var(--text-muted); }
+.tutor-quiz__stem { margin: 4px 0 8px; font-weight: 700; }
+.tutor-quiz__options { display: flex; flex-direction: column; gap: 8px; }
+.tutor-quiz__option {
+  display: flex; align-items: flex-start; gap: 10px; width: 100%;
+  border: 1px solid var(--line-strong); border-radius: 12px; padding: 10px 12px;
+  background-color: var(--card); color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+}
+.tutor-quiz__option:hover:not(:disabled) { border-color: var(--brand); }
+.tutor-quiz__option:disabled { cursor: default; }
+.tutor-quiz__option.is-correct { border-color: #22b573; background-color: #eafaf1; }
+.tutor-quiz__option.is-wrong { border-color: #ef4444; background-color: #fdecec; }
+.tutor-quiz__key {
+  flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background-color: var(--brand-soft); color: var(--brand-ink); font-size: 12px; font-weight: 800;
+}
+.tutor-quiz__feedback { margin-top: 8px; }
+.tutor-quiz__verdict { margin: 0; font-weight: 700; }
+.tutor-quiz__verdict.is-correct { color: #127a3e; }
+.tutor-quiz__verdict.is-wrong { color: #b42318; }
+.tutor-quiz__explain { margin: 4px 0 0; font-size: 13px; color: var(--text-muted); }
+
+/* ---- Rail cards ------------------------------------------------------- */
+.tutor-select {
+  flex: 0 0 auto; border: 1px solid var(--line); border-radius: var(--radius-pill);
+  padding: 10px 12px; font: inherit; font-size: 13px; background-color: var(--card); color: var(--text);
+}
+.tutor-card-hint { margin: 6px 0 0; font-size: 12px; line-height: 1.6; color: var(--text-muted); }
+.tutor-quiz-card { display: flex; flex-direction: column; gap: 10px; }
+.tutor-quiz-card__row { display: flex; gap: 8px; }
+.tutor-quiz-card__row .tutor-select { flex: 1 1 0; min-width: 0; }
+.tutor-check { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.tutor-check__box { width: 16px; height: 16px; accent-color: var(--brand); }
+.tutor-start {
+  border: 0; border-radius: var(--radius-pill); padding: 11px 16px;
+  background-color: var(--brand); color: #ffffff; font: inherit; font-weight: 700; cursor: pointer;
+  box-shadow: var(--shadow-btn);
+}
+.tutor-start:hover { background-color: var(--brand-strong); }
 
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 1024px) {
@@ -126,5 +157,7 @@
 }
 @media (max-width: 560px) {
   .tutor-hero { flex-direction: column; text-align: center; }
-  .tutor-msg { max-width: 92%; }
+  .tutor-msg { max-width: 96%; }
+  .tutor-input__row { flex-wrap: wrap; }
+  .tutor-input__row .tutor-select { flex: 1 1 100%; }
 }

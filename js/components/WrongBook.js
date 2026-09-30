@@ -815,8 +815,8 @@ AHS.WrongBook = (function () {
       class: "wb-detail__btn wb-detail__btn--ghost",
       href: "tutor.html" + (AHS.PlatformContext ? AHS.PlatformContext.toQuery({ questionId: item.id }) : "")
     }, [
-      el("span", { html: AHS.Icons.robot() }),
-      el("span", { text: "問 AI 巧巧老師" })
+      el("span", { html: AHS.Icons.tutor() }),
+      el("span", { text: "問學習助教" })
     ]);
 
     /* AI-128（知識弱點排版重新設計）: 錯誤次數／正確次數獨立成一列明顯的
