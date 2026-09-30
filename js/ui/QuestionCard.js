@@ -57,7 +57,13 @@ AHS.QuestionCard = (function () {
     if (difficulty) { metaBits.push("難度：" + difficulty); }
     if (question.knowledgePoint) { metaBits.push("考點：" + question.knowledgePoint); }
 
-    var optionButtons = question.options.map(function (opt) {
+    /* 2026-09-30: fixed per-question display order (AHS.OptionOrder);
+       data-key / onSelect keep the ORIGINAL key, the visible letter is
+       the display position. */
+    var displayed = AHS.OptionOrder ? AHS.OptionOrder.order(question) : question.options.map(function (o) {
+      return { key: o.key, text: o.text, label: o.key };
+    });
+    var optionButtons = displayed.map(function (opt) {
       var isSelected = selectedKey === opt.key;
       var btn = el("button", {
         type: "button",
@@ -65,7 +71,7 @@ AHS.QuestionCard = (function () {
         "aria-pressed": isSelected ? "true" : "false",
         "data-key": opt.key
       }, [
-        el("span", { class: "qcard-option__key", text: opt.key }),
+        el("span", { class: "qcard-option__key", text: opt.label }),
         el("span", { class: "qcard-option__text", text: opt.text })
       ]);
       btn.addEventListener("click", function () {

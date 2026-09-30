@@ -105,6 +105,21 @@ AHS.WrongBook = (function () {
     return [];
   }
 
+  /* displayOptions(item) — 2026-09-30: resolveOptions() in the fixed
+     per-question display order (AHS.OptionOrder), each with its display
+     `label`; `key` stays the ORIGINAL key the record stores. */
+  function displayOptions(item) {
+    var opts = resolveOptions(item);
+    if (AHS.OptionOrder) { return AHS.OptionOrder.order({ questionId: item.questionId, options: opts }); }
+    return opts.map(function (o) { return { key: o.key, text: o.text, label: o.key }; });
+  }
+
+  function answerLabel(item, key) {
+    if (!key) { return "未作答"; }
+    var found = displayOptions(item).filter(function (o) { return o.key === key; })[0];
+    return found ? found.label : key;
+  }
+
   /* WS-001: Mastered Rule — three consecutive correct reviews -> 已精熟.
      Sprint AI-111 AI-610: now backed by WrongBookRuntime's own real,
      persisted `correctStreak` field (see that file's recordRetry(),
@@ -655,9 +670,9 @@ AHS.WrongBook = (function () {
     /* AI-127/AI-152: resolveOptions() falls back to js/data/TeachingMaterialData.js
        for a record whose own options were never captured (see that
        function's own header). */
-    var optionEls = resolveOptions(item).map(function (o) {
+    var optionEls = displayOptions(item).map(function (o) {
       var li = el("li", { class: "wb-detail__option", role: "button", tabindex: "0" }, [
-        el("span", { class: "wb-detail__option-key", text: o.key }),
+        el("span", { class: "wb-detail__option-key", text: o.label }),
         el("span", { class: "wb-detail__option-text", text: o.text })
       ]);
       function pick() {
@@ -709,14 +724,14 @@ AHS.WrongBook = (function () {
        unresolvable — an empty option list renders honestly empty instead
        of crashing (which previously aborted the whole Detail Panel +
        Question List render before either could mount). */
-    var itemOptions = resolveOptions(item);
+    var itemOptions = displayOptions(item);
     var options = itemOptions.length ? el("ol", { class: "wb-detail__options" },
       itemOptions.map(function (o) {
         var mods = "";
         if (o.key === item.correctAnswer) { mods += " is-correct"; }
         if (o.key === item.yourAnswer && item.yourAnswer !== item.correctAnswer) { mods += " is-wrong"; }
         return el("li", { class: "wb-detail__option" + mods }, [
-          el("span", { class: "wb-detail__option-key", text: o.key }),
+          el("span", { class: "wb-detail__option-key", text: o.label }),
           el("span", { class: "wb-detail__option-text", text: o.text })
         ]);
       })) : null;
@@ -880,12 +895,12 @@ AHS.WrongBook = (function () {
           el("span", { class: "wb-detail__answer-label", text: "你的答案" }),
           el("span", {
             class: "wb-detail__answer-badge " + (isCorrectNow ? "is-correct" : "is-wrong"),
-            text: item.yourAnswer
+            text: answerLabel(item, item.yourAnswer)
           })
         ]),
         el("div", { class: "wb-detail__answer" }, [
           el("span", { class: "wb-detail__answer-label", text: "正確答案" }),
-          el("span", { class: "wb-detail__answer-badge is-correct", text: item.correctAnswer })
+          el("span", { class: "wb-detail__answer-badge is-correct", text: answerLabel(item, item.correctAnswer) })
         ])
       ]),
       el("div", { class: "wb-detail__kp" }, [
