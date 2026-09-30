@@ -137,6 +137,9 @@ AHS.ReviewRuntime = (function () {
       questions: graded.results.map(function (r) {
         return {
           index: r.index,
+          /* 2026-09-30: needed by AHS.OptionOrder to show the same option
+             letters the student saw while answering. */
+          questionId: r.questionId,
           text: r.text,
           options: r.options,
           yourAnswer: r.yourAnswer,

@@ -51,6 +51,12 @@ AHS.MaterialQuestionCard = (function () {
        用 is-correct／is-wrong 標示（答錯時同時標出正確選項），不再需要另
        外的「提交」步驟，因為這裡本來就只是預覽用途，不寫入任何 Runtime。 */
     var options = Array.isArray(question.options) ? question.options : [];
+    /* 2026-09-30: same fixed per-question display order as 測驗中心
+       (AHS.OptionOrder); options here are plain strings, matched by text. */
+    if (AHS.OptionOrder) {
+      options = AHS.OptionOrder.order({ id: question.id || question.questionId, options: options })
+        .map(function (o) { return o.text; });
+    }
     var LETTERS = ["A", "B", "C", "D", "E", "F"];
     var correctText = String(question.answer || "");
     var answered = false;

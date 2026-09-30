@@ -329,7 +329,10 @@ AHS.StudyAssistant = (function () {
     picked = picked.map(function (q) {
       var copy = {};
       Object.keys(q).forEach(function (k) { copy[k] = q[k]; });
-      copy.displayOptions = shuffle(q.options, random);
+      /* Same fixed per-question order as 測驗中心／知識弱點 (AHS.OptionOrder),
+         so a question looks the same everywhere; random fallback only if
+         that helper isn't loaded. */
+      copy.displayOptions = AHS.OptionOrder ? AHS.OptionOrder.order(q) : shuffle(q.options, random);
       return copy;
     });
     return { questions: picked, fromWeak: fromWeak, poolSize: pool.length };

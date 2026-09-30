@@ -920,9 +920,11 @@ AHS.QuizCenter = (function () {
              only, same discipline as QuestionCard.js's own qcard__figure. */
           q.figureSvg ? el("div", { class: "qreview__item-figure", html: q.figureSvg }) : null,
           el("div", { class: "qreview__item-answers" }, [
-            el("span", { text: "你的答案：" + (q.yourAnswer || "未作答") }),
+            /* 2026-09-30: letters as displayed while answering (AHS.OptionOrder)
+               plus the option text, instead of the bare original key. */
+            el("span", { text: "你的答案：" + (AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.yourAnswer) : (q.yourAnswer || "未作答")) }),
             el("span", { style: "color:" + toneHex + ";font-weight:700",
-              text: "正確答案：" + q.correctAnswer })
+              text: "正確答案：" + (AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer) })
           ]),
           el("p", { class: "qreview__item-explain", text: q.explanation })
         ]);
@@ -1490,7 +1492,7 @@ AHS.QuizCenter = (function () {
       answerSlot.innerHTML = "";
       answerSlot.appendChild(el("div", { class: "quiz-practice__answer-block" }, [
         el("strong", { text: "標準答案：" }),
-        el("span", { text: q.correctAnswer })
+        el("span", { text: AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer })
       ]));
       if (q.explanation) {
         answerSlot.appendChild(el("div", { class: "quiz-practice__exp-block" }, [
@@ -1534,10 +1536,14 @@ AHS.QuizCenter = (function () {
       onAnswered(q.id, isCorrect);
     }
 
-    optionBtns = (q.options || []).map(function (o) {
+    /* 2026-09-30: fixed per-question display order (AHS.OptionOrder);
+       data-key keeps the ORIGINAL key. */
+    var displayedOptions = AHS.OptionOrder ? AHS.OptionOrder.order(q)
+      : (q.options || []).map(function (o) { return { key: o.key, text: o.text, label: o.key }; });
+    optionBtns = displayedOptions.map(function (o) {
       var b = el("button", {
         type: "button", class: "quiz-practice__option quiz-practice__option--btn", "data-key": o.key
-      }, [el("span", { text: o.key + "、" + o.text })]);
+      }, [el("span", { text: o.label + "、" + o.text })]);
       b.addEventListener("click", function () { finishSubmit(o.key); });
       return b;
     });
