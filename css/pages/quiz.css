@@ -394,8 +394,11 @@
   font: inherit; text-align: left; cursor: pointer;
 }
 .quiz-practice__row:hover { background-color: var(--bg); }
-.quiz-practice__row-q { flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.quiz-practice__row-meta { flex: 0 0 auto; font-size: 12px; color: var(--text-muted); }
+.quiz-practice__row { min-width: 0; }
+.quiz-practice__row .chip { flex: 0 0 auto; }
+.quiz-practice__row-q { flex: 1 1 60%; min-width: 0; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 2026-09-30: the meta may shrink (ellipsis) instead of squeezing the title */
+.quiz-practice__row-meta { flex: 0 1 auto; min-width: 0; max-width: 40%; font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .quiz-practice__row-arrow { flex: 0 0 auto; color: var(--text-faint); display: flex; }
 .quiz-practice__row-arrow svg { width: 16px; height: 16px; }
 
@@ -654,7 +657,7 @@
 }
 .qpick-close:hover { background-color: var(--bg); }
 .qpick-close svg { width: 18px; height: 18px; }
-.qpick-body { flex: 1 1 auto; overflow: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.qpick-body { flex: 1 1 auto; overflow-x: hidden; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
 .qpick-subjects { display: flex; flex-wrap: wrap; gap: 8px; }
 .qpick-subject {
   border: 1px solid var(--line); border-radius: var(--radius-pill);
@@ -665,15 +668,18 @@
 .qpick-subject.is-active { font-weight: 800; }
 .qpick-list { display: flex; flex-direction: column; gap: 8px; }
 .qpick-row {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: flex-start; gap: 12px;
   border: 1px solid var(--line); border-radius: 12px;
-  padding: 10px 12px; cursor: pointer;
+  padding: 12px 14px; cursor: pointer; min-width: 0;
 }
 .qpick-row:hover { background-color: var(--bg); }
 .qpick-row.is-checked { border-color: var(--brand); background-color: var(--brand-soft); }
-.qpick-row input[type="checkbox"] { flex: none; width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
-.qpick-row-title { flex: 1 1 auto; font-size: 14px; font-weight: 700; }
-.qpick-row-meta { flex: none; font-size: 12px; color: var(--text-muted); }
+.qpick-row input[type="checkbox"] { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--brand); cursor: pointer; }
+/* title + meta stack and wrap normally (long chapter names used to squeeze
+   the title into one character per line) */
+.qpick-row-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.qpick-row-title { font-size: 14px; font-weight: 700; line-height: 1.55; overflow-wrap: anywhere; }
+.qpick-row-meta { font-size: 12px; line-height: 1.5; color: var(--text-muted); overflow-wrap: anywhere; }
 .qpick-empty { margin: 0; padding: 20px 0; text-align: center; color: var(--text-muted); font-size: 13px; }
 .qpick-footer {
   display: flex; justify-content: flex-end; gap: 10px;
@@ -694,4 +700,12 @@
   .qpick-panel { max-height: 92vh; }
   .qpick-footer { flex-direction: column-reverse; }
   .qpick-btn { width: 100%; }
+  /* narrow screens: title up to two lines, meta wraps instead of cutting
+     off 「（共 10 題）」 */
+  .quiz-practice__row { align-items: flex-start; }
+  .quiz-practice__row-q {
+    white-space: normal; line-height: 1.45;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  }
+  .quiz-practice__row-meta { flex: 0 0 auto; max-width: 40%; white-space: normal; overflow: visible; text-align: right; line-height: 1.45; }
 }

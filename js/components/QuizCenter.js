@@ -606,10 +606,16 @@ AHS.QuizCenter = (function () {
       var rows = chapters.length ? chapters.map(function (it) {
         var checkbox = el("input", { type: "checkbox", "data-exam-id": it._repoExamId });
         checkbox.checked = !!selected[it._repoExamId];
+        /* 2026-09-30 (PO 回報：長章節名稱把標題擠成一字一行): title and meta
+           stack in one wrapping text column; the chapter is only repeated
+           in the meta line when the title doesn't already contain it. */
+        var showChapter = it.chapter && String(it.title || "").indexOf(it.chapter) === -1;
         var row = el("label", { class: "qpick-row" + (checkbox.checked ? " is-checked" : "") }, [
           checkbox,
-          el("span", { class: "qpick-row-title", text: it.title }),
-          el("span", { class: "qpick-row-meta", text: (it.chapter ? it.chapter + "・" : "") + "共 " + it.count + " 題" })
+          el("span", { class: "qpick-row-text" }, [
+            el("span", { class: "qpick-row-title", text: it.title }),
+            el("span", { class: "qpick-row-meta", text: (showChapter ? it.chapter + "・" : "") + "共 " + it.count + " 題" })
+          ])
         ]);
         checkbox.addEventListener("change", function () {
           if (checkbox.checked) { selected[it._repoExamId] = true; } else { delete selected[it._repoExamId]; }
@@ -1208,12 +1214,17 @@ AHS.QuizCenter = (function () {
     if (repoEntries.length) {
       var repoRows = repoEntries.map(function (entry) {
         var subj = AHS.Subjects[entry.subject] || { name: entry.subject || "未分類", hex: "#6b7280" };
-        var row = el("button", { type: "button", class: "quiz-practice__row" }, [
+        /* 2026-09-30: the chapter is usually already part of the title —
+           repeating it made the meta so long it squeezed the title to a
+           couple of characters. Full text stays available as a tooltip. */
+        var repoShowChapter = entry.chapter && String(entry.title || "").indexOf(entry.chapter) === -1;
+        var repoMeta = (repoShowChapter ? entry.chapter : "") + "（共 " + entry.count + " 題）";
+        var row = el("button", { type: "button", class: "quiz-practice__row", title: entry.title + "　" + repoMeta }, [
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
           }, [el("span", { text: subj.name })]),
           el("span", { class: "quiz-practice__row-q", text: entry.title }),
-          el("span", { class: "quiz-practice__row-meta", text: (entry.chapter || "") + "（共 " + entry.count + " 題）" }),
+          el("span", { class: "quiz-practice__row-meta", text: repoMeta }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
         ]);
         row.addEventListener("click", function () { onRepoDrillDown(materialIdFromExamId(entry._repoExamId)); });
