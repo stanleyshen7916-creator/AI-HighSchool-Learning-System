@@ -255,9 +255,10 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     return preview(materialId);
   }
 
-  function supplementMarkdown(materialId, parent, mode, accepted, checkResult, sourceNames) {
+  function supplementMarkdown(materialId, parent, mode, accepted, checkResult, sourceNames, reviewNote) {
     const m = parent.metadata;
-    const modeLabel = mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
+    const solved = (checkResult.solvers || []).length > 0;
+    const modeLabel = !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
       : '單一 Claude（Claude 出題；另開新的 Claude 對話獨立作答）';
     const reviewed = accepted.filter((q) => q.status === 'review');
     const lines = [
@@ -276,7 +277,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       '- 出題 Prompt 依原教材 summary.json 的核心概念、定義、重點、易錯點與既有題目產生；題目一律標示為 `AI_GENERATED`。',
       '- 引擎逐題比對出題答案與獨立作答答案；不一致、作答者認為題目有問題、缺詳解、選項不足或重複者，標示為「需人工確認」，預設不收錄。',
       reviewed.length
-        ? `- 以下 ${reviewed.length} 題原本標示為需人工確認，經管理者確認後收錄：${reviewed.map((q) => `Q${q.number}（${q.reasons.join('；')}）`).join('、')}`
+        ? `- 以下 ${reviewed.length} 題原本標示為需人工確認，經${reviewNote ? `「${reviewNote}」` : '管理者'}確認後收錄：${reviewed.map((q) => `Q${q.number}（${q.reasons.join('；')}）`).join('、')}`
         : '- 本批收錄的題目皆通過自動核對。',
       '- 完整核對結果見 `source/check-report.json`。',
       '',
@@ -286,7 +287,9 @@ function createPackageBuilder({ platformRoot, dataDir }) {
 
   // 為既有（已上架）教材加題：新增一份 tm_N「補充題庫」教材包（草稿），原教材不修改。
   // 只收錄管理者勾選、且不是「重複」的題目；需人工確認的題目要明確勾選才會收錄。
-  function createSupplementDraft({ parentId, authorText, solvers, mode, accept }) {
+  // reviewNote（選填）：需人工確認的題目是如何確認的（例如沒有另開對話作答時，改用的核對方式），
+  // 會如實寫進 material.md 與 check-report.json。
+  function createSupplementDraft({ parentId, authorText, solvers, mode, accept, reviewNote }) {
     const parent = supplements.loadParent(parentId);
     const result = supplements.check({ parentId, authorText, solvers });
     const wanted = new Set((accept || []).map(Number));
@@ -308,7 +311,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     });
     writeJson(path.join(sourceDir, 'check-report.json'), {
       parentId, mode: mode === 'tri' ? 'tri' : 'single', createdAt: now,
-      accepted: chosen.map((q) => q.number), ...result,
+      accepted: chosen.map((q) => q.number), reviewNote: reviewNote ? String(reviewNote) : null, ...result,
     });
     sourceNames.push('check-report.json');
 
@@ -367,7 +370,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       materialId,
       related: [{ materialId: parent.materialId, reason: `${SUPPLEMENT_SOURCE}：為 ${parent.materialId}「${pm.chapter || ''}」擴充的 AI 練習題` }],
     });
-    fs.writeFileSync(path.join(dir, 'material.md'), supplementMarkdown(materialId, parent, mode, chosen, result, sourceNames), 'utf8');
+    fs.writeFileSync(path.join(dir, 'material.md'), supplementMarkdown(materialId, parent, mode, chosen, result, sourceNames, reviewNote ? String(reviewNote) : ''), 'utf8');
 
     const reviewed = chosen.filter((q) => q.status === 'review').map((q) => ({ number: q.number, reasons: q.reasons }));
     const reg = registry();

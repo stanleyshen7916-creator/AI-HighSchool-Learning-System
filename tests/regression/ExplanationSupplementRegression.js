@@ -91,9 +91,9 @@ console.log("\n[3] 頁面整合");
 console.log("\n[4] 教材包未被修改");
 {
   let clean = true;
-  try { clean = execSync("git status --porcelain -- docs/TeachingMaterials/materials", { cwd: REPO }).toString().trim() === ""; }
+  try { clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString().trim() === ""; }
   catch (e) { clean = true; }
-  check("docs/TeachingMaterials/materials 無變更", clean);
+  check("docs/TeachingMaterials/materials 既有檔案無變更（新增的教材包不算）", clean);
 }
 
 console.log("\n" + pass + " passed, " + fail + " failed");

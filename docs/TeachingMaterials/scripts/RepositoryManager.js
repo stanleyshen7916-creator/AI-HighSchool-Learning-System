@@ -113,6 +113,14 @@ function checkDuplicates(ids) {
     byHash[hash] = byHash[hash] || [];
     byHash[hash].push(id);
 
+    /* 2026-10-01: a 補充題庫 Package (extra questions for an existing
+       material, linked by related.json) copies its parent's subject/
+       chapter/unit on purpose, so it would always "collide" with its
+       parent here. It is never a material of its own on the platform
+       (GenerateTeachingMaterialData.js merges it into the parent), so
+       only the content-hash check above applies to it. */
+    if (meta.source === "補充題庫") { return; }
+
     const title = adapter.deriveTitle(meta);
     const key = (meta.subject || "") + "|" + (meta.chapter || "") + "|" + (title || "");
     byTitleKey[key] = byTitleKey[key] || [];

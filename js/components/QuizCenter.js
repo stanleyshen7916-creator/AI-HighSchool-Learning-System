@@ -2052,6 +2052,16 @@ AHS.QuizCenter = (function () {
        completely unchanged (same additive-variant convention
        startDrawnSession() below already established). */
     function tryDirectExamEntry(examId) {
+      /* 2026-10-01: a material can now hold BOTH original exam questions
+         and AI questions (a 補充題庫 added to an exam paper, e.g. tm_1).
+         The drawn 平時練習 set below would mix them, against Assessment
+         Mode's "不得混用" — so such a material opens its 原始試卷 variant,
+         and the exam view's own toggle switches to AI 練習. Materials with
+         one question source keep the drawn set exactly as before. */
+      if (/^teaching_material_/.test(examId) && !/__(original|ai)$/.test(examId) &&
+          AHS.QuestionRuntime.hasExam(examId + "__original") && AHS.QuestionRuntime.hasExam(examId + "__ai")) {
+        examId = examId + "__original";
+      }
       if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.drawCycle === "function" &&
           AHS.QuestionBankRuntime.hasBank(examId)) {
         var drawn = AHS.QuestionBankRuntime.drawCycle(examId, FORMAL_EXAM_QUESTION_COUNT);
@@ -2079,6 +2089,13 @@ AHS.QuizCenter = (function () {
       }
       var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
         ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
+      /* 2026-10-01: the __original/__ai Assessment Mode variants share their
+         base material's meta (resolveExamMeta() only knows the base id);
+         without it the session had no subject and the exam view crashed. */
+      if (!meta && examId !== baseAssessmentExamId(examId) && AHS.TeachingMaterialLoader &&
+          typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function") {
+        meta = AHS.TeachingMaterialLoader.resolveExamMeta(baseAssessmentExamId(examId));
+      }
       var session = AHS.ExamRuntime.startFromExam(examId, meta || {});
       if (!session) { showList(); return null; }
       showExam(session.examId);

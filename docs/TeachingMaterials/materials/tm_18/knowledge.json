@@ -1,0 +1,61 @@
+{
+  "materialId": "tm_18",
+  "knowledgePoints": [
+    {
+      "name": "三角形面積公式的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三角形面積公式（兩邊夾角）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "以邊長判斷三角形的形狀（餘弦定理）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正弦定理的應用（測量）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正弦定理與外接圓半徑",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "正弦定理（已知兩角一邊）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正弦定理（邊長比＝正弦比）、餘弦定理",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "海龍公式、餘弦定理",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理的應用（平行四邊形對角線）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理（已知三邊求角）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理（已知兩邊夾角求第三邊）",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-01T15:27:08.605Z"
+}

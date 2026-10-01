@@ -1,0 +1,51 @@
+{
+  "materialId": "tm_20",
+  "knowledgePoints": [
+    {
+      "name": "受體媒介胞吞作用",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "大分子的運輸：胞吞作用與胞吐作用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "水分子的特性",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "溶液濃度與細胞形狀（動物細胞）",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "等張、高張、低張溶液",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "細胞壁的構造與成分",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細胞膜的構造",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "膨壓與滲透壓的區別",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "被動運輸與主動運輸的判斷",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-01T15:27:12.463Z"
+}
