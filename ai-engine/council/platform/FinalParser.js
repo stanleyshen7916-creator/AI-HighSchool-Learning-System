@@ -13,6 +13,8 @@
 
 const PLACEHOLDER = /^(（待補充|\(待補充|未提供有效內容|N\/A$|無$)/;
 const MAX_ITEM_LENGTH = 400;
+// 詳解要保留完整的推理步驟，上限另外放寬。
+const MAX_EXPLANATION_LENGTH = 2000;
 
 function parseFrontmatter(markdown) {
   const text = String(markdown || '').replace(/^﻿/, '');
@@ -55,14 +57,18 @@ function findSections(sections, keywords, exclude) {
     !isPlaceholder(s.body));
 }
 
-function cleanInline(text) {
+function cleanText(text, max) {
   return String(text)
     .replace(/\*\*(.+?)\*\*/g, '$1')
     .replace(/`([^`]+)`/g, '$1')
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, MAX_ITEM_LENGTH);
+    .slice(0, max);
+}
+
+function cleanInline(text) {
+  return cleanText(text, MAX_ITEM_LENGTH);
 }
 
 // 條列項目：「- 」「* 」「• 」「1. 」「1) 」「1、」開頭的行。
@@ -129,7 +135,7 @@ function tableItems(body) {
 
 // 沒有條列、表格時的退路：章節內的一般段落（略過「Claude 認為：」這類標籤行、標題、分隔線）。
 // 練習題的題幹、選項、答案、詳解屬於題庫，不當成摘要段落。
-const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析)\s*(\*\*)?\s*[:：]/;
+const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析|知識點|考點|難度)\s*(\*\*)?\s*[:：]/;
 
 function paragraphs(body) {
   return String(body).split(/\r?\n/)
@@ -170,6 +176,18 @@ const OPTION_LINE = /^\s*([A-E])\s*[.．、]\s*(.+)$/;
 // 題目區塊內直接寫出的答案／詳解（上傳頁的 Prompt 要求的格式）。
 const INLINE_ANSWER = /^\s*(?:\*\*)?\s*答案\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*[（(]?\s*([A-E])\s*[)）]?/;
 const INLINE_EXPLANATION = /^\s*(?:\*\*)?\s*(?:詳解|解析)\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.*)$/;
+// 「為既有教材加題」的出題格式另外要求每題標註知識點與難度（詳解之後的獨立一行）。
+const INLINE_KNOWLEDGE = /^\s*(?:\*\*)?\s*(?:知識點|考點)\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
+const INLINE_DIFFICULTY = /^\s*(?:\*\*)?\s*難度\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
+
+// 難度統一成平台既有的「易／中等／難」；認不出來就不填（不猜）。
+function normalizeDifficulty(text) {
+  const t = String(text || '');
+  if (/中/.test(t)) return '中等';
+  if (/難|困難|挑戰/.test(t)) return '難';
+  if (/易|簡單|基礎/.test(t)) return '易';
+  return null;
+}
 
 function parseOptions(lines) {
   const joined = lines.join('\n');
@@ -215,6 +233,10 @@ function questionBlocks(body) {
     if (!current || !line.trim() || /^-{3,}$/.test(line.trim())) return;
     const answer = INLINE_ANSWER.exec(line);
     if (answer) { current.inlineAnswer = answer[1]; return; }
+    const knowledge = INLINE_KNOWLEDGE.exec(line);
+    if (knowledge) { current.knowledgePoint = cleanInline(knowledge[1]); return; }
+    const difficulty = INLINE_DIFFICULTY.exec(line);
+    if (difficulty) { current.difficulty = normalizeDifficulty(difficulty[1]); return; }
     const explanation = INLINE_EXPLANATION.exec(line);
     if (explanation) { current.explanationLines = explanation[1] ? [explanation[1]] : []; return; }
     if (current.explanationLines) { current.explanationLines.push(line); return; }
@@ -267,7 +289,7 @@ function parseExplanations(sections) {
   });
   const out = {};
   Object.keys(explanations).forEach((k) => {
-    const text = cleanInline(explanations[k].join(' '));
+    const text = cleanText(explanations[k].join(' '), MAX_EXPLANATION_LENGTH);
     if (text) out[k] = text;
   });
   return out;
@@ -291,7 +313,7 @@ function parseQuestions(sections) {
     const stem = cleanInline(block.stemLines.join(' '));
     const options = parseOptions(block.optionLines);
     const letter = block.inlineAnswer || answers[block.number];
-    const inlineExplanation = block.explanationLines ? cleanInline(block.explanationLines.join(' ')) : '';
+    const inlineExplanation = block.explanationLines ? cleanText(block.explanationLines.join(' '), MAX_EXPLANATION_LENGTH) : '';
     if (!stem) { warnings.push(`${label}：找不到題幹，未收錄`); return; }
     if (!options) { warnings.push(`${label}：找不到完整的 (A)(B)… 選項，未收錄`); return; }
     const chosen = options.find((o) => o.key === letter);
@@ -304,6 +326,8 @@ function parseQuestions(sections) {
       answer: chosen.text,
       explanation: inlineExplanation || explanations[block.number] || null,
       section: block.section,
+      knowledgePoint: block.knowledgePoint || null,
+      difficulty: block.difficulty || null,
     });
   }));
 
@@ -344,4 +368,13 @@ function parseFinal(markdown) {
   };
 }
 
-module.exports = { parseFinal, parseFrontmatter, splitSections, parseOptions, isPlaceholder };
+// 「為既有教材加題」：貼回來的只有題目，不是完整 Final.md。整段視為一個練習題章節；
+// 其中的 ## 標題降為 ### 小節，避免被當成另一個（非練習題）章節而漏掉題目。
+function parseQuestionText(text) {
+  const body = String(text || '').replace(/^﻿/, '').replace(/^##\s+/gm, '### ');
+  return parseQuestions(splitSections(`## 練習題\n${body}`));
+}
+
+module.exports = {
+  parseFinal, parseFrontmatter, splitSections, parseOptions, isPlaceholder, parseQuestionText, normalizeDifficulty,
+};

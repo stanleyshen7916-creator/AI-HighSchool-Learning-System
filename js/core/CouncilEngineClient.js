@@ -91,6 +91,12 @@ AHS.CouncilEngineClient = (function () {
     getDraft: function (id) { return request("GET", "/api/platform/drafts/" + enc(id)); },
     createDraft: function (payload) { return request("POST", "/api/platform/drafts", payload); },
     publishDraft: function (id) { return request("POST", "/api/platform/drafts/" + enc(id) + "/publish"); },
-    deleteDraft: function (id) { return request("DELETE", "/api/platform/drafts/" + enc(id)); }
+    deleteDraft: function (id) { return request("DELETE", "/api/platform/drafts/" + enc(id)); },
+    /* 2026-10-01 為既有教材加題 */
+    supplementParents: function () { return request("GET", "/api/platform/supplements/parents"); },
+    supplementAuthorPrompt: function (payload) { return request("POST", "/api/platform/supplements/author-prompt", payload); },
+    supplementSolverPrompt: function (payload) { return request("POST", "/api/platform/supplements/solver-prompt", payload); },
+    supplementCheck: function (payload) { return request("POST", "/api/platform/supplements/check", payload); },
+    createSupplementDraft: function (payload) { return request("POST", "/api/platform/supplements/drafts", payload); }
   };
 })();

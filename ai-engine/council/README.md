@@ -10,6 +10,22 @@
 4. **建立教材包草稿**：`platform/PackageBuilder.js` 把 Final.md 轉成新的 `docs/TeachingMaterials/materials/tm_N/`。草稿的 `manifest.status` 為 `draft`，學生看不到。原始檔放進 `source/`。
 5. **預覽 → 發布**：發布時走 repo 既有的 `RepositoryManager.prepare()` + `ImportManager.importAll()`。之後由管理者 `git commit` / `git push`，GitHub Pages 部署後學生才看得到。
 
+## 為既有教材加題（2026-10-01）
+
+上傳頁的「為既有教材加題」分頁，用來為已上架的教材補出新的練習題（`platform/SupplementBuilder.js`）。不呼叫任何 AI API，所有 AI 步驟都由管理者在網頁版操作：
+
+1. **選教材與題數**：引擎依該教材的 `summary.json`（核心概念、定義、重點、易錯）與既有題目，產生出題 Prompt，貼到 Claude 網頁版。
+2. **擷取題目**：貼回 Claude 的輸出。引擎擷取每題的題幹、選項、答案、詳解、知識點、難度，再產生只有題目、沒有答案的作答 Prompt。
+3. **獨立作答**：把作答 Prompt 貼到**新的** Claude 對話。三方模式另外貼到 ChatGPT、Gemini。再把作答結果貼回。
+4. **核對**：
+   - 作答答案和出題答案不一致、作答者認為題目有問題、缺詳解、選項不足或重複、與既有題目相似 → **需人工確認**，預設不勾選。
+   - 與既有題目或本批其他題重複 → **不能加入**。
+5. **建立補充題庫草稿**：新增一份 `tm_N`，內容如下。之後的預覽、發布、刪除與上面相同。
+   - `metadata.source = "補充題庫"`
+   - `related.json` 指向原教材
+   - `source/` 保留出題結果、作答結果與 `check-report.json`
+6. **併入原教材題庫**：產生平台資料時（`GenerateTeachingMaterialData.js` 的 `mergeSupplements()`），補充題目會併入原教材的題庫。補充題庫本身不會成為一份教材，原教材的檔案完全不修改。
+
 ## 已上架資料的保護
 
 - 引擎只會新增 `tm_<目前最大編號+1>`，資料夾若已存在就停止，不會覆寫。
