@@ -83,7 +83,7 @@ console.log("\n[3] 頁面整合");
     const a = html.indexOf("js/data/ExplanationSupplementData.js"), b = html.indexOf("js/utils/ExplanationSupplement.js");
     check(p + ".html 載入資料、顯示模組與 CSS", a !== -1 && b > a && html.indexOf("css/components/explanation.css") !== -1);
   });
-  ["js/components/QuizCenter.js", "js/components/WrongBook.js", "js/components/AiTutor.js", "js/ui/MaterialQuestionCard.js", "js/utils/TutorEngine.js"].forEach((f) => {
+  ["js/components/quiz/QuizShared.js", "js/components/WrongBook.js", "js/components/AiTutor.js", "js/ui/MaterialQuestionCard.js", "js/utils/TutorEngine.js"].forEach((f) => {
     check(f + " 使用補強詳解", fs.readFileSync(path.join(REPO, f), "utf8").indexOf("AHS.ExplanationSupplement") !== -1);
   });
   require(path.join(REPO, "js/utils/TutorEngine.js"));
