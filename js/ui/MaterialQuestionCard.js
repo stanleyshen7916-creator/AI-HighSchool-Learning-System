@@ -96,7 +96,13 @@ AHS.MaterialQuestionCard = (function () {
         el("span", { class: "mat-question__answerlabel", text: "正確答案：" }),
         el("span", { class: "mat-question__answervalue", text: String(question.answer || "") })
       ]),
-      question.explanation
+      /* 2026-10-01 數學詳解補強: steps + figures when available. */
+      (window.AHS && AHS.ExplanationSupplement && AHS.ExplanationSupplement.find(question))
+        ? el("div", { class: "mat-question__explain mat-question__explain--rich" }, [
+            el("span", { class: "mat-question__answerlabel", text: "解析：" }),
+            AHS.ExplanationSupplement.render(question, question.explanation)
+          ])
+        : question.explanation
         ? el("p", { class: "mat-question__explain" }, [
             el("span", { class: "mat-question__answerlabel", text: "解析：" }),
             el("span", { text: String(question.explanation) })
