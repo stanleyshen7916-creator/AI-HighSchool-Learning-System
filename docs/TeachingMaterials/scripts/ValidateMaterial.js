@@ -117,7 +117,7 @@ function validateQuestionSourceRule(questionBank) {
     check("Question Source Rule checkable", false, "no questions[] to check");
     return;
   }
-  const PAIRING = { ORIGINAL: "Uploaded Material", AI_GENERATED: "AI", TEACHER_CREATED: "Teacher" };
+  const PAIRING = { ORIGINAL: "Uploaded Material", AI_GENERATED: "AI", TEACHER_CREATED: "Teacher", PAST_EXAM: "Past Exam" };
   const seenIds = {};
   questionBank.questions.forEach((q, i) => {
     const label = "questions[" + i + "] (" + (q.questionId || "?") + ")";
@@ -125,6 +125,11 @@ function validateQuestionSourceRule(questionBank) {
       check(label + ": questionSource/origin pair consistent",
         PAIRING[q.questionSource] === q.origin,
         "questionSource=" + q.questionSource + " origin=" + q.origin + " (expected " + PAIRING[q.questionSource] + ")");
+    }
+    /* 2026-10-01: a past national exam question must say where it is from
+       (year, exam, subject, question number) — shown to students as 出處. */
+    if (q.questionSource === "PAST_EXAM") {
+      check(label + ": PAST_EXAM carries a reference (出處)", typeof q.reference === "string" && q.reference.trim().length > 0);
     }
     const isOriginal = q.questionSource === "ORIGINAL";
     ["ocrConfidence", "needsReview"].forEach((field) => {

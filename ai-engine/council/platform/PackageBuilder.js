@@ -258,7 +258,8 @@ function createPackageBuilder({ platformRoot, dataDir }) {
   function supplementMarkdown(materialId, parent, mode, accepted, checkResult, sourceNames, reviewNote) {
     const m = parent.metadata;
     const solved = (checkResult.solvers || []).length > 0;
-    const modeLabel = !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
+    const pastExam = !!checkResult.pastExam;
+    const modeLabel = pastExam ? '歷屆試題：題目與選項逐字取自官方公布的試卷，答案依官方公布的答案，不另做獨立作答核對' : !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
       : '單一 Claude（Claude 出題；另開新的 Claude 對話獨立作答）';
     const reviewed = accepted.filter((q) => q.status === 'review');
     const lines = [
@@ -274,8 +275,14 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       '平台產生教材資料時，會把這裡的題目併入原教材的題庫（學生端不會看到一份獨立的「補充題庫」教材）。',
       '',
       `- 核對方式：${modeLabel}`,
-      '- 出題 Prompt 依原教材 summary.json 的核心概念、定義、重點、易錯點與既有題目產生；題目一律標示為 `AI_GENERATED`。',
-      '- 引擎逐題比對出題答案與獨立作答答案；不一致、作答者認為題目有問題、缺詳解、選項不足或重複者，標示為「需人工確認」，預設不收錄。',
+      ...(pastExam ? [
+        '- 題目一律標示為 `PAST_EXAM`（歷屆試題），每題都有「出處」（年度、考試、考科、題號），學生端顯示於題目下方。',
+        '- 詳解不是官方提供，由 AI 撰寫（每題詳解開頭已註明）。',
+        '- 試題著作權屬原出題單位所有；此處僅供非營利學習使用並逐題標註出處。',
+      ] : [
+        '- 出題 Prompt 依原教材 summary.json 的核心概念、定義、重點、易錯點與既有題目產生；題目一律標示為 `AI_GENERATED`，並附「出處」說明出題依據。',
+        '- 引擎逐題比對出題答案與獨立作答答案；不一致、作答者認為題目有問題、缺詳解、選項不足或重複者，標示為「需人工確認」，預設不收錄。',
+      ]),
       reviewed.length
         ? `- 以下 ${reviewed.length} 題原本標示為需人工確認，經${reviewNote ? `「${reviewNote}」` : '管理者'}確認後收錄：${reviewed.map((q) => `Q${q.number}（${q.reasons.join('；')}）`).join('、')}`
         : '- 本批收錄的題目皆通過自動核對。',
@@ -289,12 +296,15 @@ function createPackageBuilder({ platformRoot, dataDir }) {
   // 只收錄管理者勾選、且不是「重複」的題目；需人工確認的題目要明確勾選才會收錄。
   // reviewNote（選填）：需人工確認的題目是如何確認的（例如沒有另開對話作答時，改用的核對方式），
   // 會如實寫進 material.md 與 check-report.json。
-  function createSupplementDraft({ parentId, authorText, solvers, mode, accept, reviewNote }) {
+  // pastExam：歷屆試題（PAST_EXAM），每題必須有「出處」。AI 出題沒寫出處時，自動註明依據的教材與章節。
+  function createSupplementDraft({ parentId, authorText, solvers, mode, accept, reviewNote, pastExam }) {
     const parent = supplements.loadParent(parentId);
-    const result = supplements.check({ parentId, authorText, solvers });
+    const result = supplements.check({ parentId, authorText, solvers, pastExam });
     const wanted = new Set((accept || []).map(Number));
     const chosen = result.questions.filter((q) => wanted.has(q.number) && q.status !== 'duplicate');
     if (!chosen.length) throw new Error('沒有勾選任何可加入的題目（重複的題目不能加入）');
+    if (pastExam && chosen.some((q) => !q.reference)) throw new Error('歷屆試題每題都必須有「出處：」（年度、考試、考科、題號）');
+    const aiReference = `AI 依 ${parent.materialId}「${parent.metadata.chapter || ''}」教材內容出題`;
 
     const materialId = nextMaterialId();
     const dir = packageDir(materialId);
@@ -351,8 +361,8 @@ function createPackageBuilder({ platformRoot, dataDir }) {
           materialId,
           questionNumber: String(i + 1),
           type: 'single_choice',
-          questionSource: 'AI_GENERATED',
-          origin: 'AI',
+          questionSource: pastExam ? 'PAST_EXAM' : 'AI_GENERATED',
+          origin: pastExam ? 'Past Exam' : 'AI',
           question: q.question,
           options: q.options,
           answer: q.answer,
@@ -363,12 +373,13 @@ function createPackageBuilder({ platformRoot, dataDir }) {
         };
         if (q.knowledgePoint) record.knowledgePoint = q.knowledgePoint;
         if (q.difficulty) record.difficulty = q.difficulty;
+        record.reference = q.reference || aiReference;
         return record;
       }),
     });
     writeJson(path.join(dir, 'related.json'), {
       materialId,
-      related: [{ materialId: parent.materialId, reason: `${SUPPLEMENT_SOURCE}：為 ${parent.materialId}「${pm.chapter || ''}」擴充的 AI 練習題` }],
+      related: [{ materialId: parent.materialId, reason: `${SUPPLEMENT_SOURCE}：為 ${parent.materialId}「${pm.chapter || ''}」擴充的${pastExam ? '歷屆試題' : ' AI 練習題'}` }],
     });
     fs.writeFileSync(path.join(dir, 'material.md'), supplementMarkdown(materialId, parent, mode, chosen, result, sourceNames, reviewNote ? String(reviewNote) : ''), 'utf8');
 

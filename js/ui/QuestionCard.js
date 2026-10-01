@@ -91,6 +91,8 @@ AHS.QuestionCard = (function () {
         el("span", { class: "qcard__type", text: question.type })
       ]),
       el("h2", { class: "qcard__text", text: question.text }),
+      /* 2026-10-01 出處 (past exam / supplement questions) */
+      (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(question) : null),
       metaBits.length ? el("p", { class: "qcard__meta", text: metaBits.join("　") }) : null,
       /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
          only — a plain, honest empty (no element at all) when this

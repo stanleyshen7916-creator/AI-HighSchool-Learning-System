@@ -245,6 +245,48 @@ describe('補充題庫草稿 → 發布 → 併入原教材題庫', () => {
   }, 180000);
 });
 
+describe('出處與歷屆試題（2026-10-02）', () => {
+  const PAST = [
+    'Q1. 下列何者是測試用的歷屆試題題幹，用來確認出處欄位會被保存？',
+    '(A) 甲　(B) 乙　(C) 丙　(D) 丁',
+    '答案：C',
+    '詳解：（詳解為 AI 撰寫）測試。',
+    '出處：999學年度學科能力測驗 社會考科 第1題（大考中心）',
+  ].join('\n');
+
+  test('擷取「出處：」行', () => {
+    expect(parseQuestionText(PAST).questions[0].reference).toBe('999學年度學科能力測驗 社會考科 第1題（大考中心）');
+  });
+
+  test('歷屆試題：不需獨立作答；缺出處時不能建立', () => {
+    const noRef = PAST.replace(/\n出處：.*$/, '');
+    const r = packageBuilder.supplements.check({ parentId: 'tm_9', authorText: noRef, solvers: [], pastExam: true });
+    expect(r.questions[0].reasons).toEqual(['歷屆試題缺少出處（年度、考試、考科、題號）']);
+    expect(() => packageBuilder.createSupplementDraft({ parentId: 'tm_9', authorText: noRef, solvers: [], accept: [1], pastExam: true }))
+      .toThrow('必須有「出處');
+    const ok = packageBuilder.supplements.check({ parentId: 'tm_9', authorText: PAST, solvers: [], pastExam: true });
+    expect(ok.questions[0]).toMatchObject({ status: 'ok', reasons: [] });
+  });
+
+  test('歷屆試題存成 PAST_EXAM 並保留出處；AI 題沒寫出處時自動註明依據', () => {
+    const past = packageBuilder.createSupplementDraft({ parentId: 'tm_9', authorText: PAST, solvers: [], accept: [1], pastExam: true });
+    expect(past.questions[0]).toMatchObject({
+      questionSource: 'PAST_EXAM', origin: 'Past Exam', reference: '999學年度學科能力測驗 社會考科 第1題（大考中心）',
+    });
+    const md = fs.readFileSync(path.join(PLATFORM, `docs/TeachingMaterials/materials/${past.materialId}/material.md`), 'utf8');
+    expect(md).toContain('歷屆試題：題目與選項逐字取自官方公布的試卷');
+    const AI = [
+      'Q1. 某商品原料價格大幅上漲，在其他條件不變下，該商品市場最可能出現哪種變化？',
+      '(A) 需求增加　(B) 需求減少　(C) 供給增加　(D) 供給減少',
+      '答案：D',
+      '詳解：原料是生產成本，成本上升使供給減少。',
+    ].join('\n');
+    const ai = packageBuilder.createSupplementDraft({ parentId: 'tm_9', authorText: AI, solvers: [], accept: [1] });
+    expect(ai.questions[0]).toMatchObject({ questionSource: 'AI_GENERATED', reference: expect.stringMatching(/^AI 依 tm_9「.*」教材內容出題$/) });
+    expect(existingPackagesHash()).toEqual(BASELINE);
+  });
+});
+
 describe('重複判定的勝出者依編號數值（不是字串排序）', () => {
   test('tm_9 與 tm_10 重複時保留較早的 tm_9', () => {
     const scripts = path.join(PLATFORM, 'docs/TeachingMaterials/scripts');

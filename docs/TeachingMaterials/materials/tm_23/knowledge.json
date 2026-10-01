@@ -1,0 +1,16 @@
+{
+  "materialId": "tm_23",
+  "knowledgePoints": [
+    {
+      "name": "供給變動的原因（生產技術、補貼）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "需求與供給同時變動對價格的影響",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-01T22:58:47.693Z"
+}

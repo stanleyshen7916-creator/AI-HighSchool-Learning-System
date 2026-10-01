@@ -434,6 +434,7 @@ AHS.QuizParts = AHS.QuizParts || {};
     return el("section", { class: "card quiz-practice__question", "aria-label": "練習題" },
       [
         el("p", { class: "quiz-practice__q-text", text: record.question }),
+        (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(record) : null),
         interaction,
         resultBanner,
         answerSlot
@@ -532,6 +533,7 @@ AHS.QuizParts = AHS.QuizParts || {};
 
     return el("section", { class: "card quiz-practice__question", "aria-label": "練習題" }, [
       el("p", { class: "quiz-practice__q-text", text: q.text }),
+      (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(q) : null),
       metaBits.length ? el("p", { class: "quiz-practice__meta", text: metaBits.join("　") }) : null,
       el("div", { class: "quiz-practice__options" }, optionBtns),
       resultBanner,

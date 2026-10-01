@@ -205,6 +205,7 @@ function createSupplementBuilder({ platformRoot }) {
       '5. 詳解要寫出完整的推理或計算步驟，並簡短說明其他選項為什麼錯。',
       '6. 每題標註知識點（使用上面教材重點的用語）與難度（易／中等／難）。',
       '7. 全部出完後，請逐題重新驗算答案；發現錯誤請直接改正後再輸出。',
+      '8. 每題最後加一行「出處：」，寫明這題依據上面教材重點的哪一部分出題（例如：教材重點「弧長公式」）；若改編自其他資料，寫出資料名稱。',
       '',
       '【輸出格式】（學習平台會自動擷取，請完全依照此格式，不要輸出其他說明文字）',
       'Q1. 題幹',
@@ -213,6 +214,7 @@ function createSupplementBuilder({ platformRoot }) {
       '詳解：完整解題步驟',
       '知識點：…',
       '難度：中等',
+      '出處：教材重點「…」',
       '',
       'Q2. …',
     ].join('\n');
@@ -272,7 +274,9 @@ function createSupplementBuilder({ platformRoot }) {
     return answers;
   }
 
-  function check({ parentId, authorText, solvers }) {
+  // pastExam：貼上的是歷屆試題（題目、選項逐字取自官方試卷，答案依官方公布），不需要獨立作答核對，
+  // 但每題都必須有「出處：」（年度、考試、考科、題號）。
+  function check({ parentId, authorText, solvers, pastExam }) {
     const parent = loadParent(parentId);
     const { questions, warnings } = parseAuthor(authorText);
     const existing = existingQuestions(parent);
@@ -305,7 +309,9 @@ function createSupplementBuilder({ platformRoot }) {
         const a = s.answers[q.number];
         return { id: s.id, name: s.name, key: a ? a.key : null, problem: a ? a.problem : null };
       });
-      if (!solverList.length) reasons.push('尚未獨立作答核對');
+      if (pastExam) {
+        if (!q.reference) reasons.push('歷屆試題缺少出處（年度、考試、考科、題號）');
+      } else if (!solverList.length) reasons.push('尚未獨立作答核對');
       solverAnswers.forEach((a) => {
         if (a.problem) reasons.push(`${a.name}認為題目有問題：${a.problem}`);
         else if (!a.key) reasons.push(`${a.name}沒有作答本題`);
@@ -325,6 +331,7 @@ function createSupplementBuilder({ platformRoot }) {
         explanation: q.explanation,
         knowledgePoint: q.knowledgePoint || q.section || null,
         difficulty: q.difficulty || null,
+        reference: q.reference || null,
         solverAnswers,
         status,
         reasons,
@@ -333,7 +340,7 @@ function createSupplementBuilder({ platformRoot }) {
 
     const counts = { ok: 0, review: 0, duplicate: 0 };
     results.forEach((r) => { counts[r.status] += 1; });
-    return { parentId, solvers: solverList.map((s) => ({ id: s.id, name: s.name })), counts, warnings, questions: results };
+    return { parentId, pastExam: !!pastExam, solvers: solverList.map((s) => ({ id: s.id, name: s.name })), counts, warnings, questions: results };
   }
 
   return { listParents, loadParent, authorPrompt, solverPrompt, parseSolver, check, supplementsOf };

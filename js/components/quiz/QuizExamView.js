@@ -75,9 +75,14 @@ AHS.QuizParts = AHS.QuizParts || {};
       return btn;
     }
 
+    /* 2026-10-01: the practice side may also hold past national exam
+       questions (PAST_EXAM) — say so instead of calling them all AI. */
+    var practice = AHS.QuestionRuntime.getSet(base + "__ai");
+    var pastCount = practice.filter(function (q) { return q.questionSource === "PAST_EXAM"; }).length;
+    var practiceLabel = !pastCount ? "AI 練習" : pastCount === practice.length ? "歷屆試題練習" : "補充練習（AI＋歷屆試題）";
     return el("div", { class: "qexam__mode-toggle", role: "group", "aria-label": "Assessment Mode" }, [
       modeBtn("original", "原始試卷"),
-      modeBtn("ai", "AI 練習")
+      modeBtn("ai", practiceLabel)
     ]);
   }
 
@@ -177,6 +182,7 @@ AHS.QuizParts = AHS.QuizParts || {};
             el("span", { class: "qreview__item-index", text: "第 " + q.index + " 題" })
           ]),
           el("p", { class: "qreview__item-text", text: q.text }),
+          (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(q) : null),
           /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
              only, same discipline as QuestionCard.js's own qcard__figure. */
           q.figureSvg ? el("div", { class: "qreview__item-figure", html: q.figureSvg }) : null,

@@ -273,6 +273,8 @@ function convertQuestions(questionBank, materialRuntimeId) {
        flagged unclear/unverifiable from the source photo (see this
        Package's own questionbank.json comments). */
     if (q.figureSvg) { converted.figureSvg = q.figureSvg; }
+    /* 2026-10-01 出處: real passthrough only, omitted when absent. */
+    if (q.reference) { converted.reference = q.reference; }
     return converted;
   });
 }

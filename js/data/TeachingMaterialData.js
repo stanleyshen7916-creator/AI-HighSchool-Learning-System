@@ -376,10 +376,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "餘弦定理（已知三邊求角）",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「餘弦定理（已知三邊求角）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -399,10 +400,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "餘弦定理（已知兩邊夾角求第三邊）",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「餘弦定理（已知兩邊夾角求第三邊）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -422,10 +424,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "正弦定理與外接圓半徑",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「正弦定理與外接圓半徑」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -445,10 +448,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "三角形面積公式（兩邊夾角）",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「三角形面積公式（兩邊夾角）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -468,10 +472,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "正弦定理（已知兩角一邊）",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「正弦定理（已知兩角一邊）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -491,10 +496,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "海龍公式、餘弦定理",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「海龍公式、餘弦定理」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -514,10 +520,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "以邊長判斷三角形的形狀（餘弦定理）",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「以邊長判斷三角形的形狀（餘弦定理）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -537,10 +544,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "正弦定理（邊長比＝正弦比）、餘弦定理",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「正弦定理（邊長比＝正弦比）、餘弦定理」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -560,10 +568,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "正弦定理與外接圓半徑",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「正弦定理與外接圓半徑」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -583,10 +592,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "三角形面積公式的應用",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「三角形面積公式的應用」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -606,10 +616,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "餘弦定理的應用（平行四邊形對角線）",
         "difficulty": "難",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「餘弦定理的應用（平行四邊形對角線）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       },
       {
@@ -629,10 +640,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:08.460Z",
         "knowledgePoint": "正弦定理的應用（測量）",
         "difficulty": "難",
+        "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「正弦定理的應用（測量）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
       }
     ],
@@ -3798,10 +3810,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：讀歷史的功用",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.2〈一、讀歷史的功用〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3821,10 +3834,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：讀歷史的功用",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.2〈一、讀歷史的功用〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3844,10 +3858,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：為什麼要讀世界史",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.3〈二、為什麼要讀世界史？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3867,10 +3882,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：世界史知識的實用價值",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.3〈二、為什麼要讀世界史？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3890,10 +3906,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：世界史知識的實用價值",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.3〈二、為什麼要讀世界史？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3913,10 +3930,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：在怎樣的脈絡中討論世界史",
         "difficulty": "中等",
+        "reference": "課本 序篇「從臺灣走向世界」p.4〈三、可以在怎樣的脈絡中討論世界史？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3936,10 +3954,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：在怎樣的脈絡中討論世界史",
         "difficulty": "中等",
+        "reference": "課本 序篇「從臺灣走向世界」p.4〈三、可以在怎樣的脈絡中討論世界史？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3959,10 +3978,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：在怎樣的脈絡中討論世界史",
         "difficulty": "中等",
+        "reference": "課本 序篇「從臺灣走向世界」p.4〈三、可以在怎樣的脈絡中討論世界史？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -3982,10 +4002,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：我們要往何處去",
         "difficulty": "中等",
+        "reference": "課本 序篇「從臺灣走向世界」p.5〈四、我們要往何處去？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -4005,10 +4026,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：我們要往何處去",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.5〈四、我們要往何處去？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -4028,10 +4050,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：我們要往何處去（全球在地化）",
         "difficulty": "中等",
+        "reference": "課本 序篇「從臺灣走向世界」p.5〈四、我們要往何處去？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       },
       {
@@ -4051,10 +4074,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:10.372Z",
         "knowledgePoint": "序篇：我們要往何處去",
         "difficulty": "易",
+        "reference": "課本 序篇「從臺灣走向世界」p.5〈四、我們要往何處去？〉，由 AI 依原文改寫為選擇題",
         "supplementId": "tm_19"
       }
     ],
@@ -4946,6 +4970,54 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "十字軍東征與學術復甦",
         "difficulty": "中等",
         "section": "第1章第2節：基督教與中古歐洲"
+      },
+      {
+        "id": "tm_24_q1",
+        "materialId": "tm_15",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "四世紀末，羅馬皇帝狄奧多西一世因信奉基督教，下令關閉羅馬境內所有異教神廟，包括埃及的神廟，使得最後一批懂古埃及文的祭司四處流散。這個舉動造成的最大影響應當是：",
+        "options": [
+          "長期無人識讀古埃及文字系統",
+          "基督教成為西方世界唯一宗教",
+          "羅馬皇帝成為埃及宗教的教宗",
+          "羅馬脫離埃及文化而自成體系"
+        ],
+        "answer": "長期無人識讀古埃及文字系統",
+        "explanation": "（詳解為 AI 撰寫）四世紀末基督教成為羅馬國教，異教神廟被關閉。懂古埃及文字的祭司流散後，這套文字失去傳承，此後長期無人能讀懂。(B) 題文只說關閉異教神廟，不能推到「唯一宗教」；(C) 羅馬皇帝並沒有成為埃及宗教的領袖；(D) 與題文描述的影響無關。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:50.432Z",
+        "knowledgePoint": "基督教成為羅馬國教",
+        "difficulty": "易",
+        "reference": "114學年度學科能力測驗 社會考科 第14題（大考中心）",
+        "supplementId": "tm_24"
+      },
+      {
+        "id": "tm_24_q2",
+        "materialId": "tm_15",
+        "questionNumber": "2",
+        "type": "single_choice",
+        "question": "（第51–53題為題組）土耳其領土橫跨歐、亞兩大陸，被稱為文明的十字路口，五千年來歷經波斯、希臘、羅馬、拜占庭、鄂圖曼和土耳其共和國等的治理。由於地理位置與歷史發展的影響，土耳其在區域歸屬上，始終擺盪於「西方（歐洲）」與「東方（西亞）」之間；雖然早於 1952年即加入北大西洋公約組織，但近年來幾經爭取，迄今仍未成為歐盟的正式會員國。2017年土耳其通過修憲公投，將憲政體制由議會內閣制改為總統制，總統由普選產生且擁有更大行政權，由總統組成政府並任免各部會首長。俄烏戰爭期間，多國對俄羅斯實施經濟制裁，禁止俄國石油、天然氣等能源的進口。圖 6是俄羅斯、烏克蘭位置圖。（原卷附圖略，本題作答不需參考）土耳其國內的反對黨，亦提出封鎖俄羅斯交通線的制裁方案，但執政黨基於該國能源高度依賴俄國，表明不會加入制裁俄羅斯的行列。請問： 伊斯坦堡因歷史發展因素，擁有不同時代的古文物。經由歷次古建築遺址考古，出土了以下四件文物： 甲、有希臘文福音故事的馬賽克磚 乙、鑄有君士坦丁皇帝頭像的金幣 丙、書寫於羊皮紙上的古蘭經殘頁 丁、描繪特洛伊戰爭的古希臘陶瓶 依照它們所代表的時代，其先後順序應是：",
+        "options": [
+          "甲乙丙丁",
+          "乙丁甲丙",
+          "丙甲乙丁",
+          "丁乙甲丙"
+        ],
+        "answer": "丁乙甲丙",
+        "explanation": "（詳解為 AI 撰寫）依時代先後：丁、描繪特洛伊戰爭（荷馬史詩題材）的古希臘陶瓶，屬古希臘；乙、君士坦丁皇帝的金幣，屬四世紀的羅馬帝國；甲、希臘文福音故事的馬賽克磚，屬以希臘文為主、信奉基督教的拜占庭帝國；丙、古蘭經殘頁，屬伊斯蘭的鄂圖曼時期。所以是丁→乙→甲→丙。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:50.432Z",
+        "knowledgePoint": "希臘、羅馬、拜占庭、鄂圖曼的時代先後",
+        "difficulty": "中等",
+        "reference": "113學年度學科能力測驗 社會考科 第51題（第51–53題題組，大考中心）",
+        "supplementId": "tm_24"
       }
     ],
     "related": [
@@ -5580,6 +5652,30 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "社會主義與工人運動——馬克思社會主義",
         "difficulty": "易",
         "section": "第2節：十八、十九世紀政治與經濟的新思維"
+      },
+      {
+        "id": "tm_25_q1",
+        "materialId": "tm_16",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "一位史家認為：在啟蒙運動中，重要的思想家通常出身貴族，或者與貴族有密切聯繫，很少挑戰當時的政治與社會秩序。這位史家還發現在 1780年代法國大革命前的暢銷書，多是一些八卦式的虛構文學，主題如「教宗的私生子」、「皇后的奢靡生活」等。這些作者透過撰寫捏造上流人士醜聞的小冊來養活自己並抒發心中的苦悶。從上文可知，史家認為這類暢銷書與法國大革命之間的關係最可能是：",
+        "options": [
+          "啟發人民以爭取民主自由",
+          "打擊了王室與教會的權威",
+          "敵國為顛覆法國故予支持",
+          "為了賺錢以支持革命運動"
+        ],
+        "answer": "打擊了王室與教會的權威",
+        "explanation": "（詳解為 AI 撰寫）史家認為重要的啟蒙思想家很少挑戰既有秩序；真正廣為流傳的，是醜化教宗、皇后等上流人士的八卦小冊。這些書讓人民對王室與教會的尊敬下降，打擊了它們的權威，為大革命鋪路。(A) 這類虛構八卦並非以爭取民主自由為內容；(C) 題文沒有提到敵國；(D) 作者寫書是為了養活自己、抒發苦悶，不是為了支持革命。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:53.167Z",
+        "knowledgePoint": "啟蒙運動與法國大革命",
+        "difficulty": "中等",
+        "reference": "114學年度學科能力測驗 社會考科 第10題（大考中心）",
+        "supplementId": "tm_25"
       }
     ],
     "related": [
@@ -9861,6 +9957,150 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.5,
         "needsReview": true,
         "knowledgePoint": "跨國企業競合關係（原稿文字疑有誤植，待覆核）"
+      },
+      {
+        "id": "tm_21_q1",
+        "materialId": "tm_4",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "「日治時期，為了支援製糖會社的發展，臺灣總督府協助會社興建『糖業鐵道』，以利農場運送甘蔗至糖廠，製糖後輸往海外。1990年代開始，部分農場土地釋出，提供科學園區或相關產業使用；其他農場儘管仍維持農業使用，但轉為栽種毛豆等經濟價值較高的作物外銷，部分糖業鐵道也轉型為觀光使用。」僅依題文資訊，上文最可能是下列哪個研究的摘要？",
+        "options": [
+          "糖業發展與國際貿易關係之研究",
+          "糖業專業分工與產品標準化之研究",
+          "經濟全球化與糖業地景變遷之研究",
+          "知識經濟下糖業產業系統轉變之研究"
+        ],
+        "answer": "經濟全球化與糖業地景變遷之研究",
+        "explanation": "（詳解為 AI 撰寫）題文從「製糖後輸往海外」寫到「土地釋出給科學園區、改種毛豆外銷、鐵道轉為觀光」，重點是糖業用地與鐵道在全球市場變化下的「地景」改變，所以是「經濟全球化與糖業地景變遷」。(A) 只談到貿易一面，沒有涵蓋土地利用的轉變；(B)(D) 題文沒有提到分工、標準化或知識經濟。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:42.195Z",
+        "knowledgePoint": "全球化與地景變遷",
+        "difficulty": "中等",
+        "reference": "114學年度學科能力測驗 社會考科 第22題（大考中心）",
+        "supplementId": "tm_21"
+      },
+      {
+        "id": "tm_21_q2",
+        "materialId": "tm_4",
+        "questionNumber": "2",
+        "type": "single_choice",
+        "question": "1980年以前，泰國透過減稅促使日本公司與當地企業合作組裝汽車；1990年代後，曼谷北側許多汽車相關產業在此設廠，從零組件到整車都可以完成，因而吸引國際大廠至此投資，銷往東協各國的日系車輛大多由泰國生產。依據題文，1990年代泰國汽車產業的發展特色，最適合用下列哪個概念解釋？",
+        "options": [
+          "進口替代",
+          "工業慣性",
+          "聚集經濟",
+          "產品生命週期"
+        ],
+        "answer": "聚集經濟",
+        "explanation": "（詳解為 AI 撰寫）1990 年代後許多汽車相關產業集中在曼谷北側設廠，零組件到整車都能就近完成，降低成本並吸引更多大廠進駐，這是「聚集經濟」。(A) 進口替代對應的是 1980 年以前以減稅鼓勵在地組裝的階段；(B) 工業慣性是指原本的區位優勢消失後產業仍留在原地；(D) 產品生命週期與題文無關。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:42.195Z",
+        "knowledgePoint": "產業區位：聚集經濟",
+        "difficulty": "易",
+        "reference": "114學年度學科能力測驗 社會考科 第23題（大考中心）",
+        "supplementId": "tm_21"
+      },
+      {
+        "id": "tm_21_q3",
+        "materialId": "tm_4",
+        "questionNumber": "3",
+        "type": "single_choice",
+        "question": "（第31–32題為題組）新加坡的發展不僅與英國人有關，也與當地最大族群華人的關係密切。十九世紀中興建的蘇伊士運河，打通了西歐與東亞的新航路，促使歐洲人在東南亞大力發展熱帶栽培業，故需要許多人手進行種植、管理、初步加工和產品運輸等，提供了新加坡發達的基礎，也使當地華人人口迅速上升。新加坡不僅是英國海峽殖民地的行政首府，也是東南亞熱帶作物銷往歐洲的集散中心。圖 3是歐、亞、非三洲的形勢簡圖，甲—丁是世界上重要的海峽。（原卷附圖略，本題作答不需參考）請問： 根據題文，下列何者最能解釋新加坡華人的移入？",
+        "options": [
+          "作為殖民地行政首府，可創造市場區位優勢",
+          "栽種技術領先，形塑絕對利益增加勞動供給",
+          "華人的草原耕作技術，有利當地栽培業發展",
+          "運輸成本降低活絡貿易，帶來更多勞動需求"
+        ],
+        "answer": "運輸成本降低活絡貿易，帶來更多勞動需求",
+        "explanation": "（詳解為 AI 撰寫）蘇伊士運河縮短西歐到東亞的航程、降低運輸成本，歐洲人因此在東南亞大力發展熱帶栽培業，需要大量人力從事種植、加工和運輸——勞動需求增加，吸引華人移入。(A) 行政首府的地位不是題文說明華人移入的原因；(B)(C) 題文沒有提到華人的栽種或草原耕作技術。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:42.195Z",
+        "knowledgePoint": "人口移動與產業發展",
+        "difficulty": "易",
+        "reference": "114學年度學科能力測驗 社會考科 第31題（第31–32題題組，大考中心）",
+        "supplementId": "tm_21"
+      },
+      {
+        "id": "tm_21_q4",
+        "materialId": "tm_4",
+        "questionNumber": "4",
+        "type": "single_choice",
+        "question": "（第39–42題為題組）二次世界大戰後，美蘇兩強對峙，夾在中間的歐洲思考如何走出自己的路。1950年，一幅以「放大鏡下的歐洲：第三力量」為題的政治漫畫（圖 4），將歐洲各國畫成小孩子，被兩位大人以放大鏡檢視，有些小孩更被壓制在一位大人的膝蓋下方。（原卷附圖略，本題作答不需參考）1952年，德、法、義、荷、盧、比等六國，成立「歐洲煤鋼共同體」，其想法來自法國提出西歐各國將重要工業資源共同管理的計畫，規定成員國間毋須繳納關稅而直接取得煤和鋼的生產原料。1958年，六國成立「歐洲經濟共同體」與「歐洲議會」；1967年，六國依條約整合成「歐洲共同體」；1993年，「歐洲共同體」正式更名為「歐洲聯盟」（歐盟）。2004年起，東歐多國才陸續加入歐盟；英國則因國內諸多問題，而於 2016年公投決定退出，並就移民、國際貿易、跨國金融等與歐盟進行談判。請問： 依據上文，1950年代法國提出的管理計畫，其規定所隱含的理念最適合以下列哪個概念說明？",
+        "options": [
+          "核心邊陲",
+          "地緣樞紐",
+          "區域互賴",
+          "中地體系"
+        ],
+        "answer": "區域互賴",
+        "explanation": "（詳解為 AI 撰寫）各國把煤、鋼等重要工業資源共同管理，彼此免關稅直接取得原料，是讓區域內各國在經濟上互相依存、合作發展的「區域互賴」。(A) 核心邊陲強調不平等的關係；(B) 地緣樞紐指位置重要的戰略據點；(D) 中地體系談的是聚落提供服務的層級。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:42.195Z",
+        "knowledgePoint": "全球化下的區域互賴",
+        "difficulty": "易",
+        "reference": "114學年度學科能力測驗 社會考科 第40題（第39–42題題組，大考中心）",
+        "supplementId": "tm_21"
+      },
+      {
+        "id": "tm_21_q5",
+        "materialId": "tm_4",
+        "questionNumber": "5",
+        "type": "single_choice",
+        "question": "（第29–30題為題組）某生分別從東歐、西歐、南歐、北歐各地區挑選一個國家，蒐集相關資料，進行某項主題的探究，表 3是 2022年這些國家的三項經濟發展資料。已知 2022年歐盟平均每人國內生產毛額為 37,150美元。請問： 表3（依原卷表格內容轉為文字）甲：國內生產毛額 89.0（10億美元）；平均每人國內生產毛額 13,772美元；主要出口項目：電氣機械設備、礦物燃料、礦物油機械設備等。乙：國內生產毛額 4,072.2（10億美元）；平均每人國內生產毛額 48,432美元；主要出口項目：機械和運輸設備、醫學和藥品相關、航太產品和電腦設備等。丙：國內生產毛額 1,397.5（10億美元）；平均每人國內生產毛額 29,350美元；主要出口項目：機械和運輸設備、食品飲料和香菸、化學品等。丁：國內生產毛額 585.9（10億美元）；平均每人國內生產毛額 55,873美元；主要出口項目：機械和運輸設備、化學品和相關產品等。 根據表 3，該生從歐盟各區域成員國之間的經濟發展狀況，最可能進行下列哪項主題的探究？",
+        "options": [
+          "歐盟製造業發展的困境",
+          "歐盟向東擴散趨勢分析",
+          "歐盟政策整合面臨的挑戰",
+          "歐盟國家不平等交換現象"
+        ],
+        "answer": "歐盟政策整合面臨的挑戰",
+        "explanation": "（詳解為 AI 撰寫）四國的平均每人國內生產毛額從 13,772 美元到 55,873 美元，有的遠低於、有的遠高於歐盟平均（37,150 美元），顯示成員國之間經濟發展差距很大；差距大時，各國利益不同，歐盟要推動一致的政策就比較困難。(B) 判斷「向東擴散」需要不同年份的變化資料；(D) 不平等交換要有國家之間的貿易條件資料；(A) 表中各國都以機械等製造業產品為主要出口，看不出製造業的困境。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:42.195Z",
+        "knowledgePoint": "區域互賴與區域內的發展差距",
+        "difficulty": "難",
+        "reference": "113學年度學科能力測驗 社會考科 第30題（第29–30題題組，大考中心）",
+        "supplementId": "tm_21"
+      },
+      {
+        "id": "tm_21_q6",
+        "materialId": "tm_4",
+        "questionNumber": "6",
+        "type": "single_choice",
+        "question": "（第54–57題為題組）位於大西洋西側加勒比海的某島西部，曾是法國盛產蔗糖的殖民地，該地的人口除歐洲白人、原住民與黑奴之外，尚有法國男性在當地所生的混血人種，他們也可受教育、擁有財產及黑奴，是所謂「有色自由人」。法國大革命初期，新政府依《人權宣言》主張公民在法律之前一律平等，但該地居民的公民資格並非馬上就取得。歐洲人種植園主反對用公民平等的原則來治理，爭取成立自治政府。1791年該地爆發奴隸反抗事件，法國政府擔心島嶼動盪會被保王派或英國、西班牙乘虛而入，急需「有色自由人」為革命盟友，故宣布他們為法國公民。緊接著法國政府又發現，若沒有奴隸的支持，也無法控制該地的族群衝突，因此 1793年釋放當地奴隸並宣布他們為公民。但該地仍持續抗爭，追求獨立，1804年終於建國，然因主權爭議，直到十九世紀中期才獲得大多數國家承認。請問： 題文中「加勒比海的某島西部」與法國之間的商品往來，最可能是形成下列哪種現象的重要背景？",
+        "options": [
+          "基於經濟誘因原則，該地生產的甘蔗主要送往法國加工製成精糖",
+          "屬於世界體系邊陲區的該地，獨立後國民所得有逐年減少的趨勢",
+          "民主化導致該地的蔗糖勞工短缺，製糖業者承擔較高的外部成本",
+          "核心國擴散效應對該地影響有限，國內產業仍多受跨國企業掌控"
+        ],
+        "answer": "核心國擴散效應對該地影響有限，國內產業仍多受跨國企業掌控",
+        "explanation": "（詳解為 AI 撰寫）殖民時期該地專門為核心國法國生產蔗糖等初級產品，是世界體系中的邊陲。這樣的經濟結構讓核心國的「擴散效應」很難帶動當地發展，產業仍多掌握在跨國企業手中。(A) 題文說的是「盛產蔗糖」，不是把甘蔗送去法國加工；(B)「國民所得逐年減少」、(C)「民主化導致勞工短缺」，題文都沒有依據。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:42.195Z",
+        "knowledgePoint": "世界體系理論：核心與邊陲、擴散效應",
+        "difficulty": "難",
+        "reference": "113學年度學科能力測驗 社會考科 第55題（第54–57題題組，大考中心）",
+        "supplementId": "tm_21"
       }
     ],
     "related": []
@@ -10165,10 +10405,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "大分子的運輸：胞吞作用與胞吐作用",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「大分子的運輸：胞吞作用與胞吐作用」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10188,10 +10429,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "受體媒介胞吞作用",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「受體媒介胞吞作用」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10211,10 +10453,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "水分子的特性",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「水分子的特性」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10234,10 +10477,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "水分子的特性",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「水分子的特性」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10257,10 +10501,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "溶液濃度與細胞形狀（動物細胞）",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「溶液濃度與細胞形狀（動物細胞）」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10280,10 +10525,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "溶液濃度與細胞形狀（動物細胞）",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「溶液濃度與細胞形狀（動物細胞）」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10303,10 +10549,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "等張、高張、低張溶液",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「等張、高張、低張溶液」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10326,10 +10573,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "細胞壁的構造與成分",
         "difficulty": "易",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「細胞壁的構造與成分」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10349,10 +10597,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "細胞膜的構造",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「細胞膜的構造」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10372,10 +10621,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "膨壓與滲透壓的區別",
         "difficulty": "難",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「膨壓與滲透壓的區別」出題",
         "supplementId": "tm_20"
       },
       {
@@ -10395,10 +10645,11 @@ AHS.TeachingMaterialData = [
         "questionSource": "AI_GENERATED",
         "origin": "AI",
         "page": null,
-        "version": "1",
+        "version": "2",
         "createdDate": "2026-10-01T15:27:12.325Z",
         "knowledgePoint": "被動運輸與主動運輸的判斷",
         "difficulty": "中等",
+        "reference": "AI 自編（非課本原題），依本教材「長榮中學高二第一次月考 生物補充資料」重點「被動運輸與主動運輸的判斷」出題",
         "supplementId": "tm_20"
       }
     ],
@@ -11487,6 +11738,54 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "第1節 誘因四象限綜合應用",
         "difficulty": "中等"
+      },
+      {
+        "id": "tm_22_q1",
+        "materialId": "tm_8",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "（第21–22題為題組）曾有大學校長表示：從事高等科學研究的科學家中，男性比女性有更高的占比，這是因為在數理能力上，男性比女性有先天優勢，其成就也較大。此論點引發強烈抗議，反對者認為該校長忽略了女性要成為科學家，或女性科學家要持續發展學術生涯時，常面對難以打破的文化刻板印象，以及社會規範的阻礙。請問： 該校長認為男生比女生有優勢的觀點，若純粹以經濟學觀點來理解，最接近下列哪個概念的意涵？",
+        "options": [
+          "人力資本",
+          "比較利益",
+          "市場機能",
+          "絕對利益"
+        ],
+        "answer": "絕對利益",
+        "explanation": "（詳解為 AI 撰寫）校長的說法是「在數理能力上，男性比女性有先天優勢」——兩群人做同一件事、直接比誰做得比較好，這是「絕對利益」。「比較利益」要比較各自做不同事情的機會成本；「人力資本」是透過教育、訓練後天累積的能力，與「先天」不同；「市場機能」是價格引導資源分配，與題意無關。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:45.051Z",
+        "knowledgePoint": "絕對利益與比較利益",
+        "difficulty": "中等",
+        "reference": "113學年度學科能力測驗 社會考科 第21題（第21–22題題組，大考中心）",
+        "supplementId": "tm_22"
+      },
+      {
+        "id": "tm_22_q2",
+        "materialId": "tm_8",
+        "questionNumber": "2",
+        "type": "single_choice",
+        "question": "（第61–64題為題組）十九世紀，華人開始大規模移民美國，先後從事開挖金礦、修建鐵路等勞力工作。當時載運華工橫渡太平洋的輪船公司，為了提高利潤而超載，船艙極端擁擠，華工在漫長旅途中，常受非人待遇而死亡，甚至有高達 64%的死亡率紀錄。即使如此，移民美國的華人仍持續增加。在鐵路修建告一段落時，又值美國政府立法廢除某項制度後，出現低階勞動力不足的現象，各地華人移工開始進入農、漁、工勞動市場，而白人擔心工作被奪取，薪資被壓抑，針對華人的種族暴力時有所聞。更多的華人陸續聚居到不同的市區，形成各地的「唐人街」族群經濟聚落，其職業與行業特色以經營小生意為主，市場規模小但可互助兼自保。他們赴美時常將妻子留在家中撫養子女、照顧公婆；加上在海外謀生不易，妻子即使來美也不太可能有工作機會。因此，早期唐人街的男性華人，大多是過著類似「光棍」（單身）的生活。1873年後美國經濟蕭條，對華人移民的歧視更形加劇。在工會遊說及各州議會的強力支持下，美國國會在 1882年完成立法、由總統簽署通過《排華法案》，對華人移民入境與取得美國籍都設下嚴格限制，這是美國政府通過的唯一針對移民國籍所設定的歧視性法案。請問： 如果要避免華工在旅途中高死亡率的人道悲劇，從「誘因」的角度思考，下列改善作法中何者相對有效？",
+        "options": [
+          "船公司要求華工在搭船前須先行購買旅行平安險",
+          "要求船公司加強對船員進行基本人權的道德教育",
+          "依安全抵達目的地的人數比例支付運費給船公司",
+          "由船公司要求提高運送費以改善華人的旅程待遇"
+        ],
+        "answer": "依安全抵達目的地的人數比例支付運費給船公司",
+        "explanation": "（詳解為 AI 撰寫）船公司超載是為了提高利潤。若改成「依安全抵達的人數付運費」，乘客死亡就會直接減少船公司的收入——這是正向的金錢誘因，讓船公司自己有動機改善待遇。(A) 保險只是事後賠償，不改變船公司的行為；(B) 道德教育不是誘因機制，效果有限；(D) 提高運費並不保證船公司會把錢用在改善待遇上。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:45.051Z",
+        "knowledgePoint": "誘因（金錢誘因）",
+        "difficulty": "中等",
+        "reference": "113學年度學科能力測驗 社會考科 第61題（第61–64題題組，大考中心）",
+        "supplementId": "tm_22"
       }
     ],
     "related": [
@@ -12012,6 +12311,54 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "第4節 猶豫期例外≠瑕疵擔保豁免",
         "difficulty": "難"
+      },
+      {
+        "id": "tm_23_q1",
+        "materialId": "tm_9",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "小宜在書上讀到一段資料：「十七世紀以後，咖啡風行歐洲，帶動咖啡消費風氣，使之成為大眾化飲料，歐洲各國其後也開始在殖民地大量種植咖啡。」依據此段歷史敘述，小宜推斷當時的咖啡市場價格應該會下跌。依市場分析，其推論之依據應為下列何者？",
+        "options": [
+          "咖啡已經成為大眾化飲品，消費市場便容易發生短缺",
+          "咖啡消費需求增加，但殖民地大量種植供給增加更大",
+          "歐洲各國在殖民地種植咖啡後，同步刺激了消費成長",
+          "政府預期咖啡價格將有大波動，採取了價格管制政策"
+        ],
+        "answer": "咖啡消費需求增加，但殖民地大量種植供給增加更大",
+        "explanation": "（詳解為 AI 撰寫）咖啡風行使「需求增加」（需求線右移，會推升價格）；殖民地大量種植使「供給增加」（供給線右移，會壓低價格）。兩者同時發生時，價格要下跌，必須是供給增加的幅度大於需求增加的幅度。(A) 短缺會使價格上漲；(C) 只說明需求增加，無法推得價格下跌；(D) 題文沒有提到價格管制。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:47.550Z",
+        "knowledgePoint": "需求與供給同時變動對價格的影響",
+        "difficulty": "中等",
+        "reference": "113學年度學科能力測驗 社會考科 第3題（大考中心）",
+        "supplementId": "tm_23"
+      },
+      {
+        "id": "tm_23_q2",
+        "materialId": "tm_9",
+        "questionNumber": "2",
+        "type": "single_choice",
+        "question": "（第57–58題為題組）番茄為全球最重要的蔬果之一，其加工品「番茄糊」也成為需求甚殷的產品。遺傳學家成功透過基因改造，培育可長途運輸且更便於製成濃縮番茄糊的「加工用番茄」，使番茄種植及生產番茄糊的地點不再受限，可創造更大利潤。一名記者在那不勒斯的老牌番茄糊工廠，發現其他廠牌的桶裝番茄糊，其生產標籤上寫著：「中國製造」。該工廠不再以生產番茄糊為主，而是將番茄糊調整風味後，分裝成小容量的罐裝產品出售。經過長時間的採訪，他完成番茄糊產業加工途徑的調查，圖 6為其中一條全球番茄糊加工產業的途徑。（原卷附圖略，本題作答不需參考）請問： 根據題文，成功培育改造的番茄，對番茄糊市場供需變動的直接影響，與下列哪個商品的市場變動情況最類似？",
+        "options": [
+          "品種改良後的水梨深受消費者喜愛",
+          "政府採補貼政策鼓勵香蕉擴大栽種",
+          "颱風肆虐令西瓜受損嚴重無法到貨",
+          "民眾擔心基改草莓會帶來未知危害"
+        ],
+        "answer": "政府採補貼政策鼓勵香蕉擴大栽種",
+        "explanation": "（詳解為 AI 撰寫）改良的番茄可長途運輸、更容易製成番茄糊，生產地點不再受限，等於生產技術進步、成本下降——番茄糊的「供給增加」（供給線右移）。政府補貼鼓勵香蕉擴大栽種，也是讓生產者願意多生產，同樣是供給增加。(A)(D) 是消費者偏好改變造成的需求變動；(C) 是供給減少。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-01T22:58:47.550Z",
+        "knowledgePoint": "供給變動的原因（生產技術、補貼）",
+        "difficulty": "中等",
+        "reference": "114學年度學科能力測驗 社會考科 第57題（第57–58題題組，大考中心）",
+        "supplementId": "tm_23"
       }
     ],
     "related": [

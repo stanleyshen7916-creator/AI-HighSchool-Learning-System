@@ -891,6 +891,7 @@ AHS.WrongBook = (function () {
       ]),
       statsBlock,
       el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
+      (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),
       /* Sprint AI-147/AI-148（使用者需求：題目附圖，含舊紀錄補圖）:
          resolveFigureSvg() falls back to js/data/TeachingMaterialData.js
          when this record predates figureSvg — see its own header above. */
@@ -1151,6 +1152,7 @@ AHS.WrongBook = (function () {
           el("p", { class: "wb-review-session__progress", text: "複習進度：" + (index + 1) + " / " + queue.length }),
           el("h2", { class: "wb-detail__title", text: item.title }),
           el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
+          (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),
           /* Sprint AI-147/AI-148: resolveFigureSvg() also covers records
              created before figureSvg existed — see its own header above. */
           resolveFigureSvg(item) ? el("div", { class: "wb-detail__figure", html: resolveFigureSvg(item) }) : null,

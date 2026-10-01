@@ -97,3 +97,21 @@
 }
 
 .xsup__original .xsup__text { margin-top: 4px; }
+
+/* 2026-10-01 題目出處 (js/utils/QuestionReference.js) */
+.qref {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.qref__badge {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  background-color: #e8f1ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}

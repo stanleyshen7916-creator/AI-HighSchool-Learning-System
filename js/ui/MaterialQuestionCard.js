@@ -42,6 +42,7 @@ AHS.MaterialQuestionCard = (function () {
     card.appendChild(el("div", { class: "mat-question__q" }, [
       el("span", { class: "mat-question__num", text: "第 " + (index + 1) + " 題" }),
       el("p", { class: "mat-question__text", text: String(question.question || "") }),
+      (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(question) : null),
       metaBits.length ? el("p", { class: "mat-question__meta", text: metaBits.join("　") }) : null
     ]));
 
