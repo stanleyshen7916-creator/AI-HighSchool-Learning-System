@@ -6,7 +6,7 @@
    the questions' real coordinates) live in a separate overlay keyed by
    questionId:
 
-     docs/TeachingMaterials/explanations/build/MathTm*.js   (source)
+     docs/TeachingMaterials/explanations/build/*.js        (source)
        -> docs/TeachingMaterials/explanations/tm_N.json     (reviewable data)
        -> js/data/ExplanationSupplementData.js              (loaded by pages)
 
@@ -29,7 +29,8 @@ const EXPLANATIONS_DIR = path.join(__dirname, "..", "explanations");
 const OUTPUT_FILE = path.join(REPO_ROOT, "js", "data", "ExplanationSupplementData.js");
 const SOURCES = [
   { materialId: "tm_7", module: "MathTm7.js" },
-  { materialId: "tm_1", module: "MathTm1.js" }
+  { materialId: "tm_1", module: "MathTm1.js" },
+  { materialId: "tm_11", module: "PhysicsTm11.js" }
 ];
 
 const UNSAFE_SVG = [/<script/i, /\son[a-z]+\s*=/i, /javascript:/i, /<foreignObject/i, /(?:xlink:)?href\s*=/i, /<iframe/i, /<image/i];

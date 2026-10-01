@@ -107,7 +107,9 @@ function unitCircle(o) {
    o.xTicks / o.yTicks: [{ v, label }]
    o.hlines / o.vlines: [{ v, color, dash, label }]
    o.points: [{ x, y, label, color, dx, dy }]
-   o.bands: [{ y1, y2, color }] horizontal arrows (e.g. amplitude) */
+   o.bands: [{ y1, y2, color }] horizontal arrows (e.g. amplitude)
+   o.areas: [{ f, from, to, color, label, lx, ly }] shaded region between f and y = 0
+   o.axes: { x: "t (s)", y: "v (m/s)" } axis titles */
 function plot(o) {
   const w = o.w || 460, h = o.h || 250, pad = { l: 34, r: 16, t: 16, b: 26 };
   const [x0, x1] = o.x, [y0, y1] = o.y;
@@ -121,6 +123,14 @@ function plot(o) {
   (o.xTicks || []).forEach((t) => {
     b += line(X(t.v), pad.t, X(t.v), h - pad.b, { color: C.grid, width: 1 });
     b += text(X(t.v), h - 8, t.label, { color: C.muted, size: 11 });
+  });
+  (o.areas || []).forEach((a) => {
+    const n = 200;
+    let d = "M" + r2(X(a.from)) + " " + r2(Y(0));
+    for (let i = 0; i <= n; i++) { const x = a.from + (a.to - a.from) * i / n; d += "L" + r2(X(x)) + " " + r2(Y(a.f(x))); }
+    d += "L" + r2(X(a.to)) + " " + r2(Y(0)) + "Z";
+    b += '<path d="' + d + '" fill="' + (a.color || C.fill) + '" stroke="none"/>';
+    if (a.label) { b += text(X(a.lx != null ? a.lx : (a.from + a.to) / 2), Y(a.ly != null ? a.ly : a.f((a.from + a.to) / 2) / 2), a.label, { color: a.textColor || C.brand, size: 12, bold: true }); }
   });
   if (y0 <= 0 && y1 >= 0) { b += line(pad.l, Y(0), w - pad.r, Y(0), { color: C.axis, width: 1.2 }); }
   if (x0 <= 0 && x1 >= 0) { b += line(X(0), pad.t, X(0), h - pad.b, { color: C.axis, width: 1.2 }); }
@@ -165,6 +175,10 @@ function plot(o) {
     b += dot(X(p.x), Y(p.y), p.color || C.red);
     if (p.label) { b += text(X(p.x) + (p.dx || 0), Y(p.y) + (p.dy || -9), p.label, { color: p.color || C.red, size: 12, bold: true }); }
   });
+  if (o.axes) {
+    if (o.axes.x) { b += text(w - pad.r, (y0 <= 0 && y1 >= 0 ? Y(0) : h - pad.b) - 6, o.axes.x, { color: C.muted, size: 11, anchor: "end" }); }
+    if (o.axes.y) { b += text((x0 <= 0 && x1 >= 0 ? X(0) : pad.l) + 6, pad.t + 10, o.axes.y, { color: C.muted, size: 11, anchor: "start" }); }
+  }
   return svgWrap(w, h, b, o.label);
 }
 
@@ -263,4 +277,31 @@ function shape(o) {
   return svgWrap(W, H, b, o.label);
 }
 
-module.exports = { unitCircle, plot, sector, shape, COLORS: C };
+/* numberLine(o) — positions on a straight line (displacement, relative motion).
+   o.min, o.max, o.ticks: [values], o.unit: "m"
+   o.arrows: [{ from, to, row, label, color }] row 0 = just above the line, 1, 2 … stacked upwards
+   o.points: [{ v, label, color }]  o.width */
+function numberLine(o) {
+  const W = o.width || 460, pad = 30, rowH = 30;
+  const rows = Math.max(1, ...(o.arrows || []).map((a) => (a.row || 0) + 1));
+  const H = 40 + rows * rowH + 24, base = H - 34;
+  const X = (v) => pad + (v - o.min) / (o.max - o.min) * (W - 2 * pad);
+  let b = line(pad - 10, base, W - pad + 10, base, { color: C.axis, width: 1.4 }) + arrowHead(W - pad + 12, base, 0, C.axis);
+  (o.ticks || []).forEach((t) => {
+    b += line(X(t), base - 4, X(t), base + 4, { color: C.axis, width: 1.2 });
+    b += text(X(t), base + 18, String(t) + (o.unit && t === o.ticks[o.ticks.length - 1] ? " " + o.unit : ""), { color: C.muted, size: 11 });
+  });
+  (o.arrows || []).forEach((a) => {
+    const y = base - 16 - (a.row || 0) * rowH, color = a.color || C.brand;
+    b += line(X(a.from), y, X(a.to), y, { color: color, width: 2.4 });
+    b += arrowHead(X(a.to), y, a.to >= a.from ? 0 : Math.PI, color);
+    if (a.label) { b += text((X(a.from) + X(a.to)) / 2, y - 7, a.label, { color: color, size: 12, bold: true }); }
+  });
+  (o.points || []).forEach((p) => {
+    b += dot(X(p.v), base, p.color || C.text);
+    if (p.label) { b += text(X(p.v), base + 32, p.label, { color: p.color || C.text, size: 12, bold: true }); }
+  });
+  return svgWrap(W, H + 12, b, o.label);
+}
+
+module.exports = { unitCircle, plot, sector, shape, numberLine, COLORS: C };

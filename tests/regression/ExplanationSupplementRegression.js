@@ -1,6 +1,7 @@
 /* tests/regression/ExplanationSupplementRegression.js — 2026-10-01 數學詳解補強.
 
-   Verifies the explanation overlay for tm_7 / tm_1 (37 math questions):
+   Verifies the explanation overlay for tm_7 / tm_1 (37 math questions) and
+   tm_11 (23 physics questions, 2026-10-01):
    - js/data/ExplanationSupplementData.js is up to date with its source and
      every entry belongs to a real question in that package;
    - every figure is a plain, safe <svg> (no script / handler / link);
@@ -44,14 +45,17 @@ console.log("\n[1] 資料");
   const r = gen.generate({ check: true });
   check("產生的資料與來源一致（無過期檔案）", r.stale.length === 0);
   const ids = Object.keys(DATA);
-  check("共 37 題（tm_7 23 題 + tm_1 14 題）", ids.length === 37 &&
-    ids.filter((id) => /^tm_7_/.test(id)).length === 23 && ids.filter((id) => /^tm_1_/.test(id)).length === 14);
+  check("共 60 題（tm_7 23 題 + tm_1 14 題 + tm_11 23 題）", ids.length === 60 &&
+    ids.filter((id) => /^tm_7_/.test(id)).length === 23 && ids.filter((id) => /^tm_1_/.test(id)).length === 14 &&
+    ids.filter((id) => /^tm_11_/.test(id)).length === 23);
   const bank = {};
   AHS.TeachingMaterialData.forEach((e) => e.questions.forEach((q) => { bank[q.id] = q; }));
   check("每題都對應到教材包中的真實題目", ids.every((id) => bank[id] && bank[id].question === DATA[id].question));
   check("每題都有解題關鍵與至少兩個步驟", ids.every((id) => DATA[id].concept && DATA[id].steps.length >= 2));
   const figs = ids.reduce((n, id) => n + DATA[id].figures.length, 0);
-  check("示意圖至少 33 張", figs >= 33);
+  check("示意圖至少 54 張", figs >= 54);
+  const tm11 = XS.render("tm_11_q4", "x");
+  check("物理 v-t 圖：面積以色塊標出（tm_11_q4）", !!tm11.querySelector(".xsup__figure svg path[fill^=\"rgba\"]"));
   check("所有示意圖皆為安全的 SVG", ids.every((id) => DATA[id].figures.every((f) => gen.validateSvg(f.svg).length === 0 && f.caption)));
   check("驗證器擋下含 script 的 SVG", gen.validateSvg('<svg><script>alert(1)</script></svg>').length > 0);
   check("驗證器擋下含事件處理的 SVG", gen.validateSvg('<svg onload="x()"></svg>').length > 0);
