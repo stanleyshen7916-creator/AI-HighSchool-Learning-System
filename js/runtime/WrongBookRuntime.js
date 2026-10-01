@@ -362,8 +362,10 @@ AHS.WrongBookRuntime = (function () {
           id: "wb_" + store.seq,
           questionId: w.questionId,
           subject: gradedResult.subject,
-          title: gradedResult.title,
-          chapter: gradedResult.chapter,
+          /* 2026-10-01: the question's own lesson when the exam spanned
+             several materials (see AutoGrader.js sourceTitle). */
+          title: w.sourceTitle || gradedResult.title,
+          chapter: w.sourceChapter || gradedResult.chapter,
           /* AI-601: real material-source link — w.materialId comes
              straight from the question record's own, already-real
              materialId field (see AutoGrader.js's own additive change),

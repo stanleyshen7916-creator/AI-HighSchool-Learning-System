@@ -62,6 +62,12 @@ AHS.AutoGrader = (function () {
            discipline as materialId above — "" when the source question
            genuinely has no figure, never fabricated. */
         figureSvg: q.figureSvg || "",
+        /* 2026-10-01: an exam drawn across several materials (合併複習,
+           綜合隨機練習) tags each question with its own material's title/
+           chapter so 知識弱點 records the real lesson, not the exam's
+           combined label. "" for ordinary single-material exams. */
+        sourceTitle: q.sourceTitle || "",
+        sourceChapter: q.sourceChapter || "",
         yourAnswer: yourAnswer,
         correctAnswer: q.correctAnswer,
         isCorrect: isCorrect

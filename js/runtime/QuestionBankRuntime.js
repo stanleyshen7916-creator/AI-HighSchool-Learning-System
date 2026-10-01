@@ -29,7 +29,12 @@ AHS.QuestionBankRuntime = (function () {
   "use strict";
 
   var STORAGE_KEY = "questionBankRuntime";
-  var MAX_BANK_SIZE = 50;
+  /* 2026-10-01: was 50, which silently dropped real questions that were
+     never drawn (tm_12 has 57, tm_4 60, and 補充題庫 grows banks further)
+     — against drawCycle()'s own "每一題均必須要出到". 300 is still only a
+     safety ceiling: all 440 questions together are ~280K characters, far
+     inside sessionStorage's quota. */
+  var MAX_BANK_SIZE = 300;
 
   function hydrate() {
     if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.load === "function") {
@@ -160,6 +165,34 @@ AHS.QuestionBankRuntime = (function () {
     return drawn;
   }
 
+  /* undrawnIds(examId) — 2026-10-01 綜合隨機練習: ids still waiting in the
+     current drawCycle() bag (the whole bank when no cycle has started);
+     null when no bank exists yet for this examId. */
+  function undrawnIds(examId) {
+    if (!hasBank(examId)) { return null; }
+    var cycle = store.cycles[examId];
+    if (!cycle || !Array.isArray(cycle.remaining) || !cycle.remaining.length) {
+      return store.banks[examId].map(function (q) { return q.id; });
+    }
+    return cycle.remaining.slice();
+  }
+
+  /* markDrawn(examId, ids) — 綜合隨機練習 drew these questions outside
+     drawCycle(): take them out of the current bag so that material's own
+     平時練習 doesn't hand them straight back. No-op without a bank. */
+  function markDrawn(examId, ids) {
+    if (!hasBank(examId) || !Array.isArray(ids) || !ids.length) { return; }
+    var cycle = store.cycles[examId];
+    if (!cycle || !Array.isArray(cycle.remaining) || !cycle.remaining.length) {
+      cycle = { remaining: shuffledIds(store.banks[examId]) };
+      store.cycles[examId] = cycle;
+    }
+    var drop = {};
+    ids.forEach(function (id) { drop[id] = true; });
+    cycle.remaining = cycle.remaining.filter(function (id) { return !drop[id]; });
+    persist();
+  }
+
   /* reset() — test helper; clears every built bank back to first-open
      state, same convention every other Runtime's reset() already uses. */
   function reset() {
@@ -174,6 +207,8 @@ AHS.QuestionBankRuntime = (function () {
     bankSize: bankSize,
     drawRandom: drawRandom,
     drawCycle: drawCycle,
+    undrawnIds: undrawnIds,
+    markDrawn: markDrawn,
     reset: reset,
     MAX_BANK_SIZE: MAX_BANK_SIZE
   };

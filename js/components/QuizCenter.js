@@ -667,7 +667,7 @@ AHS.QuizCenter = (function () {
      合併複習" action when provided; every existing caller that omits it
      (none left, but future ones are safe) keeps the pre-Feature-B list
      unchanged. */
-  function buildListView(data, onStart, onOpenCombine) {
+  function buildListView(data, onStart, onOpenCombine, onRandomPractice) {
     /* EO-S7.0-003 Production Cleanup: 預設題庫已移除 — Exam Mode 無
        真實測驗來源前顯示正式 Empty State（未來由測驗建立功能填入）。 */
     if (!data.items || !data.items.length) {
@@ -734,6 +734,29 @@ AHS.QuizCenter = (function () {
       });
       combineBtn.addEventListener("click", onOpenCombine);
       combineRow = el("div", { class: "quiz-combine-row" }, [combineBtn]);
+    }
+    /* 2026-10-01 綜合隨機練習（方案 C）: one exam across every lesson of the
+       subject chosen in the filter above. */
+    if (typeof onRandomPractice === "function") {
+      var randomHint = el("p", { class: "quiz-random-hint", "aria-live": "polite", hidden: "hidden" });
+      var randomBtn = el("button", {
+        type: "button", class: "quiz-random-btn", html: AHS.Icons.chevronRight() + "<span>綜合隨機練習</span>",
+        title: "從這個科目所有課隨機出題，優先出還沒做過與答錯過的題目"
+      });
+      randomBtn.addEventListener("click", function () {
+        if (state.subject === "all") {
+          randomHint.textContent = "請先在上方選擇一個科目，再開始綜合隨機練習。";
+          randomHint.removeAttribute("hidden");
+          return;
+        }
+        randomHint.setAttribute("hidden", "hidden");
+        if (!onRandomPractice(state.subject)) {
+          randomHint.textContent = "這個科目目前沒有可練習的題目。";
+          randomHint.removeAttribute("hidden");
+        }
+      });
+      combineRow = el("div", { class: "quiz-combine-row" }, [randomBtn].concat(combineRow ? Array.prototype.slice.call(combineRow.childNodes) : []));
+      combineRow.appendChild(randomHint);
     }
 
     var main = el("div", { class: "quiz-main" }, [
@@ -1888,7 +1911,7 @@ AHS.QuizCenter = (function () {
     }
 
     function showList() {
-      AHS.UI.mount(root, buildListView(mergedListData(), unifiedStart, openCombinePicker));
+      AHS.UI.mount(root, buildListView(mergedListData(), unifiedStart, openCombinePicker, tryRandomPracticeEntry));
     }
 
     /* showScopedList(materialId) — Sprint AI-124 AI-124-03/04/12: when a
@@ -2097,7 +2120,7 @@ AHS.QuizCenter = (function () {
           : (AHS.QuestionRuntime && typeof AHS.QuestionRuntime.getSet === "function"
             ? AHS.QuestionRuntime.getSet(examId) : []);
         if (!drawn.length) { return; }
-        combined = combined.concat(drawn);
+        combined = combined.concat(tagSource(drawn, sourceMetaFor(examId, entry)));
         if (!subjectKey && entry.subject) { subjectKey = entry.subject; }
         if (!gradeLabel && entry.grade) { gradeLabel = entry.grade; }
         if (entry.chapter) { chapterLabels.push(entry.chapter); }
@@ -2119,6 +2142,81 @@ AHS.QuizCenter = (function () {
 
     function openCombinePicker() {
       openChapterPicker("exam", function (examIds) { tryCombinedExamEntry(examIds); });
+    }
+
+    /* sourceMetaFor()/tagSource() — 2026-10-01: each question in an exam
+       that spans several materials carries its own material's title/
+       chapter (same resolveExamMeta() a single-material exam uses), so
+       知識弱點 files a wrong answer under its real lesson. */
+    function sourceMetaFor(examId, entry) {
+      var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
+        ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
+      return { title: (meta && meta.title) || entry.title || "", chapter: (meta && meta.chapter) || entry.chapter || "" };
+    }
+    function tagSource(questions, src) {
+      return questions.map(function (q) {
+        var out = {};
+        Object.keys(q).forEach(function (k) { out[k] = q[k]; });
+        out.sourceTitle = src.title;
+        out.sourceChapter = src.chapter;
+        return out;
+      });
+    }
+
+    /* tryRandomPracticeEntry(subjectKey) — 2026-10-01 綜合隨機練習（方案 C）:
+       one FORMAL_EXAM_QUESTION_COUNT exam drawn across every material of
+       this subject in the current semester (repositoryExamCatalog()),
+       chosen by AHS.RandomPracticeRuntime: unmastered 知識弱點 questions
+       (at most 40%), then questions not yet drawn in their material's
+       cycle, then the rest. The drawn questions leave their materials'
+       cycles (markDrawn) so 平時練習 doesn't repeat them right away. Same
+       ExamRuntime/AutoGrader/WrongBook/History chain as every exam. */
+    function tryRandomPracticeEntry(subjectKey) {
+      if (!subjectKey || !AHS.RandomPracticeRuntime) { return null; }
+      var entries = repositoryExamCatalog().filter(function (it) { return it.subject === subjectKey; });
+      var bank = AHS.QuestionBankRuntime;
+      var pools = entries.map(function (entry) {
+        var examId = entry._repoExamId;
+        var hasBank = bank && typeof bank.hasBank === "function" && bank.hasBank(examId);
+        return {
+          examId: examId,
+          questions: hasBank ? bank.getBank(examId)
+            : (AHS.QuestionRuntime && typeof AHS.QuestionRuntime.getSet === "function" ? AHS.QuestionRuntime.getSet(examId) : []),
+          undrawnIds: hasBank && typeof bank.undrawnIds === "function" ? bank.undrawnIds(examId) : null,
+          source: sourceMetaFor(examId, entry)
+        };
+      });
+      var weakIds = {};
+      if (AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.list === "function") {
+        AHS.WrongBookRuntime.list().forEach(function (w) {
+          if (w && w.questionId && !w.archived && (w.correctStreak || 0) < 3) { weakIds[w.questionId] = true; }
+        });
+      }
+      var picked = AHS.RandomPracticeRuntime.pick({ pools: pools, weakIds: weakIds, count: FORMAL_EXAM_QUESTION_COUNT });
+      if (!picked.length) { return null; }
+      var byExam = {};
+      picked.forEach(function (q) { (byExam[q._examId] = byExam[q._examId] || []).push(q.id); });
+      if (bank && typeof bank.markDrawn === "function") {
+        Object.keys(byExam).forEach(function (examId) { bank.markDrawn(examId, byExam[examId]); });
+      }
+      var questions = picked.map(function (q, i) {
+        var out = {};
+        Object.keys(q).forEach(function (k) { if (k.charAt(0) !== "_") { out[k] = q[k]; } });
+        out.index = i + 1;
+        return out;
+      });
+      var subj = AHS.Subjects[subjectKey] || { name: subjectKey };
+      var derivedExamId = "random_practice_" + Date.now();
+      AHS.QuestionRuntime.importQuestions(derivedExamId, questions);
+      var session = AHS.ExamRuntime.startFromExam(derivedExamId, {
+        subject: subjectKey,
+        title: subj.name + "綜合隨機練習",
+        chapter: "跨 " + Object.keys(byExam).length + " 課",
+        grade: (entries[0] && entries[0].grade) || ""
+      });
+      if (!session) { showList(); return null; }
+      showExam(session.examId);
+      return session.examId;
     }
 
     /* openCombinedPractice(examIds) — Feature B, 考前總複習 sibling: real
