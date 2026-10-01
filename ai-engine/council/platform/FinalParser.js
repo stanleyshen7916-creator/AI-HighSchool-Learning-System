@@ -15,6 +15,8 @@ const PLACEHOLDER = /^(（待補充|\(待補充|未提供有效內容|N\/A$|無$
 const MAX_ITEM_LENGTH = 400;
 // 詳解要保留完整的推理步驟，上限另外放寬。
 const MAX_EXPLANATION_LENGTH = 2000;
+// 題幹（含題組共用的題文）也可能很長，例如學測題組；截斷會改變原題，上限同樣放寬。
+const MAX_STEM_LENGTH = 2000;
 
 function parseFrontmatter(markdown) {
   const text = String(markdown || '').replace(/^﻿/, '');
@@ -135,7 +137,7 @@ function tableItems(body) {
 
 // 沒有條列、表格時的退路：章節內的一般段落（略過「Claude 認為：」這類標籤行、標題、分隔線）。
 // 練習題的題幹、選項、答案、詳解屬於題庫，不當成摘要段落。
-const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析|知識點|考點|難度)\s*(\*\*)?\s*[:：]/;
+const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析|知識點|考點|難度|出處)\s*(\*\*)?\s*[:：]/;
 
 function paragraphs(body) {
   return String(body).split(/\r?\n/)
@@ -179,6 +181,8 @@ const INLINE_EXPLANATION = /^\s*(?:\*\*)?\s*(?:詳解|解析)\s*(?:\*\*)?\s*[:�
 // 「為既有教材加題」的出題格式另外要求每題標註知識點與難度（詳解之後的獨立一行）。
 const INLINE_KNOWLEDGE = /^\s*(?:\*\*)?\s*(?:知識點|考點)\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
 const INLINE_DIFFICULTY = /^\s*(?:\*\*)?\s*難度\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
+// 2026-10-01 出處：題目不是出自教材原文時標明來源（歷屆試題的年度、考科、題號，或 AI 出題的依據）。
+const INLINE_REFERENCE = /^\s*(?:\*\*)?\s*出處\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
 
 // 難度統一成平台既有的「易／中等／難」；認不出來就不填（不猜）。
 function normalizeDifficulty(text) {
@@ -237,6 +241,8 @@ function questionBlocks(body) {
     if (knowledge) { current.knowledgePoint = cleanInline(knowledge[1]); return; }
     const difficulty = INLINE_DIFFICULTY.exec(line);
     if (difficulty) { current.difficulty = normalizeDifficulty(difficulty[1]); return; }
+    const reference = INLINE_REFERENCE.exec(line);
+    if (reference) { current.reference = cleanInline(reference[1]); return; }
     const explanation = INLINE_EXPLANATION.exec(line);
     if (explanation) { current.explanationLines = explanation[1] ? [explanation[1]] : []; return; }
     if (current.explanationLines) { current.explanationLines.push(line); return; }
@@ -310,7 +316,7 @@ function parseQuestions(sections) {
       return;
     }
     seen.add(block.number);
-    const stem = cleanInline(block.stemLines.join(' '));
+    const stem = cleanText(block.stemLines.join(' '), MAX_STEM_LENGTH);
     const options = parseOptions(block.optionLines);
     const letter = block.inlineAnswer || answers[block.number];
     const inlineExplanation = block.explanationLines ? cleanText(block.explanationLines.join(' '), MAX_EXPLANATION_LENGTH) : '';
@@ -328,6 +334,7 @@ function parseQuestions(sections) {
       section: block.section,
       knowledgePoint: block.knowledgePoint || null,
       difficulty: block.difficulty || null,
+      reference: block.reference || null,
     });
   }));
 

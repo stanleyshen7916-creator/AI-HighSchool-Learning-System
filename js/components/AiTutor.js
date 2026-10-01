@@ -176,6 +176,7 @@ AHS.AiTutor = (function () {
       push(aiBubble([
         el("p", { class: "tutor-quiz__meta", text: "第 " + (index + 1) + "／" + questions.length + " 題・" + (AHS.Subjects[q.subject] ? AHS.Subjects[q.subject].name : "") + "・" + (q.knowledgePoint || "") }),
         el("p", { class: "tutor-quiz__stem", text: q.text }),
+        (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(q) : null),
         options,
         feedback
       ]));

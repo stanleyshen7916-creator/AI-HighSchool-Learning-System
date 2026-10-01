@@ -337,7 +337,9 @@ AHS.TeachingMaterialLoader = (function () {
            js/data/TeachingMaterialData.js already carries figureSvg for
            the questions that genuinely have one (see
            TeachingMaterialAdapter.js's own identical passthrough). */
-        figureSvg: q.figureSvg || ""
+        figureSvg: q.figureSvg || "",
+        /* 2026-10-01 出處 (past exam / supplement questions); "" when none. */
+        reference: q.reference || ""
       });
     });
     return compatible;
@@ -357,7 +359,10 @@ AHS.TeachingMaterialLoader = (function () {
   function importAssessmentModeVariants(examId, questions) {
     if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
     var original = questions.filter(function (q) { return q.questionSource === "ORIGINAL"; });
-    var aiGenerated = questions.filter(function (q) { return q.questionSource === "AI_GENERATED"; });
+    /* 2026-10-01: the practice side is every non-ORIGINAL question — AI
+       questions and past national exam questions (PAST_EXAM, 補充題庫) —
+       so the material's own exam paper (原始試卷) is never mixed with them. */
+    var aiGenerated = questions.filter(function (q) { return q.questionSource === "AI_GENERATED" || q.questionSource === "PAST_EXAM"; });
     if (original.length) { AHS.QuestionRuntime.importQuestions(examId + "__original", original); }
     if (aiGenerated.length) { AHS.QuestionRuntime.importQuestions(examId + "__ai", aiGenerated); }
   }

@@ -131,7 +131,10 @@ AHS.CouncilUpload = (function () {
     autoDifficulty();
     var modeSingle = el("input", { type: "radio", name: "upl-sup-mode", value: "single", checked: "checked" });
     var modeTri = el("input", { type: "radio", name: "upl-sup-mode", value: "tri" });
-    function mode() { return modeTri.checked ? "tri" : "single"; }
+    /* 2026-10-01: 歷屆試題 — official past exam questions pasted verbatim with
+       「出處：」 lines; official answers, so no independent solve. */
+    var modePast = el("input", { type: "radio", name: "upl-sup-mode", value: "past" });
+    function mode() { return modePast.checked ? "past" : modeTri.checked ? "tri" : "single"; }
     var subjectHint = el("p", { class: "upl-hint upl-hint--warn", hidden: "hidden" });
     function selectedParent() {
       return state.parents.filter(function (p) { return p.materialId === materialSel.value; })[0] || null;
@@ -146,7 +149,7 @@ AHS.CouncilUpload = (function () {
       }
     }
     materialSel.addEventListener("change", updateSubjectHint);
-    [modeSingle, modeTri].forEach(function (r) { r.addEventListener("change", function () { updateSubjectHint(); updateSolverFields(); }); });
+    [modeSingle, modeTri, modePast].forEach(function (r) { r.addEventListener("change", function () { updateSubjectHint(); updateSolverFields(); }); });
 
     var promptStatus = el("p", { class: "upl-status" });
     var promptPreview = el("div");
@@ -192,7 +195,8 @@ AHS.CouncilUpload = (function () {
       ]),
       el("div", { class: "upl-radios" }, [
         el("label", { class: "upl-radio" }, [modeSingle, el("span", { text: "Claude 出題＋另開新對話獨立作答核對（建議）" })]),
-        el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT、Gemini 各自作答" })])
+        el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT、Gemini 各自作答" })]),
+        el("label", { class: "upl-radio" }, [modePast, el("span", { text: "歷屆試題：逐字貼上官方題目與官方答案，每題加一行「出處：年度、考試、考科、題號」（不需獨立作答）" })])
       ]),
       subjectHint,
       el("div", { class: "upl-actions" }, [authorBtn]),
@@ -239,11 +243,13 @@ AHS.CouncilUpload = (function () {
     });
     function updateSolverFields() {
       solverFields.forEach(function (s) {
-        if (!s.tri || mode() === "tri") { s.field.removeAttribute("hidden"); } else { s.field.setAttribute("hidden", "hidden"); }
+        var show = mode() !== "past" && (!s.tri || mode() === "tri");
+        if (show) { s.field.removeAttribute("hidden"); } else { s.field.setAttribute("hidden", "hidden"); }
       });
     }
     updateSolverFields();
     function currentSolvers() {
+      if (mode() === "past") { return []; }
       return solverFields.filter(function (s) { return !s.tri || mode() === "tri"; })
         .map(function (s) { return { id: s.id, text: s.input.value }; });
     }
@@ -251,8 +257,8 @@ AHS.CouncilUpload = (function () {
     var resultSlot = el("div", { class: "upl-sup-results" });
     var checkBtn = button("核對", "primary", function () {
       if (!materialSel.value) { status(checkStatus, "請先在步驟 1 選擇教材。", "error"); return; }
-      var snapshot = { parentId: materialSel.value, authorText: authorText.value, solvers: currentSolvers(), mode: mode() };
-      if (!snapshot.solvers.some(function (s) { return s.text.trim(); })) {
+      var snapshot = { parentId: materialSel.value, authorText: authorText.value, solvers: currentSolvers(), mode: mode(), pastExam: mode() === "past" };
+      if (!snapshot.pastExam && !snapshot.solvers.some(function (s) { return s.text.trim(); })) {
         if (!window.confirm("還沒有貼上任何作答結果，所有題目都會標示為需人工確認。仍要核對嗎？")) { return; }
       }
       status(checkStatus, "核對中…");
@@ -279,7 +285,7 @@ AHS.CouncilUpload = (function () {
       status(createStatus, "建立中…");
       client.createSupplementDraft({
         parentId: state.checked.parentId, authorText: state.checked.authorText, solvers: state.checked.solvers,
-        mode: state.checked.mode, accept: accept
+        mode: state.checked.mode, pastExam: state.checked.pastExam, accept: accept
       }).then(function (r) {
         createBtn.disabled = false;
         if (r.error) { status(createStatus, r.error.message, "error"); return; }
@@ -314,6 +320,7 @@ AHS.CouncilUpload = (function () {
           })),
           answers.length ? el("p", { class: "upl-hint", text: "獨立作答：" + answers.join("　") }) : null,
           q.reasons.length ? el("ul", { class: "upl-warnings" }, q.reasons.map(function (t) { return el("li", { text: t }); })) : null,
+          q.reference ? el("p", { class: "upl-hint", text: "出處：" + q.reference }) : null,
           q.explanation ? el("p", { class: "upl-hint", text: "詳解：" + q.explanation }) : null,
           q.knowledgePoint || q.difficulty
             ? el("p", { class: "upl-hint", text: [q.knowledgePoint ? "知識點：" + q.knowledgePoint : "", q.difficulty ? "難度：" + q.difficulty : ""].filter(Boolean).join("　") })
@@ -617,7 +624,8 @@ AHS.CouncilUpload = (function () {
         body.push(el("ul", { class: "upl-list" }, (s.coreConcepts || []).map(function (c) { return el("li", { text: c }); })));
         body.push(el("p", { class: "upl-hint", text: "重點詞彙 " + (s.keywords || []).length + "、重點 " + (s.keyPoints || []).length + "、易錯 " + (s.pitfalls || []).length + "、複習建議 " + (s.reviewSuggestions || []).length }));
       }
-      body.push(el("h3", { class: "upl-subtitle", text: "練習題（" + q.length + " 題，皆標示為 AI 出題）" }));
+      var pastCount = q.filter(function (item) { return item.questionSource === "PAST_EXAM"; }).length;
+      body.push(el("h3", { class: "upl-subtitle", text: "練習題（" + q.length + " 題，" + (pastCount ? "歷屆試題 " + pastCount + " 題，皆附出處" : "皆標示為 AI 出題") + "）" }));
       body.push(el("ol", { class: "upl-questions" }, q.map(function (item) {
         return el("li", { class: "upl-question" }, [
           el("p", { class: "upl-question__stem", text: item.question }),
@@ -625,6 +633,7 @@ AHS.CouncilUpload = (function () {
             return el("li", { class: opt === item.answer ? "is-answer" : null, text: opt + (opt === item.answer ? "　✓" : "") });
           })),
           item.explanation ? el("p", { class: "upl-hint", text: "詳解：" + item.explanation }) : null,
+          item.reference ? el("p", { class: "upl-hint", text: "出處：" + item.reference }) : null,
           item.knowledgePoint || item.difficulty
             ? el("p", { class: "upl-hint", text: [item.knowledgePoint ? "知識點：" + item.knowledgePoint : "", item.difficulty ? "難度：" + item.difficulty : ""].filter(Boolean).join("　") })
             : null

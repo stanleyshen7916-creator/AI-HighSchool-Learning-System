@@ -1,0 +1,36 @@
+{
+  "materialId": "tm_21",
+  "knowledgePoints": [
+    {
+      "name": "世界體系理論：核心與邊陲、擴散效應",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "人口移動與產業發展",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "全球化下的區域互賴",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "全球化與地景變遷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "區域互賴與區域內的發展差距",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "產業區位：聚集經濟",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-01T22:58:42.424Z"
+}
