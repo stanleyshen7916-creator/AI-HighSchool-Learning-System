@@ -196,6 +196,42 @@ function writeKnowledgeAndReport(entries) {
    excluded from this run so generate() never bakes two "same real
    material" entries into TeachingMaterialData.js/index.json, even though
    both individually pass ValidateMaterial.js. */
+/* 2026-10-01 為既有教材加題: a 補充題庫 Package (metadata.source ===
+   "補充題庫", exactly one related.json link = its parent) holds extra
+   AI questions for an already-imported material, created by the upload
+   page without touching the parent Package. It is never a material of
+   its own on the platform: its questions are appended to the parent's
+   question bank (materialId rewritten to the parent, supplementId kept
+   for traceability) and the Package itself is left out of
+   TeachingMaterialData.js. A supplement whose parent isn't included in
+   this run is left out entirely. index.json still lists it (it IS
+   imported — MaterialLifecycle.js relies on that), with supplementOf. */
+var SUPPLEMENT_SOURCE = "補充題庫";
+function supplementParentId(e) {
+  var meta = e.rawMetadata || {};
+  if (meta.source !== SUPPLEMENT_SOURCE || !Array.isArray(e.related) || e.related.length !== 1) { return null; }
+  return e.related[0].materialId || null;
+}
+function mergeSupplements(entries) {
+  var byId = {};
+  entries.forEach(function (e) { byId[e.materialId] = e; });
+  var extra = {};
+  entries.forEach(function (e) {
+    var parentId = supplementParentId(e);
+    if (!parentId) { return; }
+    if (!byId[parentId] || supplementParentId(byId[parentId])) {
+      console.warn("SKIP " + e.materialId + ": 補充題庫 of " + parentId + ", which is not an included material");
+      return;
+    }
+    extra[parentId] = (extra[parentId] || []).concat(e.questions.map(function (q) {
+      return Object.assign({}, q, { materialId: parentId, supplementId: e.materialId });
+    }));
+  });
+  return entries.filter(function (e) { return !supplementParentId(e); }).map(function (e) {
+    return extra[e.materialId] ? Object.assign({}, e, { questions: e.questions.concat(extra[e.materialId]) }) : e;
+  });
+}
+
 function generate(options) {
   options = options || {};
   var skipIds = {};
@@ -226,7 +262,7 @@ function generate(options) {
      js/runtime/TeachingMaterialLoader.js (browser side) has something
      real to filter Repository bridging by. No generation/validation
      logic changed, no new required field, no schema touched. */
-  var dataEntries = entries.map(function (e) {
+  var dataEntries = mergeSupplements(entries).map(function (e) {
     var material = e.material;
     var meta = e.rawMetadata || {};
     if (meta.school || meta.semester) {
@@ -290,7 +326,7 @@ function writeIndex(entries) {
     updatedAt: entries.length ? new Date().toISOString() : null,
     materials: entries.map(function (e) {
       var meta = e.rawMetadata || {};
-      return {
+      var record = {
         materialId: e.materialId,
         /* school/semester — Sprint AI-119 (Platform Core Baseline) §8/§9:
            metadata-level Repository classification (School -> Semester
@@ -312,6 +348,9 @@ function writeIndex(entries) {
            here — check those with MaterialLifecycle.js directly. */
         lifecycleStage: "IMPORTED"
       };
+      /* 2026-10-01: a 補充題庫 Package names the material it extends. */
+      if (supplementParentId(e)) { record.supplementOf = supplementParentId(e); }
+      return record;
     })
   };
   writeIfChanged(INDEX_FILE, JSON.stringify(index, null, 2) + "\n");
@@ -324,6 +363,7 @@ if (require.main === module) {
 
 module.exports = {
   generate: generate,
+  mergeSupplements: mergeSupplements,
   writeIfChanged: writeIfChanged,
   listMaterialIds: listMaterialIds,
   buildEntry: buildEntry,

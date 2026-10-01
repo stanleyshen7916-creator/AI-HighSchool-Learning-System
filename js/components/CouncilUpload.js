@@ -74,9 +74,10 @@ AHS.CouncilUpload = (function () {
     temp.value = text;
     document.body.appendChild(temp);
     temp.select();
-    document.execCommand("copy");
+    var copied = false;
+    try { copied = document.execCommand("copy"); } catch (e) { copied = false; }
     document.body.removeChild(temp);
-    return Promise.resolve();
+    return copied ? Promise.resolve() : Promise.reject(new Error("copy not allowed"));
   }
 
   // 與引擎 buildMaterialId() 相同的命名規則（MinerU 圖片目錄、Final.md 檔名前綴）。
@@ -91,6 +92,243 @@ AHS.CouncilUpload = (function () {
         el("p", { class: "upl-hint", text: "此頁僅限管理者使用。請以 Admin 帳號登入後再開啟。" })
       ])
     ]);
+  }
+
+  /* ---- 為既有教材加題（2026-10-01） --------------------------------------
+     1 選教材與題數 → 複製出題 Prompt（貼到 Claude）
+     2 貼回出題結果 → 擷取題目、複製「只有題目」的作答 Prompt
+     3 貼回獨立作答結果（新的 Claude 對話；三方模式另加 ChatGPT、Gemini）
+     4 核對結果：一致 → 預設勾選；需人工確認 → 預設不勾；重複 → 不能勾
+       → 建立補充題庫草稿（新的 tm_N，原教材不修改）→ 共用的預覽／發布。 */
+  var OPTION_LETTERS = ["A", "B", "C", "D", "E"];
+  var CALC_SUBJECTS = ["數學", "物理", "化學", "地球科學"];
+  var STATUS_LABEL = { ok: "核對一致", review: "需人工確認", duplicate: "重複，不能加入" };
+  var STATUS_TONE = { ok: "ok", review: "warn", duplicate: "error" };
+
+  function buildSupplementCards(client, hooks) {
+    var state = { parents: [], checked: null };
+    var semesters = (AHS.WorkspaceData && AHS.WorkspaceData.semesters) || [];
+    function semesterName(id) {
+      var s = semesters.filter(function (x) { return x.id === id; })[0];
+      return s ? s.name : (id || "");
+    }
+
+    /* 1 選擇教材與題數 */
+    var materialSel = el("select", { class: "upl-input" });
+    var countInput = el("input", { class: "upl-input", type: "number", min: "1", max: "40", value: "20" });
+    var diff = {
+      "易": el("input", { class: "upl-input", type: "number", min: "0", max: "40" }),
+      "中等": el("input", { class: "upl-input", type: "number", min: "0", max: "40" }),
+      "難": el("input", { class: "upl-input", type: "number", min: "0", max: "40" })
+    };
+    function autoDifficulty() {
+      var n = Math.max(0, Math.floor(Number(countInput.value) || 0));
+      diff["易"].value = String(Math.round(n * 0.3));
+      diff["難"].value = String(Math.round(n * 0.2));
+      diff["中等"].value = String(n - Number(diff["易"].value) - Number(diff["難"].value));
+    }
+    countInput.addEventListener("input", autoDifficulty);
+    autoDifficulty();
+    var modeSingle = el("input", { type: "radio", name: "upl-sup-mode", value: "single", checked: "checked" });
+    var modeTri = el("input", { type: "radio", name: "upl-sup-mode", value: "tri" });
+    function mode() { return modeTri.checked ? "tri" : "single"; }
+    var subjectHint = el("p", { class: "upl-hint upl-hint--warn", hidden: "hidden" });
+    function selectedParent() {
+      return state.parents.filter(function (p) { return p.materialId === materialSel.value; })[0] || null;
+    }
+    function updateSubjectHint() {
+      var p = selectedParent();
+      if (p && CALC_SUBJECTS.indexOf(p.subject) !== -1 && mode() === "single") {
+        subjectHint.textContent = p.subject + "的計算與圖表題答案出錯的機率較高，建議改用三方核對，或至少逐題看過被標示的題目。";
+        subjectHint.removeAttribute("hidden");
+      } else {
+        subjectHint.setAttribute("hidden", "hidden");
+      }
+    }
+    materialSel.addEventListener("change", updateSubjectHint);
+    [modeSingle, modeTri].forEach(function (r) { r.addEventListener("change", function () { updateSubjectHint(); updateSolverFields(); }); });
+
+    var promptStatus = el("p", { class: "upl-status" });
+    var promptPreview = el("div");
+    function refresh() {
+      client.supplementParents().then(function (r) {
+        if (r.error) { status(promptStatus, r.error.message, "error"); return; }
+        state.parents = r.data.materials || [];
+        var keep = materialSel.value;
+        AHS.UI.mount(materialSel, el("option", { value: "", text: state.parents.length ? "（選擇要加題的教材）" : "（沒有已上架的教材）" }));
+        state.parents.slice().sort(function (a, b) {
+          return String(b.semester).localeCompare(String(a.semester)) || String(a.subject).localeCompare(String(b.subject));
+        }).forEach(function (p) {
+          materialSel.appendChild(el("option", {
+            value: p.materialId,
+            text: semesterName(p.semester) + "・" + p.subject + "・" + (p.chapter || "") + (p.unit ? " " + p.unit : "") +
+              "（" + p.materialId + "，原有 " + p.questionCount + " 題" + (p.supplementCount ? "、已補 " + p.supplementCount + " 題" : "") + "）"
+          }));
+        });
+        if (keep) { materialSel.value = keep; }
+        updateSubjectHint();
+      });
+    }
+    var authorBtn = button("複製出題 Prompt", "primary", function () {
+      if (!materialSel.value) { status(promptStatus, "請先選擇教材。", "error"); return; }
+      var payload = { parentId: materialSel.value, count: Number(countInput.value), difficulty: {} };
+      Object.keys(diff).forEach(function (k) { payload.difficulty[k] = Number(diff[k].value) || 0; });
+      client.supplementAuthorPrompt(payload).then(function (r) {
+        if (r.error) { status(promptStatus, r.error.message, "error"); return; }
+        AHS.UI.mount(promptPreview, el("details", { class: "upl-details" }, [
+          el("summary", { text: "預覽出題 Prompt（若複製失敗可從這裡手動複製）" }),
+          el("pre", { class: "upl-pre", text: r.data.prompt })
+        ]));
+        copyText(r.data.prompt).then(function () {
+          status(promptStatus, "已複製（出 " + r.data.count + " 題：易 " + r.data.difficulty["易"] + "、中等 " + r.data.difficulty["中等"] +
+            "、難 " + r.data.difficulty["難"] + "；已避開既有 " + r.data.existingCount + " 題）。請貼到 Claude 網頁版，再把輸出貼到下一步。", "ok");
+        }, function () { status(promptStatus, "瀏覽器不允許複製，請展開下方預覽手動複製。", "warn"); });
+      });
+    });
+    var pickCard = card("1　選擇教材與題數", "補充題目會存成一份新的「補充題庫」，發布後併入該課題庫；原本的教材資料不會被修改。", [
+      el("div", { class: "upl-grid" }, [
+        field("教材", materialSel), field("題數（1～40）", countInput),
+        field("易", diff["易"]), field("中等", diff["中等"]), field("難", diff["難"])
+      ]),
+      el("div", { class: "upl-radios" }, [
+        el("label", { class: "upl-radio" }, [modeSingle, el("span", { text: "Claude 出題＋另開新對話獨立作答核對（建議）" })]),
+        el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT、Gemini 各自作答" })])
+      ]),
+      subjectHint,
+      el("div", { class: "upl-actions" }, [authorBtn]),
+      promptStatus,
+      promptPreview
+    ]);
+
+    /* 2 貼上出題結果 */
+    var authorText = el("textarea", { class: "upl-textarea", rows: "14", placeholder: "把 Claude 依出題 Prompt 產出的完整內容貼在這裡。" });
+    var solverPromptStatus = el("p", { class: "upl-status" });
+    var solverPromptPreview = el("div");
+    var solverBtn = button("擷取題目並複製作答 Prompt", "primary", function () {
+      client.supplementSolverPrompt({ authorText: authorText.value }).then(function (r) {
+        if (r.error) { status(solverPromptStatus, r.error.message, "error"); return; }
+        AHS.UI.mount(solverPromptPreview, el("div", {}, [
+          r.data.warnings.length ? el("ul", { class: "upl-warnings" }, r.data.warnings.map(function (w) { return el("li", { text: w }); })) : null,
+          el("details", { class: "upl-details" }, [
+            el("summary", { text: "預覽作答 Prompt（只有題目，沒有答案）" }),
+            el("pre", { class: "upl-pre", text: r.data.prompt })
+          ])
+        ]));
+        var where = mode() === "tri" ? "請分別貼到「新的」Claude 對話、ChatGPT、Gemini，" : "請開一個「新的」Claude 對話貼上（不要用出題的同一個對話），";
+        copyText(r.data.prompt).then(function () {
+          status(solverPromptStatus, "擷取到 " + r.data.count + " 題，作答 Prompt 已複製。" + where + "再把作答結果貼到下一步。", "ok");
+        }, function () { status(solverPromptStatus, "擷取到 " + r.data.count + " 題；瀏覽器不允許複製，請展開下方預覽手動複製後，" + where + "再把作答結果貼到下一步。", "warn"); });
+      });
+    });
+    var authorCard = card("2　貼上出題結果", "引擎會擷取題號、選項、答案、詳解、知識點與難度；格式不完整的題目不收錄，並列在警告中。", [
+      field("Claude 出題結果", authorText),
+      el("div", { class: "upl-actions" }, [solverBtn]),
+      solverPromptStatus,
+      solverPromptPreview
+    ]);
+
+    /* 3 貼上獨立作答結果 */
+    var solverFields = [
+      { id: "claude-fresh", name: "Claude（新對話）", tri: false },
+      { id: "chatgpt", name: "ChatGPT", tri: true },
+      { id: "gemini", name: "Gemini", tri: true }
+    ].map(function (s) {
+      s.input = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "例如：\nQ1：B\nQ2：D" });
+      s.field = field(s.name + " 作答結果", s.input);
+      return s;
+    });
+    function updateSolverFields() {
+      solverFields.forEach(function (s) {
+        if (!s.tri || mode() === "tri") { s.field.removeAttribute("hidden"); } else { s.field.setAttribute("hidden", "hidden"); }
+      });
+    }
+    updateSolverFields();
+    function currentSolvers() {
+      return solverFields.filter(function (s) { return !s.tri || mode() === "tri"; })
+        .map(function (s) { return { id: s.id, text: s.input.value }; });
+    }
+    var checkStatus = el("p", { class: "upl-status" });
+    var resultSlot = el("div", { class: "upl-sup-results" });
+    var checkBtn = button("核對", "primary", function () {
+      if (!materialSel.value) { status(checkStatus, "請先在步驟 1 選擇教材。", "error"); return; }
+      var snapshot = { parentId: materialSel.value, authorText: authorText.value, solvers: currentSolvers(), mode: mode() };
+      if (!snapshot.solvers.some(function (s) { return s.text.trim(); })) {
+        if (!window.confirm("還沒有貼上任何作答結果，所有題目都會標示為需人工確認。仍要核對嗎？")) { return; }
+      }
+      status(checkStatus, "核對中…");
+      client.supplementCheck(snapshot).then(function (r) {
+        if (r.error) { status(checkStatus, r.error.message, "error"); return; }
+        state.checked = snapshot;
+        status(checkStatus, "核對完成：一致 " + r.data.counts.ok + " 題、需人工確認 " + r.data.counts.review + " 題、重複 " + r.data.counts.duplicate + " 題。", "ok");
+        renderResults(r.data);
+      });
+    });
+    var solverCard = card("3　貼上獨立作答結果", "作答者看不到出題答案；答案和出題不一致、或作答者認為題目有問題時，會標示為需人工確認。", [
+      el("div", { class: "upl-drafts" }, solverFields.map(function (s) { return s.field; })),
+      el("div", { class: "upl-actions" }, [checkBtn]),
+      checkStatus
+    ]);
+
+    /* 4 核對結果 */
+    var createStatus = el("p", { class: "upl-status" });
+    var createBtn = button("建立補充題庫草稿", "primary", function () {
+      var accept = Array.prototype.filter.call(resultSlot.querySelectorAll("input[type=checkbox]"), function (c) { return c.checked; })
+        .map(function (c) { return Number(c.value); });
+      if (!state.checked || !accept.length) { status(createStatus, "請先核對並勾選要加入的題目。", "error"); return; }
+      createBtn.disabled = true;
+      status(createStatus, "建立中…");
+      client.createSupplementDraft({
+        parentId: state.checked.parentId, authorText: state.checked.authorText, solvers: state.checked.solvers,
+        mode: state.checked.mode, accept: accept
+      }).then(function (r) {
+        createBtn.disabled = false;
+        if (r.error) { status(createStatus, r.error.message, "error"); return; }
+        status(createStatus, "已建立 " + r.data.materialId + "（" + r.data.questions.length + " 題）。", "ok");
+        hooks.onDraft(r.data);
+        refresh();
+      });
+    });
+    function updateCreateLabel() {
+      var n = resultSlot.querySelectorAll("input[type=checkbox]:checked").length;
+      createBtn.textContent = "建立補充題庫草稿（已勾選 " + n + " 題）";
+    }
+    function renderResults(data) {
+      AHS.UI.mount(resultSlot, el("ol", { class: "upl-questions" }, data.questions.map(function (q) {
+        var box = el("input", { type: "checkbox", value: String(q.number) });
+        if (q.status === "ok") { box.checked = true; }
+        if (q.status === "duplicate") { box.disabled = true; }
+        box.addEventListener("change", updateCreateLabel);
+        var answers = (q.solverAnswers || []).map(function (a) {
+          return a.name + "：" + (a.problem ? "認為有問題" : (a.key || "未作答"));
+        });
+        return el("li", { class: "upl-question upl-sup-item upl-sup-item--" + q.status }, [
+          el("label", { class: "upl-sup-item__head" }, [
+            box,
+            el("span", { class: "upl-gate upl-gate--" + STATUS_TONE[q.status], text: STATUS_LABEL[q.status] }),
+            el("span", { class: "upl-sup-item__no", text: "Q" + q.number })
+          ]),
+          el("p", { class: "upl-question__stem", text: q.question }),
+          el("ul", { class: "upl-question__options" }, q.options.map(function (opt, i) {
+            var isAnswer = OPTION_LETTERS[i] === q.answerKey;
+            return el("li", { class: isAnswer ? "is-answer" : null, text: "(" + OPTION_LETTERS[i] + ") " + opt + (isAnswer ? "　✓ 出題答案" : "") });
+          })),
+          answers.length ? el("p", { class: "upl-hint", text: "獨立作答：" + answers.join("　") }) : null,
+          q.reasons.length ? el("ul", { class: "upl-warnings" }, q.reasons.map(function (t) { return el("li", { text: t }); })) : null,
+          q.explanation ? el("p", { class: "upl-hint", text: "詳解：" + q.explanation }) : null,
+          q.knowledgePoint || q.difficulty
+            ? el("p", { class: "upl-hint", text: [q.knowledgePoint ? "知識點：" + q.knowledgePoint : "", q.difficulty ? "難度：" + q.difficulty : ""].filter(Boolean).join("　") })
+            : null
+        ]);
+      })));
+      updateCreateLabel();
+    }
+    var resultCard = card("4　核對結果與建立草稿", "核對一致的題目已預先勾選。需人工確認的題目請看過原因與詳解，確定正確才勾選；重複的題目不能加入。", [
+      resultSlot,
+      el("div", { class: "upl-actions" }, [createBtn]),
+      createStatus
+    ]);
+
+    return { cards: [pickCard, authorCard, solverCard, resultCard], refresh: refresh };
   }
 
   function create(options) {
@@ -344,9 +582,12 @@ AHS.CouncilUpload = (function () {
     var draftsList = el("div", { class: "upl-draft-list" });
 
     function gitCommands(result) {
+      var what = result.kind === "supplement"
+        ? " 補充題庫 " + (result.questions || []).length + " 題（為 " + result.supplementOf + " 加題）"
+        : " 教材上架（教材上傳）";
       return [
         "git add " + result.changedPaths.join(" "),
-        "git commit -m \"" + result.materialId + "｜" + (result.metadata.subject || "") + " " + (result.metadata.chapter || "") + " 教材上架（教材上傳）\"",
+        "git commit -m \"" + result.materialId + "｜" + (result.metadata.subject || "") + " " + (result.metadata.chapter || "") + what + "\"",
         "git push"
       ].join("\n");
     }
@@ -355,9 +596,11 @@ AHS.CouncilUpload = (function () {
       state.draft = d;
       var q = d.questions || [];
       var s = d.summary || {};
+      var isSupplement = d.kind === "supplement";
       var body = [
         el("div", { class: "upl-preview__head" }, [
           el("strong", { text: d.materialId }),
+          isSupplement ? el("span", { class: "upl-gate upl-gate--info", text: "補充題庫 → " + d.supplementOf }) : null,
           el("span", { class: "upl-gate upl-gate--" + (d.stage === "IMPORTED" ? "ok" : "warn"), text: d.stage === "IMPORTED" ? "已上架（IMPORTED）" : "草稿（學生看不到）" }),
           d.qualityGate ? el("span", { class: "upl-gate upl-gate--" + (d.qualityGate === "PASS" ? "ok" : "warn"), text: "Quality Gate " + d.qualityGate }) : null
         ]),
@@ -367,9 +610,13 @@ AHS.CouncilUpload = (function () {
       if ((d.warnings || []).length) {
         body.push(el("ul", { class: "upl-warnings" }, d.warnings.map(function (w) { return el("li", { text: w }); })));
       }
-      body.push(el("h3", { class: "upl-subtitle", text: "核心概念（" + (s.coreConcepts || []).length + "）" }));
-      body.push(el("ul", { class: "upl-list" }, (s.coreConcepts || []).map(function (c) { return el("li", { text: c }); })));
-      body.push(el("p", { class: "upl-hint", text: "重點詞彙 " + (s.keywords || []).length + "、重點 " + (s.keyPoints || []).length + "、易錯 " + (s.pitfalls || []).length + "、複習建議 " + (s.reviewSuggestions || []).length }));
+      if (isSupplement) {
+        body.push(el("p", { class: "upl-hint", text: "發布後，這些題目會併入 " + d.supplementOf + " 的題庫，學生在測驗中心練習該課時就會抽到；不會出現一份獨立的教材。" }));
+      } else {
+        body.push(el("h3", { class: "upl-subtitle", text: "核心概念（" + (s.coreConcepts || []).length + "）" }));
+        body.push(el("ul", { class: "upl-list" }, (s.coreConcepts || []).map(function (c) { return el("li", { text: c }); })));
+        body.push(el("p", { class: "upl-hint", text: "重點詞彙 " + (s.keywords || []).length + "、重點 " + (s.keyPoints || []).length + "、易錯 " + (s.pitfalls || []).length + "、複習建議 " + (s.reviewSuggestions || []).length }));
+      }
       body.push(el("h3", { class: "upl-subtitle", text: "練習題（" + q.length + " 題，皆標示為 AI 出題）" }));
       body.push(el("ol", { class: "upl-questions" }, q.map(function (item) {
         return el("li", { class: "upl-question" }, [
@@ -377,7 +624,10 @@ AHS.CouncilUpload = (function () {
           el("ul", { class: "upl-question__options" }, item.options.map(function (opt) {
             return el("li", { class: opt === item.answer ? "is-answer" : null, text: opt + (opt === item.answer ? "　✓" : "") });
           })),
-          item.explanation ? el("p", { class: "upl-hint", text: "詳解：" + item.explanation }) : null
+          item.explanation ? el("p", { class: "upl-hint", text: "詳解：" + item.explanation }) : null,
+          item.knowledgePoint || item.difficulty
+            ? el("p", { class: "upl-hint", text: [item.knowledgePoint ? "知識點：" + item.knowledgePoint : "", item.difficulty ? "難度：" + item.difficulty : ""].filter(Boolean).join("　") })
+            : null
         ]);
       })));
 
@@ -420,7 +670,8 @@ AHS.CouncilUpload = (function () {
         if (!list.length) { AHS.UI.mount(draftsList, el("p", { class: "upl-hint", text: "目前沒有由教材上傳建立的教材包。" })); return; }
         AHS.UI.mount(draftsList, el("ul", { class: "upl-list" }, list.map(function (d) {
           return el("li", { class: "upl-draft-row" }, [
-            el("span", { text: d.materialId + "　" + (d.status === "published" ? "已發布" : "草稿") + "　" + d.finalFilename }),
+            el("span", { text: d.materialId + "　" + (d.status === "published" ? "已發布" : "草稿") + "　" +
+              (d.kind === "supplement" ? "補充題庫（為 " + d.parentId + " 加題）" : d.finalFilename) }),
             button("預覽", null, function () {
               client.getDraft(d.materialId).then(function (g) {
                 if (g.error) { status(draftStatus, g.error.message, "error"); return; }
@@ -446,21 +697,57 @@ AHS.CouncilUpload = (function () {
         refreshDrafts();
       });
     });
-    var packageCard = card("5　建立教材包並發布", "把 Final.md 轉成平台教材包：只會新增一個新的教材編號，不會改動任何已上架的教材。擷取不到的內容會列在警告裡，不會自動補寫。", [
-      el("div", { class: "upl-actions" }, [createBtn]),
+    var packageCard = card("5　建立教材包草稿", "把 Final.md 轉成平台教材包：只會新增一個新的教材編號，不會改動任何已上架的教材。擷取不到的內容會列在警告裡，不會自動補寫。", [
+      el("div", { class: "upl-actions" }, [createBtn])
+    ]);
+    // 草稿預覽／發布與上傳紀錄：兩種模式共用。
+    var reviewCard = card("草稿預覽與發布", "草稿學生看不到；確認內容無誤後再發布。", [
       draftStatus,
       previewSlot,
       el("h3", { class: "upl-subtitle", text: "教材上傳紀錄" }),
       draftsList
     ]);
 
+    var supplementCards = buildSupplementCards(client, {
+      onDraft: function (d) {
+        status(draftStatus, d.materialId + " 補充題庫草稿已建立（學生看不到）。請檢查下方題目，確認無誤再發布。", "ok");
+        renderPreview(d, false);
+        refreshDrafts();
+        if (reviewCard.scrollIntoView) { reviewCard.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      }
+    });
+
+    var modes = [
+      { id: "new", name: "上傳新教材", cards: [metaCard, uploadCard, draftsCard, councilCard, packageCard],
+        sub: "上傳課本或講義 → 三方 AI 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" },
+      { id: "supplement", name: "為既有教材加題", cards: supplementCards.cards,
+        sub: "為已上架的教材補出新的練習題：Claude 出題 → 另開新對話獨立作答核對 → 預覽確認後併入該課題庫。僅管理者可見。" }
+    ];
+    var headSub = el("p", { class: "upl-head__sub" });
+    var tabs = el("div", { class: "upl-tabs", role: "tablist" });
+    function showMode(id) {
+      modes.forEach(function (m) {
+        m.tab.setAttribute("aria-selected", m.id === id ? "true" : "false");
+        m.tab.classList.toggle("is-active", m.id === id);
+        m.cards.forEach(function (c) { if (m.id === id) { c.removeAttribute("hidden"); } else { c.setAttribute("hidden", "hidden"); } });
+        if (m.id === id) { headSub.textContent = m.sub; }
+      });
+      if (id === "supplement") { supplementCards.refresh(); }
+    }
+    modes.forEach(function (m) {
+      m.tab = el("button", { type: "button", class: "upl-tab", role: "tab", text: m.name });
+      m.tab.addEventListener("click", function () { showMode(m.id); });
+      tabs.appendChild(m.tab);
+    });
+
     var root = el("div", { class: "upl-page" }, [
       el("header", { class: "upl-head" }, [
         el("h1", { class: "upl-head__title", text: "教材上傳" }),
-        el("p", { class: "upl-head__sub", text: "上傳課本或講義 → 三方 AI 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" })
+        headSub
       ]),
-      engineCard, metaCard, uploadCard, draftsCard, councilCard, packageCard
-    ]);
+      engineCard, tabs
+    ].concat(modes[0].cards, supplementCards.cards, [reviewCard]));
+    showMode("new");
     checkEngine();
     return root;
   }

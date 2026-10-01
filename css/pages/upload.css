@@ -127,6 +127,47 @@
 
 .upl-offscreen { position: fixed; left: -9999px; top: 0; opacity: 0; }
 
+/* 2026-10-01 為既有教材加題: mode tabs, mode radios, check results.
+   .upl-card / .upl-field set display, so [hidden] needs its own rule. */
+.upl-page [hidden] { display: none; }
+
+.upl-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background-color: var(--card);
+  box-shadow: var(--shadow-card);
+}
+.upl-tab {
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background-color: transparent;
+  cursor: pointer;
+}
+.upl-tab.is-active { background-color: var(--brand); color: #ffffff; }
+
+.upl-radios { display: flex; flex-direction: column; gap: 6px; }
+.upl-radio { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.5; cursor: pointer; }
+.upl-radio input { margin-top: 3px; }
+
+.upl-gate--error { background-color: #fdecec; color: #b42318; }
+.upl-gate--info { background-color: var(--brand-soft); color: var(--brand-ink); }
+
+.upl-sup-item { padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.upl-sup-item--review { border-color: #f2d19b; }
+.upl-sup-item--duplicate { opacity: 0.6; }
+.upl-sup-item__head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; cursor: pointer; }
+.upl-sup-item__head .upl-gate { margin-left: 0; }
+.upl-sup-item__no { font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.upl-sup-item .upl-warnings { margin-bottom: 4px; }
+
 @media (max-width: 900px) {
   .upl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .upl-drafts { grid-template-columns: minmax(0, 1fr); }

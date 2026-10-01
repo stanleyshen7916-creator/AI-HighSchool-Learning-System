@@ -841,6 +841,32 @@ app.delete('/api/platform/drafts/:materialId', (req, res) => {
   }
 });
 
+// 為既有教材加題（2026-10-01）：產生出題／作答 Prompt、核對貼回來的結果，最後建立一份
+// 「補充題庫」草稿（新的 tm_N，原教材不修改），之後沿用上面的草稿預覽／發布／刪除端點。
+function supplementRoute(handler) {
+  return (req, res) => {
+    try {
+      return res.status(200).json(handler(req.body || {}));
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  };
+}
+
+app.get('/api/platform/supplements/parents', (req, res) => {
+  res.status(200).json({ materials: packageBuilder.supplements.listParents() });
+});
+app.post('/api/platform/supplements/author-prompt', supplementRoute((b) => packageBuilder.supplements.authorPrompt(b)));
+app.post('/api/platform/supplements/solver-prompt', supplementRoute((b) => packageBuilder.supplements.solverPrompt(b)));
+app.post('/api/platform/supplements/check', supplementRoute((b) => packageBuilder.supplements.check(b)));
+app.post('/api/platform/supplements/drafts', (req, res) => {
+  try {
+    return res.status(201).json(packageBuilder.createSupplementDraft(req.body || {}));
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 // 學習平台本身（含 upload.html）：以 http://localhost:3000/upload.html 開啟時與 API 同源，
 // 不受瀏覽器跨來源／混合內容限制。dotfiles 預設忽略（.git 不會被提供）。
 app.use(express.static(PLATFORM_ROOT, { dotfiles: 'ignore', index: 'index.html' }));

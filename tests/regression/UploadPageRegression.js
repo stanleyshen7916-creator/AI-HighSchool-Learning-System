@@ -58,6 +58,24 @@ function fakeEngine(window, log, mode) {
       }));
     }
     if (u.indexOf("/api/materials/") === 0) { return reply(200, { count: 0, images: [] }); }
+    /* 2026-10-01 為既有教材加題 */
+    if (u === "/api/platform/supplements/parents") {
+      return reply(200, { materials: [{ materialId: "tm_7", semester: "g2s1", subject: "數學", chapter: "第1章：三角函數", questionCount: 23, supplementCount: 0 }] });
+    }
+    if (u === "/api/platform/supplements/author-prompt") {
+      return reply(200, { parentId: "tm_7", count: body.count, difficulty: body.difficulty, existingCount: 23, prompt: "出題 PROMPT" });
+    }
+    if (u === "/api/platform/supplements/solver-prompt") { return reply(200, { count: 3, numbers: [1, 2, 3], warnings: [], prompt: "作答 PROMPT" }); }
+    if (u === "/api/platform/supplements/check") {
+      const q = (n, status, reasons) => ({ number: n, question: "題目 " + n, options: ["a", "b", "c", "d"], answer: "b", answerKey: "B",
+        explanation: "詳解 " + n, knowledgePoint: "弧長", difficulty: "易", solverAnswers: [{ id: "claude-fresh", name: "Claude（新對話）", key: "B" }], status, reasons });
+      return reply(200, { parentId: "tm_7", counts: { ok: 1, review: 1, duplicate: 1 }, warnings: [], questions: [
+        q(1, "ok", []), q(2, "review", ["Claude（新對話）答 C，出題答案為 B"]), q(3, "duplicate", ["與既有題目 tm_7_q3 重複"])] });
+    }
+    if (u === "/api/platform/supplements/drafts") {
+      return reply(201, Object.assign({}, DRAFT, { materialId: "tm_19", kind: "supplement", supplementOf: "tm_7", warnings: [],
+        questions: [{ question: "題目 1", options: ["a", "b", "c", "d"], answer: "b", explanation: "詳解 1", knowledgePoint: "弧長", difficulty: "易" }] }));
+    }
     return reply(404, { error: "not found" });
   };
 }
@@ -119,7 +137,9 @@ async function main() {
   const { window, doc, log, consoleErrors } = loadUpload("admin");
   await settle();
   check("Sidebar 出現「教材上傳」", sidebarLabels(doc).indexOf("教材上傳") !== -1);
-  check("六個區塊（引擎＋步驟 1～5）", doc.querySelectorAll(".upl-card").length === 6);
+  const visibleCards = () => [...doc.querySelectorAll(".upl-card")].filter((c) => !c.hasAttribute("hidden"));
+  check("上傳新教材：七個區塊（引擎＋步驟 1～5＋草稿預覽與發布）", visibleCards().length === 7);
+  check("預設不呼叫加題端點", !log.some((c) => c.url.indexOf("/supplements/") !== -1));
   check("引擎狀態顯示已連線", doc.body.textContent.indexOf("已連線（引擎 v1.1.0）") !== -1);
   check("學校選單來自平台資料（長榮中學 cjsh）", [...fieldByLabel(doc, "學校").options].some((o) => o.value === "cjsh" && o.textContent === "長榮中學"));
   check("科目選單含平台所有科目（含地球科學）", [...fieldByLabel(doc, "科目").options].some((o) => o.value === "地球科學"));
@@ -162,6 +182,48 @@ async function main() {
   check("顯示已上架與 git 指令", doc.body.textContent.indexOf("已上架（IMPORTED）") !== -1 && doc.querySelector(".upl-success .upl-pre").textContent.indexOf("git add docs/TeachingMaterials/materials/tm_18/ js/data/TeachingMaterialData.js") === 0);
   check("發布後不再顯示發布／刪除按鈕", !buttonByText(doc, "確認發布到平台") && !buttonByText(doc, "刪除草稿"));
   check("Console errors = 0", consoleErrors.length === 0);
+
+  console.log("\n[5b] 為既有教材加題");
+  click(buttonByText(doc, "為既有教材加題"));
+  await settle();
+  check("切換後只顯示加題的四個步驟＋引擎＋草稿預覽", visibleCards().length === 6 && !visibleCards().some((c) => c.textContent.indexOf("三方初稿") !== -1));
+  const parentSel = fieldByLabel(doc, "教材");
+  check("教材清單來自引擎（含原題數）", !!parentSel && [...parentSel.options].some((o) => o.value === "tm_7" && o.textContent.indexOf("原有 23 題") !== -1));
+  check("預設單一 Claude 模式：只有 Claude（新對話）作答欄", !!fieldByLabel(doc, "Claude（新對話） 作答結果") &&
+    fieldByLabel(doc, "ChatGPT 作答結果").closest(".upl-field").hasAttribute("hidden"));
+  parentSel.value = "tm_7";
+  parentSel.dispatchEvent(new window.Event("change"));
+  check("數學教材在單一模式下提示建議三方核對", doc.body.textContent.indexOf("建議改用三方核對") !== -1);
+  const countInput = fieldByLabel(doc, "題數（1～40）");
+  countInput.value = "10";
+  countInput.dispatchEvent(new window.Event("input"));
+  check("題數改變時自動分配難度（3/5/2）", fieldByLabel(doc, "易").value === "3" && fieldByLabel(doc, "中等").value === "5" && fieldByLabel(doc, "難").value === "2");
+  click(buttonByText(doc, "複製出題 Prompt"));
+  await settle();
+  const ap = log.find((c) => /\/supplements\/author-prompt$/.test(c.url));
+  check("出題 Prompt 送出教材、題數與難度", !!ap && ap.body.parentId === "tm_7" && ap.body.count === 10 && ap.body.difficulty["難"] === 2);
+  check("出題 Prompt 可預覽", doc.body.textContent.indexOf("出題 PROMPT") !== -1);
+  fieldByLabel(doc, "Claude 出題結果").value = "Q1. …";
+  click(buttonByText(doc, "擷取題目並複製作答 Prompt"));
+  await settle();
+  check("擷取題目並提示開新的 Claude 對話", doc.body.textContent.indexOf("擷取到 3 題") !== -1 && doc.body.textContent.indexOf("「新的」Claude 對話") !== -1);
+  fieldByLabel(doc, "Claude（新對話） 作答結果").value = "Q1：B";
+  click(buttonByText(doc, "核對"));
+  await settle();
+  const ck = log.find((c) => /\/supplements\/check$/.test(c.url));
+  check("核對送出單一作答者", !!ck && ck.body.solvers.length === 1 && ck.body.solvers[0].id === "claude-fresh" && ck.body.mode === "single");
+  const boxes = [...doc.querySelectorAll(".upl-sup-results input[type=checkbox]")];
+  check("一致預設勾選、需人工確認不勾、重複不能勾", boxes.length === 3 && boxes[0].checked && !boxes[1].checked && boxes[2].disabled);
+  check("顯示需人工確認的原因", doc.body.textContent.indexOf("答 C，出題答案為 B") !== -1);
+  boxes[1].checked = true;
+  boxes[1].dispatchEvent(new window.Event("change"));
+  check("勾選數顯示在按鈕上", !!buttonByText(doc, "建立補充題庫草稿（已勾選 2 題）"));
+  click(buttonByText(doc, "建立補充題庫草稿（已勾選 2 題）"));
+  await settle();
+  const cd = log.find((c) => /\/supplements\/drafts$/.test(c.url));
+  check("建立草稿送出勾選的題號與核對當時的內容", !!cd && JSON.stringify(cd.body.accept) === "[1,2]" && cd.body.authorText === "Q1. …" && cd.body.parentId === "tm_7");
+  check("預覽標示補充題庫與原教材", doc.body.textContent.indexOf("補充題庫 → tm_7") !== -1 && doc.body.textContent.indexOf("併入 tm_7 的題庫") !== -1);
+  check("加題流程 Console errors = 0", consoleErrors.length === 0);
   window.close();
 
   console.log("\n[6] 引擎未啟動");

@@ -17,6 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const { parseFinal } = require('./FinalParser');
+const { createSupplementBuilder, SUPPLEMENT_SOURCE, SOLVER_NAMES } = require('./SupplementBuilder');
 
 const MATERIAL_TYPES = { TEXTBOOK: '課本', HANDOUT: '講義', REFERENCE: '補充資料' };
 
@@ -56,6 +57,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
   const adapter = () => require(path.join(scripts, 'TeachingMaterialAdapter.js'));
   const repoManager = () => require(path.join(scripts, 'RepositoryManager.js'));
   const importManager = () => require(path.join(scripts, 'ImportManager.js'));
+  const supplements = createSupplementBuilder({ platformRoot });
 
   function registry() {
     return readJson(registryFile, { drafts: {} });
@@ -172,6 +174,9 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     const manifest = readJson(path.join(dir, 'manifest.json'), {});
     return {
       materialId,
+      kind: entry.kind || 'material',
+      supplementOf: entry.parentId || null,
+      reviewed: entry.reviewed || [],
       status: entry.status,
       manifestStatus: manifest.status,
       stage: lifecycle().resolveStage(materialId),
@@ -244,6 +249,138 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       qualityGate: parsed.qualityGate,
       finalScore: parsed.finalScore,
       warnings: parsed.warnings,
+      createdAt: now,
+    };
+    saveRegistry(reg);
+    return preview(materialId);
+  }
+
+  function supplementMarkdown(materialId, parent, mode, accepted, checkResult, sourceNames) {
+    const m = parent.metadata;
+    const modeLabel = mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
+      : '單一 Claude（Claude 出題；另開新的 Claude 對話獨立作答）';
+    const reviewed = accepted.filter((q) => q.status === 'review');
+    const lines = [
+      `# ${materialId} — 補充題庫：${parent.materialId}「${m.chapter || ''}」`,
+      '',
+      `- **原教材**：\`${parent.materialId}\`（${m.subject || ''}，${m.grade || ''}，${m.chapter || ''}${m.unit ? ` / ${m.unit}` : ''}）`,
+      `- **題數**：${accepted.length} 題（本批擷取 ${checkResult.questions.length} 題；重複 ${checkResult.counts.duplicate} 題未收錄）`,
+      `- **原始檔案**（\`source/\`）：${sourceNames.map((n) => `\`${n}\``).join('、')}`,
+      '',
+      '## 產出過程（誠實揭露）',
+      '',
+      `本題庫由學習平台「教材上傳」頁的「為既有教材加題」建立，用來擴充 \`${parent.materialId}\` 的練習題。原教材包未做任何修改；`,
+      '平台產生教材資料時，會把這裡的題目併入原教材的題庫（學生端不會看到一份獨立的「補充題庫」教材）。',
+      '',
+      `- 核對方式：${modeLabel}`,
+      '- 出題 Prompt 依原教材 summary.json 的核心概念、定義、重點、易錯點與既有題目產生；題目一律標示為 `AI_GENERATED`。',
+      '- 引擎逐題比對出題答案與獨立作答答案；不一致、作答者認為題目有問題、缺詳解、選項不足或重複者，標示為「需人工確認」，預設不收錄。',
+      reviewed.length
+        ? `- 以下 ${reviewed.length} 題原本標示為需人工確認，經管理者確認後收錄：${reviewed.map((q) => `Q${q.number}（${q.reasons.join('；')}）`).join('、')}`
+        : '- 本批收錄的題目皆通過自動核對。',
+      '- 完整核對結果見 `source/check-report.json`。',
+      '',
+    ];
+    return lines.join('\n');
+  }
+
+  // 為既有（已上架）教材加題：新增一份 tm_N「補充題庫」教材包（草稿），原教材不修改。
+  // 只收錄管理者勾選、且不是「重複」的題目；需人工確認的題目要明確勾選才會收錄。
+  function createSupplementDraft({ parentId, authorText, solvers, mode, accept }) {
+    const parent = supplements.loadParent(parentId);
+    const result = supplements.check({ parentId, authorText, solvers });
+    const wanted = new Set((accept || []).map(Number));
+    const chosen = result.questions.filter((q) => wanted.has(q.number) && q.status !== 'duplicate');
+    if (!chosen.length) throw new Error('沒有勾選任何可加入的題目（重複的題目不能加入）');
+
+    const materialId = nextMaterialId();
+    const dir = packageDir(materialId);
+    if (fs.existsSync(dir)) throw new Error(`${materialId} 已存在，為避免覆寫既有教材已停止`);
+    const now = new Date().toISOString();
+    const sourceDir = path.join(dir, 'source');
+    fs.mkdirSync(sourceDir, { recursive: true });
+    const sourceNames = ['author.md'];
+    fs.writeFileSync(path.join(sourceDir, 'author.md'), String(authorText), 'utf8');
+    (solvers || []).filter((s) => s && SOLVER_NAMES[s.id] && String(s.text || '').trim()).forEach((s) => {
+      const name = `solver-${s.id}.md`;
+      fs.writeFileSync(path.join(sourceDir, name), String(s.text), 'utf8');
+      sourceNames.push(name);
+    });
+    writeJson(path.join(sourceDir, 'check-report.json'), {
+      parentId, mode: mode === 'tri' ? 'tri' : 'single', createdAt: now,
+      accepted: chosen.map((q) => q.number), ...result,
+    });
+    sourceNames.push('check-report.json');
+
+    const pm = parent.metadata;
+    writeJson(path.join(dir, 'metadata.json'), {
+      materialId,
+      school: pm.school || null,
+      semester: pm.semester || null,
+      subject: pm.subject || null,
+      grade: pm.grade || null,
+      publisher: null,
+      chapter: pm.chapter || null,
+      unit: pm.unit || null,
+      keywords: Array.isArray(pm.keywords) ? pm.keywords : [],
+      difficulty: null,
+      source: SUPPLEMENT_SOURCE,
+      uploadDate: now,
+      version: '1',
+      materialType: 'REFERENCE',
+    });
+    writeJson(path.join(dir, 'manifest.json'), {
+      materialId,
+      packageVersion: '1',
+      createdDate: now,
+      updatedDate: now,
+      repositoryVersion: 'EO-S1.1-003',
+      analysisEngine: 'Claude',
+      status: 'draft',
+    });
+    // summary.json 是必要檔案：沿用原教材的摘要（同一份教材內容），平台上不會另外顯示。
+    writeJson(path.join(dir, 'summary.json'), { ...parent.summary, materialId });
+    writeJson(path.join(dir, 'questionbank.json'), {
+      materialId,
+      questions: chosen.map((q, i) => {
+        const record = {
+          questionId: `${materialId}_q${i + 1}`,
+          materialId,
+          questionNumber: String(i + 1),
+          type: 'single_choice',
+          questionSource: 'AI_GENERATED',
+          origin: 'AI',
+          question: q.question,
+          options: q.options,
+          answer: q.answer,
+          explanation: q.explanation,
+          page: null,
+          version: '1',
+          createdDate: now,
+        };
+        if (q.knowledgePoint) record.knowledgePoint = q.knowledgePoint;
+        if (q.difficulty) record.difficulty = q.difficulty;
+        return record;
+      }),
+    });
+    writeJson(path.join(dir, 'related.json'), {
+      materialId,
+      related: [{ materialId: parent.materialId, reason: `${SUPPLEMENT_SOURCE}：為 ${parent.materialId}「${pm.chapter || ''}」擴充的 AI 練習題` }],
+    });
+    fs.writeFileSync(path.join(dir, 'material.md'), supplementMarkdown(materialId, parent, mode, chosen, result, sourceNames), 'utf8');
+
+    const reviewed = chosen.filter((q) => q.status === 'review').map((q) => ({ number: q.number, reasons: q.reasons }));
+    const reg = registry();
+    reg.drafts[materialId] = {
+      materialId,
+      kind: 'supplement',
+      parentId: parent.materialId,
+      status: 'draft',
+      finalFilename: 'author.md',
+      qualityGate: null,
+      finalScore: null,
+      warnings: result.warnings.concat(reviewed.map((r) => `Q${r.number} 經人工確認後收錄（${r.reasons.join('；')}）`)),
+      reviewed,
       createdAt: now,
     };
     saveRegistry(reg);
@@ -333,6 +470,8 @@ function createPackageBuilder({ platformRoot, dataDir }) {
 
   return {
     createDraft,
+    createSupplementDraft,
+    supplements,
     publish,
     deleteDraft,
     listDrafts,
