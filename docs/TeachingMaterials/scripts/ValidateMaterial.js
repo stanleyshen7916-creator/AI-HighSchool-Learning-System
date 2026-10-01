@@ -229,4 +229,9 @@ console.log("\n[Lifecycle Stage — Sprint AI-113 AI-806]");
 console.log("  " + materialId + ": " + lifecycle.resolveStage(materialId));
 
 console.log("\n" + pass + " PASS / " + fail + " FAIL");
-process.exit(fail === 0 ? 0 : 1);
+/* 2026-10-01: exitCode, not process.exit() — on Linux, stdout to a pipe is
+   asynchronous and process.exit() can drop what hasn't been flushed yet.
+   TeachingMaterialAdapter.validatePackage() reads this output through a
+   pipe; in CI the largest report (tm_4, 329 lines) intermittently lost its
+   last lines, so report.md was regenerated as "0 PASS / 0 FAIL". */
+process.exitCode = fail === 0 ? 0 : 1;
