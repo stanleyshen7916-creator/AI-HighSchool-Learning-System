@@ -58,7 +58,17 @@ AHS.TutorEngine = (function () {
      explanation field, formatted as a solution readout. Never invents
      steps that aren't in the real record. */
   function explainSteps(question) {
-    if (!question || !question.explanation) { return null; }
+    if (!question) { return null; }
+    /* 2026-10-01 數學詳解補強: the reviewed step-by-step solution, when one
+       exists for this question (js/data/ExplanationSupplementData.js). */
+    var sup = (window.AHS && AHS.ExplanationSupplement) ? AHS.ExplanationSupplement.find(question) : null;
+    if (sup) {
+      return "「" + question.question + "」的詳解：\n解題關鍵：" + sup.concept + "\n" +
+        sup.steps.map(function (s, i) { return (i + 1) + ". " + s; }).join("\n") +
+        (sup.pitfalls.length ? "\n常見錯誤：" + sup.pitfalls.join("；") : "") +
+        (sup.note ? "\n覆核提醒：" + sup.note : "");
+    }
+    if (!question.explanation) { return null; }
     return "「" + question.question + "」的詳解：\n" + question.explanation;
   }
 

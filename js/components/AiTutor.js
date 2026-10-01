@@ -163,7 +163,10 @@ AHS.AiTutor = (function () {
             class: "tutor-quiz__verdict " + (result.correct ? "is-correct" : "is-wrong"),
             text: result.correct ? "答對了！" : "答錯了，正確答案是 " + correctLabel + "「" + result.correctText + "」。"
           }));
-          if (result.explanation) { feedback.appendChild(el("p", { class: "tutor-quiz__explain", text: "詳解：" + result.explanation })); }
+          /* 2026-10-01 數學詳解補強: steps + figures when available. */
+          var rich = AHS.ExplanationSupplement ? AHS.ExplanationSupplement.render(q, result.explanation) : null;
+          if (rich) { feedback.appendChild(el("div", { class: "tutor-quiz__explain tutor-quiz__explain--rich" }, [rich])); }
+          else if (result.explanation) { feedback.appendChild(el("p", { class: "tutor-quiz__explain", text: "詳解：" + result.explanation })); }
           feedback.removeAttribute("hidden");
           scrollBottom();
           askNext(questions, index + 1, score);

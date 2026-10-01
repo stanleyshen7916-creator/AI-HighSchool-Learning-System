@@ -859,7 +859,13 @@ AHS.WrongBook = (function () {
       el("span", { class: "wb-detail__explain-toggle-label", text: "詳解" }),
       el("span", { class: "wb-detail__explain-chevron", html: AHS.Icons.chevronRight() })
     ]);
-    var explainText = el("p", { class: "wb-detail__explain-text", text: item.explanation, hidden: "hidden" });
+    /* 2026-10-01 數學詳解補強: richer worked solution with figures when one
+       exists (AHS.ExplanationSupplement, matched by questionId or, for old
+       records, the question text), else the original text as before. */
+    var richExplain = (window.AHS && AHS.ExplanationSupplement) ? AHS.ExplanationSupplement.render(item, item.explanation) : null;
+    var explainText = richExplain
+      ? el("div", { class: "wb-detail__explain-text wb-detail__explain-text--rich", hidden: "hidden" }, [richExplain])
+      : el("p", { class: "wb-detail__explain-text", text: item.explanation, hidden: "hidden" });
     explainToggle.addEventListener("click", function () {
       var isOpen = explainToggle.getAttribute("aria-expanded") === "true";
       explainToggle.setAttribute("aria-expanded", isOpen ? "false" : "true");

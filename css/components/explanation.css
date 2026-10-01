@@ -1,0 +1,99 @@
+/* css/components/explanation.css — 2026-10-01 數學詳解補強.
+   Layout for AHS.ExplanationSupplement (js/utils/ExplanationSupplement.js),
+   shared by 測驗中心, 知識弱點, 學習助教 and 教材預覽. */
+.xsup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  text-align: left;
+}
+
+.xsup__label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+
+.xsup__text { margin: 0; white-space: pre-wrap; }
+
+.xsup__concept {
+  padding: 10px 14px;
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background-color: var(--brand-soft);
+}
+
+.xsup__figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.xsup__figure {
+  flex: 1 1 260px;
+  max-width: 380px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+}
+
+.xsup__svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+}
+
+.xsup__caption {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.xsup__list {
+  margin: 0;
+  padding-left: 1.5em;
+}
+
+.xsup__list li { margin: 2px 0; }
+
+.xsup__steps .xsup__list li::marker { font-weight: 700; color: var(--brand); }
+
+.xsup__pitfalls {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background-color: #fff5f5;
+}
+
+.xsup__pitfalls .xsup__label { color: #c0392b; }
+
+.xsup__note {
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background-color: #fff8e6;
+  color: #7a5200;
+  font-size: 14px;
+}
+
+.xsup__original {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.xsup__original summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.xsup__original .xsup__text { margin-top: 4px; }

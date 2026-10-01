@@ -19,6 +19,14 @@ AHS.QuizCenter = (function () {
   "use strict";
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
 
+  /* richExplanation(q, original, cls) — 2026-10-01 數學詳解補強: the richer
+     worked solution (steps + figures) from AHS.ExplanationSupplement wrapped
+     in a div of class cls, or null when this question has none. */
+  function richExplanation(q, original, cls) {
+    var sup = (window.AHS && AHS.ExplanationSupplement) ? AHS.ExplanationSupplement.render(q, original) : null;
+    return sup ? el("div", { class: cls }, [sup]) : null;
+  }
+
   var DIFF_TONE = { "易": "#22b573", "易~中等": "#22b573", "中等": "#f59e0b", "難": "#ef4444" };
 
   /* difficultyBadge(label) — Sprint AI-137: a small colored pill (reuses
@@ -932,7 +940,10 @@ AHS.QuizCenter = (function () {
             el("span", { style: "color:" + toneHex + ";font-weight:700",
               text: "正確答案：" + (AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer) })
           ]),
-          el("p", { class: "qreview__item-explain", text: q.explanation })
+          /* 2026-10-01 數學詳解補強: richer worked solution with figures when
+             one exists (AHS.ExplanationSupplement), else the original text. */
+          richExplanation(q, q.explanation, "qreview__item-explain") ||
+            el("p", { class: "qreview__item-explain", text: q.explanation })
         ]);
       }));
 
@@ -1505,10 +1516,11 @@ AHS.QuizCenter = (function () {
         el("strong", { text: "標準答案：" }),
         el("span", { text: AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer })
       ]));
-      if (q.explanation) {
+      var rich = richExplanation(q, q.explanation, "quiz-practice__exp-rich");
+      if (q.explanation || rich) {
         answerSlot.appendChild(el("div", { class: "quiz-practice__exp-block" }, [
           el("strong", { class: "quiz-practice__exp-title", text: "詳解" }),
-          el("p", { text: q.explanation })
+          rich || el("p", { text: q.explanation })
         ]));
       }
       answerSlot.removeAttribute("hidden");
