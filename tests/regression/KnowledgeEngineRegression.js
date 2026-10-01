@@ -118,9 +118,12 @@ console.log("\n[1] QuestionBankRuntime — 建立一次永久保存，capped 於
   check("hasBank() 反映真實已建立狀態", A.QuestionBankRuntime.hasBank("exam_bank_test") === true);
   check("bankSize() 正確", A.QuestionBankRuntime.bankSize("exam_bank_test") === 6);
   const many = [];
-  for (let i = 0; i < 80; i++) { many.push({ id: "m" + i, index: i, text: "t" }); }
+  for (let i = 0; i < 320; i++) { many.push({ id: "m" + i, index: i, text: "t" }); }
   const bankBig = A.QuestionBankRuntime.ensureBank("exam_bank_big", many);
-  check("MAX_BANK_SIZE 上限生效（80 題真實內容被 cap 在 50，never 補到更多）", bankBig.length === 50);
+  check("MAX_BANK_SIZE 上限生效（320 題真實內容被 cap 在 300，never 補到更多）", bankBig.length === 300 && A.QuestionBankRuntime.MAX_BANK_SIZE === 300);
+  const sixty = [];
+  for (let i = 0; i < 60; i++) { sixty.push({ id: "s" + i, index: i, text: "t" }); }
+  check("60 題的教材（如 tm_4）全部進入題庫，不再被截掉", A.QuestionBankRuntime.ensureBank("exam_bank_60", sixty).length === 60);
   const drawn = A.QuestionBankRuntime.drawRandom("exam_bank_test", 10);
   check("drawRandom() 對僅 6 題的真實 Bank 誠實只回傳 6 題（不假造湊滿 10）", drawn.length === 6);
   const drawnBig = A.QuestionBankRuntime.drawRandom("exam_bank_big", 10);
