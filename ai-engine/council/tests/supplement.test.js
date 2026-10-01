@@ -218,6 +218,46 @@ describe('補充題庫草稿 → 發布 → 併入原教材題庫', () => {
     expect(() => packageBuilder.supplements.authorPrompt({ parentId: draftId, count: 5 })).toThrow('本身是補充題庫');
     expect(existingPackagesHash()).toEqual(BASELINE);
   }, 180000);
+
+  // 2026-10-01 regression: a supplement copies its parent's subject/chapter, and the
+  // duplicate check used to reject it whenever the parent's id sorted first as text
+  // ("tm_1" < "tm_19"); tm_7 only passed because "tm_18" < "tm_7".
+  test('原教材編號較小（tm_1）時也能發布；未獨立作答時如實記錄確認方式', () => {
+    const MATH = [
+      'Q1. 三角形兩邊長為 3 與 8，兩邊的夾角為 60°，第三邊長為何？',
+      '(A) 5　(B) 7　(C) √73　(D) √97',
+      '答案：B',
+      '詳解：第三邊² = 9 + 64 − 2·3·8·cos60° = 49，第三邊 = 7。',
+      '知識點：餘弦定理',
+      '難度：易',
+    ].join('\n');
+    const draft = packageBuilder.createSupplementDraft({
+      parentId: 'tm_1', authorText: MATH, solvers: [], accept: [1], reviewNote: '以程式數值驗算',
+    });
+    const md = fs.readFileSync(path.join(PLATFORM, `docs/TeachingMaterials/materials/${draft.materialId}/material.md`), 'utf8');
+    expect(md).toContain('核對方式：未經獨立作答核對；改以「以程式數值驗算」確認');
+    expect(md).toContain('經「以程式數值驗算」確認後收錄');
+    const result = packageBuilder.publish(draft.materialId);
+    expect(result.stage).toBe('IMPORTED');
+    const tm1 = loadPlatformData().find((e) => e.materialId === 'tm_1');
+    expect(tm1.questions.some((q) => q.supplementId === draft.materialId)).toBe(true);
+    expect(existingPackagesHash()).toEqual(BASELINE);
+  }, 180000);
+});
+
+describe('重複判定的勝出者依編號數值（不是字串排序）', () => {
+  test('tm_9 與 tm_10 重複時保留較早的 tm_9', () => {
+    const scripts = path.join(PLATFORM, 'docs/TeachingMaterials/scripts');
+    const repo = require(path.join(scripts, 'RepositoryManager.js'));
+    const im = require(path.join(scripts, 'ImportManager.js'));
+    const original = repo.checkDuplicates;
+    repo.checkDuplicates = () => [{ group: ['tm_10', 'tm_9'], reason: 'test' }];
+    try {
+      expect(im.duplicateLoserMap()).toEqual({ tm_10: 'tm_9' });
+    } finally {
+      repo.checkDuplicates = original;
+    }
+  });
 });
 
 describe('/api/platform/supplements', () => {

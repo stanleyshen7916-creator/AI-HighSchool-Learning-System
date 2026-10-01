@@ -1532,7 +1532,11 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
     pw.window.document.querySelector(".wb-row").click();
     const redoBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("立即重做"));
     redoBtn.click();
-    const correctOpt = [...pw.window.document.querySelectorAll(".wb-detail__option")].find(li => li.querySelector(".wb-detail__option-key").textContent === item.correctAnswer);
+    /* 2026-10-01: pick the correct option by its TEXT — AI-generated
+       questions are displayed in a shuffled order (AHS.OptionOrder), so the
+       displayed letter is not the stored original key. */
+    const correctText = ((item.options || []).find(o => o.key === item.correctAnswer) || {}).text;
+    const correctOpt = [...pw.window.document.querySelectorAll(".wb-detail__option")].find(li => li.querySelector(".wb-detail__option-text").textContent === correctText);
     correctOpt.click();
     const submitBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("提交答案"));
     submitBtn.click();

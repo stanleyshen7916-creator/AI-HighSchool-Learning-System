@@ -36,7 +36,7 @@
    not attempted at all, no log entry):
      1. AI-115-06 Duplicate Detection — RepositoryManager.checkDuplicates()
         across the WHOLE repository (not just candidates); reused, not
-        re-implemented. Within a duplicate group, the lexicographically
+        re-implemented. Within a duplicate group, the numerically
         smallest materialId (== the earliest-assigned tm_<seq>, since ids
         are assigned sequentially) is kept; every other member is
         rejected as a duplicate of it.
@@ -115,7 +115,10 @@ function duplicateLoserMap() {
   const groups = repoManager.checkDuplicates();
   const losers = {};
   groups.forEach(function (g) {
-    const sorted = g.group.slice().sort();
+    /* 2026-10-01: numeric order — a plain string sort put "tm_18" before
+       "tm_7", so a NEW package could win over the older, already-imported
+       one once ids reached two digits ("earliest-assigned" is the rule). */
+    const sorted = g.group.slice().sort(function (a, b) { return Number(a.slice(3)) - Number(b.slice(3)); });
     const winner = sorted[0];
     sorted.slice(1).forEach(function (id) { losers[id] = losers[id] || winner; });
   });

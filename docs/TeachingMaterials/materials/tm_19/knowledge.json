@@ -1,0 +1,36 @@
+{
+  "materialId": "tm_19",
+  "knowledgePoints": [
+    {
+      "name": "序篇：世界史知識的實用價值",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "序篇：在怎樣的脈絡中討論世界史",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "序篇：我們要往何處去",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "序篇：我們要往何處去（全球在地化）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "序篇：為什麼要讀世界史",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "序篇：讀歷史的功用",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-01T15:27:10.493Z"
+}

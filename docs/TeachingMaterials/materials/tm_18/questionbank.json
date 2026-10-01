@@ -1,0 +1,269 @@
+{
+  "materialId": "tm_18",
+  "questions": [
+    {
+      "questionId": "tm_18_q1",
+      "materialId": "tm_18",
+      "questionNumber": "1",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，a = 7、b = 5、c = 3，則 ∠A 為多少？",
+      "options": [
+        "60°",
+        "90°",
+        "120°",
+        "150°"
+      ],
+      "answer": "120°",
+      "explanation": "由餘弦定理 cosA = (b² + c² − a²)/(2bc) = (25 + 9 − 49)/(2·5·3) = −15/30 = −1/2，且 0° < A < 180°，所以 A = 120°。a 是最長邊，cosA < 0 也說明 ∠A 是鈍角，可直接排除 (A)(B)。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "餘弦定理（已知三邊求角）",
+      "difficulty": "易"
+    },
+    {
+      "questionId": "tm_18_q2",
+      "materialId": "tm_18",
+      "questionNumber": "2",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，∠A = 60°、b = 8、c = 5，則 a = ？",
+      "options": [
+        "6",
+        "7",
+        "√89",
+        "√129"
+      ],
+      "answer": "7",
+      "explanation": "a² = b² + c² − 2bc·cosA = 64 + 25 − 2·8·5·(1/2) = 89 − 40 = 49，所以 a = 7。選 (C) 是忘了減去 2bc·cosA；選 (D) 是把 cos60° 的符號弄反（變成 89 + 40）。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "餘弦定理（已知兩邊夾角求第三邊）",
+      "difficulty": "易"
+    },
+    {
+      "questionId": "tm_18_q3",
+      "materialId": "tm_18",
+      "questionNumber": "3",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，a = 6、∠A = 30°，則 △ABC 外接圓的半徑 R = ？",
+      "options": [
+        "6",
+        "3",
+        "12",
+        "6√3"
+      ],
+      "answer": "6",
+      "explanation": "正弦定理 a / sinA = 2R，6 / (1/2) = 12 = 2R，所以 R = 6。選 (C) 是把 2R 當成 R。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "正弦定理與外接圓半徑",
+      "difficulty": "易"
+    },
+    {
+      "questionId": "tm_18_q4",
+      "materialId": "tm_18",
+      "questionNumber": "4",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，b = 4、c = 6、∠A = 150°，則 △ABC 的面積為何？",
+      "options": [
+        "6√3",
+        "12",
+        "6",
+        "3"
+      ],
+      "answer": "6",
+      "explanation": "面積 = ½·b·c·sinA = ½·4·6·sin150° = 12 · ½ = 6。sin150° = sin30° = 1/2；若誤用 cos150° 或 sin60° 會得到 (A)。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "三角形面積公式（兩邊夾角）",
+      "difficulty": "易"
+    },
+    {
+      "questionId": "tm_18_q5",
+      "materialId": "tm_18",
+      "questionNumber": "5",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，∠A = 45°、∠B = 60°、a = 2√2，則 b = ？",
+      "options": [
+        "√6",
+        "2√3",
+        "3√2",
+        "4"
+      ],
+      "answer": "2√3",
+      "explanation": "正弦定理 a / sinA = b / sinB，b = a·sinB / sinA = 2√2 · (√3/2) / (√2/2) = 2√2 · √3 / √2 = 2√3。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "正弦定理（已知兩角一邊）",
+      "difficulty": "中等"
+    },
+    {
+      "questionId": "tm_18_q6",
+      "materialId": "tm_18",
+      "questionNumber": "6",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "三邊長分別為 5、7、8 的三角形，面積為何？",
+      "options": [
+        "10√3",
+        "20√3",
+        "10",
+        "5√3"
+      ],
+      "answer": "10√3",
+      "explanation": "以海龍公式：s = (5 + 7 + 8)/2 = 10，面積 = √(10·5·3·2) = √300 = 10√3。也可先用餘弦定理求 7 所對的角：cosθ = (25 + 64 − 49)/(2·5·8) = 1/2，θ = 60°，面積 = ½·5·8·sin60° = 10√3。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "海龍公式、餘弦定理",
+      "difficulty": "中等"
+    },
+    {
+      "questionId": "tm_18_q7",
+      "materialId": "tm_18",
+      "questionNumber": "7",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "三角形的三邊長為下列哪一組時，它是鈍角三角形？",
+      "options": [
+        "3、4、5",
+        "5、12、13",
+        "6、7、8",
+        "4、5、7"
+      ],
+      "answer": "4、5、7",
+      "explanation": "設最長邊為 c，c² > a² + b² 時最大角為鈍角。(D) 7² = 49 > 4² + 5² = 41，是鈍角三角形。(A)(B) 剛好相等，是直角三角形；(C) 64 < 36 + 49 = 85，是銳角三角形。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "以邊長判斷三角形的形狀（餘弦定理）",
+      "difficulty": "中等"
+    },
+    {
+      "questionId": "tm_18_q8",
+      "materialId": "tm_18",
+      "questionNumber": "8",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，sinA : sinB : sinC = 3 : 5 : 7，則 △ABC 的最大角為多少？",
+      "options": [
+        "90°",
+        "120°",
+        "135°",
+        "150°"
+      ],
+      "answer": "120°",
+      "explanation": "由正弦定理 a : b : c = sinA : sinB : sinC = 3 : 5 : 7，可設 a = 3k、b = 5k、c = 7k。最大角是 ∠C：cosC = (9k² + 25k² − 49k²)/(2·3k·5k) = −15k²/30k² = −1/2，所以 C = 120°。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "正弦定理（邊長比＝正弦比）、餘弦定理",
+      "difficulty": "中等"
+    },
+    {
+      "questionId": "tm_18_q9",
+      "materialId": "tm_18",
+      "questionNumber": "9",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "△ABC 中，a = 10、sinA = 5/13，則外接圓半徑 R = ？",
+      "options": [
+        "26",
+        "13/2",
+        "10",
+        "13"
+      ],
+      "answer": "13",
+      "explanation": "2R = a / sinA = 10 ÷ (5/13) = 26，所以 R = 13。選 (A) 是把 2R 當成 R。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "正弦定理與外接圓半徑",
+      "difficulty": "易"
+    },
+    {
+      "questionId": "tm_18_q10",
+      "materialId": "tm_18",
+      "questionNumber": "10",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "平行四邊形 ABCD 中，AB = 6、AD = 8、∠BAD = 60°，則平行四邊形 ABCD 的面積為何？",
+      "options": [
+        "12√3",
+        "24",
+        "24√3",
+        "48"
+      ],
+      "answer": "24√3",
+      "explanation": "對角線 BD 把平行四邊形分成兩個全等三角形，每個面積 ½·6·8·sin60° = 12√3，所以平行四邊形面積 = 2 × 12√3 = 24√3（等於 AB·AD·sin∠BAD）。選 (A) 是只算了一個三角形。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "三角形面積公式的應用",
+      "difficulty": "中等"
+    },
+    {
+      "questionId": "tm_18_q11",
+      "materialId": "tm_18",
+      "questionNumber": "11",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "承上題，平行四邊形 ABCD（AB = 6、AD = 8、∠BAD = 60°）中，較短的對角線 BD 長為何？",
+      "options": [
+        "2√13",
+        "2√37",
+        "10",
+        "14"
+      ],
+      "answer": "2√13",
+      "explanation": "在 △ABD 中用餘弦定理：BD² = 6² + 8² − 2·6·8·cos60° = 36 + 64 − 48 = 52，BD = 2√13。另一條對角線 AC 所對的角是 120°，AC² = 36 + 64 + 48 = 148，AC = 2√37，較長，所以 (B) 是較長的對角線。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "餘弦定理的應用（平行四邊形對角線）",
+      "difficulty": "難"
+    },
+    {
+      "questionId": "tm_18_q12",
+      "materialId": "tm_18",
+      "questionNumber": "12",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "測量員在河岸的 A、B 兩點測得 AB = 100 公尺，對岸一點 C 滿足 ∠CAB = 75°、∠CBA = 45°，則 A 到 C 的距離為多少公尺？",
+      "options": [
+        "50√6",
+        "100√6/3",
+        "50√2",
+        "100√3/3"
+      ],
+      "answer": "100√6/3",
+      "explanation": "∠C = 180° − 75° − 45° = 60°。正弦定理：AC / sin∠B = AB / sin∠C，AC = 100 · sin45° / sin60° = 100 · (√2/2) / (√3/2) = 100√2/√3 = 100√6/3（約 81.6 公尺）。注意 AC 對的是 ∠B，不是 ∠A。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-01T15:27:08.460Z",
+      "knowledgePoint": "正弦定理的應用（測量）",
+      "difficulty": "難"
+    }
+  ]
+}
