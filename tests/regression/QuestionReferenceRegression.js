@@ -1,15 +1,19 @@
-/* tests/regression/QuestionReferenceRegression.js — 2026-10-02 題目出處與歷屆試題.
+/* tests/regression/QuestionReferenceRegression.js — 2026-10-02 題目出處、歷屆試題與對應課程.
 
    Verifies:
    - every 補充題庫 question merged into a material carries a reference (出處);
-   - past national exam questions (questionSource PAST_EXAM) all name the
-     exam, year, subject and question number, and keep their official
-     option order (never shuffled by AHS.OptionOrder);
-   - AHS.QuestionReference shows 「出處：…」 (with a 「歷屆試題」 badge for
-     PAST_EXAM) and finds the reference for old records that lack it;
-   - 測驗中心: tm_4 (an exam paper) opens 原始試卷, its practice side is
-     labelled 「歷屆試題練習」 and shows the past exam questions with 出處;
-   - the schema and validator accept PAST_EXAM and require its reference.
+   - past national exam questions (questionSource PAST_EXAM) name the exam,
+     year, subject and question number, keep their official option order
+     (never shuffled by AHS.OptionOrder), and map to at least a lesson (課)
+     of the textbook: 對應課程 + optional 節次 + 完全/部分對應 + reason;
+   - AHS.QuestionReference shows 「出處：…」 (with a 「歷屆試題」 badge) and
+     「對應：課 · 節」 (plus the extra concepts needed for 部分對應), and
+     finds both for old records that lack them;
+   - tm_4's past exam questions (tm_21) are archived — tm_4 is a
+     multi-lesson exam paper whose lessons can't be told apart — so tm_4
+     keeps its usual single-source 平時練習 without a toggle;
+   - the schema and validator accept PAST_EXAM and require reference and
+     a lesson mapping.
 
    Run: node tests/regression/QuestionReferenceRegression.js */
 "use strict";
@@ -47,68 +51,87 @@ function loadPage(htmlFile, semester) {
 }
 function click(node) { node.dispatchEvent(new node.ownerDocument.defaultView.MouseEvent("click", { bubbles: true, cancelable: true })); }
 
-console.log("QuestionReference Regression — 題目出處與歷屆試題");
+console.log("QuestionReference Regression — 題目出處、歷屆試題與對應課程");
 
 console.log("\n[1] 資料");
 global.window = global;
 require(path.join(REPO, "js/data/TeachingMaterialData.js"));
 const all = AHS.TeachingMaterialData.flatMap((e) => e.questions);
 const supplement = all.filter((q) => q.supplementId);
-check("補充題庫的題目全部都有出處", supplement.length >= 48 && supplement.every((q) => q.reference && q.reference.trim()));
+check("補充題庫的題目全部都有出處", supplement.length >= 42 && supplement.every((q) => q.reference && q.reference.trim()));
 const past = all.filter((q) => q.questionSource === "PAST_EXAM");
-check("歷屆試題 13 題，全部來自補充題庫", past.length === 13 && past.every((q) => q.supplementId));
-check("歷屆試題出處寫明年度、考試、考科、題號與出題單位",
+check("歷屆試題 7 題，全部來自補充題庫（tm_4 的 6 題已封存）", past.length === 7 && past.every((q) => q.supplementId));
+check("出處寫明年度、考試、考科、題號與出題單位",
   past.every((q) => /^11[34]學年度學科能力測驗 社會考科 第\d+題（.*大考中心）$/.test(q.reference)));
-check("歷屆試題的詳解註明由 AI 撰寫", past.every((q) => /^（詳解為 AI 撰寫）/.test(q.explanation)));
+check("詳解註明由 AI 撰寫", past.every((q) => /^（詳解為 AI 撰寫）/.test(q.explanation)));
+check("每題都對應到課（對應課程＋完全／部分對應＋理由）",
+  past.every((q) => q.mapping && /^第\d章 /.test(q.mapping.lesson) && /^(完全|部分)對應$/.test(q.mapping.fit) && q.mapping.note));
+check("部分對應的題目寫出另需的觀念", past.filter((q) => q.mapping.fit === "部分對應").length === 2 &&
+  past.filter((q) => q.mapping.fit === "部分對應").every((q) => q.mapping.note.length > 10));
 const byParent = {};
 past.forEach((q) => { byParent[q.materialId] = (byParent[q.materialId] || 0) + 1; });
-check("歷屆試題併入 tm_4／tm_8／tm_9／tm_15／tm_16", JSON.stringify(byParent) === JSON.stringify({ tm_15: 2, tm_16: 1, tm_4: 6, tm_8: 2, tm_9: 2 }));
+check("併入 tm_8／tm_9／tm_15／tm_16", JSON.stringify(byParent) === JSON.stringify({ tm_15: 2, tm_16: 1, tm_8: 2, tm_9: 2 }));
+const tm21 = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/materials/tm_21/manifest.json"), "utf8"));
+check("tm_21（tm_4 的歷屆試題）已封存，題目檔案保留",
+  tm21.archived === true && fs.existsSync(path.join(REPO, "docs/TeachingMaterials/materials/tm_21/questionbank.json")));
 require(path.join(REPO, "js/utils/OptionOrder.js"));
 const L = ["A", "B", "C", "D"];
-check("歷屆試題維持官方選項順序（不打亂）",
+check("維持官方選項順序（不打亂）",
   past.every((q) => AHS.OptionOrder.order({ id: q.id, options: q.options.map((t, i) => ({ key: L[i], text: t })) }).every((o, i) => o.key === L[i])));
 
 console.log("\n[2] 顯示");
 {
   const { window } = loadPage("wrongbook.html", "g2s1");
   const QR = window.AHS.QuestionReference;
-  const p = QR.node(past[0]);
-  check("歷屆試題顯示「歷屆試題」標籤與出處", !!p && p.classList.contains("qref--past") && p.textContent === "歷屆試題出處：" + past[0].reference);
+  const full = past.find((q) => q.mapping.fit === "完全對應" && q.mapping.section);
+  const pf = QR.node(full);
+  check("歷屆試題：標籤、出處、對應課節",
+    !!pf && pf.classList.contains("qref--past") &&
+    pf.textContent === "歷屆試題出處：" + full.reference + "對應：" + full.mapping.lesson + " · " + full.mapping.section);
+  const partial = past.find((q) => q.mapping.fit === "部分對應");
+  check("部分對應註明另需的觀念", QR.node(partial).querySelector(".qref__map").textContent.indexOf("（部分對應：" + partial.mapping.note) !== -1);
   const ai = supplement.find((q) => q.questionSource === "AI_GENERATED");
-  check("AI 補充題顯示出處（無歷屆標籤）", QR.node(ai).textContent === "出處：" + ai.reference && !QR.node(ai).querySelector(".qref__badge"));
-  check("舊紀錄沒有 reference 時，用 questionId 找回出處", QR.of({ questionId: past[1].id, question: "x" }).text === past[1].reference);
+  check("AI 補充題顯示出處（無歷屆標籤、無對應行）",
+    QR.node(ai).textContent === "出處：" + ai.reference && !QR.node(ai).querySelector(".qref__badge") && !QR.node(ai).querySelector(".qref__map"));
+  check("舊紀錄沒有 reference 時，用 questionId 找回出處與對應", QR.of({ questionId: past[1].id, question: "x" }).mapping.lesson === past[1].mapping.lesson);
   check("舊紀錄沒有 questionId 時，用題目文字找回出處", QR.of({ question: past[2].question }).text === past[2].reference);
   const own = all.find((q) => !q.reference && !q.supplementId);
   check("教材本身的題目不顯示出處", QR.node({ id: own.id, question: own.question }) === null);
 }
 
-console.log("\n[3] 測驗中心：tm_4（考卷）＋歷屆試題");
+console.log("\n[3] 測驗中心");
 {
   const { window, doc, consoleErrors } = loadPage("quiz.html", "g1s2");
-  const AHSw = window.AHS;
   const row = [...doc.querySelectorAll(".quiz-row")].find((r) => r.textContent.indexOf("全球化與國際分工") !== -1);
   click(row.querySelector(".quiz-row__start"));
-  let s = AHSw.ExamRuntime.getCurrent();
-  check("tm_4 先進入原始試卷（只有原題）", /__original$/.test(s.examId) && AHSw.QuestionRuntime.getSet(s.examId).every((q) => q.questionSource === "ORIGINAL"));
-  const labels = [...doc.querySelectorAll(".qexam__mode-btn")].map((b) => b.textContent);
-  check("練習側標示為「歷屆試題練習」", labels.length === 2 && labels[1].indexOf("歷屆試題練習") !== -1);
-  click([...doc.querySelectorAll(".qexam__mode-btn")][1]);
-  s = AHSw.ExamRuntime.getCurrent();
-  const qs = AHSw.QuestionRuntime.getSet(s.examId);
-  check("切換後是 6 題歷屆試題", /__ai$/.test(s.examId) && qs.length === 6 && qs.every((q) => q.questionSource === "PAST_EXAM"));
-  const ref = doc.querySelector(".qcard .qref--past");
-  check("題目下方顯示出處（大考中心）", !!ref && ref.textContent.indexOf("學年度學科能力測驗 社會考科") !== -1);
-  check("Console errors = 0", consoleErrors.length === 0);
+  const s4 = window.AHS.ExamRuntime.getCurrent();
+  check("tm_4 照常平時練習（只有原題、沒有切換）", /__formal_\d+$/.test(s4.examId) &&
+    window.AHS.QuestionRuntime.getSet(s4.examId).every((q) => q.questionSource === "ORIGINAL") && !doc.querySelector(".qexam__mode-btn"));
+  check("Console errors = 0（高一下）", consoleErrors.length === 0);
+}
+{
+  const { window, doc, consoleErrors } = loadPage("quiz.html", "g2s1");
+  const idMap = window.AHS.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {};
+  const examId = "teaching_material_" + idMap.tm_9;
+  const q = window.AHS.QuestionRuntime.getSet(examId).find((x) => x.id === "tm_23_q2");
+  check("tm_9 的題目裡有歷屆試題（帶對應資料）", !!q && q.questionSource === "PAST_EXAM" && q.mapping && q.mapping.fit === "完全對應");
+  const card = window.AHS.QuestionCard.create(q, null, function () {});
+  doc.body.appendChild(card);
+  const map = card.querySelector(".qref__map");
+  check("題卡顯示「對應：第2章 需求與供給 · 第3節 供給」",
+    !!card.querySelector(".qref--past") && !!map && map.textContent === "對應：第2章 需求與供給 · 第3節 供給");
+  check("Console errors = 0（高二上）", consoleErrors.length === 0);
 }
 
 console.log("\n[4] Schema 與驗證");
 {
   const schema = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/schema/QuestionBank.schema.json"), "utf8"));
   const props = schema.properties.questions.items.properties;
-  check("Schema：questionSource 含 PAST_EXAM、origin 含 Past Exam、有 reference 欄位",
-    props.questionSource.enum.indexOf("PAST_EXAM") !== -1 && props.origin.enum.indexOf("Past Exam") !== -1 && !!props.reference);
+  check("Schema：PAST_EXAM／Past Exam／reference／mapping",
+    props.questionSource.enum.indexOf("PAST_EXAM") !== -1 && props.origin.enum.indexOf("Past Exam") !== -1 && !!props.reference &&
+    JSON.stringify(props.mapping.required) === JSON.stringify(["lesson", "fit"]));
   const validator = fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/scripts/ValidateMaterial.js"), "utf8");
-  check("驗證：PAST_EXAM 必須有出處", /PAST_EXAM carries a reference/.test(validator));
+  check("驗證：PAST_EXAM 必須有出處，且至少對應到課", /PAST_EXAM carries a reference/.test(validator) && /PAST_EXAM maps to a lesson/.test(validator));
 }
 
 console.log("\nQuestionReferenceRegression: " + pass + " PASS / " + fail + " FAIL");

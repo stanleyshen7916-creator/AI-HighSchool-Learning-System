@@ -7,7 +7,9 @@
    Every page that shows a question shows this line under the stem.
 
    API
-     of(q)   -> { text, pastExam } or null
+     of(q)   -> { text, pastExam, mapping } or null
+   mapping (2026-10-02, past exam questions): { lesson, section, fit, note }
+   — which lesson (課) / section (節) of the textbook the question maps to.
      node(q) -> HTMLElement (p.qref) or null
    q: { id | questionId, reference?, questionSource?, question | text }.
    Records saved before `reference` existed (e.g. old 知識弱點 rows) are
@@ -42,7 +44,7 @@ AHS.QuestionReference = (function () {
       source = (id && byId[id]) || byText[String(q.question || q.text || "").replace(/\s+/g, "")] || null;
     }
     if (!source || !source.reference) { return null; }
-    return { text: String(source.reference), pastExam: source.questionSource === "PAST_EXAM" };
+    return { text: String(source.reference), pastExam: source.questionSource === "PAST_EXAM", mapping: source.mapping || null };
   }
 
   function node(q) {
@@ -57,6 +59,13 @@ AHS.QuestionReference = (function () {
       p.appendChild(badge);
     }
     p.appendChild(document.createTextNode("出處：" + ref.text));
+    if (ref.mapping && ref.mapping.lesson) {
+      var map = document.createElement("span");
+      map.className = "qref__map";
+      map.textContent = "對應：" + ref.mapping.lesson + (ref.mapping.section ? " · " + ref.mapping.section : "") +
+        (ref.mapping.fit === "部分對應" ? "（部分對應：" + (ref.mapping.note || "另需其他課的觀念") + "）" : "");
+      p.appendChild(map);
+    }
     return p;
   }
 

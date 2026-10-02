@@ -311,6 +311,9 @@ function createSupplementBuilder({ platformRoot }) {
       });
       if (pastExam) {
         if (!q.reference) reasons.push('歷屆試題缺少出處（年度、考試、考科、題號）');
+        // 2026-10-02：至少要對應到課本的「課」；節次可以空白。
+        if (!q.mapping || !q.mapping.lesson) reasons.push('歷屆試題缺少「對應課程：」（至少要對應到課）');
+        else if (q.mapping.fit !== '完全對應' && q.mapping.fit !== '部分對應') reasons.push('「對應程度：」須為「完全對應」或「部分對應」');
       } else if (!solverList.length) reasons.push('尚未獨立作答核對');
       solverAnswers.forEach((a) => {
         if (a.problem) reasons.push(`${a.name}認為題目有問題：${a.problem}`);
@@ -332,6 +335,7 @@ function createSupplementBuilder({ platformRoot }) {
         knowledgePoint: q.knowledgePoint || q.section || null,
         difficulty: q.difficulty || null,
         reference: q.reference || null,
+        mapping: q.mapping || null,
         solverAnswers,
         status,
         reasons,

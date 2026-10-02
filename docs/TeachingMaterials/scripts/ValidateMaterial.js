@@ -130,6 +130,10 @@ function validateQuestionSourceRule(questionBank) {
        (year, exam, subject, question number) — shown to students as 出處. */
     if (q.questionSource === "PAST_EXAM") {
       check(label + ": PAST_EXAM carries a reference (出處)", typeof q.reference === "string" && q.reference.trim().length > 0);
+      /* 2026-10-02: and must map to at least a lesson (課) of the textbook. */
+      check(label + ": PAST_EXAM maps to a lesson (對應課程) with a fit (完全/部分對應)",
+        !!q.mapping && typeof q.mapping.lesson === "string" && q.mapping.lesson.trim().length > 0 &&
+        (q.mapping.fit === "完全對應" || q.mapping.fit === "部分對應"));
     }
     const isOriginal = q.questionSource === "ORIGINAL";
     ["ocrConfidence", "needsReview"].forEach((field) => {

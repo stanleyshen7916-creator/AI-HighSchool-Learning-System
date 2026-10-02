@@ -304,6 +304,9 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     const chosen = result.questions.filter((q) => wanted.has(q.number) && q.status !== 'duplicate');
     if (!chosen.length) throw new Error('沒有勾選任何可加入的題目（重複的題目不能加入）');
     if (pastExam && chosen.some((q) => !q.reference)) throw new Error('歷屆試題每題都必須有「出處：」（年度、考試、考科、題號）');
+    if (pastExam && chosen.some((q) => !q.mapping || !q.mapping.lesson || !/^(完全|部分)對應$/.test(q.mapping.fit || ''))) {
+      throw new Error('歷屆試題每題都必須有「對應課程：」與「對應程度：完全對應／部分對應」（至少要對應到課）');
+    }
     const aiReference = `AI 依 ${parent.materialId}「${parent.metadata.chapter || ''}」教材內容出題`;
 
     const materialId = nextMaterialId();
@@ -374,6 +377,9 @@ function createPackageBuilder({ platformRoot, dataDir }) {
         if (q.knowledgePoint) record.knowledgePoint = q.knowledgePoint;
         if (q.difficulty) record.difficulty = q.difficulty;
         record.reference = q.reference || aiReference;
+        if (q.mapping && q.mapping.lesson) {
+          record.mapping = { lesson: q.mapping.lesson, section: q.mapping.section || null, fit: q.mapping.fit, note: q.mapping.note || '' };
+        }
         return record;
       }),
     });

@@ -275,6 +275,8 @@ function convertQuestions(questionBank, materialRuntimeId) {
     if (q.figureSvg) { converted.figureSvg = q.figureSvg; }
     /* 2026-10-01 出處: real passthrough only, omitted when absent. */
     if (q.reference) { converted.reference = q.reference; }
+    /* 2026-10-02 對應課程 (past exam questions). */
+    if (q.mapping) { converted.mapping = q.mapping; }
     return converted;
   });
 }
