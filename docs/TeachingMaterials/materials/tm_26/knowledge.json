@@ -1,0 +1,16 @@
+{
+  "materialId": "tm_26",
+  "knowledgePoints": [
+    {
+      "name": "化學計量：連續反應的係數比",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "限量試劑與剩餘量",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-02T14:09:52.016Z"
+}

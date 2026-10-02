@@ -60,22 +60,24 @@ const all = AHS.TeachingMaterialData.flatMap((e) => e.questions);
 const supplement = all.filter((q) => q.supplementId);
 check("補充題庫的題目全部都有出處", supplement.length >= 42 && supplement.every((q) => q.reference && q.reference.trim()));
 const past = all.filter((q) => q.questionSource === "PAST_EXAM");
-check("歷屆試題 7 題，全部來自補充題庫（tm_4 的 6 題已封存）", past.length === 7 && past.every((q) => q.supplementId));
-check("出處寫明年度、考試、考科、題號與出題單位",
-  past.every((q) => /^11[34]學年度學科能力測驗 社會考科 第\d+題（.*大考中心）$/.test(q.reference)));
+check("歷屆試題 11 題，全部來自補充題庫（tm_4 的 6 題已封存）", past.length === 11 && past.every((q) => q.supplementId));
+check("出處寫明年度、考試、考科、題號與出題單位（學測社會、學測數學A、分科化學）",
+  past.every((q) => /^11[1-4]學年度(學科能力測驗 (社會|數學A)|分科測驗 化學)考科 第\d+題（.*大考中心）$/.test(q.reference)));
 check("詳解註明由 AI 撰寫", past.every((q) => /^（詳解為 AI 撰寫）/.test(q.explanation)));
 check("每題都對應到課（對應課程＋完全／部分對應＋理由）",
-  past.every((q) => q.mapping && /^第\d章 /.test(q.mapping.lesson) && /^(完全|部分)對應$/.test(q.mapping.fit) && q.mapping.note));
-check("部分對應的題目寫出另需的觀念", past.filter((q) => q.mapping.fit === "部分對應").length === 2 &&
+  past.every((q) => q.mapping && /^第(\d|[一二三四五六七八九十])章 |^第[一二三四]冊 第\d章 /.test(q.mapping.lesson) &&
+    /^(完全|部分)對應$/.test(q.mapping.fit) && q.mapping.note));
+check("部分對應的題目寫出另需的觀念", past.filter((q) => q.mapping.fit === "部分對應").length === 3 &&
   past.filter((q) => q.mapping.fit === "部分對應").every((q) => q.mapping.note.length > 10));
 const byParent = {};
 past.forEach((q) => { byParent[q.materialId] = (byParent[q.materialId] || 0) + 1; });
-check("併入 tm_8／tm_9／tm_15／tm_16", JSON.stringify(byParent) === JSON.stringify({ tm_15: 2, tm_16: 1, tm_8: 2, tm_9: 2 }));
+check("併入 tm_1／tm_8／tm_9／tm_13／tm_15／tm_16",
+  JSON.stringify(byParent) === JSON.stringify({ tm_1: 2, tm_13: 2, tm_15: 2, tm_16: 1, tm_8: 2, tm_9: 2 }));
 const tm21 = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/materials/tm_21/manifest.json"), "utf8"));
 check("tm_21（tm_4 的歷屆試題）已封存，題目檔案保留",
   tm21.archived === true && fs.existsSync(path.join(REPO, "docs/TeachingMaterials/materials/tm_21/questionbank.json")));
 require(path.join(REPO, "js/utils/OptionOrder.js"));
-const L = ["A", "B", "C", "D"];
+const L = ["A", "B", "C", "D", "E"];
 check("維持官方選項順序（不打亂）",
   past.every((q) => AHS.OptionOrder.order({ id: q.id, options: q.options.map((t, i) => ({ key: L[i], text: t })) }).every((o, i) => o.key === L[i])));
 
