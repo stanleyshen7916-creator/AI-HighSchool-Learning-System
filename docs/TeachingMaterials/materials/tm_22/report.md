@@ -13,7 +13,7 @@ generator after any Repository change and this file regenerates with it.
 ## Package Status
 - Manifest status：complete
 - Lifecycle Stage：IMPORTED
-- Validation：22 PASS / 0 FAIL
+- Validation：24 PASS / 0 FAIL
 
 ## Content Summary
 - 核心概念：16 項

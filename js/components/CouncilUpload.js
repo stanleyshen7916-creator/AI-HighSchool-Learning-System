@@ -196,7 +196,7 @@ AHS.CouncilUpload = (function () {
       el("div", { class: "upl-radios" }, [
         el("label", { class: "upl-radio" }, [modeSingle, el("span", { text: "Claude 出題＋另開新對話獨立作答核對（建議）" })]),
         el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT、Gemini 各自作答" })]),
-        el("label", { class: "upl-radio" }, [modePast, el("span", { text: "歷屆試題：逐字貼上官方題目與官方答案，每題加一行「出處：年度、考試、考科、題號」（不需獨立作答）" })])
+        el("label", { class: "upl-radio" }, [modePast, el("span", { text: "歷屆試題：逐字貼上官方題目與官方答案，每題加上「出處：年度、考試、考科、題號」「對應課程：第X章 …」（至少對應到課）「對應程度：完全對應／部分對應」，可另加「對應節次：」「對應說明：」（不需獨立作答）" })])
       ]),
       subjectHint,
       el("div", { class: "upl-actions" }, [authorBtn]),
@@ -321,6 +321,9 @@ AHS.CouncilUpload = (function () {
           answers.length ? el("p", { class: "upl-hint", text: "獨立作答：" + answers.join("　") }) : null,
           q.reasons.length ? el("ul", { class: "upl-warnings" }, q.reasons.map(function (t) { return el("li", { text: t }); })) : null,
           q.reference ? el("p", { class: "upl-hint", text: "出處：" + q.reference }) : null,
+          q.mapping && q.mapping.lesson
+            ? el("p", { class: "upl-hint", text: "對應：" + q.mapping.lesson + (q.mapping.section ? " · " + q.mapping.section : "") + "（" + (q.mapping.fit || "未標示對應程度") + (q.mapping.note ? "：" + q.mapping.note : "") + "）" })
+            : null,
           q.explanation ? el("p", { class: "upl-hint", text: "詳解：" + q.explanation }) : null,
           q.knowledgePoint || q.difficulty
             ? el("p", { class: "upl-hint", text: [q.knowledgePoint ? "知識點：" + q.knowledgePoint : "", q.difficulty ? "難度：" + q.difficulty : ""].filter(Boolean).join("　") })

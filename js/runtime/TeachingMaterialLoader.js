@@ -339,7 +339,9 @@ AHS.TeachingMaterialLoader = (function () {
            TeachingMaterialAdapter.js's own identical passthrough). */
         figureSvg: q.figureSvg || "",
         /* 2026-10-01 出處 (past exam / supplement questions); "" when none. */
-        reference: q.reference || ""
+        reference: q.reference || "",
+        /* 2026-10-02 對應課程 (PAST_EXAM); null when none. */
+        mapping: q.mapping || null
       });
     });
     return compatible;

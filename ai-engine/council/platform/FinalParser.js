@@ -137,7 +137,7 @@ function tableItems(body) {
 
 // 沒有條列、表格時的退路：章節內的一般段落（略過「Claude 認為：」這類標籤行、標題、分隔線）。
 // 練習題的題幹、選項、答案、詳解屬於題庫，不當成摘要段落。
-const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析|知識點|考點|難度|出處)\s*(\*\*)?\s*[:：]/;
+const QUESTION_LINE = /^\s*(\*\*)?\s*(Q\s*\d|第\s*\d+\s*題)|^\s*[（(]\s*[A-E]\s*[)）]|^\s*[A-E]\s*[.．、]\s|^\s*(\*\*)?\s*(答案|詳解|解析|知識點|考點|難度|出處|對應課程|對應節次|對應程度|對應說明)\s*(\*\*)?\s*[:：]/;
 
 function paragraphs(body) {
   return String(body).split(/\r?\n/)
@@ -183,6 +183,9 @@ const INLINE_KNOWLEDGE = /^\s*(?:\*\*)?\s*(?:知識點|考點)\s*(?:\*\*)?\s*[:�
 const INLINE_DIFFICULTY = /^\s*(?:\*\*)?\s*難度\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
 // 2026-10-01 出處：題目不是出自教材原文時標明來源（歷屆試題的年度、考科、題號，或 AI 出題的依據）。
 const INLINE_REFERENCE = /^\s*(?:\*\*)?\s*出處\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
+// 2026-10-02 對應課程：歷屆試題對應到課本的哪一課（必填）、哪一節、完全或部分對應、理由。
+const INLINE_MAPPING = /^\s*(?:\*\*)?\s*對應(課程|節次|程度|說明)\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.+)$/;
+const MAPPING_FIELD = { 課程: 'lesson', 節次: 'section', 程度: 'fit', 說明: 'note' };
 
 // 難度統一成平台既有的「易／中等／難」；認不出來就不填（不猜）。
 function normalizeDifficulty(text) {
@@ -243,6 +246,12 @@ function questionBlocks(body) {
     if (difficulty) { current.difficulty = normalizeDifficulty(difficulty[1]); return; }
     const reference = INLINE_REFERENCE.exec(line);
     if (reference) { current.reference = cleanInline(reference[1]); return; }
+    const mapping = INLINE_MAPPING.exec(line);
+    if (mapping) {
+      current.mapping = current.mapping || {};
+      current.mapping[MAPPING_FIELD[mapping[1]]] = cleanInline(mapping[2]);
+      return;
+    }
     const explanation = INLINE_EXPLANATION.exec(line);
     if (explanation) { current.explanationLines = explanation[1] ? [explanation[1]] : []; return; }
     if (current.explanationLines) { current.explanationLines.push(line); return; }
@@ -335,6 +344,7 @@ function parseQuestions(sections) {
       knowledgePoint: block.knowledgePoint || null,
       difficulty: block.difficulty || null,
       reference: block.reference || null,
+      mapping: block.mapping || null,
     });
   }));
 

@@ -252,18 +252,32 @@ describe('出處與歷屆試題（2026-10-02）', () => {
     '答案：C',
     '詳解：（詳解為 AI 撰寫）測試。',
     '出處：999學年度學科能力測驗 社會考科 第1題（大考中心）',
+    '對應課程：第2章 需求與供給',
+    '對應節次：第3節 供給',
+    '對應程度：完全對應',
+    '對應說明：供給變動的原因。',
   ].join('\n');
+  const withoutLines = (text, re) => text.split('\n').filter((l) => !re.test(l)).join('\n');
 
-  test('擷取「出處：」行', () => {
-    expect(parseQuestionText(PAST).questions[0].reference).toBe('999學年度學科能力測驗 社會考科 第1題（大考中心）');
+  test('擷取「出處：」與「對應課程／節次／程度／說明」行', () => {
+    const q = parseQuestionText(PAST).questions[0];
+    expect(q.reference).toBe('999學年度學科能力測驗 社會考科 第1題（大考中心）');
+    expect(q.mapping).toEqual({ lesson: '第2章 需求與供給', section: '第3節 供給', fit: '完全對應', note: '供給變動的原因。' });
   });
 
-  test('歷屆試題：不需獨立作答；缺出處時不能建立', () => {
-    const noRef = PAST.replace(/\n出處：.*$/, '');
+  test('歷屆試題：不需獨立作答；缺出處或對應課程時不能建立', () => {
+    const noRef = withoutLines(PAST, /^出處：/);
     const r = packageBuilder.supplements.check({ parentId: 'tm_9', authorText: noRef, solvers: [], pastExam: true });
     expect(r.questions[0].reasons).toEqual(['歷屆試題缺少出處（年度、考試、考科、題號）']);
     expect(() => packageBuilder.createSupplementDraft({ parentId: 'tm_9', authorText: noRef, solvers: [], accept: [1], pastExam: true }))
       .toThrow('必須有「出處');
+    const noLesson = withoutLines(PAST, /^對應/);
+    expect(packageBuilder.supplements.check({ parentId: 'tm_9', authorText: noLesson, solvers: [], pastExam: true }).questions[0].reasons)
+      .toEqual(['歷屆試題缺少「對應課程：」（至少要對應到課）']);
+    expect(() => packageBuilder.createSupplementDraft({ parentId: 'tm_9', authorText: noLesson, solvers: [], accept: [1], pastExam: true }))
+      .toThrow('至少要對應到課');
+    const noSection = withoutLines(PAST, /^對應節次/);
+    expect(packageBuilder.supplements.check({ parentId: 'tm_9', authorText: noSection, solvers: [], pastExam: true }).questions[0].status).toBe('ok');
     const ok = packageBuilder.supplements.check({ parentId: 'tm_9', authorText: PAST, solvers: [], pastExam: true });
     expect(ok.questions[0]).toMatchObject({ status: 'ok', reasons: [] });
   });
@@ -272,6 +286,7 @@ describe('出處與歷屆試題（2026-10-02）', () => {
     const past = packageBuilder.createSupplementDraft({ parentId: 'tm_9', authorText: PAST, solvers: [], accept: [1], pastExam: true });
     expect(past.questions[0]).toMatchObject({
       questionSource: 'PAST_EXAM', origin: 'Past Exam', reference: '999學年度學科能力測驗 社會考科 第1題（大考中心）',
+      mapping: { lesson: '第2章 需求與供給', section: '第3節 供給', fit: '完全對應', note: '供給變動的原因。' },
     });
     const md = fs.readFileSync(path.join(PLATFORM, `docs/TeachingMaterials/materials/${past.materialId}/material.md`), 'utf8');
     expect(md).toContain('歷屆試題：題目與選項逐字取自官方公布的試卷');

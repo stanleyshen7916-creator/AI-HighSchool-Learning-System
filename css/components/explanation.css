@@ -115,3 +115,7 @@
   color: #1d4ed8;
   font-weight: 700;
 }
+
+.qref__map {
+  display: block;
+}

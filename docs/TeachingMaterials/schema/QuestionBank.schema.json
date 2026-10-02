@@ -56,6 +56,18 @@
             "type": "string", "minLength": 1,
             "description": "選填（PAST_EXAM 必填）。2026-10-01 出處：不是出自本教材原文的題目要標明來源——歷屆試題寫明年度、考科、題號與出題單位（例如「114學年度學科能力測驗 社會考科 第10題（大考中心）」）；AI 補充題寫明依據的教材與範圍。學生端在題目下方顯示。"
           },
+          "mapping": {
+            "type": "object",
+            "description": "選填（PAST_EXAM 必填 lesson 與 fit）。2026-10-02 對應課程：不是出自本教材的題目（如學測歷屆試題）對應到課本的哪一課（必填）與哪一節（對應不到時為 null）；fit 為完全對應或部分對應（作答還需要其他課的觀念），note 寫出判斷理由與另需的觀念。",
+            "required": ["lesson", "fit"],
+            "properties": {
+              "lesson": { "type": "string", "minLength": 1 },
+              "section": { "type": ["string", "null"] },
+              "fit": { "type": "string", "enum": ["完全對應", "部分對應"] },
+              "note": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
           "figureSvg": {
             "type": "string",
             "description": "選填。Sprint AI-147（使用者需求：題目附圖）: 一段內嵌 SVG 字串，供題幹提到「如圖／附圖」但原始照片本身未數位化保存的題目使用。只在該題的幾何/數據/關係已能從題幹或詳解文字完整、無歧義還原時才附上；原始照片本身已被標註不清晰/無法覆核的題目一律不附。絕不是原始考卷照片的掃描重製，而是根據題目自身已核實文字內容繪製的示意圖。"
