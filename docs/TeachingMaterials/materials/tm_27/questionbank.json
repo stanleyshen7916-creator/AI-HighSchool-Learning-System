@@ -1,0 +1,65 @@
+{
+  "materialId": "tm_27",
+  "questions": [
+    {
+      "questionId": "tm_27_q1",
+      "materialId": "tm_27",
+      "questionNumber": "1",
+      "type": "single_choice",
+      "questionSource": "PAST_EXAM",
+      "origin": "Past Exam",
+      "question": "坐標平面上，以原點 O 為圓心、1 為半徑作圓，分別交坐標軸正向於 A、B 兩點。在第一象限的圓弧上取一點 C 作圓的切線分別交兩軸於點 D、E，如圖所示。（原卷附圖略，本題作答不需參考）令 ∠OEC = θ，試選出為 tanθ 的選項。",
+      "options": [
+        "OE",
+        "OC",
+        "OD",
+        "CE",
+        "CD"
+      ],
+      "answer": "CD",
+      "explanation": "（詳解為 AI 撰寫）切線垂直於過切點的半徑，所以 ∠OCD = ∠OCE = 90°。在直角三角形 OCE 中，∠EOC = 90° − θ，因此 ∠COD = θ。在直角三角形 OCD 中，tanθ = 對邊 ÷ 鄰邊 = CD ÷ OC = CD ÷ 1 = CD。注意原卷的選項編號是 (1)～(5)，這裡依平台格式改為 (A)～(E)，正確答案是原卷的 (5)。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-02T14:09:54.781Z",
+      "knowledgePoint": "直角三角形的正切、圓的切線",
+      "difficulty": "中等",
+      "reference": "112學年度學科能力測驗 數學A考科 第2題（大考中心）",
+      "mapping": {
+        "lesson": "第二冊 第4章 三角函數的性質",
+        "section": null,
+        "fit": "完全對應",
+        "note": "用直角三角形的邊角關係定義 tanθ，並利用切線垂直半徑，屬本章；平台未記錄本章各節名稱，故不標節次。"
+      }
+    },
+    {
+      "questionId": "tm_27_q2",
+      "materialId": "tm_27",
+      "questionNumber": "2",
+      "type": "single_choice",
+      "questionSource": "PAST_EXAM",
+      "origin": "Past Exam",
+      "question": "（第18–20題為題組）坐標平面上 O 為原點，給定 A(1,0)、B(−2,0) 兩點。另有兩點 P、Q 在上半平面，且滿足 AP = OA、BQ = OB、∠POQ 為直角，如圖所示。（原卷附圖略，本題作答不需參考）令 ∠AOP = θ。根據上述，試回答下列問題。 線段 OP 長為下列哪一選項？",
+      "options": [
+        "sinθ",
+        "cosθ",
+        "2sinθ",
+        "2cosθ",
+        "cos2θ"
+      ],
+      "answer": "2cosθ",
+      "explanation": "（詳解為 AI 撰寫）AP = OA = 1，所以 △OAP 是等腰三角形，兩個底角相等：∠AOP = ∠APO = θ。也可以用餘弦定理：AP² = OA² + OP² − 2·OA·OP·cosθ，即 1 = 1 + OP² − 2·OP·cosθ，得 OP = 2cosθ。注意原卷的選項編號是 (1)～(5)，這裡依平台格式改為 (A)～(E)，正確答案是原卷的 (4)。",
+      "page": null,
+      "version": "1",
+      "createdDate": "2026-10-02T14:09:54.781Z",
+      "knowledgePoint": "餘弦定理、等腰三角形",
+      "difficulty": "中等",
+      "reference": "112學年度學科能力測驗 數學A考科 第18題（第18–20題題組，大考中心）",
+      "mapping": {
+        "lesson": "第二冊 第4章 三角函數的性質",
+        "section": null,
+        "fit": "完全對應",
+        "note": "以餘弦定理（或等腰三角形的邊角關係）求邊長，屬本章；平台未記錄本章各節名稱，故不標節次。"
+      }
+    }
+  ]
+}

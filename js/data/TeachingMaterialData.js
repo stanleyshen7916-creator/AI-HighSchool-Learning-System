@@ -646,6 +646,68 @@ AHS.TeachingMaterialData = [
         "difficulty": "難",
         "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「正弦定理的應用（測量）」出題；答案經程式數值驗算（source/verify-tm1.js）",
         "supplementId": "tm_18"
+      },
+      {
+        "id": "tm_27_q1",
+        "materialId": "tm_1",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "坐標平面上，以原點 O 為圓心、1 為半徑作圓，分別交坐標軸正向於 A、B 兩點。在第一象限的圓弧上取一點 C 作圓的切線分別交兩軸於點 D、E，如圖所示。（原卷附圖略，本題作答不需參考）令 ∠OEC = θ，試選出為 tanθ 的選項。",
+        "options": [
+          "OE",
+          "OC",
+          "OD",
+          "CE",
+          "CD"
+        ],
+        "answer": "CD",
+        "explanation": "（詳解為 AI 撰寫）切線垂直於過切點的半徑，所以 ∠OCD = ∠OCE = 90°。在直角三角形 OCE 中，∠EOC = 90° − θ，因此 ∠COD = θ。在直角三角形 OCD 中，tanθ = 對邊 ÷ 鄰邊 = CD ÷ OC = CD ÷ 1 = CD。注意原卷的選項編號是 (1)～(5)，這裡依平台格式改為 (A)～(E)，正確答案是原卷的 (5)。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-02T14:09:54.781Z",
+        "knowledgePoint": "直角三角形的正切、圓的切線",
+        "difficulty": "中等",
+        "reference": "112學年度學科能力測驗 數學A考科 第2題（大考中心）",
+        "mapping": {
+          "lesson": "第二冊 第4章 三角函數的性質",
+          "section": null,
+          "fit": "完全對應",
+          "note": "用直角三角形的邊角關係定義 tanθ，並利用切線垂直半徑，屬本章；平台未記錄本章各節名稱，故不標節次。"
+        },
+        "supplementId": "tm_27"
+      },
+      {
+        "id": "tm_27_q2",
+        "materialId": "tm_1",
+        "questionNumber": "2",
+        "type": "single_choice",
+        "question": "（第18–20題為題組）坐標平面上 O 為原點，給定 A(1,0)、B(−2,0) 兩點。另有兩點 P、Q 在上半平面，且滿足 AP = OA、BQ = OB、∠POQ 為直角，如圖所示。（原卷附圖略，本題作答不需參考）令 ∠AOP = θ。根據上述，試回答下列問題。 線段 OP 長為下列哪一選項？",
+        "options": [
+          "sinθ",
+          "cosθ",
+          "2sinθ",
+          "2cosθ",
+          "cos2θ"
+        ],
+        "answer": "2cosθ",
+        "explanation": "（詳解為 AI 撰寫）AP = OA = 1，所以 △OAP 是等腰三角形，兩個底角相等：∠AOP = ∠APO = θ。也可以用餘弦定理：AP² = OA² + OP² − 2·OA·OP·cosθ，即 1 = 1 + OP² − 2·OP·cosθ，得 OP = 2cosθ。注意原卷的選項編號是 (1)～(5)，這裡依平台格式改為 (A)～(E)，正確答案是原卷的 (4)。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-02T14:09:54.781Z",
+        "knowledgePoint": "餘弦定理、等腰三角形",
+        "difficulty": "中等",
+        "reference": "112學年度學科能力測驗 數學A考科 第18題（第18–20題題組，大考中心）",
+        "mapping": {
+          "lesson": "第二冊 第4章 三角函數的性質",
+          "section": null,
+          "fit": "完全對應",
+          "note": "以餘弦定理（或等腰三角形的邊角關係）求邊長，屬本章；平台未記錄本章各節名稱，故不標節次。"
+        },
+        "supplementId": "tm_27"
       }
     ],
     "related": []
@@ -3732,6 +3794,68 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "電石反應、化學計量、生活情境應用",
         "section": "素養題"
+      },
+      {
+        "id": "tm_26_q1",
+        "materialId": "tm_13",
+        "questionNumber": "1",
+        "type": "single_choice",
+        "question": "（第4–5題為題組）陳同學依據下述三步驟，對某湖水樣進行溶氧量分析：I. 量取97.0 mL水樣，置於一100 mL容量瓶中，加入1.0 mL硫酸亞錳（MnSO₄·2H₂O）以及1.0 mL鹼性碘化鈉後，激烈搖晃，使瓶內溶液混合均勻，此時溶液中產生MnO₂沉澱。II. 待沉澱不再增加後，隨即加入1.0 mL濃硫酸，並以蒸餾水稀釋至刻度。III. 從容量瓶中取出10.0 mL溶液，隨即以0.015 M硫代硫酸鈉溶液（Na₂S₂O₃）滴定。當滴定到達終點時，共耗去0.52 mL硫代硫酸鈉溶液。 根據下列反應，一莫耳的氧氣可消耗多少莫耳硫代硫酸鈉？ Mn²⁺ + 2 OH⁻ → Mn(OH)₂ 2 Mn(OH)₂ + O₂ → 2 MnO₂ + 2 H₂O MnO₂ + 2 I⁻ + 4 H⁺ → Mn²⁺ + I₂ + 2 H₂O I₂ + 2 S₂O₃²⁻ → 2 I⁻ + S₄O₆²⁻",
+        "options": [
+          "6",
+          "5",
+          "4",
+          "3",
+          "2"
+        ],
+        "answer": "4",
+        "explanation": "（詳解為 AI 撰寫）用各反應式的係數比一路換算：1 mol O₂ 由第二式產生 2 mol MnO₂；由第三式，2 mol MnO₂ 產生 2 mol I₂；由第四式，2 mol I₂ 需要 2 × 2 = 4 mol S₂O₃²⁻。所以 1 莫耳氧氣可消耗 4 莫耳硫代硫酸鈉。常見錯誤是只看第一和最後一式，或忘了第二式的 O₂ 係數是 1、MnO₂ 是 2。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-02T14:09:51.851Z",
+        "knowledgePoint": "化學計量：連續反應的係數比",
+        "difficulty": "中等",
+        "reference": "113學年度分科測驗 化學考科 第4題（第4–5題題組，大考中心）",
+        "mapping": {
+          "lesson": "第一章 物質的特性與化學反應",
+          "section": "化學反應式平衡與化學計量",
+          "fit": "完全對應",
+          "note": "題目已給出平衡的反應式，只需依係數比換算莫耳數，屬本章化學計量。"
+        },
+        "supplementId": "tm_26"
+      },
+      {
+        "id": "tm_26_q2",
+        "materialId": "tm_13",
+        "questionNumber": "2",
+        "type": "single_choice",
+        "question": "已知氨氣與氯化氫反應後，可生成固體的產物，其反應式如下：NH₃(g) + HCl(g) → NH₄Cl(s) 假設有一裝置容器，左、右各是 2.00 公升的球體，中間有一個氣體閥門（如圖 1）。（原卷附圖略，本題作答不需參考）在 27°C，先將中間的氣體閥門關起來，在右邊球體內裝入 6.80 克的氨氣，在左邊球體裝入 2.46 atm 的氯化氫氣體。置入氣體後，將左、右氣體閥門關閉，再將中間氣體閥門打開，使左、右氣體完全混合且反應完全。假設氨氣和氯化氫氣體皆為理想氣體，且反應前後溫度不變，生成的固體體積可忽略。上述實驗後，容器內所剩的氣體與其壓力為何？",
+        "options": [
+          "1.23 atm的氨氣",
+          "2.46 atm的氨氣",
+          "3.69 atm的氨氣",
+          "1.23 atm的氯化氫",
+          "2.46 atm的氯化氫"
+        ],
+        "answer": "1.23 atm的氨氣",
+        "explanation": "（詳解為 AI 撰寫）先換成莫耳數：氨氣 6.80 g ÷ 17 g/mol = 0.400 mol；氯化氫由 PV = nRT，n = 2.46 × 2.00 ÷ (0.082 × 300) = 0.200 mol。兩者係數比 1 : 1，所以氯化氫是限量試劑，反應後剩下氨氣 0.400 − 0.200 = 0.200 mol。打開閥門後總體積 4.00 L，P = nRT/V = 0.200 × 0.082 × 300 ÷ 4.00 = 1.23 atm，所以是 1.23 atm 的氨氣。",
+        "questionSource": "PAST_EXAM",
+        "origin": "Past Exam",
+        "page": null,
+        "version": "1",
+        "createdDate": "2026-10-02T14:09:51.851Z",
+        "knowledgePoint": "限量試劑與剩餘量",
+        "difficulty": "中等",
+        "reference": "111學年度分科測驗 化學考科 第1題（大考中心）",
+        "mapping": {
+          "lesson": "第一章 物質的特性與化學反應",
+          "section": "化學反應式平衡與化學計量",
+          "fit": "部分對應",
+          "note": "限量試劑與係數比屬本章；由壓力、體積換算莫耳數需「理想氣體方程式」（選修化學第2章 氣體的性質）"
+        },
+        "supplementId": "tm_26"
       }
     ],
     "related": []

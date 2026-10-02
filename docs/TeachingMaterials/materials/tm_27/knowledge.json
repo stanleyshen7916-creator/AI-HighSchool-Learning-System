@@ -1,0 +1,16 @@
+{
+  "materialId": "tm_27",
+  "knowledgePoints": [
+    {
+      "name": "直角三角形的正切、圓的切線",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦定理、等腰三角形",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-02T14:09:54.966Z"
+}
