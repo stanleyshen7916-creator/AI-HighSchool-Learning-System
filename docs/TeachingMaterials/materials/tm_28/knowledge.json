@@ -1,0 +1,261 @@
+{
+  "materialId": "tm_28",
+  "knowledgePoints": [
+    {
+      "name": "亞佛加厥定律",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "亞佛加厥定律、分壓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "亞佛加厥定律、壓力計",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "亞佛加厥定律的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "亞佛加厥定律與反應計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分壓、氣體動力論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分壓定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "分壓定律（混合）",
+      "source": "question",
+      "refCount": 8
+    },
+    {
+      "name": "分壓與反應計量",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "壓力單位換算",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "壓力計的使用",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "壓力計的計算",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "定容下壓力與溫度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "平均分子量與分壓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "排水集氣法求分子量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "排水集氣法的壓力校正",
+      "source": "both",
+      "refCount": 8
+    },
+    {
+      "name": "排水集氣法與反應計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "查理定律",
+      "source": "both",
+      "refCount": 6
+    },
+    {
+      "name": "查理定律的應用",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "查理定律與絕對零度",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "查理定律（圖形）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體動力論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體定律綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體定律（圖形）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體的通性",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "氣體體積",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "波以耳定律的作圖",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律的應用",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "波以耳定律（J 型管）",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "波以耳定律（U 形管）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律（壓力計）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律（汞柱封氣）",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "液體壓力 P ＝ d × h",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "混合時發生反應",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "理想氣體方程式",
+      "source": "both",
+      "refCount": 9
+    },
+    {
+      "name": "理想氣體方程式、壓力計",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體方程式求分子量",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "理想氣體方程式求密度",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "理想氣體方程式與反應計量",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "理想氣體方程式（圖形）",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "理想氣體的性質",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "理想氣體與真實氣體",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "絕對溫度",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "莫耳分率",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "莫耳分率與分壓",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "莫耳體積",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳體積與密度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律的限制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "體積單位換算",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-02T14:50:46.039Z"
+}
