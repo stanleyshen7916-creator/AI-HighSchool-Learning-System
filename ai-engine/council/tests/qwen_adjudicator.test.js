@@ -16,6 +16,10 @@ const {
   FAILURE_REASON,
   VERDICTS,
   CONTEXT_SAFE_TOKEN_LIMIT,
+  OLLAMA_NUM_CTX,
+  OLLAMA_MAX_CTX,
+  contextWindowFor,
+  selectSourceWindow,
   computeSectionCoverage,
   computeDocumentCompleteness,
   CONTENT_SECTION_KEYS,
@@ -304,17 +308,63 @@ describe('Qwen2.5 Semantic Cross-Council Adjudicator（Claim-level, SOURCE-groun
     expect(council.claims[0].source_ref).toBeNull();
   });
 
-  test('Test C — Context Overflow：SOURCE + drafts 估算超過安全上限時不得呼叫 Ollama，直接 fallback + PENDING_MANUAL_REVIEW', async () => {
-    global.fetch = jest.fn();
+  // 2026-10-04：以實際上傳的教材為主——SOURCE 很長時不再整份退回 fallback。
+  test('Test C — 長 SOURCE（整本課本）：不退回 fallback，context window 依實際 prompt 放大，SOURCE 整份送進 Qwen', async () => {
+    const longSource = `${CANON_SOURCE}
 
-    const hugeSource = '極長教材內容'.repeat(20000);
-    const council = await assembleCouncilFinal(metadata, drafts, hugeSource);
+${'氣體壓力來自粒子撞擊器壁。'.repeat(1200)}`; // 約 1.6 萬字，舊版 8192 上限必定超過
+    const fn = mockFullPipeline(buildAllSupportedClaims().slice(0, 1));
+    const council = await assembleCouncilFinal(metadata, drafts, longSource);
 
-    expect(global.fetch).not.toHaveBeenCalled();
-    expect(council.mode).toBe('fallback_concat');
-    expect(council.meta.failureReason).toBe(FAILURE_REASON.CONTEXT_OVERFLOW);
-    expect(council.meta.qualityGate).toBe('PENDING_MANUAL_REVIEW');
-    expect(council.meta.finalScore).toBe('N/A');
+    expect(council.mode).toBe('llm_semantic');
+    expect(council.meta.failureReason).not.toBe(FAILURE_REASON.CONTEXT_OVERFLOW);
+    expect(council.meta.sourceWindowed).toBe(false);
+    const sent = fn.mock.calls.map(([, init]) => JSON.parse(init.body));
+    expect(sent.length).toBeGreaterThan(0);
+    sent.forEach((body) => {
+      expect(body.prompt).toContain(longSource); // 完整 SOURCE，未截斷
+      expect(body.options.num_ctx).toBeGreaterThan(OLLAMA_NUM_CTX);
+      expect(body.options.num_ctx).toBeLessThanOrEqual(OLLAMA_MAX_CTX);
+      expect(estimateTokenCount(body.prompt) + 1536).toBeLessThanOrEqual(body.options.num_ctx);
+    });
+  });
+
+  test('Test C2 — SOURCE 超過模型最大 context：改送最相關段落（不截斷、不跳過），Final 標示 source_windowed', async () => {
+    const filler = Array.from({ length: 400 }, (_, i) => `第${i}段：與本課無關的填充敘述內容，重複出現以撐大篇幅。`.repeat(6)).join('\n\n');
+    const hugeSource = `${filler}
+
+${CANON_SOURCE}
+
+${filler}`;
+    expect(estimateTokenCount(hugeSource)).toBeGreaterThan(CONTEXT_SAFE_TOKEN_LIMIT);
+    const claims = [{ ...buildAllSupportedClaims()[0], claim: '老道人叮囑王生歸宜潔持，否則不驗。' }];
+    const fn = mockFullPipeline(claims);
+    const council = await assembleCouncilFinal(metadata, { ...drafts, claude: '①核心概念\n老道人曰歸宜潔持，否則不驗。' }, hugeSource);
+
+    expect(council.mode).toBe('llm_semantic');
+    expect(council.meta.sourceWindowed).toBe(true);
+    expect(council.adjudicationRecord.source_windowed).toBe(true);
+    fn.mock.calls.forEach(([, init]) => {
+      const body = JSON.parse(init.body);
+      expect(body.options.num_ctx).toBeLessThanOrEqual(OLLAMA_MAX_CTX);
+      expect(estimateTokenCount(body.prompt)).toBeLessThanOrEqual(CONTEXT_SAFE_TOKEN_LIMIT);
+      expect(body.prompt).toContain('歸宜潔持，否則不驗'); // 最相關的段落被選進來
+    });
+  });
+
+  test('selectSourceWindow：放得下就原樣回傳；放不下時依原文順序挑最相關段落、不超過額度', () => {
+    expect(selectSourceWindow(CANON_SOURCE, '潔持', 100000)).toEqual({ text: CANON_SOURCE, windowed: false });
+    const paras = ['甲段：波以耳定律定溫下壓力與體積成反比。', '乙段：天氣晴朗適合郊遊。', '丙段：查理定律定壓下體積與絕對溫度成正比。'];
+    const w = selectSourceWindow(paras.join('\n\n'), '波以耳定律 查理定律 壓力 體積', 45);
+    expect(w.windowed).toBe(true);
+    expect(w.text.indexOf('甲段')).toBeLessThan(w.text.indexOf('丙段'));
+    expect(w.text).not.toContain('乙段');
+  });
+
+  test('contextWindowFor：短 prompt 用最小 window，長 prompt 放大，但不超過模型上限', () => {
+    expect(contextWindowFor('短')).toBe(OLLAMA_NUM_CTX);
+    expect(contextWindowFor('字'.repeat(20000))).toBeGreaterThanOrEqual(20000 + 1536);
+    expect(contextWindowFor('字'.repeat(200000))).toBe(OLLAMA_MAX_CTX);
   });
 
   test('Test D — Ollama HTTP 500：明確錯誤處理並降級 fallback + PENDING_MANUAL_REVIEW', async () => {
