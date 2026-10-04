@@ -1,0 +1,31 @@
+{
+  "materialId": "tm_32",
+  "knowledgePoints": [
+    {
+      "name": "排水集氣法的壓力校正",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "排水集氣法與化學計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "混合時發生反應的氣體",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體方程式",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳分率與分壓、亞佛加厥定律",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-04T06:53:34.084Z"
+}

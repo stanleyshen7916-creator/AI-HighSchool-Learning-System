@@ -22,7 +22,7 @@ function check(name, cond) {
   else { fail++; console.log("  FAIL  " + name); }
 }
 
-function loadPage(htmlFile) {
+function loadPage(htmlFile, workspace) {
   const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
   const vconsole = new (require("jsdom").VirtualConsole)();
   const consoleErrors = [];
@@ -35,7 +35,7 @@ function loadPage(htmlFile) {
   const dom = new JSDOM(html, { url: "https://ahs.test/" + htmlFile, runScripts: "outside-only", pretendToBeVisual: true, virtualConsole: vconsole });
   const { window } = dom;
   window.fetch = function () { return Promise.reject(new Error("fetch disabled in test environment")); };
-  window.sessionStorage.setItem("ahs:workspace", JSON.stringify({ studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] }));
+  window.sessionStorage.setItem("ahs:workspace", JSON.stringify(workspace || { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] }));
   [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
     if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); }
@@ -78,6 +78,23 @@ check("Console errors = 0", consoleErrors.length === 0);
   const s2 = second.window.AHS.ExamRuntime.getCurrent();
   check("只有一種題目來源的教材照常抽題（__formal_）", !!s2 && /__formal_\d+$/.test(s2.examId));
   check("不顯示切換", second.doc.querySelectorAll(".qexam__mode-btn").length === 0);
+}
+
+/* 2026-10-04: tm_29（竹圍高中化學課本 第二章 氣體）本身是 AI 題；課本原題放在補充題庫
+   tm_30（ORIGINAL），另有 AI 加題 tm_31 與歷屆試題 tm_32。原始試卷只出課本原題。 */
+{
+  const zw = loadPage("quiz.html", { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] });
+  click(rowFor(zw.doc, "第二章：氣體").querySelector(".quiz-row__start"));
+  const s3 = zw.window.AHS.ExamRuntime.getCurrent();
+  const orig = zw.window.AHS.QuestionRuntime.getSet(s3.examId);
+  check("tm_29 原始試卷：只抽課本原題（tm_30）", /__original$/.test(s3.examId) && orig.length >= 10 &&
+    orig.every((q) => q.questionSource === "ORIGINAL" && /^tm_30_q/.test(q.id)));
+  click([...zw.doc.querySelectorAll(".qexam__mode-btn")][1]);
+  const s4 = zw.window.AHS.ExamRuntime.getCurrent();
+  const extra = zw.window.AHS.QuestionRuntime.getSet(s4.examId);
+  check("tm_29 補充練習：原 AI 題＋AI 加題（tm_31）＋歷屆試題（tm_32），共 36 題", /__ai$/.test(s4.examId) && extra.length === 36 &&
+    extra.some((q) => /^tm_31_q/.test(q.id)) && extra.filter((q) => q.questionSource === "PAST_EXAM").length === 6);
+  check("竹圍高中 Console errors = 0", zw.consoleErrors.length === 0);
 }
 
 console.log("\nMixedSourceExamRegression: " + pass + " PASS / " + fail + " FAIL");

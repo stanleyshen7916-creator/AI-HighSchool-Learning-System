@@ -13,7 +13,7 @@ process.env.PLATFORM_ROOT = PLATFORM;
 jest.mock('tesseract.js', () => ({ recognize: jest.fn() }));
 
 const { parseQuestionText } = require('../platform/FinalParser');
-const { similarity, normalizeStem } = require('../platform/SupplementBuilder');
+const { similarity, normalizeStem, compareQuestions, optionKey } = require('../platform/SupplementBuilder');
 const { app, packageBuilder } = require('../server');
 
 const PARENT = 'tm_7';
@@ -302,6 +302,21 @@ describe('出處與歷屆試題（2026-10-02）', () => {
   });
 });
 
+describe('題組：同一題組的不同小題不算重複（2026-10-04）', () => {
+  const intro = '（第18–19題為題組）林同學取氯酸鉀試樣 1.50 g，加熱分解，以排水集氣法收集氧氣，共收集 250 mL 的氧氣。水溫 32℃、大氣壓力 736 mmHg。';
+  const q = (stem, options) => ({ norm: normalizeStem(intro + stem), opts: optionKey(options) });
+  test('同一題組、問不同問題：不是重複', () => {
+    expect(compareQuestions(q('此實驗共收集多少莫耳的氧氣？', ['1.6', '4.1', '9.2', '8.8', '7.3']), q('此氯酸鉀試藥的純度最接近下列哪一數值？', ['32', '50', '75', '89', '95']))).toBeNull();
+  });
+  test('同一題組、同一小題：仍是重複', () => {
+    const a = q('此實驗共收集多少莫耳的氧氣？', ['1.6', '4.1', '9.2', '8.8', '7.3']);
+    expect(compareQuestions(a, { ...a })).toBe('duplicate');
+  });
+  test('沒有題組標記的題目照舊比較全文（只改數字的換句話說仍標示）', () => {
+    const plain = (n) => ({ norm: normalizeStem('定溫下，將 2.0 L、3.0 atm 的定量氣體壓縮成 ' + n + ' L，壓力變為多少 atm？'), opts: 'x' });
+    expect(compareQuestions(plain('0.50'), plain('0.25'))).not.toBeNull();
+  });
+});
 describe('重複判定的勝出者依編號數值（不是字串排序）', () => {
   test('tm_9 與 tm_10 重複時保留較早的 tm_9', () => {
     const scripts = path.join(PLATFORM, 'docs/TeachingMaterials/scripts');

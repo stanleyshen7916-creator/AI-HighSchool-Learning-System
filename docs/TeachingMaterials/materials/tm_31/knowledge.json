@@ -1,0 +1,91 @@
+{
+  "materialId": "tm_31",
+  "knowledgePoints": [
+    {
+      "name": "PM ＝ dRT",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "亞佛加厥定律",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "分壓與反應計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "壓力單位換算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "定容下壓力與溫度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "排水集氣法的壓力校正",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "查理定律、絕對溫度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "查理定律的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律與查理定律的綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "混合時發生反應的氣體",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體與真實氣體",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳分率與分壓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳體積、分子量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "閉口式壓力計",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "開口式壓力計",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-04T06:51:32.925Z"
+}
