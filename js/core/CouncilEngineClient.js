@@ -78,6 +78,7 @@ AHS.CouncilEngineClient = (function () {
     health: function () { return request("GET", "/api/health"); },
     catalog: function () { return request("GET", "/api/catalog"); },
     finalContent: function (filename) { return request("GET", "/api/finals/" + enc(filename)); },
+    saveFinal: function (filename, content) { return request("PUT", "/api/finals/" + enc(filename), { content: content }); },
     upload: function (files) {
       var form = new FormData();
       Array.prototype.forEach.call(files, function (f) { form.append("files", f, f.name); });

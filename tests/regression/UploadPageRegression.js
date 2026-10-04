@@ -6,6 +6,7 @@
    - Admin：Sidebar 出現「教材上傳」；引擎狀態顯示已連線。
    - 完整流程：三方初稿 → 交叉審議 job → Final → 建立草稿（送出平台的學校/
      學期/科目代碼與上傳批次）→ 預覽題目與答案 → 發布 → 顯示 git 指令。
+   - 既有 Final.md：frontmatter 帶入步驟 1；預覽可修改並存回引擎（2026-10-04）。
    - 引擎沒啟動時顯示明確的啟動提示，不拋錯。
 
    Run: node tests/regression/UploadPageRegression.js */
@@ -22,6 +23,8 @@ function check(name, cond) {
 }
 
 const FINAL = "長榮中學_高二_數學_第一章_課本_Final.md";
+const OLD_FINAL = "竹圍高中_高二_化學_化學_第三章_課本_Final.md";
+const OLD_FINAL_CONTENT = "---\nschool: 竹圍高中\ngrade: 高二\nsubject: 化學\nunit: 化學 第三章\ncategory: 課本\nquality_gate: \"PENDING_MANUAL_REVIEW\"\n---\n\n# 化學 第三章 Final\n";
 const DRAFT = {
   materialId: "tm_18", status: "draft", stage: "ANALYZING", qualityGate: "PASS",
   warnings: ["Q3：找不到答案或答案不在選項中，未收錄"],
@@ -43,7 +46,12 @@ function fakeEngine(window, log, mode) {
     if (mode === "down") { return Promise.reject(new window.Error("connection refused")); }
     const u = String(url).replace(/^https?:\/\/[^/]+/, "");
     if (u === "/api/health") { return reply(200, { engine: "ahs-council", version: "1.1.0", mineru: true, ollama: true }); }
-    if (u === "/api/catalog") { return reply(200, { items: [{ filename: "舊的_Final.md", qualityGate: "PASS" }] }); }
+    if (u === "/api/catalog") { return reply(200, { items: [{ filename: OLD_FINAL, qualityGate: "PENDING_MANUAL_REVIEW" }] }); }
+    if (u.indexOf("/api/finals/") === 0 && method === "PUT") {
+      const name = decodeURIComponent(u.slice("/api/finals/".length));
+      return reply(200, { filename: name, content: body.content, backup: name + ".orig" });
+    }
+    if (u === "/api/finals/" + encodeURIComponent(OLD_FINAL)) { return reply(200, { filename: OLD_FINAL, content: OLD_FINAL_CONTENT }); }
     if (u.indexOf("/api/finals/") === 0) { return reply(200, { filename: FINAL, content: "# Final" }); }
     if (u === "/api/assemble-council/jobs" && method === "POST") { return reply(202, { jobId: "job-1", status: "running" }); }
     if (u === "/api/assemble-council/jobs/job-1") {
@@ -181,6 +189,38 @@ async function main() {
   check("呼叫 publish", log.some((c) => c.method === "POST" && /\/api\/platform\/drafts\/tm_18\/publish$/.test(c.url)));
   check("顯示已上架與 git 指令", doc.body.textContent.indexOf("已上架（IMPORTED）") !== -1 && doc.querySelector(".upl-success .upl-pre").textContent.indexOf("git add docs/TeachingMaterials/materials/tm_18/ js/data/TeachingMaterialData.js") === 0);
   check("發布後不再顯示發布／刪除按鈕", !buttonByText(doc, "確認發布到平台") && !buttonByText(doc, "刪除草稿"));
+  check("Console errors = 0", consoleErrors.length === 0);
+
+  console.log("\n[5a] 既有 Final.md：帶入步驟 1、預覽可修改並存回");
+  const catalog = [...doc.querySelectorAll("select")].find((s2) => [...s2.options].some((o) => o.value === OLD_FINAL));
+  catalog.value = OLD_FINAL;
+  click(buttonByText(doc, "使用這份 Final"));
+  await settle();
+  check("帶入步驟 1：學校、科目、年級、教材類型、章節（去掉科目前綴）",
+    fieldByLabel(doc, "學校").value === "zwsh" && fieldByLabel(doc, "科目").value === "化學" && fieldByLabel(doc, "年級").value === "高二" &&
+    fieldByLabel(doc, "教材類型").value === "TEXTBOOK" && fieldByLabel(doc, "章節").value === "第三章" && fieldByLabel(doc, "單元").value === "");
+  check("提示已帶入、可修正", doc.body.textContent.indexOf("已依 Final.md 帶入步驟 1") !== -1);
+  const editor = doc.querySelector(".upl-final__editor");
+  check("預覽是可編輯的文字框，內容為 Final.md", !!editor && editor.tagName === "TEXTAREA" && editor.value === OLD_FINAL_CONTENT);
+  click(buttonByText(doc, "儲存修改"));
+  await settle();
+  check("沒有修改時不送出", !log.some((c) => c.method === "PUT"));
+  editor.value = OLD_FINAL_CONTENT.replace(/第三章/g, "第二章");
+  click(buttonByText(doc, "還原未儲存的修改"));
+  check("還原未儲存的修改", editor.value === OLD_FINAL_CONTENT);
+  editor.value = OLD_FINAL_CONTENT.replace(/第三章/g, "第二章");
+  click(buttonByText(doc, "儲存修改"));
+  await settle();
+  const put = log.find((c) => c.method === "PUT");
+  check("存回引擎：PUT /api/finals/<檔名>，送出修改後的內容", !!put && put.url.indexOf("/api/finals/" + encodeURIComponent(OLD_FINAL)) !== -1 &&
+    put.body.content.indexOf("unit: 化學 第二章") !== -1);
+  check("儲存後步驟 1 章節更新為第二章，並說明原始版本已保留", fieldByLabel(doc, "章節").value === "第二章" &&
+    doc.body.textContent.indexOf(OLD_FINAL + ".orig") !== -1);
+  click(buttonByText(doc, "建立教材包草稿"));
+  await settle();
+  const create2 = log.filter((c) => c.method === "POST" && /\/api\/platform\/drafts$/.test(c.url)).pop();
+  check("建立草稿使用這份 Final 與修正後的章節", !!create2 && create2.body.finalFilename === OLD_FINAL &&
+    create2.body.metadata.chapter === "第二章" && create2.body.metadata.school === "zwsh");
   check("Console errors = 0", consoleErrors.length === 0);
 
   console.log("\n[5b] 為既有教材加題");
