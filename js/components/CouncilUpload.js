@@ -509,8 +509,44 @@ AHS.CouncilUpload = (function () {
     var councilStatus = el("p", { class: "upl-status" });
     var finalSlot = el("div", { class: "upl-final" });
     var catalogSel = el("select", { class: "upl-input" });
-    function showFinal(filename, gate, score) {
+
+    /* 2026-10-04: Final.md 開頭的 frontmatter（school/grade/subject/unit/category）
+       帶入步驟 1——教材包的學校、科目、章節以步驟 1 為準，帶入後判讀錯誤
+       （例如第二章被寫成第三章）一眼就看得到，可直接在步驟 1 或 Final.md 修正。 */
+    function frontmatterOf(content) {
+      var m = /^﻿?---\r?\n([\s\S]*?)\r?\n---/.exec(content || "");
+      var out = {};
+      if (!m) { return out; }
+      m[1].split(/\r?\n/).forEach(function (line) {
+        var kv = /^([A-Za-z_]+)\s*:\s*(.*)$/.exec(line);
+        if (kv) { out[kv[1].toLowerCase()] = kv[2].trim().replace(/^"(.*)"$/, "$1"); }
+      });
+      return out;
+    }
+    function pick(sel, value) {
+      var opt = Array.prototype.filter.call(sel.options, function (o) { return o.value === value || o.textContent === value; })[0];
+      if (opt) { sel.value = opt.value; }
+      return !!opt;
+    }
+    function applyFrontmatter(content) {
+      var fm = frontmatterOf(content);
+      var filled = [];
+      if (fm.school && pick(schoolSel, fm.school)) { filled.push("學校"); }
+      if (fm.grade && pick(gradeSel, fm.grade)) { filled.push("年級"); }
+      if (fm.subject && pick(subjectSel, fm.subject)) { filled.push("科目"); }
+      if (fm.category && pick(typeSel, fm.category)) { filled.push("教材類型"); }
+      if (fm.unit) {
+        var chapter = fm.subject && fm.unit.indexOf(fm.subject) === 0 ? fm.unit.slice(fm.subject.length).trim() : fm.unit;
+        chapterInput.value = chapter || fm.unit;
+        unitInput.value = "";
+        filled.push("章節");
+      }
+      return filled;
+    }
+
+    function showFinal(filename, gate, score, fillMeta) {
       state.finalFilename = filename;
+      var editStatus = el("p", { class: "upl-status" });
       AHS.UI.mount(finalSlot, el("div", {}, [
         el("p", { class: "upl-final__name" }, [
           el("strong", { text: "Final：" }), filename,
@@ -519,11 +555,40 @@ AHS.CouncilUpload = (function () {
         gate && gate !== "PASS" ? el("p", { class: "upl-hint upl-hint--warn", text: "Quality Gate 不是 PASS：建立草稿後請特別仔細檢查擷取結果再決定是否發布。" }) : null
       ]));
       client.finalContent(filename).then(function (r) {
-        if (r.error) { return; }
-        finalSlot.appendChild(el("details", { class: "upl-details" }, [
-          el("summary", { text: "預覽 Final.md" }),
-          el("pre", { class: "upl-pre", text: r.data.content })
+        if (r.error) { status(editStatus, r.error.message, "error"); finalSlot.appendChild(editStatus); return; }
+        var saved = r.data.content;
+        var editor = el("textarea", { class: "upl-textarea upl-final__editor", rows: "20", spellcheck: "false" });
+        editor.value = saved;
+        var saveBtn = button("儲存修改", "primary", function () {
+          if (editor.value === saved) { status(editStatus, "沒有修改。"); return; }
+          saveBtn.disabled = true;
+          status(editStatus, "儲存中…");
+          client.saveFinal(filename, editor.value).then(function (s) {
+            saveBtn.disabled = false;
+            if (s.error) { status(editStatus, s.error.message, "error"); return; }
+            saved = s.data.content;
+            var filled = applyFrontmatter(saved);
+            status(editStatus, "已存回 " + filename + "（引擎產出的原始版本保留為 " + s.data.backup + "）。" +
+              (filled.length ? "步驟 1 已依修改後的內容更新：" + filled.join("、") + "。" : "") + "建立教材包草稿時會使用修改後的版本。", "ok");
+          });
+        });
+        var revertBtn = button("還原未儲存的修改", null, function () {
+          editor.value = saved;
+          status(editStatus, "已還原為最後儲存的版本。");
+        });
+        finalSlot.appendChild(el("details", { class: "upl-details", open: "open" }, [
+          el("summary", { text: "預覽與修改 Final.md" }),
+          el("p", { class: "upl-hint", text: "內容有誤（例如章節判讀錯誤、OCR 錯字）可直接修改後按「儲存修改」。開頭 --- 之間的 unit、subject、grade 會帶入步驟 1。" }),
+          editor,
+          el("div", { class: "upl-actions" }, [saveBtn, revertBtn]),
+          editStatus
         ]));
+        if (fillMeta) {
+          var filled = applyFrontmatter(saved);
+          if (filled.length) {
+            status(editStatus, "已依 Final.md 帶入步驟 1：" + filled.join("、") + "（章節：" + chapterInput.value + "）。若判讀有誤，請在步驟 1 或上方內容修正。", "warn");
+          }
+        }
       });
     }
     function poll(jobId) {
@@ -580,7 +645,7 @@ AHS.CouncilUpload = (function () {
         button("使用這份 Final", null, function () {
           if (!catalogSel.value) { return; }
           var item = catalogSel.options[catalogSel.selectedIndex].text.match(/\[(.+)\]$/);
-          showFinal(catalogSel.value, item ? item[1] : null, null);
+          showFinal(catalogSel.value, item ? item[1] : null, null, true);
         })
       ]),
       finalSlot

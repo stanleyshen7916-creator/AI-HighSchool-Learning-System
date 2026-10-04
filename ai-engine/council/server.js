@@ -61,7 +61,7 @@ app.use((req, res, next) => {
   }
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Vary', 'Origin');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   // Chrome Private Network Access：公開網站（GitHub Pages）呼叫 localhost 前的預檢需要這個標頭。
   if (req.headers['access-control-request-private-network']) {
@@ -781,6 +781,25 @@ app.get('/api/finals/:filename', (req, res) => {
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
+});
+
+// 2026-10-04：在上傳頁的預覽中修正 Final.md（例如章節判讀錯誤）後存回原檔。
+// 第一次修改前把引擎產出的原始版本保留為 <檔名>.orig，之後的修改都不覆蓋它。
+app.put('/api/finals/:filename', (req, res) => {
+  let p;
+  try {
+    p = finalPathFor(req.params.filename);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+  const content = req.body && req.body.content;
+  if (typeof content !== 'string' || !content.trim()) {
+    return res.status(400).json({ error: 'Final.md 內容不可為空白' });
+  }
+  const backup = `${p}.orig`;
+  if (!fs.existsSync(backup)) fs.copyFileSync(p, backup);
+  fs.writeFileSync(p, content, 'utf8');
+  return res.status(200).json({ filename: path.basename(p), content, backup: path.basename(backup) });
 });
 
 function uploadSessionFiles(sessionId) {

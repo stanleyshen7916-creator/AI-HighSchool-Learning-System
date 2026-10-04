@@ -224,6 +224,44 @@ describe('API：來源檢查', () => {
   });
 });
 
+describe('API：修改 Final.md（PUT /api/finals/:filename）', () => {
+  const finalName = '竹圍高中_高二_化學_化學_第三章_課本_Final.md';
+  const original = SAMPLE_FINAL.replace(/^---(\r?\n)/, '---$1unit: 化學 第三章$1');
+
+  beforeAll(() => {
+    fs.mkdirSync(OUTPUTS_DIR, { recursive: true });
+    fs.writeFileSync(path.join(OUTPUTS_DIR, finalName), original, 'utf8');
+  });
+
+  test('存回修改後的內容；第一次修改前保留原始版本為 .orig，之後不覆蓋', async () => {
+    const fixed = original.replace('unit: 化學 第三章', 'unit: 化學 第二章');
+    expect(fixed).not.toBe(original);
+    const res = await request(app).put(`/api/finals/${encodeURIComponent(finalName)}`).send({ content: fixed });
+    expect(res.status).toBe(200);
+    expect(res.body.backup).toBe(`${finalName}.orig`);
+    expect(fs.readFileSync(path.join(OUTPUTS_DIR, finalName), 'utf8')).toBe(fixed);
+    expect(fs.readFileSync(path.join(OUTPUTS_DIR, `${finalName}.orig`), 'utf8')).toBe(original);
+
+    const again = await request(app).put(`/api/finals/${encodeURIComponent(finalName)}`).send({ content: `${fixed}\n補充` });
+    expect(again.status).toBe(200);
+    expect(fs.readFileSync(path.join(OUTPUTS_DIR, `${finalName}.orig`), 'utf8')).toBe(original);
+    const read = await request(app).get(`/api/finals/${encodeURIComponent(finalName)}`);
+    expect(read.body.content).toBe(`${fixed}\n補充`);
+  });
+
+  test('空白內容、不存在或非 *_Final.md 的檔案一律拒絕，不建立任何檔案', async () => {
+    expect((await request(app).put(`/api/finals/${encodeURIComponent(finalName)}`).send({ content: '  ' })).status).toBe(400);
+    expect((await request(app).put('/api/finals/%E4%B8%8D%E5%AD%98%E5%9C%A8_Final.md').send({ content: 'x' })).status).toBe(404);
+    expect((await request(app).put('/api/finals/..%2F..%2Fserver.js').send({ content: 'x' })).status).toBe(404);
+    expect(fs.existsSync(path.join(OUTPUTS_DIR, '不存在_Final.md'))).toBe(false);
+  });
+
+  test('允許清單內的瀏覽器來源可用 PUT（CORS）', async () => {
+    const res = await request(app).options(`/api/finals/${encodeURIComponent(finalName)}`).set('Origin', 'https://stanleyshen7916-creator.github.io');
+    expect(res.headers['access-control-allow-methods']).toContain('PUT');
+  });
+});
+
 describe('API：上傳 → 建立草稿 → 預覽 → 刪除', () => {
   const finalName = '長榮高中_高二_數學_API測試_課本_Final.md';
   let sessionId;
