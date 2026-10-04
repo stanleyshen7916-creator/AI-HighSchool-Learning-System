@@ -1,0 +1,583 @@
+{
+  "parentId": "tm_29",
+  "mode": "single",
+  "createdAt": "2026-10-04T06:50:33.771Z",
+  "accepted": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "reviewNote": "Claude 出題後，由另一個未看過答案的 Claude（獨立 agent）依只有題目的作答 Prompt 作答，20 題答案全部一致。Q3 的干擾選項因平台的重複選項規則（忽略小數點）由 1.52 改為 1520，正確答案 (A) 不受影響。",
+  "pastExam": false,
+  "solvers": [
+    {
+      "id": "claude-fresh",
+      "name": "Claude（新對話）"
+    }
+  ],
+  "counts": {
+    "ok": 20,
+    "review": 0,
+    "duplicate": 0
+  },
+  "warnings": [],
+  "questions": [
+    {
+      "number": 1,
+      "question": "以閉口式壓力計（閉口端為真空）測量某容器內的氣體壓力，兩側汞面高度差為 45.6 cm，則氣體壓力為多少 atm？",
+      "options": [
+        "0.40",
+        "0.60",
+        "1.60",
+        "45.6"
+      ],
+      "answer": "0.60",
+      "answerKey": "B",
+      "explanation": "閉口式壓力計的閉口端為真空，氣體壓力等於汞柱高度差：P ＝ 45.6 cmHg ＝ 45.6 ÷ 76 ＝ 0.60 atm。(C) 是誤加了 1 atm；(D) 是單位錯誤（cmHg 不是 atm）；(A) 是 1 − 0.60 的誤算。",
+      "knowledgePoint": "閉口式壓力計",
+      "difficulty": "易",
+      "reference": "教材重點「氣體壓力的測量：閉口式壓力計 Pgas ＝ Δh」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "B",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 2,
+      "question": "大氣壓力為 760 mmHg 時，以開口式壓力計測量某氣體，發現開口端的汞面比氣體端的汞面低 120 mm，則氣體壓力為多少 mmHg？",
+      "options": [
+        "880",
+        "760",
+        "640",
+        "120"
+      ],
+      "answer": "640",
+      "answerKey": "C",
+      "explanation": "開口端汞面較低，表示氣體端被推得較少，氣體壓力小於大氣壓：Pgas ＋ 120 ＝ 760，Pgas ＝ 640 mmHg。(A) 是把高低方向弄反；(B) 是兩側等高時的情形；(D) 是只取高度差。",
+      "knowledgePoint": "開口式壓力計",
+      "difficulty": "易",
+      "reference": "教材重點「開口式壓力計需考慮外界大氣壓」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "C",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 3,
+      "question": "1.5 atm 相當於多少 kPa？（1 atm ＝ 1.013 × 10⁵ Pa）",
+      "options": [
+        "152",
+        "114",
+        "1520",
+        "1140"
+      ],
+      "answer": "152",
+      "answerKey": "A",
+      "explanation": "1.5 × 1.013 × 10⁵ Pa ＝ 1.52 × 10⁵ Pa ＝ 152 kPa。(B) 是 1.5 × 76 的 cmHg 數值；(D) 是 1.5 × 760 的 mmHg 數值；(C) 是 10 的次方換算錯誤。",
+      "knowledgePoint": "壓力單位換算",
+      "difficulty": "易",
+      "reference": "教材重點「1 atm ＝ 1.013 × 10⁵ Pa」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "A",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 4,
+      "question": "定溫下，將 2.0 L、3.0 atm 的定量氣體壓縮成 0.50 L，壓力變為多少 atm？",
+      "options": [
+        "0.75",
+        "1.5",
+        "6.0",
+        "12"
+      ],
+      "answer": "12",
+      "answerKey": "D",
+      "explanation": "波以耳定律 P₁V₁ ＝ P₂V₂：3.0 × 2.0 ＝ P₂ × 0.50，P₂ ＝ 12 atm。(A) 是把壓力與體積當成正比；(B)(C) 是倍數算錯。",
+      "knowledgePoint": "波以耳定律",
+      "difficulty": "易",
+      "reference": "教材重點「波以耳定律：定溫、定量，PV ＝ k」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "D",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 5,
+      "question": "定壓下，將 27°C、3.0 L 的定量氣體加熱至 127°C，體積變為多少 L？",
+      "options": [
+        "14.1",
+        "4.0",
+        "3.3",
+        "2.25"
+      ],
+      "answer": "4.0",
+      "answerKey": "B",
+      "explanation": "查理定律須用絕對溫度：V₂ ＝ 3.0 × (400 ÷ 300) ＝ 4.0 L。(A) 是直接用攝氏溫度 3.0 × 127/27；(D) 是把溫度比倒過來；(C) 沒有依比例計算。",
+      "knowledgePoint": "查理定律、絕對溫度",
+      "difficulty": "易",
+      "reference": "教材重點「查理－給呂薩克定律：定壓、定量，V ∝ T(K)」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "B",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 6,
+      "question": "同溫、同壓下，質量相同的下列四種氣體，何者的體積最大？",
+      "options": [
+        "O₂",
+        "CO₂",
+        "CH₄",
+        "H₂"
+      ],
+      "answer": "H₂",
+      "answerKey": "D",
+      "explanation": "同溫同壓下體積與莫耳數成正比；質量相同時，莫耳數 ＝ 質量 ÷ 分子量，分子量愈小莫耳數愈多。H₂（2）分子量最小，體積最大；CH₄ 16、O₂ 32、CO₂ 44 依序較小。",
+      "knowledgePoint": "亞佛加厥定律",
+      "difficulty": "易",
+      "reference": "教材重點「亞佛加厥定律：定溫、定壓，V ∝ n」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "D",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 7,
+      "question": "標準溫壓（0°C、1 atm）下，某氣體 5.6 L 的質量為 11 g，此氣體可能為何？",
+      "options": [
+        "CO₂",
+        "O₂",
+        "SO₂",
+        "CH₄"
+      ],
+      "answer": "CO₂",
+      "answerKey": "A",
+      "explanation": "STP 下莫耳體積 22.4 L，n ＝ 5.6 ÷ 22.4 ＝ 0.25 mol，M ＝ 11 ÷ 0.25 ＝ 44 g/mol，為 CO₂。O₂ 32、SO₂ 64、CH₄ 16 都不符合。",
+      "knowledgePoint": "莫耳體積、分子量",
+      "difficulty": "中等",
+      "reference": "教材重點「STP 下理想氣體 1 mol 為 22.4 L」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "A",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 8,
+      "question": "在 27°C、1.00 atm 下測得某氣體的密度為 1.14 g/L，此氣體最可能是下列何者？（R ＝ 0.082 atm·L/(mol·K)）",
+      "options": [
+        "He",
+        "CH₄",
+        "N₂",
+        "CO₂"
+      ],
+      "answer": "N₂",
+      "answerKey": "C",
+      "explanation": "PM ＝ dRT，M ＝ dRT ÷ P ＝ 1.14 × 0.082 × 300 ÷ 1.00 ≈ 28.0 g/mol，為 N₂。He 4、CH₄ 16、CO₂ 44 都不符合。",
+      "knowledgePoint": "PM ＝ dRT",
+      "difficulty": "中等",
+      "reference": "教材重點「理想氣體方程式衍生 PM ＝ dRT」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "C",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 9,
+      "question": "一個體積固定的鋼瓶內，氣體在 27°C 時壓力為 2.0 atm。若將鋼瓶加熱至 177°C，瓶內壓力變為多少 atm？",
+      "options": [
+        "13.1",
+        "3.0",
+        "2.6",
+        "1.3"
+      ],
+      "answer": "3.0",
+      "answerKey": "B",
+      "explanation": "定容、定量下壓力與絕對溫度成正比：P₂ ＝ 2.0 × (450 ÷ 300) ＝ 3.0 atm。(A) 是直接用攝氏溫度 2.0 × 177/27；(D) 是溫度比倒過來。",
+      "knowledgePoint": "定容下壓力與溫度",
+      "difficulty": "中等",
+      "reference": "教材重點「理想氣體方程式 PV ＝ nRT（n、V 固定時 P ∝ T）」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "B",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 10,
+      "question": "10.0 L 的容器內含 0.20 mol N₂ 與 0.30 mol O₂，溫度 27°C，則 O₂ 的分壓為多少 atm？（R ＝ 0.082 atm·L/(mol·K)）",
+      "options": [
+        "0.492",
+        "0.738",
+        "1.23",
+        "0.60"
+      ],
+      "answer": "0.738",
+      "answerKey": "B",
+      "explanation": "O₂ 的分壓 ＝ n(O₂)RT ÷ V ＝ 0.30 × 0.082 × 300 ÷ 10.0 ＝ 0.738 atm。(A) 是 N₂ 的分壓；(C) 是總壓；(D) 是只算莫耳分率 0.60。",
+      "knowledgePoint": "道耳頓分壓定律",
+      "difficulty": "中等",
+      "reference": "教材重點「分壓：混合氣體中某一成分所貢獻的壓力」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "B",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 11,
+      "question": "某混合氣體的總壓力為 1.00 atm，其中 N₂ 的莫耳分率為 0.78，則 N₂ 的分壓為多少 mmHg？",
+      "options": [
+        "0.78",
+        "167",
+        "593",
+        "760"
+      ],
+      "answer": "593",
+      "answerKey": "C",
+      "explanation": "分壓 ＝ 總壓 × 莫耳分率 ＝ 760 mmHg × 0.78 ≈ 593 mmHg。(A) 是忘了換成 mmHg（0.78 atm）；(B) 是其他氣體的分壓 760 × 0.22；(D) 是總壓。",
+      "knowledgePoint": "莫耳分率與分壓",
+      "difficulty": "中等",
+      "reference": "教材重點「莫耳分率 Xₐ；PA ＝ Pt × XA」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "C",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 12,
+      "question": "以排水集氣法收集氧氣，在 25°C、大氣壓力 755 mmHg 時，集氣瓶內外液面等高。已知 25°C 時水的飽和蒸氣壓為 24 mmHg，則瓶內氧氣的分壓為多少 mmHg？",
+      "options": [
+        "779",
+        "755",
+        "731",
+        "24"
+      ],
+      "answer": "731",
+      "answerKey": "C",
+      "explanation": "內外液面等高時，瓶內總壓 ＝ 大氣壓 ＝ P(O₂) ＋ P(H₂O)，P(O₂) ＝ 755 − 24 ＝ 731 mmHg。(A) 是把水蒸氣壓加上去；(B) 是忘了扣除水蒸氣壓。",
+      "knowledgePoint": "排水集氣法的壓力校正",
+      "difficulty": "中等",
+      "reference": "教材重點「排水集氣法：收集到的氣體壓力需扣除該溫度下之水飽和蒸氣壓」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "C",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 13,
+      "question": "同溫、同壓下，體積相同的甲烷（CH₄）與氧氣（O₂），兩者的質量比（CH₄：O₂）為何？",
+      "options": [
+        "1：2",
+        "2：1",
+        "1：1",
+        "1：4"
+      ],
+      "answer": "1：2",
+      "answerKey": "A",
+      "explanation": "同溫同壓同體積，莫耳數相同；質量比 ＝ 分子量比 ＝ 16：32 ＝ 1：2。(C) 是把體積比當成質量比；(B) 是比值倒置。",
+      "knowledgePoint": "亞佛加厥定律",
+      "difficulty": "中等",
+      "reference": "教材重點「亞佛加厥定律：同溫同壓下，相同體積之任何氣體含有相同之分子數」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "A",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 14,
+      "question": "下列哪一種氣體在哪一種狀況下，其行為最接近理想氣體？",
+      "options": [
+        "He，500 K、0.5 atm",
+        "He，200 K、5 atm",
+        "NH₃，500 K、0.5 atm",
+        "NH₃，200 K、5 atm"
+      ],
+      "answer": "He，500 K、0.5 atm",
+      "answerKey": "A",
+      "explanation": "真實氣體在高溫、低壓下最接近理想氣體；分子間作用力愈小的氣體也愈接近。He 為分子間作用力最小的氣體，NH₃ 分子間有氫鍵、作用力大。所以高溫低壓下的 He 最接近理想氣體。",
+      "knowledgePoint": "理想氣體與真實氣體",
+      "difficulty": "中等",
+      "reference": "教材重點「真實氣體偏離理想行為，偏離程度在低溫、高壓時最明顯」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "A",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 15,
+      "question": "一定量的氣體由 1.0 atm、27°C、2.0 L 變為 2.0 atm、327°C，其體積變為多少 L？",
+      "options": [
+        "1.0",
+        "4.0",
+        "8.0",
+        "2.0"
+      ],
+      "answer": "2.0",
+      "answerKey": "D",
+      "explanation": "P₁V₁/T₁ ＝ P₂V₂/T₂：V₂ ＝ 2.0 × (1.0 ÷ 2.0) × (600 ÷ 300) ＝ 2.0 L。壓力加倍使體積減半，絕對溫度加倍使體積加倍，兩者抵消。(A) 只考慮壓力；(B) 只考慮溫度；(C) 是兩項都當成加倍。",
+      "knowledgePoint": "波以耳定律與查理定律的綜合",
+      "difficulty": "中等",
+      "reference": "教材重點「三大定律可整合成理想氣體方程式」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "D",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 16,
+      "question": "同溫下，A 容器（2.0 L、1.5 atm）與 B 容器（3.0 L、0.50 atm）裝有不互相反應的氣體，以體積可忽略的細管連通後達平衡，總壓力為多少 atm？",
+      "options": [
+        "2.0",
+        "1.0",
+        "0.90",
+        "0.45"
+      ],
+      "answer": "0.90",
+      "answerKey": "C",
+      "explanation": "定溫下各氣體 PV 不變：總壓 ＝ (1.5 × 2.0 ＋ 0.50 × 3.0) ÷ (2.0 ＋ 3.0) ＝ 4.5 ÷ 5.0 ＝ 0.90 atm。(A) 是兩壓力直接相加；(B) 是兩壓力的平均；(D) 是除錯體積。",
+      "knowledgePoint": "道耳頓分壓定律",
+      "difficulty": "中等",
+      "reference": "教材重點「道耳頓分壓定律：總壓＝各分壓總和」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "C",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 17,
+      "question": "將 0.50 mol NH₃ 與 0.30 mol HCl 注入 10.0 L 的真空容器中，在 27°C 下完全反應生成 NH₄Cl(s)（固體體積可忽略），反應後容器內剩下的氣體與其壓力為何？（R ＝ 0.082 atm·L/(mol·K)）",
+      "options": [
+        "0.492 atm 的 NH₃",
+        "0.738 atm 的 HCl",
+        "1.97 atm 的混合氣體",
+        "0.492 atm 的 HCl"
+      ],
+      "answer": "0.492 atm 的 NH₃",
+      "answerKey": "A",
+      "explanation": "NH₃ ＋ HCl → NH₄Cl(s)，係數比 1：1，HCl 為限量試劑，反應後剩下 NH₃ 0.50 − 0.30 ＝ 0.20 mol。P ＝ 0.20 × 0.082 × 300 ÷ 10.0 ＝ 0.492 atm。(C) 是忽略反應直接把兩者分壓相加——會反應的氣體不適用分壓相加。",
+      "knowledgePoint": "混合時發生反應的氣體",
+      "difficulty": "難",
+      "reference": "教材重點「會發生化學反應氣體不適用分壓加總（如 HCl＋NH₃）」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "A",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 18,
+      "question": "定壓下，將開口容器中的空氣由 27°C 加熱到 227°C，原來容器內的空氣有百分之多少逸出容器？",
+      "options": [
+        "88%",
+        "60%",
+        "12%",
+        "40%"
+      ],
+      "answer": "40%",
+      "answerKey": "D",
+      "explanation": "容器體積與壓力不變，留在容器內的莫耳數與絕對溫度成反比：剩下 300 ÷ 500 ＝ 60%，逸出 40%。(B) 是剩下的比例；(A)(C) 是用攝氏溫度計算的錯誤結果。",
+      "knowledgePoint": "查理定律的應用",
+      "difficulty": "難",
+      "reference": "教材重點「查理－給呂薩克定律：定壓下體積與溫度的關係」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "D",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 19,
+      "question": "定溫、定容的密閉容器中有 CO(g) 與 O₂(g)，分壓都是 2.0 atm。點火使其依 2CO(g) ＋ O₂(g) → 2CO₂(g) 完全反應後，恢復原溫度，容器內總壓為多少 atm？",
+      "options": [
+        "4.0",
+        "3.0",
+        "2.0",
+        "1.0"
+      ],
+      "answer": "3.0",
+      "answerKey": "B",
+      "explanation": "定溫定容下分壓與莫耳數成正比，可直接用分壓做計量。CO 2.0 atm 完全反應，消耗 O₂ 1.0 atm、生成 CO₂ 2.0 atm；剩 O₂ 1.0 atm。總壓 ＝ 1.0 ＋ 2.0 ＝ 3.0 atm。(A) 是忽略反應；(C) 只算了 CO₂。",
+      "knowledgePoint": "分壓與反應計量",
+      "difficulty": "難",
+      "reference": "教材重點「道耳頓分壓定律適用互不反應的混合氣體；會反應者須先計算反應後剩餘氣體」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "B",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    },
+    {
+      "number": 20,
+      "question": "某氣體在 0°C、1 atm 下的密度為 1.25 g/L。同一氣體在 273°C、2 atm 下的密度為多少 g/L？",
+      "options": [
+        "0.625",
+        "2.50",
+        "5.00",
+        "1.25"
+      ],
+      "answer": "1.25",
+      "answerKey": "D",
+      "explanation": "由 PM ＝ dRT，同一氣體 d ∝ P/T：d₂ ＝ 1.25 × (2 ÷ 1) × (273 ÷ 546) ＝ 1.25 g/L。壓力加倍使密度加倍，絕對溫度加倍使密度減半，兩者抵消。(A) 只考慮溫度；(B) 只考慮壓力。",
+      "knowledgePoint": "PM ＝ dRT",
+      "difficulty": "難",
+      "reference": "教材重點「PM ＝ dRT：同溫同壓下分子量與密度成正比」",
+      "mapping": null,
+      "solverAnswers": [
+        {
+          "id": "claude-fresh",
+          "name": "Claude（新對話）",
+          "key": "D",
+          "problem": null
+        }
+      ],
+      "status": "ok",
+      "reasons": []
+    }
+  ]
+}

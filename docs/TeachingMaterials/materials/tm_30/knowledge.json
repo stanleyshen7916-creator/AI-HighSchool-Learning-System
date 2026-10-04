@@ -1,0 +1,126 @@
+{
+  "materialId": "tm_30",
+  "knowledgePoints": [
+    {
+      "name": "亞佛加厥定律",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "分壓定律（混合）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分壓與反應計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "壓力計",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "定容下壓力與溫度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "排水集氣法的壓力校正",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "查理定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "查理定律的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "查理定律與絕對零度",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "氣體定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "氣體定律（圖形）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體的通性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "波以耳定律（J 型管）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律（壓力計）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "波以耳定律（汞柱封氣）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體方程式",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "理想氣體方程式、分壓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體方程式與反應計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體與真實氣體",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "莫耳體積的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律、莫耳分率",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律的限制",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-04T06:50:42.073Z"
+}

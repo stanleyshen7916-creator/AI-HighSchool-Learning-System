@@ -66,9 +66,25 @@ function optionKey(options) {
   return (options || []).map(normalizeStem).sort().join('|');
 }
 
+// 2026-10-04：題組（例如歷屆試題「（第18–19題為題組）」）的每一題都必須帶著同一段題組
+// 說明文字，整段相同的前文會讓同一題組的不同小題被判為「重複」。兩題都以同一個題組
+// 標記開頭時，跳過共同的前文、只比較後面不同的部分；整題完全相同仍然是重複。其他題目
+// 照舊比較全文（只改數字的換句話說仍會被抓到）。
+const SHARED_PASSAGE_MIN = 30;
+const GROUP_MARK = /^第\d+題為題組/;
+function withoutSharedPassage(a, b) {
+  const mark = GROUP_MARK.exec(a);
+  if (!mark || !b.startsWith(mark[0])) return [a, b];
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  if (i >= SHARED_PASSAGE_MIN && i < a.length && i < b.length) return [a.slice(i), b.slice(i)];
+  return [a, b];
+}
+
 // 'duplicate' | 'similar' | null
 function compareQuestions(a, b) {
-  const sim = similarity(a.norm, b.norm);
+  const [na, nb] = withoutSharedPassage(a.norm, b.norm);
+  const sim = similarity(na, nb);
   if (sim >= DUPLICATE_THRESHOLD || (sim >= SIMILAR_THRESHOLD && a.opts && a.opts === b.opts)) return 'duplicate';
   return sim >= SIMILAR_THRESHOLD ? 'similar' : null;
 }
