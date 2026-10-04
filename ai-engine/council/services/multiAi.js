@@ -36,21 +36,87 @@ const SECTION_KEYS = SECTION_DEFS.map(keyOf);
 // 抽取claim的對象，計算「小節覆蓋率」時必須排除，否則分母會被稀釋、覆蓋率虛高。
 const CONTENT_SECTION_KEYS = SECTION_KEYS.slice(0, 13);
 
-// Ollama 目前實際設定值（見 callOllamaAdjudication 的 num_ctx），非任務文件建議之 32768；
-// 若未來調整模型 context window，必須同步更新此常數，否則 Context Safety Gate 會失準。
+// 2026-10-04：context window 依「實際送出的 prompt」決定，不再固定 8192。
+// 過去固定 8192 tokens，整本課本（例如 22 頁照片 OCR）的 SOURCE 一放進 prompt 就超過，
+// 每個小節都被跳過、整份退回 fallback_concat（OLLAMA_CONTEXT_OVERFLOW）。本地模型沒有
+// 計費或配額限制，唯一的上限是模型本身：qwen2.5 原生 context 為 32768，可用環境變數
+// OLLAMA_MAX_CTX 調整。OLLAMA_NUM_CTX 是最小 window（短 prompt 不必配置大 KV cache，
+// 6 GB 顯卡上速度較快）。
 const OLLAMA_NUM_CTX = 8192;
+const OLLAMA_MAX_CTX = Math.max(OLLAMA_NUM_CTX, Number(process.env.OLLAMA_MAX_CTX) || 32768);
 // 保留給模型輸出（claims JSON）的 token 額度，避免 prompt（含 Canonical SOURCE）佔滿整個
 // context window 導致輸出被截斷。Claim JSON 通常比舊版純敘述輸出更長（含 provenance 欄位），
 // 保留額度略高於舊版。
 const CONTEXT_OUTPUT_RESERVE_TOKENS = 1536;
-const CONTEXT_SAFE_TOKEN_LIMIT = OLLAMA_NUM_CTX - CONTEXT_OUTPUT_RESERVE_TOKENS;
-// 中文／混合文本無可靠 tokenizer 可用時的保守估算：約 2 字元 / token。
-// 保守（低估安全上限）優於樂觀估算，避免「估算安全但實際超限」的情況。
-const CONTEXT_CHARS_PER_TOKEN_ESTIMATE = 2;
+const CONTEXT_SAFE_TOKEN_LIMIT = OLLAMA_MAX_CTX - CONTEXT_OUTPUT_RESERVE_TOKENS;
+
+// 沒有 tokenizer 時的保守估算：Qwen 對中日韓文字約 1 字 ≤ 1 token，其他字元約 3～4 字元
+// 1 token；這裡用 1 字 1 token、其他 2.5 字元 1 token，寧可高估。高估很重要：prompt
+// 超過 num_ctx 時 Ollama 會「靜默」從開頭截掉內容（SOURCE 在前面），不會報錯。
+const CJK_RE = /[　-〿㐀-鿿豈-﫿＀-￯]/g;
 
 function estimateTokenCount(text) {
-  const length = String(text ?? '').length;
-  return Math.ceil(length / CONTEXT_CHARS_PER_TOKEN_ESTIMATE);
+  const str = String(text ?? '');
+  const cjk = (str.match(CJK_RE) || []).length;
+  return Math.ceil(cjk + (str.length - cjk) / 2.5);
+}
+
+// 這次呼叫需要的 context window：prompt＋輸出額度，以 2048 為單位，介於最小與最大之間。
+function contextWindowFor(promptText) {
+  const needed = estimateTokenCount(promptText) + CONTEXT_OUTPUT_RESERVE_TOKENS;
+  return Math.min(OLLAMA_MAX_CTX, Math.max(OLLAMA_NUM_CTX, Math.ceil(needed / 2048) * 2048));
+}
+
+// SOURCE 連模型最大 context 都放不下時（極長的教材），不跳過也不截斷：把 SOURCE 切成段落，
+// 依與這次要處理的內容（小節初稿／單一陳述）的字詞重疊度挑出最相關的段落，依原文順序
+// 組成這次呼叫的 SOURCE，直到填滿可用額度。整份 SOURCE 仍是唯一 Truth Anchor——逐字比對
+// （applySourceTruthGate）一律對完整 SOURCE 進行；Final.md 會標示 source_windowed。
+function splitSourceParagraphs(sourceText, maxChars = 800) {
+  const parts = [];
+  String(sourceText).split(/\n\s*\n|\n(?=#)/).forEach((para) => {
+    const text = para.trim();
+    if (!text) return;
+    for (let i = 0; i < text.length; i += maxChars) parts.push(text.slice(i, i + maxChars));
+  });
+  return parts;
+}
+
+function bigramsOf(text) {
+  const set = new Set();
+  const str = String(text || '').replace(/\s+/g, '');
+  for (let i = 0; i < str.length - 1; i += 1) set.add(str.slice(i, i + 2));
+  return set;
+}
+
+function selectSourceWindow(sourceText, focusText, maxTokens) {
+  if (estimateTokenCount(sourceText) <= maxTokens) return { text: sourceText, windowed: false };
+  const focus = bigramsOf(focusText);
+  const paragraphs = splitSourceParagraphs(sourceText).map((text, index) => {
+    let hits = 0;
+    bigramsOf(text).forEach((bg) => { if (focus.has(bg)) hits += 1; });
+    return { text, index, score: hits / Math.sqrt(text.length + 1), tokens: estimateTokenCount(text) + 2 };
+  });
+  const chosen = [];
+  let used = 0;
+  paragraphs.slice().sort((a, b) => b.score - a.score || a.index - b.index).forEach((p) => {
+    if (used + p.tokens <= maxTokens) { chosen.push(p); used += p.tokens; }
+  });
+  chosen.sort((a, b) => a.index - b.index);
+  return { text: chosen.map((p) => p.text).join('\n\n…\n\n'), windowed: true };
+}
+
+// 依 SOURCE 實際長度組 prompt：放得下就給完整 SOURCE；放不下就給最相關的段落。
+// 連「不含 SOURCE 的部分」都超過上限（初稿某小節異常龐大）時回傳 null，由呼叫端誠實
+// 記錄 CONTEXT_OVERFLOW。
+function fitSourceIntoPrompt(build, sourceText, focusText) {
+  const full = build(sourceText);
+  if (isContextSafe(full)) return { prompt: full, windowed: false };
+  const overhead = estimateTokenCount(build(''));
+  const budget = CONTEXT_SAFE_TOKEN_LIMIT - overhead - 64;
+  if (budget < 512) return null;
+  const window = selectSourceWindow(sourceText, focusText, budget);
+  const prompt = build(window.text);
+  return isContextSafe(prompt) ? { prompt, windowed: window.windowed } : null;
 }
 
 function isContextSafe(promptText, safeLimit = CONTEXT_SAFE_TOKEN_LIMIT) {
@@ -197,7 +263,7 @@ async function callOllamaAdjudication(
         prompt,
         stream: false,
         format: 'json',
-        options: { temperature: 0, num_ctx: OLLAMA_NUM_CTX, num_predict: CONTEXT_OUTPUT_RESERVE_TOKENS },
+        options: { temperature: 0, num_ctx: contextWindowFor(prompt), num_predict: CONTEXT_OUTPUT_RESERVE_TOKENS },
       }),
       signal: AbortSignal.timeout(timeoutMs),
     });
@@ -411,6 +477,7 @@ async function extractClaimsPerSection(metadata, sourceText, draftSectionMaps, m
   let anySectionSucceeded = false;
   let anySectionAttempted = false;
   let lastFailureReason = null;
+  let sourceWindowed = false;
 
   for (const sectionKey of CONTENT_SECTION_KEYS) {
     const snippets = {
@@ -423,15 +490,19 @@ async function extractClaimsPerSection(metadata, sourceText, draftSectionMaps, m
     if (!hasContent) continue; // 三份都沒寫，不是缺口，不需要問模型
 
     anySectionAttempted = true;
-    const prompt = buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, snippets);
-
-    // 沿用既有的 Context Safety Gate：單一小節的 prompt 理論上遠比整份小，但極端情況
-    // （例如某份初稿在單一小節塞了異常大量內容）仍可能逼近上限，誠實跳過並記錄，
-    // 不得靜默截斷內容。
-    if (!isContextSafe(prompt)) {
+    // SOURCE 放得下就整份給；超過模型最大 context 時給與這個小節最相關的段落
+    // （fitSourceIntoPrompt）。只有初稿這個小節本身就超過上限時才跳過並記錄。
+    const fitted = fitSourceIntoPrompt(
+      (src) => buildSectionClaimExtractionPrompt(metadata, src, sectionKey, snippets),
+      sourceText,
+      Object.values(snippets).join('\n'),
+    );
+    if (!fitted) {
       lastFailureReason = FAILURE_REASON.CONTEXT_OVERFLOW;
       continue;
     }
+    const { prompt } = fitted;
+    if (fitted.windowed) sourceWindowed = true;
 
     let raw;
     try {
@@ -455,7 +526,7 @@ async function extractClaimsPerSection(metadata, sourceText, draftSectionMaps, m
     unresolvedSections.push(...parsedSection.unresolvedSections);
   }
 
-  return { claims, unresolvedSections, anySectionAttempted, anySectionSucceeded, lastFailureReason };
+  return { claims, unresolvedSections, anySectionAttempted, anySectionSucceeded, lastFailureReason, sourceWindowed };
 }
 
 function extractJsonObject(raw) {
@@ -754,9 +825,12 @@ function buildClaimVerificationPrompt(sourceText, claimText) {
 }
 
 async function verifyClaimAgainstSource(sourceText, claimText, model, url, timeoutMs) {
-  const raw = await callOllamaAdjudication(buildClaimVerificationPrompt(sourceText, claimText), model, url, timeoutMs);
+  const fitted = fitSourceIntoPrompt((src) => buildClaimVerificationPrompt(src, claimText), sourceText, claimText);
+  if (!fitted) throw failure('單一 Claim 裁決 prompt 超過模型最大 context', FAILURE_REASON.CONTEXT_OVERFLOW);
+  const raw = await callOllamaAdjudication(fitted.prompt, model, url, timeoutMs);
   const parsed = extractJsonObject(raw);
   return {
+    windowed: fitted.windowed,
     quoted_source_span:
       typeof parsed.quoted_source_span === 'string' && parsed.quoted_source_span.trim()
         ? parsed.quoted_source_span.trim()
@@ -797,6 +871,7 @@ async function verifyAllClaims(claims, sourceText, model, url, timeoutMs) {
       verdict: verification.verdict || VERDICTS.INSUFFICIENT_EVIDENCE,
       reason: verification.reason || '（模型未提供理由）',
       confidence: verification.verdict ? 1 : 0,
+      ...(verification.windowed ? { source_windowed: true } : {}),
     });
   }
   return results;
@@ -1191,6 +1266,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
   let qualityGate = 'PENDING_MANUAL_REVIEW';
   let failureReason = null;
   let hardFail = false;
+  let sourceWindowed = false;
 
   const trimmedSource = String(sourceText || '').trim();
 
@@ -1222,6 +1298,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
         failureReason = FAILURE_REASON.SCHEMA_INVALID;
       } else {
         const verified = await verifyAllClaims(extracted.claims, trimmedSource, model, url, timeoutMs); // 逐一裁決，低負載
+        sourceWindowed = Boolean(extracted.sourceWindowed) || verified.some((c) => c.source_windowed);
         const allDraftsText = [drafts.chatgpt, drafts.gemini, drafts.claude].filter(Boolean).join('\n');
         const firstPass = applySourceTruthGate(verified, trimmedSource, allDraftsText);
         const gated = await retryDowngradedClaims(firstPass, trimmedSource, model, url, timeoutMs); // 防禦性第二次確認
@@ -1333,6 +1410,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
       adjudication_mode: mode,
       failureReason,
       hardFail,
+      sourceWindowed,
       sourceId,
       runId,
     },
@@ -1352,6 +1430,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
       source_id: sourceId,
       run_id: runId,
       source_provided: Boolean(trimmedSource),
+      source_windowed: sourceWindowed,
       claims: claims.map((claim) => ({
         claim_id: claim.claim_id,
         claim: claim.claim,
@@ -1407,6 +1486,7 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `section_coverage_rate: "${meta.sectionCoverage?.coverage_rate ?? 'N/A'}"`,
     `document_completeness: "${meta.documentCompleteness ?? 'N/A'}"`,
     `failure_reason: "${meta.failureReason || 'null'}"`,
+    ...(meta.sourceWindowed ? ['source_windowed: "true"'] : []),
     `source_id: "${meta.sourceId || 'null'}"`,
     `run_id: "${meta.runId || 'null'}"`,
     `generated_at: ${generatedAt}`,
@@ -1460,6 +1540,9 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `Quality Gate 判定：${meta.qualityGate || 'PENDING_MANUAL_REVIEW'}`,
     ...(meta.failureReason ? [`Failure Reason：${meta.failureReason}`] : []),
     ...(meta.hardFail ? ['HARD FAIL：true'] : []),
+    ...(meta.sourceWindowed
+      ? ['SOURCE 超過本地模型最大 context：各小節與陳述改以 SOURCE 中最相關的段落裁決；逐字比對仍對照完整 SOURCE。']
+      : []),
     '',
   ].join('\n');
 }
@@ -1743,6 +1826,9 @@ module.exports = {
   assembleCouncilFinal,
   generateCouncilMarkdown,
   isContextSafe,
+  contextWindowFor,
+  selectSourceWindow,
+  fitSourceIntoPrompt,
   estimateTokenCount,
   detectAttributionLeakage,
   findIncompleteSections,
@@ -1774,5 +1860,6 @@ module.exports = {
   CONTENT_SECTION_KEYS,
   CONTEXT_SAFE_TOKEN_LIMIT,
   OLLAMA_NUM_CTX,
+  OLLAMA_MAX_CTX,
   DEFAULT_ADJUDICATION_TIMEOUT_MS,
 };

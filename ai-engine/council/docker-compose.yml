@@ -37,13 +37,20 @@ services:
           memory: 4G
 
   ollama:
-    image: ollama/ollama:latest
+    # 2026-10-04：固定 0.9.6。latest（0.33）的 CUDA 函式庫在這台電腦的 NVIDIA 驅動
+    # （536.67 / CUDA 12.2）上偵測不到 GPU，會整個退回 CPU（實測一次長 prompt 裁決超過
+    # 10 分鐘仍未完成）；0.9.6 可正確使用 GTX 1660 Ti。更新顯卡驅動後才可改回 latest。
+    image: ollama/ollama:0.9.6
     volumes:
       - ${COUNCIL_DATA_DIR:-./data}/ollama_data:/root/.ollama
     ports:
       - "127.0.0.1:11434:11434"
     environment:
       - OLLAMA_KEEP_ALIVE=5m
+      # 整本教材的 SOURCE 需要較大的 context（引擎依 prompt 長度自動設定 num_ctx，最大
+      # 32768）。Flash attention＋8-bit KV cache 讓長 context 佔用的顯示記憶體減半。
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_KV_CACHE_TYPE=q8_0
     deploy:
       resources:
         reservations:
