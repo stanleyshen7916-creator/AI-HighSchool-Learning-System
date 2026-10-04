@@ -1,0 +1,20 @@
+{
+  "adjudicator": "n/a（fallback，未執行 semantic adjudication）",
+  "adjudication_mode": "fallback_concat",
+  "failure_reason": "OLLAMA_CONTEXT_OVERFLOW",
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": "N/A",
+  "claim_verification_score": "N/A",
+  "section_coverage": null,
+  "document_completeness": null,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_化學_化學_第三章_課本",
+  "run_id": "e78dbfae-a464-4eb0-a3ce-0fb190b6fffd",
+  "source_provided": true,
+  "claims": [],
+  "validation": {
+    "sections_complete": false,
+    "source_attribution_valid": false
+  }
+}
