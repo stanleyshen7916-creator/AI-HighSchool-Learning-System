@@ -96,6 +96,8 @@ AHS.CouncilEngineClient = (function () {
     },
     /* 2026-10-05 發布後自動 commit + push 的進度 */
     gitJob: function (jobId) { return request("GET", "/api/platform/git-jobs/" + enc(jobId)); },
+    /* 2026-10-05 模擬月考：管理者把某校某學期某科的範圍設為全體預設（寫入 js/data/MonthExamConfig.js 並自動上架） */
+    saveMonthExamRange: function (payload) { return request("POST", "/api/platform/month-exam-config", payload); },
     deleteDraft: function (id) { return request("DELETE", "/api/platform/drafts/" + enc(id)); },
     /* 2026-10-01 為既有教材加題 */
     supplementParents: function () { return request("GET", "/api/platform/supplements/parents"); },

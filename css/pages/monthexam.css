@@ -1,0 +1,68 @@
+/* css/pages/monthexam.css — 模擬月考專區（2026-10-05）。沿用 tokens.css 的變數。 */
+.mx { display: flex; flex-direction: column; gap: var(--space-4); max-width: 920px; }
+.mx-list, .mx-exam, .mx-result { display: flex; flex-direction: column; gap: var(--space-4); }
+.mx-title { margin: 0; font-size: 22px; color: var(--text); }
+.mx-sub { margin: 6px 0 0; font-size: 14px; line-height: 1.7; color: var(--text-muted); }
+.mx-empty { margin: 0; color: var(--text-faint); }
+.mx-notice {
+  margin: 0; padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; line-height: 1.6;
+}
+
+.mx-card { display: flex; flex-direction: column; gap: 10px; }
+.mx-card__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.mx-card__title { margin: 0; font-size: 18px; color: var(--text); }
+.mx-pool { font-size: 13px; color: var(--text-muted); }
+.mx-range-src { margin: 0; font-size: 13px; color: var(--text-muted); }
+.mx-range { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.mx-range li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.5; }
+.mx-range input { margin-top: 3px; }
+.mx-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.mx-status { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+.mx-btn {
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 9px 16px;
+  font-family: inherit; font-size: 14px; font-weight: 700; background: var(--card); color: var(--text); cursor: pointer;
+}
+.mx-btn:hover { border-color: var(--brand); color: var(--brand-ink); }
+.mx-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.mx-btn--primary { border-color: var(--brand); background: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
+.mx-btn--primary:hover { background: var(--brand-strong); color: #ffffff; }
+
+.mx-history { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mx-history li { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 14px; }
+.mx-history li span { flex: 1 1 200px; color: var(--text-muted); }
+
+/* 作答 */
+.mx-bar {
+  position: sticky; top: var(--topbar-h, 64px); z-index: 5;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-md); background: var(--card);
+  box-shadow: var(--shadow-card); border: 1px solid var(--line);
+}
+.mx-bar__subject { flex: 1 1 200px; font-weight: 700; }
+.mx-clock { font-size: 18px; font-variant-numeric: tabular-nums; color: var(--brand-ink); }
+.mx-clock.is-urgent { color: #b42318; }
+.mx-progress { font-size: 13px; color: var(--text-muted); }
+
+.mx-qs { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+.mx-q { padding: 14px 16px; border-radius: var(--radius-md); background: var(--card); border: 1px solid var(--line); }
+.mx-q.is-wrong { border-left: 4px solid #b42318; }
+.mx-q.is-correct { border-left: 4px solid var(--ok); }
+.mx-q__text { margin: 0 0 10px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mx-opts { display: grid; gap: 8px; }
+.mx-opt {
+  text-align: left; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong);
+  background: var(--card); font: inherit; line-height: 1.5; cursor: pointer; overflow-wrap: anywhere;
+}
+.mx-opt:hover { border-color: var(--brand); }
+.mx-opt.is-picked { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-ink); font-weight: 700; }
+
+/* 成績 */
+.mx-score__num { margin: 4px 0; font-size: 40px; font-weight: 800; color: var(--brand-ink); }
+.mx-ans { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 4px; font-size: 14px; }
+.mx-ans li { padding: 4px 8px; border-radius: var(--radius-sm); overflow-wrap: anywhere; }
+.mx-ans .is-answer { background: #e7f6ec; color: #18794e; font-weight: 700; }
+.mx-ans .is-given { background: #fdecec; color: #b42318; }
+.mx-given { margin: 6px 0 0; color: #b42318; font-size: 13px; font-weight: 600; }
+.mx-expl { margin-top: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg); line-height: 1.7; font-size: 14px; }
