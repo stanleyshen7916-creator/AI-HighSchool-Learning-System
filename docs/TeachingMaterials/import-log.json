@@ -265,6 +265,27 @@
       "version": "1",
       "result": "FAIL_DUPLICATE",
       "error": "duplicate of tm_34"
+    },
+    {
+      "time": "2026-10-05T06:43:20.059Z",
+      "materialId": "tm_39",
+      "version": "1",
+      "result": "FAIL_DUPLICATE",
+      "error": "duplicate of tm_37"
+    },
+    {
+      "time": "2026-10-05T12:40:47.357Z",
+      "materialId": "tm_39",
+      "version": "1",
+      "result": "FAIL_DUPLICATE",
+      "error": "duplicate of tm_37"
+    },
+    {
+      "time": "2026-10-05T12:41:36.716Z",
+      "materialId": "tm_39",
+      "version": "1",
+      "result": "SUCCESS",
+      "error": null
     }
   ]
 }

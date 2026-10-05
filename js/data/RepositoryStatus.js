@@ -9,11 +9,11 @@ window.AHS = window.AHS || {};
 AHS.RepositoryStatus = {
   "counts": {
     "RAW": 0,
-    "ANALYZING": 0,
+    "ANALYZING": 1,
     "CLAUDE_READY": 0,
     "READY_FOR_IMPORT": 0,
-    "IMPORTED": 30,
+    "IMPORTED": 31,
     "ARCHIVED": 2
   },
-  "generatedAt": "2026-10-05T06:16:23.624Z"
+  "generatedAt": "2026-10-05T12:41:52.664Z"
 };
