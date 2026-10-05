@@ -1,0 +1,16 @@
+{
+  "materialId": "tm_40",
+  "knowledgePoints": [
+    {
+      "name": "全球在地化",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "歷史的功用",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-05T14:30:10.617Z"
+}
