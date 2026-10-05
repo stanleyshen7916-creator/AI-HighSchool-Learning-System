@@ -466,7 +466,7 @@ console.log("\n[8] Sprint AI-015E — Production Pipeline wiring (materials.html
   check("single_choice 呈現可作答選項", optBtns.length === 4);
   const q0 = window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const wrongOpt = optBtns.find(b => b.textContent !== String(q0.answer));
-  wrongOpt.click();
+  wrongOpt.click(); doc.querySelector(".quiz-practice__submit").click(); /* 2026-10-04: 選擇後按「確認」才批改 */
   check("Submit 後顯示批改結果（答錯）", /答錯了/.test(doc.querySelector(".quiz-practice__result").textContent));
   check("explanation 正常渲染（詳解區塊）", /詳解|標準答案/.test(doc.querySelector(".quiz-practice__answer").textContent));
   check("答錯 → WrongBookSession 自動建立 1 筆（Identity Mapping 成功解析 Runtime→Session）", window.AHS.WrongBookSession.count() === 1);
@@ -496,16 +496,16 @@ console.log("\n[10] EO-S7.0-002 / Sprint AI-015E — 答對不建立 / 重複答
   }
   // Correct answer first: no wrong-book entry
   openRow(0);
-  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent === String(q0.answer)).click(); doc.querySelector(".quiz-practice__submit").click();
   check("答對 → 不建立 Wrong Book", window.AHS.WrongBookSession.count() === 0 && /答對了/.test(doc.querySelector(".quiz-practice__result").textContent));
   // Wrong twice: single record, wrongCount 2, firstWrongAt preserved
   backFromPractice(doc);
   openRow(0);
-  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click(); doc.querySelector(".quiz-practice__submit").click();
   const first = window.AHS.WrongBookSession.list()[0];
   backFromPractice(doc);
   openRow(0);
-  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...doc.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click(); doc.querySelector(".quiz-practice__submit").click();
   const after = window.AHS.WrongBookSession.list()[0];
   check("重複答錯不重建資料（仍 1 筆）", window.AHS.WrongBookSession.count() === 1);
   check("wrongCount 正常累加 (2) 且 firstWrongAt 不覆蓋",
@@ -526,7 +526,7 @@ console.log("\n[11] EO-S7.0-002 / Sprint AI-015E — Wrong Book 頁面：Session
   const rows = [...preMount.querySelectorAll(".quiz-practice__row-q")];
   const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
-  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click(); pre.window.document.querySelector(".quiz-practice__submit").click();
   const carried = {
     "ahs:learningQuestionSession": pre.window.AHS.PersistenceAdapter.load("learningQuestionSession"),
     "ahs:wrongBookSession": pre.window.AHS.PersistenceAdapter.load("wrongBookSession"),
@@ -613,7 +613,7 @@ console.log("\n[14] EO-S7.0-003 / Sprint AI-015E — Review Widget 反映真實�
   const q0 = pre.window.AHS.LearningQuestionRuntime.findByMaterialId(seed.materialId)[0];
   const rows = [...m.querySelectorAll(".quiz-practice__row-q")];
   (rows[0].closest(".quiz-practice__row") || rows[0]).click();
-  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click();
+  [...pre.window.document.querySelectorAll(".quiz-practice__option--btn")].find(b => b.textContent !== String(q0.answer)).click(); pre.window.document.querySelector(".quiz-practice__submit").click();
   const carried = {};
   for (const shortKey of ["wrongBookSession", "reviewQueue"]) carried["ahs:" + shortKey] = pre.window.AHS.PersistenceAdapter.load(shortKey);
   const { window } = loadPage("index.html", { seedSession: carried });
@@ -1186,7 +1186,7 @@ console.log("\n[26] HOTFIX-004 — Review Suggestion & Quiz Runtime Integration�
   docE.querySelector(".quiz-practice__row").click();
   const wrongOption = [...docE.querySelectorAll(".quiz-practice__option")]
     .find(b => b.dataset.key !== qs[0].correctAnswer) || docE.querySelector(".quiz-practice__option");
-  wrongOption.click();
+  wrongOption.click(); docE.querySelector(".quiz-practice__submit").click(); /* 2026-10-04: 選擇後按「確認」 */
   check("PAT：真實練習答錯 -> 直接寫入知識弱點（AHS.WrongBookRuntime，AI-121 Knowledge Engine）",
     AQ.WrongBookRuntime.list().length === wrongBefore + 1);
   const masteryAfter = AQ.KnowledgeMasteryRuntime.get(qs[0].knowledgePoint);

@@ -91,7 +91,9 @@ AHS.CouncilEngineClient = (function () {
     listDrafts: function () { return request("GET", "/api/platform/drafts"); },
     getDraft: function (id) { return request("GET", "/api/platform/drafts/" + enc(id)); },
     createDraft: function (payload) { return request("POST", "/api/platform/drafts", payload); },
-    publishDraft: function (id) { return request("POST", "/api/platform/drafts/" + enc(id) + "/publish"); },
+    publishDraft: function (id, confirmExisting) {
+      return request("POST", "/api/platform/drafts/" + enc(id) + "/publish", { confirmExisting: !!confirmExisting });
+    },
     deleteDraft: function (id) { return request("DELETE", "/api/platform/drafts/" + enc(id)); },
     /* 2026-10-01 為既有教材加題 */
     supplementParents: function () { return request("GET", "/api/platform/supplements/parents"); },

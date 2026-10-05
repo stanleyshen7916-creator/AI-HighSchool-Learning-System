@@ -172,8 +172,8 @@ console.log("\n[3] Student B／竹圍高中／高二上學期 — 讀到自己�
   const { window } = loadPage("materials.html", {
     seedSession: { "ahs:workspace": { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] } }
   });
-  /* 2026-10-04: tm_29（竹圍高中化學課本 第二章 氣體，教材上傳頁建立）為第 2 筆。 */
-  check("Student B（竹圍高中）看到自己學校的 2 筆 Repository 教材（tm_13、tm_29 化學）", window.AHS.MaterialRuntime.list().length === 2);
+  /* 2026-10-04: tm_29（竹圍高中化學課本 第二章 氣體）、tm_34（第三章 液態與溶液），皆由教材上傳頁建立。 */
+  check("Student B（竹圍高中）看到自己學校的 3 筆 Repository 教材（tm_13、tm_29、tm_34 化學）", window.AHS.MaterialRuntime.list().length === 3);
   check("命名空間與 Student A 不同（storageNamespace 真實反映 Student B／竹圍高中）",
     window.AHS.WorkspaceRuntime.storageNamespace() === "student_c__zwsh__g2s1");
 }

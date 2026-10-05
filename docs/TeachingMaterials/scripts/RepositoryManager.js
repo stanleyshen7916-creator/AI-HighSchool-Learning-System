@@ -122,7 +122,10 @@ function checkDuplicates(ids) {
     if (meta.source === "補充題庫") { return; }
 
     const title = adapter.deriveTitle(meta);
-    const key = (meta.subject || "") + "|" + (meta.chapter || "") + "|" + (title || "");
+    /* 2026-10-04: school is part of the key — the same chapter of the same
+       textbook at two schools (竹圍高中 / 長榮中學) is two materials, not a
+       duplicate. A second upload for the SAME school is still caught here. */
+    const key = (meta.school || "") + "|" + (meta.subject || "") + "|" + (meta.chapter || "") + "|" + (title || "");
     byTitleKey[key] = byTitleKey[key] || [];
     byTitleKey[key].push(id);
   });

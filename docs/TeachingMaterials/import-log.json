@@ -223,6 +223,48 @@
       "version": "1",
       "result": "SUCCESS",
       "error": null
+    },
+    {
+      "time": "2026-10-04T14:15:56.895Z",
+      "materialId": "tm_33",
+      "version": "1",
+      "result": "SUCCESS",
+      "error": null
+    },
+    {
+      "time": "2026-10-04T14:19:47.449Z",
+      "materialId": "tm_34",
+      "version": "1",
+      "result": "SUCCESS",
+      "error": null
+    },
+    {
+      "time": "2026-10-04T14:23:04.651Z",
+      "materialId": "tm_35",
+      "version": "1",
+      "result": "FAIL_DUPLICATE",
+      "error": "duplicate of tm_33"
+    },
+    {
+      "time": "2026-10-04T14:23:28.773Z",
+      "materialId": "tm_35",
+      "version": "1",
+      "result": "FAIL_DUPLICATE",
+      "error": "duplicate of tm_33"
+    },
+    {
+      "time": "2026-10-04T14:24:12.202Z",
+      "materialId": "tm_35",
+      "version": "1",
+      "result": "FAIL_DUPLICATE",
+      "error": "duplicate of tm_33"
+    },
+    {
+      "time": "2026-10-04T14:25:23.413Z",
+      "materialId": "tm_36",
+      "version": "1",
+      "result": "FAIL_DUPLICATE",
+      "error": "duplicate of tm_34"
     }
   ]
 }
