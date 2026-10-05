@@ -6,11 +6,18 @@
 # the engine launcher .bat), uses the host's own git + credentials, and writes
 # the result back for the upload page to show.
 #
+# main is protected by a ruleset (changes only through a pull request, and the
+# "Verify + Test + Playwright" check must pass), so a publish goes:
+#   commit on local main -> push to branch publish/<tm_N>-<id> -> gh pr create
+#   -> wait for the checks -> gh pr merge --squash -> git pull --rebase (the
+#   local commit is dropped as already upstream).
 # Safety:
 #   - only the paths listed in the request are staged and committed
 #     (git commit -- <paths>), never anything else in the working tree;
-#   - only pushes when the repo is on main;
-#   - a rejected push is retried once after "git pull --rebase --autostash".
+#   - only runs when the repo is on main;
+#   - if the checks fail the PR is left open (nothing merged) and the reason
+#     plus the PR link are reported.
+# Needs the host's git and gh (GitHub CLI), both already signed in.
 # Kept ASCII-only on purpose: Windows PowerShell 5.1 reads BOM-less scripts as ANSI.
 param(
   [Parameter(Mandatory = $true)][string]$RepoRoot,
@@ -32,35 +39,70 @@ function Invoke-Git([string[]]$GitArgs) {
   return @{ code = $LASTEXITCODE; out = $out.Trim() }
 }
 
+function Invoke-Gh([string[]]$GhArgs) {
+  Push-Location $RepoRoot
+  try { $out = & gh @GhArgs 2>&1 | ForEach-Object { "$_" } | Out-String } finally { Pop-Location }
+  return @{ code = $LASTEXITCODE; out = $out.Trim() }
+}
+
+# progress shown on the upload page while the request is pending (steps take minutes)
+function Set-Progress([string]$id, [string]$step) {
+  [System.IO.File]::WriteAllText((Join-Path $QueueDir "$id.progress.txt"), $step, $utf8)
+  Write-Host "$(Get-Date -Format 'HH:mm:ss')   $step"
+}
+
 function Publish-Request($req, [string]$id) {
   $log = New-Object System.Collections.Generic.List[string]
+  $fail = { param($msg, $extra) $h = @{ ok = $false; error = $msg; log = ($log -join "`n") }; if ($extra) { $extra.Keys | ForEach-Object { $h[$_] = $extra[$_] } }; return $h }
   $branch = (Invoke-Git @('rev-parse', '--abbrev-ref', 'HEAD')).out
   if ($branch -ne 'main') {
-    return @{ ok = $false; error = "repo is on branch '$branch', not main; not pushed. Switch to main and publish again, or push manually."; log = '' }
+    return (& $fail "repo is on branch '$branch', not main; not pushed. Switch to main and publish again." $null)
   }
   $paths = @($req.paths)
 
+  Set-Progress $id 'commit'
   $r = Invoke-Git (@('add', '--') + $paths); $log.Add("git add: $($r.out)")
-  if ($r.code -ne 0) { return @{ ok = $false; error = 'git add failed'; log = ($log -join "`n") } }
-
+  if ($r.code -ne 0) { return (& $fail 'git add failed' $null) }
   $msgFile = Join-Path $QueueDir "$id.message.txt"
   $r = Invoke-Git (@('commit', '-F', $msgFile, '--') + $paths); $log.Add("git commit: $($r.out)")
-  if ($r.code -ne 0) { return @{ ok = $false; error = 'git commit failed (nothing changed, or a hook rejected it)'; log = ($log -join "`n") } }
+  if ($r.code -ne 0) { return (& $fail 'git commit failed (nothing changed, or a hook rejected it)' $null) }
   $commit = (Invoke-Git @('rev-parse', '--short', 'HEAD')).out
 
-  $r = Invoke-Git @('push', 'origin', 'main'); $log.Add("git push: $($r.out)")
-  if ($r.code -ne 0) {
-    $r = Invoke-Git @('pull', '--rebase', '--autostash', 'origin', 'main'); $log.Add("git pull --rebase: $($r.out)")
-    if ($r.code -ne 0) {
-      return @{ ok = $false; commit = $commit; error = 'push rejected and rebase failed; the commit is saved locally, resolve and push manually'; log = ($log -join "`n") }
+  Set-Progress $id 'push'
+  $pubBranch = "publish/$($req.materialId)-$($id.Split('_')[0])"
+  $r = Invoke-Git @('push', 'origin', "HEAD:refs/heads/$pubBranch"); $log.Add("git push: $($r.out)")
+  if ($r.code -ne 0) { return (& $fail 'git push of the publish branch failed; the commit is saved on local main' @{ commit = $commit }) }
+
+  Set-Progress $id 'pr'
+  $title = (Get-Content -LiteralPath $msgFile -Encoding UTF8 -TotalCount 1)
+  $r = Invoke-Gh @('pr', 'create', '--base', 'main', '--head', $pubBranch, '--title', $title, '--body-file', $msgFile); $log.Add("gh pr create: $($r.out)")
+  if ($r.code -ne 0) { return (& $fail 'gh pr create failed' @{ commit = $commit }) }
+  $prUrl = ($r.out -split "`n" | Where-Object { $_ -match '^https://github\.com/.+/pull/\d+' } | Select-Object -Last 1)
+
+  # wait for the required checks (usually 4-5 minutes); give up after 30 minutes
+  Set-Progress $id 'checks'
+  $deadline = (Get-Date).AddMinutes(30)
+  while ($true) {
+    Start-Sleep -Seconds 20
+    [System.IO.File]::WriteAllText((Join-Path $QueueDir 'publisher.heartbeat'), (Get-Date).ToString('o'), $utf8)
+    $buckets = @((Invoke-Gh @('pr', 'checks', $prUrl, '--json', 'bucket', '-q', '.[].bucket')).out -split "`n" | Where-Object { $_ })
+    if ($buckets -contains 'fail' -or $buckets -contains 'cancel') {
+      return (& $fail 'the automated checks failed; nothing was merged. Open the PR to see why.' @{ commit = $commit; pr = $prUrl })
     }
-    $commit = (Invoke-Git @('rev-parse', '--short', 'HEAD')).out
-    $r = Invoke-Git @('push', 'origin', 'main'); $log.Add("git push (retry): $($r.out)")
-    if ($r.code -ne 0) {
-      return @{ ok = $false; commit = $commit; error = 'git push failed; the commit is saved locally, push manually'; log = ($log -join "`n") }
+    if ($buckets.Count -gt 0 -and -not ($buckets -contains 'pending')) { break }
+    if ((Get-Date) -gt $deadline) {
+      return (& $fail 'the automated checks did not finish within 30 minutes; the PR is left open' @{ commit = $commit; pr = $prUrl })
     }
   }
-  return @{ ok = $true; commit = $commit; error = $null; log = ($log -join "`n") }
+
+  Set-Progress $id 'merge'
+  $r = Invoke-Gh @('pr', 'merge', $prUrl, '--squash', '--delete-branch'); $log.Add("gh pr merge: $($r.out)")
+  if ($r.code -ne 0) { return (& $fail 'gh pr merge failed; the PR is left open' @{ commit = $commit; pr = $prUrl }) }
+
+  # the squash commit has the same changes, so the rebase drops the local commit
+  $r = Invoke-Git @('pull', '--rebase', '--autostash', 'origin', 'main'); $log.Add("git pull --rebase: $($r.out)")
+  $merged = (Invoke-Git @('rev-parse', '--short', 'HEAD')).out
+  return @{ ok = $true; commit = $merged; pr = $prUrl; error = $null; log = ($log -join "`n") }
 }
 
 while ($true) {

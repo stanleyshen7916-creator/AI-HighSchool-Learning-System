@@ -742,24 +742,32 @@ AHS.CouncilUpload = (function () {
                 return;
               }
               var tries = 0;
-              status(draftStatus, "發布完成，正在推送到 GitHub…");
+              /* main 受保護：推送程式會開 PR、等自動測試通過再合併，約 5 分鐘 */
+              var steps = {
+                commit: "建立 commit", push: "推送分支", pr: "建立 PR",
+                checks: "等待 GitHub 自動測試（約 4～5 分鐘）", merge: "合併 PR"
+              };
+              status(draftStatus, "發布完成，正在送上 GitHub…（全程約 5 分鐘，請勿關閉推送視窗）");
               (function poll() {
                 client.gitJob(data.gitJobId).then(function (g) {
                   var job = g.data || {};
                   if (job.status === "pushed") {
-                    status(draftStatus, "發布完成，已推送到 GitHub（commit " + job.commit + "）。約 1～3 分鐘後學生端可見。", "ok");
+                    status(draftStatus, "已上架到 GitHub（" + (job.pr || "commit " + job.commit) + "）。約 1～3 分鐘後學生端可見。", "ok");
                     return;
                   }
                   if (job.status === "failed") {
-                    status(draftStatus, "發布完成，但自動推送失敗：" + job.error + "。請用下方指令手動推送。", "error");
+                    status(draftStatus, "發布完成，但送上 GitHub 失敗：" + job.error + (job.pr ? "（" + job.pr + "）" : "") + "。", "error");
                     return;
                   }
                   tries += 1;
-                  if (job.status === "pending" && job.publisherAlive === false && tries >= 3) {
+                  if (job.status === "pending" && !job.progress && job.publisherAlive === false && tries >= 3) {
                     status(draftStatus, "發布完成，但發布推送程式沒有在執行。請重新執行「啟動教材上傳引擎.bat」，它會自動補推；或用下方指令手動推送。", "error");
                     return;
                   }
-                  if (tries > 100) {
+                  if (job.progress && steps[job.progress]) {
+                    status(draftStatus, "發布完成，正在送上 GitHub：" + steps[job.progress] + "…");
+                  }
+                  if (tries > 700) {
                     status(draftStatus, "發布完成，推送仍在進行中，請稍後到 GitHub 確認。", "error");
                     return;
                   }
