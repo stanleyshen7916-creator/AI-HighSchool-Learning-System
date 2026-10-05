@@ -15,6 +15,7 @@ const {
 } = require('./services/multiAi');
 
 const { createPackageBuilder } = require('./platform/PackageBuilder');
+const { createGitPublishQueue } = require('./platform/GitPublishQueue');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,7 @@ const REVIEW_ENGINE = 'AI-Study-Council Cross-Reviewer v1.1';
 fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 const packageBuilder = createPackageBuilder({ platformRoot: PLATFORM_ROOT, dataDir: DATA_DIR });
+const gitPublishQueue = createGitPublishQueue({ dataDir: DATA_DIR, platformRoot: PLATFORM_ROOT });
 
 // 瀏覽器來源檢查：引擎沒有登入機制、只綁在本機，但使用者的瀏覽器開著其他網站時，
 // 那些網站仍可對 localhost 發出「簡單請求」（例如 multipart 表單 POST）。凡是帶 Origin
@@ -845,11 +847,29 @@ app.get('/api/platform/drafts/:materialId', (req, res) => {
 });
 
 app.post('/api/platform/drafts/:materialId/publish', (req, res) => {
+  let result;
   try {
-    return res.status(200).json(packageBuilder.publish(req.params.materialId, { confirmExisting: req.body?.confirmExisting === true }));
+    result = packageBuilder.publish(req.params.materialId, { confirmExisting: req.body?.confirmExisting === true });
   } catch (error) {
     // 409：平台上已有同章教材，需管理者確認後帶 confirmExisting 重送
     return res.status(error.code === 'EXISTING_MATERIAL' ? 409 : 400).json({ error: error.message });
+  }
+  // 發布已完成；接著排隊由主機的推送程式 commit + push（見 platform/GitPublishQueue.js）。
+  // 排隊失敗不影響發布本身，回報給上傳頁即可。
+  try {
+    result.gitJobId = gitPublishQueue.enqueue(result.materialId || req.params.materialId, result.changedPaths);
+    result.gitPublisherAlive = gitPublishQueue.publisherAlive();
+  } catch (error) {
+    result.gitQueueError = error.message;
+  }
+  return res.status(200).json(result);
+});
+
+app.get('/api/platform/git-jobs/:jobId', (req, res) => {
+  try {
+    return res.status(200).json(gitPublishQueue.status(req.params.jobId));
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
   }
 });
 

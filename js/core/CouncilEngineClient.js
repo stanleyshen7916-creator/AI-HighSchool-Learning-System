@@ -94,6 +94,8 @@ AHS.CouncilEngineClient = (function () {
     publishDraft: function (id, confirmExisting) {
       return request("POST", "/api/platform/drafts/" + enc(id) + "/publish", { confirmExisting: !!confirmExisting });
     },
+    /* 2026-10-05 發布後自動 commit + push 的進度 */
+    gitJob: function (jobId) { return request("GET", "/api/platform/git-jobs/" + enc(jobId)); },
     deleteDraft: function (id) { return request("DELETE", "/api/platform/drafts/" + enc(id)); },
     /* 2026-10-01 為既有教材加題 */
     supplementParents: function () { return request("GET", "/api/platform/supplements/parents"); },

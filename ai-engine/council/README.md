@@ -8,7 +8,13 @@
 2. **三方初稿**：把上傳頁產生的 Prompt 貼到 ChatGPT、Gemini、Claude 網頁版，再把三份輸出貼回上傳頁。
 3. **交叉審議**：本地 Qwen2.5 逐條對照教材本文裁決，產出 `Final.md`。
 4. **建立教材包草稿**：`platform/PackageBuilder.js` 把 Final.md 轉成新的 `docs/TeachingMaterials/materials/tm_N/`。草稿的 `manifest.status` 為 `draft`，學生看不到。原始檔放進 `source/`。
-5. **預覽 → 發布**：發布時走 repo 既有的 `RepositoryManager.prepare()` + `ImportManager.importAll()`。之後由管理者 `git commit` / `git push`，GitHub Pages 部署後學生才看得到。
+5. **預覽 → 發布**：發布時走 repo 既有的 `RepositoryManager.prepare()` + `ImportManager.importAll()`。
+   - 平台上已有同校、同年級、同科目、同一章的教材時，會先跳確認框，避免選錯學校或重複上傳。
+   - 發布成功後自動 commit + push 到 main（2026-10-05），GitHub Pages 部署後學生就看得到。
+   - 引擎在 Docker 裡沒有 git 與 GitHub 憑證，所以只在 `<資料目錄>/git_queue` 排入推送請求（`platform/GitPublishQueue.js`）。由主機上的 `tools/git-publisher.ps1` 用主機的 git 執行，它由啟動器一併開啟，是一個最小化視窗。
+   - 推送程式只提交該教材的檔案，不會帶到工作目錄裡其他未提交的變更。
+   - repo 不在 main 分支時不推送。遠端有新 commit 時會先 `pull --rebase` 再推。
+   - 推送失敗時，上傳頁會顯示原因，並保留手動指令。
 
 ## 為既有教材加題（2026-10-01）
 
@@ -40,6 +46,7 @@
 ## 啟動
 
 雙擊 `啟動教材上傳引擎.bat`，完成後會自動開啟 http://localhost:3000/upload.html，請以 Admin 登入。
+啟動器也會開啟一個最小化的「教材發布推送 - 請勿關閉」視窗，即上面的自動推送程式。這個視窗沒開時，推送請求會留在佇列裡，下次啟動時補推。
 
 - 啟動器會先停止（stop，不刪除資料）舊的 AI-Study-Council Runtime，避免 port 3000 衝突。
 - 執行期資料放在 `COUNCIL_DATA_DIR`，裡面包含 Final.md、上傳原始檔、MinerU 佇列、Ollama 模型與 MinerU 模型快取。
