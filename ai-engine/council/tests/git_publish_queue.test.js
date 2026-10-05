@@ -23,7 +23,10 @@ describe('GitPublishQueue（發布後自動 commit + push 的排隊）', () => {
     expect(req.paths).toEqual(['docs/TeachingMaterials/materials/tm_40/', 'js/data/TeachingMaterialData.js']);
     expect(fs.readFileSync(path.join(queue.queueDir, `${id}.message.txt`), 'utf8'))
       .toMatch(/^feat: tm_40 — 竹圍高中高二化學「第三章」\n/);
-    expect(queue.status(id)).toMatchObject({ status: 'pending', publisherAlive: false });
+    expect(queue.status(id)).toMatchObject({ status: 'pending', progress: null, publisherAlive: false });
+    // 推送程式處理中（開 PR、等自動測試）時回報目前步驟
+    fs.writeFileSync(path.join(queue.queueDir, `${id}.progress.txt`), 'checks', 'utf8');
+    expect(queue.status(id)).toMatchObject({ status: 'pending', progress: 'checks' });
   });
 
   test('推送程式寫回結果（含 BOM 也能讀）後回報 pushed／failed', () => {

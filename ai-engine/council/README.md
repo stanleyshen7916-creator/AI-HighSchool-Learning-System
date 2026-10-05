@@ -10,10 +10,11 @@
 4. **建立教材包草稿**：`platform/PackageBuilder.js` 把 Final.md 轉成新的 `docs/TeachingMaterials/materials/tm_N/`。草稿的 `manifest.status` 為 `draft`，學生看不到。原始檔放進 `source/`。
 5. **預覽 → 發布**：發布時走 repo 既有的 `RepositoryManager.prepare()` + `ImportManager.importAll()`。
    - 平台上已有同校、同年級、同科目、同一章的教材時，會先跳確認框，避免選錯學校或重複上傳。
-   - 發布成功後自動 commit + push 到 main（2026-10-05），GitHub Pages 部署後學生就看得到。
-   - 引擎在 Docker 裡沒有 git 與 GitHub 憑證，所以只在 `<資料目錄>/git_queue` 排入推送請求（`platform/GitPublishQueue.js`）。由主機上的 `tools/git-publisher.ps1` 用主機的 git 執行，它由啟動器一併開啟，是一個最小化視窗。
-   - 推送程式只提交該教材的檔案，不會帶到工作目錄裡其他未提交的變更。
-   - repo 不在 main 分支時不推送。遠端有新 commit 時會先 `pull --rebase` 再推。
+   - 發布成功後自動送上 GitHub（2026-10-05），GitHub Pages 部署後學生就看得到。
+   - main 受 GitHub ruleset「保護 Main」保護：只能經 PR，且自動測試「Verify + Test + Playwright」須通過。因此推送程式的流程為：commit → 推到 `publish/<tm_N>-…` 分支 → 開 PR → 等自動測試 → squash 合併。全程約 5 分鐘，上傳頁會顯示目前步驟。
+   - 自動測試沒過就不合併，PR 會留著，上傳頁會顯示原因與 PR 連結。
+   - 引擎在 Docker 裡沒有 git 與 GitHub 憑證，所以只在 `<資料目錄>/git_queue` 排入推送請求（`platform/GitPublishQueue.js`）。由主機上的 `tools/git-publisher.ps1` 用主機已登入的 git 與 gh 執行，它由啟動器一併開啟，是一個最小化視窗。
+   - 推送程式只提交該教材的檔案，不會帶到工作目錄裡其他未提交的變更。repo 不在 main 分支時不推送。
    - 推送失敗時，上傳頁會顯示原因，並保留手動指令。
 
 ## 為既有教材加題（2026-10-01）

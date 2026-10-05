@@ -8,8 +8,12 @@
 //
 //   <id>.request.json  { materialId, paths, createdAt }   引擎寫
 //   <id>.message.txt   commit message（UTF-8，給 git commit -F）  引擎寫
-//   <id>.result.json   { ok, commit, error, log }          推送程式寫
+//   <id>.progress.txt  目前步驟                            推送程式寫
+//   <id>.result.json   { ok, commit, pr, error, log }      推送程式寫
 //   publisher.heartbeat                                     推送程式每輪更新
+//
+// main 受 GitHub ruleset 保護（只能經 PR、且自動測試須通過），所以推送程式是
+// 推到 publish/<tm_N> 分支 → 開 PR → 等自動測試 → squash 合併，全程約 5 分鐘。
 const fs = require('fs');
 const path = require('path');
 
@@ -56,7 +60,10 @@ function createGitPublishQueue({ dataDir, platformRoot }) {
       return { id, status: result.ok ? 'pushed' : 'failed', ...result };
     }
     if (!fs.existsSync(path.join(queueDir, `${id}.request.json`))) throw new Error('推送請求不存在');
-    return { id, status: 'pending', publisherAlive: publisherAlive() };
+    // 推送程式處理中時寫的步驟：commit／push／pr／checks（等自動測試，約 5 分鐘）／merge
+    let progress = null;
+    try { progress = fs.readFileSync(path.join(queueDir, `${id}.progress.txt`), 'utf8').trim() || null; } catch (_) { /* 尚未開始 */ }
+    return { id, status: 'pending', progress, publisherAlive: publisherAlive() };
   }
 
   return { enqueue, status, publisherAlive, queueDir };
