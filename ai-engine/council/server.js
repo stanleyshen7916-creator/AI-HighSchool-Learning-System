@@ -873,6 +873,43 @@ app.get('/api/platform/git-jobs/:jobId', (req, res) => {
   }
 });
 
+// 模擬月考：管理者把某校某學期某科的範圍設為全體預設（2026-10-05）。寫入
+// js/data/MonthExamConfig.js，並和發布教材一樣排入自動 PR 上架。
+const MONTH_EXAM_CONFIG_PATH = path.join(PLATFORM_ROOT, 'js', 'data', 'MonthExamConfig.js');
+const MONTH_EXAM_CONFIG_MARKER = 'AHS.MonthExamConfig = ';
+
+function readMonthExamConfig() {
+  const text = fs.readFileSync(MONTH_EXAM_CONFIG_PATH, 'utf8');
+  const start = text.indexOf(MONTH_EXAM_CONFIG_MARKER);
+  if (start === -1) throw new Error('MonthExamConfig.js 格式不符，未修改');
+  const json = text.slice(start + MONTH_EXAM_CONFIG_MARKER.length).replace(/;\s*$/, '');
+  return { head: text.slice(0, start), config: JSON.parse(json) };
+}
+
+app.post('/api/platform/month-exam-config', (req, res) => {
+  const { key, subject, materialIds } = req.body || {};
+  if (!/^[a-z0-9]+\|[a-z0-9]+$/i.test(String(key || ''))) return res.status(400).json({ error: '學校／學期不正確' });
+  if (typeof subject !== 'string' || !subject.trim() || subject.length > 20) return res.status(400).json({ error: '科目不正確' });
+  if (!Array.isArray(materialIds) || !materialIds.length
+    || !materialIds.every((id) => /^tm_\d+$/.test(id) && fs.existsSync(path.join(PLATFORM_ROOT, 'docs/TeachingMaterials/materials', id)))) {
+    return res.status(400).json({ error: '範圍內的教材不正確或不存在' });
+  }
+  let doc;
+  try { doc = readMonthExamConfig(); } catch (error) { return res.status(500).json({ error: error.message }); }
+  doc.config.ranges = doc.config.ranges || {};
+  doc.config.ranges[key] = { ...(doc.config.ranges[key] || {}), [subject]: materialIds };
+  fs.writeFileSync(MONTH_EXAM_CONFIG_PATH, `${doc.head}${MONTH_EXAM_CONFIG_MARKER}${JSON.stringify(doc.config, null, 2)};\n`, 'utf8');
+  const result = { key, subject, materialIds };
+  try {
+    result.gitJobId = gitPublishQueue.enqueueTask('monthexam-range', ['js/data/MonthExamConfig.js'],
+      `feat: 模擬月考預設範圍 ${key} ${subject}：${materialIds.join('、')}\n\n由模擬月考專區設定後自動推送（ai-engine/council）。\n`);
+    result.gitPublisherAlive = gitPublishQueue.publisherAlive();
+  } catch (error) {
+    result.gitQueueError = error.message;
+  }
+  return res.status(200).json(result);
+});
+
 app.delete('/api/platform/drafts/:materialId', (req, res) => {
   try {
     return res.status(200).json(packageBuilder.deleteDraft(req.params.materialId));

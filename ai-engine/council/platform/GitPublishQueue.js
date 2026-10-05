@@ -34,13 +34,18 @@ function createGitPublishQueue({ dataDir, platformRoot }) {
 
   function enqueue(materialId, paths) {
     if (!/^tm_\d+$/.test(String(materialId))) throw new Error('不合法的教材識別碼');
+    return enqueueTask(materialId, paths, `feat: ${title(materialId)}\n\n由教材上傳頁發布後自動推送（ai-engine/council）。\n`);
+  }
+
+  // 教材以外的上架（例如模擬月考預設範圍）。name 用於分支名稱 publish/<name>-…
+  function enqueueTask(name, paths, message) {
+    if (!/^[a-z0-9_-]+$/.test(String(name))) throw new Error('不合法的推送名稱');
     if (!Array.isArray(paths) || !paths.length) throw new Error('沒有要推送的檔案');
     fs.mkdirSync(queueDir, { recursive: true });
-    const id = `${Date.now()}_${materialId}`;
-    fs.writeFileSync(path.join(queueDir, `${id}.message.txt`),
-      `feat: ${title(materialId)}\n\n由教材上傳頁發布後自動推送（ai-engine/council）。\n`, 'utf8');
+    const id = `${Date.now()}_${name}`;
+    fs.writeFileSync(path.join(queueDir, `${id}.message.txt`), message, 'utf8');
     fs.writeFileSync(path.join(queueDir, `${id}.request.json`),
-      JSON.stringify({ materialId, paths, createdAt: new Date().toISOString() }, null, 2), 'utf8');
+      JSON.stringify({ materialId: name, paths, createdAt: new Date().toISOString() }, null, 2), 'utf8');
     return id;
   }
 
@@ -53,7 +58,7 @@ function createGitPublishQueue({ dataDir, platformRoot }) {
   }
 
   function status(id) {
-    if (!/^\d+_tm_\d+$/.test(String(id))) throw new Error('不合法的推送編號');
+    if (!/^\d+_[a-z0-9_-]+$/.test(String(id))) throw new Error('不合法的推送編號');
     const resultFile = path.join(queueDir, `${id}.result.json`);
     if (fs.existsSync(resultFile)) {
       const result = JSON.parse(fs.readFileSync(resultFile, 'utf8').replace(/^﻿/, ''));
@@ -66,7 +71,7 @@ function createGitPublishQueue({ dataDir, platformRoot }) {
     return { id, status: 'pending', progress, publisherAlive: publisherAlive() };
   }
 
-  return { enqueue, status, publisherAlive, queueDir };
+  return { enqueue, enqueueTask, status, publisherAlive, queueDir };
 }
 
 module.exports = { createGitPublishQueue, HEARTBEAT_STALE_MS };
