@@ -1,0 +1,61 @@
+{
+  "materialId": "tm_41",
+  "knowledgePoints": [
+    {
+      "name": "封建制度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "希伯來人一神信仰",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "希臘哲學三階段",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "政教合作與衝突",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "斯巴達雙王共治",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "活版印刷術",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "羅馬政治三階段",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "羅馬法演變層次",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "耶穌與早期基督教",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "荷馬史詩",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "雅典民主",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-05T14:30:37.580Z"
+}
