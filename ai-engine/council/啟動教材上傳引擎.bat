@@ -78,6 +78,12 @@ echo [OK] 引擎已就緒。
 echo.
 
 :OPEN_BROWSER
+REM 2026-10-05：發布後自動 commit + push。引擎在 Docker 裡沒有 git 與 GitHub 憑證，
+REM 由主機上的 git-publisher.ps1 處理推送請求（只會提交該教材的檔案，且只推送 main）。
+if defined COUNCIL_DATA_DIR (set "QUEUE=%COUNCIL_DATA_DIR%\git_queue") else (set "QUEUE=%ENGINE%data\git_queue")
+echo 啟動發布推送程式（最小化視窗，發布教材時請勿關閉）...
+start "教材發布推送 - 請勿關閉" /min powershell -NoProfile -ExecutionPolicy Bypass -File "%ENGINE%tools\git-publisher.ps1" -RepoRoot "%ENGINE%..\.." -QueueDir "!QUEUE!"
+echo.
 echo [4/4] 開啟教材上傳頁（請以 Admin 登入）...
 start "" "%URL%"
 echo.

@@ -729,10 +729,43 @@ AHS.CouncilUpload = (function () {
                   return;
                 }
                 if (r.error) { status(draftStatus, r.error.message, "error"); return; }
-                status(draftStatus, "發布完成。", "ok");
                 renderPreview(r.data, true);
                 refreshDrafts();
+                trackPush(r.data);
               });
+            }
+            /* 2026-10-05：發布後由主機的推送程式自動 commit + push（ai-engine/council/
+               platform/GitPublishQueue.js）。這裡只輪詢結果，失敗時保留下方的手動指令。 */
+            function trackPush(data) {
+              if (!data.gitJobId) {
+                status(draftStatus, "發布完成，但無法排入自動推送（" + (data.gitQueueError || "未知原因") + "），請用下方指令手動推送。", "error");
+                return;
+              }
+              var tries = 0;
+              status(draftStatus, "發布完成，正在推送到 GitHub…");
+              (function poll() {
+                client.gitJob(data.gitJobId).then(function (g) {
+                  var job = g.data || {};
+                  if (job.status === "pushed") {
+                    status(draftStatus, "發布完成，已推送到 GitHub（commit " + job.commit + "）。約 1～3 分鐘後學生端可見。", "ok");
+                    return;
+                  }
+                  if (job.status === "failed") {
+                    status(draftStatus, "發布完成，但自動推送失敗：" + job.error + "。請用下方指令手動推送。", "error");
+                    return;
+                  }
+                  tries += 1;
+                  if (job.status === "pending" && job.publisherAlive === false && tries >= 3) {
+                    status(draftStatus, "發布完成，但發布推送程式沒有在執行。請重新執行「啟動教材上傳引擎.bat」，它會自動補推；或用下方指令手動推送。", "error");
+                    return;
+                  }
+                  if (tries > 100) {
+                    status(draftStatus, "發布完成，推送仍在進行中，請稍後到 GitHub 確認。", "error");
+                    return;
+                  }
+                  setTimeout(poll, 3000);
+                });
+              })();
             }
             publish(false);
           }),
