@@ -1,0 +1,61 @@
+{
+  "materialId": "tm_43",
+  "knowledgePoints": [
+    {
+      "name": "A、B類組合不確定度",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "A類評估",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "B類評估",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "乘除法組合",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "加減法組合",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "因次分析",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "因次概念",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "常見物理量因次",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "從誤差到不確定度",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "誤差與不確定度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "進位規則",
+      "source": "both",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-05T14:46:28.594Z"
+}
