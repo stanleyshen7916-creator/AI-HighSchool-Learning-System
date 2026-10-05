@@ -9,8 +9,9 @@
 # main is protected by a ruleset (changes only through a pull request, and the
 # "Verify + Test + Playwright" check must pass), so a publish goes:
 #   commit on local main -> push to branch publish/<tm_N>-<id> -> gh pr create
-#   -> wait for the checks -> gh pr merge --squash -> git pull --rebase (the
-#   local commit is dropped as already upstream).
+#   -> wait for the checks -> gh pr merge --squash (retried while the ruleset
+#   still refuses) -> git reset --keep origin/main (moves local main onto the
+#   squash commit, keeping newer uncommitted work).
 # Safety:
 #   - only the paths listed in the request are staged and committed
 #     (git commit -- <paths>), never anything else in the working tree;
@@ -60,6 +61,17 @@ function Publish-Request($req, [string]$id) {
   }
   $paths = @($req.paths)
 
+  # Start from the current remote main. Local main must not carry commits that
+  # are not on origin/main (a previous failed request) - they would ride along
+  # into this PR. Fast-forward if behind (fails safely on conflicting edits).
+  $r = Invoke-Git @('fetch', 'origin', 'main'); $log.Add("git fetch: $($r.out)")
+  $ahead = (Invoke-Git @('rev-list', '--count', 'origin/main..HEAD')).out
+  if ($ahead -ne '0') {
+    return (& $fail "local main has $ahead commit(s) that are not on GitHub (an earlier publish did not finish); not pushed. Resolve them first." $null)
+  }
+  $r = Invoke-Git @('merge', '--ff-only', 'origin/main'); $log.Add("git merge --ff-only: $($r.out)")
+  if ($r.code -ne 0) { return (& $fail 'could not update local main to GitHub main (local edits conflict); not pushed' $null) }
+
   Set-Progress $id 'commit'
   $r = Invoke-Git (@('add', '--') + $paths); $log.Add("git add: $($r.out)")
   if ($r.code -ne 0) { return (& $fail 'git add failed' $null) }
@@ -95,12 +107,26 @@ function Publish-Request($req, [string]$id) {
     }
   }
 
+  # The ruleset can still refuse the merge for a short while after the checks
+  # report (a second required run not registered yet) - retry until the deadline.
   Set-Progress $id 'merge'
-  $r = Invoke-Gh @('pr', 'merge', $prUrl, '--squash', '--delete-branch'); $log.Add("gh pr merge: $($r.out)")
-  if ($r.code -ne 0) { return (& $fail 'gh pr merge failed; the PR is left open' @{ commit = $commit; pr = $prUrl }) }
+  while ($true) {
+    $r = Invoke-Gh @('pr', 'merge', $prUrl, '--squash', '--delete-branch'); $log.Add("gh pr merge: $($r.out)")
+    if ($r.code -eq 0) { break }
+    if ((Get-Date) -gt $deadline) { return (& $fail 'gh pr merge kept failing for 30 minutes; the PR is left open' @{ commit = $commit; pr = $prUrl }) }
+    Start-Sleep -Seconds 20
+    [System.IO.File]::WriteAllText((Join-Path $QueueDir 'publisher.heartbeat'), (Get-Date).ToString('o'), $utf8)
+  }
 
-  # the squash commit has the same changes, so the rebase drops the local commit
-  $r = Invoke-Git @('pull', '--rebase', '--autostash', 'origin', 'main'); $log.Add("git pull --rebase: $($r.out)")
+  # Move local main onto the squash commit. Its files equal the local commit's,
+  # so "reset --keep" only moves the branch; it keeps any newer uncommitted work
+  # (e.g. the next publish) and refuses instead of overwriting it. (A rebase here
+  # replays the local commit onto the squash and conflicts.)
+  $r = Invoke-Git @('fetch', 'origin', 'main'); $log.Add("git fetch: $($r.out)")
+  $r = Invoke-Git @('reset', '--keep', 'origin/main'); $log.Add("git reset --keep: $($r.out)")
+  if ($r.code -ne 0) {
+    return (& $fail 'merged on GitHub, but local main could not be moved to it; run "git reset --keep origin/main" by hand' @{ commit = $commit; pr = $prUrl })
+  }
   $merged = (Invoke-Git @('rev-parse', '--short', 'HEAD')).out
   return @{ ok = $true; commit = $merged; pr = $prUrl; error = $null; log = ($log -join "`n") }
 }
