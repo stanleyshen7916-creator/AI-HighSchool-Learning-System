@@ -1,0 +1,51 @@
+{
+  "materialId": "tm_44",
+  "knowledgePoints": [
+    {
+      "name": "三大運動圖",
+      "source": "both",
+      "refCount": 7
+    },
+    {
+      "name": "位移與路徑長",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "加速度",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "打點計時器實驗",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "相對運動",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "等加速運動公式",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "自由落體",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "速度與速率",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "鉛直上拋",
+      "source": "both",
+      "refCount": 3
+    }
+  ],
+  "generatedAt": "2026-10-05T14:51:31.245Z"
+}
