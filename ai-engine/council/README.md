@@ -49,6 +49,8 @@
 雙擊 `啟動教材上傳引擎.bat`，完成後會自動開啟 http://localhost:3000/upload.html，請以 Admin 登入。
 啟動器也會開啟一個最小化的「教材發布推送 - 請勿關閉」視窗，即上面的自動推送程式。這個視窗沒開時，推送請求會留在佇列裡，下次啟動時補推。
 
+三個容器（引擎、Ollama、MinerU）設定為 `restart: unless-stopped`（2026-10-06），只要 Docker 啟動就會自動跟著啟動，手動 stop 的除外。不會加入 Windows 開機自動執行。推送視窗是主機上的程式，不在 Docker 裡：重開機後要發布教材時，仍需執行一次啟動器來開啟它。
+
 - 啟動器會先停止（stop，不刪除資料）舊的 AI-Study-Council Runtime，避免 port 3000 衝突。
 - 執行期資料放在 `COUNCIL_DATA_DIR`，裡面包含 Final.md、上傳原始檔、MinerU 佇列、Ollama 模型與 MinerU 模型快取。
   - 未設定時，如果 `..\..\..\AI-Study-Council` 存在，會直接沿用舊資料夾（模型不必重新下載，既有的 Final.md 可以在上傳頁「使用既有的 Final.md」選到）。

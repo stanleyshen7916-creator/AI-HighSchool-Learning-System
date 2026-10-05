@@ -9,6 +9,7 @@ name: ahs-council
 
 services:
   council-engine:
+    restart: unless-stopped   # 2026-10-06：Docker 啟動時自動啟動（手動 stop 的不會自動起來）
     build:
       context: .
       dockerfile: Dockerfile
@@ -37,6 +38,7 @@ services:
           memory: 4G
 
   ollama:
+    restart: unless-stopped   # 2026-10-06：Docker 啟動時自動啟動（手動 stop 的不會自動起來）
     # 2026-10-04：固定 0.9.6。latest（0.33）的 CUDA 函式庫在這台電腦的 NVIDIA 驅動
     # （536.67 / CUDA 12.2）上偵測不到 GPU，會整個退回 CPU（實測一次長 prompt 裁決超過
     # 10 分鐘仍未完成）；0.9.6 可正確使用 GTX 1660 Ti。更新顯卡驅動後才可改回 latest。
@@ -60,6 +62,7 @@ services:
               capabilities: [gpu]
 
   mineru-parser:
+    restart: unless-stopped   # 2026-10-06：Docker 啟動時自動啟動（手動 stop 的不會自動起來）
     # MinerU 沒有可直接 pull 的公開 image，沿用本地建置（見 Dockerfile.mineru）。
     # 不保留 GPU：GPU 僅 6GB 且已由 Ollama 使用，MinerU 走 CPU pipeline。
     build:
