@@ -112,7 +112,14 @@ function validateForImport(materialId) {
    Package that loses a duplicate-group tie-break (AI-115-06). Reuses
    RepositoryManager.checkDuplicates() — one real implementation. */
 function duplicateLoserMap() {
-  const groups = repoManager.checkDuplicates();
+  /* 2026-10-05: unpublished drafts (RAW/ANALYZING) are not on the platform
+     and must not take part — otherwise an older, never-published draft of
+     the same chapter (tm_37) made every newer upload (tm_39) "a duplicate
+     of" it and blocked the publish. */
+  const ids = lifecycle.listMaterialIds().filter(function (id) {
+    return ["RAW", "ANALYZING"].indexOf(lifecycle.resolveStage(id)) === -1;
+  });
+  const groups = repoManager.checkDuplicates(ids);
   const losers = {};
   groups.forEach(function (g) {
     /* 2026-10-01: numeric order — a plain string sort put "tm_18" before
