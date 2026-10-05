@@ -1,0 +1,61 @@
+{
+  "materialId": "tm_42",
+  "knowledgePoints": [
+    {
+      "name": "全章核心線索",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "啟蒙運動",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "喀爾文預選說",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "宗教改革",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "工業革命",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "法國大革命",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "科學革命",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "美國獨立革命與法國大革命",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "英國君主立憲",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "西發里亞和約",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "資本主義",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-05T14:34:24.879Z"
+}
