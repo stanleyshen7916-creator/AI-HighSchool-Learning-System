@@ -719,13 +719,22 @@ AHS.CouncilUpload = (function () {
         body.push(el("div", { class: "upl-actions" }, [
           button("確認發布到平台", "primary", function () {
             if (!window.confirm("確定要把 " + d.materialId + " 發布到平台嗎？發布後這份教材包就不能再從這裡刪除。")) { return; }
-            status(draftStatus, "發布中…（驗證並重新產生平台教材資料）");
-            client.publishDraft(d.materialId).then(function (r) {
-              if (r.error) { status(draftStatus, r.error.message, "error"); return; }
-              status(draftStatus, "發布完成。", "ok");
-              renderPreview(r.data, true);
-              refreshDrafts();
-            });
+            /* 409：平台上已有同校同章教材，請管理者確認不是選錯學校或重複上傳後才重送 */
+            function publish(confirmExisting) {
+              status(draftStatus, "發布中…（驗證並重新產生平台教材資料）");
+              client.publishDraft(d.materialId, confirmExisting).then(function (r) {
+                if (r.error && r.error.status === 409 && !confirmExisting) {
+                  if (window.confirm(r.error.message)) { publish(true); return; }
+                  status(draftStatus, "已取消發布：平台上已有同章教材，請確認學校與章節。", "error");
+                  return;
+                }
+                if (r.error) { status(draftStatus, r.error.message, "error"); return; }
+                status(draftStatus, "發布完成。", "ok");
+                renderPreview(r.data, true);
+                refreshDrafts();
+              });
+            }
+            publish(false);
           }),
           button("刪除草稿", "danger", function () {
             if (!window.confirm("確定刪除草稿 " + d.materialId + "？")) { return; }

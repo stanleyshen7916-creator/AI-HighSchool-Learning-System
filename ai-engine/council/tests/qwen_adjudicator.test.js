@@ -355,7 +355,7 @@ ${filler}`;
   test('selectSourceWindow：放得下就原樣回傳；放不下時依原文順序挑最相關段落、不超過額度', () => {
     expect(selectSourceWindow(CANON_SOURCE, '潔持', 100000)).toEqual({ text: CANON_SOURCE, windowed: false });
     const paras = ['甲段：波以耳定律定溫下壓力與體積成反比。', '乙段：天氣晴朗適合郊遊。', '丙段：查理定律定壓下體積與絕對溫度成正比。'];
-    const w = selectSourceWindow(paras.join('\n\n'), '波以耳定律 查理定律 壓力 體積', 45);
+    const w = selectSourceWindow(paras.join('\n\n'), '波以耳定律 查理定律 壓力 體積', 62); // 放得下甲＋丙（含分隔），放不下三段
     expect(w.windowed).toBe(true);
     expect(w.text.indexOf('甲段')).toBeLessThan(w.text.indexOf('丙段'));
     expect(w.text).not.toContain('乙段');

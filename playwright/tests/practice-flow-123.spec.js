@@ -112,6 +112,7 @@ test("AI-123-03/11：返回題目列表不遺失作答進度，且保留 Scroll 
 
   await page.locator(".quiz-practice__row").first().click();
   await page.locator(".quiz-practice__option--btn").first().click(); // answer q1 (correct)
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await expect(page.locator(".quiz-practice__result")).toContainText("答對了");
 
   // Both questions now answered? No — only q1. Back button should warn.
@@ -147,6 +148,7 @@ test("AI-123-05/06/07：列表 Status Icon 立即更新，重新點擊已完成�
   // Answer q1 wrong, exit without finishing (only 1/2 answered).
   await rows.nth(0).click();
   await page.locator(".quiz-practice__option--btn").nth(1).click(); // wrong option
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await expect(page.locator(".quiz-practice__result")).toContainText("答錯了");
   await page.locator(".qpv__back").click();
   await page.locator(".qpv-confirm__btn", { hasText: "返回列表" }).click();
@@ -164,6 +166,7 @@ test("AI-123-05/06/07：列表 Status Icon 立即更新，重新點擊已完成�
   await expect(page.locator(".quiz-practice__option--btn.is-wrong")).toHaveCount(0);
   // Answer correctly this time — status icon should flip to ✔ once back on the list.
   await page.locator(".quiz-practice__option--btn").first().click();
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await expect(page.locator(".quiz-practice__result")).toContainText("答對了");
   await page.locator(".qpv__back").click();
   await page.locator(".qpv-confirm__btn", { hasText: "返回列表" }).click();
@@ -179,9 +182,11 @@ test("AI-123-04/09：完成全部題目 -> 成績摘要 -> 只能返回題目列
 
   await page.locator(".quiz-practice__row").first().click();
   await page.locator(".quiz-practice__option--btn").first().click(); // q1 correct
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await page.locator(".qpv__next", { hasText: "下一題" }).click();
   await expect(page.locator(".qpv__title")).toContainText("第 2 / 2 題");
   await page.locator(".quiz-practice__option--btn").nth(1).click(); // q2 wrong
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await page.locator(".qpv__next", { hasText: "完成測驗" }).click();
 
   // AI-123-04: real score summary, never a straight jump to Home/Material Center.
@@ -210,8 +215,10 @@ test("AI-123-04：再次測驗重新開始整組題目，狀態重置為未作�
 
   await page.locator(".quiz-practice__row").first().click();
   await page.locator(".quiz-practice__option--btn").first().click();
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await page.locator(".qpv__next", { hasText: "下一題" }).click();
   await page.locator(".quiz-practice__option--btn").first().click();
+  await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
   await page.locator(".qpv__next", { hasText: "完成測驗" }).click();
 
   await page.locator(".qpv-summary__btn", { hasText: "再次測驗" }).click();

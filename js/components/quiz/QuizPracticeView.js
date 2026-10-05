@@ -368,18 +368,26 @@ AHS.QuizParts = AHS.QuizParts || {};
     var type = String(record.questionType || "");
 
     if ((type === "single_choice" || type === "true_false") && record.options && record.options.length) {
-      /* Single pick — submitting the pick IS the answer check. */
+      /* 2026-10-04: picking only selects (can still change); 「確認」 checks the answer. */
+      var singlePick = null;
+      var singleConfirm = el("button", { type: "button", class: "quiz-practice__submit", text: "確認", disabled: "disabled" });
       var singleBtns = record.options.map(function (opt) {
         var b = el("button", { type: "button", class: "quiz-practice__option quiz-practice__option--btn", text: String(opt) });
         b.addEventListener("click", function () {
           if (submitted) { return; }
           singleBtns.forEach(function (x) { x.classList.remove("is-picked"); });
           b.classList.add("is-picked");
-          finishSubmit(answersMatch(record.answer, opt), String(opt));
+          singlePick = opt;
+          singleConfirm.removeAttribute("disabled");
         });
         return b;
       });
-      interaction = el("div", { class: "quiz-practice__options" }, singleBtns);
+      singleConfirm.addEventListener("click", function () {
+        if (submitted || singlePick === null) { return; }
+        singleConfirm.setAttribute("disabled", "disabled");
+        finishSubmit(answersMatch(record.answer, singlePick), String(singlePick));
+      });
+      interaction = el("div", { class: "quiz-practice__options" }, singleBtns.concat([singleConfirm]));
     } else if (type === "multiple_choice" && record.options && record.options.length) {
       var picked = {};
       var multiBtns = record.options.map(function (opt) {
@@ -514,8 +522,22 @@ AHS.QuizParts = AHS.QuizParts || {};
       var b = el("button", {
         type: "button", class: "quiz-practice__option quiz-practice__option--btn", "data-key": o.key
       }, [el("span", { text: o.label + "、" + o.text })]);
-      b.addEventListener("click", function () { finishSubmit(o.key); });
+      b.addEventListener("click", function () {
+        if (submitted) { return; }
+        optionBtns.forEach(function (x) { x.classList.remove("is-picked"); });
+        b.classList.add("is-picked");
+        realPick = o.key;
+        realConfirm.removeAttribute("disabled");
+      });
       return b;
+    });
+    /* 2026-10-04: picking only selects (can still change); 「確認」 checks the answer. */
+    var realPick = null;
+    var realConfirm = el("button", { type: "button", class: "quiz-practice__submit", text: "確認", disabled: "disabled" });
+    realConfirm.addEventListener("click", function () {
+      if (submitted || realPick === null) { return; }
+      realConfirm.setAttribute("disabled", "disabled");
+      finishSubmit(realPick);
     });
 
     /* Sprint AI-122 AI-122-02: 難度／考點 always visible (not gated behind
@@ -535,7 +557,7 @@ AHS.QuizParts = AHS.QuizParts || {};
       el("p", { class: "quiz-practice__q-text", text: q.text }),
       (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(q) : null),
       metaBits.length ? el("p", { class: "quiz-practice__meta", text: metaBits.join("　") }) : null,
-      el("div", { class: "quiz-practice__options" }, optionBtns),
+      el("div", { class: "quiz-practice__options" }, optionBtns.concat([realConfirm])),
       resultBanner,
       answerSlot
     ]);

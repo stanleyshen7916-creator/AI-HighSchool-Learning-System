@@ -846,9 +846,10 @@ app.get('/api/platform/drafts/:materialId', (req, res) => {
 
 app.post('/api/platform/drafts/:materialId/publish', (req, res) => {
   try {
-    return res.status(200).json(packageBuilder.publish(req.params.materialId));
+    return res.status(200).json(packageBuilder.publish(req.params.materialId, { confirmExisting: req.body?.confirmExisting === true }));
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    // 409：平台上已有同章教材，需管理者確認後帶 confirmExisting 重送
+    return res.status(error.code === 'EXISTING_MATERIAL' ? 409 : 400).json({ error: error.message });
   }
 });
 

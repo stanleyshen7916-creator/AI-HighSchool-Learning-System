@@ -407,7 +407,25 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     return preview(materialId);
   }
 
-  function publish(materialId) {
+  // 平台上已有同校、同年級、同科目、同一章的教材（補充題庫除外）。用來在發布前提醒
+  // 「是不是重複上傳或選錯學校」。章名寫法常不一致（「第三章」／「第三章 液態與溶液」），
+  // 所以有「第X章」時只比章號，沒有時才比完整章名。
+  function sameChapterMaterials(materialId) {
+    const lc = lifecycle();
+    const meta = readJson(path.join(packageDir(materialId), 'metadata.json'), {});
+    if (meta.source === SUPPLEMENT_SOURCE) return []; // 補充題庫本來就沿用原教材的章節
+    const chapterOf = (m) => `${m.chapter || ''} ${m.unit || ''}`.trim();
+    const chapterNo = (m) => (chapterOf(m).match(/第\s*[一二三四五六七八九十百\d]+\s*章/) || [''])[0].replace(/\s/g, '');
+    return lc.listMaterialIds()
+      .filter((id) => id !== materialId && lc.resolveStage(id) === 'IMPORTED')
+      .map((id) => ({ id, m: readJson(path.join(packageDir(id), 'metadata.json'), null) }))
+      .filter(({ m }) => m && m.source !== SUPPLEMENT_SOURCE
+        && m.school === meta.school && m.grade === meta.grade && m.subject === meta.subject
+        && (chapterNo(m) && chapterNo(meta) ? chapterNo(m) === chapterNo(meta) : chapterOf(m) === chapterOf(meta)))
+      .map(({ id, m }) => `${id}（${m.school}／${m.grade}／${m.subject}／${chapterOf(m)}）`);
+  }
+
+  function publish(materialId, { confirmExisting = false } = {}) {
     const entry = ownedEntry(materialId);
     if (entry.status !== 'draft') throw new Error(`${materialId} 目前狀態為 ${entry.status}，只能發布草稿`);
     const lc = lifecycle();
@@ -423,6 +441,13 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       .filter((id) => id !== materialId && ['CLAUDE_READY', 'READY_FOR_IMPORT'].includes(lc.resolveStage(id)));
     if (pending.length) {
       throw new Error(`另有教材包 ${pending.join('、')} 正在等待匯入，為避免一併發布已停止，請先處理`);
+    }
+    const existing = sameChapterMaterials(materialId);
+    if (existing.length && !confirmExisting) {
+      const error = new Error(`平台上已有同校、同年級、同科目、同一章的教材：\n${existing.join('\n')}\n\n`
+        + '請確認學校、章節是否選錯，或是否重複上傳。確定仍要發布嗎？');
+      error.code = 'EXISTING_MATERIAL';
+      throw error;
     }
 
     const draftManifest = fs.readFileSync(manifestFile, 'utf8');

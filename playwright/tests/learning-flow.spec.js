@@ -174,6 +174,7 @@ test("Learning Flow E2E：首頁 -> 教材中心 -> 學習總結 -> 考前總複
     // right or wrong is both a genuine, real outcome) — then confirm the
     // result panel renders immediately, on this same page (立即解析).
     await options.first().click();
+    await page.locator(".quiz-practice__submit").click(); // 2026-10-04: 選擇後按「確認」才批改
     await expect(page.locator(".quiz-practice__result")).toBeVisible();
   });
 

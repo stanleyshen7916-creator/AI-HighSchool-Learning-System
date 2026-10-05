@@ -55,10 +55,19 @@ const CONTEXT_SAFE_TOKEN_LIMIT = OLLAMA_MAX_CTX - CONTEXT_OUTPUT_RESERVE_TOKENS;
 // 超過 num_ctx 時 Ollama 會「靜默」從開頭截掉內容（SOURCE 在前面），不會報錯。
 const CJK_RE = /[　-〿㐀-鿿豈-﫿＀-￯]/g;
 
+// 2026-10-04 實測（化學第三章，Tesseract OCR）：舊算法（其他字元 2.5 字 1 token）估約 3 萬，
+// Ollama 實際 4 萬多 tokens，每次都被截掉開頭。OCR 文字在中文字之間夾大量空白，又有大量
+// 數字與符號；Qwen 的數字一位一個 token，空白與符號也常各自成 token。所以數字、空白、
+// 符號各算 1 token，只有英文字母以 3 字元 1 token 估，最後乘 TOKEN_ESTIMATE_MARGIN 保留餘裕。
+const ONE_TOKEN_EACH_RE = /[0-9\s!-/:-@[-`{-~]/g;
+const TOKEN_ESTIMATE_MARGIN = Number(process.env.OLLAMA_TOKEN_ESTIMATE_MARGIN) || 1.15;
+
 function estimateTokenCount(text) {
   const str = String(text ?? '');
   const cjk = (str.match(CJK_RE) || []).length;
-  return Math.ceil(cjk + (str.length - cjk) / 2.5);
+  const oneEach = (str.match(ONE_TOKEN_EACH_RE) || []).length;
+  const rest = str.length - cjk - oneEach;
+  return Math.ceil((cjk + oneEach + rest / 3) * TOKEN_ESTIMATE_MARGIN);
 }
 
 // 這次呼叫需要的 context window：prompt＋輸出額度，以 2048 為單位，介於最小與最大之間。
@@ -88,13 +97,17 @@ function bigramsOf(text) {
   return set;
 }
 
+// 段落之間的分隔也要計入額度（+1 吸收逐段 ceil 的進位誤差）。
+const WINDOW_SEPARATOR = '\n\n…\n\n';
+const WINDOW_SEPARATOR_TOKENS = estimateTokenCount(WINDOW_SEPARATOR) + 1;
+
 function selectSourceWindow(sourceText, focusText, maxTokens) {
   if (estimateTokenCount(sourceText) <= maxTokens) return { text: sourceText, windowed: false };
   const focus = bigramsOf(focusText);
   const paragraphs = splitSourceParagraphs(sourceText).map((text, index) => {
     let hits = 0;
     bigramsOf(text).forEach((bg) => { if (focus.has(bg)) hits += 1; });
-    return { text, index, score: hits / Math.sqrt(text.length + 1), tokens: estimateTokenCount(text) + 2 };
+    return { text, index, score: hits / Math.sqrt(text.length + 1), tokens: estimateTokenCount(text) + WINDOW_SEPARATOR_TOKENS };
   });
   const chosen = [];
   let used = 0;
@@ -102,7 +115,7 @@ function selectSourceWindow(sourceText, focusText, maxTokens) {
     if (used + p.tokens <= maxTokens) { chosen.push(p); used += p.tokens; }
   });
   chosen.sort((a, b) => a.index - b.index);
-  return { text: chosen.map((p) => p.text).join('\n\n…\n\n'), windowed: true };
+  return { text: chosen.map((p) => p.text).join(WINDOW_SEPARATOR), windowed: true };
 }
 
 // 依 SOURCE 實際長度組 prompt：放得下就給完整 SOURCE；放不下就給最相關的段落。
@@ -127,7 +140,9 @@ function isContextSafe(promptText, safeLimit = CONTEXT_SAFE_TOKEN_LIMIT) {
 // 完整 semantic claim adjudication 實際耗時約 412 秒。4 秒／600 秒等「縮短測試時間」式
 // timeout 一律不可接受；此常數只作為「可靠 long-running 機制」的內部安全上限，
 // 真正的非阻塞行為由呼叫端（server.js 的 job queue）負責，不得讓瀏覽器同步阻塞。
-const DEFAULT_ADJUDICATION_TIMEOUT_MS = 900000; // 15 分鐘
+// 2026-10-04：大份 SOURCE 在 6 GB 顯卡上（模型部分跑在 CPU）單次呼叫實測 8～15 分鐘，
+// 15 分鐘上限讓部分小節逾時而缺漏。改為預設 60 分鐘，可用 OLLAMA_ADJUDICATION_TIMEOUT_MS 調整。
+const DEFAULT_ADJUDICATION_TIMEOUT_MS = Number(process.env.OLLAMA_ADJUDICATION_TIMEOUT_MS) || 3600000; // 60 分鐘
 
 // Semantic Cross-Council Adjudicator 允許的裁決結果——僅此四種，不得自創其他狀態。
 const VERDICTS = Object.freeze({
@@ -241,6 +256,7 @@ async function callOllamaAdjudication(
   url = process.env.OLLAMA_URL || 'http://ollama:11434',
   timeoutMs = DEFAULT_ADJUDICATION_TIMEOUT_MS,
 ) {
+  const numCtx = contextWindowFor(prompt);
   let response;
   try {
     // format: 'json' 必須明確指定：實測（qwen2.5:7b-instruct-q4_K_M，較新版 Ollama/llama-server）
@@ -263,7 +279,7 @@ async function callOllamaAdjudication(
         prompt,
         stream: false,
         format: 'json',
-        options: { temperature: 0, num_ctx: contextWindowFor(prompt), num_predict: CONTEXT_OUTPUT_RESERVE_TOKENS },
+        options: { temperature: 0, num_ctx: numCtx, num_predict: CONTEXT_OUTPUT_RESERVE_TOKENS },
       }),
       signal: AbortSignal.timeout(timeoutMs),
     });
@@ -297,6 +313,17 @@ async function callOllamaAdjudication(
 
   if (data.response.trim().length === 0) {
     throw failure('Ollama response 為空字串', FAILURE_REASON.EMPTY_RESPONSE);
+  }
+
+  // 估算仍可能偏低：Ollama 回報實際讀入的 prompt tokens 已填滿 num_ctx，代表開頭（SOURCE）
+  // 被截掉了。這種結果不完整，不得採用，明確以 CONTEXT_OVERFLOW 失敗並記錄實際數字，
+  // 供調整 OLLAMA_TOKEN_ESTIMATE_MARGIN。
+  if (Number(data.prompt_eval_count) >= numCtx - CONTEXT_OUTPUT_RESERVE_TOKENS) {
+    console.warn(`[council] prompt 被 Ollama 截斷：實際 ${data.prompt_eval_count} tokens，估算 ${estimateTokenCount(prompt)}，num_ctx ${numCtx}`);
+    throw failure(
+      `Ollama 截斷了 prompt（實際 ${data.prompt_eval_count} tokens ≥ num_ctx ${numCtx} − 輸出額度），結果不完整`,
+      FAILURE_REASON.CONTEXT_OVERFLOW,
+    );
   }
 
   return data.response;

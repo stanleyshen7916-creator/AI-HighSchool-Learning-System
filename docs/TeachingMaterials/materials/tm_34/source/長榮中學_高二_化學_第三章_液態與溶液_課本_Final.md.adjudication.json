@@ -1,0 +1,21 @@
+{
+  "adjudicator": "n/a（fallback，未執行 semantic adjudication）",
+  "adjudication_mode": "fallback_concat",
+  "failure_reason": "NO_CANONICAL_SOURCE",
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": "N/A",
+  "claim_verification_score": "N/A",
+  "section_coverage": null,
+  "document_completeness": null,
+  "source_ref_document": null,
+  "source_id": "長榮中學_高二_化學_第三章_液態與溶液_課本",
+  "run_id": "93c7f743-1020-4cea-8c75-603fbf7252b8",
+  "source_provided": false,
+  "source_windowed": false,
+  "claims": [],
+  "validation": {
+    "sections_complete": false,
+    "source_attribution_valid": false
+  }
+}
