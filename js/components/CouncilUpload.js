@@ -153,7 +153,7 @@ AHS.CouncilUpload = (function () {
 
     var promptStatus = el("p", { class: "upl-status" });
     var promptPreview = el("div");
-    function refresh() {
+    function refresh(preselect) {
       client.supplementParents().then(function (r) {
         if (r.error) { status(promptStatus, r.error.message, "error"); return; }
         state.parents = r.data.materials || [];
@@ -168,7 +168,7 @@ AHS.CouncilUpload = (function () {
               "（" + p.materialId + "，原有 " + p.questionCount + " 題" + (p.supplementCount ? "、已補 " + p.supplementCount + " 題" : "") + "）"
           }));
         });
-        if (keep) { materialSel.value = keep; }
+        if (preselect) { materialSel.value = preselect; } else if (keep) { materialSel.value = keep; }
         updateSubjectHint();
       });
     }
@@ -454,7 +454,9 @@ AHS.CouncilUpload = (function () {
       ].concat(COUNCIL_SECTIONS).concat([
         "",
         "【練習題格式】（學習平台會自動匯入題庫，格式請務必一致）",
-        "請在⑪常考題型中，另外出 10 題單選練習題，每題格式如下：",
+        /* 2026-10-06：10 → 30 題（每科題庫目標 100 題；一次出更多容易被 AI 回覆長度截斷，
+           其餘發布後用「為既有教材加題」補足，發布完成時會提示還差幾題） */
+        "請在⑪常考題型中，另外出 30 題單選練習題（題號 Q1～Q30，請全部出完，不可省略），每題格式如下：",
         "**Q1.** 題幹",
         "(A) 選項　(B) 選項　(C) 選項　(D) 選項",
         "答案：B",
@@ -710,8 +712,25 @@ AHS.CouncilUpload = (function () {
 
       if (published) {
         var cmds = gitCommands(d);
+        /* 2026-10-06：每科題庫目標 100 題，提示還差幾題並一鍵帶到「為既有教材加題」 */
+        var cov = d.subjectCoverage;
+        var parentId = d.supplementOf || d.materialId;
+        var covNode = null;
+        if (cov) {
+          var short = Math.max(0, cov.target - cov.count);
+          covNode = el("div", { class: short ? "upl-warn" : "upl-success" }, [
+            el("p", { text: (((AHS.WorkspaceData && AHS.WorkspaceData.semesters) || []).filter(function (x) { return x.id === cov.semester; })[0] || { name: cov.semester }).name + "・" + cov.subject + " 題庫目前共 " + cov.count + " 題" +
+              (short ? "，距每科 " + cov.target + " 題的目標還差 " + short + " 題。" : "，已達每科 " + cov.target + " 題的目標。") }),
+            short ? el("div", { class: "upl-actions" }, [button("為 " + parentId + " 補題", "primary", function () {
+              showMode("supplement");
+              supplementCards.refresh(parentId);
+              window.scrollTo(0, 0);
+            })]) : null
+          ]);
+        }
+        body.push(covNode);
         body.push(el("div", { class: "upl-success" }, [
-          el("p", { text: d.materialId + " 已匯入平台資料。學生端要等你把下列變更 commit 並 push、GitHub Pages 重新部署後才看得到：" }),
+          el("p", { text: d.materialId + " 已匯入平台資料，會自動送上 GitHub（見上方狀態）。若自動推送失敗，可改用下列指令手動推送：" }),
           el("pre", { class: "upl-pre", text: cmds }),
           button("複製指令", null, function () { copyText(cmds); })
         ]));

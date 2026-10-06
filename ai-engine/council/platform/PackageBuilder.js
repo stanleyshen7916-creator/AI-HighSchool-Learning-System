@@ -188,7 +188,26 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       summary,
       questions: questionBank.questions || [],
       sourceFiles: fs.readdirSync(path.join(dir, 'source')),
+      subjectCoverage: subjectCoverage(readJson(path.join(dir, 'metadata.json'), {})),
     };
+  }
+
+  // 2026-10-06：每科題庫目標 100 題（模擬月考隨機出題的門檻）。統計平台上同校、同學期、
+  // 同科目已上架教材（含補充題庫）的單選／是非題數，發布後提示還差幾題。
+  const SUBJECT_QUESTION_TARGET = 100;
+  function subjectCoverage(meta) {
+    if (!meta || !meta.school || !meta.subject) return null;
+    const lc = lifecycle();
+    let count = 0;
+    lc.listMaterialIds().forEach((id) => {
+      if (lc.resolveStage(id) !== 'IMPORTED') return;
+      const m = readJson(path.join(packageDir(id), 'metadata.json'), null);
+      if (!m || m.school !== meta.school || m.semester !== meta.semester || m.subject !== meta.subject) return;
+      const qb = readJson(path.join(packageDir(id), 'questionbank.json'), { questions: [] });
+      count += (qb.questions || []).filter((q) => (q.type === 'single_choice' || q.type === 'true_false')
+        && Array.isArray(q.options) && q.options.length >= 2 && q.answer).length;
+    });
+    return { school: meta.school, semester: meta.semester, subject: meta.subject, count, target: SUBJECT_QUESTION_TARGET };
   }
 
   function createDraft({ finalFilename, finalMarkdown, extraSourceFiles, metadata }) {

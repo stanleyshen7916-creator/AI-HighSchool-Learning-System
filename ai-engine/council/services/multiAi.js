@@ -1358,6 +1358,19 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     const assembled = assembleClaimsIntoSections(claims);
     sections = assembled.sections;
     hardFail = assembled.hardFail;
+    // 2026-10-06：⑪ 由 claims 重組後，三方初稿的練習題（題幹＋選項＋答案）全部消失，
+    // 題庫變成 0 題。練習題不是可對照 SOURCE 逐條裁決的陳述，原樣附回 ⑪，並標明未經
+    // Qwen 逐題裁決；FinalParser 會重編號、去除題幹相同的題目。
+    const draftPractice = [gptSections, geminiSections, claudeSections]
+      .map((s) => (s && s['⑪常考題型']) || '')
+      .filter((text) => /(^|\n)\s*(\*\*\s*)?Q\s*\d/.test(text));
+    if (draftPractice.length) {
+      sections['⑪常考題型'] = [
+        sections['⑪常考題型'] || '',
+        '### 練習題（取自三方初稿，未經 Qwen 逐題裁決）',
+        ...draftPractice,
+      ].filter(Boolean).join('\n\n');
+    }
 
     if (hardFail) {
       failureReason = FAILURE_REASON.SOURCE_TRUTH_GATE_HARD_FAIL;
