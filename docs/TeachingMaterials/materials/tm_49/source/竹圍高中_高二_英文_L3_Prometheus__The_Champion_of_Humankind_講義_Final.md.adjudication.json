@@ -1,0 +1,192 @@
+{
+  "adjudicator": "qwen2.5:7b-instruct-q4_K_M",
+  "adjudication_mode": "llm_semantic",
+  "failure_reason": null,
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": 58,
+  "claim_verification_score": 58,
+  "section_coverage": {
+    "total_sections": 13,
+    "sections_with_source_content": 13,
+    "sections_with_claims": 12,
+    "sections_unresolved": 1,
+    "coverage_rate": 100,
+    "uncovered_sections": [],
+    "unresolved_sections": [
+      {
+        "section_id": "⑦作者背景",
+        "section_title": "⑦作者背景",
+        "reason": "三方初稿均未提供作者背景的相关信息，无法形成可验证的陈述。"
+      }
+    ]
+  },
+  "document_completeness": 54,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_英文_L3_Prometheus__The_Champion_of_Humankind_講義",
+  "run_id": "69723543-da4c-45c2-be9c-38cc79ad3786",
+  "source_provided": true,
+  "source_windowed": true,
+  "claims": [
+    {
+      "claim_id": "c1",
+      "claim": "普羅米修斯創造人類、補償人類弱勢、從太陽偷火並給予人類，最終因此被宙斯懲罰而成為「人類的捍衛者」。",
+      "section": "①核心概念",
+      "sections": [
+        "①核心概念"
+      ],
+      "source_ref": "e Titan by banishing him to a place far to the east. There, Prometheus was ©chained to a rock, and an eagle sent by Zeus fed on Prometheus's liver. Though his liver ®kept growing back, the eagle would return every day to gnaw at it again, torturing Prometheus until the end of time. Through his sacrifice, Prometheus, who gave humans not only the ability to stand upright but also the gift of fire, which set the stage for human civilization,  came to be known in later centuries as the \"Champion of Humankind.",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「Prometheus created humans out of clay, but his brother Epimetheus failed to give humans useful gifts. To make up for this, and also gave them fire.\n\nThough his liver kept growing back, the eagle would return every day to gnaw at it again, torturing Prometheus until the end of time. Through his sacrifice, Prometheus, who gave humans not only the ability to stand upright but also the gift of fire, which set the stage for human civilization, came to be known in later centuries as the 'Champion of Humankind.'」與 SOURCE 實際內容「e Titan by banishing him to a place far to the east. There, Prometheus was ©chained to a rock, and an eagle sent by Zeus fed on Prometheus's liver. Though his liver ®kept growing back, the eagle would return every day to gnaw at it again, torturing Prometheus until the end of time. Through his sacrifice, Prometheus, who gave humans not only the ability to stand upright but also the gift of fire, which set the stage for human civilization,  came to be known in later centuries as the \"Champion of Humankind.」僅有些微字元差異（edit distance=115），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "泰坦神普羅米修斯用黏土創造人類，他的弟弟厄庇墨透斯分配動物的能力，但到人類時已經沒有禮物。為了彌補人類的弱勢，普羅米修斯讓人類直立行走並給予火，使人類能保暖、烹飪與製造工具。",
+      "section": "②章節摘要",
+      "sections": [
+        "②章節摘要"
+      ],
+      "source_ref": "metheus 5\n二 @ereated human beings out ot clay. His brother Epimetheus then gave all living creatures on earth\no different qualities. Epimetheus gave animals speed, strength, fur, and wings. Op, the time he got to\n一 human beings, ©however, he had run out of gifts. To make up for their weaker state, Prometheus\nEE enabled them to stand upright like the gods. @Not only kind but also generous, he gave them fire too 比\n@so that they could keep warm, cook food, and make tools.",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「A Titan known as Prometheus created human beings out of clay. His brother Epimetheus then gave all living creatures on earth different qualities. Epimetheus gave animals speed, strength, fur, and wings. However, the time he got to human beings, he had run out of gifts. To make up for their weaker state, Prometheus enabled them to stand upright like the gods. @Not only kind but also generous, he gave them fire too so that they could keep warm, cook food, and make tools.」與 SOURCE 實際內容「metheus 5\n二 @ereated human beings out ot clay. His brother Epimetheus then gave all living creatures on earth\no different qualities. Epimetheus gave animals speed, strength, fur, and wings. Op, the time he got to\n一 human beings, ©however, he had run out of gifts. To make up for their weaker state, Prometheus\nEE enabled them to stand upright like the gods. @Not only kind but also generous, he gave them fire too 比\n@so that they could keep warm, cook food, and make tools.」僅有些微字元差異（edit distance=53），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "humankind 和 humanity 同類概念，universe 意為「宇宙」，universal 表示「普遍的」，fur 意指動物的毛皮，enable 使某人能夠做某事，upright 形容詞和副詞皆表示「直立地／直立的」，generous 和 generosity 與慷慨相關，conflict 可表衝突或抵觸，distribution 表示分配，benefit 意為利益，slaughter 有宰殺之意，underneath 在……下方，freeze 有受凍和冷凍的意思，victim 是受害者，miserable 和 misery 則表示悲慘，hollow 形容中空，furious 表示非常憤怒，theft 意為偷竊或偷竊罪，punish 用於懲罰，banish 有放逐之意，torture 表示折磨，civilization 指文明。",
+      "section": "③重點詞彙",
+      "sections": [
+        "③重點詞彙"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陈述中的词汇和概念在原文中均有提及，并且与原文意思一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "Prometheus 為彌補人類較弱的狀態，讓人類直立並給予火。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "To make up for their weaker state, Prometheus\nEE enabled them to stand upright like the gods. @Not only kind but also generous, he gave them fire too 比\n@so that they could keep warm, cook food, and make t",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「To make up for their weaker state, Prometheus enabled them to stand upright like the gods. @Not only kind but also generous, he gave them fire too so that they could keep warm, cook food, and make tools.」與 SOURCE 實際內容「To make up for their weaker state, Prometheus\nEE enabled them to stand upright like the gods. @Not only kind but also generous, he gave them fire too 比\n@so that they could keep warm, cook food, and make t」僅有些微字元差異（edit distance=11），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "修辭手法包括對比、重複與因果推進、象徵、not only...but also結構、敘事結構以及隱喻性片語。",
+      "section": "⑤修辭手法",
+      "sections": [
+        "⑤修辭手法"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "CANONICAL SOURCE 中未見直接支持或反駁該陳述的具體內容，主要涉及 Prometheus 的行為和結果，但缺乏對修辭手法的明確描述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "本課背景為希臘神話：泰坦神、奧林帕斯眾神之王宙斯。地名米孔，眾神與人類在此協議獻祭方式。",
+      "section": "⑥文化脈絡",
+      "sections": [
+        "⑥文化脈絡"
+      ],
+      "source_ref": " Olympian gods. When the gods and humans met at Mecone to decide on the distribution of sacrifices that humans should make to the gods, Prometheus tricked Zeus for the bene slaughtered a bull ad rated two offerings.",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「When the gods and humans met at Mecone to decide on the distribution of sacrifices that humans should make to the gods, Prometheus tricked Zeus for the bene of humans. He slaughtered a bull and created two offerings.」與 SOURCE 實際內容「 Olympian gods. When the gods and humans met at Mecone to decide on the distribution of sacrifices that humans should make to the gods, Prometheus tricked Zeus for the bene slaughtered a bull ad rated two offerings.」僅有些微字元差異（edit distance=33），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "Paragraph 4 描述了宙斯惩罚普罗米修斯，将他放逐到东方，并用茴香茎盗火给人类的过程。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": "Furious about Prometheus's theft, Zeus punished the Titan by banishing him to a place far to the east. There, Prometheus was ©chained to a rock, and an eagle sent by Zeus fed on Prometheus's liver. Though his liver ®kept growing back, the eagle would return every day to gnaw at it again, torturing Prometheus until the end of time",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「Furious about Prometheus's theft, Zeus punished the Titan by banishing him to a place far to the east. There, Prometheus was chained to a rock, and an eagle sent by Zeus fed on Prometheus's liver. Though his liver kept growing back, the eagle would return every day to gnaw at it again, torturing Prometheus until the end of time.」與 SOURCE 實際內容「Furious about Prometheus's theft, Zeus punished the Titan by banishing him to a place far to the east. There, Prometheus was ©chained to a rock, and an eagle sent by Zeus fed on Prometheus's liver. Though his liver ®kept growing back, the eagle would return every day to gnaw at it again, torturing Prometheus until the end of time」僅有些微字元差異（edit distance=3），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "幫助人類的行動是否一定不會帶來代價？",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "原文未提及幫助人類的行動是否一定不會帶來代價，因此無法支持或反驳該陳述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "run out of sth. vs sth. run out，make up for vs make up，benefit vs beneficial，misery vs miserable，punish vs punishment，banish vs banishment，freeze vs froze/frozen，conflict with，fall victim to，feed on，end up with，nothing but",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "陳述中的多個片語和詞彙組合在原文中沒有直接對應的內容。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "題型總表包括字彙選擇、片語填空、文意理解、句型、時態、分詞構句、with + O + OC 等題型。",
+      "section": "⑪常考題型",
+      "sections": [
+        "⑪常考題型"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "陳述未在給定的文本中找到直接相關內容，且無法綜合多個不連續部分得出結論。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "by the time 的時態使用錯誤，過去基準應為 By the time + 過去式，主句 had + p.p.；未來基準應為 By the time + 現在式，主句 will have + p.p.",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "CONTRADICTED",
+      "reason": "SOURCE 中的句子 'By the time my mother turned on the TV, the soap opera had already started.' 和 'By the time Sasha goes to college, her parents will have turned 65 and already retired.' 明确展示了 by the time 的时态使用规则，即过去基准时为 By the time + 过去式，主句用过去完成式；未来基准时为 By the time + 现在式，主句用将来完成式。因此，陈述中的说法与 SOURCE 冲突。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "本課的故事閱讀不是獨立於文法之外，而是將 by the time、so that、not only...but also、分詞構句、with + O + OC 嵌入故事情境中。",
+      "section": "⑬跨課連結",
+      "sections": [
+        "⑬跨課連結"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "該陳述與原文內容相符，文中多次提到由by the time、so that、not only...but also等構成的句型被嵌入故事情境中。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    }
+  ],
+  "validation": {
+    "sections_complete": true,
+    "source_attribution_valid": true
+  }
+}
