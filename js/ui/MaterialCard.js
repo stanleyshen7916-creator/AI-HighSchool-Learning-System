@@ -55,7 +55,8 @@ AHS.MaterialCard = (function () {
     var onPreview = opts.onPreview || opts.onOpen;
     var onLearn = opts.onLearn;
     var onDownload = opts.onDownload;
-    var onDelete = opts.onDelete;
+    /* 2026-10-06：canDelete(item) 為 false 時不顯示刪除鈕（雲端教材只有管理者能刪除） */
+    var onDelete = (typeof opts.canDelete === "function" && !opts.canDelete(item)) ? null : opts.onDelete;
     var onToggleFavorite = opts.onToggleFavorite;
 
     var subj = AHS.Subjects[item.subject] || { name: "其他", hex: "#6b7280" };

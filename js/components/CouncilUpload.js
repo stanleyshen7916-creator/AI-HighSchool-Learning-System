@@ -648,6 +648,15 @@ AHS.CouncilUpload = (function () {
           if (!catalogSel.value) { return; }
           var item = catalogSel.options[catalogSel.selectedIndex].text.match(/\[(.+)\]$/);
           showFinal(catalogSel.value, item ? item[1] : null, null, true);
+          /* 2026-10-06：載回這份 Final 審議時保存的三方初稿，可直接重跑交叉審議 */
+          client.finalDrafts(catalogSel.value).then(function (r) {
+            if (r.error || !r.data || !r.data.drafts) { return; }
+            var saved = r.data.drafts;
+            var filled = Object.keys(drafts).some(function (k) { return drafts[k].value.trim(); });
+            if (filled && !window.confirm("這份 Final 有保存當時的三方初稿。要用它取代步驟 3 目前的內容嗎？")) { return; }
+            Object.keys(drafts).forEach(function (k) { drafts[k].value = saved[k] || ""; });
+            status(councilStatus, "已載回 " + new Date(r.data.savedAt).toLocaleString() + " 審議時保存的三方初稿（步驟 3），可直接重新執行交叉審議。", "ok");
+          });
         })
       ]),
       finalSlot

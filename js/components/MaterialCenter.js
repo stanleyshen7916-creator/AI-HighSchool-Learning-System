@@ -455,6 +455,7 @@ AHS.MaterialCenter = (function () {
         onLearn: startLearningSession,
         onDownload: downloadMaterial,
         onDelete: confirmDeleteMaterial,
+        canDelete: canDeleteMaterial,
         onToggleFavorite: onToggleFavorite
       }, sortWithin);
       newGrid.setAttribute("data-view", theGrid.getAttribute("data-view") || "grid");
@@ -948,9 +949,21 @@ AHS.MaterialCenter = (function () {
     /* WO-008-004: custom confirm modal (replaces native window.confirm).
        "是否確定刪除此教材？" with【取消】【刪除】. Reuses .mat-dialog
        styles. Deletes only on explicit 刪除. */
+    /* 2026-10-06：雲端教材（教材包 tm_N，所有學生共用）過去「刪除」只刪掉這個瀏覽器裡的
+       副本，重新載入或登入又從平台資料出現。現在只有管理者能刪，經本機教材上傳引擎從平台
+       資料永久移除（連同其補充題庫）並自動 PR 上架；誤刪只能重新上傳。 */
+    function cloudMaterialId(item) {
+      var key = item && item.originKey;
+      return /^tm_\d+$/.test(String(key || "")) ? key : null;
+    }
+    function canDeleteMaterial(item) {
+      return !cloudMaterialId(item) || isAdmin();
+    }
+
     function confirmDeleteMaterial(id) {
       var item = AHS.MaterialRuntime.getById(id);
       var name = item ? (item.title || "此教材") : "此教材";
+      var cloudId = cloudMaterialId(item);
 
       var overlay = el("div", {
         class: "mat-dialog__overlay", role: "dialog", "aria-modal": "true", "aria-label": "刪除教材"
@@ -963,7 +976,7 @@ AHS.MaterialCenter = (function () {
       var confirmBtn = el("button", { type: "button", class: "mat-dialog__btn mat-dialog__btn--danger", text: "刪除" });
       confirmBtn.addEventListener("click", function () {
         close();
-        onDeleteMaterial(id);
+        if (cloudId) { onDeleteCloudMaterial(id, cloudId); } else { onDeleteMaterial(id); }
       });
 
       overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
@@ -977,12 +990,32 @@ AHS.MaterialCenter = (function () {
           el("h2", { class: "mat-dialog__title", text: "刪除教材" })
         ]),
         el("div", { class: "mat-dialog__body" }, [
-          el("p", { class: "mat-dialog__confirm-text", text: "是否確定刪除此教材？" }),
-          el("p", { class: "mat-dialog__confirm-sub", text: "《" + name + "》" })
+          el("p", { class: "mat-dialog__confirm-text", text: cloudId ? "是否確定從平台永久刪除此教材？" : "是否確定刪除此教材？" }),
+          el("p", { class: "mat-dialog__confirm-sub", text: "《" + name + "》" }),
+          cloudId ? el("p", { class: "mat-dialog__confirm-sub", text: "所有學生都將看不到這份教材（含其補充題庫），刪除後無法復原；誤刪只能重新上傳。需要本機的教材上傳引擎。" }) : null
         ]),
         el("div", { class: "mat-dialog__foot" }, [cancelBtn, confirmBtn])
       ]));
       document.body.appendChild(overlay);
+    }
+
+    function onDeleteCloudMaterial(id, cloudId) {
+      status.removeAttribute("hidden");
+      if (!AHS.CouncilEngineClient) { status.textContent = "此頁面沒有載入教材上傳引擎連線，無法刪除雲端教材。"; return; }
+      status.textContent = "刪除中…（需要本機的教材上傳引擎）";
+      AHS.CouncilEngineClient.deleteMaterial(cloudId).then(function (r) {
+        if (r.error) { status.textContent = "刪除失敗：" + r.error.message; return; }
+        /* 立即在這個瀏覽器隱藏，不必等 GitHub Pages 部署 */
+        if (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.markDeleted === "function") {
+          (r.data.removed || [cloudId]).forEach(function (mid) { AHS.TeachingMaterialLoader.markDeleted(mid); });
+        } else {
+          AHS.MaterialRuntime.remove(id);
+        }
+        forgetFileBytes(id);
+        status.textContent = "已從平台刪除 " + (r.data.removed || [cloudId]).join("、") +
+          (r.data.gitJobId ? "，正在送上 GitHub（約 5 分鐘，請勿關閉推送視窗），部署後所有學生都看不到。" : "，但無法排入自動上架：" + (r.data.gitQueueError || "未知原因"));
+        renderAll();
+      });
     }
 
     /* Delete: MaterialRuntime.remove() -> renderAll (grid + empty state
