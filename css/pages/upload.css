@@ -126,6 +126,9 @@
   font-size: 14px;
 }
 .upl-success p { margin: 0; }
+/* 2026-10-06：發布後提示題庫未達每科 100 題 */
+.upl-warn { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: var(--radius-sm); background: #fff7e6; color: #8a5300; }
+.upl-warn p { margin: 0; font-weight: 600; }
 .upl-success .upl-btn { align-self: flex-start; }
 
 .upl-draft-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }

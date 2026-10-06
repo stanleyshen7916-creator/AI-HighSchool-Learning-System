@@ -317,29 +317,40 @@ function parseQuestions(sections) {
   const explanations = parseExplanations(sections);
   const questions = [];
   const seen = new Set();
+  // 2026-10-06：三方初稿各自從 Q1 編號，過去「題號重複只保留第一題」讓 3×10 題只剩 10 題。
+  // 題號重複時改編到最後，題幹完全相同才視為重複。重編號的題目必須有寫在題目下方的
+  // 「答案：」——另列的答案表、詳解表是依原題號對應，套到別家的同號題目會張冠李戴。
+  const stems = new Map();
+  let nextNumber = 1;
 
   practice.forEach((s) => questionBlocks(s.body).forEach((block) => {
     const label = `Q${block.number}`;
-    if (seen.has(block.number)) {
-      warnings.push(`${label}：題號重複，只保留第一題`);
+    const renumber = seen.has(block.number);
+    if (renumber && !block.inlineAnswer) {
+      warnings.push(`${label}：題號重複，且答案沒有寫在題目下方，未收錄`);
       return;
     }
-    seen.add(block.number);
     const stem = cleanText(block.stemLines.join(' '), MAX_STEM_LENGTH);
     const options = parseOptions(block.optionLines);
     const letter = block.inlineAnswer || answers[block.number];
     const inlineExplanation = block.explanationLines ? cleanText(block.explanationLines.join(' '), MAX_EXPLANATION_LENGTH) : '';
     if (!stem) { warnings.push(`${label}：找不到題幹，未收錄`); return; }
+    const stemKey = stem.replace(/[\s\p{P}\p{S}]/gu, '');
+    if (stems.has(stemKey)) { warnings.push(`${label}：與 Q${stems.get(stemKey)} 題幹相同，未重複收錄`); return; }
     if (!options) { warnings.push(`${label}：找不到完整的 (A)(B)… 選項，未收錄`); return; }
     const chosen = options.find((o) => o.key === letter);
     if (!chosen) { warnings.push(`${label}：找不到答案或答案不在選項中，未收錄`); return; }
     if (/!\[[^\]]*\]\(/.test(block.stemLines.join(' '))) warnings.push(`${label}：題幹引用圖片，平台不會顯示該圖`);
+    const number = renumber ? nextNumber : block.number;
+    seen.add(number);
+    nextNumber = Math.max(nextNumber, number + 1);
+    stems.set(stemKey, number);
     questions.push({
-      number: block.number,
+      number,
       question: stem,
       options: options.map((o) => o.text),
       answer: chosen.text,
-      explanation: inlineExplanation || explanations[block.number] || null,
+      explanation: inlineExplanation || (renumber ? null : explanations[block.number]) || null,
       section: block.section,
       knowledgePoint: block.knowledgePoint || null,
       difficulty: block.difficulty || null,
