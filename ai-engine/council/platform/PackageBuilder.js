@@ -526,6 +526,45 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     return { materialId, status: 'deleted' };
   }
 
+  // 2026-10-06：從平台永久刪除已上架的教材（管理者在教材中心按刪除）。連同它的補充題庫
+  // 一起刪（只剩補充題庫會變成沒有原教材可併入的孤兒），重新產生平台資料，回傳要提交的
+  // 路徑交給自動 PR 上架。不可復原：誤刪只能重新上傳。補充題庫本身請刪原教材。
+  function deletePublished(materialId) {
+    if (!/^tm_\d+$/.test(String(materialId))) throw new Error('不合法的教材識別碼');
+    const dir = packageDir(materialId);
+    if (!fs.existsSync(dir)) throw new Error(`${materialId} 不存在`);
+    const meta = readJson(path.join(dir, 'metadata.json'), {});
+    const related = readJson(path.join(dir, 'related.json'), {});
+    if (isSupplementPackage(meta, related)) {
+      throw new Error(`${materialId} 是補充題庫，請刪除它的原教材 ${related.related[0].materialId}，或在教材上傳頁處理`);
+    }
+    const title = (fs.existsSync(path.join(dir, 'material.md'))
+      ? fs.readFileSync(path.join(dir, 'material.md'), 'utf8').split(/\r?\n/)[0].replace(/^#\s*/, '').trim() : '') || materialId;
+    const removed = [materialId, ...supplements.supplementsOf(materialId).map((p) => p.materialId)];
+    removed.forEach((id) => fs.rmSync(packageDir(id), { recursive: true, force: true }));
+    const reg = registry();
+    removed.forEach((id) => {
+      if (reg.drafts[id]) reg.drafts[id] = { ...reg.drafts[id], status: 'deleted', deletedAt: new Date().toISOString() };
+    });
+    saveRegistry(reg);
+    require(path.join(scripts, 'GenerateTeachingMaterialData.js')).generate();
+    return {
+      materialId,
+      title,
+      removed,
+      changedPaths: [
+        ...removed.map((id) => `docs/TeachingMaterials/materials/${id}/`),
+        'docs/TeachingMaterials/index.json',
+        'js/data/TeachingMaterialData.js',
+        'js/data/RepositoryStatus.js',
+      ],
+    };
+  }
+
+  function isSupplementPackage(meta, related) {
+    return meta && meta.source === SUPPLEMENT_SOURCE && related && Array.isArray(related.related) && related.related.length > 0;
+  }
+
   function listDrafts() {
     return Object.values(registry().drafts)
       .filter((d) => d.status !== 'deleted')
@@ -538,6 +577,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     supplements,
     publish,
     deleteDraft,
+    deletePublished,
     listDrafts,
     getDraft: preview,
     nextMaterialId,

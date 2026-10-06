@@ -78,6 +78,8 @@ AHS.CouncilEngineClient = (function () {
     health: function () { return request("GET", "/api/health"); },
     catalog: function () { return request("GET", "/api/catalog"); },
     finalContent: function (filename) { return request("GET", "/api/finals/" + enc(filename)); },
+    /* 2026-10-06 審議時保存的三方初稿 */
+    finalDrafts: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/drafts"); },
     saveFinal: function (filename, content) { return request("PUT", "/api/finals/" + enc(filename), { content: content }); },
     upload: function (files) {
       var form = new FormData();
@@ -98,6 +100,8 @@ AHS.CouncilEngineClient = (function () {
     gitJob: function (jobId) { return request("GET", "/api/platform/git-jobs/" + enc(jobId)); },
     /* 2026-10-05 模擬月考：管理者把某校某學期某科的範圍設為全體預設（寫入 js/data/MonthExamConfig.js 並自動上架） */
     saveMonthExamRange: function (payload) { return request("POST", "/api/platform/month-exam-config", payload); },
+    /* 2026-10-06 從平台永久刪除已上架的教材（連同補充題庫），自動 PR 上架 */
+    deleteMaterial: function (id) { return request("POST", "/api/platform/materials/" + enc(id) + "/delete", { confirm: true }); },
     deleteDraft: function (id) { return request("DELETE", "/api/platform/drafts/" + enc(id)); },
     /* 2026-10-01 為既有教材加題 */
     supplementParents: function () { return request("GET", "/api/platform/supplements/parents"); },

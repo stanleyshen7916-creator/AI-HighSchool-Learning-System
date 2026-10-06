@@ -460,6 +460,11 @@ async function runAssembleCouncil({ metadata, drafts, sourceText, sourceRef }, {
   // P0-05 Provenance：每一次 assemble-council 都必須留下可追溯的 claim-level
   // adjudication record，不得只有 Final.md 而沒有可查核的裁決過程。
   fs.writeFileSync(adjudicationOutputsPath, JSON.stringify(council.adjudicationRecord, null, 2), 'utf8');
+  // 2026-10-06：保存這次的三方初稿。審議結果不理想或題目遺失時，可在上傳頁「使用既有的
+  // Final.md」直接載回三方初稿重跑，不必重貼三家；建立教材包時也一併放進 source/。
+  fs.writeFileSync(path.join(OUTPUTS_DIR, `${filename}.drafts.json`), JSON.stringify({
+    savedAt: new Date().toISOString(), runId, metadata, sourceRef: sourceRef || null, drafts,
+  }, null, 2), 'utf8');
 
   fs.mkdirSync(PLATFORM_DIST_DIR, { recursive: true });
   fs.writeFileSync(distPath, markdown, 'utf8');
@@ -785,6 +790,17 @@ app.get('/api/finals/:filename', (req, res) => {
   }
 });
 
+// 2026-10-06：這份 Final.md 審議時保存的三方初稿（2026-10-06 以後跑的審議才有）。
+app.get('/api/finals/:filename/drafts', (req, res) => {
+  try {
+    const p = `${finalPathFor(req.params.filename)}.drafts.json`;
+    if (!fs.existsSync(p)) return res.status(404).json({ error: '這份 Final.md 沒有保存三方初稿（2026-10-06 以前的審議不會保存）' });
+    return res.status(200).json(JSON.parse(fs.readFileSync(p, 'utf8')));
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
 // 2026-10-04：在上傳頁的預覽中修正 Final.md（例如章節判讀錯誤）後存回原檔。
 // 第一次修改前把引擎產出的原始版本保留為 <檔名>.orig，之後的修改都不覆蓋它。
 app.put('/api/finals/:filename', (req, res) => {
@@ -824,6 +840,7 @@ app.post('/api/platform/drafts', (req, res) => {
       finalMarkdown: fs.readFileSync(finalPath, 'utf8'),
       extraSourceFiles: [
         ...(fs.existsSync(adjudicationPath) ? [{ name: path.basename(adjudicationPath), path: adjudicationPath }] : []),
+        ...(fs.existsSync(`${finalPath}.drafts.json`) ? [{ name: path.basename(`${finalPath}.drafts.json`), path: `${finalPath}.drafts.json` }] : []),
         ...uploadSessionFiles(body.uploadSessionId),
       ],
       metadata: body.metadata || {},
@@ -871,6 +888,29 @@ app.get('/api/platform/git-jobs/:jobId', (req, res) => {
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }
+});
+
+// 2026-10-06：從平台永久刪除已上架的教材（教材中心的管理者刪除），連同補充題庫，並排入
+// 自動 PR 上架。誤刪只能重新上傳。
+app.post('/api/platform/materials/:materialId/delete', (req, res) => {
+  if (req.body?.confirm !== true) return res.status(400).json({ error: '缺少刪除確認' });
+  let result;
+  try {
+    result = packageBuilder.deletePublished(req.params.materialId);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+  try {
+    result.gitJobId = gitPublishQueue.enqueueTask(`delete-${result.materialId}`, result.changedPaths,
+      `chore: 從平台刪除 ${result.removed.join('、')}（${result.title}）
+
+由教材中心的管理者刪除，自動推送（ai-engine/council）。
+`);
+    result.gitPublisherAlive = gitPublishQueue.publisherAlive();
+  } catch (error) {
+    result.gitQueueError = error.message;
+  }
+  return res.status(200).json(result);
 });
 
 // 模擬月考：管理者把某校某學期某科的範圍設為全體預設（2026-10-05）。寫入

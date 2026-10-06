@@ -644,12 +644,57 @@ AHS.TeachingMaterialLoader = (function () {
      the same full work). No-ops entirely when neither
      AHS.TeachingMaterialData nor AHS.MaterialRepository has anything —
      the existing Empty State is untouched either way. */
+  /* 2026-10-06 刪除雲端教材：
+     - pendingDeleted：管理者剛從平台刪除、GitHub Pages 尚未部署的教材包（tm_N），先在這個
+       瀏覽器隱藏；部署後平台資料已沒有它，就從清單移除（之後重新上傳拿到相同編號也能顯示）。
+     - 過去「刪除」只刪本機副本、重新載入又出現；反過來，平台資料已移除的教材也一直留在
+       每個人的本機資料裡。載入時一併清掉平台資料已不存在的教材包。 */
+  var DELETED_KEY = "teachingMaterial:pendingDeleted";
+  function pendingDeleted() {
+    var list = AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.loadGlobal === "function"
+      ? AHS.PersistenceAdapter.loadGlobal(DELETED_KEY) : null;
+    return Array.isArray(list) ? list : [];
+  }
+  function savePendingDeleted(list) {
+    if (AHS.PersistenceAdapter && typeof AHS.PersistenceAdapter.saveGlobal === "function") {
+      AHS.PersistenceAdapter.saveGlobal(DELETED_KEY, list.length ? list : null);
+    }
+  }
+  function dropRuntimeMaterial(sourceId, idMap) {
+    if (!idMap[sourceId]) { return false; }
+    if (AHS.MaterialRuntime && typeof AHS.MaterialRuntime.remove === "function") { AHS.MaterialRuntime.remove(idMap[sourceId]); }
+    delete idMap[sourceId];
+    return true;
+  }
+  function markDeleted(materialId) {
+    var list = pendingDeleted();
+    if (list.indexOf(materialId) === -1) { list.push(materialId); savePendingDeleted(list); }
+    var idMap = loadIdMap();
+    if (dropRuntimeMaterial(materialId, idMap)) { saveIdMap(idMap); }
+  }
+
   function load() {
     if (initialized) { return; }
     initialized = true;
     var idMap = loadIdMap();
     var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
-    entries.forEach(function (entry) { loadEntry(entry, idMap); });
+    var present = {};
+    entries.forEach(function (entry) { if (entry && entry.materialId) { present[entry.materialId] = true; } });
+    var deleted = pendingDeleted().filter(function (id) { return present[id]; });
+    savePendingDeleted(deleted);
+    if (entries.length) {
+      var pruned = false;
+      Object.keys(idMap).forEach(function (sourceId) {
+        if (/^tm_\d+$/.test(sourceId) && (!present[sourceId] || deleted.indexOf(sourceId) !== -1)) {
+          pruned = dropRuntimeMaterial(sourceId, idMap) || pruned;
+        }
+      });
+      if (pruned) { saveIdMap(idMap); }
+    }
+    entries.forEach(function (entry) {
+      if (deleted.indexOf(entry.materialId) !== -1) { return; }
+      loadEntry(entry, idMap);
+    });
     loadMaterialRepository(idMap);
   }
 
@@ -669,6 +714,7 @@ AHS.TeachingMaterialLoader = (function () {
   return {
     initialize: load,
     load: load,
+    markDeleted: markDeleted,
     resolveExamMeta: resolveExamMeta,
     runtimeIdFor: runtimeIdFor,
     reset: reset,
