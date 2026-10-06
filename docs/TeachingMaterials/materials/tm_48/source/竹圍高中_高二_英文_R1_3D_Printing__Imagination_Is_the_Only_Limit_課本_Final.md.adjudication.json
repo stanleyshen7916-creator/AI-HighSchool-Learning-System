@@ -1,0 +1,192 @@
+{
+  "adjudicator": "qwen2.5:7b-instruct-q4_K_M",
+  "adjudication_mode": "llm_semantic",
+  "failure_reason": null,
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": 58,
+  "claim_verification_score": 58,
+  "section_coverage": {
+    "total_sections": 13,
+    "sections_with_source_content": 13,
+    "sections_with_claims": 12,
+    "sections_unresolved": 1,
+    "coverage_rate": 100,
+    "uncovered_sections": [],
+    "unresolved_sections": [
+      {
+        "section_id": "⑦作者背景",
+        "section_title": "⑦作者背景",
+        "reason": "三方初稿均未提供作者背景的相关信息，无法形成可验证的陈述。"
+      }
+    ]
+  },
+  "document_completeness": 54,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_英文_R1_3D_Printing__Imagination_Is_the_Only_Limit_課本",
+  "run_id": "c2d97273-8dab-4060-8d6e-010bfc1b083c",
+  "source_provided": true,
+  "source_windowed": false,
+  "claims": [
+    {
+      "claim_id": "c1",
+      "claim": "3D列印技術（3D Printing / Additive Manufacturing）的顛覆性創新及其在人道醫療、環境生態與智慧建築上的賦能價值。",
+      "section": "①核心概念",
+      "sections": [
+        "①核心概念"
+      ],
+      "source_ref": "3D-Printed Limbs: Body Parts That Don't Cost an Arm and a Leg\n\nWhen Alex Pring was born in Florida without most of his right arm, it seemed that his life would never be like that of other children. However, Alex's life changed when engineering student at a university in the US collaborated to give him a hand. They developed a plastic electronic arm equipped with a sensor that would enable Alex to open and close his hand by slightly flexing his biceps muscle. Now, Alex can use both arms to hug his parents. With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible.",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「3D-Printed Limbs: Body Parts That Don't Cost an Arm and a Leg\nWhen Alex Pring was born in Florida without most of his right arm, it seemed that his life would never be like that of other children. However, Alex's life changed when engineering student at a university in the US collaborated to give him a hand. They developed a plastic electronic arm equipped with a sensor that would enable Alex to open and close his hand by slightly flexing his biceps muscle. Now, Alex can use both arms to hug his parents.\nWith 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible.」與 SOURCE 實際內容「3D-Printed Limbs: Body Parts That Don't Cost an Arm and a Leg\n\nWhen Alex Pring was born in Florida without most of his right arm, it seemed that his life would never be like that of other children. However, Alex's life changed when engineering student at a university in the US collaborated to give him a hand. They developed a plastic electronic arm equipped with a sensor that would enable Alex to open and close his hand by slightly flexing his biceps muscle. Now, Alex can use both arms to hug his parents. With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible.」僅有些微字元差異（edit distance=2），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D列印技術能夠製造義肢、人工珊瑚礁和建築物，且這些應用已將過去視為荒謬的夢想化為現實。",
+      "section": "②章節摘要",
+      "sections": [
+        "②章節摘要"
+      ],
+      "source_ref": "Many mighf @., 由 說 |\nTE 2 一 cer lt ridiculous to dream of such machines. But |\n@yith 3D printing, which @nmakes use of con - des |\n| — ———>—>1 computer designs and layers of material to create countless\n計 | useful objects, 1t S \\ready a ",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「Many might @., 由 說 | TE 2 一 cer lt ridiculous to dream of such machines. But @yith 3D printing, which @nmakes use of con - des | — ———>—>1 computer designs and layers of material to create countless useful objects, it S \ready a reality.」與 SOURCE 實際內容「Many mighf @., 由 說 |\nTE 2 一 cer lt ridiculous to dream of such machines. But |\n@yith 3D printing, which @nmakes use of con - des |\n| — ———>—>1 computer designs and layers of material to create countless\n計 | useful objects, 1t S \\ready a 」僅有些微字元差異（edit distance=21），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D打印技術能夠生產人工肢體和人造珊瑚礁，且這些人工制品相對便宜，並且具有質地和結構上的優點。",
+      "section": "③重點詞彙",
+      "sections": [
+        "③重點詞彙"
+      ],
+      "source_ref": "With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible. ... These recfs are designed to closely resemble natural reefs in both texture but also in structure. If 3D-printed reefs can consistently succeed in attracting sea creatures, it appears that they could help save valuable underwater ecosystems.",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible. ... These recfs are designed to closely resemble natural reefs in both texture but also in structure. If 3D-printed reefs can consistently succeed in attracting sea creatures, it appears that they could help save valuable underwater ecosystems.」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D列印技術能夠大幅降低義肢生產成本，使更多人受益。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible.",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述與原文一致，皆強調3D列印技術能大幅降低義肢生產成本，使更多人受益。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "文中使用了雙關語（Puns），如 'cost an arm and a leg' 和 'give him a hand'，以及平行結構 'not only in texture but also in structure'。",
+      "section": "⑤修辭手法",
+      "sections": [
+        "⑤修辭手法"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "文中未直接使用雙關語或平行結構的字面形式，而是通過上下文暗示這些表達方式的存在。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D打印技術在義肢和珊瑚礁復育領域的應用，體現了科技如何改善人類生活與保護環境。",
+      "section": "⑥文化脈絡",
+      "sections": [
+        "⑥文化脈絡"
+      ],
+      "source_ref": "With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible. It took a huge 3D printer just 17 days to print all the parts for 250-square-meter building. It took workers only 2 days to assemble these individual concrete pieces. Building a Brighter Future The 3D-Printed Cities\n\nMan-Made Reefs\n3D under the Sea\nglobal warming\nsea temperatures have risen\nto an alarming degree because_of global warming. Many sea creatures underneath the surface have suffered as a result, especially due to the decreasing number of coral reefs. To reduce costs and speed up construction, a project relying on 3D printing has been launched to create artificial coral reefs in the Caribbean. These reefs are designed to succeed not only in attracting sea life but also in structure. If 3D-printed reefs can consistently succeed in attracting sea life in texture but also in structure, it appears that they could help save valuable underwater ecosystems.",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible. It took a huge 3D printer just 17 days to print all the parts for 250-square-meter building. It took workers only 2 days to assemble these individual concrete pieces. Building a Brighter Future The 3D-Printed Cities\n\nMan-Made Reefs\n3D under the Sea\nglobal warming\nsea temperatures have risen\nto an alarming degree because_of global warming. Many sea creatures underneath the surface have suffered as a result, especially due to the decreasing number of coral reefs. To reduce costs and speed up construction, a project relying on 3D printing has been launched to create artificial coral reefs in the Caribbean. These reefs are designed to succeed not only in attracting sea life but also in structure. If 3D-printed reefs can consistently succeed in attracting sea life in texture but also in structure, it appears that they could help save valuable underwater ecosystems.」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D打印技術在生醫領域應用，如義肢，能以低成本提供給需要的人，改善他們的生活品質。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": "With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible.",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述與原文完全一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D列印技術雖然降低了義肢的成本，但開發中國家的孩童是否能夠同樣取得這些設備仍是一個問題。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "原文未提及開發中國家孩童取得3D列印義肢的情況，無法確認該陳述的真實性。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "be capable of + V-ing 和 be able to + VR 的用法不同，前者搭配 of + V-ing，後者搭配 to + VR。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陈述正确地指出了‘be capable of’与‘be able to’在搭配上的区别，这与原文中的表达一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D打印技術使義肢生產成本相對低廉，並能幫助像Alex這樣的患者獲得更便宜的義肢。",
+      "section": "⑪常考題型",
+      "sections": [
+        "⑪常考題型"
+      ],
+      "source_ref": "With 3D printing technology, artificial limbs can be produced relatively cheaply, which promises to benefit people like Alex in ways that they never dreamed possible.",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述與原文一致",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "enable 后面需接不定式 to，不能省略。例如：enable him to flex his biceps muscle。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "陈述未在源文本中直接出现或明确支持。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "3D打印技術可以生產人工肢體，如塑料電子手臂，並通過肌肉收縮和神經電訊號控制開合手部。",
+      "section": "⑬跨課連結",
+      "sections": [
+        "⑬跨課連結"
+      ],
+      "source_ref": "They developed a plastic electronic arm equipped with a sensor that would enable Alex to open and close his hand by slightly flexing his biceps muscle.",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述與原文相符，均提到3D打印技術生產塑料電子手臂，並通過肌肉收縮控制手部開合。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    }
+  ],
+  "validation": {
+    "sections_complete": true,
+    "source_attribution_valid": true
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "materialId": "tm_48",
+  "coreConcepts": [
+    "3D列印技術（3D Printing / Additive Manufacturing）的顛覆性創新及其在人道醫療、環境生態與智慧建築上的賦能價值。"
+  ],
+  "definitions": [
+    "⚠️尚待人工覆核（INSUFFICIENT_EVIDENCE）：3D打印技術能夠生產人工肢體和人造珊瑚礁，且這些人工制品相對便宜，並且具有質地和結構上的優點。"
+  ],
+  "keywords": [],
+  "keyPoints": [
+    "3D列印技術能夠製造義肢、人工珊瑚礁和建築物，且這些應用已將過去視為荒謬的夢想化為現實。",
+    "3D列印技術能夠大幅降低義肢生產成本，使更多人受益。",
+    "3D打印技術使義肢生產成本相對低廉，並能幫助像Alex這樣的患者獲得更便宜的義肢。",
+    "30 題標準單選練習題（題號 Q1～Q30，包含完整題幹、四選一選項、答案與詳解）",
+    "常考句型整理",
+    "imagine + N/V-ing",
+    "I can't imagine living in a world without modern technology and the internet.",
+    "be capable of + N/V-ing",
+    "The new robotic arm is capable of performing complex surgical procedures with precision.",
+    "S + find/consider/feel/think + it + adj./N + to VR",
+    "Many people consider it important to set goals for their personal and professional lives.",
+    "with + N（憑藉）",
+    "With years of experience, Linda became an expert in the field of environmental science.",
+    "make use of（≒ take advantage of）",
+    "Students should make use of the library's resources to enhance their research projects.",
+    "It seems/appears that + S + V",
+    "It seems that Ben will never finish his project on time, despite his hard work.",
+    "that of / those of（代替前述名詞）",
+    "The mortgage rate at this bank is lower than that of the other bank.",
+    "enable + O + to VR",
+    "This new software enables users to learn complex coding skills quickly.",
+    "非限定 which（指前面整句）",
+    "AI tools can instantly carry out complex tasks, which enables people to work more efficiently.",
+    "in a(n) + adj. + way",
+    "Karen solved the complex problem in an unexpected way, which surprised everyone.",
+    "to a(n) + adj. + degree/extent",
+    "Sea temperatures have risen to an alarming degree because of global warming.",
+    "課本綜合翻譯練習（參考答案）",
+    "Sarah couldn't imagine living abroad before, but she now is capable of adapting to new cultures. With years of experience, she considers it useful to make use of her international background to communicate with global clients.",
+    "註：SOURCE 中文提示為「她認為利用自己的國際背景……很有用處」，故填 considers it useful to make use of。",
+    "單選練習題（Q1～Q30）",
+    "3D打印技術可以生產人工肢體，如塑料電子手臂，並通過肌肉收縮和神經電訊號控制開合手部。"
+  ],
+  "pitfalls": [
+    "be capable of + V-ing 和 be able to + VR 的用法不同，前者搭配 of + V-ing，後者搭配 to + VR。",
+    "⚠️尚待人工覆核（UNSUPPORTED）：enable 后面需接不定式 to，不能省略。例如：enable him to flex his biceps muscle。"
+  ],
+  "reviewSuggestions": [
+    "⚠️尚待人工覆核（INSUFFICIENT_EVIDENCE）：3D列印技術雖然降低了義肢的成本，但開發中國家的孩童是否能夠同樣取得這些設備仍是一個問題。"
+  ]
+}
