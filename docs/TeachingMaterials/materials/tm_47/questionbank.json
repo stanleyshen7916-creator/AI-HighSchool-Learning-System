@@ -1,0 +1,215 @@
+{
+  "materialId": "tm_47",
+  "questions": [
+    {
+      "questionId": "tm_47_q1",
+      "materialId": "tm_47",
+      "questionNumber": "1",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "The new robotic arm is capable of ______ complex surgical procedures with precision.",
+      "options": [
+        "perform",
+        "performing",
+        "performed",
+        "to perform"
+      ],
+      "answer": "performing",
+      "explanation": "be capable of 的 of 為介系詞，後接名詞或動名詞，故選 performing。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q2",
+      "materialId": "tm_47",
+      "questionNumber": "2",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "Many people consider ______ important to set goals for their personal and professional lives.",
+      "options": [
+        "that",
+        "this",
+        "it",
+        "them"
+      ],
+      "answer": "it",
+      "explanation": "句型為 S + consider + it + adj. + to VR，it 是虛受詞，真正的受詞是後面的不定詞片語 to set goals...。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q3",
+      "materialId": "tm_47",
+      "questionNumber": "3",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "The mortgage rate at this bank is lower than ______ of the other bank.",
+      "options": [
+        "it",
+        "those",
+        "one",
+        "that"
+      ],
+      "answer": "that",
+      "explanation": "比較對象是單數名詞 the mortgage rate，用指示代名詞 that 代替。代替複數名詞才用 those。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q4",
+      "materialId": "tm_47",
+      "questionNumber": "4",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "AI tools can instantly carry out complex tasks, ______ enables people to work more efficiently.",
+      "options": [
+        "that",
+        "which",
+        "what",
+        "it"
+      ],
+      "answer": "which",
+      "explanation": "逗號後的非限定用法關係代名詞只能用 which，此處 which 指前面整句。that 不能用於非限定用法，what 不引導形容詞子句，it 會造成兩句無連接詞的錯誤。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q5",
+      "materialId": "tm_47",
+      "questionNumber": "5",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "The sensor in the plastic electronic arm would enable Alex ______ his hand by slightly flexing his biceps muscle.",
+      "options": [
+        "open",
+        "opening",
+        "to open",
+        "opened"
+      ],
+      "answer": "to open",
+      "explanation": "enable + O + to VR 意為「使……能夠……」，故選 to open。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q6",
+      "materialId": "tm_47",
+      "questionNumber": "6",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "In the subtitle \"Body Parts That Don't Cost an Arm and a Leg,\" what does the phrase mean?",
+      "options": [
+        "The body parts are not very expensive.",
+        "The body parts cannot replace real arms and legs.",
+        "The body parts are made without plastic.",
+        "The body parts are only for children."
+      ],
+      "answer": "The body parts are not very expensive.",
+      "explanation": "cost an arm and a leg 意為「非常昂貴」，加上否定即「不貴」。這也呼應課文 artificial limbs can be produced relatively cheaply，同時與義肢主題形成雙關。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q7",
+      "materialId": "tm_47",
+      "questionNumber": "7",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "According to the passage, why have many sea creatures suffered?",
+      "options": [
+        "Because 3D-printed reefs attract too many fish.",
+        "Because the Caribbean project was launched too late.",
+        "Because coral reefs are too rough in texture.",
+        "Because of the decreasing number of coral reefs caused by rising sea temperatures."
+      ],
+      "answer": "Because of the decreasing number of coral reefs caused by rising sea temperatures.",
+      "explanation": "P3 指出全球暖化使海溫上升，海洋生物因此受害，尤其是因為珊瑚礁數量減少（especially due to the decreasing number of coral reefs）。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q8",
+      "materialId": "tm_47",
+      "questionNumber": "8",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "Sea temperatures have risen ______ an alarming degree because of global warming.",
+      "options": [
+        "in",
+        "at",
+        "to",
+        "for"
+      ],
+      "answer": "to",
+      "explanation": "to a(n) + adj. + degree/extent 意為「到……的程度」，故選 to。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q9",
+      "materialId": "tm_47",
+      "questionNumber": "9",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "To help protect sea creatures' habitats, a project ______ on 3D printing has been launched.",
+      "options": [
+        "relies",
+        "relying",
+        "relied",
+        "is relying"
+      ],
+      "answer": "relying",
+      "explanation": "句中已有主要動詞 has been launched，此處需用分詞片語修飾 project。由 which relies on 省略關代並改為現在分詞 relying，表主動。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    },
+    {
+      "questionId": "tm_47_q10",
+      "materialId": "tm_47",
+      "questionNumber": "10",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "According to the notes on the 3D-printed building, how long did it take workers to assemble the concrete pieces?",
+      "options": [
+        "2 days",
+        "17 days",
+        "250 days",
+        "19 days"
+      ],
+      "answer": "2 days",
+      "explanation": "圖像筆記寫明 It took workers only 2 days to assemble these individual concrete pieces。17 天是 3D 印表機列印部件的時間，250 是建築面積（平方公尺）。",
+      "page": null,
+      "section": null,
+      "version": "1",
+      "createdDate": "2026-10-06T05:10:44.156Z"
+    }
+  ]
+}
