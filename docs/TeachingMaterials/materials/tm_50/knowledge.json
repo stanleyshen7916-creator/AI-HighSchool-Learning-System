@@ -1,0 +1,261 @@
+{
+  "materialId": "tm_50",
+  "knowledgePoints": [
+    {
+      "name": "三角函數圖形的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三角方程式的解的個數",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "三角方程式與不等式",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "二倍角公式",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "二倍角公式與三角方程式",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "二倍角公式與極值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "兩直線的夾角",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "半角公式",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "半角公式的應用",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "半角公式與三角方程式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "和角公式",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "和角公式的應用",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "和角與差角公式",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "圖形的平移",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "圖形的平移與伸縮",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "差角公式",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "差角公式的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "度與弧度的換算",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "廣義角三角函數",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "弧度的定義",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "弧度與三角函數值",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "弧度與角度的區別",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "弧度與象限",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "弧長公式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "弧長的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "扇形展開與最短路徑",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "扇形弧長與面積",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "扇形面積",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "扇形面積的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "振幅、週期與相位角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正切函數模型",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正切函數的圖形",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "正切函數的性質",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正切的和角與差角公式",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "正弦函數圖形的伸縮",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "正弦函數圖形的平移",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "正弦函數模型",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "正弦函數的性質",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正餘弦函數的疊合",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "由圖形求正弦函數",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "由圖形求餘弦函數",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "疊合",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "疊合成餘弦函數",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "疊合的應用",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "疊合與三角不等式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "疊合與三角方程式",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "疊合與換元求極值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "疊合與極值",
+      "source": "question",
+      "refCount": 8
+    },
+    {
+      "name": "餘弦函數圖形",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦函數的對稱性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "餘弦函數的性質",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-07T09:38:38.084Z"
+}
