@@ -21,6 +21,15 @@ const EXISTING_IDS = existingMaterialIds(PLATFORM);
 const NEXT_ID = `tm_${Math.max(...EXISTING_IDS.map((id) => Number(id.slice(3)))) + 1}`;
 const parentBank = JSON.parse(fs.readFileSync(path.join(PLATFORM, `docs/TeachingMaterials/materials/${PARENT}/questionbank.json`), 'utf8')).questions;
 const EXISTING_STEM = parentBank[2].question;
+// 2026-10-07: PARENT 已有發布的補充題庫（tm_50 課本原題），既有題目數要把它們算進去。
+const SUP_DIR = path.join(PLATFORM, 'docs/TeachingMaterials/materials');
+const EXISTING_SUPPLEMENT_QUESTIONS = fs.readdirSync(SUP_DIR).filter((id) => {
+  try {
+    const meta = JSON.parse(fs.readFileSync(path.join(SUP_DIR, id, 'metadata.json'), 'utf8'));
+    const rel = JSON.parse(fs.readFileSync(path.join(SUP_DIR, id, 'related.json'), 'utf8'));
+    return meta.source === '補充題庫' && rel.related.length === 1 && rel.related[0].materialId === PARENT;
+  } catch (e) { return false; }
+}).reduce((n, id) => n + JSON.parse(fs.readFileSync(path.join(SUP_DIR, id, 'questionbank.json'), 'utf8')).questions.length, 0);
 
 function existingPackagesHash() {
   const all = hashTree(PLATFORM, 'docs/TeachingMaterials/materials');
@@ -109,7 +118,7 @@ describe('SupplementBuilder', () => {
     const ids = list.map((m) => m.materialId);
     expect(ids).toContain(PARENT);
     expect(ids).not.toContain('tm_6');
-    expect(list.find((m) => m.materialId === PARENT)).toMatchObject({ subject: '數學', questionCount: parentBank.length, supplementCount: 0 });
+    expect(list.find((m) => m.materialId === PARENT)).toMatchObject({ subject: '數學', questionCount: parentBank.length, supplementCount: EXISTING_SUPPLEMENT_QUESTIONS });
   });
 
   test('出題 Prompt：含教材重點、既有題目、難度分布與固定格式', () => {
@@ -194,7 +203,7 @@ describe('補充題庫草稿 → 發布 → 併入原教材題庫', () => {
   });
 
   test('草稿階段：下一批出題已把草稿題目算進既有題目（避免重複出題）', () => {
-    expect(packageBuilder.supplements.authorPrompt({ parentId: PARENT, count: 5 }).existingCount).toBe(parentBank.length + 2);
+    expect(packageBuilder.supplements.authorPrompt({ parentId: PARENT, count: 5 }).existingCount).toBe(parentBank.length + EXISTING_SUPPLEMENT_QUESTIONS + 2);
     const again = packageBuilder.supplements.check({ parentId: PARENT, authorText: AUTHOR, solvers: [] });
     expect(again.questions.find((q) => q.number === 1).status).toBe('duplicate');
   });
@@ -205,7 +214,7 @@ describe('補充題庫草稿 → 發布 → 併入原教材題庫', () => {
     const data = loadPlatformData();
     expect(data.map((e) => e.materialId)).not.toContain(draftId);
     const parent = data.find((e) => e.materialId === PARENT);
-    expect(parent.questions).toHaveLength(parentBank.length + 2);
+    expect(parent.questions).toHaveLength(parentBank.length + EXISTING_SUPPLEMENT_QUESTIONS + 2);
     expect(parent.questions.slice(-2)).toEqual([
       expect.objectContaining({ id: `${draftId}_q1`, materialId: PARENT, supplementId: draftId, knowledgePoint: '弧長公式', difficulty: '易' }),
       expect.objectContaining({ id: `${draftId}_q2`, materialId: PARENT, supplementId: draftId }),
@@ -214,7 +223,7 @@ describe('補充題庫草稿 → 發布 → 併入原教材題庫', () => {
     expect(index.materials.find((m) => m.materialId === draftId)).toMatchObject({ supplementOf: PARENT, lifecycleStage: 'IMPORTED' });
     expect(index.materials.find((m) => m.materialId === PARENT).supplementOf).toBeUndefined();
     expect(packageBuilder.supplements.listParents().map((m) => m.materialId)).not.toContain(draftId);
-    expect(packageBuilder.supplements.listParents().find((m) => m.materialId === PARENT).supplementCount).toBe(2);
+    expect(packageBuilder.supplements.listParents().find((m) => m.materialId === PARENT).supplementCount).toBe(EXISTING_SUPPLEMENT_QUESTIONS + 2);
     expect(() => packageBuilder.supplements.authorPrompt({ parentId: draftId, count: 5 })).toThrow('本身是補充題庫');
     expect(existingPackagesHash()).toEqual(BASELINE);
   }, 180000);
