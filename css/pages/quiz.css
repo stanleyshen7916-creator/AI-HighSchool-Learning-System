@@ -244,6 +244,19 @@
 }
 .qcard-option.is-selected .qcard-option__key { border-color: var(--brand); background-color: var(--brand); color: #ffffff; }
 .qcard-option__text { font-size: 14px; color: var(--text); }
+/* 2026-10-08 題型支援：多選提示、計算／填充題自評（js/ui/QuestionCard.js） */
+.qcard__hint { margin: 0; font-size: 13px; color: var(--text-muted); }
+.qcard-self { display: flex; flex-direction: column; gap: 12px; }
+.qcard-self__hint { margin: 0; font-size: 13px; color: var(--text-muted); }
+.qcard-self .is-hidden { display: none; }
+.qcard-self__reveal { align-self: flex-start; border: 1px solid var(--brand); border-radius: var(--radius-pill); padding: 8px 18px; background-color: var(--brand); color: #ffffff; font: inherit; font-weight: 700; cursor: pointer; }
+.qcard-self__answer { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px 14px; background-color: var(--bg); }
+.qcard-self__answer-label { margin: 0 0 4px; font-size: 12px; font-weight: 800; color: var(--text-muted); }
+.qcard-self__answer-text { margin: 0; font-size: 15px; color: var(--text); white-space: pre-wrap; }
+.qcard-self__grades { display: flex; flex-wrap: wrap; gap: 10px; }
+.qcard-self__grade { flex: 1 1 140px; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px 14px; background-color: var(--card); font: inherit; font-weight: 700; color: var(--text); cursor: pointer; }
+.qcard-self__grade--ok.is-selected { border-color: var(--ok); background-color: var(--ok); color: #ffffff; }
+.qcard-self__grade--wrong.is-selected { border-color: var(--warn); background-color: var(--warn); color: #ffffff; }
 
 .qnav { display: flex; flex-direction: column; gap: 14px; }
 .qnav__progress-label { font-size: 13px; font-weight: 700; color: var(--text-muted); }

@@ -13,6 +13,13 @@ AHS.AnswerRuntime = (function () {
   function saveAnswer(examId, questionId, answerKey) {
     if (!examId || !questionId) { return null; }
     store[examId] = store[examId] || {};
+    /* 2026-10-08: a multi-select question with every option un-ticked
+       saves null — that is "not answered", so no entry is kept (it would
+       otherwise count as answered in answeredCount()/the navigator). */
+    if (answerKey == null) {
+      delete store[examId][questionId];
+      return null;
+    }
     store[examId][questionId] = answerKey;
     return answerKey;
   }

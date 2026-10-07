@@ -68,6 +68,10 @@ AHS.AutoGrader = (function () {
            combined label. "" for ordinary single-material exams. */
         sourceTitle: q.sourceTitle || "",
         sourceChapter: q.sourceChapter || "",
+        /* 2026-10-08 題型支援（js/utils/QuestionKind.js）: multi / self
+           answer modes and the worked answer text of a self-graded question. */
+        answerMode: q.answerMode || "choice",
+        answerText: q.answerText || "",
         yourAnswer: yourAnswer,
         correctAnswer: q.correctAnswer,
         isCorrect: isCorrect

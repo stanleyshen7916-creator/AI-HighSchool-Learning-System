@@ -462,3 +462,6 @@
 }
 .wb-live-stats__value { font-size: 18px; font-weight: 800; color: var(--brand-ink); }
 .wb-live-stats__label { font-size: 11px; color: var(--text-muted); }
+
+/* 2026-10-08: 計算／填充題重新作答（看答案後自評） */
+.wb-detail__review .is-hidden { display: none; }

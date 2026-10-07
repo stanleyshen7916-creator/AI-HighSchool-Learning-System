@@ -90,12 +90,25 @@ AHS.OptionOrder = (function () {
 
   function describe(q, key) {
     if (key == null || key === "") { return "未作答"; }
+    /* 2026-10-08: multi-select ("BCD") and self-graded (SELF_CORRECT /
+       SELF_WRONG) answers — see js/utils/QuestionKind.js. */
+    if (AHS.QuestionKind) {
+      var special = AHS.QuestionKind.describe(q, key, function (k) { return labelFor(q, k); });
+      if (special !== null) { return special; }
+    }
     var found = order(q).filter(function (o) { return o.key === String(key); })[0];
     return found ? found.label + "「" + found.text + "」" : String(key);
+  }
+
+  /* describeCorrect(q) — the 「正確答案」 line: the worked answer text for a
+     self-graded question, otherwise describe(q, q.correctAnswer). */
+  function describeCorrect(q) {
+    if (AHS.QuestionKind && AHS.QuestionKind.kindOf(q) === "self") { return AHS.QuestionKind.answerText(q) || "（見詳解）"; }
+    return describe(q, q && q.correctAnswer);
   }
 
   /* reset() — test helper: rebuild the package index. */
   function reset() { sourceIndex = null; }
 
-  return { order: order, labelFor: labelFor, describe: describe, reset: reset };
+  return { order: order, labelFor: labelFor, describe: describe, describeCorrect: describeCorrect, reset: reset };
 })();

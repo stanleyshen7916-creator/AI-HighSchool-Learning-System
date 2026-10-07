@@ -1457,7 +1457,10 @@ console.log("\n[33] Sprint AI-109 — Learning Runtime Integration（AI-601/602/
   const meta = A1.TeachingMaterialLoader.resolveExamMeta(examId) || {};
   const session = A1.ExamRuntime.startFromExam(examId, meta);
   const qs = A1.QuestionRuntime.getSet(examId);
-  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
+  /* 2026-10-08: the deliberately-wrong question is a single-choice one — the
+     redo below clicks an option (self-graded fill-in questions have none). */
+  const wrongQ = qs.find(q => A1.QuestionKind.isChoice(q)) || qs[0];
+  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === wrongQ.id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
   const finished = A1.ExamRuntime.finish(examId);
   const graded = A1.AutoGrader.grade(finished);
   A1.WrongBookRuntime.sync(graded);
@@ -1508,7 +1511,10 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
   const meta = A1.TeachingMaterialLoader.resolveExamMeta(examId) || {};
   A1.ExamRuntime.startFromExam(examId, meta);
   const qs = A1.QuestionRuntime.getSet(examId);
-  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === qs[0].id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
+  /* 2026-10-08: the deliberately-wrong question is a single-choice one — the
+     redo below clicks an option (self-graded fill-in questions have none). */
+  const wrongQ = qs.find(q => A1.QuestionKind.isChoice(q)) || qs[0];
+  qs.forEach(q => A1.AnswerRuntime.saveAnswer(examId, q.id, q.id === wrongQ.id ? "WRONG_ON_PURPOSE" : q.correctAnswer));
   const finished = A1.ExamRuntime.finish(examId);
   const graded = A1.AutoGrader.grade(finished);
   A1.WrongBookRuntime.sync(graded);

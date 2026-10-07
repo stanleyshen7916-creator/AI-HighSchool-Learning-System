@@ -63,8 +63,11 @@ AHS.QuestionCard = (function () {
     var displayed = AHS.OptionOrder ? AHS.OptionOrder.order(question) : question.options.map(function (o) {
       return { key: o.key, text: o.text, label: o.key };
     });
-    var optionButtons = displayed.map(function (opt) {
-      var isSelected = selectedKey === opt.key;
+    /* 2026-10-08 題型支援（js/utils/QuestionKind.js）。 */
+    var kind = AHS.QuestionKind ? AHS.QuestionKind.kindOf(question) : "choice";
+    var picked = kind === "multi" ? AHS.QuestionKind.multiKeys(selectedKey) : [];
+    var optionButtons = kind === "self" ? [] : displayed.map(function (opt) {
+      var isSelected = kind === "multi" ? picked.indexOf(opt.key) !== -1 : selectedKey === opt.key;
       var btn = el("button", {
         type: "button",
         class: "qcard-option" + (isSelected ? " is-selected" : ""),
@@ -75,10 +78,50 @@ AHS.QuestionCard = (function () {
         el("span", { class: "qcard-option__text", text: opt.text })
       ]);
       btn.addEventListener("click", function () {
-        if (typeof onSelect === "function") { onSelect(opt.key); }
+        if (typeof onSelect !== "function") { return; }
+        if (kind === "multi") {
+          var next = picked.indexOf(opt.key) === -1 ? picked.concat([opt.key])
+            : picked.filter(function (k) { return k !== opt.key; });
+          onSelect(next.length ? AHS.QuestionKind.joinKeys(next) : null);
+          return;
+        }
+        onSelect(opt.key);
       });
       return btn;
     });
+
+    /* 計算／填充題：先自己算，按「看答案」後依答案自評。 */
+    var selfBlock = null;
+    if (kind === "self") {
+      var QK = AHS.QuestionKind;
+      var answered = selectedKey === QK.SELF_CORRECT || selectedKey === QK.SELF_WRONG;
+      var answerBox = el("div", { class: "qcard-self__answer" + (answered ? "" : " is-hidden") }, [
+        el("p", { class: "qcard-self__answer-label", text: "答案" }),
+        el("p", { class: "qcard-self__answer-text", text: QK.answerText(question) })
+      ]);
+      var gradeBtn = function (key, text, mod) {
+        var b = el("button", {
+          type: "button", class: "qcard-self__grade qcard-self__grade--" + mod + (selectedKey === key ? " is-selected" : ""),
+          "aria-pressed": selectedKey === key ? "true" : "false", "data-key": key, text: text
+        });
+        b.addEventListener("click", function () { if (typeof onSelect === "function") { onSelect(key); } });
+        return b;
+      };
+      var grades = el("div", { class: "qcard-self__grades" + (answered ? "" : " is-hidden") }, [
+        gradeBtn(QK.SELF_CORRECT, "我答對了", "ok"),
+        gradeBtn(QK.SELF_WRONG, "我答錯了", "wrong")
+      ]);
+      var revealBtn = el("button", { type: "button", class: "qcard-self__reveal" + (answered ? " is-hidden" : ""), text: "看答案" });
+      revealBtn.addEventListener("click", function () {
+        answerBox.classList.remove("is-hidden");
+        grades.classList.remove("is-hidden");
+        revealBtn.classList.add("is-hidden");
+      });
+      selfBlock = el("div", { class: "qcard-self" }, [
+        el("p", { class: "qcard-self__hint", text: "請先在紙上計算或寫出答案，再按「看答案」，依答案自評。" }),
+        revealBtn, answerBox, grades
+      ]);
+    }
 
     return el("section", { class: "card qcard", "aria-label": "第 " + question.index + " 題" }, [
       el("div", { class: "qcard__head" }, [
@@ -88,9 +131,10 @@ AHS.QuestionCard = (function () {
           text: subj.name
         }),
         el("span", { class: "qcard__index", text: "第 " + question.index + " 題" }),
-        el("span", { class: "qcard__type", text: question.type })
+        el("span", { class: "qcard__type", text: AHS.QuestionKind ? AHS.QuestionKind.typeLabel(question) : question.type })
       ]),
       el("h2", { class: "qcard__text", text: question.text }),
+      kind === "multi" ? el("p", { class: "qcard__hint", text: "多選題：選出所有正確的選項（可複選），全部選對才算答對。" }) : null,
       /* 2026-10-01 出處 (past exam / supplement questions) */
       (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(question) : null),
       metaBits.length ? el("p", { class: "qcard__meta", text: metaBits.join("　") }) : null,
@@ -98,7 +142,7 @@ AHS.QuestionCard = (function () {
          only — a plain, honest empty (no element at all) when this
          question genuinely has no figureSvg, never a placeholder box. */
       question.figureSvg ? el("div", { class: "qcard__figure", html: question.figureSvg }) : null,
-      el("div", { class: "qcard__options" }, optionButtons)
+      selfBlock || el("div", { class: "qcard__options" }, optionButtons)
     ]);
   }
 

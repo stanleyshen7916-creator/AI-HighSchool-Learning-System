@@ -58,3 +58,6 @@
 .wb-detail__btn svg { width: 16px; height: 16px; }
 .wb-detail__btn--primary { border: 0; background-color: var(--brand); color: #ffffff; box-shadow: var(--shadow-btn); }
 .wb-detail__btn--primary:hover { background-color: var(--brand-strong); }
+
+/* 2026-10-08: 計算／填充題重新作答（看答案後自評，WrongBook.buildReviewInteraction） */
+.wb-detail__review .is-hidden { display: none; }

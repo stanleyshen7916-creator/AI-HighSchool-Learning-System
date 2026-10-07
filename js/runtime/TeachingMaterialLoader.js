@@ -306,20 +306,55 @@ AHS.TeachingMaterialLoader = (function () {
     var chapter = (entry.material && entry.material.chapter) || "";
     var compatible = [];
     (entry.questions || []).forEach(function (q) {
-      if (!q || q.type !== "single_choice") { return; }
-      if (!Array.isArray(q.options) || q.options.length < 2) { return; }
-      var answerIndex = q.options.indexOf(q.answer);
-      if (answerIndex === -1 || answerIndex >= OPTION_KEYS.length) { return; }
+      if (!q) { return; }
+      /* 2026-10-08 題型支援（js/utils/QuestionKind.js）：是非題以「正確／錯誤」
+         兩個選項作答；多選題的答案為排序後相連的原 key（"BCD"）；計算／
+         填充題看答案後自評，答案 key 固定為 SELF_CORRECT。答案仍是一個
+         字串，AutoGrader 以下各 Runtime 的比對方式不變。 */
+      var mode = AHS.QuestionKind ? AHS.QuestionKind.modeOfPackage(q) : "choice";
+      var options;
+      var correctAnswer;
+      var answerText = "";
+      if (q.type === "true_false") {
+        if (q.answer !== "正確" && q.answer !== "錯誤") { return; }
+        options = [{ key: "A", text: "正確" }, { key: "B", text: "錯誤" }];
+        correctAnswer = q.answer === "正確" ? "A" : "B";
+      } else if (mode === "self") {
+        if (!AHS.QuestionKind || !String(q.answer || "").trim()) { return; }
+        options = [];
+        correctAnswer = AHS.QuestionKind.SELF_CORRECT;
+        answerText = String(q.answer);
+      } else if (q.type === "single_choice") {
+        if (!Array.isArray(q.options) || q.options.length < 2 || q.options.length > OPTION_KEYS.length) { return; }
+        options = q.options.map(function (text, i) { return { key: OPTION_KEYS[i] || String(i), text: text }; });
+        if (mode === "multi") {
+          var keys = (String(q.answer).match(/\(([A-G])\)/g) || []).map(function (m) { return m.charAt(1); });
+          var allKnown = keys.length > 0 && keys.every(function (k) {
+            return options.some(function (o) { return o.key === k && o.text.indexOf("(" + k + ")") === 0; });
+          });
+          if (!allKnown) { return; }
+          correctAnswer = AHS.QuestionKind.joinKeys(keys);
+        } else {
+          var answerIndex = q.options.indexOf(q.answer);
+          /* an answer recorded as just its letter, e.g. "(C)" */
+          var letter = /^\(([A-F])\)$/.exec(String(q.answer).trim());
+          if (answerIndex === -1 && letter) { answerIndex = OPTION_KEYS.indexOf(letter[1]); }
+          if (answerIndex === -1 || answerIndex >= options.length) { return; }
+          correctAnswer = OPTION_KEYS[answerIndex];
+        }
+      } else {
+        return;
+      }
       compatible.push({
         id: q.id,
         index: compatible.length + 1,
         subject: subjectKey,
         text: q.question,
-        type: q.type,
-        options: q.options.map(function (text, i) {
-          return { key: OPTION_KEYS[i] || String(i), text: text };
-        }),
-        correctAnswer: OPTION_KEYS[answerIndex],
+        type: mode === "multi" ? "multiple_choice" : q.type,
+        answerMode: mode,
+        answerText: answerText,
+        options: options,
+        correctAnswer: correctAnswer,
         /* Sprint AI-121 AI-121-09 fix: Package-track questions already
            carry a real, richer per-question knowledgePoint string (see
            js/data/TeachingMaterialData.js) — prefer it over the

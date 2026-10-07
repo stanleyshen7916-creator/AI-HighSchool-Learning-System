@@ -102,7 +102,24 @@ AHS.WrongBook = (function () {
     if (match && Array.isArray(match.options) && match.options.length) {
       return match.options.map(function (text, i) { return { key: WB_OPTION_KEYS[i] || String(i), text: text }; });
     }
+    /* 2026-10-08: 是非題 are answered with 正確／錯誤 (TeachingMaterialLoader.js). */
+    if (match && match.type === "true_false") { return [{ key: "A", text: "正確" }, { key: "B", text: "錯誤" }]; }
     return [];
+  }
+
+  /* 2026-10-08 題型支援（js/utils/QuestionKind.js）. */
+  function kindOfItem(item) { return AHS.QuestionKind ? AHS.QuestionKind.kindOf(item) : "choice"; }
+  function isCorrectKey(item, key) {
+    if (kindOfItem(item) === "multi") { return AHS.QuestionKind.multiKeys(item.correctAnswer).indexOf(key) !== -1; }
+    return key === item.correctAnswer;
+  }
+  function isPickedKey(item, key) {
+    if (kindOfItem(item) === "multi") { return AHS.QuestionKind.multiKeys(item.yourAnswer).indexOf(key) !== -1; }
+    return key === item.yourAnswer;
+  }
+  function correctLabel(item) {
+    if (kindOfItem(item) === "self") { return AHS.QuestionKind.answerText(item) || "（見詳解）"; }
+    return answerLabel(item, item.correctAnswer);
   }
 
   /* displayOptions(item) — 2026-09-30: resolveOptions() in the fixed
@@ -116,6 +133,13 @@ AHS.WrongBook = (function () {
 
   function answerLabel(item, key) {
     if (!key) { return "未作答"; }
+    if (AHS.QuestionKind) {
+      var special = AHS.QuestionKind.describe(item, key, function (k) {
+        var hit = displayOptions(item).filter(function (o) { return o.key === k; })[0];
+        return hit ? hit.label : k;
+      });
+      if (special !== null) { return special; }
+    }
     var found = displayOptions(item).filter(function (o) { return o.key === key; })[0];
     return found ? found.label : key;
   }
@@ -667,6 +691,27 @@ AHS.WrongBook = (function () {
      wrap it in a Review Session + Result screen — see WS-003). */
   function buildReviewInteraction(item, onSubmit) {
     var selectedKey = null;
+    var kind = kindOfItem(item);
+    /* 2026-10-08: 計算／填充題 — reveal the answer, then self-grade. */
+    if (kind === "self") {
+      var QK = AHS.QuestionKind;
+      var answerBox = el("div", { class: "wb-detail__self-answer is-hidden" }, [
+        el("p", { class: "wb-detail__review-prompt", text: "答案：" + (QK.answerText(item) || "（見詳解）") })
+      ]);
+      var okBtn = el("button", { type: "button", class: "wb-detail__btn wb-detail__btn--primary is-hidden" }, [el("span", { text: "我答對了" })]);
+      var badBtn = el("button", { type: "button", class: "wb-detail__btn is-hidden" }, [el("span", { text: "我答錯了" })]);
+      okBtn.addEventListener("click", function () { onSubmit(true, QK.SELF_CORRECT); });
+      badBtn.addEventListener("click", function () { onSubmit(false, QK.SELF_WRONG); });
+      var revealBtn = el("button", { type: "button", class: "wb-detail__btn wb-detail__btn--primary" }, [el("span", { text: "看答案" })]);
+      revealBtn.addEventListener("click", function () {
+        [answerBox, okBtn, badBtn].forEach(function (n) { n.classList.remove("is-hidden"); });
+        revealBtn.classList.add("is-hidden");
+      });
+      return el("div", { class: "wb-detail__review" }, [
+        el("p", { class: "wb-detail__review-prompt", text: "重新作答：先在紙上算出答案，再按「看答案」自評。" }),
+        revealBtn, answerBox, okBtn, badBtn
+      ]);
+    }
     /* AI-127/AI-152: resolveOptions() falls back to js/data/TeachingMaterialData.js
        for a record whose own options were never captured (see that
        function's own header). */
@@ -676,6 +721,14 @@ AHS.WrongBook = (function () {
         el("span", { class: "wb-detail__option-text", text: o.text })
       ]);
       function pick() {
+        if (kind === "multi") {
+          var keys = AHS.QuestionKind.multiKeys(selectedKey);
+          keys = keys.indexOf(o.key) === -1 ? keys.concat([o.key]) : keys.filter(function (k) { return k !== o.key; });
+          selectedKey = keys.length ? AHS.QuestionKind.joinKeys(keys) : null;
+          li.classList.toggle("is-selected", keys.indexOf(o.key) !== -1);
+          if (selectedKey) { submitBtn.removeAttribute("disabled"); } else { submitBtn.setAttribute("disabled", "disabled"); }
+          return;
+        }
         selectedKey = o.key;
         Array.prototype.forEach.call(list.querySelectorAll(".wb-detail__option"), function (n) {
           n.classList.remove("is-selected");
@@ -698,7 +751,7 @@ AHS.WrongBook = (function () {
       onSubmit(selectedKey === item.correctAnswer, selectedKey);
     });
     return el("div", { class: "wb-detail__review" }, [
-      el("p", { class: "wb-detail__review-prompt", text: "重新作答，選出正確答案：" }),
+      el("p", { class: "wb-detail__review-prompt", text: kind === "multi" ? "重新作答，選出所有正確的選項（可複選）：" : "重新作答，選出正確答案：" }),
       list,
       submitBtn
     ]);
@@ -728,8 +781,8 @@ AHS.WrongBook = (function () {
     var options = itemOptions.length ? el("ol", { class: "wb-detail__options" },
       itemOptions.map(function (o) {
         var mods = "";
-        if (o.key === item.correctAnswer) { mods += " is-correct"; }
-        if (o.key === item.yourAnswer && item.yourAnswer !== item.correctAnswer) { mods += " is-wrong"; }
+        if (isCorrectKey(item, o.key)) { mods += " is-correct"; }
+        if (isPickedKey(item, o.key) && !isCorrectKey(item, o.key)) { mods += " is-wrong"; }
         return el("li", { class: "wb-detail__option" + mods }, [
           el("span", { class: "wb-detail__option-key", text: o.label }),
           el("span", { class: "wb-detail__option-text", text: o.text })
@@ -907,7 +960,7 @@ AHS.WrongBook = (function () {
         ]),
         el("div", { class: "wb-detail__answer" }, [
           el("span", { class: "wb-detail__answer-label", text: "正確答案" }),
-          el("span", { class: "wb-detail__answer-badge is-correct", text: answerLabel(item, item.correctAnswer) })
+          el("span", { class: "wb-detail__answer-badge is-correct", text: correctLabel(item) })
         ])
       ]),
       el("div", { class: "wb-detail__kp" }, [
