@@ -280,7 +280,11 @@ AHS.QuizParts = AHS.QuizParts || {};
   function realExamQuestionsFor(materialId) {
     if (!materialId || !AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function") { return []; }
     var examId = "teaching_material_" + materialId;
-    return AHS.QuestionRuntime.hasExam(examId) ? AHS.QuestionRuntime.getSet(examId) : [];
+    var set = AHS.QuestionRuntime.hasExam(examId) ? AHS.QuestionRuntime.getSet(examId) : [];
+    /* 2026-10-08: Practice Mode answers with a single click, so it keeps
+       single-choice and true/false questions only; multi-select and
+       self-graded questions are taken in the exam view (QuestionCard.js). */
+    return AHS.QuestionKind ? set.filter(function (q) { return AHS.QuestionKind.isChoice(q); }) : set;
   }
 
   function isRealLearningQuestion(record) {

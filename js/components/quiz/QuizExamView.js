@@ -191,7 +191,7 @@ AHS.QuizParts = AHS.QuizParts || {};
                plus the option text, instead of the bare original key. */
             el("span", { text: "你的答案：" + (AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.yourAnswer) : (q.yourAnswer || "未作答")) }),
             el("span", { style: "color:" + toneHex + ";font-weight:700",
-              text: "正確答案：" + (AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer) })
+              text: "正確答案：" + (AHS.OptionOrder ? AHS.OptionOrder.describeCorrect(q) : q.correctAnswer) })
           ]),
           /* 2026-10-01 數學詳解補強: richer worked solution with figures when
              one exists (AHS.ExplanationSupplement), else the original text. */

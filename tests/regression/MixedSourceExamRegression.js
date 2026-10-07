@@ -104,8 +104,8 @@ check("Console errors = 0", consoleErrors.length === 0);
   click(rowFor(cj.doc, "第1章：三角函數").querySelector(".quiz-row__start"));
   const s5 = cj.window.AHS.ExamRuntime.getCurrent();
   const orig7 = cj.window.AHS.QuestionRuntime.getSet(s5.examId);
-  check("tm_7 原始試卷：只抽課本原題（tm_50）", /__original$/.test(s5.examId) && orig7.length >= 6 &&
-    orig7.every((q) => q.questionSource === "ORIGINAL" && /^tm_50_q/.test(q.id)) && orig7.every((q) => q.type === "single_choice"));
+  check("tm_7 原始試卷：只抽課本原題（tm_50）", /__original$/.test(s5.examId) && orig7.length >= 10 &&
+    orig7.every((q) => q.questionSource === "ORIGINAL" && /^tm_50_q/.test(q.id)));
   click([...cj.doc.querySelectorAll(".qexam__mode-btn")][1]);
   const ai7 = cj.window.AHS.QuestionRuntime.getSet(cj.window.AHS.ExamRuntime.getCurrent().examId);
   check("tm_7 補充練習：原本的 AI 題", ai7.length >= 10 && ai7.every((q) => q.questionSource === "AI_GENERATED"));
