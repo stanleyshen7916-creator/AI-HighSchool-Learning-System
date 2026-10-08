@@ -1,0 +1,41 @@
+{
+  "materialId": "tm_52",
+  "knowledgePoints": [
+    {
+      "name": "A 類與 B 類的組合不確定度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "不確定度的 A 類評估",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "不確定度的 B 類評估",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "因次分析",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "物理量乘除後的不確定度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物理量加減後的不確定度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物理量的因次",
+      "source": "question",
+      "refCount": 4
+    }
+  ],
+  "generatedAt": "2026-10-08T14:26:20.936Z"
+}
