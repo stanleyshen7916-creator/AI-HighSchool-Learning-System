@@ -1,0 +1,66 @@
+{
+  "materialId": "tm_53",
+  "knowledgePoints": [
+    {
+      "name": "a-t 圖",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "v-t 圖",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "x-t 圖",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "加速度的意義",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "平均加速度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "平均速度與平均速率",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "平均速率",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "相對速度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "相對運動",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "等加速運動",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "等加速運動公式",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "鉛直上拋運動",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-08T14:26:21.026Z"
+}
