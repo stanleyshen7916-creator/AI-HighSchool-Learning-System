@@ -1,0 +1,25 @@
+// Recompute the calculation items in rows.js.
+const rows = require('./rows.js');
+const ans = (s) => { const r = rows.filter((x) => x[2].includes(s)); if (r.length !== 1) throw new Error(r.length + ' x ' + s); return r[0][4]; };
+const eq = (n, g, w) => { if (g !== w) throw new Error(n + ': ' + g + ' != ' + w); console.log('OK', n, g); };
+const fmt = (x) => String(+x.toFixed(1));
+eq('半衰期 1/8', ans('剩下原來的 1/8'), Math.log2(8) * 1 + ' 萬年');
+eq('碳14 11460', ans('經過 11460 年'), '1/' + 2 ** (11460 / 5730));
+eq('母子 1:3', ans('1：3'), Math.log2(1 + 3) * 7 + ' 億年');
+eq('1 vs 6 等', ans('乙星為 6 等'), Math.round(100 ** ((6 - 1) / 5)) + ' 倍');
+eq('距離 2 倍', ans('甲星距離地球是乙星的 2 倍'), '1/' + 2 ** 2);
+eq('半徑 2 倍', ans('半徑是乙星的 2 倍'), 2 ** 2 + ' 倍');
+eq('溫度 2 倍', ans('表面溫度是乙星的 2 倍'), 2 ** 4 + ' 倍');
+eq('哈伯 3 倍', ans('距離是乙星系的 3 倍'), '3 倍');
+eq('哈伯 V', ans('100 百萬秒差距'), 70 * 100 + ' km/s');
+eq('北極星仰角', ans('北極星的仰角約為多少'), '25 度');
+eq('星跡 2 小時', ans('曝光照片'), 2 * 360 / 24 + ' 度');
+eq('軌跡夾角 25N', ans('軌跡與地平面的夾角約為多少'), 90 - 25 + ' 度');
+eq('30 天後', ans('30 天後'), '晚上 ' + (9 - (30 * 4) / 60) + ' 點');
+eq('每天移動', ans('每天移動多少度'), '約 ' + Math.round(360 / 365) + ' 度');
+const noon = (lat, sub) => 90 - Math.abs(lat - sub);
+eq('夏至 23.5N', ans('夏至正午時'), fmt(noon(23.5, 23.5)) + ' 度');
+eq('冬至 25N', ans('冬至正午時'), fmt(noon(25, -23.5)) + ' 度');
+eq('春分 25N', ans('春分正午時'), fmt(noon(25, 0)) + ' 度');
+eq('極圈 30', ans('北極圈的緯度'), '北緯 ' + (90 - 30) + ' 度');
+console.log('total', rows.length, 'multi', rows.filter((r) => r[1] === 'M').length);
