@@ -6,12 +6,13 @@
    Content honesty note (Round 5 — cross-reviewed and re-verified against the
    original source PDF, superseding the previous version of this file):
    - This record replaces an earlier version built to a fixed "50 questions"
-     target. That earlier version was found, on direct comparison against
-     the original textbook PDF, to contain a transcription error that had
-     independently propagated through multiple AIs' analysis: the ending
-     line reads「頭觸硬壁，蹶然而踣」in the actual textbook, not the more
-     commonly circulated「頭觸硬壁，驀然而踣」. This version uses the
-     corrected text throughout.
+     target.
+   - 2026-10-09 correction (Project Owner approved): an earlier note here
+     claimed the ending line reads「頭觸硬壁，蹶然而踣」and that「驀然而踣」
+     was a common misquote. That was wrong. The textbook photo of p.16 (J:
+     高二第一次月考/國文) prints「頭觸硬壁，驀然而踣」with 注釋57「驀然而踣：
+     猛然跌倒。驀，音ㄇㄛˋ，忽然」. The 蹶 (ㄐㄩㄝˊ) is from 注釋69「顛蹶：
+     跌倒」in the 異史氏曰 paragraph. This version uses 驀然而踣 throughout.
    - Every question below has been checked, question by question, against
      the actual textbook page it cites (see each entry's knowledgePoint /
      explanation for the specific passage). origin: "textbook-verified"
@@ -57,7 +58,7 @@ window.AHS = window.AHS || {};
       { term: "《聊齋志異》", definition: "文言短篇小說集，收錄近五百篇作品，多描寫神仙鬼怪、花妖狐魅、奇人奇事，反映社會現實與人生百態，深富警世寓意，是清代文言小說的經典之作。" },
       { term: "篇旨", definition: "本文藉王生求道失敗的故事，諷刺好逸惡勞的人性，並藉此提醒為政者勿投機取巧；批判阿諛諂媚者，警醒世人勿倚仗虛矯不正的手段，否則終將自食其果。" },
       { term: "敘事視角與結構", definition: "全文以王生的故事為敘述主線，透過王生的視角呈現道士法術之奇異迷人；文末模仿史書論贊的形式，以「異史氏曰」揭示主旨。" },
-      { term: "情節梗概", definition: "王生慕道往勞山拜師→怕吃苦生歸志→目睹道士剪紙為月、邀嫦娥起舞等法術而心生欽羨、歸念遂息→終究不堪辛勞，只求穿牆之術便滿足下山→返家自誇卻頭觸硬壁，蹶然而踣，遭妻子揶揄。" },
+      { term: "情節梗概", definition: "王生慕道往勞山拜師→怕吃苦生歸志→目睹道士剪紙為月、邀嫦娥起舞等法術而心生欽羨、歸念遂息→終究不堪辛勞，只求穿牆之術便滿足下山→返家自誇卻頭觸硬壁，驀然而踣，遭妻子揶揄。" },
       { term: "異史氏曰", definition: "全文結尾模仿《史記》「太史公曰」等史書論贊體例，作者跳出故事直接評論，將王生個人際遇提升為對世態人心（好逸惡勞、投機取巧、逢迎諂媚）的普遍諷刺。" },
       { term: "寫作特色", definition: "情節玄幻離奇，寓意深遠；人物形象栩栩如生，躍然紙上；是一篇富涵諷刺意味的志怪小說佳作。" }
     ],
@@ -68,7 +69,7 @@ window.AHS = window.AHS || {};
         "作者蒲松齡，字留仙，號柳泉，山東淄川人（1640-1715），一生科舉不順，七十二歲始補貢生，代表作《聊齋志異》耗時數十年完成。",
         "《聊齋志異》為文言短篇小說集，收錄近五百篇，多寫神仙狐鬼，藉以反映社會現實與人生哲理，是清代文言小說經典。",
         "本文選自《聊齋志異》，是一篇志怪小說。",
-        "情節主線：王生少慕道、聞勞山多仙人而負笈往遊→隨眾採樵一個多月，手足重繭、不堪其苦而陰有歸志→目睹道士與客人剪紙為月、壺酒往復挹注不減、以箸擲月化嫦娥起舞等法術，心生欽羨，歸念遂息→終究不堪辛勞，只求得穿牆之術便滿足下山→返家自詡遇仙，向妻子演練卻頭觸硬壁，蹶然而踣，遭妻子揶揄。",
+        "情節主線：王生少慕道、聞勞山多仙人而負笈往遊→隨眾採樵一個多月，手足重繭、不堪其苦而陰有歸志→目睹道士與客人剪紙為月、壺酒往復挹注不減、以箸擲月化嫦娥起舞等法術，心生欽羨，歸念遂息→終究不堪辛勞，只求得穿牆之術便滿足下山→返家自詡遇仙，向妻子演練卻頭觸硬壁，驀然而踣，遭妻子揶揄。",
         "文末「異史氏曰」模仿史書論贊體例，作者跳脫故事直接評論，藉「傖父」「吮癰舐痔」等語，諷刺世間投機取巧、逢迎諂媚、只求速成僥倖之人。",
         "全文主旨：批判不肯下苦功、只想尋求速成捷徑的心態，強調學習應紮實踏實，否則終將因自身性格缺陷而「碰壁」，自食其果。",
         "寫作特色：情節玄幻離奇、寓意深遠；人物形象鮮明生動；以第三人稱敘述王生故事為主線，末段轉為作者現身說法的議論。"
@@ -78,7 +79,7 @@ window.AHS = window.AHS || {};
         "異史氏曰：模仿史書「論贊」體例（如《史記》太史公曰），在故事末尾由作者直接發表評論的寫作手法。",
         "潔持：潔身修持，指以虔敬的態度對待法術，道士以此告誡王生法術效驗與心志誠敬與否密切相關。",
         "資斧：旅費、盤纏，文中指道士贈與王生返家的路費。",
-        "蹶然而踣：跌倒、仆倒貌，文末描述王生撞牆後的狼狽情狀（原文用字，非坊間常見的「驀然而踣」）。"
+        "驀然而踣：猛然跌倒（課本注釋57；驀，音ㄇㄛˋ，忽然；踣，音ㄅㄛˊ，跌倒），描述王生撞牆後的狼狽情狀。勿與異史氏曰「顛蹶」（注釋69，蹶音ㄐㄩㄝˊ）混淆。"
       ],
       keywords: ["聊齋志異", "蒲松齡", "志怪小說", "異史氏曰", "王生", "勞山", "穿牆術", "諷刺"]
     },
@@ -137,10 +138,10 @@ window.AHS = window.AHS || {};
           options: [{ key: "A", text: "道士承諾立即傳授穿牆術" }, { key: "B", text: "目睹道士與友人展現剪紙為月、壺酒不竭等奇異法術，心生欽羨" }, { key: "C", text: "師兄弟主動替他分擔採樵工作" }, { key: "D", text: "山路遭大雪封閉，無法下山" }],
           correctAnswer: "B", knowledgePoint: "內容理解：情節因果", difficulty: "中等",
           explanation: "王生當晚見識道士與客人展現的奇異法術（剪紙如鏡黏壁間、壺酒往復挹注竟不少減、以箸擲月化嫦娥起舞）後心生欽羨愛慕，因此打消回家的念頭，這也是後文王生求穿牆術的動機鋪墊。" },
-        { id: ID + "-q14", origin: "textbook-verified", questionForm: "修辭與寫作手法", text: "王生返家後急於向妻子誇示穿牆術，結果「頭觸硬壁，蹶然而踣」，這個結局最主要的作用為何？",
+        { id: ID + "-q14", origin: "textbook-verified", questionForm: "修辭與寫作手法", text: "王生返家後急於向妻子誇示穿牆術，結果「頭觸硬壁，驀然而踣」，這個結局最主要的作用為何？",
           options: [{ key: "A", text: "純粹增添故事的滑稽笑料，別無深意" }, { key: "B", text: "證明道士的法術根本是騙局" }, { key: "C", text: "說明道士刻意加害王生" }, { key: "D", text: "讓原本充滿奇幻色彩的故事收束回現實，形成對王生急躁性格的諷刺與警示" }],
           correctAnswer: "D", knowledgePoint: "修辭與寫作手法：結局寓意", difficulty: "中等",
-          explanation: "撞牆的結局與王生急於炫耀、未能謹守「潔持」教誨的性格直接相關，使故事從奇幻轉回現實，達到諷刺與警世效果；王生確實曾在道士處成功穿牆一次，並非法術本身是騙局，課文也無道士刻意加害的敘述。（原文為「頭觸硬壁，蹶然而踣」，非坊間常見誤傳的「驀然而踣」。）" },
+          explanation: "撞牆的結局與王生急於炫耀、未能謹守「潔持」教誨的性格直接相關，使故事從奇幻轉回現實，達到諷刺與警世效果；王生確實曾在道士處成功穿牆一次，並非法術本身是騙局，課文也無道士刻意加害的敘述。（課本原文為「頭觸硬壁，驀然而踣」，驀然而踣即猛然跌倒，見注釋57。）" },
         { id: ID + "-q15", origin: "textbook-verified", questionForm: "修辭與寫作手法", text: "本課篇末「異史氏曰」的評論，其寫作用意最主要為何？",
           options: [{ key: "A", text: "模仿史書「太史公曰」的論贊體例，藉王生的遭遇批判好逸惡勞、投機取巧之人" }, { key: "B", text: "補充說明道士的真實身分" }, { key: "C", text: "證明穿牆術在現實中確實可行" }, { key: "D", text: "單純為故事作結，無議論意涵" }],
           correctAnswer: "A", knowledgePoint: "修辭與寫作手法", difficulty: "中等",
@@ -155,8 +156,8 @@ window.AHS = window.AHS || {};
       { concept: "誤以為王生完全未學到任何本領", misconception: "以為王生在勞山一無所獲，是徹底失敗。",
         correction: "王生其實學得了穿牆之術（且第一次施展確實成功穿牆），問題在於他求法心切、只求速成單一技藝，且未能謹守道士「潔持」的告誡，最終才會失敗。",
         relatedQuestions: [ID + "-q3", ID + "-q7", ID + "-q14"] },
-      { concept: "誤記結局原文用字", misconception: "把課文原句「頭觸硬壁，蹶然而踣」誤記為坊間更常見的「驀然而踣」。",
-        correction: "對照原始課本可確認正確用字為「蹶然而踣」（蹶，音ㄐㄩㄝˊ，跌倒貌），非「驀然而踣」；此為多方獨立分析時都曾出現過的共同誤記，提醒逐字對照原文的重要性。",
+      { concept: "混淆結局與論贊的用字", misconception: "把課文「頭觸硬壁，驀然而踣」寫成「蹶然而踣」（與異史氏曰的「顛蹶」混在一起）。",
+        correction: "課文第5段原文為「驀然而踣」（注釋57：猛然跌倒；驀，音ㄇㄛˋ）；「蹶」出現在異史氏曰「而顛蹶，不止也」（注釋69：顛蹶，跌倒；蹶，音ㄐㄩㄝˊ）。兩處要分清楚。",
         relatedQuestions: [ID + "-q14"] }
     ],
 
