@@ -1,0 +1,151 @@
+{
+  "materialId": "tm_54",
+  "knowledgePoints": [
+    {
+      "name": "RNA 為最早的遺傳物質",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "內共生假說",
+      "source": "both",
+      "refCount": 6
+    },
+    {
+      "name": "半自主胞器",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "卡爾文的實驗",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "原始地球環境",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "原始大氣的組成",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "原始湯",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "原始細胞的形成",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "呼吸作用的演化",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "實驗中加熱的目的",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "尤里與米勒的實驗",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "巴斯德的貢獻",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "巴斯德鵝頸瓶實驗",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "斯巴蘭贊尼的實驗",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "最初生物的可能起源",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "有機演化的四個階段",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "有機演化的實驗",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "有機演化論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氧氣出現的影響",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "營養方式的演化",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "生命型式的演化",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "生源說與非生源說",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "生源說與非生源說的科學家",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "真核細胞的形成",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "福克斯的實驗",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "約伯勒的乾草浸液實驗",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細胞數目的演化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "雷迪的實驗",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "非生源說的實驗",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T00:33:41.959Z"
+}
