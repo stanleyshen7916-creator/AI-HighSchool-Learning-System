@@ -4,7 +4,9 @@
      - 題目來源是範圍內各教材在 AHS.TeachingMaterialData 的題庫。管理者用上傳頁
        「為既有教材加題」補的題目在產生平台資料時已併入原教材題庫，所以補題就是
        擴充月考題池，不需要另一套資料。
-     - 每次應考重新隨機抽題、打亂題目與選項順序；只收有選項的單選／是非題。
+     - 每次應考重新隨機抽題、打亂題目與選項順序。2026-10-09：只收單選與多選題
+       （不收是非題，Project Owner 決定）；多選題全部選對才算答對。選項本身帶
+       「(A)」等代號的題目（多選題一律如此）不打亂選項，以免代號錯亂。
      - 題組（「（7-8題組）」「第18–20題題組」等標記）整組一起抽、連續排列。
      - 數學：單題最多 30 題，題組另計，含題組總數最多 50 題。其他科：50 題。
        範圍內題目不夠時，整份題庫都出，並如實回報題數。
@@ -54,10 +56,39 @@ AHS.MonthExamRuntime = (function () {
     });
   }
 
-  function usable(q) {
-    var t = String(q.type || q.questionType || "");
-    return (t === "single_choice" || t === "true_false") &&
-      Array.isArray(q.options) && q.options.length >= 2 && q.answer != null && q.answer !== "";
+  var MULTI_ANSWER = /^(\([A-G]\)){2,}$/;
+  var LETTER_ANSWER = /^\(([A-G])\)$/;
+  var SELF_LABEL = /^\s*[(（]\s*[A-Ga-g]\s*[)）]/;
+
+  /* spec(q) -> { multi: bool, correct: [option text...] } or null when the
+     question can't be asked here (not single-choice, or its answer doesn't
+     match its options). */
+  function spec(q) {
+    if (!q || String(q.type || q.questionType || "") !== "single_choice") { return null; }
+    var opts = Array.isArray(q.options) ? q.options : [];
+    if (opts.length < 2) { return null; }
+    var ans = String(q.answer == null ? "" : q.answer).trim();
+    if (!ans) { return null; }
+    var byLetter = function (L) { return opts.filter(function (o) { return String(o).trim().indexOf("(" + L + ")") === 0; })[0]; };
+    if (opts.indexOf(q.answer) !== -1) { return { multi: false, correct: [q.answer] }; }
+    var one = LETTER_ANSWER.exec(ans);
+    if (one) { var o1 = byLetter(one[1]); return o1 ? { multi: false, correct: [o1] } : null; }
+    if (MULTI_ANSWER.test(ans)) {
+      var picked = (ans.match(/\(([A-G])\)/g) || []).map(function (m) { return byLetter(m.charAt(1)); });
+      return picked.every(Boolean) ? { multi: true, correct: picked } : null;
+    }
+    return null;
+  }
+
+  function usable(q) { return !!spec(q); }
+
+  function selfLabeled(q) {
+    return (q.options || []).some(function (o) { return SELF_LABEL.test(String(o)); });
+  }
+
+  function sameSet(a, b) {
+    if (a.length !== b.length) { return false; }
+    return a.every(function (x) { return b.indexOf(x) !== -1; });
   }
 
   function materialLabel(e) {
@@ -208,7 +239,8 @@ AHS.MonthExamRuntime = (function () {
       durationMs: DURATION_MS,
       poolSize: paper.poolSize,
       items: paper.questions.map(function (q) {
-        return { qid: q.id, order: shuffle(q.options.map(function (_, i) { return i; }), rng) };
+        var idx = q.options.map(function (_, i) { return i; });
+        return { qid: q.id, multi: spec(q).multi, order: selfLabeled(q) ? idx : shuffle(idx, rng) };
       }),
       answers: {}
     };
@@ -222,10 +254,19 @@ AHS.MonthExamRuntime = (function () {
     return Math.max(0, session.startedAt + session.durationMs - (now || Date.now()));
   }
 
+  /* 單選：存選項文字。多選：切換該選項，存選項文字陣列；全部取消時視為未作答。 */
   function answer(qid, optionText, now) {
     var s = active();
     if (!s || remainingMs(s, now) <= 0) { return false; } /* 時間到不得再作答 */
-    s.answers[qid] = optionText;
+    var item = s.items.filter(function (it) { return it.qid === qid; })[0];
+    if (item && item.multi) {
+      var cur = Array.isArray(s.answers[qid]) ? s.answers[qid].slice() : [];
+      var at = cur.indexOf(optionText);
+      if (at === -1) { cur.push(optionText); } else { cur.splice(at, 1); }
+      if (cur.length) { s.answers[qid] = cur; } else { delete s.answers[qid]; }
+    } else {
+      s.answers[qid] = optionText;
+    }
     save(KEY_ACTIVE, s);
     return true;
   }
@@ -238,10 +279,19 @@ AHS.MonthExamRuntime = (function () {
     var rows = s.items.map(function (it) {
       var q = findQuestion(it.qid) || { id: it.qid, question: "（題目已不存在）", options: [], answer: null };
       var given = Object.prototype.hasOwnProperty.call(s.answers, it.qid) ? s.answers[it.qid] : null;
+      var sp = spec(q) || { multi: false, correct: [] };
+      var givenList = given == null ? [] : (Array.isArray(given) ? given : [given]);
+      var letters = function (list) {
+        return list.map(function (o) { return SELF_LABEL.test(String(o)) ? String(o).trim().charAt(1) : ""; })
+          .filter(Boolean).sort().map(function (L) { return "(" + L + ")"; }).join("");
+      };
       return {
         qid: it.qid, materialId: q.materialId, question: q.question,
         options: it.order.map(function (i) { return q.options[i]; }).filter(function (o) { return o != null; }),
-        answer: q.answer, given: given, correct: given != null && given === q.answer,
+        multi: sp.multi, correctOptions: sp.correct, givenOptions: givenList,
+        answer: sp.multi ? letters(sp.correct) : (sp.correct[0] != null ? sp.correct[0] : q.answer),
+        given: given == null ? null : (sp.multi ? letters(givenList) : given),
+        correct: givenList.length > 0 && sameSet(givenList, sp.correct),
         explanation: q.explanation || "", knowledgePoint: q.knowledgePoint || ""
       };
     });
@@ -271,7 +321,9 @@ AHS.MonthExamRuntime = (function () {
         wrong: wrong.map(function (r) {
           return {
             questionId: r.qid, knowledgePoint: r.knowledgePoint, text: r.question, options: r.options,
-            yourAnswer: r.given == null ? "（未作答）" : r.given, correctAnswer: r.answer,
+            /* 多選題存成知識弱點通用的代號字串（"BD"），重做時才能正確比對。 */
+            yourAnswer: r.given == null ? "（未作答）" : (r.multi ? r.given.replace(/[()]/g, "") : r.given),
+            correctAnswer: r.multi ? r.answer.replace(/[()]/g, "") : r.answer,
             explanation: r.explanation, materialId: r.materialId
           };
         })
@@ -295,6 +347,8 @@ AHS.MonthExamRuntime = (function () {
 
   return {
     DURATION_MS: DURATION_MS,
+    usable: usable,
+    selfLabeled: selfLabeled,
     listSubjects: listSubjects,
     getRange: getRange,
     setRange: setRange,

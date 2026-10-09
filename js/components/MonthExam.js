@@ -151,20 +151,25 @@ AHS.MonthExam = (function () {
       var questions = session.items.map(function (it, idx) {
         var q = RT().findQuestion(it.qid);
         if (!q) { return null; }
+        /* 2026-10-09: 多選題可複選；選項自帶 (A) 代號時不再加字母前綴。 */
+        var labeled = RT().selfLabeled(q);
+        var picked = function (opt) {
+          var a = RT().active() ? RT().active().answers[it.qid] : session.answers[it.qid];
+          return Array.isArray(a) ? a.indexOf(opt) !== -1 : a === opt;
+        };
         var btns = it.order.map(function (oi) {
           var opt = q.options[oi];
-          var b = el("button", { type: "button", class: "mx-opt", text: String.fromCharCode(65 + it.order.indexOf(oi)) + ". " + opt });
-          if (session.answers[it.qid] === opt) { b.classList.add("is-picked"); }
+          var b = el("button", { type: "button", class: "mx-opt", text: labeled ? opt : String.fromCharCode(65 + it.order.indexOf(oi)) + ". " + opt });
+          if (picked(opt)) { b.classList.add("is-picked"); }
           b.addEventListener("click", function () {
             if (!RT().answer(it.qid, opt)) { finish(true); return; }
-            btns.forEach(function (x) { x.classList.remove("is-picked"); });
-            b.classList.add("is-picked");
+            btns.forEach(function (x, k) { x.classList.toggle("is-picked", picked(q.options[it.order[k]])); });
             updateProgress();
           });
           return b;
         });
         return el("li", { class: "mx-q" }, [
-          el("p", { class: "mx-q__text", text: (idx + 1) + ". " + q.question }),
+          el("p", { class: "mx-q__text", text: (idx + 1) + ". " + (it.multi ? "【多選題，全部選對才得分】" : "") + q.question }),
           el("div", { class: "mx-opts" }, btns)
         ]);
       });
@@ -212,9 +217,13 @@ AHS.MonthExam = (function () {
           return el("li", { class: "mx-q " + (row.correct ? "is-correct" : "is-wrong"), value: String(i + 1) }, [
             el("p", { class: "mx-q__text", text: (i + 1) + ". " + row.question }),
             el("ul", { class: "mx-ans" }, row.options.map(function (o, k) {
-              var cls = o === row.answer ? "is-answer" : (o === row.given ? "is-given" : "");
-              return el("li", { class: cls, text: String.fromCharCode(65 + k) + ". " + o + (o === row.answer ? "　✔ 正確答案" : "") + (o === row.given && o !== row.answer ? "　✘ 你的答案" : "") });
+              var isAns = row.correctOptions ? row.correctOptions.indexOf(o) !== -1 : o === row.answer;
+              var isGiven = row.givenOptions ? row.givenOptions.indexOf(o) !== -1 : o === row.given;
+              var cls = isAns ? "is-answer" : (isGiven ? "is-given" : "");
+              var label = row.correctOptions && RT().selfLabeled({ options: row.options }) ? "" : String.fromCharCode(65 + k) + ". ";
+              return el("li", { class: cls, text: label + o + (isAns ? "　✔ 正確答案" : "") + (isGiven && !isAns ? "　✘ 你的答案" : "") + (isAns && isGiven && row.multi ? "（你有選）" : "") });
             })),
+            row.multi && row.given != null && !row.correct ? el("p", { class: "mx-given", text: "你的答案：" + row.given + "　正確答案：" + row.answer }) : null,
             row.given == null ? el("p", { class: "mx-given", text: "未作答（視為答錯）" }) : null,
             !row.correct && row.explanation ? el("div", { class: "mx-expl" }, [el("strong", { text: "詳解　" }), el("span", { text: row.explanation })]) : null
           ]);

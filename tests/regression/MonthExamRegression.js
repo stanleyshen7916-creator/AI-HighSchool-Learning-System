@@ -82,5 +82,33 @@ check("分數以題數平分（1/50 = 2 分）", r.score === 2);
 check("交卷後清除進行中的考卷並留下紀錄", RT.active() === null && RT.history().length === 1);
 check("錯題（含未作答）加入知識弱點", synced.length === 1 && synced[0].wrong.length === 49 && synced[0].wrong[0].yourAnswer === "（未作答）");
 
+console.log("\n[4] 2026-10-09 只收單選與多選題（不收是非題），多選全對才得分");
+{
+  const tf = { id: "tm_94_q1", type: "true_false", question: "TF", options: ["正確", "錯誤"], answer: "正確" };
+  const multi = { id: "tm_94_q2", type: "single_choice", question: "【多選題】M", options: ["(A) a", "(B) b", "(C) c", "(D) d"], answer: "(B)(D)" };
+  const letter = { id: "tm_94_q3", type: "single_choice", question: "L", options: ["(A) a", "(B) b", "(C) c"], answer: "(C)" };
+  const broken = { id: "tm_94_q4", type: "single_choice", question: "X", options: ["(A) a", "(B) b"], answer: "(B)(E)" };
+  check("不收是非題", RT.usable(tf) === false);
+  check("收多選題、答案只寫代號的單選題", RT.usable(multi) && RT.usable(letter));
+  check("答案對不上選項的題目不收", RT.usable(broken) === false);
+  AHS.TeachingMaterialData.push({ materialId: "tm_94", material: { subject: "生物", school: "zwsh", semester: "g2s1", chapter: "x" }, questions: [tf, multi, letter, broken] });
+  const t1 = 9000000;
+  const s2 = RT.start("生物", ["tm_94"], { now: t1 });
+  check("試卷只有 2 題（多選＋單選），選項自帶代號不打亂", s2.items.length === 2 &&
+    s2.items.every((it) => it.order.join() === RT.findQuestion(it.qid).options.map((_, i) => i).join()));
+  RT.answer("tm_94_q2", "(B) b", t1 + 1); RT.answer("tm_94_q2", "(A) a", t1 + 2); RT.answer("tm_94_q2", "(A) a", t1 + 3); RT.answer("tm_94_q2", "(D) d", t1 + 4);
+  check("多選題可複選、再點一次取消", JSON.stringify(RT.active().answers.tm_94_q2) === JSON.stringify(["(B) b", "(D) d"]));
+  RT.answer("tm_94_q3", "(C) c", t1 + 5);
+  const r2 = RT.submit({ now: t1 + 10 });
+  const rm = r2.rows.find((x) => x.qid === "tm_94_q2");
+  check("多選全對得分；答案以 (B)(D) 呈現", r2.correct === 2 && rm.correct && rm.answer === "(B)(D)" && rm.given === "(B)(D)");
+  RT.start("生物", ["tm_94"], { now: t1 + 100 });
+  RT.answer("tm_94_q2", "(B) b", t1 + 101);
+  const r3 = RT.submit({ now: t1 + 110 });
+  const wm = r3.rows.find((x) => x.qid === "tm_94_q2");
+  check("少選一個算錯；知識弱點紀錄代號 B／BD（重做時可比對）", !wm.correct && wm.given === "(B)" && wm.answer === "(B)(D)" &&
+    synced[synced.length - 1].wrong.some((w) => w.questionId === "tm_94_q2" && w.correctAnswer === "BD" && w.yourAnswer === "B"));
+}
+
 console.log("\nMonthExamRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);
