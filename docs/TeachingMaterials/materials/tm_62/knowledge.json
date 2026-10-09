@@ -1,0 +1,256 @@
+{
+  "materialId": "tm_62",
+  "knowledgePoints": [
+    {
+      "name": "作者：杜甫",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "作者：蒲松齡",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "作者：賈德．戴蒙",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "作者：黃庭堅",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "內容理解",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "出處：聊齋志異",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "字詞綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：乃爾寂飲",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：何當",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：作苦",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：光鑑毫芒",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：勝（一字多義）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：勿誤樵蘇",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：叩而與語",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：吮癰舐痔",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：喜疢毒而畏藥石",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：墳起",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：廣寒",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：忻慕",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：揶揄",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：杳",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：烈",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：然（通同字）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：環聽奔走",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：稽首",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：競飲先釂",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：素髮垂領",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：紿",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：自詡",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：資斧",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：賚",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：逡巡",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：重繭",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：陰",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：霓裳舞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：餞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "寫作手法：比喻",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "延伸：人類大歷史三部曲",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "情節理解：壺酒不減",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "情節理解：法術",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "格律：對仗",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "格律：押韻",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "用典",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "章法：重複",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "篇旨",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "綜合比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "論證手法：正反例證",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "題解：勞山",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "題解：異史氏曰",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "體裁辨識",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T08:09:08.042Z"
+}
