@@ -65,6 +65,19 @@ function Publish-Request($req, [string]$id) {
   # are not on origin/main (a previous failed request) - they would ride along
   # into this PR. Fast-forward if behind (fails safely on conflicting edits).
   $r = Invoke-Git @('fetch', 'origin', 'main'); $log.Add("git fetch: $($r.out)")
+  # 2026-10-09: a new material (tm_N) must not take an id already used on GitHub
+  # main by a different material (the engine numbered from a stale checkout once).
+  # Same metadata as GitHub = an earlier run of this request already landed.
+  if ($req.materialId -match '^tm_\d+$') {
+    $meta = "docs/TeachingMaterials/materials/$($req.materialId)/metadata.json"
+    $exists = Invoke-Git @('cat-file', '-e', "origin/main:$meta")
+    if ($exists.code -eq 0) {
+      $same = Invoke-Git @('diff', '--quiet', 'origin/main', '--', $meta)
+      if ($same.code -ne 0) {
+        return (& $fail "$($req.materialId) is already used on GitHub by a different material; not pushed. Delete the draft and publish it again from the upload page to get a new number." $null)
+      }
+    }
+  }
   $ahead = (Invoke-Git @('rev-list', '--count', 'origin/main..HEAD')).out
   if ($ahead -ne '0') {
     return (& $fail "local main has $ahead commit(s) that are not on GitHub (an earlier publish did not finish); not pushed. Resolve them first." $null)

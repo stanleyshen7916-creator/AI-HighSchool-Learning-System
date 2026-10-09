@@ -830,7 +830,59 @@ function uploadSessionFiles(sessionId) {
 
 // 建立教材包「草稿」：只會新增一個全新的 tm_N 資料夾（manifest.status = draft，
 // 學生端看不到），絕不覆寫或修改任何既有教材包。
-app.post('/api/platform/drafts', (req, res) => {
+// 2026-10-09：GitHub main 上實際已上線的教材（index.json）。用途：
+//  1. 新教材編號一併排除雲端已用的編號（PackageBuilder.setRemoteIds）。
+//  2. 上傳紀錄顯示每份教材是否真的上線，而不是只顯示「已發布」。
+// 抓不到（離線）時沿用上次結果；從未成功過則 materials 為 null，上傳頁顯示「無法確認」。
+const GITHUB_REPO = process.env.GITHUB_REPO || 'stanleyshen7916-creator/AI-HighSchool-Learning-System';
+const remoteIndex = { at: 0, materials: null, error: null };
+// 測試（jest）與 REMOTE_INDEX=off 時不連網。
+const REMOTE_INDEX_ENABLED = !process.env.JEST_WORKER_ID && process.env.REMOTE_INDEX !== 'off';
+async function refreshRemoteIndex(maxAgeMs) {
+  if (!REMOTE_INDEX_ENABLED) return remoteIndex;
+  if (remoteIndex.materials && Date.now() - remoteIndex.at < maxAgeMs) return remoteIndex;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO}/main/docs/TeachingMaterials/index.json?t=${Date.now()}`,
+      { signal: controller.signal, headers: { 'Cache-Control': 'no-cache' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    remoteIndex.materials = Array.isArray(json.materials) ? json.materials : [];
+    remoteIndex.at = Date.now();
+    remoteIndex.error = null;
+    packageBuilder.setRemoteIds(remoteIndex.materials.map((m) => m.materialId));
+  } catch (error) {
+    remoteIndex.error = error.message;
+  } finally {
+    clearTimeout(timer);
+  }
+  return remoteIndex;
+}
+refreshRemoteIndex(0);
+setInterval(() => refreshRemoteIndex(0), 10 * 60 * 1000).unref();
+
+// 上傳紀錄每一列的上線狀態：online 已上線／conflict 編號被雲端其他教材使用／pushing 送上
+// GitHub 中／stalled 推送程式沒有在執行／failed 推送失敗／offline 未上線／unknown 無法確認。
+function liveStatus(draft) {
+  if (draft.status !== 'published') return null;
+  const job = gitPublishQueue.latestFor(draft.materialId);
+  if (job && job.status === 'pending') {
+    return { state: job.publisherAlive === false && !job.progress ? 'stalled' : 'pushing', progress: job.progress || null };
+  }
+  if (!remoteIndex.materials) return { state: 'unknown', error: remoteIndex.error };
+  const remote = remoteIndex.materials.find((m) => m.materialId === draft.materialId);
+  const local = packageBuilder.materialMetadata(draft.materialId);
+  if (remote && local && (remote.school !== local.school || remote.subject !== local.subject || remote.chapter !== local.chapter)) {
+    return { state: 'conflict', remote: { school: remote.school, subject: remote.subject, chapter: remote.chapter } };
+  }
+  if (remote) return { state: 'online' };
+  if (job && job.status === 'failed') return { state: 'failed', error: job.error || null, pr: job.pr || null };
+  return { state: 'offline' };
+}
+
+app.post('/api/platform/drafts', async (req, res) => {
+  await refreshRemoteIndex(60 * 1000);
   const body = req.body || {};
   try {
     const finalPath = finalPathFor(body.finalFilename);
@@ -851,8 +903,12 @@ app.post('/api/platform/drafts', (req, res) => {
   }
 });
 
-app.get('/api/platform/drafts', (req, res) => {
-  res.status(200).json({ drafts: packageBuilder.listDrafts() });
+app.get('/api/platform/drafts', async (req, res) => {
+  await refreshRemoteIndex(60 * 1000);
+  res.status(200).json({
+    drafts: packageBuilder.listDrafts().map((d) => Object.assign({}, d, { live: liveStatus(d) })),
+    publisherAlive: gitPublishQueue.publisherAlive(),
+  });
 });
 
 app.get('/api/platform/drafts/:materialId', (req, res) => {
@@ -976,7 +1032,8 @@ app.get('/api/platform/supplements/parents', (req, res) => {
 app.post('/api/platform/supplements/author-prompt', supplementRoute((b) => packageBuilder.supplements.authorPrompt(b)));
 app.post('/api/platform/supplements/solver-prompt', supplementRoute((b) => packageBuilder.supplements.solverPrompt(b)));
 app.post('/api/platform/supplements/check', supplementRoute((b) => packageBuilder.supplements.check(b)));
-app.post('/api/platform/supplements/drafts', (req, res) => {
+app.post('/api/platform/supplements/drafts', async (req, res) => {
+  await refreshRemoteIndex(60 * 1000);
   try {
     return res.status(201).json(packageBuilder.createSupplementDraft(req.body || {}));
   } catch (error) {
