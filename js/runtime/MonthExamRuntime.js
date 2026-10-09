@@ -10,6 +10,10 @@
      - 題組（「（7-8題組）」「第18–20題題組」等標記）整組一起抽、連續排列。
      - 數學：單題最多 30 題，題組另計，含題組總數最多 50 題。其他科：50 題。
        範圍內題目不夠時，整份題庫都出，並如實回報題數。
+     - 2026-10-09：也收舊版教材庫（AHS.MaterialRepository，data/materials/*.js，
+       國文第一～三課、英文第一課等）的單選題。這些紀錄不在 TeachingMaterialData
+       裡，在此轉成相同格式（選項 {key,text} 轉成文字、正確答案轉成選項文字），
+       materialId 以「repo:」開頭。原始紀錄不修改。
    計時：開始作答即記錄開始時間，以開始時間為準（重新整理或離開頁面不暫停），
    時間到自動交卷，未作答視為答錯。作答與進行中的考卷存在 PersistenceAdapter
    （依 Workspace 分開），重新整理後可接續。 */
@@ -43,9 +47,38 @@ AHS.MonthExamRuntime = (function () {
     return ws || null;
   }
 
+  /* 舊版教材庫紀錄 -> 與 TeachingMaterialData 相同的 { materialId, material, questions }。 */
+  var repoCache = null;
+  function repoEntries() {
+    var R = AHS.MaterialRepository;
+    if (!R || typeof R.list !== "function") { return []; }
+    var records = R.list();
+    if (repoCache && repoCache.n === records.length) { return repoCache.entries; }
+    var out = records.map(function (r) {
+      var m = r.metadata || {};
+      var subj = AHS.Subjects && AHS.Subjects[m.subject] ? AHS.Subjects[m.subject].name : m.subject;
+      var questions = ((r.questionBank || {}).singleChoice || []).map(function (q) {
+        var opts = (q.options || []).map(function (o) { return o && typeof o === "object" ? String(o.text) : String(o); });
+        var hit = (q.options || []).filter(function (o) { return o && o.key === q.correctAnswer; })[0];
+        return { id: q.id, type: "single_choice", question: q.text, options: opts,
+          answer: hit ? String(hit.text) : null, explanation: q.explanation || "", knowledgePoint: q.knowledgePoint || "" };
+      }).filter(function (q) { return q.id && q.answer != null; });
+      return { materialId: "repo:" + r.id,
+        material: { subject: subj, school: m.workspaceSchool, semester: m.workspaceSemester,
+          chapter: [m.chapter, m.unit].filter(Boolean).join(" ") || r.id },
+        questions: questions };
+    }).filter(function (e) { return e.material.subject && e.questions.length; });
+    repoCache = { n: records.length, entries: out };
+    return out;
+  }
+
+  function allEntries() {
+    return (AHS.TeachingMaterialData || []).concat(repoEntries());
+  }
+
   /* 目前 Workspace（學校＋學期）可用的教材，依科目分組。 */
   function entries() {
-    var data = (AHS.TeachingMaterialData || []).filter(function (e) { return e && e.material; });
+    var data = allEntries().filter(function (e) { return e && e.material; });
     var ws = workspace();
     if (!ws) { return data; }
     return data.filter(function (e) {
@@ -96,6 +129,12 @@ AHS.MonthExamRuntime = (function () {
     return m.chapter || m.title || e.materialId;
   }
 
+  /* tm_N 依數字排序，舊版教材庫（repo:）排在後面。 */
+  function orderOf(id) {
+    var n = /^tm_(\d+)$/.exec(id);
+    return n ? Number(n[1]) : 1e9;
+  }
+
   function listSubjects() {
     var bySubject = {};
     entries().forEach(function (e) {
@@ -109,7 +148,7 @@ AHS.MonthExamRuntime = (function () {
       });
     });
     return Object.keys(bySubject).map(function (s) {
-      return { subject: s, materials: bySubject[s].sort(function (a, b) { return Number(a.materialId.slice(3)) - Number(b.materialId.slice(3)); }) };
+      return { subject: s, materials: bySubject[s].sort(function (a, b) { return orderOf(a.materialId) - orderOf(b.materialId) || (a.materialId < b.materialId ? -1 : 1); }) };
     });
   }
 
@@ -216,7 +255,7 @@ AHS.MonthExamRuntime = (function () {
   }
 
   function findQuestion(qid) {
-    var all = AHS.TeachingMaterialData || [];
+    var all = allEntries();
     for (var i = 0; i < all.length; i += 1) {
       var qs = all[i].questions || [];
       for (var j = 0; j < qs.length; j += 1) {

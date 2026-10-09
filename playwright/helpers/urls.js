@@ -18,7 +18,8 @@ const PAGES = {
   review: "review.html",
   learning: "learning.html",
   tutor: "tutor.html",
-  dashboard: "dashboard.html"
+  dashboard: "dashboard.html",
+  monthexam: "monthexam.html"
 };
 
 function fileUrl(pageKeyOrFile) {

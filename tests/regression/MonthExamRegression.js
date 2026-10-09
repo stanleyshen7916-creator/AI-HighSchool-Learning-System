@@ -110,5 +110,26 @@ console.log("\n[4] 2026-10-09 只收單選與多選題（不收是非題），�
     synced[synced.length - 1].wrong.some((w) => w.questionId === "tm_94_q2" && w.correctAnswer === "BD" && w.yourAnswer === "B"));
 }
 
+console.log("\n[5] 2026-10-09 也收舊版教材庫（國文、英文）的單選題");
+{
+  AHS.Subjects = { chinese: { name: "國文" } };
+  const recs = [{ id: "chinese-l1", metadata: { subject: "chinese", workspaceSchool: "zwsh", workspaceSemester: "g2s1", chapter: "第一課", unit: "勞山道士" },
+    questionBank: { singleChoice: [
+      { id: "chinese-l1-q1", text: "C1", options: [{ key: "A", text: "甲" }, { key: "B", text: "乙" }], correctAnswer: "B", explanation: "e" },
+      { id: "chinese-l1-q2", text: "C2", options: [{ key: "A", text: "甲" }], correctAnswer: "Z" }] } },
+    { id: "other-school", metadata: { subject: "chinese", workspaceSchool: "cjsh", workspaceSemester: "g2s1", chapter: "x" },
+      questionBank: { singleChoice: [{ id: "o1", text: "O", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A" }] } }];
+  AHS.MaterialRepository = { list: () => JSON.parse(JSON.stringify(recs)) };
+  const zh = RT.listSubjects().filter((x) => x.subject === "國文")[0];
+  check("國文出現在科目清單（只算目前學校、答案對得上的題目）", zh && zh.materials.length === 1 && zh.materials[0].materialId === "repo:chinese-l1" && zh.materials[0].count === 1);
+  const t2 = 20000000;
+  const s3 = RT.start("國文", ["repo:chinese-l1"], { now: t2 });
+  const fq = RT.findQuestion("chinese-l1-q1");
+  check("選項轉成文字、正確答案轉成選項文字", s3.items.length === 1 && fq && fq.answer === "乙" && fq.options.join() === "甲,乙");
+  RT.answer("chinese-l1-q1", "乙", t2 + 1);
+  const r4 = RT.submit({ now: t2 + 2 });
+  check("可作答與批改", r4.correct === 1 && r4.total === 1);
+}
+
 console.log("\nMonthExamRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);
