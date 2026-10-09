@@ -823,10 +823,27 @@ AHS.CouncilUpload = (function () {
       client.listDrafts().then(function (r) {
         var list = (r.data && r.data.drafts) || [];
         if (!list.length) { AHS.UI.mount(draftsList, el("p", { class: "upl-hint", text: "目前沒有由教材上傳建立的教材包。" })); return; }
-        AHS.UI.mount(draftsList, el("ul", { class: "upl-list" }, list.map(function (d) {
+        /* 2026-10-09：「已發布」只代表本機匯入完成，還要送上 GitHub 才會上線。
+           每列顯示實際上線狀態（引擎比對 GitHub main 的 index.json）。 */
+        var LIVE = {
+          online: ["已上線", "ok"], pushing: ["送上 GitHub 中", ""], stalled: ["未上線：推送程式沒有在執行", "error"],
+          failed: ["未上線：送上 GitHub 失敗", "error"], offline: ["未上線", "error"],
+          conflict: ["未上線：編號已被雲端其他教材使用", "error"], unknown: ["無法確認是否上線（連不到 GitHub）", ""]
+        };
+        var notOnline = list.filter(function (d) { return d.live && d.live.state !== "online" && d.live.state !== "unknown"; }).length;
+        var banner = null;
+        if (r.data && r.data.publisherAlive === false) {
+          banner = el("p", { class: "upl-status upl-status--error", text: "推送程式沒有在執行：發布的教材不會送上 GitHub。請重新執行「啟動教材上傳引擎.bat」。" });
+        } else if (notOnline) {
+          banner = el("p", { class: "upl-status upl-status--error", text: notOnline + " 份已發布的教材尚未上線，見下方各列說明。" });
+        }
+        var rows = el("ul", { class: "upl-list" }, list.map(function (d) {
+          var live = d.live && LIVE[d.live.state];
+          var liveText = live ? live[0] + (d.live.state === "conflict" && d.live.remote ? "（雲端為 " + d.live.remote.subject + " " + d.live.remote.chapter + "）" : "") : "";
           return el("li", { class: "upl-draft-row" }, [
             el("span", { text: d.materialId + "　" + (d.status === "published" ? "已發布" : "草稿") + "　" +
               (d.kind === "supplement" ? "補充題庫（為 " + d.parentId + " 加題）" : d.finalFilename) }),
+            live ? el("span", { class: "upl-live upl-live--" + (live[1] || "info"), text: liveText }) : null,
             button("預覽", null, function () {
               client.getDraft(d.materialId).then(function (g) {
                 if (g.error) { status(draftStatus, g.error.message, "error"); return; }
@@ -834,7 +851,8 @@ AHS.CouncilUpload = (function () {
               });
             })
           ]);
-        })));
+        }));
+        AHS.UI.mount(draftsList, el("div", {}, banner ? [banner, rows] : [rows]));
       });
     }
 

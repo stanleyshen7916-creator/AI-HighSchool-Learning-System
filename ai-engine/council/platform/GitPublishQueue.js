@@ -71,7 +71,17 @@ function createGitPublishQueue({ dataDir, platformRoot }) {
     return { id, status: 'pending', progress, publisherAlive: publisherAlive() };
   }
 
-  return { enqueue, enqueueTask, status, publisherAlive, queueDir };
+  // 某份教材最近一次的推送請求狀態（上傳紀錄顯示「是否已上線」用）；沒有請求時回 null。
+  function latestFor(name) {
+    let files = [];
+    try { files = fs.readdirSync(queueDir); } catch (_) { return null; }
+    const ids = files.map((f) => /^(\d+_[a-z0-9_-]+)\.request\.json$/.exec(f)).filter(Boolean).map((m) => m[1])
+      .filter((id) => id.slice(id.indexOf('_') + 1) === String(name))
+      .sort();
+    if (!ids.length) return null;
+    try { return status(ids[ids.length - 1]); } catch (_) { return null; }
+  }
+  return { enqueue, enqueueTask, status, latestFor, publisherAlive, queueDir };
 }
 
 module.exports = { createGitPublishQueue, HEARTBEAT_STALE_MS };

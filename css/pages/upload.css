@@ -133,6 +133,12 @@
 
 .upl-draft-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }
 .upl-draft-row .upl-btn { padding: 5px 12px; font-size: 13px; }
+.upl-draft-row > span:first-child { flex: 1 1 320px; min-width: 0; }
+/* 2026-10-09: 已發布教材的實際上線狀態 */
+.upl-live { font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.upl-live--ok { color: var(--ok); }
+.upl-live--error { color: #b42318; }
+.upl-live--info { color: var(--text-muted); }
 
 .upl-offscreen { position: fixed; left: -9999px; top: 0; opacity: 0; }
 

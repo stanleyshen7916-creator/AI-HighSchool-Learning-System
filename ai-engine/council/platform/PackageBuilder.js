@@ -80,9 +80,18 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     return path.join(materialsDir, materialId);
   }
 
+  // 2026-10-09：本機工作目錄可能落後 GitHub main（例如推送程式停擺期間），只看本機
+  // 資料夾會撞到雲端已用掉的編號（竹圍 tm_52–54 撞上長榮 tm_52–54）。server.js 定期
+  // 從 GitHub main 的 index.json 取得已用編號，透過 setRemoteIds() 一併排除。
+  let remoteIds = [];
+  function setRemoteIds(ids) {
+    remoteIds = (Array.isArray(ids) ? ids : []).filter((id) => /^tm_\d+$/.test(String(id)));
+  }
+
   function nextMaterialId() {
     const used = fs.readdirSync(materialsDir)
       .concat(Object.keys(registry().drafts))
+      .concat(remoteIds)
       .map((name) => /^tm_(\d+)$/.exec(name))
       .filter(Boolean)
       .map((m) => Number(m[1]));
@@ -581,6 +590,8 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     listDrafts,
     getDraft: preview,
     nextMaterialId,
+    setRemoteIds,
+    materialMetadata: (materialId) => readJson(path.join(materialsDir, String(materialId), 'metadata.json'), null),
     loadPlatformGlobals: () => loadPlatformGlobals(platformRoot),
   };
 }
