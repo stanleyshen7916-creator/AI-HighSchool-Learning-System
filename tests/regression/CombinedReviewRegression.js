@@ -153,12 +153,14 @@ console.log("\n[1] 平時練習列表 — 真實顯示「選擇多課合併複�
   check("真實存在「國文」科目分頁", !!chineseChip);
   click(chineseChip);
 
+  /* 2026-10-09: 國文另有 tm_62（第一～三課單選／多選補充練習，Package track），
+     分頁裡共 4 列；這裡驗證的「三課」仍是舊版教材庫的 3 個課別。 */
   const rows = doc.querySelectorAll(".qpick-row");
-  check("點擊國文分頁後真實列出 3 個可複選課別（第一課／第二課／第三課／近體詩選）", rows.length === 3);
-
   const checkboxes = doc.querySelectorAll(".qpick-row input[type='checkbox']");
+  const lessonBoxes = Array.prototype.filter.call(checkboxes, (cb) => realExamIds.indexOf(cb.getAttribute("data-exam-id")) !== -1);
+  check("點擊國文分頁後真實列出 3 個可複選課別（第一課／第二課／第三課／近體詩選），另加 1 份補充練習", lessonBoxes.length === 3 && rows.length === 4);
   check("每個課別 checkbox 都帶有真實 examId（可追溯回真實 QuestionRuntime exam）",
-    Array.prototype.every.call(checkboxes, (cb) => realExamIds.indexOf(cb.getAttribute("data-exam-id")) !== -1));
+    Array.prototype.every.call(checkboxes, (cb) => !!cb.getAttribute("data-exam-id")));
 
   const confirmBtnBefore = doc.querySelector(".qpick-btn--primary");
   check("尚未勾選任何課別時，確認按鈕真實為 disabled（不得空選就開始）", confirmBtnBefore.disabled === true);
@@ -182,7 +184,7 @@ console.log("\n[2] 平時練習 — 勾選 2 課並確認，真實開始「一�
   click(doc.querySelector(".quiz-combine-btn"));
   const subjectChips2 = doc.querySelectorAll(".qpick-subject");
   click(Array.prototype.filter.call(subjectChips2, (c) => c.textContent === "國文")[0]);
-  const checkboxes = Array.prototype.slice.call(doc.querySelectorAll(".qpick-row input[type='checkbox']"), 0, 2);
+  const checkboxes = realExamIds.slice(0, 2).map((id) => doc.querySelector(".qpick-row input[data-exam-id='" + id + "']"));
   checkboxes.forEach((cb) => { cb.checked = true; cb.dispatchEvent(new window.Event("change", { bubbles: true })); });
 
   const confirmBtn = doc.querySelector(".qpick-btn--primary");
@@ -254,7 +256,8 @@ console.log("\n[4] 考前總複習 — Repository 教材區塊真實顯示合併
   click(combineBtn);
   const subjectChips4 = doc.querySelectorAll(".qpick-subject");
   click(Array.prototype.filter.call(subjectChips4, (c) => c.textContent === "國文")[0]);
-  const checkboxes = doc.querySelectorAll(".qpick-row input[type='checkbox']");
+  const checkboxes = Array.prototype.filter.call(doc.querySelectorAll(".qpick-row input[type='checkbox']"),
+    (cb) => realExamIds.indexOf(cb.getAttribute("data-exam-id")) !== -1);
   check("考前總複習的 Picker 點擊國文分頁後也真實列出全部 3 課", checkboxes.length === 3);
   Array.prototype.forEach.call(checkboxes, (cb) => { cb.checked = true; cb.dispatchEvent(new window.Event("change", { bubbles: true })); });
   click(doc.querySelector(".qpick-btn--primary"));
