@@ -1,0 +1,121 @@
+{
+  "materialId": "tm_59",
+  "knowledgePoints": [
+    {
+      "name": "七日猶豫期",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "七日猶豫期的例外",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "互補品",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "供給法則",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "供給變動的原因",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "定型化契約",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "審閱期",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "對未來價格的預期",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "市場供給量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "市場需求量",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "平等互惠原則",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "替代品",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "有形與無形市場",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正常財與劣等財",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "特種交易",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "生產上的互補品",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "生產上的替代品",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "產品市場與生產要素市場",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "需求法則",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "需求與需求量",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "需求變動的原因",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "願付價格",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "願售價格",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T07:28:10.166Z"
+}

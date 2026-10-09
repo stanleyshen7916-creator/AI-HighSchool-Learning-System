@@ -1,0 +1,106 @@
+{
+  "materialId": "tm_58",
+  "knowledgePoints": [
+    {
+      "name": "取捨",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "外顯成本與隱藏成本",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "成本效益分析",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "政府資源分配的考量",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "會計利潤",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "會計利潤與經濟利潤",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "機會成本",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "機會成本遞增",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "比較利益",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "比較利益法則",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "生產可能曲線",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "生產可能曲線的移動",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "生產可能曲線與機會成本",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "看不見的手",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "稀少性",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "累進稅率",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "絕對利益",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "絕對利益與比較利益",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "經濟利潤",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "誘因的類型",
+      "source": "question",
+      "refCount": 4
+    }
+  ],
+  "generatedAt": "2026-10-09T07:28:10.058Z"
+}
