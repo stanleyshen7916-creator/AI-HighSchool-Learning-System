@@ -1,0 +1,11 @@
+{
+  "materialId": "tm_51",
+  "knowledgePoints": [
+    {
+      "name": "練習題（取自三方初稿，未經 Qwen 逐題裁決）",
+      "source": "question",
+      "refCount": 59
+    }
+  ],
+  "generatedAt": "2026-10-07T23:36:11.673Z"
+}

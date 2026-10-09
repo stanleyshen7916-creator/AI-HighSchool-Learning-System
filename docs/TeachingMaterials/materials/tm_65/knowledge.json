@@ -1,0 +1,106 @@
+{
+  "materialId": "tm_65",
+  "knowledgePoints": [
+    {
+      "name": "主旨推論題；史料／文本證據題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "主旨推論題；核心概念",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "主旨推論題；比較閱讀題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "修辭辨識題（反覆、摹寫）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "修辭辨識題（反覆、擬人）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "修辭辨識題（象徵）；詞語解釋題（地平線）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "史料／文本證據題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "意象象徵題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "文意判讀題；主旨推論題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "文意判讀題；修辭辨識題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "文意判讀題；核心概念",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "文意判讀題；詞語解釋題（虛無）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "比較閱讀題（主體、人稱、情感）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "比較閱讀題（情感面向）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "詞語解釋題（長嗥）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "詞語解釋題（雲翳）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "詞語解釋題；文意判讀題",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "詞語解釋題；重要定義（戰慄）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "詞語解釋題；重要定義（搖撼）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "重要定義（獨來獨往）；意象象徵題",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T13:59:38.653Z"
+}

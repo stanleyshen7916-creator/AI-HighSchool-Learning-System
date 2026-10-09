@@ -1,0 +1,199 @@
+{
+  "adjudicator": "qwen2.5:7b-instruct-q4_K_M",
+  "adjudication_mode": "llm_semantic",
+  "failure_reason": null,
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": 54,
+  "claim_verification_score": 54,
+  "section_coverage": {
+    "total_sections": 13,
+    "sections_with_source_content": 13,
+    "sections_with_claims": 13,
+    "sections_unresolved": 0,
+    "coverage_rate": 100,
+    "uncovered_sections": [],
+    "unresolved_sections": []
+  },
+  "document_completeness": 54,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_英文_L1_Lesson_1_The_Day_I_Broke_the_Rules_講義",
+  "run_id": "b1b11314-dab1-4783-bdc3-6bf0e2b06beb",
+  "source_provided": true,
+  "source_windowed": true,
+  "claims": [
+    {
+      "claim_id": "c1",
+      "claim": "本課的核心主題有三：規則與人性的拉扯、小舉動，大影響（make a difference）、生命的優先順序。",
+      "section": "①核心概念",
+      "sections": [
+        "①核心概念"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "該陳述概括了本課的核心主題，包括規則與人性的拉扯、小舉動帶來的大影響以及生命的優先順序，這些都與原文內容相符。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "Ronald幾年前受雇於麥當勞公司，在「Ronald Day」會扮成麥當勞叔叔到社區醫院探望病童，其中許多孩子罹患末期疾病。能為他們帶來歡笑，讓他覺得極有意義。",
+      "section": "②章節摘要",
+      "sections": [
+        "②章節摘要"
+      ],
+      "source_ref": "On \"Ronald Day,\" I would dress up as Ronald McDonald and visit sick children in the hospital.\n\nNever to visit them alone with my painted face and red wig.",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「On 'Ronald Day,' I would dress up as Ronald McDonald and visit sick children in the hospital. Never to visit them alone with my painted face and red wig.」與 SOURCE 實際內容「On \"Ronald Day,\" I would dress up as Ronald McDonald and visit sick children in the hospital.\n\nNever to visit them alone with my painted face and red wig.」僅有些微字元差異（edit distance=4），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "雇用、大公司、受苦、末期的疾病、笑聲、驚嚇、接觸、細菌、溫暖、虛弱、促使、限制、神采、擁抱、昏昏欲睡、伸展、拒絕、猶豫等單詞和搭配",
+      "section": "③重點詞彙",
+      "sections": [
+        "③重點詞彙"
+      ],
+      "source_ref": null,
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "陳述中包含多個單詞和搭配，但原文未集中討論這些單詞和搭配的關係或意義。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "Ronald 最後違規不是因為不重視規則，而是因為 Billy 的情況使他重新衡量規則與關懷的優先順序。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "原文未提及 Ronald 是否重視規則或重新衡量規則與關懷的優先順序，因此無法支持此陳述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "融合後的陳述文字：修辭手法包括伏筆、對比、細節描寫、三連並列、直接引語和委婉語。",
+      "section": "⑤修辭手法",
+      "sections": [
+        "⑤修辭手法"
+      ],
+      "source_ref": null,
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "原文未提及该陈述的具体内容，无法直接引用支持或反驳。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "麥當勞叔叔（Ronald McDonald）是麥當勞的品牌吉祥人物，其造型為白臉彩妝與紅色假髮。探視病童時有規定不可單獨見面，以免嚇到孩子；聖誕老人（Santa）在西方孩童心中具有重要地位，Billy 說今年見不到聖誕老人也沒關係，透露他知道自己撐不到聖誕節；醫院感染控制規定禁止與病人進行肢體接觸，以防傳染細菌；企業公益活動中，工作人員受雇於大公司探視病童，屬於社會關懷的一環。",
+      "section": "⑥文化脈絡",
+      "sections": [
+        "⑥文化脈絡"
+      ],
+      "source_ref": "On 'Ronald Day,' I would dress up as Ronald McDonald and visit sick children in the hospital.\nNever to visit them alone with my painted face and red wig.\nI picked him up and held him in my arms. After that, we talked and talked. He confided his worries to me.\n\n![](images/f75788c548b8d04c3bc3f6ae4d81d4533c32c0b4a1f6518eee1515307642f0bd.jpg)",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「On 'Ronald Day,' I would dress up as Ronald McDonald and visit sick children in the hospital.\nNever to visit them alone with my painted face and red wig.\nI picked him up and held him in my arms. After that, we talked and talked. He confided his worries to me.\n\n![](images/f75788c548b8d04c3bc3f6ae4d81d4533c32c0b4a1f6518eee1515307642f0bd.jpg)」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "敘述者曾受雇於麥當勞公司，但未提供姓名。",
+      "section": "⑦作者背景",
+      "sections": [
+        "⑦作者背景"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "虽然原文没有直接提到叙述者的姓名，但是描述了其在麦当劳的工作内容和职责，这与陈述相符。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "Ronald 遵守兩項規定，但內心矛盾，最終在見到 Billy 的希望眼神後決定違規擁抱他。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "雖未直接引用原文，但陳述與文章內容一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "規則原本為保護他人時，什麼情況下可能需要例外？",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "原文未提及规则制定的初衷或保护他人的具体情境，无法直接支持或反驳该陈述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "would + VR 和 used to + VR 都表示過去的習慣動作；for 表「因為」，不可置於句首；since 表「因為、既然」，可置於句首。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "CANONICAL SOURCE 中未提及 Ronald 会因为某些原因拒绝拥抱孩子或违反规定，因此无法直接支持或反驳该陈述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "文章中常考題型包括文意理解、字彙、片語和文法／句型，每種題型都有其主要考點和易錯點。",
+      "section": "⑪常考題型",
+      "sections": [
+        "⑪常考題型"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "文章中提到‘The Day I Broke the Rules’课文中包括了对文法、句型、字彙以及片語的測驗和學習，因此支持该陈述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "兩條規定的理由對調。‘不可單獨探視’是怕嚇到孩子；‘不可肢體接觸’是怕傳染細菌。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "虽然原文没有直接使用相同的句子结构，但内容一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "融合後的陳述文字：本節內容涉及英文文法、閱讀理解、素養教育等多方面，包括分詞構句、感官動詞、虛主詞 it 等高中核心文法；人物動機、事件因果、轉折、結尾回扣等閱讀技巧；規則與倫理、同理心、醫療感染風險、制度與個人判斷等素養教育。",
+      "section": "⑬跨課連結",
+      "sections": [
+        "⑬跨課連結"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "本節內容涉及英文文法、閱讀理解、素養教育等多方面，包括分詞構句、感官動詞、虛主詞 it 等高中核心文法；人物動機、事件因果、轉折、結尾回扣等閱讀技巧；規則與倫理、同理心、醫療感染風險、制度與個人判斷等素養教育。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    }
+  ],
+  "validation": {
+    "sections_complete": true,
+    "source_attribution_valid": true
+  }
+}
