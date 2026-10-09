@@ -1,0 +1,396 @@
+{
+  "materialId": "tm_56",
+  "knowledgePoints": [
+    {
+      "name": "伴細胞",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "側根",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "側根與根毛",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "內皮",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "分生組織",
+      "source": "both",
+      "refCount": 6
+    },
+    {
+      "name": "初生分生組織",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "初生組織與次生組織",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "初生與次生細胞壁",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "厚角細胞與厚壁細胞",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "單子葉植物莖",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "單子葉與雙子葉植物",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "基本組織",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "壁孔",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "導管與管胞",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "年輪",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "年輪與樹皮",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "形成層",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "心材與邊材",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "托葉",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "木栓層",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "木栓形成層",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "木質莖的構造",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "木質部的運輸",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "根尖的分區",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "根毛",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "根的構造",
+      "source": "question",
+      "refCount": 9
+    },
+    {
+      "name": "根系",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "根莖構造的比較",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "植物形態與環境",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "植物的分類",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "植物的演化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "植物的體制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "植物細胞",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "植物細胞的種類",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "植物組織",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "植物組織的分類",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "植物組織的功能",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "樹皮",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "氣孔",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣孔的觀察",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "水生植物",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "水生植物的葉",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "營養器官",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "物質的運輸管道",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "皮孔與氣孔",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "石細胞",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "篩管與伴細胞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "篩管與導管",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "細胞壁",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "組織系統",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "維管束形成層",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "維管束的排列",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "維管束的構造",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "維管束的橫向運輸",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "維管束組織",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "維管束組織的細胞",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "纖維細胞",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "莖的外部形態",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莖的構造",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "葉序",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "葉柄",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "葉的外部形態",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "葉的形態",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "葉的構造",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "葉的構造與環境",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "葉肉",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "葉脈",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "薄壁細胞",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "薄壁細胞與厚壁細胞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "表皮組織",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "變態根與變態莖",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "變態莖",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "陸地與水域環境",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "陸生與水生植物",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "雙子葉植物莖",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "髓",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "髓腔",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "髓與髓腔",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T03:01:33.846Z"
+}
