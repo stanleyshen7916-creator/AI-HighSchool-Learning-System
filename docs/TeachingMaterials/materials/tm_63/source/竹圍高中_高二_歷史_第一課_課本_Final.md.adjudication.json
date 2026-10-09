@@ -1,0 +1,199 @@
+{
+  "adjudicator": "qwen2.5:7b-instruct-q4_K_M",
+  "adjudication_mode": "llm_semantic",
+  "failure_reason": null,
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": 85,
+  "claim_verification_score": 85,
+  "section_coverage": {
+    "total_sections": 13,
+    "sections_with_source_content": 13,
+    "sections_with_claims": 13,
+    "sections_unresolved": 0,
+    "coverage_rate": 100,
+    "uncovered_sections": [],
+    "unresolved_sections": []
+  },
+  "document_completeness": 85,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_歷史_第一課_課本",
+  "run_id": "80c6fde5-f5ed-47fb-8927-8aca8670a236",
+  "source_provided": true,
+  "source_windowed": true,
+  "claims": [
+    {
+      "claim_id": "c1",
+      "claim": "日本在1930年代走向軍國主義，對中國及東南亞擴張，戰爭逐步由東亞擴大至太平洋。",
+      "section": "①核心概念",
+      "sections": [
+        "①核心概念"
+      ],
+      "source_ref": "二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文，描述了二十世紀初日本侵略中國及東南亞的情況。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "日本在二十世纪初侵略朝鲜，并先后通过九·一八事变和一二八事变占领东北、进犯上海。",
+      "section": "②章節摘要",
+      "sections": [
+        "②章節摘要"
+      ],
+      "source_ref": "二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "九一八事變（1931）是日本侵占中國東北的重要事件；一二八事變（1932）是日軍進犯上海的事件；盧溝橋事變（1937）引發中日全面戰爭，南京大屠殺發生於1937年12月，日軍攻占南京後對當地軍民展開報復性屠殺。",
+      "section": "③重點詞彙",
+      "sections": [
+        "③重點詞彙"
+      ],
+      "source_ref": "二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文，描述了九一八事變和一二八事變是日本侵略中國的重要事件。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "日本提出「大東亞共榮圈」的宣傳語言，與其實際進軍、占領、控制資源的行動形成落差。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 中提到日本正式提出‘大東亞共榮圈’的概念，并声称以日本、滿洲国、汪精卫国民政府为中心，宣称援助东亚人民反抗殖民帝國統治，建立‘共存共榮的新秩序’。但随后又指出日本趁歐美列强无暇东顾，与法国维希政府签订协议，派军进驻法属越南，并将控制范围扩展至东南亚。这表明日本提出的‘大東亞共榮圈’宣传语言与实际行动存在落差。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "歷史課本中使用象徵與隱喻手法，例如「乒乓外交」象徵美中大國關係的轉折、「哥吉拉」作為原子彈輻射浩劫的文化象徵。",
+      "section": "⑤修辭手法",
+      "sections": [
+        "⑤修辭手法"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述正確地描述了歷史課本中使用象徵與隱喻手法的例子，如「乒乓外交」和「哥吉拉」作為原子彈輻射浩劫的文化象徵。這些例子在原文中有相關內容支持。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "日本藉由明治維新確立天皇現人神神格，戰時體制進一步將神道教神聖化，要求臺灣及朝鮮拆毀本土廟宇、改立日本神龕與神社，作為精神統治與同化手段。",
+      "section": "⑥文化脈絡",
+      "sections": [
+        "⑥文化脈絡"
+      ],
+      "source_ref": "東 半 部 的 社會 與 論 普遍 同 情 兇 手 , 伍 使 日 本 逐步 走向 軍國 主 義 。",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「東 半 部 的 社會 與 論 普遍 同 情 兩 手 , 伍 使 日 本 逐步 走向 軍國 主 義 。」與 SOURCE 實際內容「東 半 部 的 社會 與 論 普遍 同 情 兇 手 , 伍 使 日 本 逐步 走向 軍國 主 義 。」僅有些微字元差異（edit distance=1），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "本書敘寫了東亞各國從古至今，在統治權威人群移動與現代化的歷程，過程中各國透過不斷的互動甚至衝突，而形成今日的局面。",
+      "section": "⑦作者背景",
+      "sections": [
+        "⑦作者背景"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "该陈述与所提供的canonical source中的内容一致。source中提到东亚各国从古代到现代，在统治权权威人群移动和现代化的过程中，通过不断的互动甚至冲突形成了今日的局面。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "日本在亞洲的侵略經歷了侵華戰爭、大東亞共榮圈以及珍珠港事件，這些行動導致了美日之間的全面戰爭。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": "二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。## 一日本在亞洲的侵略\n二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。## （二）大東亞共榮圈\n1940年，日本正式提出「大東亞日本、滿洲國、汪精衛國民政府為中人民反抗殖民帝國統治，建立「共存共榮的新秩序」的號召，鼓吹亞洲人合作，共同防禦歐美帝國主義的侵略。## 想讀歷\n此外，日本趁歐美列強無暇（Vichy）政府①簽訂協議，派軍進駐法圍擴及東南亞。",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。## 一日本在亞洲的侵略\n二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。## （二）大東亞共榮圈\n1940年，日本正式提出「大東亞日本、滿洲國、汪精衛國民政府為中人民反抗殖民帝國統治，建立「共存共榮的新秩序」的號召，鼓吹亞洲人合作，共同防禦歐美帝國主義的侵略。## 想讀歷\n此外，日本趁歐美列強無暇（Vichy）政府①簽訂協議，派軍進駐法圍擴及東南亞。」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "東南亞民族主義者與日本合作，可能的戰略考量包括爭取獨立、利用日本力量抗衡歐美列強等。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 中提到「大東亞共榮圈」的概念，以及日本趁歐美列强无暇之际与法属越南签订协议，派军进驻东南亚，将控制的范围扩展至东南海域。这表明了日本确实考虑过利用其力量来抗衡欧美的影响力，并且这种合作可能包括争取独立的民族主义者。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "大東亞共榮圈与東亞新秩序是不同的概念，前者是日本提出的戰時構想，範圍向南擴展至東南亞及太平洋地區；後者則是日、滿、華（汪精衛政權）三角結盟，旨在穩固中國戰場防線。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE中明确区分了大東亞共榮圈与东亚新秩序的概念及其各自范围和目的，支持了陈述的内容。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "1937年7月7日的盧溝橋事變引發中日全面戰爭，8月13日淞滬會戰爆發，國民政府向西南遷徙，11月將首都遷往重慶；12月南京被攻占並經歷大屠殺。",
+      "section": "⑪常考題型",
+      "sections": [
+        "⑪常考題型"
+      ],
+      "source_ref": "## （一）日本侵華\n\n1937年（民國26年）7月7日，日軍在北平盧溝橋附近演習，聲稱士兵失蹤，要求入城搜索被拒，與中國國軍發生衝突，稱為「盧溝橋事變」，引發中日大戰。8月13日，日軍進攻上海，淞滬會戰爆發，國民政府向西南遷徙，11月將首都遷往重慶；12月，日軍攻占南京，因遭遇當地軍民奮力抵抗，展開報復性的屠殺，稱為「南京大屠殺」。",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「## （一）日本侵華\n1937年（民國26年）7月7日，日軍在北平盧溝橋附近演習，聲稱士兵失蹤，要求入城搜索被拒，與中國國軍發生衝突，稱為「盧溝橋事變」，引發中日大戰。8月13日，日軍進攻上海，淞滬會戰爆發，國民政府向西南遷徙，11月將首都遷往重慶；12月，日軍攻占南京，因遭遇當地軍民奮力抵抗，展開報復性的屠殺，稱為「南京大屠殺」。」與 SOURCE 實際內容「## （一）日本侵華\n\n1937年（民國26年）7月7日，日軍在北平盧溝橋附近演習，聲稱士兵失蹤，要求入城搜索被拒，與中國國軍發生衝突，稱為「盧溝橋事變」，引發中日大戰。8月13日，日軍進攻上海，淞滬會戰爆發，國民政府向西南遷徙，11月將首都遷往重慶；12月，日軍攻占南京，因遭遇當地軍民奮力抵抗，展開報復性的屠殺，稱為「南京大屠殺」。」僅有些微字元差異（edit distance=1），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "九一八事變為日本侵占中國東北（局部抗戰）；1937年「七七盧溝橋事變」才是中日全面大戰與八年全面抗戰的正式爆發點。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": "二十世紀初，日本併吞朝鮮後，持續對中國侵略，除了先後藉由九一八事變（1931，日本稱為滿洲事變）與一二八事變（1932，日本稱為第一次上海事變）占領東北、進犯上海外，也將東南亞視為下一步進攻的目標。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述中的「九一八事變」和「七七盧溝橋事變」分別被 SOURCES 說明為日本侵占中國東北和中日全面大戰爆發點，符合原文內容。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "皇民化運動與戰時體制在東亞各國的推行，如日本對臺灣和朝鮮的殖民統治、總督府政策及慰安婦訴訟等，反映了帝國主義與殖民統治下的人民命運。",
+      "section": "⑬跨課連結",
+      "sections": [
+        "⑬跨課連結"
+      ],
+      "source_ref": "日 本 在 朝 鮮 实 施 皇 民 化 政 策 ， 企 图 使 朝 鲜 人 成 为 「 皇 国 臣民 」 。 朝 鲜 人 每 天 正 午 都 要 背誦「 皇國 臣民 誓词 」 ； 1940 年 ， 日 本 要 求 朝鮮 人 必 须 改用 日 本 式 姓名 ； 1942 年 ， 日 本 在 日 本 管 辖 下 的 朝 鲜 地 区 实 行 日 语 制 度 ， 每 天 正 午 背誦「 皇國 臣民 誓词」 。",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「日 本 在 朝 鮮 实 施 皇 民 化 政 策 ， 企 图 使 朝 鲜 人 成 为 「 皇 国 臣民 」 。 朝 鲜 人 每 天 正 午 都 要 背誦「 皇國 臣民 誓词 」 ； 1940 年 ， 日 本 要 求 朝鮮 人 必 须 改用 日 本 式 姓名 ； 1942 年 ， 日 本 在 日 本 管 辖 下 的 朝 鲜 地 区 实 行 日 语 制 度 ， 每 天 正 午 背誦「 皇國 臣民 誓词」 。」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    }
+  ],
+  "validation": {
+    "sections_complete": true,
+    "source_attribution_valid": true
+  }
+}

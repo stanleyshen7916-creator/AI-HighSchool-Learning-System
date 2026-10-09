@@ -1,0 +1,381 @@
+{
+  "adjudicator": "qwen2.5:7b-instruct-q4_K_M",
+  "adjudication_mode": "llm_semantic",
+  "failure_reason": null,
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": 89,
+  "claim_verification_score": 89,
+  "section_coverage": {
+    "total_sections": 13,
+    "sections_with_source_content": 13,
+    "sections_with_claims": 13,
+    "sections_unresolved": 0,
+    "coverage_rate": 100,
+    "uncovered_sections": [],
+    "unresolved_sections": []
+  },
+  "document_completeness": 100,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_國文_C1_課本",
+  "run_id": "1b25250b-9b86-4742-83a8-3766323277c9",
+  "source_provided": true,
+  "source_windowed": true,
+  "claims": [
+    {
+      "claim_id": "c1",
+      "claim": "兩首詩都強調過程而非結果，狼追求一分過癮，雁以飛行本身作為存在的意義。",
+      "section": "①核心概念",
+      "sections": [
+        "①核心概念"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "該陳述與詩中狼和雁的特質相符，狼追求一分過癮，雁以飛行本身作為存在的意義。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "兩首詩皆強調過程中的體驗和當下的體會，而非最終的成就或目標達成。",
+      "section": "②章節摘要",
+      "sections": [
+        "②章節摘要"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "該陳述與詩中狼之獨步及雁所表達的人生態度相符，兩首詩均強調過程中的體驗和當下的體會而非最終的成就或目標。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "獨來獨往、長嗥、搖撼、戰慄等詞語強調狼的孤獨與力量。",
+      "section": "③重點詞彙",
+      "sections": [
+        "③重點詞彙"
+      ],
+      "source_ref": "我乃曠野裡獨來獨往的一匹狼。不是先知，沒有半個字的嘆息。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：直接改寫自原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "「我乃曠野裡獨來獨往的一匹狼」：以曠野之大對比狼之渺小，表達自己不同流俗、特立獨行的形象。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "我乃曠野裡獨來獨往的一匹狼。不是先知，沒有半個字的嘆息。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：直接引用原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "「不是先知，沒有半個字的嘆息」：表面是謙詞，卻隱含「先知」的意味。不嘆息，表示對孤獨無怨無悔。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "不是先知，沒有半個字的嘆息。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：直接引用原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c3",
+      "claim": "「數聲悽厲已極之長嗥」：以聽覺意象營造強烈、尖銳的情緒。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "我乃曠野裡獨來獨往的一匹狼。不是先知，沒有半個字的嘆息。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c4",
+      "claim": "「搖撼彼空無一物之天地／使天地戰慄」：「空無一物」既是孤單的寫照，也是睥睨詩壇的豪氣。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "恆以數聲悽厲已極之長嗥搖撼彼空無一物之天地，使天地戰慄如同發了瘧疾；並颱起涼風颯颯的，颯颯颯颯的：",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「恆以数声悽厲已极之长嗥搖撼彼空无一物之天地，使天地战慄如同发了疟疾；並颱起凉风颯颯的，颯颯颯颯的：」與 SOURCE 實際內容「恆以數聲悽厲已極之長嗥搖撼彼空無一物之天地，使天地戰慄如同發了瘧疾；並颱起涼風颯颯的，颯颯颯颯的：」僅有些微字元差異（edit distance=10），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c5",
+      "claim": "「地平線長久在遠處退縮地引逗著我們／活著。不斷地追逐」：地平線象徵理想、目標、存在意義，正因為它的引逗，人生在不斷追逐中創造意義。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "地平线长久在远处退缩地引逗著我们/活著。不断地追逐",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「地平线长久在远处退缩地引逗著我们/活著。不断地追逐」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c6",
+      "claim": "「感覺它已接近而抬眼還是那麼遠離」：追逐看似容易，實則艱困，而且永無企及之時。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "該陳述與詩中「感覺它已接近而抬眼還是那麼遠離」相符，表現了追逐理想看似容易實則艱困且永無企及之時的狀態。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "狼象徵孤獨而堅持自我的詩人；雁象徵持續追尋的人類",
+      "section": "⑤修辭手法",
+      "sections": [
+        "⑤修辭手法"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述直接改寫自原文，符合狼和雁的特質描述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "二十世纪中叶台湾现代诗社发展与思潮碰撞，纪弦主张新诗为‘横的移植’，强调移植欧美现代主义技法与精神；蓝星诗社则提出‘纵的继承’，主张除了西方技巧外还需植根并汲取中国古典传统文化养分。",
+      "section": "⑥文化脈絡",
+      "sections": [
+        "⑥文化脈絡"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述直接改寫自CANONICAL SOURCE中的內容",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "紀弦是臺灣現代詩壇的重要詩人，積極推動現代詩發展；本名、出生地、刊物與運動年份在 SOURCE 的長篇背景段落中有記載。",
+      "section": "⑦作者背景",
+      "sections": [
+        "⑦作者背景"
+      ],
+      "source_ref": "紀弦，本名路逾，西元一九一三年生於河北省清苑縣（今河北省保定市清苑區），是中國及臺灣現代詩壇的重要詩人。紀弦自幼便受到新文化運動的影響，這段時期的中國，文學創作開始由傳統的詩詞向新詩轉變。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述與原文記載一致",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "白萩是臺灣現代詩壇的重要詩人之一，1953年起開始在《民聲日報》副刊投稿，兩年後轉向《藍星》週刊發表大量作品。",
+      "section": "⑦作者背景",
+      "sections": [
+        "⑦作者背景"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "白萩是臺灣現代詩壇的重要詩人之一，1953年起開始在《民聲日報》副刊投稿，兩年後轉向《藍星》週刊發表大量作品。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "〈狼之獨步〉以「我乃曠野裡獨來獨往的一匹狼。不是先知，沒有半個字的嘆息」確立特立獨行主體，自負孤寂；以「而恆以數聲悽厲已極之長嗥／搖撼彼空無一物之天地／使天地戰慄如同發了瘧疾」展現力量與自信，象徵詩人對文壇的震動；以「這就是一種過癮」諧謔收結，痛快淋漓。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": "我乃曠野裡獨來獨往的一匹狼。不是先知，沒有半個字的嘆息。\n而恆以數聲悽厲已極之長嗥搖撼彼空無一物之天地，使天地戰慄如同發了瘧疾；並颱起涼風颯颯的，颯颯颯颯的：\n這就是一種過癮。",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「我乃曠野裡獨來獨往的一匹狼。不是先知，沒有半個字的嘆息。\n而恆以數聲悽厲已極之長嗥搖撼彼空無一物之天地，使天地戰慄如同發了瘧疾；並颱起涼風颯颯的，颯颯颯颯的：\n這就是一種過癮。」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c2",
+      "claim": "〈雁〉以「我們仍然活著。仍然要飛行……地平線長久在遠處退縮地引逗著我們」顯現生存動能，地平線象徵不可企及卻牽引生命的崇高理想；以「天空還是我們祖先飛過的天空……鼓在風上／陷入一個不完的魘夢」承擔宿命，歷史時空的循環，荒謬處境代代延續，意志在逆境中持續奮戰。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述直接改寫自詩中的相關內容",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "孤獨是否等於失敗？《狼之獨步》提示：孤獨可能來自不被理解，也可能是堅持獨立立場的代價。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述與詩中狼的形象及意象相符，狼獨步荒野、大聲嗥叫，顯示出不被理解卻堅持獨立的精神。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "理想一直退遠，追尋還有意義嗎？《雁》將價值放在持續追尋與意志的展現，而非只以抵達与否评价。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述符合詩中雁的形象和意象分析",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c3",
+      "claim": "'我'与'我们'带来何种差异？'我'强调个体的自我宣示；'我们'将个人行动扩展为群体与世代的共同使命。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述直接改寫自詩中的相關內容，尤其是「我乃曠野裡獨來獨往的一匹狼」和「搖撼彼空無一物之天地」等句。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "狼的長嗥代表詩人自發的強烈意志、對藝術的堅持與向平庸文壇的吶喊，而非外在批評聲浪令人恐懼害怕。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": "不是先知，沒有半個字的嘆息。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "「不是先知」不表示完全否定自我，而是強調詩人自負且堅定的態度。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": "不是先知，沒有半個字的嘆息。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：直接引用原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c3",
+      "claim": "雁的飛行象徵持續追尋理想而非僅寫自然景觀。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": "我們仍然活著。仍然要飛行\n",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「我們仍然活著。仍然要飛行。」與 SOURCE 實際內容「我們仍然活著。仍然要飛行\n」僅有些微字元差異（edit distance=1），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c4",
+      "claim": "地平線象徵似近實遠、難以企及的理想，而非已經抵達的目標。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": "地平線長久在遠處退縮地引逗著我們／活著。不斷地追逐",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「地平线长久在远处退缩地引逗著我们／活著。不断地追逐」與 SOURCE 實際內容「地平線長久在遠處退縮地引逗著我們／活著。不斷地追逐」僅有些微字元差異（edit distance=7），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c5",
+      "claim": "雲翳象徵未知的困難／阻礙，而非希望或終點。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "CONTRADICTED",
+      "reason": "SOURCE 中提到雲翳暗指不可知的凶险，而陳述則稱其為未知的困難/阻礙，并未提及希望或終點。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c6",
+      "claim": "「我們」可延伸至全人類或共同群體，不只指一群雁。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述符合詩中多次出現的‘我們’意象，如‘我們仍然活著。仍然要飛行’等句。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "兩首詩分別以狼和雁為意象，寄託了作者不同的精神態度：狼代表孤獨堅韌、自我宣示；雁則象征群體延續與不屈追尋。",
+      "section": "⑪常考題型",
+      "sections": [
+        "⑪常考題型"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述符合詩中狼和雁的意象及其精神態度",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "長嗥代表詩人內心發出、撼動天地的自我意志之聲，而非外界批評聲浪。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": "恆以數聲悽厲已極之長嗥搖撼彼空無一物之天地，使天地戰慄如同發了瘧疾；並颱起涼風颯颯的，颯颯颯颯的：",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「恆以数声悽厲已极之长嗥搖撼彼空无一物之天地，使天地战慄如同发了疟疾；並颱起凉风颯颯的，颯颯颯颯的：」與 SOURCE 實際內容「恆以數聲悽厲已極之長嗥搖撼彼空無一物之天地，使天地戰慄如同發了瘧疾；並颱起涼風颯颯的，颯颯颯颯的：」僅有些微字元差異（edit distance=10），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "把《狼之獨步》与《雁》并读，可以从意象、人称、情绪与主旨建立比较表。",
+      "section": "⑬跨課連結",
+      "sections": [
+        "⑬跨課連結"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述與詩中多處內容相符",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    }
+  ],
+  "validation": {
+    "sections_complete": true,
+    "source_attribution_valid": true
+  }
+}
