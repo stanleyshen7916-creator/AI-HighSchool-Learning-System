@@ -1,0 +1,231 @@
+{
+  "materialId": "tm_61",
+  "knowledgePoints": [
+    {
+      "name": "It seems/appears that...",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "It seems/appears that...（改寫）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "S + find/consider/feel/think + it + adj./N + to VR",
+      "source": "question",
+      "refCount": 8
+    },
+    {
+      "name": "人物性格推論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "人物情緒",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "代名詞指涉（虛受詞 it）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "反義片語",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "字彙：confine（限定）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：contact",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：corporation／corporate",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：drowsy（同義字）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：employ 字群",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "字彙：frail（同義字）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：frighten／fright",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：hesitate／hesitation",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：illness／ill",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：prompt (adj.)",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：refuse／refusal",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：sparkle (vi.)",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：stretch（拉長）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：terminal",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：terminal 的兩種詞性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：tremendously／tremendous",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字彙：warmth",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "推論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "推論（主旨句）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "文章主旨",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：after all",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：be about to",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：cheer...up",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：make a difference",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：pass away",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：pass on...to",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "片語：turn...down",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細節理解",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "細節理解綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細節理解（事件順序）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "細節理解（圖文框）",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "細節理解（規定與理由）",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "細節理解（轉折）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "聽力策略：同意與不同意",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "言外之意推論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "詞性辨識",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "課文出處",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T07:59:21.017Z"
+}
