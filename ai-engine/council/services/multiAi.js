@@ -353,11 +353,11 @@ function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
     '5. 三方初稿是否一致（禁止使用：不得因為兩份初稿意見相同就判定為正確，即禁止 majority vote）',
     '',
     '範例（必須遵守的行為）：',
-    '若 SOURCE 寫「頭觸硬壁，蹶然而踣」，',
-    '而 ChatGPT 初稿與 Gemini 初稿都寫「頭觸硬壁，驀然而踣」（兩份意見相同），',
-    'Claude 初稿寫「頭觸硬壁，蹶然而踣」且引用 SOURCE 頁碼，',
-    '你必須裁決「蹶然而踣」為正確（SUPPORTED），「驀然而踣」為錯誤（CONTRADICTED）——',
-    '即使那是兩份初稿一致的說法。不得因為兩票對一票而選擇「驀然而踣」。',
+    '若 SOURCE 寫「頭觸硬壁，驀然而踣」，',
+    '而 ChatGPT 初稿與 Gemini 初稿都寫「頭觸硬壁，蹶然而踣」（兩份意見相同），',
+    'Claude 初稿寫「頭觸硬壁，驀然而踣」且引用 SOURCE 頁碼，',
+    '你必須裁決「驀然而踣」為正確（SUPPORTED），「蹶然而踣」為錯誤（CONTRADICTED）——',
+    '即使那是兩份初稿一致的說法。不得因為兩票對一票而選擇「蹶然而踣」。',
     '',
     `學校：${metadata.school}　年級：${metadata.grade}　科目：${metadata.subject}　單元：${metadata.unit}`,
     '',
@@ -686,7 +686,7 @@ function parseSectionClaimResponse(raw, sectionKey) {
   return { claims, unresolvedSections };
 }
 
-// Levenshtein edit distance——用於「近似但不相同」的引用比對（例如「驀然」vs「蹶然」）。
+// Levenshtein edit distance——用於「近似但不相同」的引用比對（例如「蹶然」vs「驀然」）。
 function levenshteinDistance(a, b) {
   const s = String(a ?? '');
   const t = String(b ?? '');
@@ -742,7 +742,7 @@ function findApproxMatch(needle, sourceText) {
 // allDraftsText（選填，預設空字串——3 個既有單元測試直接以 2 個參數呼叫本函式，
 // 行為必須維持完全不變）：實測發現 near-miss（edit distance 很小）有兩種完全不同的成因，
 // 不能用同一套規則處理：
-//   (a) 三方初稿中「真的」有一方寫錯（例如「驀然而踣」實際出現在 ChatGPT／Gemini 初稿中）——
+//   (a) 三方初稿中「真的」有一方寫錯（例如「蹶然而踣」實際出現在 ChatGPT／Gemini 初稿中）——
 //       這是真實的跨初稿衝突，即使只差一兩個字也必須嚴格判 CONTRADICTED（P0-02 acceptance fixture）。
 //   (b) 三方初稿全部都寫對，錯字是 Qwen 自己在同一次生成內部產生的字元誤植（例如「弳」被生成成
 //       「弹」，但三份原始初稿裡完全找不到「弹」這個字）——這不是任何一方初稿真正主張的內容，只是

@@ -45,7 +45,7 @@ const drafts = {
 const CANON_SOURCE =
   '妻不信。王果去牆數尺，奔而入；及牆，虛若無物，回視，果在牆外矣。大喜，入謝。老道人曰：' +
   '「歸宜潔持，否則不驗。」遂助資斧遣之歸。抵家，自詡遇仙，堅壁所不能阻。妻不信，王效其作為，' +
-  '去牆數尺，奔而入，頭觸硬壁，蹶然而踣。妻扶視之，額上墳起如巨卵焉。妻揶揄之。王慚忿，罵老道士之無良而已。';
+  '去牆數尺，奔而入，頭觸硬壁，驀然而踣。妻扶視之，額上墳起如巨卵焉。妻揶揄之。王慚忿，罵老道士之無良而已。';
 
 function claimResponse(claims) {
   return { ok: true, json: async () => ({ response: JSON.stringify({ claims }) }) };
@@ -154,13 +154,13 @@ describe('Qwen2.5 Semantic Cross-Council Adjudicator（Claim-level, SOURCE-groun
     expect(council.meta.qualityGate).toBe('PENDING_MANUAL_REVIEW');
   });
 
-  test('Test KNOWN CONFLICT FIXTURE（Acceptance fixture，P0-02／STEP 12）— SOURCE 為「蹶然而踣」，兩個 claim 引用錯誤的「驀然而踣」（模擬多數意見一致但錯誤），一個 claim 引用正確的「蹶然而踣」：SOURCE evidence 必須凌駕多數決', async () => {
+  test('Test KNOWN CONFLICT FIXTURE（Acceptance fixture，P0-02／STEP 12）— SOURCE 為「驀然而踣」，兩個 claim 引用錯誤的「蹶然而踣」（模擬多數意見一致但錯誤），一個 claim 引用正確的「驀然而踣」：SOURCE evidence 必須凌駕多數決', async () => {
     const claims = [
       {
         claim_id: 'wrong-a',
         section: '②章節摘要',
-        claim: '王生返家後試穿牆術，頭觸硬壁，驀然而踣。',
-        quoted_source_span: '頭觸硬壁，驀然而踣',
+        claim: '王生返家後試穿牆術，頭觸硬壁，蹶然而踣。',
+        quoted_source_span: '頭觸硬壁，蹶然而踣',
         verdict: 'SUPPORTED', // 模型本身誤判為 SUPPORTED（模擬 majority-vote 偏誤）
         reason: 'ChatGPT 與 Gemini 初稿皆如此描述，故判定為 SUPPORTED。',
         confidence: 0.8,
@@ -168,8 +168,8 @@ describe('Qwen2.5 Semantic Cross-Council Adjudicator（Claim-level, SOURCE-groun
       {
         claim_id: 'wrong-b',
         section: '②章節摘要',
-        claim: '王生返家後試穿牆術，頭觸硬壁，驀然而踣（重複陳述）。',
-        quoted_source_span: '頭觸硬壁，驀然而踣',
+        claim: '王生返家後試穿牆術，頭觸硬壁，蹶然而踣（重複陳述）。',
+        quoted_source_span: '頭觸硬壁，蹶然而踣',
         verdict: 'SUPPORTED',
         reason: '與另一份初稿一致。',
         confidence: 0.8,
@@ -177,8 +177,8 @@ describe('Qwen2.5 Semantic Cross-Council Adjudicator（Claim-level, SOURCE-groun
       {
         claim_id: 'correct-c',
         section: '②章節摘要',
-        claim: '王生返家後試穿牆術，頭觸硬壁，蹶然而踣。',
-        quoted_source_span: '頭觸硬壁，蹶然而踣',
+        claim: '王生返家後試穿牆術，頭觸硬壁，驀然而踣。',
+        quoted_source_span: '頭觸硬壁，驀然而踣',
         verdict: 'SUPPORTED',
         reason: 'Claude 初稿引用並註明已對照原始 PDF 頁 16 逐字覆核。',
         confidence: 0.95,
@@ -187,12 +187,12 @@ describe('Qwen2.5 Semantic Cross-Council Adjudicator（Claim-level, SOURCE-groun
     mockFullPipeline(claims, [], ['②章節摘要']);
 
     // 這個 fixture 的敘事前提是「ChatGPT 與 Gemini 初稿本身真的寫錯」，不是 Qwen 生成時自己
-    // 誤植的雜訊，所以這裡必須用真的包含「驀然而踣」的初稿內容，draft cross-check（判斷
+    // 誤植的雜訊，所以這裡必須用真的包含「蹶然而踣」的初稿內容，draft cross-check（判斷
     // near-miss 究竟是真實跨初稿衝突、還是模型自己的生成雜訊）才能得到正確的輸入。
     const conflictDrafts = {
-      chatgpt: '②章節摘要\n王生返家後試穿牆術，頭觸硬壁，驀然而踣。',
-      gemini: '②章節摘要\n王生返家後試穿牆術，頭觸硬壁，驀然而踣（重複陳述）。',
-      claude: '②章節摘要\n王生返家後試穿牆術，頭觸硬壁，蹶然而踣。',
+      chatgpt: '②章節摘要\n王生返家後試穿牆術，頭觸硬壁，蹶然而踣。',
+      gemini: '②章節摘要\n王生返家後試穿牆術，頭觸硬壁，蹶然而踣（重複陳述）。',
+      claude: '②章節摘要\n王生返家後試穿牆術，頭觸硬壁，驀然而踣。',
     };
     const council = await assembleCouncilFinal(metadata, conflictDrafts, CANON_SOURCE);
 
@@ -208,8 +208,8 @@ describe('Qwen2.5 Semantic Cross-Council Adjudicator（Claim-level, SOURCE-groun
     expect(correctC.verdict).toBe('SUPPORTED');
 
     // Final 內容只能包含 SOURCE 驗證通過的版本，錯誤版本不得進入 Final。
-    expect(council.sections['②章節摘要']).toContain('蹶然而踣');
-    expect(council.sections['②章節摘要']).not.toContain('驀然而踣');
+    expect(council.sections['②章節摘要']).toContain('驀然而踣');
+    expect(council.sections['②章節摘要']).not.toContain('蹶然而踣');
 
     // 有 claim 被排除，不得偽裝成乾淨的 PASS。
     expect(council.meta.qualityGate).toBe('PENDING_MANUAL_REVIEW');
@@ -464,17 +464,17 @@ ${filler}`;
 
   describe('applySourceTruthGate（Deterministic SOURCE Truth Gate 單元測試）', () => {
     test('quoted_source_span 與 SOURCE 逐字相符：確認 SUPPORTED，並回填 source_ref', () => {
-      const claims = [{ claim_id: 'c1', section: null, claim: 'x', quoted_source_span: '頭觸硬壁，蹶然而踣', verdict: 'UNSUPPORTED', reason: 'y', confidence: 0.5 }];
+      const claims = [{ claim_id: 'c1', section: null, claim: 'x', quoted_source_span: '頭觸硬壁，驀然而踣', verdict: 'UNSUPPORTED', reason: 'y', confidence: 0.5 }];
       const gated = applySourceTruthGate(claims, CANON_SOURCE);
       expect(gated[0].verdict).toBe('SUPPORTED');
-      expect(gated[0].source_ref).toBe('頭觸硬壁，蹶然而踣');
+      expect(gated[0].source_ref).toBe('頭觸硬壁，驀然而踣');
     });
 
     test('quoted_source_span 與 SOURCE 存在但內容不同（近似字串）：覆寫為 CONTRADICTED，且優先於任何模型自評 verdict', () => {
-      const claims = [{ claim_id: 'c1', section: null, claim: 'x', quoted_source_span: '頭觸硬壁，驀然而踣', verdict: 'SUPPORTED', reason: '多數初稿一致', confidence: 0.9 }];
+      const claims = [{ claim_id: 'c1', section: null, claim: 'x', quoted_source_span: '頭觸硬壁，蹶然而踣', verdict: 'SUPPORTED', reason: '多數初稿一致', confidence: 0.9 }];
       const gated = applySourceTruthGate(claims, CANON_SOURCE);
       expect(gated[0].verdict).toBe('CONTRADICTED');
-      expect(gated[0].source_ref).toBe('頭觸硬壁，蹶然而踣');
+      expect(gated[0].source_ref).toBe('頭觸硬壁，驀然而踣');
       expect(gated[0].overridden).toBe(true);
     });
 
@@ -512,16 +512,16 @@ ${filler}`;
 
   describe('levenshteinDistance / findApproxMatch（近似比對工具函式）', () => {
     test('完全相同字串距離為 0', () => {
-      expect(levenshteinDistance('蹶然而踣', '蹶然而踣')).toBe(0);
+      expect(levenshteinDistance('驀然而踣', '驀然而踣')).toBe(0);
     });
 
     test('差一個字元距離為 1（驀 vs 蹶）', () => {
-      expect(levenshteinDistance('驀然而踣', '蹶然而踣')).toBe(1);
+      expect(levenshteinDistance('蹶然而踣', '驀然而踣')).toBe(1);
     });
 
-    test('findApproxMatch 可在較長 SOURCE 中找出「蹶然而踣」對應「驀然而踣」的近似片段', () => {
-      const match = findApproxMatch('頭觸硬壁，驀然而踣', CANON_SOURCE);
-      expect(match.matchedText).toBe('頭觸硬壁，蹶然而踣');
+    test('findApproxMatch 可在較長 SOURCE 中找出「驀然而踣」對應「蹶然而踣」的近似片段', () => {
+      const match = findApproxMatch('頭觸硬壁，蹶然而踣', CANON_SOURCE);
+      expect(match.matchedText).toBe('頭觸硬壁，驀然而踣');
       expect(match.distance).toBe(1);
     });
   });

@@ -323,14 +323,14 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
   const sourceText =
     '妻不信。王果去牆數尺，奔而入；及牆，虛若無物，回視，果在牆外矣。大喜，入謝。老道人曰：' +
     '「歸宜潔持，否則不驗。」遂助資斧遣之歸。抵家，自詡遇仙，堅壁所不能阻。妻不信，王效其作為，' +
-    '去牆數尺，奔而入，頭觸硬壁，蹶然而踣。妻扶視之，額上墳起如巨卵焉。妻揶揄之。王慚忿，罵老道士之無良而已。';
+    '去牆數尺，奔而入，頭觸硬壁，驀然而踣。妻扶視之，額上墳起如巨卵焉。妻揶揄之。王慚忿，罵老道士之無良而已。';
 
   const chatgptDraft = [
     '①核心概念',
     'ChatGPT 認為核心概念是甲。',
     '',
     '②章節摘要',
-    '王生返家試術，頭觸硬壁，驀然而踣。',
+    '王生返家試術，頭觸硬壁，蹶然而踣。',
     '',
     '⑪常考題型',
     '常考題型一：解釋甲的意義。',
@@ -344,7 +344,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
     'Gemini 補充核心概念的批判性檢視。',
     '',
     '②章節摘要',
-    '王生試術失敗，頭觸硬壁，驀然而踣。',
+    '王生試術失敗，頭觸硬壁，蹶然而踣。',
     '',
     '⑤修辭手法',
     'Gemini 分析修辭手法：比喻與排比。',
@@ -358,7 +358,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
     'Claude 從結構完整性角度整理核心概念。',
     '',
     '②章節摘要',
-    '王生返家試術，頭觸硬壁，蹶然而踣（對照課本原文）。',
+    '王生返家試術，頭觸硬壁，驀然而踣（對照課本原文）。',
     '',
     '⑪常考題型',
     '常考題型二：分析乙的結構。',
@@ -373,7 +373,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
 
   const allSupportedClaims = [
     { claim_id: 'c1', section: '①核心概念', claim: '融合後核心概念：王生入勞山拜師習得穿牆術。', quoted_source_span: null, verdict: 'SUPPORTED', reason: '三方一致', confidence: 0.9 },
-    { claim_id: 'c2', section: '②章節摘要', claim: '王生返家後試穿牆術，頭觸硬壁，蹶然而踣。', quoted_source_span: '頭觸硬壁，蹶然而踣', verdict: 'SUPPORTED', reason: '逐字對照 SOURCE', confidence: 0.95 },
+    { claim_id: 'c2', section: '②章節摘要', claim: '王生返家後試穿牆術，頭觸硬壁，驀然而踣。', quoted_source_span: '頭觸硬壁，驀然而踣', verdict: 'SUPPORTED', reason: '逐字對照 SOURCE', confidence: 0.95 },
     { claim_id: 'c3', section: '⑪常考題型', claim: '常考題型：解釋甲的意義；分析乙的結構。', quoted_source_span: null, verdict: 'SUPPORTED', reason: '合併自 ChatGPT 與 Claude 初稿', confidence: 0.8 },
     { claim_id: 'c4', section: '⑬跨課連結', claim: 'Claude 補充之跨課連結說明已納入。', quoted_source_span: null, verdict: 'SUPPORTED', reason: '僅 Claude 提供，SOURCE 未牴觸', confidence: 0.7 },
     { claim_id: 'c6', section: '⑤修辭手法', claim: '本段以對比手法凸顯王生前後的落差。', quoted_source_span: null, verdict: 'SUPPORTED', reason: 'SOURCE 情節前後對照', confidence: 0.8 },
@@ -404,7 +404,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
     expect(markdown).toContain('Sources: ChatGPT (Web) + Gemini (Web) + Claude (Web)');
     expect(markdown).toContain('adjudication_mode: "llm_semantic"');
     expect(markdown).toContain('王生入勞山拜師習得穿牆術');
-    expect(markdown).toContain('蹶然而踣');
+    expect(markdown).toContain('驀然而踣');
 
     FINAL_TITLES.forEach((title) => {
       expect(markdown).toContain(title);
@@ -529,11 +529,11 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
     expect(markdown).toContain('ChatGPT 認為核心概念是甲');
   });
 
-  test('Known Conflict Fixture（STEP 12 Acceptance fixture）— 兩份初稿一致但錯誤的引用「驀然而踣」不得因為多數決獲勝，Final.md 必須採用 SOURCE 驗證通過的「蹶然而踣」', async () => {
+  test('Known Conflict Fixture（STEP 12 Acceptance fixture）— 兩份初稿一致但錯誤的引用「蹶然而踣」不得因為多數決獲勝，Final.md 必須採用 SOURCE 驗證通過的「驀然而踣」', async () => {
     const conflictClaims = [
-      { claim_id: 'wrong-a', section: '②章節摘要', claim: '頭觸硬壁，驀然而踣。', quoted_source_span: '頭觸硬壁，驀然而踣', verdict: 'SUPPORTED', reason: 'ChatGPT 與 Gemini 初稿一致', confidence: 0.8 },
-      { claim_id: 'wrong-b', section: '②章節摘要', claim: '（重複）頭觸硬壁，驀然而踣。', quoted_source_span: '頭觸硬壁，驀然而踣', verdict: 'SUPPORTED', reason: '與另一份初稿一致', confidence: 0.8 },
-      { claim_id: 'correct-c', section: '②章節摘要', claim: '頭觸硬壁，蹶然而踣。', quoted_source_span: '頭觸硬壁，蹶然而踣', verdict: 'SUPPORTED', reason: 'Claude 初稿並引用 SOURCE 頁碼', confidence: 0.95 },
+      { claim_id: 'wrong-a', section: '②章節摘要', claim: '頭觸硬壁，蹶然而踣。', quoted_source_span: '頭觸硬壁，蹶然而踣', verdict: 'SUPPORTED', reason: 'ChatGPT 與 Gemini 初稿一致', confidence: 0.8 },
+      { claim_id: 'wrong-b', section: '②章節摘要', claim: '（重複）頭觸硬壁，蹶然而踣。', quoted_source_span: '頭觸硬壁，蹶然而踣', verdict: 'SUPPORTED', reason: '與另一份初稿一致', confidence: 0.8 },
+      { claim_id: 'correct-c', section: '②章節摘要', claim: '頭觸硬壁，驀然而踣。', quoted_source_span: '頭觸硬壁，驀然而踣', verdict: 'SUPPORTED', reason: 'Claude 初稿並引用 SOURCE 頁碼', confidence: 0.95 },
     ];
     global.fetch = jest.fn().mockImplementation(ollamaMock(conflictClaims));
 
@@ -551,8 +551,8 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
 
     expect(res.status).toBe(200);
     const markdown = res.body.content;
-    expect(markdown).toContain('蹶然而踣');
-    expect(markdown).not.toContain('驀然而踣');
+    expect(markdown).toContain('驀然而踣');
+    expect(markdown).not.toContain('蹶然而踣');
     // 三個 claim 只有一個通過 SOURCE 驗證：分批裁決後的 Quality Gate 為 FAIL（舊版為
     // PENDING_MANUAL_REVIEW）。這個測試要保證的是「絕不 PASS」。
     expect(markdown).toMatch(/quality_gate: "(PENDING_MANUAL_REVIEW|FAIL)"/);
