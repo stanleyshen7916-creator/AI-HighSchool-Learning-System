@@ -34,9 +34,13 @@ AHS.MonthExam = (function () {
   function create() {
     var root = el("section", { class: "mx", "aria-label": "模擬月考專區" });
     var timer = null;
+    var onList = false;
+    /* 2026-10-09: 雲端撈回歷次成績後（RepositorySync），停在科目列表時重畫，
+       讓「作答紀錄」顯示其他裝置的成績。作答中或看結果時不打擾。 */
+    window.addEventListener("ahs:repository-pulled", function () { if (onList && !RT().active()) { renderList(); } });
 
     function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
-    function show(node) { stopTimer(); AHS.UI.mount(root, node); window.scrollTo(0, 0); }
+    function show(node) { onList = false; stopTimer(); AHS.UI.mount(root, node); window.scrollTo(0, 0); }
 
     /* ---- 1. 科目列表 ---------------------------------------------------- */
     function renderList(notice) {
@@ -52,7 +56,7 @@ AHS.MonthExam = (function () {
       }
       subjects.forEach(function (s) { body.push(subjectCard(s)); });
       body.push(historyCard());
-      show(el("div", { class: "mx-list" }, body));
+      show(el("div", { class: "mx-list" }, body)); onList = true;
     }
 
     function subjectCard(s) {
