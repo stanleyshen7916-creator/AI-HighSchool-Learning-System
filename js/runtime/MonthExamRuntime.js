@@ -14,6 +14,11 @@
        國文第一～三課、英文第一課等）的單選題。這些紀錄不在 TeachingMaterialData
        裡，在此轉成相同格式（選項 {key,text} 轉成文字、正確答案轉成選項文字），
        materialId 以「repo:」開頭。原始紀錄不修改。
+   2026-10-09（雲端保存）：錯題與知識點熟練度改傳科目代號（"math"），才能
+   像平常練習一樣上傳到雲端（原本傳「數學」，雲端查不到科目而沒有上傳）。
+   交卷結果另存到 Supabase 的 month_exam_results（每位學生、每份考卷一列），
+   pullFromRepository() 在頁面載入時撈回，換裝置也看得到歷次成績；本機還沒
+   上傳成功的紀錄（synced 不是 true）也在這時補傳。
    計時：開始作答即記錄開始時間，以開始時間為準（重新整理或離開頁面不暫停），
    時間到自動交卷，未作答視為答錯。作答與進行中的考卷存在 PersistenceAdapter
    （依 Workspace 分開），重新整理後可接續。 */
@@ -117,6 +122,15 @@ AHS.MonthExamRuntime = (function () {
 
   function selfLabeled(q) {
     return (q.options || []).some(function (o) { return SELF_LABEL.test(String(o)); });
+  }
+
+  /* 中文科目名稱（「數學」）-> 平台的科目代號（"math"）。 */
+  function subjectCode(name) {
+    var S = AHS.Subjects || {};
+    if (S[name]) { return name; }
+    var keys = Object.keys(S);
+    for (var i = 0; i < keys.length; i++) { if (S[keys[i]] && S[keys[i]].name === name) { return keys[i]; } }
+    return name;
   }
 
   function sameSet(a, b) {
@@ -348,7 +362,99 @@ AHS.MonthExamRuntime = (function () {
     save(KEY_HISTORY, history.slice(0, HISTORY_LIMIT));
     save(KEY_ACTIVE, null);
     syncWrong(result);
+    pushResult(result);
     return result;
+  }
+
+  /* ---- 雲端保存（Supabase month_exam_results）---- */
+  function cloud() {
+    if (!AHS.SyncBridge || typeof AHS.SyncBridge.isConfigured !== "function" || !AHS.SyncBridge.isConfigured()) { return null; }
+    var identity = AHS.SyncBridge.identity();
+    if (!identity || !AHS.RepositoryFactory) { return null; }
+    var ws = workspace();
+    var scope = ws && ws.schoolId && ws.semesterIds && ws.semesterIds.length === 1
+      ? { school: ws.schoolId, semester: ws.semesterIds[0] } : null;
+    return { identity: identity, repo: AHS.RepositoryFactory.create(), scope: scope };
+  }
+
+  function toRow(result, c) {
+    return {
+      user_id: c.identity.userId,
+      student_profile_id: c.identity.studentProfileId,
+      school_code: c.scope ? c.scope.school : null,
+      semester_code: c.scope ? c.scope.semester : null,
+      local_id: result.id,
+      subject_code: subjectCode(result.subject),
+      subject_name: result.subject,
+      material_ids: result.materialIds || [],
+      started_at: new Date(result.startedAt).toISOString(),
+      submitted_at: new Date(result.submittedAt).toISOString(),
+      timed_out: !!result.timedOut,
+      total: result.total,
+      correct_count: result.correct,
+      unanswered: result.unanswered,
+      score: result.score,
+      rows: result.rows
+    };
+  }
+
+  function markSynced(id) {
+    var history = load(KEY_HISTORY, []) || [];
+    var hit = history.filter(function (h) { return h.id === id; })[0];
+    if (hit && !hit.synced) { hit.synced = true; save(KEY_HISTORY, history); }
+  }
+
+  function pushResult(result) {
+    var c = cloud();
+    if (!c) { return; }
+    var send = function () {
+      return c.repo.insert("month_exam_results", toRow(result, c)).then(function (r) {
+        /* 23505 = 已經有同一份考卷（重送）——視為已上傳。 */
+        if (!r.error || String(r.error.code || "") === "23505" || /duplicate/i.test(String(r.error.message || ""))) { markSynced(result.id); }
+        return r;
+      });
+    };
+    if (typeof AHS.SyncBridge.pushFireAndForget === "function") { AHS.SyncBridge.pushFireAndForget(send); } else { send(); }
+  }
+
+  function fromRow(row) {
+    return {
+      id: row.local_id, subject: row.subject_name, materialIds: row.material_ids || [],
+      startedAt: Date.parse(row.started_at), submittedAt: Date.parse(row.submitted_at),
+      timedOut: !!row.timed_out, total: row.total, correct: row.correct_count,
+      unanswered: row.unanswered, score: Number(row.score), rows: row.rows || [], synced: true
+    };
+  }
+
+  /* 頁面載入時（RepositorySync）：撈回雲端的歷次成績併入本機紀錄，並補傳本機
+     還沒上傳成功的紀錄。只撈目前學校／學期（單一學期 Workspace 時）。 */
+  function pullFromRepository() {
+    var c = cloud();
+    if (!c) { return Promise.resolve({ pulled: 0 }); }
+    var query = "student_profile_id=eq." + c.identity.studentProfileId + "&order=submitted_at.desc&limit=" + HISTORY_LIMIT;
+    if (c.scope) {
+      query += "&school_code=eq." + encodeURIComponent(c.scope.school) + "&semester_code=eq." + encodeURIComponent(c.scope.semester);
+    }
+    return c.repo.read("month_exam_results", query).then(function (r) {
+      if (r.error || !Array.isArray(r.data)) { return { pulled: 0, error: r.error }; }
+      var history = load(KEY_HISTORY, []) || [];
+      var byId = {};
+      history.forEach(function (h) { byId[h.id] = h; });
+      var pulled = 0;
+      r.data.forEach(function (row) {
+        if (byId[row.local_id]) { byId[row.local_id].synced = true; return; }
+        history.push(fromRow(row));
+        pulled += 1;
+      });
+      history.sort(function (a, b) { return (b.submittedAt || 0) - (a.submittedAt || 0); });
+      var kept = history.slice(0, HISTORY_LIMIT);
+      save(KEY_HISTORY, kept);
+      var pending = kept.filter(function (h) { return !h.synced; });
+      pending.forEach(pushResult);
+      return { pulled: pulled, repushed: pending.length };
+    }).catch(function (err) {
+      return { pulled: 0, error: { message: String(err && err.message || err) } };
+    });
   }
 
   /* 錯題（含未作答）加入知識弱點，與平常練習相同。 */
@@ -356,7 +462,7 @@ AHS.MonthExamRuntime = (function () {
     var wrong = result.rows.filter(function (r) { return !r.correct && r.answer != null; });
     if (wrong.length && AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.sync === "function") {
       AHS.WrongBookRuntime.sync({
-        subject: result.subject, title: "模擬月考", chapter: "",
+        subject: subjectCode(result.subject), title: "模擬月考", chapter: "",
         wrong: wrong.map(function (r) {
           return {
             questionId: r.qid, knowledgePoint: r.knowledgePoint, text: r.question, options: r.options,
@@ -370,7 +476,7 @@ AHS.MonthExamRuntime = (function () {
     }
     if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
       result.rows.forEach(function (r) {
-        if (r.knowledgePoint) { AHS.KnowledgeMasteryRuntime.recordAttempt(r.knowledgePoint, r.correct, result.subject, r.materialId); }
+        if (r.knowledgePoint) { AHS.KnowledgeMasteryRuntime.recordAttempt(r.knowledgePoint, r.correct, subjectCode(result.subject), r.materialId); }
       });
     }
   }
@@ -386,6 +492,8 @@ AHS.MonthExamRuntime = (function () {
 
   return {
     DURATION_MS: DURATION_MS,
+    pullFromRepository: pullFromRepository,
+    subjectCode: subjectCode,
     usable: usable,
     selfLabeled: selfLabeled,
     listSubjects: listSubjects,

@@ -45,6 +45,31 @@ AHS.KnowledgeMasteryRuntime = (function () {
 
   var store = hydrate() || { points: {} };
 
+  /* 2026-10-09: 科目一律存代號（"math"），見 WrongBookRuntime.subjectKeyOf()。
+     模擬月考原本傳中文名稱，雲端的 subject_id 因此是空的；修正過的知識點
+     標記 pendingPush，下一次 pullFromRepository() 重新上傳補上科目。 */
+  function subjectKeyOf(subject) {
+    var S = AHS.Subjects;
+    if (!S || !subject || S[subject]) { return subject; }
+    var keys = Object.keys(S);
+    for (var i = 0; i < keys.length; i++) {
+      if (S[keys[i]] && S[keys[i]].name === subject) { return keys[i]; }
+    }
+    return subject;
+  }
+
+  function normalizeSubjects() {
+    var changed = false;
+    Object.keys(store.points).forEach(function (k) {
+      var p = store.points[k];
+      var key = subjectKeyOf(p.subject);
+      if (key !== p.subject) { p.subject = key; p.pendingPush = true; changed = true; }
+    });
+    if (changed) { persist(); }
+  }
+
+  normalizeSubjects();
+
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -63,6 +88,7 @@ AHS.KnowledgeMasteryRuntime = (function () {
      field). */
   function recordAttempt(knowledgePoint, wasCorrect, subject, materialId) {
     if (!knowledgePoint) { return; }
+    subject = subjectKeyOf(subject);
     var kp = store.points[knowledgePoint];
     if (!kp) {
       kp = { subject: subject || "", materialId: "", attempts: [] };
@@ -174,6 +200,7 @@ AHS.KnowledgeMasteryRuntime = (function () {
       query += "&school_code=eq." + encodeURIComponent(currentWs.schoolId) +
         "&semester_code=eq." + encodeURIComponent(currentWs.semesterIds[0]);
     }
+    normalizeSubjects();
     return repo.read("knowledge_mastery", query).then(function (result) {
       if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
       var pulled = 0;
@@ -197,8 +224,10 @@ AHS.KnowledgeMasteryRuntime = (function () {
         pulled += 1;
       });
       return Promise.all(subjectLookups).then(function () {
-        if (pulled) { persist(); }
-        return { pulled: pulled };
+        var pending = Object.keys(store.points).filter(function (k) { return store.points[k].pendingPush; });
+        pending.forEach(function (k) { delete store.points[k].pendingPush; pushMastery(k); });
+        if (pulled || pending.length) { persist(); }
+        return { pulled: pulled, repushed: pending.length };
       });
     }).catch(function (err) {
       return { pulled: 0, error: { message: String(err && err.message || err) } };

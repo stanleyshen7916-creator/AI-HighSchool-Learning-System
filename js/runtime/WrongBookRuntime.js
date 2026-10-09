@@ -48,6 +48,38 @@ AHS.WrongBookRuntime = (function () {
 
   var store = hydrate() || { items: [], seq: 0 };
 
+  /* 2026-10-09（模擬月考錯題沒有上雲端）: 科目一律存代號（"math"），
+     不是中文名稱（「數學」）。模擬月考原本傳中文名稱，subjectIdFor() 用
+     code 查 subjects 表查不到，pushRecord() 因此默默跳過，錯題只留在
+     sessionStorage；科目篩選比對代號也找不到它們。subjectKeyOf() 把中文
+     名稱轉回代號；normalizeSubjects() 修正已存在本機的舊紀錄，並把從沒
+     上傳過的標記 pendingPush，等下一次 pullFromRepository() 補傳。 */
+  function subjectKeyOf(subject) {
+    var S = AHS.Subjects;
+    if (!S || !subject || S[subject]) { return subject; }
+    var keys = Object.keys(S);
+    for (var i = 0; i < keys.length; i++) {
+      if (S[keys[i]] && S[keys[i]].name === subject) { return keys[i]; }
+    }
+    return subject;
+  }
+
+  function normalizeSubjects() {
+    var changed = false;
+    store.items.forEach(function (item) {
+      var key = subjectKeyOf(item.subject);
+      if (key !== item.subject) {
+        item.subject = key;
+        if (!item.supabaseId) { item.pendingPush = true; }
+        changed = true;
+      }
+    });
+    if (changed) { persist(); }
+    return changed;
+  }
+
+  normalizeSubjects();
+
   /* --- Sprint AI-126B Part 2, Task 4: Supabase sync (additive only) ---
      Every existing write path below still returns exactly what it did
      before; pushRecord() is a fire-and-forget background write appended
@@ -204,6 +236,7 @@ AHS.WrongBookRuntime = (function () {
       query += "&school_code=eq." + encodeURIComponent(currentWs.schoolId) +
         "&semester_code=eq." + encodeURIComponent(currentWs.semesterIds[0]);
     }
+    normalizeSubjects();
     return repo.read("wrong_book", query).then(function (result) {
       if (result.error || !Array.isArray(result.data)) { return { pulled: 0, error: result.error }; }
       var bySupabaseId = {};
@@ -212,6 +245,12 @@ AHS.WrongBookRuntime = (function () {
       var subjectLookups = [];
       result.data.forEach(function (row) {
         var local = bySupabaseId[row.id];
+        /* 2026-10-09: 本機已有同一題、但還沒拿到 supabaseId 的紀錄（例如上
+           傳的回應還沒回來就換頁），就認領這筆遠端資料，不再另建一筆重複的。 */
+        if (!local && row.local_question_id) {
+          local = store.items.filter(function (item) { return !item.supabaseId && item.questionId === row.local_question_id; })[0] || null;
+          if (local) { local.pendingPush = false; }
+        }
         if (!local) {
           store.seq += 1;
           local = { id: "wb_" + store.seq, questionId: row.local_question_id || row.question_id || "", materialId: row.material_id || "" };
@@ -271,8 +310,11 @@ AHS.WrongBookRuntime = (function () {
         pulled += 1;
       });
       return Promise.all(subjectLookups).then(function () {
+        /* 補傳 normalizeSubjects() 修正過、從沒上傳成功的紀錄。 */
+        var pending = store.items.filter(function (item) { return item.pendingPush && !item.supabaseId; });
+        pending.forEach(function (item) { item.pendingPush = false; pushRecord(item); });
         persist();
-        return { pulled: pulled };
+        return { pulled: pulled, repushed: pending.length };
       });
     }).catch(function (err) {
       return { pulled: 0, error: { message: String(err && err.message || err) } };
@@ -361,7 +403,7 @@ AHS.WrongBookRuntime = (function () {
         var record = {
           id: "wb_" + store.seq,
           questionId: w.questionId,
-          subject: gradedResult.subject,
+          subject: subjectKeyOf(gradedResult.subject),
           /* 2026-10-01: the question's own lesson when the exam spanned
              several materials (see AutoGrader.js sourceTitle). */
           title: w.sourceTitle || gradedResult.title,
@@ -585,6 +627,7 @@ AHS.WrongBookRuntime = (function () {
     weaknessState: weaknessState,
     reset: reset,
     importRecords: importRecords,
-    pullFromRepository: pullFromRepository
+    pullFromRepository: pullFromRepository,
+    subjectKeyOf: subjectKeyOf
   };
 })();

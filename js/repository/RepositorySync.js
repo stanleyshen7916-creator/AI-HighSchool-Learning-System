@@ -25,7 +25,8 @@ AHS.RepositorySync = (function () {
       { name: "MaterialRuntime", runtime: AHS.MaterialRuntime },
       { name: "WrongBookRuntime", runtime: AHS.WrongBookRuntime },
       { name: "KnowledgeMasteryRuntime", runtime: AHS.KnowledgeMasteryRuntime },
-      { name: "SettingsRuntime", runtime: AHS.SettingsRuntime }
+      { name: "SettingsRuntime", runtime: AHS.SettingsRuntime },
+      { name: "MonthExamRuntime", runtime: AHS.MonthExamRuntime }
     ];
   }
 
