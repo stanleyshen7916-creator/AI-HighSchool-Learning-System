@@ -1,0 +1,316 @@
+{
+  "materialId": "tm_60",
+  "knowledgePoints": [
+    {
+      "name": "不同緯度的星空",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "亮度與光度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "亮度與距離",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "光度與半徑、溫度",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "八大行星的特徵",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "北極星",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "北極星仰角與緯度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "半衰期計算",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "周年運動",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "周日運動",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "哈伯定律",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "四季成因",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "四季與晝夜",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球的熔融與分層",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "地球防護罩",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "地質年代的劃分",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "均變說",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "多波段觀測",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "大氣分層",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "大氣的演變",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "大氣窗口",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大霹靂學說",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "大霹靂的證據",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "天文距離單位",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天球中的天體",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天球與黃道",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽星雲學說",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽直射緯度",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "太陽系小天體",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "季節星座",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "宇宙結構",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "宇宙膨脹",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "帶狀鐵礦",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "彗星",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "彗星的來源",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星日與太陽日",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星的顏色與溫度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "拱極星",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "放射性定年的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "放射性定年的限制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "星等",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "星等與亮度",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "晝夜長短",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "極圈",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "標準化石與指相化石",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "正午太陽仰角",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "海洋的形成",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "生物大滅絕",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "相對地質年代",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "相對與絕對地質年代",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "矮行星",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "紅移",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "絕對星等",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "臭氧層與生物上陸",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "行星的顏色",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "行星適居性",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "觀測的限制",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "距離模數",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "適居帶",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "除碳作用",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "類地行星與類木行星",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "黃赤交角",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-09T07:36:46.952Z"
+}
