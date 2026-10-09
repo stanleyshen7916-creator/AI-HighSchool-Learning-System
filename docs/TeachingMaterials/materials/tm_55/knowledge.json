@@ -1,0 +1,41 @@
+{
+  "materialId": "tm_55",
+  "knowledgePoints": [
+    {
+      "name": "不同緯度的周日運動",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "中午太陽仰角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽在天球上的位置",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "宇宙膨脹與紅移",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "放射性定年的極限",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "標準化石比對與地層先後",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "黃道星座與時間方位",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-09T00:42:47.608Z"
+}
