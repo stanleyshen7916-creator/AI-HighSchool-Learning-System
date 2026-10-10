@@ -34,6 +34,12 @@ jobs:
       - name: wrong_book rows from month-exam material ids (local_question_id prefix)
         run: |
           supabase db query --linked "select split_part(w.local_question_id,'_q',1) as material, to_char(w.created_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as rows from public.wrong_book w where w.created_at > now() - interval '$DAYS days' and w.local_question_id like 'tm\_%' group by 1,2 order by 2 desc, 1;"
+      - name: wrong_book rows touched recently (updated_at), by subject / school / semester / day
+        run: |
+          supabase db query --linked "select coalesce(s.code,'(none)') as subject, w.school_code, w.semester_code, to_char(w.updated_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as rows, sum(case when w.created_at < now() - interval '$DAYS days' then 1 else 0 end) as older_rows from public.wrong_book w left join public.subjects s on s.id = w.subject_id where w.updated_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4 desc, 1;"
+      - name: wrong_book totals per school / semester / subject (all time)
+        run: |
+          supabase db query --linked "select w.school_code, w.semester_code, coalesce(s.code,'(none)') as subject, count(*) as rows, to_char(max(w.updated_at) at time zone 'Asia/Taipei','YYYY-MM-DD HH24:MI') as last_update from public.wrong_book w left join public.subjects s on s.id = w.subject_id group by 1,2,3 order by 1,2,3;"
       - name: month_exam_results by subject / school / semester / day
         run: |
           supabase db query --linked "select subject_code, school_code, semester_code, to_char(submitted_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as papers, count(distinct student_profile_id) as students, round(avg(score),1) as avg_score, sum(total - correct_count) as wrong_or_blank from public.month_exam_results where submitted_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4 desc, 1;"
