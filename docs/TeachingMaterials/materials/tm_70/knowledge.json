@@ -1,0 +1,261 @@
+{
+  "materialId": "tm_70",
+  "knowledgePoints": [
+    {
+      "name": "不同緯度的星空",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "中午太陽仰角",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "光行時間",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "內行星",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "北極星仰角",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "周年運動",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "周日與周年運動",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "周日運動",
+      "source": "both",
+      "refCount": 8
+    },
+    {
+      "name": "四季成因",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "地球自轉的變化",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "多波段觀測",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "大氣的演變",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天球與黃道",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天體的年齡",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太空望遠鏡",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽直射緯度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "太陽直射與仰角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽軌跡",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "太陽軌跡與季節",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽風",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "太陽黑子",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "宇宙的演化",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "宇宙的結構",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "彗星",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星日",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "恆星顏色",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "恆星顏色與溫度",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "拱極星",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "日食",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "星等",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "星等與亮度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "星等與距離",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "時區與日落",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "晝夜長短",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "望遠鏡",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "極光",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "極圈",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "火星",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "紅移",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "紅移與距離",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "緯度與太陽仰角",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "緯度與距離",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "行星亮度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "行星的運動",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "行星與恆星",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "距離模數",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "都卜勒效應",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "銀河系",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "隕石",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "黃道 13 星座",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "黑體輻射",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-10T21:17:11.382Z"
+}
