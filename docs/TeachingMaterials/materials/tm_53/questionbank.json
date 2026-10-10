@@ -99,7 +99,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.9,
       "needsReview": false,
-      "question": "（依原課本附圖以文字描述）某車作直線運動，其位置對時間的關係圖（x-t 圖）為一條由原點出發、向上升高但斜率逐漸變小（向下彎）的曲線。此車的加速度大於或小於零？",
+      "question": "（圖說）某車作直線運動，其位置對時間的關係圖（x-t 圖）為一條由原點出發、向上升高但斜率逐漸變小（向下彎）的曲線。此車的加速度大於或小於零？",
       "options": [
         "(A) 大於零",
         "(B) 等於零",
@@ -114,7 +114,8 @@
       "createdDate": "2026-10-08T00:00:00Z",
       "knowledgePoint": "x-t 圖",
       "difficulty": "易",
-      "reference": "長榮中學高二物理課本 第2章 直線運動 想一想（課本第39頁）"
+      "reference": "長榮中學高二物理課本 第2章 直線運動 想一想（課本第39頁）",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q5.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_53_q6",
@@ -125,7 +126,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.94,
       "needsReview": false,
-      "question": "（依原課本附圖以文字描述）南極地區虎鯨是豹斑海豹的唯一天敵。一靜止的虎鯨發現前方 30 m 處有一海豹，立即開始追趕。兩者運動在同一直線上，速度對時間關係（v-t 圖）為：虎鯨在 0～6 s 速度由 0 均勻增加到 9 m/s，之後維持 9 m/s；海豹一直以 6 m/s 等速前進。試問：(1) 虎鯨前 6 s 的加速度為多少 m/s²？(2) 在幾 s 後虎鯨可追上海豹？",
+      "question": "（圖說）南極地區虎鯨是豹斑海豹的唯一天敵。一靜止的虎鯨發現前方 30 m 處有一海豹，立即開始追趕。兩者運動在同一直線上，速度對時間關係（v-t 圖）為：虎鯨在 0～6 s 速度由 0 均勻增加到 9 m/s，之後維持 9 m/s；海豹一直以 6 m/s 等速前進。試問：(1) 虎鯨前 6 s 的加速度為多少 m/s²？(2) 在幾 s 後虎鯨可追上海豹？",
       "options": [],
       "answer": "(1) 1.5 m/s²；(2) 19 s",
       "explanation": "（答案依課本範例解答，已獨立驗算一致）(1) a ＝ 9/6 ＝ 1.5 m/s²。(2) t ＝ 6 s 時虎鯨走了 ½ × 6 × 9 ＝ 27 m，海豹走了 36 m，兩者相距 36 ＋ 30 − 27 ＝ 39 m；之後每秒拉近 3 m，需 13 s，共 19 s。",
@@ -135,7 +136,8 @@
       "createdDate": "2026-10-08T00:00:00Z",
       "knowledgePoint": "v-t 圖",
       "difficulty": "中等",
-      "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-2（課本第43頁）"
+      "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-2（課本第43頁）",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q6.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_53_q7",
@@ -161,7 +163,8 @@
       "createdDate": "2026-10-08T00:00:00Z",
       "knowledgePoint": "v-t 圖",
       "difficulty": "中等",
-      "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-3（課本第43頁）"
+      "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-3（課本第43頁）",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q7.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_53_q8",
@@ -172,7 +175,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.93,
       "needsReview": false,
-      "question": "（依原課本附圖以文字描述）某物體以 −15 m/s 的初速度作直線變加速度運動，其加速度和時間的關係（a-t 圖）為：0～6 s 加速度由 0 均勻增加到 8 m/s²，6 s 之後維持 8 m/s²。則物體 8 s 末的速度為多少 m/s？",
+      "question": "（圖說）某物體以 −15 m/s 的初速度作直線變加速度運動，其加速度和時間的關係（a-t 圖）為：0～6 s 加速度由 0 均勻增加到 8 m/s²，6 s 之後維持 8 m/s²。則物體 8 s 末的速度為多少 m/s？",
       "options": [],
       "answer": "25 m/s",
       "explanation": "（答案依課本範例解答，已獨立驗算一致）a-t 圖面積為速度變化量：0～8 s 為梯形，Δv ＝ (2 ＋ 8) × 8/2 ＝ 40 m/s，v ＝ −15 ＋ 40 ＝ 25 m/s。",
@@ -182,7 +185,8 @@
       "createdDate": "2026-10-08T00:00:00Z",
       "knowledgePoint": "a-t 圖",
       "difficulty": "中等",
-      "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-4（課本第45頁）"
+      "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-4（課本第45頁）",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q8.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_53_q9",

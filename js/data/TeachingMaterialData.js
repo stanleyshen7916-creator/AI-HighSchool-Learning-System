@@ -3643,7 +3643,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_11",
         "questionNumber": "想2-3",
         "type": "single_choice",
-        "question": "（依原課本附圖以文字描述）某車作直線運動，其位置對時間的關係圖（x-t 圖）為一條由原點出發、向上升高但斜率逐漸變小（向下彎）的曲線。此車的加速度大於或小於零？",
+        "question": "（圖說）某車作直線運動，其位置對時間的關係圖（x-t 圖）為一條由原點出發、向上升高但斜率逐漸變小（向下彎）的曲線。此車的加速度大於或小於零？",
         "options": [
           "(A) 大於零",
           "(B) 等於零",
@@ -3662,6 +3662,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "x-t 圖",
         "difficulty": "易",
         "section": "2-2 物體運動圖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q5.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二物理課本 第2章 直線運動 想一想（課本第39頁）",
         "supplementId": "tm_53"
       },
@@ -3670,7 +3671,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_11",
         "questionNumber": "例2-2",
         "type": "calculation",
-        "question": "（依原課本附圖以文字描述）南極地區虎鯨是豹斑海豹的唯一天敵。一靜止的虎鯨發現前方 30 m 處有一海豹，立即開始追趕。兩者運動在同一直線上，速度對時間關係（v-t 圖）為：虎鯨在 0～6 s 速度由 0 均勻增加到 9 m/s，之後維持 9 m/s；海豹一直以 6 m/s 等速前進。試問：(1) 虎鯨前 6 s 的加速度為多少 m/s²？(2) 在幾 s 後虎鯨可追上海豹？",
+        "question": "（圖說）南極地區虎鯨是豹斑海豹的唯一天敵。一靜止的虎鯨發現前方 30 m 處有一海豹，立即開始追趕。兩者運動在同一直線上，速度對時間關係（v-t 圖）為：虎鯨在 0～6 s 速度由 0 均勻增加到 9 m/s，之後維持 9 m/s；海豹一直以 6 m/s 等速前進。試問：(1) 虎鯨前 6 s 的加速度為多少 m/s²？(2) 在幾 s 後虎鯨可追上海豹？",
         "options": [],
         "answer": "(1) 1.5 m/s²；(2) 19 s",
         "explanation": "（答案依課本範例解答，已獨立驗算一致）(1) a ＝ 9/6 ＝ 1.5 m/s²。(2) t ＝ 6 s 時虎鯨走了 ½ × 6 × 9 ＝ 27 m，海豹走了 36 m，兩者相距 36 ＋ 30 − 27 ＝ 39 m；之後每秒拉近 3 m，需 13 s，共 19 s。",
@@ -3684,6 +3685,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "v-t 圖",
         "difficulty": "中等",
         "section": "2-2 物體運動圖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q6.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-2（課本第43頁）",
         "supplementId": "tm_53"
       },
@@ -3711,6 +3713,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "v-t 圖",
         "difficulty": "中等",
         "section": "2-2 物體運動圖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q7.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-3（課本第43頁）",
         "supplementId": "tm_53"
       },
@@ -3719,7 +3722,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_11",
         "questionNumber": "例2-4",
         "type": "calculation",
-        "question": "（依原課本附圖以文字描述）某物體以 −15 m/s 的初速度作直線變加速度運動，其加速度和時間的關係（a-t 圖）為：0～6 s 加速度由 0 均勻增加到 8 m/s²，6 s 之後維持 8 m/s²。則物體 8 s 末的速度為多少 m/s？",
+        "question": "（圖說）某物體以 −15 m/s 的初速度作直線變加速度運動，其加速度和時間的關係（a-t 圖）為：0～6 s 加速度由 0 均勻增加到 8 m/s²，6 s 之後維持 8 m/s²。則物體 8 s 末的速度為多少 m/s？",
         "options": [],
         "answer": "25 m/s",
         "explanation": "（答案依課本範例解答，已獨立驗算一致）a-t 圖面積為速度變化量：0～8 s 為梯形，Δv ＝ (2 ＋ 8) × 8/2 ＝ 40 m/s，v ＝ −15 ＋ 40 ＝ 25 m/s。",
@@ -3733,6 +3736,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "a-t 圖",
         "difficulty": "中等",
         "section": "2-2 物體運動圖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_53/figures/tm_53_q8.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二物理課本 第2章 直線運動 範例2-4（課本第45頁）",
         "supplementId": "tm_53"
       },
@@ -9367,7 +9371,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_17",
         "questionNumber": "打鐵1-2a",
         "type": "fill_blank",
-        "question": "（依原講義附圖以文字描述）已知甲地是沒受外力翻轉的原始水平沉積地層，岩層由下而上沉積順序為 A→B→C→D→E。乙地岩層由上而下為 ㄈ、ㄇ、ㄆ、ㄅ，其中 ㄇ、ㄆ、ㄅ 三層傾斜，ㄈ 水平覆蓋在傾斜岩層之上。比對兩地化石：甲地 A 層的化石與乙地 ㄇ 層相同、B 與 ㄆ 相同、C 與 ㄅ 相同、E 與 ㄈ 相同。(1) 寫出兩地化石種類一致的地層配對。(2) 推出乙地之岩層與地質事件形成的先後順序。",
+        "question": "（圖說）已知甲地是沒受外力翻轉的原始水平沉積地層，岩層由下而上沉積順序為 A→B→C→D→E。乙地岩層由上而下為 ㄈ、ㄇ、ㄆ、ㄅ，其中 ㄇ、ㄆ、ㄅ 三層傾斜，ㄈ 水平覆蓋在傾斜岩層之上。比對兩地化石：甲地 A 層的化石與乙地 ㄇ 層相同、B 與 ㄆ 相同、C 與 ㄅ 相同、E 與 ㄈ 相同。(1) 寫出兩地化石種類一致的地層配對。(2) 推出乙地之岩層與地質事件形成的先後順序。",
         "options": [],
         "answer": "(1) A↔ㄇ、B↔ㄆ、C↔ㄅ、E↔ㄈ；(2) ㄇ沉積→ㄆ沉積→ㄅ沉積→受外力作用岩層翻轉傾斜→侵蝕作用→ㄈ沉積",
         "explanation": "（答案依講義所附答案，已獨立驗算一致）同一種標準化石代表同一沉積年代。乙地的 ㄇㄆㄅ 依甲地 A→B→C 的順序，所以 ㄇ 最老；但 ㄇ 在 ㄆ 之上，表示岩層受外力翻轉。ㄈ 水平覆蓋在傾斜岩層上、且缺少相當於 D 的地層，表示翻轉後經侵蝕，最後才沉積 ㄈ。",
@@ -9381,6 +9385,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "標準化石比對與地層先後",
         "difficulty": "中等",
         "section": "主題2 相對地質年代與絕對地質年代",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_55/figures/tm_55_q1.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二地球科學講義 打鐵趁熱（課本第7頁）",
         "supplementId": "tm_55"
       },
@@ -9455,7 +9460,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_17",
         "questionNumber": "打鐵9-2",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）北半球不同緯度的甲地與乙地，同一天觀測某顆恆星的上升軌跡：甲地的軌跡與地平面的夾角較大（較陡），乙地的軌跡與地平面的夾角較小（較斜）。下列敘述何者正確？",
+        "question": "（圖說）北半球不同緯度的甲地與乙地，同一天觀測某顆恆星的上升軌跡：甲地的軌跡與地平面的夾角較大（較陡），乙地的軌跡與地平面的夾角較小（較斜）。下列敘述何者正確？",
         "options": [
           "(A) 甲地緯度較高，甲地可見天球範圍較廣",
           "(B) 乙地緯度較高，甲地可見天球範圍較廣",
@@ -9474,6 +9479,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "不同緯度的周日運動",
         "difficulty": "中等",
         "section": "主題9 周日運動與不同緯度的星空",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_55/figures/tm_55_q5.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二地球科學講義 打鐵趁熱（課本第49頁）",
         "supplementId": "tm_55"
       },
@@ -9482,7 +9488,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_17",
         "questionNumber": "打鐵10a",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）黃道 13 星座示意圖中，地球繞太陽公轉；從太陽向外看，冬至位置的地球背對太陽一側為金牛座方向，夏至位置的地球背對太陽一側為人馬座方向，春分時太陽在雙魚座方向、秋分時太陽在室女座方向（春分點在雙魚座、秋分點在室女座）。夏至當晚 24:00，雙魚座位於哪一方向地平面附近？",
+        "question": "（圖說）黃道 13 星座示意圖中，地球繞太陽公轉；從太陽向外看，冬至位置的地球背對太陽一側為金牛座方向，夏至位置的地球背對太陽一側為人馬座方向，春分時太陽在雙魚座方向、秋分時太陽在室女座方向（春分點在雙魚座、秋分點在室女座）。夏至當晚 24:00，雙魚座位於哪一方向地平面附近？",
         "options": [
           "(A) 東方",
           "(B) 西方",
@@ -9501,6 +9507,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "黃道星座與時間方位",
         "difficulty": "難",
         "section": "主題10 周年運動",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_55/figures/tm_55_q6.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二地球科學講義 打鐵趁熱（課本第55頁）",
         "supplementId": "tm_55"
       },
@@ -13110,7 +13117,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-1例題3",
         "type": "calculation",
-        "question": "（依原講義附圖以文字描述）三個壓力計：ⓐ開口式，開口端汞面比氣室端汞面高 4.0 cm；ⓑ開口式，氣室端汞面比開口端汞面高 5.0 cm；ⓒ閉口式（閉口端為真空），兩管汞面高度差 9.0 cm。(1) 實驗當時大氣壓力為 1 atm，求各壓力計內氣體壓力為多少 mmHg？(2) 若將ⓒ的氣體改為開口式壓力計，則開口端汞柱比閉口端汞柱高或低若干 cm？",
+        "question": "（圖說）三個壓力計：ⓐ開口式，開口端汞面比氣室端汞面高 4.0 cm；ⓑ開口式，氣室端汞面比開口端汞面高 5.0 cm；ⓒ閉口式（閉口端為真空），兩管汞面高度差 9.0 cm。(1) 實驗當時大氣壓力為 1 atm，求各壓力計內氣體壓力為多少 mmHg？(2) 若將ⓒ的氣體改為開口式壓力計，則開口端汞柱比閉口端汞柱高或低若干 cm？",
         "options": [],
         "answer": "(1) ⓐ800 mmHg、ⓑ710 mmHg、ⓒ90 mmHg；(2) 低 67 cm",
         "explanation": "(1) 開口式：開口端較高時 P ＝ P大氣 ＋ h ＝ 760 ＋ 40 ＝ 800 mmHg；氣室端較高時 P ＝ P大氣 － h ＝ 760 － 50 ＝ 710 mmHg；閉口式 P ＝ h ＝ 90 mmHg。(2) 90 mmHg 小於大氣壓，改用開口式時開口端汞面較低，差 760 － 90 ＝ 670 mm ＝ 67 cm。",
@@ -13123,7 +13130,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "壓力計的使用",
         "difficulty": "中等",
-        "section": "2-1.2 氣體的壓力"
+        "section": "2-1.2 氣體的壓力",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q5.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q6",
@@ -13208,7 +13216,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-1單選2",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）J 型管的截面積 1.0 cm²，一端封閉充氖及水銀（氖柱長 10 cm），另一端為開口端，開口端水銀面比氖一端的水銀面高 24 cm。大氣壓力為 1 atm，則氖氣的壓力為下列何者？",
+        "question": "（圖說）J 型管的截面積 1.0 cm²，一端封閉充氖及水銀（氖柱長 10 cm），另一端為開口端，開口端水銀面比氖一端的水銀面高 24 cm。大氣壓力為 1 atm，則氖氣的壓力為下列何者？",
         "options": [
           "(A) 24 cmHg",
           "(B) 52 cmHg",
@@ -13227,7 +13235,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "壓力計的使用",
         "difficulty": "易",
-        "section": "2-1 單元練習"
+        "section": "2-1 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q9.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q10",
@@ -13312,7 +13321,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-1單選6",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）開口式壓力計中置入某非揮發性液體甲，開口端液面比氣室端液面高 h。該液體密度為 1.04 g/mL（Hg 密度為 13.6 g/mL）。若大氣壓力為 0.9 atm，h ＝ 10.2 cm，則氣體壓力為多少 mmHg？",
+        "question": "（圖說）開口式壓力計中置入某非揮發性液體甲，開口端液面比氣室端液面高 h。該液體密度為 1.04 g/mL（Hg 密度為 13.6 g/mL）。若大氣壓力為 0.9 atm，h ＝ 10.2 cm，則氣體壓力為多少 mmHg？",
         "options": [
           "(A) 684",
           "(B) 676",
@@ -13331,7 +13340,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "壓力計的計算",
         "difficulty": "中等",
-        "section": "2-1 單元練習"
+        "section": "2-1 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q13.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q14",
@@ -13416,7 +13426,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-1多選4",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）下列各圖均代表氣體壓力計：圖甲為開口式（大氣壓 1 atm），連接 A 氣體一側的汞柱高 80 cm、開口端汞柱高 20 cm；圖乙中 B 氣體壓力為 2 atm，另一端封閉、封住一段氣柱，連接 B 氣體一側的汞柱高 20 cm、封閉端汞柱高 80 cm；圖丙為開口式（大氣壓 1 atm），開口端汞面比 C 氣體一側高 60 cm。下列各項敘述，哪些正確？",
+        "question": "【多選題】（圖說）下列各圖均代表氣體壓力計：圖甲為開口式（大氣壓 1 atm），連接 A 氣體一側的汞柱高 80 cm、開口端汞柱高 20 cm；圖乙中 B 氣體壓力為 2 atm，另一端封閉、封住一段氣柱，連接 B 氣體一側的汞柱高 20 cm、封閉端汞柱高 80 cm；圖丙為開口式（大氣壓 1 atm），開口端汞面比 C 氣體一側高 60 cm。下列各項敘述，哪些正確？",
         "options": [
           "(A) 圖甲中 A 氣體之壓力為 60 cmHg",
           "(B) 圖甲中 A 氣體之壓力為 96 mmHg",
@@ -13435,7 +13445,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "壓力計的計算",
         "difficulty": "中等",
-        "section": "2-1 單元練習"
+        "section": "2-1 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q17.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q18",
@@ -13562,7 +13573,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-2例題2",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）J 型管的截面積 2.0 cm²，一端封閉充氦（氦柱長 10 cm）及水銀，開口端水銀面比氦一端高 24 cm，大氣壓力為 76 cmHg，如欲使氦一端之水銀面上升 2.0 cm，管中尚需加入水銀若干 mL？",
+        "question": "（圖說）J 型管的截面積 2.0 cm²，一端封閉充氦（氦柱長 10 cm）及水銀，開口端水銀面比氦一端高 24 cm，大氣壓力為 76 cmHg，如欲使氦一端之水銀面上升 2.0 cm，管中尚需加入水銀若干 mL？",
         "options": [
           "(A) 25",
           "(B) 29",
@@ -13581,7 +13592,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "波以耳定律（J 型管）",
         "difficulty": "難",
-        "section": "2-2.1 波以耳定律"
+        "section": "2-2.1 波以耳定律",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q24.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q25",
@@ -13876,7 +13888,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-2練習9",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）一管徑均勻、一端開口（通大氣）、另一端接氣體球的水銀壓力計。將 X、Y 兩種不同的理想氣體，分別注入同一壓力計的氣體球中。在標準狀況時，測 X 氣體、Y 氣體個別的壓力，結果量得水銀高度差均為 h 公分，則下列敘述何者正確？",
+        "question": "（圖說）一管徑均勻、一端開口（通大氣）、另一端接氣體球的水銀壓力計。將 X、Y 兩種不同的理想氣體，分別注入同一壓力計的氣體球中。在標準狀況時，測 X 氣體、Y 氣體個別的壓力，結果量得水銀高度差均為 h 公分，則下列敘述何者正確？",
         "options": [
           "(A) X 與 Y 的壓力均為 h cmHg",
           "(B) X 氣體的壓力大於 Y 氣體的壓力",
@@ -13895,7 +13907,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "亞佛加厥定律、壓力計",
         "difficulty": "中等",
-        "section": "2-2.3 亞佛加厥定律"
+        "section": "2-2.3 亞佛加厥定律",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q37.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q38",
@@ -14108,7 +14121,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-2單選9",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）有一測量氣體裝置：左邊為開口的水銀槽，以透明軟管與右邊的量氣管相連，量氣管內封有氣體，左邊水銀面比右邊高 h。定溫時在一大氣壓力下，開始時左右兩邊水銀面的高度差 h 為 380 mmHg，氣體體積為 V₀。如將左邊的水銀槽降低，使左右兩邊水銀面的高度差減少至 h 為 190 mmHg，此時右邊量氣管內 V 之變化為何？",
+        "question": "（圖說）有一測量氣體裝置：左邊為開口的水銀槽，以透明軟管與右邊的量氣管相連，量氣管內封有氣體，左邊水銀面比右邊高 h。定溫時在一大氣壓力下，開始時左右兩邊水銀面的高度差 h 為 380 mmHg，氣體體積為 V₀。如將左邊的水銀槽降低，使左右兩邊水銀面的高度差減少至 h 為 190 mmHg，此時右邊量氣管內 V 之變化為何？",
         "options": [
           "(A) V 減半",
           "(B) V 增大 20%",
@@ -14127,7 +14140,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "波以耳定律（壓力計）",
         "difficulty": "中等",
-        "section": "2-2 單元練習"
+        "section": "2-2 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q46.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q47",
@@ -14160,7 +14174,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-2單選11",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）U 形玻璃管，口徑為 0.50 公分，左管上端封閉、右管開口。於 25°C，1 大氣壓時，已知左方玻璃管上方密閉空間中的氣體為氖氣，其體積為 5 毫升，此時右管汞面比左管高 14 公分。假設氖氣可視同理想氣體，今在右方開口處加入一些汞，使得最終左右汞柱高度差為 24 公分。試問此時氖氣的體積為若干毫升？〔91指考〕",
+        "question": "（圖說）U 形玻璃管，口徑為 0.50 公分，左管上端封閉、右管開口。於 25°C，1 大氣壓時，已知左方玻璃管上方密閉空間中的氣體為氖氣，其體積為 5 毫升，此時右管汞面比左管高 14 公分。假設氖氣可視同理想氣體，今在右方開口處加入一些汞，使得最終左右汞柱高度差為 24 公分。試問此時氖氣的體積為若干毫升？〔91指考〕",
         "options": [
           "(A) 2.9",
           "(B) 3.5",
@@ -14179,7 +14193,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "波以耳定律（U 形管）",
         "difficulty": "中等",
-        "section": "2-2 單元練習"
+        "section": "2-2 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q48.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q49",
@@ -14290,7 +14305,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-2非選1",
         "type": "fill_blank",
-        "question": "在 25°C、1 大氣壓下，取 0.5 公升氬氣，於溫度不變的情況下，測得壓力 P（atm）與體積 V（升）：1.00/0.50、1.11/0.45、1.25/0.40、1.43/0.35、1.67/0.30、1.99/0.25、2.50/0.20、5.00/0.10。有五位學生以不同方式作圖（依原講義附圖以文字描述）：甲圖 P 對 V，點呈遞減曲線；乙圖 P 對 1/V，點呈遞減曲線；丙圖 P 對 V，點呈遞增；丁圖 P 對 1/V，點呈通過原點的直線；戊圖 PV 對 V，點為一水平線，但 PV 值約為 5。(1) 甲圖至戊圖中，哪二個圖是符合實驗數據的正確作圖？(2) 承上題，若要預測壓力為 0.5 大氣壓時氬氣的體積，使用哪一個圖較佳？〔95學測〕",
+        "question": "在 25°C、1 大氣壓下，取 0.5 公升氬氣，於溫度不變的情況下，測得壓力 P（atm）與體積 V（升）：1.00/0.50、1.11/0.45、1.25/0.40、1.43/0.35、1.67/0.30、1.99/0.25、2.50/0.20、5.00/0.10。有五位學生以不同方式作圖（圖說）：甲圖 P 對 V，點呈遞減曲線；乙圖 P 對 1/V，點呈遞減曲線；丙圖 P 對 V，點呈遞增；丁圖 P 對 1/V，點呈通過原點的直線；戊圖 PV 對 V，點為一水平線，但 PV 值約為 5。(1) 甲圖至戊圖中，哪二個圖是符合實驗數據的正確作圖？(2) 承上題，若要預測壓力為 0.5 大氣壓時氬氣的體積，使用哪一個圖較佳？〔95學測〕",
         "options": [],
         "answer": "(1) 甲、丁；(2) 丁",
         "explanation": "PV ＝ 0.5（定值）。甲：P 隨 V 增大而減小呈雙曲線，正確；乙：P 對 1/V 應為正比直線，不應遞減；丙：P 不會隨 V 增大；丁：P ∝ 1/V，直線，正確；戊：PV 為定值 0.5，不是 5。直線最方便外插預測，故用丁圖（P ＝ 0.5 時 1/V ＝ 1，V ＝ 1.0 L）。",
@@ -14303,7 +14318,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "波以耳定律的作圖",
         "difficulty": "中等",
-        "section": "2-2 單元練習"
+        "section": "2-2 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q53.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q54",
@@ -14486,7 +14502,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3例題4",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）某定量理想氣體於 P₁ 與 P₂ atm 下，分別測其體積（L）與溫度（°C）關係為兩條直線：0°C 時，P₁ 線的體積為 11.2 L，P₂ 線的體積為 5.6 L，兩線皆隨溫度上升（P₁ 線較陡）。若 P₁ ＝ 3 atm，則 P₂ 為若干 atm？",
+        "question": "（圖說）某定量理想氣體於 P₁ 與 P₂ atm 下，分別測其體積（L）與溫度（°C）關係為兩條直線：0°C 時，P₁ 線的體積為 11.2 L，P₂ 線的體積為 5.6 L，兩線皆隨溫度上升（P₁ 線較陡）。若 P₁ ＝ 3 atm，則 P₂ 為若干 atm？",
         "options": [
           "(A) 1",
           "(B) 2",
@@ -14505,7 +14521,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "中等",
-        "section": "2-3.3 理想氣體方程的應用"
+        "section": "2-3.3 理想氣體方程的應用",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q61.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q62",
@@ -14538,7 +14555,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3例題5",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）在 150 K、1 atm 下取 1 m³ 的空氣，其壓力、體積變化為 A(1 m³, 1 atm) → B(1 m³, 3 atm) → C(2 m³, 3 atm) → 沿曲線到 D(6 m³, 1 atm)。依圖所示，下列敘述哪些正確？",
+        "question": "【多選題】（圖說）在 150 K、1 atm 下取 1 m³ 的空氣，其壓力、體積變化為 A(1 m³, 1 atm) → B(1 m³, 3 atm) → C(2 m³, 3 atm) → 沿曲線到 D(6 m³, 1 atm)。依圖所示，下列敘述哪些正確？",
         "options": [
           "(A) 由 A 至 B 的變化因素為溫度",
           "(B) C 點溫度為 450 K",
@@ -14557,7 +14574,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "中等",
-        "section": "2-3.3 理想氣體方程的應用"
+        "section": "2-3.3 理想氣體方程的應用",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q63.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q64",
@@ -14582,14 +14600,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "中等",
-        "section": "2-3.3 理想氣體方程的應用"
+        "section": "2-3.3 理想氣體方程的應用",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q64.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q65",
         "materialId": "tm_28",
         "questionNumber": "2-3例題6",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）有關理想氣體的函數圖，下列圖形何者錯誤？",
+        "question": "（圖說）有關理想氣體的函數圖，下列圖形何者錯誤？",
         "options": [
           "(A) P 對 V 的雙曲線，n₁ ＝ n₂、T₁＜T₂，T₂ 曲線在 T₁ 曲線外側",
           "(B) V 對攝氏溫度 t 的直線，n₁ ＝ n₂、P₁＞P₂，P₂ 直線在 P₁ 直線上方",
@@ -14608,14 +14627,15 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "中等",
-        "section": "2-3.3 理想氣體方程的應用"
+        "section": "2-3.3 理想氣體方程的應用",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q65.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q66",
         "materialId": "tm_28",
         "questionNumber": "2-3練習6",
         "type": "calculation",
-        "question": "（依原講義附圖以文字描述）密度（g/L）對溫度（K）圖上有兩條遞減曲線，200 K 時 A 曲線的密度為 4.00 g/L，B 曲線為 6.00 g/L。(1) 若 A 曲線表某氣體在 1 atm 下之密度與溫度關係，則此氣體分子量為何？(A) 16.4 (B) 24.5 (C) 32.8 (D) 49.0 (E) 65.6　(2) 承上題，若 A、B 分別表示 1 atm、2 atm 下之不同氣體，則 A、B 分子量比為何？(A) 3/2 (B) 4/3 (C) 3 (D) 1/3 (E) 3/4",
+        "question": "（圖說）密度（g/L）對溫度（K）圖上有兩條遞減曲線，200 K 時 A 曲線的密度為 4.00 g/L，B 曲線為 6.00 g/L。(1) 若 A 曲線表某氣體在 1 atm 下之密度與溫度關係，則此氣體分子量為何？(A) 16.4 (B) 24.5 (C) 32.8 (D) 49.0 (E) 65.6　(2) 承上題，若 A、B 分別表示 1 atm、2 atm 下之不同氣體，則 A、B 分子量比為何？(A) 3/2 (B) 4/3 (C) 3 (D) 1/3 (E) 3/4",
         "options": [],
         "answer": "(1) (E) 65.6；(2) (B) 4/3",
         "explanation": "(1) M ＝ dRT/P ＝ 4.00 × 0.082 × 200 ÷ 1 ＝ 65.6。(2) M ∝ d/P（同溫）：A：B ＝ (4.00/1)：(6.00/2) ＝ 4：3。",
@@ -14628,7 +14648,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式求分子量",
         "difficulty": "中等",
-        "section": "2-3.3 理想氣體方程的應用"
+        "section": "2-3.3 理想氣體方程的應用",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q66.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q67",
@@ -14687,7 +14708,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3單選3",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）如圖，氣體球 A 接開口式水銀壓力計，開口端通大氣（760 mmHg），兩管汞面高度差為 x（氣體端汞面較高）。1.0 atm 下，27°C 時，A 之體積為 6 L，其中含有 1.12 g 的氮氣，若忽略管徑體積下，試計算水銀壓力計之高度 x 約為若干 mm？（原子量：N ＝ 14）",
+        "question": "（圖說）如圖，氣體球 A 接開口式水銀壓力計，開口端通大氣（760 mmHg），兩管汞面高度差為 x（氣體端汞面較高）。1.0 atm 下，27°C 時，A 之體積為 6 L，其中含有 1.12 g 的氮氣，若忽略管徑體積下，試計算水銀壓力計之高度 x 約為若干 mm？（原子量：N ＝ 14）",
         "options": [
           "(A) 124",
           "(B) 750",
@@ -14706,7 +14727,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式、壓力計",
         "difficulty": "中等",
-        "section": "2-3 單元練習"
+        "section": "2-3 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q69.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q70",
@@ -14843,7 +14865,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3單選9",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）在一個體積可固定的汽缸內，充入一種氣體，以研究氣體體積不變時壓力與溫度的關係。今在固定體積做實驗時，得其關係如圖中的丙線（通過原點的直線）。圖中另有：甲線為通過原點、比丙陡的直線；乙線為由原點出發、向上彎曲的曲線；丁線為由原點出發、向下彎曲趨平的曲線；戊線為通過原點、比丙平緩的直線。如移動活塞將體積壓小並固定後，再做同樣的實驗，則圖中哪一條線可以表示其結果？（假設此氣體為理想氣體）",
+        "question": "（圖說）在一個體積可固定的汽缸內，充入一種氣體，以研究氣體體積不變時壓力與溫度的關係。今在固定體積做實驗時，得其關係如圖中的丙線（通過原點的直線）。圖中另有：甲線為通過原點、比丙陡的直線；乙線為由原點出發、向上彎曲的曲線；丁線為由原點出發、向下彎曲趨平的曲線；戊線為通過原點、比丙平緩的直線。如移動活塞將體積壓小並固定後，再做同樣的實驗，則圖中哪一條線可以表示其結果？（假設此氣體為理想氣體）",
         "options": [
           "(A) 丙",
           "(B) 甲",
@@ -14862,7 +14884,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "中等",
-        "section": "2-3 單元練習"
+        "section": "2-3 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q75.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q76",
@@ -14946,7 +14969,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3單選13",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）定量的理想氣體，在定容下，溫度由 36°C 加熱至 80°C 後，再於定溫下使體積膨脹，則其狀態變化過程可以圖示為下列何者？",
+        "question": "（圖說）定量的理想氣體，在定容下，溫度由 36°C 加熱至 80°C 後，再於定溫下使體積膨脹，則其狀態變化過程可以圖示為下列何者？",
         "options": [
           "(A) V 對 P 圖：先水平向右，再沿曲線向右下",
           "(B) PV 對 P 圖：先斜線向右上，再水平向右",
@@ -14965,7 +14988,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "難",
-        "section": "2-3 單元練習"
+        "section": "2-3 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q79.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q80",
@@ -15024,7 +15048,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3多選3",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）關於理想氣體，下列各圖哪些正確？（但假定該圖中未曾出現之變數均為常數）",
+        "question": "【多選題】（圖說）關於理想氣體，下列各圖哪些正確？（但假定該圖中未曾出現之變數均為常數）",
         "options": [
           "(A) V 對 P：雙曲線",
           "(B) PV 對 T：通過原點的直線",
@@ -15043,7 +15067,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式（圖形）",
         "difficulty": "中等",
-        "section": "2-3 單元練習"
+        "section": "2-3 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q82.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q83",
@@ -15102,7 +15127,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3多選6",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）在溫度 0°C，分別測量 1 mol 氫、甲烷、二氧化碳三種氣體的體積和壓力，作成 PV/nRT 與壓力（0～500 atm）的關係圖①：H₂ 由 1.0 緩慢上升；CH₄ 先降到約 0.8 再上升；CO₂ 先急降到約 0.3 再上升。另在壓力 1 大氣壓，分別測量 1 mol 氫、氮、二氧化碳三種氣體的體積和溫度，作成 PV/nRT 與溫度（0～500 K）的關係圖②（縱軸約 0.99～1.00）：H₂ 幾乎貼在 1.00；N₂ 由低溫 0.99 以下上升，常溫附近已很接近 1.00；CO₂ 上升較慢，仍明顯低於 1.00。兩圖中 PV/nRT ＝ 1 的虛線為理想氣體。根據圖①與圖②實驗結果，下列哪些敘述正確？",
+        "question": "【多選題】（圖說）在溫度 0°C，分別測量 1 mol 氫、甲烷、二氧化碳三種氣體的體積和壓力，作成 PV/nRT 與壓力（0～500 atm）的關係圖①：H₂ 由 1.0 緩慢上升；CH₄ 先降到約 0.8 再上升；CO₂ 先急降到約 0.3 再上升。另在壓力 1 大氣壓，分別測量 1 mol 氫、氮、二氧化碳三種氣體的體積和溫度，作成 PV/nRT 與溫度（0～500 K）的關係圖②（縱軸約 0.99～1.00）：H₂ 幾乎貼在 1.00；N₂ 由低溫 0.99 以下上升，常溫附近已很接近 1.00；CO₂ 上升較慢，仍明顯低於 1.00。兩圖中 PV/nRT ＝ 1 的虛線為理想氣體。根據圖①與圖②實驗結果，下列哪些敘述正確？",
         "options": [
           "(A) 溫度 0°C，三種氣體中，甲烷最接近理想氣體",
           "(B) 壓力 1 大氣壓與常溫時，三種氣體中，氮氣最接近理想氣體",
@@ -15122,7 +15147,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "理想氣體與真實氣體",
         "difficulty": "中等",
-        "section": "2-3 單元練習"
+        "section": "2-3 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q85.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q86",
@@ -15149,7 +15175,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-3非選2",
         "type": "calculation",
-        "question": "（依原講義附圖以文字描述）一定量的氦，其壓力與體積之關係圖（P 單位 atm，V 單位 L）上有：曲線 AOB 經過 B(1 L, 4 atm)、O(2 L, 2 atm)、A(4 L, 1 atm)，係在 27°C 時測得；另有水平線 B → C(4 L, 4 atm)，以及通過原點方向的直線 O → P(3 L, 3 atm) → C。試回答下列各題：(1) 曲線 AOB 可應用下列哪一個定律說明之？(2) 圖中由 B 點到 C 點可應用哪一定律加以說明？(3) 圖中由 O 點到 P 點可應用哪一定律加以說明？〔(1)～(3) 選項：(A) 波以耳定律 (B) 查理定律 (C) 亞佛加厥定律 (D) 波－查定律 (E) 給呂薩克定律〕(4) C 點的溫度為若干 °C？(A) 27 (B) 108 (C) 300 (D) 927 (E) 1200",
+        "question": "（圖說）一定量的氦，其壓力與體積之關係圖（P 單位 atm，V 單位 L）上有：曲線 AOB 經過 B(1 L, 4 atm)、O(2 L, 2 atm)、A(4 L, 1 atm)，係在 27°C 時測得；另有水平線 B → C(4 L, 4 atm)，以及通過原點方向的直線 O → P(3 L, 3 atm) → C。試回答下列各題：(1) 曲線 AOB 可應用下列哪一個定律說明之？(2) 圖中由 B 點到 C 點可應用哪一定律加以說明？(3) 圖中由 O 點到 P 點可應用哪一定律加以說明？〔(1)～(3) 選項：(A) 波以耳定律 (B) 查理定律 (C) 亞佛加厥定律 (D) 波－查定律 (E) 給呂薩克定律〕(4) C 點的溫度為若干 °C？(A) 27 (B) 108 (C) 300 (D) 927 (E) 1200",
         "options": [],
         "answer": "(1) (A)；(2) (B)；(3) (D)；(4) (D) 927",
         "explanation": "(1) AOB 上 PV ＝ 4 為定值，是 27°C 的等溫線，波以耳定律。(2) B → C 壓力不變、體積增大，查理定律。(3) O → P 壓力與體積同時改變，用波－查定律（PV/T 為定值）。(4) T ∝ PV：C 點 PV ＝ 16 是 O 點的 4 倍，T ＝ 300 × 4 ＝ 1200 K ＝ 927°C。",
@@ -15162,7 +15188,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "氣體定律（圖形）",
         "difficulty": "難",
-        "section": "2-3 單元練習"
+        "section": "2-3 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q87.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q88",
@@ -15269,7 +15296,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4練習3",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）三個分別裝有相同理想氣體的固定體積容器以活栓相連，開始時各活栓關閉，各容器內的氣體體積及壓力為：3.00 L、3.00 atm；4.00 L、4.00 atm；5.00 L、5.00 atm。定溫下，將各活栓打開，當容器內氣體達到平衡後，若忽略各活栓的體積，則容器內的壓力應變為多少大氣壓（atm）？〔96指考〕",
+        "question": "（圖說）三個分別裝有相同理想氣體的固定體積容器以活栓相連，開始時各活栓關閉，各容器內的氣體體積及壓力為：3.00 L、3.00 atm；4.00 L、4.00 atm；5.00 L、5.00 atm。定溫下，將各活栓打開，當容器內氣體達到平衡後，若忽略各活栓的體積，則容器內的壓力應變為多少大氣壓（atm）？〔96指考〕",
         "options": [
           "(A) 3.60",
           "(B) 3.98",
@@ -15288,14 +15315,15 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "易",
-        "section": "2-4.2 莫耳分率"
+        "section": "2-4.2 莫耳分率",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q92.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q93",
         "materialId": "tm_28",
         "questionNumber": "2-4例題4",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）甲（1 L）、乙（2 L）、丙（3 L）三容器以活門相連，分別裝有 HCl(g)、NH₃(g) 及 CH₄(g)，當活門關閉時，測得各氣體壓力均為 2 atm，若將容器間的活門打開，三容器氣體混合均勻後，求 NH₃ 所占的莫耳分率？（補充試題）",
+        "question": "（圖說）甲（1 L）、乙（2 L）、丙（3 L）三容器以活門相連，分別裝有 HCl(g)、NH₃(g) 及 CH₄(g)，當活門關閉時，測得各氣體壓力均為 2 atm，若將容器間的活門打開，三容器氣體混合均勻後，求 NH₃ 所占的莫耳分率？（補充試題）",
         "options": [
           "(A) 0.10",
           "(B) 0.15",
@@ -15314,7 +15342,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "混合時發生反應",
         "difficulty": "中等",
-        "section": "2-4.2 莫耳分率"
+        "section": "2-4.2 莫耳分率",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q93.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q94",
@@ -15601,7 +15630,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4單選9",
         "type": "single_choice",
-        "question": "（第9–10題為題組，依原講義附圖以文字描述）兩個以細管相連的玻璃球（細管體積可忽略不計），大球 0.4 升充滿 1.5 大氣壓的氮氣，小球 0.1 升充滿 3 大氣壓的氦氣。若維持一定溫度，並將兩球中間的開關打開，達平衡後，大球內的壓力為多少大氣壓？",
+        "question": "（第9–10題為題組；圖說）兩個以細管相連的玻璃球（細管體積可忽略不計），大球 0.4 升充滿 1.5 大氣壓的氮氣，小球 0.1 升充滿 3 大氣壓的氦氣。若維持一定溫度，並將兩球中間的開關打開，達平衡後，大球內的壓力為多少大氣壓？",
         "options": [
           "(A) 1.4",
           "(B) 1.5",
@@ -15620,7 +15649,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "易",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q105.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q106",
@@ -15653,7 +15683,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4單選11",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）有三個體積一定之容器甲（5 升、0.20 atm）、乙（4 升、2.0 atm）、丙（3 升、1.5 atm），以可膨脹之氣球用管路聯結在一起。開始時各活栓關閉，現將各活栓打開，當系統內之壓力達到 1 atm 時，問氣球的體積為幾升？",
+        "question": "（圖說）有三個體積一定之容器甲（5 升、0.20 atm）、乙（4 升、2.0 atm）、丙（3 升、1.5 atm），以可膨脹之氣球用管路聯結在一起。開始時各活栓關閉，現將各活栓打開，當系統內之壓力達到 1 atm 時，問氣球的體積為幾升？",
         "options": [
           "(A) 1.13",
           "(B) 1.50",
@@ -15672,7 +15702,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "中等",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q107.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q108",
@@ -15835,7 +15866,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4單選18",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）A、B 兩容器以開關 C 相連，開關 C 關閉時，A 容器內裝 H₂ 壓力為 5 atm，B 容器內裝 N₂ 壓力為 3 atm，當開關 C 開啟後，平衡壓力變為 3.4 atm，則下列敘述何者錯誤？",
+        "question": "（圖說）A、B 兩容器以開關 C 相連，開關 C 關閉時，A 容器內裝 H₂ 壓力為 5 atm，B 容器內裝 N₂ 壓力為 3 atm，當開關 C 開啟後，平衡壓力變為 3.4 atm，則下列敘述何者錯誤？",
         "options": [
           "(A) P_A ＝ P_B ＝ 3.4 atm",
           "(B) V_A：V_B ＝ 1：4",
@@ -15854,7 +15885,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "難",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q114.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q115",
@@ -15939,7 +15971,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4多選3",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）甲瓶（He，1.0 L，63.6 mmHg）、乙瓶（N₂，1.0 L，21.2 mmHg）、丙瓶（H₂，0.5 L，42.4 mmHg）以活栓相連。活栓都打開平衡以後，下列敘述哪些正確？（假設溫度不變，玻璃管體積可忽略）",
+        "question": "【多選題】（圖說）甲瓶（He，1.0 L，63.6 mmHg）、乙瓶（N₂，1.0 L，21.2 mmHg）、丙瓶（H₂，0.5 L，42.4 mmHg）以活栓相連。活栓都打開平衡以後，下列敘述哪些正確？（假設溫度不變，玻璃管體積可忽略）",
         "options": [
           "(A) 在丙瓶中，各氣體的分壓以氦為最大",
           "(B) 乙瓶中總壓力是 42.4 mmHg",
@@ -15958,7 +15990,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "中等",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q118.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q119",
@@ -15991,7 +16024,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4多選5",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）容器 A 和 B 含有不同數量的氦原子（He）和氫分子（H₂）：容器 A 有 4 個 H₂、4 個 He；容器 B 有 8 個 H₂、6 個 He。若容器 B 的體積為容器 A 的 2 倍，且兩容器之溫度相同，而所有的氣體均可視為理想氣體，則下列哪些敘述正確？〔99指考〕",
+        "question": "【多選題】（圖說）容器 A 和 B 含有不同數量的氦原子（He）和氫分子（H₂）：容器 A 有 4 個 H₂、4 個 He；容器 B 有 8 個 H₂、6 個 He。若容器 B 的體積為容器 A 的 2 倍，且兩容器之溫度相同，而所有的氣體均可視為理想氣體，則下列哪些敘述正確？〔99指考〕",
         "options": [
           "(A) 容器 A 中之氫與氦的分壓相同",
           "(B) 容器 B 之氣體密度較容器 A 大",
@@ -16010,7 +16043,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "分壓、氣體動力論",
         "difficulty": "中等",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q120.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q121",
@@ -16037,7 +16071,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "2-4非選2",
         "type": "calculation",
-        "question": "（依原講義附圖以文字描述）A（4 L，3 atm NO）、B（3 L，2 atm N₂）、C（2 L，3 atm O₂）三個容器，中間以細管及活栓 T₁（A、B 間）、T₂（B、C 間）相連（細管體積忽略不計）。活栓 T₁、T₂ 為關閉狀態，常溫下依題意回答下列問題：(1) 活栓 T₁、T₂ 均關閉時，A、B、C 三容器內，所含氣體的莫耳數比？(2) 僅將活栓 T₂ 打開，當 B、C 兩容器達平衡時，則 C 容器總壓變為多少 atm？(3) 將活栓 T₁、T₂ 打開，當 A、B、C 三容器達平衡時，則 N₂ 氣體所占的莫耳分率為多少？",
+        "question": "（圖說）A（4 L，3 atm NO）、B（3 L，2 atm N₂）、C（2 L，3 atm O₂）三個容器，中間以細管及活栓 T₁（A、B 間）、T₂（B、C 間）相連（細管體積忽略不計）。活栓 T₁、T₂ 為關閉狀態，常溫下依題意回答下列問題：(1) 活栓 T₁、T₂ 均關閉時，A、B、C 三容器內，所含氣體的莫耳數比？(2) 僅將活栓 T₂ 打開，當 B、C 兩容器達平衡時，則 C 容器總壓變為多少 atm？(3) 將活栓 T₁、T₂ 打開，當 A、B、C 三容器達平衡時，則 N₂ 氣體所占的莫耳分率為多少？",
         "options": [],
         "answer": "(1) 2：1：1；(2) 2.4 atm；(3) 1/3",
         "explanation": "(1) n ∝ PV：12：6：6 ＝ 2：1：1。(2) (6 ＋ 6) ÷ 5 ＝ 2.4 atm。(3) 2NO ＋ O₂ → 2NO₂：NO 12 與 O₂ 6 恰好完全反應生成 NO₂ 12，再加 N₂ 6，X(N₂) ＝ 6/18 ＝ 1/3。",
@@ -16050,7 +16084,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "混合時發生反應",
         "difficulty": "難",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q122.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q123",
@@ -16103,7 +16138,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "大考風向單選2",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）王同學以排水集氣法做收集氧氣的實驗。當收集氧氣到達圖 (a) 的程度時（瓶內水面比瓶外高 h₁，瓶內氣柱高 h₂），隨即停止收集，並將收集瓶向下壓如圖 (b)（瓶內水面比瓶外高 h₃，瓶內氣柱高 h₄），使得 h₃ ＋ h₄ 小於 h₁ ＋ h₂。若根據上述實驗，則下列哪一敘述正確？（假設大氣壓力為一大氣壓，溫度為 25°C）〔106指考〕",
+        "question": "（圖說）王同學以排水集氣法做收集氧氣的實驗。當收集氧氣到達圖 (a) 的程度時（瓶內水面比瓶外高 h₁，瓶內氣柱高 h₂），隨即停止收集，並將收集瓶向下壓如圖 (b)（瓶內水面比瓶外高 h₃，瓶內氣柱高 h₄），使得 h₃ ＋ h₄ 小於 h₁ ＋ h₂。若根據上述實驗，則下列哪一敘述正確？（假設大氣壓力為一大氣壓，溫度為 25°C）〔106指考〕",
         "options": [
           "(A) h₁ 等於 h₃",
           "(B) h₂ 小於 h₄",
@@ -16122,7 +16157,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "排水集氣法的壓力校正",
         "difficulty": "難",
-        "section": "大考風向 歷屆試題"
+        "section": "大考風向 歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q125.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q126",
@@ -16259,7 +16295,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_28",
         "questionNumber": "大考風向單選10",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）下列哪一個圖最接近 2.0 莫耳的理想氣體在 3.0 大氣壓下，其體積（L）與絕對溫度（K）的關係？〔97指考〕",
+        "question": "（圖說）下列哪一個圖最接近 2.0 莫耳的理想氣體在 3.0 大氣壓下，其體積（L）與絕對溫度（K）的關係？〔97指考〕",
         "options": [
           "(A) 通過原點的直線，斜率 ＝ 0.0547",
           "(B) 通過原點的直線，斜率 ＝ 0.1094",
@@ -16278,7 +16314,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "查理定律（圖形）",
         "difficulty": "易",
-        "section": "大考風向 歷屆試題"
+        "section": "大考風向 歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q131.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
       },
       {
         "id": "tm_28_q132",
