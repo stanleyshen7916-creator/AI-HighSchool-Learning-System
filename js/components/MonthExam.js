@@ -174,6 +174,8 @@ AHS.MonthExam = (function () {
         });
         return el("li", { class: "mx-q" }, [
           el("p", { class: "mx-q__text", text: (idx + 1) + ". " + (it.multi ? "【多選題，全部選對才得分】" : "") + q.question }),
+          /* 2026-10-10: 題目附圖（題組題常要看圖作答）。 */
+          q.figureSvg ? el("div", { class: "mx-q__figure", html: q.figureSvg }) : null,
           el("div", { class: "mx-opts" }, btns)
         ]);
       });
@@ -220,6 +222,7 @@ AHS.MonthExam = (function () {
           if (wrongOnly && row.correct) { return null; }
           return el("li", { class: "mx-q " + (row.correct ? "is-correct" : "is-wrong"), value: String(i + 1) }, [
             el("p", { class: "mx-q__text", text: (i + 1) + ". " + row.question }),
+            (function () { var fq = RT().findQuestion(row.qid); return fq && fq.figureSvg ? el("div", { class: "mx-q__figure", html: fq.figureSvg }) : null; })(),
             el("ul", { class: "mx-ans" }, row.options.map(function (o, k) {
               var isAns = row.correctOptions ? row.correctOptions.indexOf(o) !== -1 : o === row.answer;
               var isGiven = row.givenOptions ? row.givenOptions.indexOf(o) !== -1 : o === row.given;

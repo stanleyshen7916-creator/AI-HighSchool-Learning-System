@@ -1285,7 +1285,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.95,
       "needsReview": false,
-      "question": "（依原講義附圖以文字描述）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。「甲」的分子組成中，應不會出現",
+      "question": "（圖說）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。「甲」的分子組成中，應不會出現",
       "options": [
         "(A) CH₄",
         "(B) NH₃",
@@ -1299,7 +1299,8 @@
       "version": "1",
       "createdDate": "2026-10-09T00:00:00Z",
       "knowledgePoint": "尤里與米勒的實驗",
-      "difficulty": "易"
+      "difficulty": "易",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_54_q56",
@@ -1310,7 +1311,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.95,
       "needsReview": false,
-      "question": "（依原講義附圖以文字描述）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，在何處可以收集到有機物？",
+      "question": "（圖說）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，在何處可以收集到有機物？",
       "options": [
         "(A) 甲",
         "(B) 乙",
@@ -1323,7 +1324,8 @@
       "version": "1",
       "createdDate": "2026-10-09T00:00:00Z",
       "knowledgePoint": "尤里與米勒的實驗",
-      "difficulty": "易"
+      "difficulty": "易",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_54_q57",
@@ -1334,7 +1336,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.95,
       "needsReview": false,
-      "question": "（依原講義附圖以文字描述）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，該有機物可能為",
+      "question": "（圖說）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，該有機物可能為",
       "options": [
         "(A) 礦物質",
         "(B) 胺基酸",
@@ -1348,7 +1350,8 @@
       "version": "1",
       "createdDate": "2026-10-09T00:00:00Z",
       "knowledgePoint": "尤里與米勒的實驗",
-      "difficulty": "易"
+      "difficulty": "易",
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
     },
     {
       "questionId": "tm_54_q58",

@@ -228,6 +228,8 @@
   border: 1px solid var(--line); border-radius: var(--radius-md); background-color: var(--bg);
 }
 .qcard__figure svg { max-width: 100%; height: auto; max-height: 320px; }
+/* 2026-10-10: figures cropped from the original handout are <img>. */
+.qcard__figure img, .qreview__item-figure img { display: block; max-width: 100%; height: auto; max-height: 360px; border-radius: 6px; }
 .qcard__options { display: flex; flex-direction: column; gap: 10px; }
 .qcard-option {
   display: flex; align-items: center; gap: 12px;

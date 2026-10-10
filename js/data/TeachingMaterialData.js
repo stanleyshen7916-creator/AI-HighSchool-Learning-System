@@ -27249,7 +27249,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_54",
         "questionNumber": "綜合單選11",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。「甲」的分子組成中，應不會出現",
+        "question": "（圖說）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。「甲」的分子組成中，應不會出現",
         "options": [
           "(A) CH₄",
           "(B) NH₃",
@@ -27267,14 +27267,15 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "尤里與米勒的實驗",
         "difficulty": "易",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_54_q56",
         "materialId": "tm_54",
         "questionNumber": "綜合單選12",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，在何處可以收集到有機物？",
+        "question": "（圖說）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，在何處可以收集到有機物？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -27291,14 +27292,15 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "尤里與米勒的實驗",
         "difficulty": "易",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_54_q57",
         "materialId": "tm_54",
         "questionNumber": "綜合單選13",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，該有機物可能為",
+        "question": "（圖說）尤里與米勒的實驗儀器：上方玻璃球「甲」內有電極放電；氣體經冷凝管冷卻後流入下方收集瓶「乙」；左下方加熱的燒瓶「丙」內為沸水，產生水蒸氣循環。承上題，該有機物可能為",
         "options": [
           "(A) 礦物質",
           "(B) 胺基酸",
@@ -27316,7 +27318,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "尤里與米勒的實驗",
         "difficulty": "易",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_54_q58",
@@ -27812,7 +27815,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P28基礎3",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為觀察梨子果肉中的一種特殊的細胞（細胞壁極厚、細胞腔很小的石細胞），請問有關該細胞的說明，何者正確？",
+        "question": "（圖說）附圖為觀察梨子果肉中的一種特殊的細胞（細胞壁極厚、細胞腔很小的石細胞），請問有關該細胞的說明，何者正確？",
         "options": [
           "(A) 為活細胞",
           "(B) 具有初生細胞壁",
@@ -27830,7 +27833,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "石細胞",
         "difficulty": "易",
-        "section": "2-1.1 植物體細胞的種類"
+        "section": "2-1.1 植物體細胞的種類",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q8.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q9",
@@ -28037,7 +28041,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P33基礎5",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為一種植物組織的顯微照片（由許多細長、紡錘狀、縱向排列的細胞組成）。請問附圖為哪一種植物組織？",
+        "question": "（圖說）附圖為一種植物組織的顯微照片（由許多細長、紡錘狀、縱向排列的細胞組成）。請問附圖為哪一種植物組織？",
         "options": [
           "(A) 表皮組織",
           "(B) 維管束組織",
@@ -28055,7 +28059,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束組織",
         "difficulty": "易",
-        "section": "2-1.2 植物體的組織"
+        "section": "2-1.2 植物體的組織",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q18.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q19",
@@ -28112,7 +28117,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P34單選3",
         "type": "single_choice",
-        "question": "（第3～4題為題組）（依原講義附圖以文字描述）附圖中的甲、乙、丙、丁，為植物體中不同類型的細胞：甲為細長、兩端尖細、壁上有環紋或螺紋增厚的細胞；乙為上下相接、橫隔有篩板的長管狀細胞；丙為緊貼在乙旁邊、具有細胞核的小型細胞；丁為兩端開口、上下相接成管、壁上有壁孔的粗大管狀細胞。下列選項中，關於這四種細胞與組織分類的配對，何者正確？",
+        "question": "（第3～4題為題組）（圖說）附圖中的甲、乙、丙、丁，為植物體中不同類型的細胞：甲為細長、兩端尖細、壁上有環紋或螺紋增厚的細胞；乙為上下相接、橫隔有篩板的長管狀細胞；丙為緊貼在乙旁邊、具有細胞核的小型細胞；丁為兩端開口、上下相接成管、壁上有壁孔的粗大管狀細胞。下列選項中，關於這四種細胞與組織分類的配對，何者正確？",
         "options": [
           "(A) 甲－表皮組織",
           "(B) 乙－維管束組織",
@@ -28130,14 +28135,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束組織的細胞",
         "difficulty": "中等",
-        "section": "2-1 課後演練"
+        "section": "2-1 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q21.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q22",
         "materialId": "tm_56",
         "questionNumber": "P34單選4",
         "type": "single_choice",
-        "question": "（第3～4題為題組）（依原講義附圖以文字描述）附圖中的甲、乙、丙、丁，為植物體中不同類型的細胞：甲為細長、兩端尖細、壁上有環紋或螺紋增厚的細胞；乙為上下相接、橫隔有篩板的長管狀細胞；丙為緊貼在乙旁邊、具有細胞核的小型細胞；丁為兩端開口、上下相接成管、壁上有壁孔的粗大管狀細胞。下列關於細胞甲～丁的敘述何者正確？",
+        "question": "（第3～4題為題組）（圖說）附圖中的甲、乙、丙、丁，為植物體中不同類型的細胞：甲為細長、兩端尖細、壁上有環紋或螺紋增厚的細胞；乙為上下相接、橫隔有篩板的長管狀細胞；丙為緊貼在乙旁邊、具有細胞核的小型細胞；丁為兩端開口、上下相接成管、壁上有壁孔的粗大管狀細胞。下列關於細胞甲～丁的敘述何者正確？",
         "options": [
           "(A) 甲、丁可輸送水分及礦物質",
           "(B) 僅有丙為活細胞",
@@ -28155,7 +28161,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束組織的細胞",
         "difficulty": "中等",
-        "section": "2-1 課後演練"
+        "section": "2-1 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q21.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q23",
@@ -28187,7 +28194,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P34單選6",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為觀察梨子果肉中某種特化的細胞（多角形、細胞壁很厚、細胞腔呈星狀的甲細胞），請問下列選項中的特性，何者與該細胞較無關聯？",
+        "question": "（圖說）附圖為觀察梨子果肉中某種特化的細胞（多角形、細胞壁很厚、細胞腔呈星狀的甲細胞），請問下列選項中的特性，何者與該細胞較無關聯？",
         "options": [
           "(A) 運輸物質",
           "(B) 富含木質素",
@@ -28205,7 +28212,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "石細胞",
         "difficulty": "易",
-        "section": "2-1 課後演練"
+        "section": "2-1 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q24.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q25",
@@ -28717,7 +28725,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P40基礎1",
         "type": "single_choice",
-        "question": "（第1～2題為題組）（依原講義附圖以文字描述）附圖為某植物根部的橫切面示意圖：最外圈為甲（表皮），向內大範圍為乙（皮層），中央小圓為中柱，中柱外緣為丙（內皮），中柱中央呈十字形（輻射狀）排列的為丁（木質部）。該植物可能為？",
+        "question": "（第1～2題為題組）（圖說）附圖為某植物根部的橫切面示意圖：最外圈為甲（表皮），向內大範圍為乙（皮層），中央小圓為中柱，中柱外緣為丙（內皮），中柱中央呈十字形（輻射狀）排列的為丁（木質部）。該植物可能為？",
         "options": [
           "(A) 玉米",
           "(B) 水稻",
@@ -28735,14 +28743,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
-        "section": "2-2.1 根"
+        "section": "2-2.1 根",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q46.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q47",
         "materialId": "tm_56",
         "questionNumber": "P40基礎2",
         "type": "single_choice",
-        "question": "（第1～2題為題組）（依原講義附圖以文字描述）附圖為某植物根部的橫切面示意圖：最外圈為甲（表皮），向內大範圍為乙（皮層），中央小圓為中柱，中柱外緣為丙（內皮），中柱中央呈十字形（輻射狀）排列的為丁（木質部）。若為了觀察根部儲存養分的構造，用碘液染色，則可發現何處會有明顯的紫藍色反應？",
+        "question": "（第1～2題為題組）（圖說）附圖為某植物根部的橫切面示意圖：最外圈為甲（表皮），向內大範圍為乙（皮層），中央小圓為中柱，中柱外緣為丙（內皮），中柱中央呈十字形（輻射狀）排列的為丁（木質部）。若為了觀察根部儲存養分的構造，用碘液染色，則可發現何處會有明顯的紫藍色反應？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -28760,7 +28769,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
-        "section": "2-2.1 根"
+        "section": "2-2.1 根",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q46.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q48",
@@ -28942,7 +28952,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P46基礎1",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為單子葉植物莖中的一個維管束顯微照片：左半部為數個口徑很大的導管，右半部為口徑小、排列緊密的細胞。就其韌皮部與木質部的相對位置，請問下列哪種方向（箭頭）可能是植物的外側？",
+        "question": "（圖說）附圖為單子葉植物莖中的一個維管束顯微照片：左半部為數個口徑很大的導管，右半部為口徑小、排列緊密的細胞。就其韌皮部與木質部的相對位置，請問下列哪種方向（箭頭）可能是植物的外側？",
         "options": [
           "(A) ↑",
           "(B) →",
@@ -28960,14 +28970,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束的排列",
         "difficulty": "中等",
-        "section": "2-2.2 莖"
+        "section": "2-2.2 莖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q56.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q57",
         "materialId": "tm_56",
         "questionNumber": "P46基礎2",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為某植物構造於成熟時的示意圖：圓形橫切面中，維管束排列成一環，每個維管束靠近中心的一半標示為紅色區塊。請問針對圖中紅色區塊的敘述，何者正確？",
+        "question": "（圖說）附圖為某植物構造於成熟時的示意圖：圓形橫切面中，維管束排列成一環，每個維管束靠近中心的一半標示為紅色區塊。請問針對圖中紅色區塊的敘述，何者正確？",
         "options": [
           "(A) 為韌皮部",
           "(B) 可運輸水分",
@@ -28985,14 +28996,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "雙子葉植物莖",
         "difficulty": "中等",
-        "section": "2-2.2 莖"
+        "section": "2-2.2 莖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q57.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q58",
         "materialId": "tm_56",
         "questionNumber": "P46基礎3",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為雙子葉植物草質莖局部的橫切面示意圖，由外而內依序為：角質、表皮、甲（表皮下方數層細胞，即皮層）、韌皮纖維、乙（韌皮部）、丙（乙與丁之間的一薄層細胞，即形成層）、丁（木質部）、戊（中央大型薄壁細胞，即髓）。請問關於其中構造甲～戊的功能說明，何者正確？",
+        "question": "（圖說）附圖為雙子葉植物草質莖局部的橫切面示意圖，由外而內依序為：角質、表皮、甲（表皮下方數層細胞，即皮層）、韌皮纖維、乙（韌皮部）、丙（乙與丁之間的一薄層細胞，即形成層）、丁（木質部）、戊（中央大型薄壁細胞，即髓）。請問關於其中構造甲～戊的功能說明，何者正確？",
         "options": [
           "(A) 甲能儲存養分",
           "(B) 乙能進行細胞分裂",
@@ -29010,7 +29022,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "雙子葉植物莖",
         "difficulty": "中等",
-        "section": "2-2.2 莖"
+        "section": "2-2.2 莖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q58.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q59",
@@ -29042,7 +29055,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P46基礎5",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）若在臺灣的高山上發現某一植物的年輪，其紋路的間距在左側明顯較寬、右側較窄（年輪中心偏右）。因臺灣位於北半球，所以太陽大部分的時間偏南方。請就植物生長與太陽位置的關係，推測哪一側為南方？",
+        "question": "（圖說）若在臺灣的高山上發現某一植物的年輪，其紋路的間距在左側明顯較寬、右側較窄（年輪中心偏右）。因臺灣位於北半球，所以太陽大部分的時間偏南方。請就植物生長與太陽位置的關係，推測哪一側為南方？",
         "options": [
           "(A) 上側",
           "(B) 下側",
@@ -29060,14 +29073,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "年輪",
         "difficulty": "中等",
-        "section": "2-2.2 莖"
+        "section": "2-2.2 莖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q60.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q61",
         "materialId": "tm_56",
         "questionNumber": "P46基礎6",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為香蕉「樹幹」橫切面（呈一圈圈同心環狀），該構造為許多片狀組織所交疊包圍形成，可分別剝離，若已知香蕉為單子葉植物，請問有關此構造的說明，何者正確？",
+        "question": "（圖說）附圖為香蕉「樹幹」橫切面（呈一圈圈同心環狀），該構造為許多片狀組織所交疊包圍形成，可分別剝離，若已知香蕉為單子葉植物，請問有關此構造的說明，何者正確？",
         "options": [
           "(A) 具有環狀紋路的年輪",
           "(B) 靠近外側部位為皮層",
@@ -29085,7 +29099,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "單子葉植物莖",
         "difficulty": "中等",
-        "section": "2-2.2 莖"
+        "section": "2-2.2 莖",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q61.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q62",
@@ -29177,7 +29192,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P50基礎1",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為植物葉子的橫切面示意圖，由上而下：甲（上表皮）、乙（排列緊密的柱狀細胞）、丙（葉脈中的維管束：上半部為大口徑細胞，下半部為小細胞）、丁（排列鬆散、有許多空隙的細胞）、戊（下表皮，可見氣孔）。請問就構造丙中下半部小細胞的部分，何者正確？",
+        "question": "（圖說）附圖為植物葉子的橫切面示意圖，由上而下：甲（上表皮）、乙（排列緊密的柱狀細胞）、丙（葉脈中的維管束：上半部為大口徑細胞，下半部為小細胞）、丁（排列鬆散、有許多空隙的細胞）、戊（下表皮，可見氣孔）。請問就構造丙中下半部小細胞的部分，何者正確？",
         "options": [
           "(A) 為韌皮部",
           "(B) 可行光合作用",
@@ -29195,7 +29210,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "葉的構造",
         "difficulty": "中等",
-        "section": "2-2.3 葉"
+        "section": "2-2.3 葉",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q66.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q67",
@@ -29327,7 +29343,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P51單選3",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為雙子葉植物莖部的橫切面，由外而內依序為：甲（表皮）、乙（韌皮纖維）、丙（韌皮部）、丁（丙與戊之間的扁平細胞層，即形成層）、戊（木質部）、己（中央的髓）。請問就以下選項中，關於構造與特性的敘述，何者正確？",
+        "question": "（圖說）附圖為雙子葉植物莖部的橫切面，由外而內依序為：甲（表皮）、乙（韌皮纖維）、丙（韌皮部）、丁（丙與戊之間的扁平細胞層，即形成層）、戊（木質部）、己（中央的髓）。請問就以下選項中，關於構造與特性的敘述，何者正確？",
         "options": [
           "(A) 甲可形成樹皮",
           "(B) 乙為活細胞，可運輸養分",
@@ -29345,7 +29361,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "雙子葉植物莖",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q72.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q73",
@@ -29502,7 +29519,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P52單選10",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為某種植物葉片橫切面的示意圖：上下表皮皆為多層細胞、上表皮外有角質層，保衛細胞位於下表皮凹陷處。請問此切面可能取自於何種環境條件下的植物葉片？",
+        "question": "（圖說）附圖為某種植物葉片橫切面的示意圖：上下表皮皆為多層細胞、上表皮外有角質層，保衛細胞位於下表皮凹陷處。請問此切面可能取自於何種環境條件下的植物葉片？",
         "options": [
           "(A) 浮在水面的葉片",
           "(B) 雨林地面植物的葉片",
@@ -29520,14 +29537,15 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "葉的構造與環境",
         "difficulty": "易",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q79.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q80",
         "materialId": "tm_56",
         "questionNumber": "P52單選11",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為木質莖橫切面的示意圖，由外而內依序標示甲（木栓層）、乙（皮層）、丙（韌皮部）、丁（木質部）。下列有關構造位置與特質的敘述，何者錯誤？",
+        "question": "（圖說）附圖為木質莖橫切面的示意圖，由外而內依序標示甲（木栓層）、乙（皮層）、丙（韌皮部）、丁（木質部）。下列有關構造位置與特質的敘述，何者錯誤？",
         "options": [
           "(A) 維管束形成層位於乙丙之間",
           "(B) 乙具有儲存養分的功能",
@@ -29545,14 +29563,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "木質莖的構造",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q80.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q81",
         "materialId": "tm_56",
         "questionNumber": "P52單選12",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為木質植物的莖的橫切面，可見許多同心年輪；甲指向靠近中心的部位，乙指向靠近外緣的部位。下列敘述何者正確？",
+        "question": "（圖說）附圖為木質植物的莖的橫切面，可見許多同心年輪；甲指向靠近中心的部位，乙指向靠近外緣的部位。下列敘述何者正確？",
         "options": [
           "(A) 椰子橫切面類似此圖",
           "(B) 甲的細胞較乙的細胞小",
@@ -29570,7 +29589,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "年輪",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q81.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q82",
@@ -29602,7 +29622,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P52單選14",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）若將空心菜的根橫切，應可得到與下列哪一選項中類似的橫切面？（以紅色表示木質部）",
+        "question": "（圖說）若將空心菜的根橫切，應可得到與下列哪一選項中類似的橫切面？（以紅色表示木質部）",
         "options": [
           "(A) 維管束排成一環，每束內側為紅色（雙子葉莖）",
           "(B) 維管束散生於整個切面（單子葉莖）",
@@ -29620,7 +29640,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q83.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q84",
@@ -29702,7 +29723,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P53單選18",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為植物維管束的橫切面：上方甲區由大小不一、口徑較大的細胞組成；下方乙區由口徑小、排列緊密的細胞組成，兩區之間有數層扁平細胞。下列選項中的敘述，何者有誤？",
+        "question": "（圖說）附圖為植物維管束的橫切面：上方甲區由大小不一、口徑較大的細胞組成；下方乙區由口徑小、排列緊密的細胞組成，兩區之間有數層扁平細胞。下列選項中的敘述，何者有誤？",
         "options": [
           "(A) 此圖可在雙子葉植物中發現",
           "(B) 乙區中進行運輸的細胞為無核的死細胞",
@@ -29720,14 +29741,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束的構造",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q87.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q88",
         "materialId": "tm_56",
         "questionNumber": "P53單選19",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）將一植株的根浸泡在紅墨水溶液中一段時間後，分別對其根莖葉做橫切面觀察：葉的葉脈中①為上半部、②為下半部；莖中維管束③為外側、④為內側；根中⑤為中央十字形部分、⑥為十字形之間的部分。請問哪幾處染色最深？",
+        "question": "（圖說）將一植株的根浸泡在紅墨水溶液中一段時間後，分別對其根莖葉做橫切面觀察：葉的葉脈中①為上半部、②為下半部；莖中維管束③為外側、④為內側；根中⑤為中央十字形部分、⑥為十字形之間的部分。請問哪幾處染色最深？",
         "options": [
           "(A) 葉－①，莖－③，根－⑤",
           "(B) 葉－①，莖－③，根－⑥",
@@ -29745,14 +29767,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "木質部的運輸",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q88.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q89",
         "materialId": "tm_56",
         "questionNumber": "P53單選20",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為植物根部中柱附近的橫切面：由外而內 a（內皮）、b（周鞘）、c（韌皮部）、d（木質部），e 為由中柱向外長出的柱狀構造，f 為外圍的皮層細胞。請問下列敘述何者正確？",
+        "question": "（圖說）附圖為植物根部中柱附近的橫切面：由外而內 a（內皮）、b（周鞘）、c（韌皮部）、d（木質部），e 為由中柱向外長出的柱狀構造，f 為外圍的皮層細胞。請問下列敘述何者正確？",
         "options": [
           "(A) 構造 e 為根毛",
           "(B) 構造 b 的細胞具有分裂的能力",
@@ -29770,7 +29793,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q89.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q90",
@@ -29855,7 +29879,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P54多選4",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）附圖為葉的橫切面圖：甲為上表皮、乙為排列緊密的柵狀組織、丙為排列鬆散的海綿組織、丁為下表皮上的氣孔、戊為氣孔旁的保衛細胞；葉脈中己為上半部、庚為下半部，辛為海綿組織間的空隙。下列敘述哪些正確？",
+        "question": "【多選題】（圖說）附圖為葉的橫切面圖：甲為上表皮、乙為排列緊密的柵狀組織、丙為排列鬆散的海綿組織、丁為下表皮上的氣孔、戊為氣孔旁的保衛細胞；葉脈中己為上半部、庚為下半部，辛為海綿組織間的空隙。下列敘述哪些正確？",
         "options": [
           "(A) 圖中只有乙、丙可行光合作用",
           "(B) 己為輸送有機養分的構造",
@@ -29874,7 +29898,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "葉的構造",
         "difficulty": "中等",
-        "section": "2-2 課後演練"
+        "section": "2-2 課後演練",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q93.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q94",
@@ -29907,7 +29932,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P56基礎1",
         "type": "single_choice",
-        "question": "（第1～5題為題組）（依原講義附圖以文字描述）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。玉米莖部的橫切面，其維管束分布較類似何者？",
+        "question": "（第1～5題為題組）（圖說）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。玉米莖部的橫切面，其維管束分布較類似何者？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -29925,14 +29950,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
-        "section": "探討活動 2-1 植物根莖構造的觀察"
+        "section": "探討活動 2-1 植物根莖構造的觀察",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q96",
         "materialId": "tm_56",
         "questionNumber": "P56基礎2",
         "type": "single_choice",
-        "question": "（第1～5題為題組）（依原講義附圖以文字描述）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。向日葵根部的橫切面，其維管束分布較類似何者？",
+        "question": "（第1～5題為題組）（圖說）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。向日葵根部的橫切面，其維管束分布較類似何者？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -29950,14 +29976,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
-        "section": "探討活動 2-1 植物根莖構造的觀察"
+        "section": "探討活動 2-1 植物根莖構造的觀察",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q97",
         "materialId": "tm_56",
         "questionNumber": "P56基礎3",
         "type": "single_choice",
-        "question": "【多選題】（第1～5題為題組）（依原講義附圖以文字描述）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。何者外側可形成根毛，以促進物質的吸收？",
+        "question": "【多選題】（第1～5題為題組）（圖說）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。何者外側可形成根毛，以促進物質的吸收？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -29975,14 +30002,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
-        "section": "探討活動 2-1 植物根莖構造的觀察"
+        "section": "探討活動 2-1 植物根莖構造的觀察",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q98",
         "materialId": "tm_56",
         "questionNumber": "P56基礎4",
         "type": "single_choice",
-        "question": "【多選題】（第1～5題為題組）（依原講義附圖以文字描述）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。何者外側具有角質層，可防止水分的散失？",
+        "question": "【多選題】（第1～5題為題組）（圖說）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。何者外側具有角質層，可防止水分的散失？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -30000,14 +30028,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
-        "section": "探討活動 2-1 植物根莖構造的觀察"
+        "section": "探討活動 2-1 植物根莖構造的觀察",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q99",
         "materialId": "tm_56",
         "questionNumber": "P56基礎5",
         "type": "single_choice",
-        "question": "【多選題】（第1～5題為題組）（依原講義附圖以文字描述）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。何者的構造中具有「髓」？",
+        "question": "【多選題】（第1～5題為題組）（圖說）甲～丁是植物器官的橫切構造示意圖（藍色代表韌皮部，紅色代表木質部）：甲的中柱內，紅色與藍色小圓相間排成一環，中央有一大片薄壁組織；乙的中央為紅色十字形，藍色位於十字的凹處，中央沒有薄壁組織；丙的維管束排成一環，每束內側紅色、外側藍色，中央有一大片薄壁組織；丁的維管束（內紅外藍）散生於整個切面。何者的構造中具有「髓」？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -30025,7 +30054,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
-        "section": "探討活動 2-1 植物根莖構造的觀察"
+        "section": "探討活動 2-1 植物根莖構造的觀察",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q100",
@@ -30280,7 +30310,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P62單選2",
         "type": "single_choice",
-        "question": "（第2～3題為題組）（依原講義附圖以文字描述）附圖為某植物構造的橫切面圖：圓形切面最外層為甲（一層緊密排列的細胞），中央大片薄壁細胞為乙，丙為排列成一環的維管束之一。下列有關構造的說明，何者正確？",
+        "question": "（第2～3題為題組）（圖說）附圖為某植物構造的橫切面圖：圓形切面最外層為甲（一層緊密排列的細胞），中央大片薄壁細胞為乙，丙為排列成一環的維管束之一。下列有關構造的說明，何者正確？",
         "options": [
           "(A) 此構造為根的橫切面",
           "(B) 此植物可能為玉米",
@@ -30298,14 +30328,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "雙子葉植物莖",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q110.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q111",
         "materialId": "tm_56",
         "questionNumber": "P62單選3",
         "type": "single_choice",
-        "question": "（第2～3題為題組）（依原講義附圖以文字描述）附圖為某植物構造的橫切面圖：圓形切面最外層為甲（一層緊密排列的細胞），中央大片薄壁細胞為乙，丙為排列成一環的維管束之一。針對構造乙的敘述，何者正確？",
+        "question": "（第2～3題為題組）（圖說）附圖為某植物構造的橫切面圖：圓形切面最外層為甲（一層緊密排列的細胞），中央大片薄壁細胞為乙，丙為排列成一環的維管束之一。針對構造乙的敘述，何者正確？",
         "options": [
           "(A) 稱為中柱",
           "(B) 可形成年輪",
@@ -30323,14 +30354,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "髓",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q110.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q112",
         "materialId": "tm_56",
         "questionNumber": "P62單選4",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）在植物維管束組織的觀察中，發現兩種管狀細胞：左側細胞上下相接處有篩板（多個小孔）；右側細胞上下相接處有穿孔板、壁上有許多壁孔。下列有關兩者特性的比較，請問何者正確？",
+        "question": "（圖說）在植物維管束組織的觀察中，發現兩種管狀細胞：左側細胞上下相接處有篩板（多個小孔）；右側細胞上下相接處有穿孔板、壁上有許多壁孔。下列有關兩者特性的比較，請問何者正確？",
         "options": [
           "(A) 皆為死細胞",
           "(B) 皆無細胞核",
@@ -30348,7 +30380,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "篩管與導管",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q112.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q113",
@@ -30605,7 +30638,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P64單選15",
         "type": "single_choice",
-        "question": "（第15～17題為題組）（依原講義附圖以文字描述）附圖為植物根部的縱切面，由上而下：甲（長有根毛的區域）、乙（細胞較長的區域）、丙（根尖內小而密集的細胞）、丁（包覆在最前端的帽狀構造）。何處構造的吸收能力最好？",
+        "question": "（第15～17題為題組）（圖說）附圖為植物根部的縱切面，由上而下：甲（長有根毛的區域）、乙（細胞較長的區域）、丙（根尖內小而密集的細胞）、丁（包覆在最前端的帽狀構造）。何處構造的吸收能力最好？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -30623,14 +30656,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根尖的分區",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q124",
         "materialId": "tm_56",
         "questionNumber": "P64單選16",
         "type": "single_choice",
-        "question": "（第15～17題為題組）（依原講義附圖以文字描述）附圖為植物根部的縱切面，由上而下：甲（長有根毛的區域）、乙（細胞較長的區域）、丙（根尖內小而密集的細胞）、丁（包覆在最前端的帽狀構造）。有關構造丙的細胞特性之說明，下列何者有誤？",
+        "question": "（第15～17題為題組）（圖說）附圖為植物根部的縱切面，由上而下：甲（長有根毛的區域）、乙（細胞較長的區域）、丙（根尖內小而密集的細胞）、丁（包覆在最前端的帽狀構造）。有關構造丙的細胞特性之說明，下列何者有誤？",
         "options": [
           "(A) 細胞週期長",
           "(B) 細胞體積小",
@@ -30648,14 +30682,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根尖的分區",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q125",
         "materialId": "tm_56",
         "questionNumber": "P64單選17",
         "type": "single_choice",
-        "question": "（第15～17題為題組）（依原講義附圖以文字描述）附圖為植物根部的縱切面，由上而下：甲（長有根毛的區域）、乙（細胞較長的區域）、丙（根尖內小而密集的細胞）、丁（包覆在最前端的帽狀構造）。若想觀察植物細胞內的染色體，取何構造較佳？",
+        "question": "（第15～17題為題組）（圖說）附圖為植物根部的縱切面，由上而下：甲（長有根毛的區域）、乙（細胞較長的區域）、丙（根尖內小而密集的細胞）、丁（包覆在最前端的帽狀構造）。若想觀察植物細胞內的染色體，取何構造較佳？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -30673,14 +30708,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根尖的分區",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q126",
         "materialId": "tm_56",
         "questionNumber": "P64單選18",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為葉子的橫切面構造：甲（上表皮）、乙（柵狀組織）、丙（葉脈維管束上半部、口徑較大的細胞）、丁（海綿組織）、戊（下表皮）。下列有關構造丙的敘述，何者正確？",
+        "question": "（圖說）附圖為葉子的橫切面構造：甲（上表皮）、乙（柵狀組織）、丙（葉脈維管束上半部、口徑較大的細胞）、丁（海綿組織）、戊（下表皮）。下列有關構造丙的敘述，何者正確？",
         "options": [
           "(A) 為活細胞",
           "(B) 有細胞核",
@@ -30698,7 +30734,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "葉的構造",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q126.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q127",
@@ -30755,7 +30792,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P65單選21",
         "type": "single_choice",
-        "question": "（第21～22題為題組）（依原講義附圖以文字描述）附圖中的甲、乙、丙、丁，為維管束組織中四種不同的細胞類型：甲為粗大、上下相接、壁上有壁孔的管狀細胞；乙為上下相接、橫隔有篩板的長管狀細胞；丙為緊貼在乙旁邊、具有細胞核的小型細胞；丁為細長、兩端尖細、壁上有環紋增厚的細胞。何者是藉由篩孔進行物質的運輸？",
+        "question": "（第21～22題為題組）（圖說）附圖中的甲、乙、丙、丁，為維管束組織中四種不同的細胞類型：甲為粗大、上下相接、壁上有壁孔的管狀細胞；乙為上下相接、橫隔有篩板的長管狀細胞；丙為緊貼在乙旁邊、具有細胞核的小型細胞；丁為細長、兩端尖細、壁上有環紋增厚的細胞。何者是藉由篩孔進行物質的運輸？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -30773,7 +30810,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束組織的細胞",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q129.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q130",
@@ -30798,7 +30836,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "導管與管胞",
         "difficulty": "易",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q129.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q131",
@@ -30855,7 +30894,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P65多選1",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）下表為植物體內兩種類型的細胞：左為細胞壁很厚、細胞腔很小的細胞照片；右為細胞壁在角隅處不均勻增厚的細胞照片。關於其特性的敘述（左／右），哪些正確？",
+        "question": "【多選題】（圖說）下表為植物體內兩種類型的細胞：左為細胞壁很厚、細胞腔很小的細胞照片；右為細胞壁在角隅處不均勻增厚的細胞照片。關於其特性的敘述（左／右），哪些正確？",
         "options": [
           "(A) 形態：厚壁細胞／厚角細胞",
           "(B) 狀態：死細胞／死細胞",
@@ -30874,14 +30913,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "厚角細胞與厚壁細胞",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q133.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q134",
         "materialId": "tm_56",
         "questionNumber": "P66多選2",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）附圖為某類植物維管束的橫切面構造圖：上方甲區由口徑大小不一的細胞組成；下方乙區為一群細胞壁很厚、染成紅色、排列緊密的細胞。針對圖中甲區與乙區的敘述，何者正確？",
+        "question": "【多選題】（圖說）附圖為某類植物維管束的橫切面構造圖：上方甲區由口徑大小不一的細胞組成；下方乙區為一群細胞壁很厚、染成紅色、排列緊密的細胞。針對圖中甲區與乙區的敘述，何者正確？",
         "options": [
           "(A) 甲區的細胞為死細胞",
           "(B) 乙區的細胞為活細胞",
@@ -30900,7 +30940,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束的構造",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q134.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q135",
@@ -30985,7 +31026,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P66多選6",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）三種不同植物類型的莖橫切面：甲的維管束散生於整個切面；乙的維管束排成一環，中央為淺色組織；丙為具有許多同心年輪的木材，外層有樹皮。下列選項的說明，何者正確？",
+        "question": "【多選題】（圖說）三種不同植物類型的莖橫切面：甲的維管束散生於整個切面；乙的維管束排成一環，中央為淺色組織；丙為具有許多同心年輪的木材，外層有樹皮。下列選項的說明，何者正確？",
         "options": [
           "(A) 丙的中央淺色區塊已無運輸功能",
           "(B) 甲的維管束散生，所以沒有儲存養分的部位",
@@ -31004,14 +31045,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "莖的構造",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q138.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q139",
         "materialId": "tm_56",
         "questionNumber": "P67多選7",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）附圖為植物構造的橫切面示意圖（半圓形）：最外側長有細長突起的為甲，大片的薄壁細胞為乙，中央中柱外圍的一層細胞為丙，中柱中央深色的部分為丁。請問下列敘述何者正確？",
+        "question": "【多選題】（圖說）附圖為植物構造的橫切面示意圖（半圓形）：最外側長有細長突起的為甲，大片的薄壁細胞為乙，中央中柱外圍的一層細胞為丙，中柱中央深色的部分為丁。請問下列敘述何者正確？",
         "options": [
           "(A) 此為單子葉植物的根",
           "(B) 構造甲由表皮細胞分裂而來",
@@ -31030,7 +31072,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q139.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q140",
@@ -31089,7 +31132,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P67多選10",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）附圖為葉子的橫切面示意圖，由上而下：甲（上表皮）、乙（柵狀組織）、丙（海綿組織）、丁（海綿組織間的空隙）、戊（下表皮）、己（下表皮上的保衛細胞）。請問若以碘液染色的話，哪些構造的細胞內會有紫黑色的顆粒？",
+        "question": "【多選題】（圖說）附圖為葉子的橫切面示意圖，由上而下：甲（上表皮）、乙（柵狀組織）、丙（海綿組織）、丁（海綿組織間的空隙）、戊（下表皮）、己（下表皮上的保衛細胞）。請問若以碘液染色的話，哪些構造的細胞內會有紫黑色的顆粒？",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -31108,7 +31151,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "葉的構造",
         "difficulty": "中等",
-        "section": "綜合評量"
+        "section": "綜合評量",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q142.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q143",
@@ -31141,7 +31185,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P68學測1",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）某生於探討活動時，觀察植物器官後，寫出紀錄及推測如下。附圖為圓形橫切面：甲為外圍大範圍的薄壁細胞；中央中柱內，乙為木質部與韌皮部相間、排列成一環的維管束；丙為中柱外緣的一層細胞；中柱中央有薄壁組織。其中敘述哪些正確？〔108學測〕",
+        "question": "【多選題】（圖說）某生於探討活動時，觀察植物器官後，寫出紀錄及推測如下。附圖為圓形橫切面：甲為外圍大範圍的薄壁細胞；中央中柱內，乙為木質部與韌皮部相間、排列成一環的維管束；丙為中柱外緣的一層細胞；中柱中央有薄壁組織。其中敘述哪些正確？〔108學測〕",
         "options": [
           "(A) 此植物葉片較可能具網狀脈",
           "(B) 甲為水分主要運輸區域",
@@ -31160,14 +31204,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q144.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q145",
         "materialId": "tm_56",
         "questionNumber": "P68單選1",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖左為植物小苗（根部長有許多根毛），附圖右為其根部的橫切面：由外而內甲（表皮）、乙（皮層）、丙（內皮）、丁（中柱中的木質部）。箭頭所指的根毛是由甲至丁中何者發育而來？〔111分科〕",
+        "question": "（圖說）附圖左為植物小苗（根部長有許多根毛），附圖右為其根部的橫切面：由外而內甲（表皮）、乙（皮層）、丙（內皮）、丁（中柱中的木質部）。箭頭所指的根毛是由甲至丁中何者發育而來？〔111分科〕",
         "options": [
           "(A) 甲",
           "(B) 乙",
@@ -31185,7 +31230,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "根毛",
         "difficulty": "易",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q145.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q146",
@@ -31210,7 +31256,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "薄壁細胞",
         "difficulty": "易",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q146.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q147",
@@ -31242,7 +31289,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P69單選7",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為某一植物莖部維管束之橫切面：上方甲區有許多大型中空的死細胞；下方乙區為一群染成紅色、排列緊密的細胞。下列敘述何者正確？〔指考〕",
+        "question": "（圖說）附圖為某一植物莖部維管束之橫切面：上方甲區有許多大型中空的死細胞；下方乙區為一群染成紅色、排列緊密的細胞。下列敘述何者正確？〔指考〕",
         "options": [
           "(A) 甲區為較靠近表皮的組織",
           "(B) 甲區含光合作用產物的主要輸送通道",
@@ -31260,7 +31307,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "維管束的構造",
         "difficulty": "中等",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q148.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q149",
@@ -31292,7 +31340,7 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_56",
         "questionNumber": "P70單選9",
         "type": "single_choice",
-        "question": "（依原講義附圖以文字描述）附圖為某植物葉片的永久切片：上層為排列緊密的柵狀薄壁組織，上表皮有空隙處（氣孔）；下層為具有大量大型氣室的海綿薄壁組織，下表皮沒有氣孔。由其構造推測這葉片來自何種植物？",
+        "question": "（圖說）附圖為某植物葉片的永久切片：上層為排列緊密的柵狀薄壁組織，上表皮有空隙處（氣孔）；下層為具有大量大型氣室的海綿薄壁組織，下表皮沒有氣孔。由其構造推測這葉片來自何種植物？",
         "options": [
           "(A) 浮葉植物，因為氣孔分布在上表皮",
           "(B) 陸生植物，因為維管束有明顯的厚細胞壁",
@@ -31310,14 +31358,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "水生植物的葉",
         "difficulty": "中等",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q150.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q151",
         "materialId": "tm_56",
         "questionNumber": "P70多選1",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）附圖為利用顯微鏡所觀察到的甲、乙兩種植物木質部組織：甲為粗大的管狀細胞，壁上有螺旋狀增厚紋路；乙為兩端尖細的細長細胞，壁上有許多圓形壁孔。下列敘述哪些正確？〔114分科〕",
+        "question": "【多選題】（圖說）附圖為利用顯微鏡所觀察到的甲、乙兩種植物木質部組織：甲為粗大的管狀細胞，壁上有螺旋狀增厚紋路；乙為兩端尖細的細長細胞，壁上有許多圓形壁孔。下列敘述哪些正確？〔114分科〕",
         "options": [
           "(A) 乙細胞只存在松柏類植物",
           "(B) 甲細胞上下之間交接處的細胞壁形成穿孔",
@@ -31336,14 +31385,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "導管與管胞",
         "difficulty": "中等",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q151.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q152",
         "materialId": "tm_56",
         "questionNumber": "P70多選2",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）附圖為某溫帶雙子葉木本植物的樹幹橫切面之局部放大圖，由外而內：I（最外層的樹皮）、II（樹皮內側較薄的一層）、III（紋路間隔較密的一段年輪）、IV（一組淺色明帶與深色暗帶）、V（紋路間隔較寬的一段年輪）、VI（中央的心材）。試根據附圖判斷下列選項，哪些正確？〔104指考〕",
+        "question": "【多選題】（圖說）附圖為某溫帶雙子葉木本植物的樹幹橫切面之局部放大圖，由外而內：I（最外層的樹皮）、II（樹皮內側較薄的一層）、III（紋路間隔較密的一段年輪）、IV（一組淺色明帶與深色暗帶）、V（紋路間隔較寬的一段年輪）、VI（中央的心材）。試根據附圖判斷下列選項，哪些正確？〔104指考〕",
         "options": [
           "(A) 部位 I 可找到木栓細胞",
           "(B) 部位 II 為次生韌皮部",
@@ -31362,14 +31412,15 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "年輪與樹皮",
         "difficulty": "難",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q152.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       },
       {
         "id": "tm_56_q153",
         "materialId": "tm_56",
         "questionNumber": "P70多選3",
         "type": "single_choice",
-        "question": "【多選題】（依原講義附圖以文字描述）新聞報導：竹筷子因浸泡漂白水而導致組織受損，出現了像猴子臉的構造。附圖為實際以顯微鏡觀察竹筷子橫切面的結果：可見數個「猴臉」狀的構造，甲為其中一群細胞壁很厚的細胞，乙為兩個大型圓孔（導管），丙為「猴臉」之間的大片細胞。下列敘述哪些正確？〔106指考參考題〕",
+        "question": "【多選題】（圖說）新聞報導：竹筷子因浸泡漂白水而導致組織受損，出現了像猴子臉的構造。附圖為實際以顯微鏡觀察竹筷子橫切面的結果：可見數個「猴臉」狀的構造，甲為其中一群細胞壁很厚的細胞，乙為兩個大型圓孔（導管），丙為「猴臉」之間的大片細胞。下列敘述哪些正確？〔106指考參考題〕",
         "options": [
           "(A) 新聞所說的猴子臉構造其實是竹子的維管束",
           "(B) 竹子中乙構造具有運輸蔗糖的功能",
@@ -31388,7 +31439,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "單子葉植物莖",
         "difficulty": "難",
-        "section": "歷屆試題"
+        "section": "歷屆試題",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q153.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
       }
     ],
     "related": []
