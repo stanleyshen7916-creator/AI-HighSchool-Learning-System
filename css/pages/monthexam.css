@@ -50,6 +50,9 @@
 .mx-q.is-wrong { border-left: 4px solid #b42318; }
 .mx-q.is-correct { border-left: 4px solid var(--ok); }
 .mx-q__text { margin: 0 0 10px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* 2026-10-10: 題目附圖 */
+.mx-q__figure { margin: 0 0 12px; }
+.mx-q__figure img, .mx-q__figure svg { display: block; max-width: 100%; height: auto; max-height: 360px; border-radius: 6px; }
 .mx-opts { display: grid; gap: 8px; }
 .mx-opt {
   text-align: left; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong);

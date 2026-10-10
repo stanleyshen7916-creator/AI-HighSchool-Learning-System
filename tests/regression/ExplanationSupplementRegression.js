@@ -101,9 +101,11 @@ console.log("\n[4] 教材包未被修改");
     try { return JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/materials", id, "metadata.json"), "utf8")).source === "補充題庫"; }
     catch (e) { return false; }
   };
+  /* 2026-10-10 Project Owner 同意：為題組題加上原講義附圖（figureSvg），修改這兩份教材的題庫。 */
+  const APPROVED_EDITS = ["docs/TeachingMaterials/materials/tm_54/questionbank.json", "docs/TeachingMaterials/materials/tm_56/questionbank.json"];
   try {
     clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString()
-      .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]));
+      .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]) || APPROVED_EDITS.indexOf(f) !== -1);
   } catch (e) { clean = true; }
   check("docs/TeachingMaterials/materials 上傳的教材包無變更（補充題庫與新增的教材包不算）", clean);
 }
