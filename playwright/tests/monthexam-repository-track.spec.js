@@ -29,7 +29,8 @@ test("長榮高二上：國文、英文出現在模擬月考科目中且可開�
     const ids = window.AHS.MonthExamRuntime.listSubjects().filter((x) => x.subject === "英文")[0].materials.map((m) => m.materialId);
     const session = window.AHS.MonthExamRuntime.start("英文", ids);
     const q = window.AHS.MonthExamRuntime.findQuestion(session.items[0].qid);
-    return { n: session.items.length, hasAnswer: q.options.indexOf(q.answer) !== -1 };
+    /* usable() also accepts multi-select answers like "(A)(C)(D)" (tm_61); the old indexOf check was flaky. */
+    return { n: session.items.length, hasAnswer: window.AHS.MonthExamRuntime.usable(q) };
   });
   expect(s.n).toBe(50);
   expect(s.hasAnswer).toBe(true);
