@@ -80,6 +80,67 @@ AHS.WrongBookRuntime = (function () {
 
   normalizeSubjects();
 
+  /* 2026-10-10（知識弱點詳解：你的答案顯示 B、正確答案卻顯示「5 s」）：
+     平常練習的紀錄以選項代號存答案、選項為 [{key,text}]；模擬月考（與從雲端
+     考卷補回的紀錄）原本存的是選項文字、選項為打亂後的純字串。畫面只會把代號
+     換成標籤，文字就原樣顯示；重新練習時拿代號跟文字比對，永遠判錯。
+     canonicalize() 統一成同一種格式：選項依原題順序編為 A、B、C…，你的答案與
+     正確答案都換成代號。找得到原題（教材資料）時用原題的選項順序，找不到時用
+     紀錄本身的順序。多選題的「BD」、未作答等其他值不變。 */
+  var KEYS = ["A", "B", "C", "D", "E", "F", "G"];
+  function originalQuestion(questionId) {
+    if (!questionId) { return null; }
+    var data = AHS.TeachingMaterialData;
+    if (Array.isArray(data)) {
+      for (var i = 0; i < data.length; i++) {
+        var qs = (data[i] && data[i].questions) || [];
+        for (var j = 0; j < qs.length; j++) { if (qs[j].id === questionId) { return qs[j]; } }
+      }
+    }
+    var repo = AHS.MaterialRepository;
+    if (repo && typeof repo.list === "function") {
+      var hit = null;
+      repo.list().forEach(function (r) {
+        ((r.questionBank || {}).singleChoice || []).forEach(function (q) { if (!hit && q.id === questionId) { hit = q; } });
+      });
+      if (hit) { return { options: hit.options }; }
+    }
+    return null;
+  }
+  function optionText(o) { return o && typeof o === "object" ? String(o.text) : String(o); }
+  function canonicalize(item) {
+    if (!item) { return false; }
+    var stored = Array.isArray(item.options) ? item.options : [];
+    var orig = originalQuestion(item.questionId);
+    var source = orig && Array.isArray(orig.options) && orig.options.length ? orig.options : stored;
+    if (!source.length) { return false; }
+    var keyed = source.map(function (o, i) {
+      return o && typeof o === "object" && o.key ? { key: String(o.key), text: optionText(o) } : { key: KEYS[i] || String(i), text: optionText(o) };
+    });
+    var changed = false;
+    var storedIsKeyed = stored.length && stored.every(function (o) { return o && typeof o === "object" && o.key; });
+    if (!storedIsKeyed || stored.length !== keyed.length) { item.options = keyed; changed = true; }
+    var toKey = function (value) {
+      if (value == null) { return value; }
+      var v = String(value);
+      if (keyed.some(function (o) { return o.key === v; })) { return v; }
+      var hit = keyed.filter(function (o) { return o.text === v; })[0];
+      return hit ? hit.key : value;
+    };
+    var ya = toKey(item.yourAnswer);
+    var ca = toKey(item.correctAnswer);
+    if (ya !== item.yourAnswer) { item.yourAnswer = ya; changed = true; }
+    if (ca !== item.correctAnswer) { item.correctAnswer = ca; changed = true; }
+    return changed;
+  }
+  function canonicalizeAll() {
+    var changed = [];
+    store.items.forEach(function (item) { if (canonicalize(item)) { changed.push(item); } });
+    if (changed.length) { persist(); }
+    return changed;
+  }
+  var canonicalizedOnLoad = canonicalizeAll();
+
   /* --- Sprint AI-126B Part 2, Task 4: Supabase sync (additive only) ---
      Every existing write path below still returns exactly what it did
      before; pushRecord() is a fire-and-forget background write appended
@@ -310,6 +371,11 @@ AHS.WrongBookRuntime = (function () {
         pulled += 1;
       });
       return Promise.all(subjectLookups).then(function () {
+        /* 2026-10-10：答案統一成代號（見 canonicalize()）；雲端版本是舊格式的，
+           改好後回寫雲端。包含載入時就已在本機改好、但還沒回寫的紀錄。 */
+        var fixed = canonicalizeAll().concat(canonicalizedOnLoad.filter(function (item) { return item.supabaseId; }));
+        canonicalizedOnLoad = [];
+        fixed.forEach(function (item) { if (item.supabaseId) { pushRecord(item); } });
         /* 2026-10-10：補傳所有從沒上傳成功的紀錄（不只科目名稱被修正過的）。例如
            雲端科目表當時缺「地球科學」，那些紀錄的科目已是代號 earthscience，
            上傳失敗後就再也沒有重送。只補有題目編號（local_question_id）的紀錄：
@@ -446,6 +512,7 @@ AHS.WrongBookRuntime = (function () {
           id: "wb_" + store.seq,
           questionId: w.questionId,
           subject: subjectKeyOf(gradedResult.subject),
+          /* see canonicalize() — applied right after this object is built */
           /* 2026-10-01: the question's own lesson when the exam spanned
              several materials (see AutoGrader.js sourceTitle). */
           title: w.sourceTitle || gradedResult.title,
@@ -494,6 +561,7 @@ AHS.WrongBookRuntime = (function () {
              reset to 0 on every fresh session — see pushRecord()). */
           correctCount: 0
         };
+        canonicalize(record);
         store.items.push(record);
         touched.push(record);
       }
@@ -670,6 +738,7 @@ AHS.WrongBookRuntime = (function () {
     reset: reset,
     importRecords: importRecords,
     pullFromRepository: pullFromRepository,
-    subjectKeyOf: subjectKeyOf
+    subjectKeyOf: subjectKeyOf,
+    canonicalize: canonicalize
   };
 })();
