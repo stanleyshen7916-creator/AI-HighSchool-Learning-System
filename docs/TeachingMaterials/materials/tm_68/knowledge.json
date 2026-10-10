@@ -1,0 +1,126 @@
+{
+  "materialId": "tm_68",
+  "knowledgePoints": [
+    {
+      "name": "冥古元",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "化石對比",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "半衰期",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "四大圈的交互作用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球歷史事件順序",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球歷史的研究方法",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球的分層",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球的形成",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "地質作用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地質年代的判定",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大氣的演變",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "寒武紀大爆發",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "截切定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "放射性定年",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "放射性定年與相對年代",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "標準化石與指相化石",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "生物大滅絕",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "疊層石與帶狀鐵礦",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "相對地質年代",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "相對與絕對年代",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "縞狀鐵礦",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "臭氧層與生物上陸",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "隕石坑",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "隕石定年",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-10T16:20:49.841Z"
+}
