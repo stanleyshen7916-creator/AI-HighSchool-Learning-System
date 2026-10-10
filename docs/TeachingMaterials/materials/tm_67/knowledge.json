@@ -1,0 +1,16 @@
+{
+  "materialId": "tm_67",
+  "knowledgePoints": [
+    {
+      "name": "B. 30 題單選練習（Q1–Q30）",
+      "source": "question",
+      "refCount": 30
+    },
+    {
+      "name": "C. 練習題答案速查",
+      "source": "question",
+      "refCount": 30
+    }
+  ],
+  "generatedAt": "2026-10-10T06:21:28.347Z"
+}
