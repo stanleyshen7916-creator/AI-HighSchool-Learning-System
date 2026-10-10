@@ -206,6 +206,12 @@ AHS.KnowledgeMasteryRuntime = (function () {
       var pulled = 0;
       var subjectLookups = [];
       result.data.forEach(function (row) {
+        /* 2026-10-10：雲端這一列沒有科目（當時科目表缺「地球科學」，或模擬月考傳了
+           中文科目名稱），但本機知道科目代號時，重新上傳補上。 */
+        var localPoint = store.points[row.knowledge_point];
+        if (localPoint && !row.subject_id && localPoint.subject && AHS.Subjects && AHS.Subjects[localPoint.subject]) {
+          localPoint.pendingPush = true;
+        }
         if (store.points[row.knowledge_point]) { return; }
         var attempts = [];
         for (var i = 0; i < row.correct_count; i++) { attempts.push({ correct: true, day: dayKey(new Date(row.last_attempt_at)), ts: row.last_attempt_at }); }

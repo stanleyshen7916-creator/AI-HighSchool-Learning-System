@@ -310,15 +310,57 @@ AHS.WrongBookRuntime = (function () {
         pulled += 1;
       });
       return Promise.all(subjectLookups).then(function () {
-        /* 補傳 normalizeSubjects() 修正過、從沒上傳成功的紀錄。 */
-        var pending = store.items.filter(function (item) { return item.pendingPush && !item.supabaseId; });
+        /* 2026-10-10：補傳所有從沒上傳成功的紀錄（不只科目名稱被修正過的）。例如
+           雲端科目表當時缺「地球科學」，那些紀錄的科目已是代號 earthscience，
+           上傳失敗後就再也沒有重送。只補有題目編號（local_question_id）的紀錄：
+           萬一上一次上傳其實已寫入，下一次撈回時會依題目編號認領，不會重複。 */
+        var pending = store.items.filter(function (item) { return !item.supabaseId && item.questionId && item.subject; });
         pending.forEach(function (item) { item.pendingPush = false; pushRecord(item); });
         persist();
-        return { pulled: pulled, repushed: pending.length };
+        return backfillFromMonthExams(repo, query).then(function (backfilled) {
+          return { pulled: pulled, repushed: pending.length, backfilled: backfilled };
+        });
       });
     }).catch(function (err) {
       return { pulled: 0, error: { message: String(err && err.message || err) } };
     });
+  }
+
+  /* backfillFromMonthExams(repo, query) — 2026-10-10（長榮模擬月考實測：物理、
+     公民、地科的錯題沒有進知識弱點）。模擬月考的每份考卷都存在雲端
+     month_exam_results，rows 裡有每一題的作答。這裡把「考卷上答錯（含未作答）、
+     但知識弱點裡沒有這一題」的題目補建成知識弱點紀錄並上傳；已存在的題目不動
+     （不會重複累加錯誤次數），所以每次載入都可以安全地再跑一次。換裝置、關過
+     瀏覽器也能補回，不需要當初那個分頁的本機資料。 */
+  function backfillFromMonthExams(repo, query) {
+    if (!repo || typeof repo.read !== "function") { return Promise.resolve(0); }
+    return repo.read("month_exam_results", query + "&order=submitted_at.desc&limit=50").then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { return 0; }
+      var have = {};
+      store.items.forEach(function (item) { if (item.questionId) { have[item.questionId] = true; } });
+      var added = 0;
+      result.data.forEach(function (paper) {
+        var subject = subjectKeyOf(paper.subject_code || paper.subject_name || "");
+        if (!subject || !AHS.Subjects || !AHS.Subjects[subject]) { return; }
+        var strip = function (v) { return String(v).replace(/[()]/g, ""); };
+        var wrong = (Array.isArray(paper.rows) ? paper.rows : []).filter(function (r) {
+          return r && r.qid && !r.correct && r.answer != null && !have[r.qid];
+        }).map(function (r) {
+          have[r.qid] = true;
+          return {
+            questionId: r.qid, materialId: r.materialId || "", knowledgePoint: r.knowledgePoint || "",
+            text: r.question || "", options: Array.isArray(r.options) ? r.options : [],
+            yourAnswer: r.given == null ? "（未作答）" : (r.multi ? strip(r.given) : r.given),
+            correctAnswer: r.multi ? strip(r.answer) : r.answer,
+            explanation: r.explanation || ""
+          };
+        });
+        if (!wrong.length) { return; }
+        sync({ subject: subject, title: "模擬月考", chapter: "", wrong: wrong });
+        added += wrong.length;
+      });
+      return added;
+    }).catch(function () { return 0; });
   }
 
   /* weaknessState(item) — Sprint AI-121 (Learning Knowledge Engine)

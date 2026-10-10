@@ -24,7 +24,7 @@ window.sessionStorage = {
   removeItem: (k) => { delete memoryStore[k]; }
 };
 require(path.join(REPO, "js/core/PersistenceAdapter.js"));
-AHS.Subjects = { math: { name: "數學" }, chinese: { name: "國文" } };
+AHS.Subjects = { math: { name: "數學" }, chinese: { name: "國文" }, physics: { name: "物理" }, earthscience: { name: "地球科學" } };
 
 let pass = 0, fail = 0;
 function check(name, cond) {
@@ -123,6 +123,46 @@ async function main() {
   check("撈回其他裝置的成績，不重複已有的那份", r3.pulled === 1 && h.filter((x) => x.id === "me_other_device").length === 1 && h.filter((x) => x.id === res.id).length === 1 && h[0].id === "me_other_device");
   const mxAfter = writes.filter((w) => w.table === "month_exam_results");
   check("補傳本機還沒上傳的舊紀錄", r3.repushed === 1 && mxAfter.length === mxBefore + 1 && mxAfter[mxAfter.length - 1].row.local_id === "me_local_old" && mxAfter[mxAfter.length - 1].row.subject_code === "chinese");
+
+  console.log("\n[4] 2026-10-10 從雲端考卷補回錯題、補傳已是代號的紀錄、補上熟練度科目");
+  {
+    /* An earth-science item saved with the code but never uploaded (subject table lacked it then). */
+    const items = AHS.PersistenceAdapter.load("wrongBookRuntime");
+    items.items.push({ id: "wb_99", questionId: "tm_60_q5", subject: "earthscience", title: "模擬月考", knowledgePoint: "半衰期", question: "Q", yourAnswer: "A", correctAnswer: "B", errorCount: 1, correctStreak: 0, lastError: "2026/10/10", firstError: "2026/10/10" });
+    AHS.PersistenceAdapter.save("wrongBookRuntime", items);
+  }
+  delete require.cache[require.resolve(path.join(REPO, "js/runtime/WrongBookRuntime.js"))];
+  require(path.join(REPO, "js/runtime/WrongBookRuntime.js"));
+  const wb2 = AHS.WrongBookRuntime;
+  remote.wrong_book = [];
+  remote.month_exam_results = [{ local_id: "me_phys", subject_code: "physics", subject_name: "物理", rows: [
+    { qid: "tm_44_q1", correct: false, answer: "5 m/s²", given: "15 m/s²", question: "加速度？", options: ["5 m/s²", "15 m/s²"], knowledgePoint: "加速度", materialId: "tm_44", explanation: "e" },
+    { qid: "tm_44_q2", correct: true, answer: "a", given: "a", question: "Q2", options: ["a", "b"] },
+    { qid: "tm_44_q3", correct: false, answer: "(B)(D)", given: null, multi: true, question: "【多選題】Q3", options: ["(A) a", "(B) b", "(C) c", "(D) d"] },
+    { qid: "tm_90_q2", correct: false, answer: "a2", given: "b2", question: "already in 知識弱點" }
+  ] }];
+  const before4 = writes.length;
+  const errBefore = wb2.list().filter((i) => i.questionId === "tm_90_q2")[0].errorCount;
+  const r4 = await wb2.pullFromRepository();
+  await settle();
+  const w4 = writes.slice(before4).filter((w) => w.table === "wrong_book" && w.op === "insert").map((w) => w.row.local_question_id);
+  check("已是代號 earthscience、從沒上傳的紀錄也會補傳", w4.indexOf("tm_60_q5") !== -1);
+  check("從雲端考卷補回答錯／未作答的題目（tm_44_q1、tm_44_q3），答對的不補", r4.backfilled === 2 && w4.indexOf("tm_44_q1") !== -1 && w4.indexOf("tm_44_q3") !== -1 && w4.indexOf("tm_44_q2") === -1);
+  const q1 = wb2.list().filter((i) => i.questionId === "tm_44_q1")[0];
+  const q3 = wb2.list().filter((i) => i.questionId === "tm_44_q3")[0];
+  check("補回的紀錄：科目 physics、標題模擬月考、答案與選項正確；多選存代號、未作答標示", q1.subject === "physics" && q1.title === "模擬月考" && q1.correctAnswer === "5 m/s²" && q1.yourAnswer === "15 m/s²" && q1.options.length === 2 &&
+    q3.correctAnswer === "BD" && q3.yourAnswer === "（未作答）");
+  check("知識弱點已有的題目不重複、不累加錯誤次數", wb2.list().filter((i) => i.questionId === "tm_90_q2").length === 1 && wb2.list().filter((i) => i.questionId === "tm_90_q2")[0].errorCount === errBefore);
+  const count4 = wb2.list().length;
+  const r5 = await wb2.pullFromRepository();
+  await settle();
+  check("再載入一次不會重複補建", r5.backfilled === 0 && wb2.list().length === count4);
+
+  remote.knowledge_mastery = [{ knowledge_point: "弧度", subject_id: null, correct_count: 0, wrong_count: 1, last_attempt_at: "2026-10-09T01:00:00Z" }];
+  const before6 = writes.length;
+  const r6 = await km.pullFromRepository();
+  await settle();
+  check("雲端熟練度沒有科目、本機知道科目時重新上傳補上", r6.repushed === 1 && writes.slice(before6).some((w) => w.table === "knowledge_mastery" && w.row.subject_id === "sid-math"));
 
   console.log("\nMonthExamCloudRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail ? 1 : 0);
