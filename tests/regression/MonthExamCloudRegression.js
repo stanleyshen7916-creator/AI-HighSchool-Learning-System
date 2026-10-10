@@ -150,7 +150,7 @@ async function main() {
   check("從雲端考卷補回答錯／未作答的題目（tm_44_q1、tm_44_q3），答對的不補", r4.backfilled === 2 && w4.indexOf("tm_44_q1") !== -1 && w4.indexOf("tm_44_q3") !== -1 && w4.indexOf("tm_44_q2") === -1);
   const q1 = wb2.list().filter((i) => i.questionId === "tm_44_q1")[0];
   const q3 = wb2.list().filter((i) => i.questionId === "tm_44_q3")[0];
-  check("補回的紀錄：科目 physics、標題模擬月考、答案與選項正確；多選存代號、未作答標示", q1.subject === "physics" && q1.title === "模擬月考" && q1.correctAnswer === "5 m/s²" && q1.yourAnswer === "15 m/s²" && q1.options.length === 2 &&
+  check("補回的紀錄：科目 physics、標題模擬月考、答案與選項正確；多選存代號、未作答標示", q1.subject === "physics" && q1.title === "模擬月考" && q1.correctAnswer === "A" && q1.yourAnswer === "B" && q1.options.length === 2 && q1.options[0].key === "A" && q1.options[0].text === "5 m/s²" &&
     q3.correctAnswer === "BD" && q3.yourAnswer === "（未作答）");
   check("知識弱點已有的題目不重複、不累加錯誤次數", wb2.list().filter((i) => i.questionId === "tm_90_q2").length === 1 && wb2.list().filter((i) => i.questionId === "tm_90_q2")[0].errorCount === errBefore);
   const count4 = wb2.list().length;
@@ -163,6 +163,31 @@ async function main() {
   const r6 = await km.pullFromRepository();
   await settle();
   check("雲端熟練度沒有科目、本機知道科目時重新上傳補上", r6.repushed === 1 && writes.slice(before6).some((w) => w.table === "knowledge_mastery" && w.row.subject_id === "sid-math"));
+
+  console.log("\n[5] 2026-10-10 答案統一存代號（知識弱點：你的答案 B、正確答案卻顯示「5 s」）");
+  {
+    const items = AHS.PersistenceAdapter.load("wrongBookRuntime");
+    /* An old month-exam record: shuffled plain-string options, answers stored as option text. */
+    items.items.push({ id: "wb_200", questionId: "tm_90_q3", subject: "math", title: "模擬月考", knowledgePoint: "kp3", question: "Q3",
+      options: ["b3", "a3"], yourAnswer: "b3", correctAnswer: "a3", errorCount: 2, correctStreak: 0, supabaseId: "remote-200", lastError: "2026/10/10", firstError: "2026/10/09" });
+    AHS.PersistenceAdapter.save("wrongBookRuntime", items);
+  }
+  delete require.cache[require.resolve(path.join(REPO, "js/runtime/WrongBookRuntime.js"))];
+  require(path.join(REPO, "js/runtime/WrongBookRuntime.js"));
+  const wb3 = AHS.WrongBookRuntime;
+  const old = wb3.list().filter((i) => i.id === "wb_200")[0];
+  /* tm_90_q3 in TeachingMaterialData has options ["a3","b3"] (original order). */
+  check("舊紀錄載入時換成原題順序的 A/B 選項，答案換成代號（正確 A、你的 B）",
+    old.options.map((o) => o.key + ":" + o.text).join() === "A:a3,B:b3" && old.correctAnswer === "A" && old.yourAnswer === "B");
+  remote.wrong_book = []; remote.month_exam_results = [];
+  const before7 = writes.length;
+  await wb3.pullFromRepository();
+  await settle();
+  check("改好的紀錄回寫雲端（以代號）", writes.slice(before7).some((w) => w.table === "wrong_book" && w.op === "update" && w.row.correct_answer === "A" && w.row.your_answer === "B"));
+  const after = wb3.recordRetry("wb_200", "A" === wb3.getById("wb_200").correctAnswer);
+  check("重新練習選 A 判為答對（過去拿代號比文字，永遠判錯）", after.correctStreak === 1 && after.correctCount === 1);
+  const practice = wb3.list().filter((i) => i.questionId === "tm_57_q1")[0];
+  check("平常練習的既有紀錄（已是代號）不受影響", practice && practice.yourAnswer === "A" && practice.correctAnswer === "B");
 
   console.log("\nMonthExamCloudRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail ? 1 : 0);
