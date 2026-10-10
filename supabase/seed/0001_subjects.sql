@@ -5,6 +5,9 @@
 -- already-shipped subjectOptions list verbatim (chinese/english/math/
 -- physics/chemistry/biology/history/geography/civics ↔
 -- 國文/英文/數學/物理/化學/生物/歷史/地理/公民) — not invented here.
+-- 2026-10-10: + earthscience／地球科學 (AHS.Subjects has had it since tm_17;
+-- without this row every 地球科學 wrong answer / mastery push found no
+-- subject_id and was skipped).
 --
 -- Not applied automatically by `supabase db push` (that only runs
 -- migrations/). Apply explicitly once, after the schema migrations:
@@ -19,5 +22,6 @@ insert into public.subjects (code, name) values
   ('biology', '生物'),
   ('history', '歷史'),
   ('geography', '地理'),
-  ('civics', '公民')
+  ('civics', '公民'),
+  ('earthscience', '地球科學')
 on conflict (code) do update set name = excluded.name;

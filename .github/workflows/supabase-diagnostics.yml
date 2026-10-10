@@ -43,6 +43,15 @@ jobs:
       - name: month_exam_results by subject / school / semester / day
         run: |
           supabase db query --linked "select subject_code, school_code, semester_code, to_char(submitted_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as papers, count(distinct student_profile_id) as students, round(avg(score),1) as avg_score, sum(total - correct_count) as wrong_or_blank from public.month_exam_results where submitted_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4 desc, 1;"
+      - name: month_exam_results timing (submitted vs written to the cloud, Taipei time)
+        run: |
+          supabase db query --linked "select subject_code, school_code, semester_code, to_char(submitted_at at time zone 'Asia/Taipei','MM-DD HH24:MI') as submitted, to_char(created_at at time zone 'Asia/Taipei','MM-DD HH24:MI') as written, total, total - correct_count as wrong_or_blank from public.month_exam_results where submitted_at > now() - interval '$DAYS days' order by submitted_at;"
+      - name: knowledge_mastery rows updated recently, by subject and hour (Taipei)
+        run: |
+          supabase db query --linked "select coalesce(s.code,'(none)') as subject, k.school_code, k.semester_code, to_char(k.updated_at at time zone 'Asia/Taipei','MM-DD HH24') as hour, count(*) as rows from public.knowledge_mastery k left join public.subjects s on s.id = k.subject_id where k.updated_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4,1;"
+      - name: wrong_book rows touched recently, by hour (Taipei)
+        run: |
+          supabase db query --linked "select coalesce(s.code,'(none)') as subject, w.school_code, w.semester_code, to_char(w.updated_at at time zone 'Asia/Taipei','MM-DD HH24') as hour, count(*) as rows from public.wrong_book w left join public.subjects s on s.id = w.subject_id where w.updated_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4,1;"
       - name: knowledge_mastery rows updated recently, with / without subject
         run: |
           supabase db query --linked "select (subject_id is not null) as has_subject, school_code, semester_code, count(*) as rows from public.knowledge_mastery where updated_at > now() - interval '$DAYS days' group by 1,2,3 order by 2,3,1;"
