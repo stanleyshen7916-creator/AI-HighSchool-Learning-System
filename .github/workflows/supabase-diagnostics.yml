@@ -1,0 +1,44 @@
+name: Supabase Diagnostics
+
+# 2026-10-09: read-only health check of the learning-record sync (wrong_book,
+# knowledge_mastery, month_exam_results). workflow_dispatch only. Every query
+# returns aggregate counts only — no question text, answers, names or ids —
+# because this repository (and so its Actions logs) is public.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Look back this many days"
+        required: false
+        default: "3"
+
+jobs:
+  diagnose:
+    name: Aggregate sync counts
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      DAYS: ${{ github.event.inputs.days || '3' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v3
+        with:
+          version: latest
+      - name: Link project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+      - name: wrong_book rows by subject / school / semester / day
+        run: |
+          supabase db query --linked "select coalesce(s.code,'(none)') as subject, w.school_code, w.semester_code, to_char(w.created_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as rows, count(distinct w.student_profile_id) as students from public.wrong_book w left join public.subjects s on s.id = w.subject_id where w.created_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4 desc, 1;"
+      - name: wrong_book rows from month-exam material ids (local_question_id prefix)
+        run: |
+          supabase db query --linked "select split_part(w.local_question_id,'_q',1) as material, to_char(w.created_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as rows from public.wrong_book w where w.created_at > now() - interval '$DAYS days' and w.local_question_id like 'tm\_%' group by 1,2 order by 2 desc, 1;"
+      - name: month_exam_results by subject / school / semester / day
+        run: |
+          supabase db query --linked "select subject_code, school_code, semester_code, to_char(submitted_at at time zone 'Asia/Taipei','YYYY-MM-DD') as day, count(*) as papers, count(distinct student_profile_id) as students, round(avg(score),1) as avg_score, sum(total - correct_count) as wrong_or_blank from public.month_exam_results where submitted_at > now() - interval '$DAYS days' group by 1,2,3,4 order by 4 desc, 1;"
+      - name: knowledge_mastery rows updated recently, with / without subject
+        run: |
+          supabase db query --linked "select (subject_id is not null) as has_subject, school_code, semester_code, count(*) as rows from public.knowledge_mastery where updated_at > now() - interval '$DAYS days' group by 1,2,3 order by 2,3,1;"
+      - name: subjects table
+        run: supabase db query --linked "select code, name from public.subjects order by code;"
