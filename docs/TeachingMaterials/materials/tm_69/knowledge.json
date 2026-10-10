@@ -1,0 +1,176 @@
+{
+  "materialId": "tm_69",
+  "knowledgePoints": [
+    {
+      "name": "亮度與距離",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "光年與觀測",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "多波段觀測",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "大氣散射",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大氣的保溫作用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大氣的保護",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "天體的距離",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太空望遠鏡",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽圈",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽星雲學說",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "太陽系成員",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "宇宙微波背景輻射",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "宇宙的結構",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "宇宙膨脹",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "彗星",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "恆星的距離與宇宙階級",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星與行星",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星與行星的顏色",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星顏色的成因",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "恆星顏色與溫度",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "星座的視形狀",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "星等與亮度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "星系、星雲與星團",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "望遠鏡的選擇",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "極光",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "流星雨",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "火星",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "范艾倫輻射帶",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "行星資料判讀",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "視星等",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "視星等與亮度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "距離模數",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "輻射曲線與溫度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "適居帶與防護罩",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-10T16:33:20.319Z"
+}
