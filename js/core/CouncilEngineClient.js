@@ -81,6 +81,9 @@ AHS.CouncilEngineClient = (function () {
     /* 2026-10-06 審議時保存的三方初稿 */
     finalDrafts: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/drafts"); },
     saveFinal: function (filename, content) { return request("PUT", "/api/finals/" + enc(filename), { content: content }); },
+    /* 2026-10-12: 練習題 Claude 最終審查包 */
+    practiceReview: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/practice-review"); },
+    applyPracticeReview: function (filename, reply) { return request("POST", "/api/finals/" + enc(filename) + "/practice-review", { reply: reply }); },
     upload: function (files) {
       var form = new FormData();
       Array.prototype.forEach.call(files, function (f) { form.append("files", f, f.name); });
