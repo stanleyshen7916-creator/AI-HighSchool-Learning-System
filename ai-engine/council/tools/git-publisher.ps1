@@ -82,8 +82,21 @@ function Publish-Request($req, [string]$id) {
   if ($ahead -ne '0') {
     return (& $fail "local main has $ahead commit(s) that are not on GitHub (an earlier publish did not finish); not pushed. Resolve them first." $null)
   }
+  # 2026-10-12: the four generated data files are rebuilt from the package folders, so
+  # this checkout's copies always conflict once GitHub main has moved on (tm_68 and
+  # tm_72 sat unpushed for days with "local edits conflict"). Restore them, fast-forward,
+  # then regenerate them so they include this request's package on top of the newest main.
+  $generated = @('docs/TeachingMaterials/index.json', 'docs/TeachingMaterials/import-log.json', 'js/data/TeachingMaterialData.js', 'js/data/RepositoryStatus.js')
+  $r = Invoke-Git (@('checkout', '--') + $generated); $log.Add("git checkout (generated files): $($r.out)")
   $r = Invoke-Git @('merge', '--ff-only', 'origin/main'); $log.Add("git merge --ff-only: $($r.out)")
   if ($r.code -ne 0) { return (& $fail 'could not update local main to GitHub main (local edits conflict); not pushed' $null) }
+  Set-Progress $id 'regenerate'
+  foreach ($script in @('ImportManager.js', 'GenerateTeachingMaterialData.js')) {
+    Push-Location $RepoRoot
+    try { $out = & node "docs/TeachingMaterials/scripts/$script" 2>&1 | ForEach-Object { "$_" } | Out-String } finally { Pop-Location }
+    $log.Add("node ${script}: $($out.Trim())")
+    if ($LASTEXITCODE -ne 0) { return (& $fail "regenerating the platform data ($script) failed; not pushed" $null) }
+  }
 
   Set-Progress $id 'commit'
   $r = Invoke-Git (@('add', '--') + $paths); $log.Add("git add: $($r.out)")
