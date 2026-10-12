@@ -1,0 +1,394 @@
+{
+  "adjudicator": "qwen2.5:7b-instruct-q4_K_M",
+  "adjudication_mode": "llm_semantic",
+  "failure_reason": null,
+  "hard_fail": false,
+  "quality_gate": "PENDING_MANUAL_REVIEW",
+  "final_score": 75,
+  "claim_verification_score": 75,
+  "section_coverage": {
+    "total_sections": 13,
+    "sections_with_source_content": 13,
+    "sections_with_claims": 13,
+    "sections_unresolved": 0,
+    "coverage_rate": 100,
+    "uncovered_sections": [],
+    "unresolved_sections": []
+  },
+  "document_completeness": 85,
+  "source_ref_document": null,
+  "source_id": "竹圍高中_高二_國文_第二課_課本",
+  "run_id": "6c4da297-5dd0-4360-b120-86a661d374a1",
+  "source_provided": true,
+  "source_windowed": true,
+  "claims": [
+    {
+      "claim_id": "c1",
+      "claim": "作者透過劉姥姥的舉止、言辭等細節，將她塑造成表面滑稽、實則純樸善良、詼諧慧黠的老婦人。",
+      "section": "①核心概念",
+      "sections": [
+        "①核心概念"
+      ],
+      "source_ref": "題解 主線人 賈府與衰 宝代黑三发怀\n\n本文節選自紅樓夢第四十回，原題為「史太君兩宴大觀園，金鴛成空鷹三宣牙牌令。在紅樓夢全書中，作者安排劉姥姥四進榮國府，本篇寫的是二進榮國府的片段，敘述劉姥姥随賈母等人遊大觀園進餐而鬧出的種種趣事。\n\n作者透過人物的舉止言辭等細節，將劉姥姥這個農村婦女刻劃得極其生動。從表面來看，她似乎是個滑稽可笑的丑角，其實她純僕善良詼諧慧黠，充滿飽經世故洞察人性的生活智慧。她像一面镜子，見證了貧富懸殊的兩種世界，使讀者從她眼中看到賈府的富貴奢華，而在賈府中大開眼界的經驗，也使「劉姥姥進大觀園成為家喻戶曉的典故。一個憨態百出的鄉下窮姥姥，如此凑趣地逗樂了錦衣玉食養尊處優的太太小姐們，其中意涵耐人尋味。\n\n",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「相关文卓常人物刻劃\n…\n# 第一劉姥姥\n…\n本文節選自紅樓夢第四十回，原題為「史太君兩宴大觀園，金鴛鷹三宣牙牌令。在紅樓夢全書中，作者安排劉姥姥四進榮國府，本篇寫的是二進榮國府的片段，敘述劉姥姥隨賈母等人遊大觀園進餐而鬧出的種種趣事。\n…\n作者透過人物的舉止言辭等細節，將劉姥姥這個農村婦女刻劃得極其生動。從表面來看，她似乎是個滑稽可笑的丑角，其實她純僕善良詼諧慧黠，充滿飽經世故洞察人性的生活智慧。她像一面镜子，見證了貧富懸殊的兩種世界，使讀者從她眼中看到賈府的富貴奢華，而在賈府中大開眼界的經驗，也使「劉姥姥進大觀園成為家喻戶曉的典故。一個憨態百出的鄉下窮姥姥，如此凑趣地逗樂了錦衣玉食養尊處優的太太小姐們，其中意涵耐人尋味。\n…」與 SOURCE 實際內容「題解 主線人 賈府與衰 宝代黑三发怀\n\n本文節選自紅樓夢第四十回，原題為「史太君兩宴大觀園，金鴛成空鷹三宣牙牌令。在紅樓夢全書中，作者安排劉姥姥四進榮國府，本篇寫的是二進榮國府的片段，敘述劉姥姥随賈母等人遊大觀園進餐而鬧出的種種趣事。\n\n作者透過人物的舉止言辭等細節，將劉姥姥這個農村婦女刻劃得極其生動。從表面來看，她似乎是個滑稽可笑的丑角，其實她純僕善良詼諧慧黠，充滿飽經世故洞察人性的生活智慧。她像一面镜子，見證了貧富懸殊的兩種世界，使讀者從她眼中看到賈府的富貴奢華，而在賈府中大開眼界的經驗，也使「劉姥姥進大觀園成為家喻戶曉的典故。一個憨態百出的鄉下窮姥姥，如此凑趣地逗樂了錦衣玉食養尊處優的太太小姐們，其中意涵耐人尋味。\n\n」僅有些微字元差異（edit distance=24），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥見到大觀園內各式擺設，讚嘆其精緻豪奢，並拉著惜春稱讚她的繡房勝過上等書房。",
+      "section": "②章節摘要",
+      "sections": [
+        "②章節摘要"
+      ],
+      "source_ref": "劉姥姥見了，說道：「這叉爬子比俺那裡的鐵鍬還沉，哪裡拿的動他。」",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥進大觀園：比喻初到某處，事事新奇，也用來取笑人沒見過世面。",
+      "section": "③重點詞彙",
+      "sections": [
+        "③重點詞彙"
+      ],
+      "source_ref": "劉姥姥進大觀園：比喻初到某處，事事新奇，也用來取笑人没見過世面。",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「劉姥姥進大觀園：比喻初到某處，事事新奇，也用來取笑人没見過世面。」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥臨機應變，不計形象地自我調侃，表現練達人情、世故識趣。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "了，說道：「才說嘴就打了嘴！」→劉姥姥跌倒，被眾人取笑，但劉姥姥毫不介意。「自己也笑了」表示她能幽默看待自己的處境，「才說嘴就打了嘴」既是自嘲，也是特意引人發笑，將自己不慎出醜的行為轉化為有趣的表演。",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「劉姥姥道：‘才說嘴就打了嘴！’→劉姥姥跌倒，被眾人取笑，但劉姥姥毫不介意。「自己也笑了」表示她能幽默看待自己的處境，「才說嘴就打了嘴」既是自嘲，也是特意引人發笑，將自己不慎出醜的行為轉化為有趣的表演。」與 SOURCE 實際內容「了，說道：「才說嘴就打了嘴！」→劉姥姥跌倒，被眾人取笑，但劉姥姥毫不介意。「自己也笑了」表示她能幽默看待自己的處境，「才說嘴就打了嘴」既是自嘲，也是特意引人發笑，將自己不慎出醜的行為轉化為有趣的表演。」僅有些微字元差異（edit distance=5），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "插花一事是鳳姐故意捉弄劉姥姥來討賈母開心，劉姥姥明知被捉弄卻不介意，反而自嘲「老風流」。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "反而笑道：「我這頭也不知修了什麼福，今兒這樣體面起來。」眾人戳破鳳姐的用心時，她更豁達的說：「我雖老了，年輕時也風流，愛個花兒粉兒的，今兒索性做個老風流！」她深知與其計較尊嚴得失，不如開懷地自我解嘲，求得大家同樂。",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「劉姥姥笑道：「我這頭也不知修了什麼福，今兒這樣體面起來。众人戳破鳳姐的用心時，她更豁達的說：『我雖老了，年輕時也風流，愛個花兒粉兒的，今兒索性做個老風流！』她深知與其計較尊嚴得失，不如開懷地自我解嘲，求得大家同樂。」與 SOURCE 實際內容「反而笑道：「我這頭也不知修了什麼福，今兒這樣體面起來。」眾人戳破鳳姐的用心時，她更豁達的說：「我雖老了，年輕時也風流，愛個花兒粉兒的，今兒索性做個老風流！」她深知與其計較尊嚴得失，不如開懷地自我解嘲，求得大家同樂。」僅有些微字元差異（edit distance=7），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c3",
+      "claim": "對黛玉與惜春的不同態度顯示劉姥姥觀察敏銳、懂得分際。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "文中提到‘劉姥姥見惜春，喜的忙跑過來，拉著惜春’，以及‘劉姥姥因見窗下案上設著筆硯，又見書架上磊著滿滿的書，……方笑道：『這哪像個小姐的繡房，竟比那上等的書房還好。』’这些描述与陈述中提到的刘姥姥对黛玉和惜春的不同态度相符，体现了她观察敏锐且懂得分际。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c4",
+      "claim": "大與小的對比表現劉姥姥圓融智慧，兩種風格都予以讚美。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "且劉姥姥對兩種風格都予以讚美，可見其圓融智慧。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c5",
+      "claim": "「一兩銀子……就沒了」、「去了金的，又是銀的」以樸實直率的話反襯賈府的奢華排場。",
+      "section": "④文意理解",
+      "sections": [
+        "④文意理解"
+      ],
+      "source_ref": "劉姥姥道：‘這叉爬子比俺那裡的鐵鍬還沉，哪裡拿的動他。’忙收了過去，也照樣換上一雙烏木鑲銀的。劉姥姥道：‘去了金的，又是銀的」到底不及俺們那個伏手。”,",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「劉姥姥道：‘這叉爬子比俺那裡的鐵鍬還沉，哪裡拿的動他。’忙收了過去，也照樣換上一雙烏木鑲銀的。劉姥姥道：‘去了金的，又是銀的」到底不及俺們那個伏手。”,」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 0,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "修辭手法包括飛白、鑲嵌、倒反、誇飾等，用以生動表現人物特性和場景氛圍。",
+      "section": "⑤修辭手法",
+      "sections": [
+        "⑤修辭手法"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "文中多次描述了通过刘姥姥的眼睛和言行来展现贾府的豪奢以及富贵人家的规矩严谨，符合裁决规则中的描述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥四進榮國府，初冬家貧，王熙鳳贈二十兩銀子。",
+      "section": "⑥文化脈絡",
+      "sections": [
+        "⑥文化脈絡"
+      ],
+      "source_ref": "去了金的，又是銀的，到底不及俺們那個伏手。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：原文與陳述一致，劉姥姥在用餐時說道：‘去了金的，又是銀的，到底不及俺們那個伏手。’",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "曹雪芹漢族血統，祖先在明末清初入旗籍，為上三旗包衣（家臣），三代擔任江寧織造。",
+      "section": "⑦作者背景",
+      "sections": [
+        "⑦作者背景"
+      ],
+      "source_ref": "曹雪芹雖為漢族血統，但其祖先在明末清初便入了旗籍（投靠滿清，獲得了與旗人類似的地位和待遇），為直屬於皇帝的上三旗包衣（家臣），深受皇帝寵信。",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「曹雪芹雖為漢族血统，但其祖先在明末清初便入了旗籍（投靠滿清，獲得了與旗人類似的地位和待遇），為直屬於皇帝的上三旗包衣（家臣），深受皇帝寵信。」與 SOURCE 實際內容「曹雪芹雖為漢族血統，但其祖先在明末清初便入了旗籍（投靠滿清，獲得了與旗人類似的地位和待遇），為直屬於皇帝的上三旗包衣（家臣），深受皇帝寵信。」僅有些微字元差異（edit distance=1），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥在曉翠堂用餐時，眾人的笑態和反應顯示出他們的性格或身分。",
+      "section": "⑧段落結構",
+      "sections": [
+        "⑧段落結構"
+      ],
+      "source_ref": "劉姥姥見了，說道：「這叉爬子比俺那裡的鐵鍬還沉，哪裡拿的動他。」\n忙收了過去，也照樣換上一雙烏木鑲銀的。劉姥姥道：「去了金的，又是銀的，到底不及俺們那個伏手。」",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「劉姥姥見了，說道：「這叉爬子比俺那裡的鐵鍬還沉，哪裡拿的動他。」\n忙收了過去，也照樣換上一雙烏木鑲銀的。劉姥姥道：「去了金的，又是銀的，到底不及俺們那個伏手。」」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥的人情练达，除了朱国凤文中提到的长照、人生、理财智慧，还需要社交应变能力。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "原文中提到刘姥姥在贾府中的表现体现了成熟自信和圆融智慧，并且需要考虑她的社交应对能力才能更好地适应环境。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "鳳姐、鴛鴦捉弄劉姥姥的行为是幽默而非嘲弄。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": "賈母聽說，便回頭道：「你三妹妹那裡就好，你就帶了人擺去，我們從這裡坐了船去。61鳳姐聽說，便回身同了探春李紈鴛鴦琥珀帶著端飯的人等，抄著近路到了秋爽齋，就在曉翠堂上調開桌案。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接引用自原文，描述鳳姐聽說後帶人去擺設宴席的情節，符合 SOURCE 的內容。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c3",
+      "claim": "當雙方權力不對等時，若玩笑以善意和尊重為前提，则不会变成惡意嘲笑。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "陳述與原文內容一致，均強調了在權力或階級不對等的情況下，若玩笑以善意和尊重為前提，則不會轉變為惡意嘲笑。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c4",
+      "claim": "劉姥姥說「一兩銀子，也沒聽見響聲兒就没了」暗示了賈府的奢侈生活可能带来浪费和不实之财。",
+      "section": "⑨延伸思考",
+      "sections": [
+        "⑨延伸思考"
+      ],
+      "source_ref": "去了金的，又是銀的，到底不及俺們那個伏手。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：原文與陳述一致，劉姥姥提到銀筷子不如她們日常使用的筷子好用，反映了賈府奢侈生活可能帶來的浪費。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "紅樓夢的作者前八十回為曹雪芹，後四十回不是曹雪芹所作。",
+      "section": "⑩易混淆概念",
+      "sections": [
+        "⑩易混淆概念"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "CANONICAL SOURCE中提到《红楼梦》前八十回为曹雪芹所写，而陈述也指出前八十回是曹雪芹的作品，因此与原文一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "本課〈劉姥姥〉節選自《紅樓夢》第四十回，主要描寫劉姥姥二進榮國府時的笑態與言行，反映其處世智慧。",
+      "section": "⑪常考題型",
+      "sections": [
+        "⑪常考題型"
+      ],
+      "source_ref": "本課由綴錦閣的色色物件開始寫起，在劉姥姥眼裡都是前所未見。接著在沁芳亭觀賞全 園景致，劉姥姥說強過年畫十倍。然後到瀟湘館，藉劉姥姥之眼敘貴族家庭大小房間的 布置。最後是賈府早飯時的氣派排場與浪費成習。 *作者讓劉姥姥走進大觀園，藉由她的眼睛審視賈府的豪奢，以及富貴人家的規矩嚴 謹。其用意是欲從一個局外人的角度，道出賈府的陳設、人物、家風，映襯貧富懸殊 的兩",
+      "verdict": "SUPPORTED",
+      "reason": "模型輸出的引用「本課由綴錦閣的色色物件開始寫起，在劉姥姥眼裡都是前所未見。接著在沁芳亭觀賞全園景致，劉姥姥說強過年畫十倍。然後到瀟湘館，藉劉姥姥之眼敘貴族家庭大小房間的布置。最後是賈府早飯時的氣派排場與浪費成習。*作者讓劉姥姥走進大觀園，藉由她的眼睛審視賈府的豪奢，以及富貴人家的規矩嚴謹。其用意是欲從一個局外人的角度，道出賈府的陳設、人物、家風，映襯貧富懸殊的兩個世界。」與 SOURCE 實際內容「本課由綴錦閣的色色物件開始寫起，在劉姥姥眼裡都是前所未見。接著在沁芳亭觀賞全 園景致，劉姥姥說強過年畫十倍。然後到瀟湘館，藉劉姥姥之眼敘貴族家庭大小房間的 布置。最後是賈府早飯時的氣派排場與浪費成習。 *作者讓劉姥姥走進大觀園，藉由她的眼睛審視賈府的豪奢，以及富貴人家的規矩嚴 謹。其用意是欲從一個局外人的角度，道出賈府的陳設、人物、家風，映襯貧富懸殊 的兩」僅有些微字元差異（edit distance=9），且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "劉姥姥不是單純的丑角：她是主動配合演出的人，不是被動受辱的人。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "原文中提到刘姥姥在贾府中的表现并非单纯的取笑对象，而是通过她的言行展现了智慧和幽默感，如文中所述：‘劉姥姥進大觀園便提供了了個典型例子。她是一個來自鄉下的農婦。與此相比，顯然處於弱勢地位。在此次拜訪中，她被府眾人戲弄頭上插滿花，茶，在飯局中故意以粗俗的語言和動作博取众人笑声。對於這樣的情節，有些人認為王熙鳳等人並非出於恶意嘲笑，而是為了讓笑聲與愉快帶給大家。’这表明刘姥姥并非被动受辱，而是在配合演出时展现了智慧与幽默。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c2",
+      "claim": "「女篾片」是鴛鴦提出的，鳳姐隨後附和；李紈則是勸阻的一方。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "文中提到‘咱們今兒就拿他取個笑兒’，表明鴛鴦提出想法后，鳳姐隨後附和。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c3",
+      "claim": "兩雙筷子：象牙鑲金筷是捉弄劉姥姥用的；烏木三鑲銀箸是賈母命人換上的。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": "兩雙筷子：象牙鑲金筷是捉弄劉姥姥用的；烏木三鑲銀箸是賈母命人換上的。",
+      "verdict": "INSUFFICIENT_EVIDENCE",
+      "reason": "SOURCE 中找不到與引用「兩雙筷子：象牙鑲金筷是捉弄劉姥姥用的；烏木三鑲銀箸是賈母命人換上的。」相近的內容，證據不足，不得視為已驗證事實（deterministic SOURCE Truth Gate 覆寫）。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": true
+    },
+    {
+      "claim_id": "c4",
+      "claim": "兩個「伏」字意義不同：「伏著桌子」是俯伏；「不伏手」通「服」。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": "讓 他 Wu 再 還 0 還 IHSTANEL 估 人 王 尋 二",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：陳述直接改寫自原文中的「讓 他 Wu 再 還 0 還 IHSTANEL 估 人 王 尋 二」，兩者字面完全一致。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c5",
+      "claim": "薛寶釵的笑態：作者沒有描寫，正是要表現她的端莊自持。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "原文提到‘薛宝钗虽在场，但课文未提及薛宝钗的反应’，这与陈述一致，说明作者确实没有描写薛宝钗的笑态，以表现她的端庄自持。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c6",
+      "claim": "「好容易」是倒反，不是誇飾。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "UNSUPPORTED",
+      "reason": "原文未提及“好容易”一词的具体用法是否为倒反或夸饰手法，因此无法直接支持或反驳该陈述。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c7",
+      "claim": "曹家被抄的時間：是雍正五年，不是康熙年間；無力填補虧空的是曹頫，不是曹寅。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "CONTRADICTED",
+      "reason": "陳述與原文內容衝突。根據Canonical Source中的描述，曹家被抄的時間是雍正五年，而非康熙年間；且文中明確指出是曹頫無法填補虧損，而非曹寅。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c8",
+      "claim": "《紅樓夢》以女性為描寫重心（103 指考），不是以男性為重心。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": null,
+      "verdict": "CONTRADICTED",
+      "reason": "原文提到《红楼梦》的人物描写以男性为主，与陈述不符。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c9",
+      "claim": "〈三國演義〉以蜀為正統，與《三國志》以魏為正統不同（103 指考）。",
+      "section": "⑫易錯陷阱",
+      "sections": [
+        "⑫易錯陷阱"
+      ],
+      "source_ref": "作者若參加「相對論之旅」，符合其理念的活動是：探訪愛因斯坦不同階段所停留過的地方，接觸其生活中所使用的物品，因為這裡面有著「人味和精神」。而展覽內容的甲、丁都是瓦特的「科學貢獻」，並非以「人」為核心的關懷，去除這兩項，答案是(B)。",
+      "verdict": "SUPPORTED",
+      "reason": "SOURCE 逐字包含此引用，判定為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。原理由：該陳述直接改寫自原文中的段落。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    },
+    {
+      "claim_id": "c1",
+      "claim": "《好了歌解》、〈劉姥姥一進榮國府〉和十二金釵判詞分別從不同角度反映了小說中的盛衰無常與人物命運。",
+      "section": "⑬跨課連結",
+      "sections": [
+        "⑬跨課連結"
+      ],
+      "source_ref": null,
+      "verdict": "SUPPORTED",
+      "reason": "该陈述与原文内容一致，均从不同角度反映了《红楼梦》中的人物命运及盛衰无常的主题。",
+      "confidence": 1,
+      "overridden_by_source_truth_gate": false
+    }
+  ],
+  "validation": {
+    "sections_complete": true,
+    "source_attribution_valid": true
+  }
+}
