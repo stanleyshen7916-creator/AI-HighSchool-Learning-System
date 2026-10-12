@@ -5,6 +5,7 @@
 // 明確調高 undici 全域 dispatcher 逾時，確保「是否逾時」只由 DEFAULT_ADJUDICATION_TIMEOUT_MS
 // 這個唯一、有意設計的安全上限決定。
 const { Agent, setGlobalDispatcher } = require('undici');
+const practiceAdjudicator = require('./practiceAdjudicator');
 setGlobalDispatcher(new Agent({ headersTimeout: 0, bodyTimeout: 0 }));
 
 const SECTION_DEFS = [
@@ -1351,6 +1352,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
   }
 
   let sections;
+  let practice = null;
   let sectionCoverage = null;
   let documentCompleteness = null;
 
@@ -1358,17 +1360,22 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     const assembled = assembleClaimsIntoSections(claims);
     sections = assembled.sections;
     hardFail = assembled.hardFail;
-    // 2026-10-06：⑪ 由 claims 重組後，三方初稿的練習題（題幹＋選項＋答案）全部消失，
-    // 題庫變成 0 題。練習題不是可對照 SOURCE 逐條裁決的陳述，原樣附回 ⑪，並標明未經
-    // Qwen 逐題裁決；FinalParser 會重編號、去除題幹相同的題目。
-    const draftPractice = [gptSections, geminiSections, claudeSections]
-      .map((s) => (s && s['⑪常考題型']) || '')
-      .filter((text) => /(^|\n)\s*(\*\*\s*)?Q\s*\d/.test(text));
-    if (draftPractice.length) {
+    // 2026-10-06：⑪ 由 claims 重組後，三方初稿的練習題會消失，所以另外處理。
+    // 2026-10-12（審議改版第 1 階段）：不再原樣附回，改為逐題自動裁決（格式、三方比對、
+    // Qwen 獨立作答），通過的收進 Final.md，其餘留給「Claude 最終審查包」
+    // （services/practiceAdjudicator.js）。
+    practice = await practiceAdjudicator.adjudicatePractice(
+      { chatgpt: gptSections['⑪常考題型'], gemini: geminiSections['⑪常考題型'], claude: claudeSections['⑪常考題型'] },
+      trimmedSource,
+      {
+        callModel: (prompt) => callOllamaAdjudication(prompt, model, url, timeoutMs),
+        fitSource: (build, focus) => fitSourceIntoPrompt(build, trimmedSource, focus),
+      },
+    );
+    if (practice.total) {
       sections['⑪常考題型'] = [
         sections['⑪常考題型'] || '',
-        '### 練習題（取自三方初稿，未經 Qwen 逐題裁決）',
-        ...draftPractice,
+        practiceAdjudicator.renderPracticeBlock(practice.accepted, practice.pending.length),
       ].filter(Boolean).join('\n\n');
     }
 
@@ -1433,6 +1440,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     gptSections,
     claims,
     sections,
+    practice,
     meta: {
       mode:
         mode === 'llm_semantic'
@@ -1457,6 +1465,8 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     // Adjudication Record（機器可讀裁決資料 + Claim-level Provenance，供 *.adjudication.json 之類的
     // 追溯用途）。每一個 claim 都必須可回溯：claim → source_ref → verdict → reason → confidence。
     adjudicationRecord: {
+      // 2026-10-12：練習題自動裁決結果；pending 供上傳頁產生「Claude 最終審查包」。
+      practice: practice ? { total: practice.total, accepted: practice.accepted, pending: practice.pending, resolved: [] } : null,
       adjudicator: mode === 'llm_semantic' ? model : 'n/a（fallback，未執行 semantic adjudication）',
       adjudication_mode: mode,
       failure_reason: failureReason,
@@ -1552,6 +1562,10 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `ChatGPT/Web 貢獻節數：${council.contributions?.gpt ?? 0}/13`,
     `Gemini/Web 貢獻節數：${council.contributions?.gemini ?? 0}/13`,
     `Claude/Web 貢獻節數：${council.contributions?.claude ?? 0}/13`,
+    ...(council.practice && council.practice.total ? [
+      '',
+      `練習題自動裁決：共 ${council.practice.total} 題（題幹相同者合併），通過 ${council.practice.accepted.length} 題、待 Claude 最終審查 ${council.practice.pending.length} 題。`,
+    ] : []),
     '',
     `## ⑮Final Score`,
     '',

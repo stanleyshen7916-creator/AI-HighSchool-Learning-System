@@ -16,6 +16,8 @@ const {
 
 const { createPackageBuilder } = require('./platform/PackageBuilder');
 const { createGitPublishQueue } = require('./platform/GitPublishQueue');
+const practiceAdjudicator = require('./services/practiceAdjudicator');
+const { parseFrontmatter } = require('./platform/FinalParser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -818,6 +820,73 @@ app.put('/api/finals/:filename', (req, res) => {
   if (!fs.existsSync(backup)) fs.copyFileSync(p, backup);
   fs.writeFileSync(p, content, 'utf8');
   return res.status(200).json({ filename: path.basename(p), content, backup: path.basename(backup) });
+});
+
+// 2026-10-12（審議改版第 1 階段）：練習題的「Claude 最終審查包」。
+// 交叉審議時沒有通過自動裁決的練習題存在 <Final>.adjudication.json 的 practice.pending。
+// GET 產生要貼到 Claude 網頁版的 Prompt；POST 貼回 Claude 的回覆後套用：正確、答案應為 X
+// 收錄到 Final.md，刪除、無法判斷不收錄；沒有回覆到的題目留在待審。
+function practiceRecordFor(filename) {
+  const finalPath = finalPathFor(filename);
+  const recordPath = assertInsideDir(OUTPUTS_DIR, path.join(OUTPUTS_DIR, `${path.basename(finalPath)}.adjudication.json`));
+  if (!fs.existsSync(recordPath)) throw new Error('這份 Final.md 沒有審議紀錄（adjudication.json）');
+  const record = JSON.parse(fs.readFileSync(recordPath, 'utf8'));
+  if (!record.practice) throw new Error('這份 Final.md 沒有練習題自動裁決紀錄（2026-10-12 以前的審議，或審議未完成語意裁決）');
+  return { finalPath, recordPath, record };
+}
+
+app.get('/api/finals/:filename/practice-review', (req, res) => {
+  try {
+    const { finalPath, record } = practiceRecordFor(req.params.filename);
+    const { frontmatter } = parseFrontmatter(fs.readFileSync(finalPath, 'utf8'));
+    const pending = record.practice.pending || [];
+    return res.status(200).json({
+      total: record.practice.total,
+      accepted: (record.practice.accepted || []).length,
+      pending: pending.map((p, i) => ({ id: `P${i + 1}`, question: p.question, reason: p.reason, origins: p.origins })),
+      resolved: record.practice.resolved || [],
+      prompt: pending.length ? practiceAdjudicator.buildClaudeReviewPrompt(frontmatter, pending) : null,
+    });
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+});
+
+app.post('/api/finals/:filename/practice-review', (req, res) => {
+  let ctx;
+  try {
+    ctx = practiceRecordFor(req.params.filename);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+  const reply = req.body && req.body.reply;
+  if (typeof reply !== 'string' || !reply.trim()) return res.status(400).json({ error: '請貼上 Claude 的回覆' });
+  const { finalPath, recordPath, record } = ctx;
+  const pending = record.practice.pending || [];
+  const result = practiceAdjudicator.applyClaudeReview(pending, reply);
+  if (!result.accepted.length && !result.dropped.length) {
+    return res.status(400).json({ error: '回覆中找不到「P1：正確」這種格式的逐題結果，請確認貼上的是 Claude 的回覆' });
+  }
+  const accepted = (record.practice.accepted || []).concat(result.accepted);
+  const stillPending = pending.filter((_, i) => result.unanswered.indexOf(i + 1) !== -1);
+  const content = fs.readFileSync(finalPath, 'utf8');
+  const updated = practiceAdjudicator.replacePracticeBlock(content, accepted, stillPending.length);
+  if (updated === null) return res.status(409).json({ error: 'Final.md 中找不到練習題區塊（<!-- practice:start --> … <!-- practice:end -->），可能已被手動刪除' });
+  const backup = `${finalPath}.orig`;
+  if (!fs.existsSync(backup)) fs.copyFileSync(finalPath, backup);
+  fs.writeFileSync(finalPath, updated, 'utf8');
+  record.practice.accepted = accepted;
+  record.practice.pending = stillPending;
+  record.practice.resolved = (record.practice.resolved || []).concat([{
+    at: new Date().toISOString(),
+    accepted: result.accepted.map((p) => ({ question: p.question, claude: p.claude })),
+    dropped: result.dropped.map((d) => ({ question: d.item.question, verdict: d.verdict })),
+  }]);
+  fs.writeFileSync(recordPath, JSON.stringify(record, null, 2), 'utf8');
+  return res.status(200).json({
+    added: result.accepted.length, dropped: result.dropped.length, stillPending: stillPending.length,
+    accepted: accepted.length, content: updated,
+  });
 });
 
 function uploadSessionFiles(sessionId) {

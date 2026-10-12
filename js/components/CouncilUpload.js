@@ -585,6 +585,49 @@ AHS.CouncilUpload = (function () {
           el("div", { class: "upl-actions" }, [saveBtn, revertBtn]),
           editStatus
         ]));
+        /* 2026-10-12（審議改版第 1 階段）：沒有通過自動裁決的練習題 → Claude 最終審查包。
+           不使用 API：複製審查包貼到 Claude 網頁版，再把回覆貼回來套用。 */
+        client.practiceReview(filename).then(function (pr) {
+          if (pr.error || !pr.data || !Array.isArray(pr.data.pending)) { return; }
+          var d = pr.data;
+          var reviewStatus = el("p", { class: "upl-status" });
+          var summary = el("p", { class: "upl-hint", text: "練習題自動裁決：共 " + d.total + " 題，已收錄 " + d.accepted + " 題，待 Claude 最終審查 " + d.pending.length + " 題。" });
+          if (!d.pending.length) { finalSlot.appendChild(summary); return; }
+          var promptBox = el("textarea", { class: "upl-textarea", rows: "10", readonly: "readonly", spellcheck: "false" });
+          promptBox.value = d.prompt;
+          var replyBox = el("textarea", { class: "upl-textarea", rows: "6", spellcheck: "false", placeholder: "把 Claude 的回覆貼在這裡（每題一行，例如「P1：正確」「P2：答案應為 C」）" });
+          var copyBtn = button("複製審查包", null, function () {
+            promptBox.select();
+            var done = function () { status(reviewStatus, "已複製。請貼到 Claude 網頁版，再把回覆貼回下方。", "ok"); };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(promptBox.value).then(done, function () { document.execCommand("copy"); done(); });
+            } else { document.execCommand("copy"); done(); }
+          });
+          var applyBtn = button("套用 Claude 審查結果", "primary", function () {
+            if (!replyBox.value.trim()) { status(reviewStatus, "請先貼上 Claude 的回覆。", "error"); return; }
+            applyBtn.disabled = true;
+            status(reviewStatus, "套用中…");
+            client.applyPracticeReview(filename, replyBox.value).then(function (r) {
+              applyBtn.disabled = false;
+              if (r.error) { status(reviewStatus, r.error.message, "error"); return; }
+              saved = r.data.content;
+              editor.value = saved;
+              status(reviewStatus, "已套用：收錄 " + r.data.added + " 題、不收錄 " + r.data.dropped + " 題（刪除與無法判斷）" +
+                (r.data.stillPending ? "，還有 " + r.data.stillPending + " 題沒有回覆，仍待審" : "") + "。Final.md 目前共 " + r.data.accepted + " 題練習題。", "ok");
+            });
+          });
+          finalSlot.appendChild(el("details", { class: "upl-details", open: "open" }, [
+            el("summary", { text: "練習題 Claude 最終審查（" + d.pending.length + " 題）" }),
+            summary,
+            el("ul", { class: "upl-list" }, d.pending.map(function (p) { return el("li", { text: p.id + "　" + p.reason + "　" + p.question.slice(0, 40) }); })),
+            el("p", { class: "upl-hint", text: "回覆「正確」或「答案應為 X」的題目會收進 Final.md；「刪除」與「無法判斷」不收錄。" }),
+            promptBox,
+            el("div", { class: "upl-actions" }, [copyBtn]),
+            replyBox,
+            el("div", { class: "upl-actions" }, [applyBtn]),
+            reviewStatus
+          ]));
+        });
         if (fillMeta) {
           var filled = applyFrontmatter(saved);
           if (filled.length) {
