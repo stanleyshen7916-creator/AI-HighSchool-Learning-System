@@ -815,7 +815,7 @@ AHS.CouncilUpload = (function () {
               var tries = 0;
               /* main 受保護：推送程式會開 PR、等自動測試通過再合併，約 5 分鐘 */
               var steps = {
-                commit: "建立 commit", push: "推送分支", pr: "建立 PR",
+                regenerate: "更新平台資料", commit: "建立 commit", push: "推送分支", pr: "建立 PR",
                 checks: "等待 GitHub 自動測試（約 4～5 分鐘）", merge: "合併 PR"
               };
               status(draftStatus, "發布完成，正在送上 GitHub…（全程約 5 分鐘，請勿關閉推送視窗）");
