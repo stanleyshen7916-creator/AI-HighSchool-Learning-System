@@ -831,7 +831,7 @@ function practiceRecordFor(filename) {
   const recordPath = assertInsideDir(OUTPUTS_DIR, path.join(OUTPUTS_DIR, `${path.basename(finalPath)}.adjudication.json`));
   if (!fs.existsSync(recordPath)) throw new Error('這份 Final.md 沒有審議紀錄（adjudication.json）');
   const record = JSON.parse(fs.readFileSync(recordPath, 'utf8'));
-  if (!record.practice) throw new Error('這份 Final.md 沒有練習題自動裁決紀錄（2026-10-12 以前的審議，或審議未完成語意裁決）');
+  if (!record.practice && !record.claimReview) throw new Error('這份 Final.md 沒有自動裁決紀錄（2026-10-12 以前的審議，或審議未完成語意裁決）');
   return { finalPath, recordPath, record };
 }
 
@@ -839,13 +839,17 @@ app.get('/api/finals/:filename/practice-review', (req, res) => {
   try {
     const { finalPath, record } = practiceRecordFor(req.params.filename);
     const { frontmatter } = parseFrontmatter(fs.readFileSync(finalPath, 'utf8'));
-    const pending = record.practice.pending || [];
+    const practice = record.practice || { total: 0, accepted: [], pending: [], resolved: [] };
+    const pending = practice.pending || [];
+    // 2026-10-13（第 2 階段）：沒有定論的陳述一併放進審查包（C1、C2…）。
+    const claims = (record.claimReview && record.claimReview.pending) || [];
     return res.status(200).json({
-      total: record.practice.total,
-      accepted: (record.practice.accepted || []).length,
+      total: practice.total,
+      accepted: (practice.accepted || []).length,
       pending: pending.map((p, i) => ({ id: `P${i + 1}`, question: p.question, reason: p.reason, origins: p.origins })),
-      resolved: record.practice.resolved || [],
-      prompt: pending.length ? practiceAdjudicator.buildClaudeReviewPrompt(frontmatter, pending) : null,
+      claims: claims.map((c, i) => ({ id: `C${i + 1}`, claim: c.claim, reason: c.reason, escalate: !!c.escalate })),
+      resolved: practice.resolved || [],
+      prompt: pending.length || claims.length ? practiceAdjudicator.buildClaudeReviewPrompt(frontmatter, pending, claims) : null,
     });
   } catch (error) {
     return res.status(404).json({ error: error.message });
@@ -862,30 +866,49 @@ app.post('/api/finals/:filename/practice-review', (req, res) => {
   const reply = req.body && req.body.reply;
   if (typeof reply !== 'string' || !reply.trim()) return res.status(400).json({ error: '請貼上 Claude 的回覆' });
   const { finalPath, recordPath, record } = ctx;
-  const pending = record.practice.pending || [];
+  const practice = record.practice || { total: 0, accepted: [], pending: [], resolved: [] };
+  const pending = practice.pending || [];
+  const claims = (record.claimReview && record.claimReview.pending) || [];
   const result = practiceAdjudicator.applyClaudeReview(pending, reply);
-  if (!result.accepted.length && !result.dropped.length) {
-    return res.status(400).json({ error: '回覆中找不到「P1：正確」這種格式的逐題結果，請確認貼上的是 Claude 的回覆' });
+  let content = fs.readFileSync(finalPath, 'utf8');
+  const claimResult = practiceAdjudicator.applyClaimReview(content, claims, reply);
+  if (!result.accepted.length && !result.dropped.length && !claimResult.confirmed.length && !claimResult.removed.length) {
+    return res.status(400).json({ error: '回覆中找不到「P1：正確」或「C1：成立」這種格式的逐題結果，請確認貼上的是 Claude 的回覆' });
   }
-  const accepted = (record.practice.accepted || []).concat(result.accepted);
+  content = claimResult.markdown;
+  const accepted = (practice.accepted || []).concat(result.accepted);
   const stillPending = pending.filter((_, i) => result.unanswered.indexOf(i + 1) !== -1);
-  const content = fs.readFileSync(finalPath, 'utf8');
-  const updated = practiceAdjudicator.replacePracticeBlock(content, accepted, stillPending.length);
-  if (updated === null) return res.status(409).json({ error: 'Final.md 中找不到練習題區塊（<!-- practice:start --> … <!-- practice:end -->），可能已被手動刪除' });
+  if (record.practice && (result.accepted.length || result.dropped.length)) {
+    const updated = practiceAdjudicator.replacePracticeBlock(content, accepted, stillPending.length);
+    if (updated === null) return res.status(409).json({ error: 'Final.md 中找不到練習題區塊（<!-- practice:start --> … <!-- practice:end -->），可能已被手動刪除' });
+    content = updated;
+  }
   const backup = `${finalPath}.orig`;
   if (!fs.existsSync(backup)) fs.copyFileSync(finalPath, backup);
-  fs.writeFileSync(finalPath, updated, 'utf8');
-  record.practice.accepted = accepted;
-  record.practice.pending = stillPending;
-  record.practice.resolved = (record.practice.resolved || []).concat([{
-    at: new Date().toISOString(),
-    accepted: result.accepted.map((p) => ({ question: p.question, claude: p.claude })),
-    dropped: result.dropped.map((d) => ({ question: d.item.question, verdict: d.verdict })),
-  }]);
+  fs.writeFileSync(finalPath, content, 'utf8');
+  if (record.practice) {
+    record.practice.accepted = accepted;
+    record.practice.pending = stillPending;
+    record.practice.resolved = (record.practice.resolved || []).concat([{
+      at: new Date().toISOString(),
+      accepted: result.accepted.map((p) => ({ question: p.question, claude: p.claude })),
+      dropped: result.dropped.map((d) => ({ question: d.item.question, verdict: d.verdict })),
+    }]);
+  }
+  if (record.claimReview) {
+    record.claimReview.pending = claims.filter((_, i) => claimResult.unanswered.indexOf(i + 1) !== -1);
+    record.claimReview.resolved = (record.claimReview.resolved || []).concat([{
+      at: new Date().toISOString(),
+      confirmed: claimResult.confirmed.map((c) => c.claim),
+      removed: claimResult.removed.map((r) => ({ claim: r.claim.claim, verdict: r.verdict })),
+    }]);
+  }
   fs.writeFileSync(recordPath, JSON.stringify(record, null, 2), 'utf8');
   return res.status(200).json({
     added: result.accepted.length, dropped: result.dropped.length, stillPending: stillPending.length,
-    accepted: accepted.length, content: updated,
+    accepted: accepted.length, content,
+    claimsConfirmed: claimResult.confirmed.length, claimsRemoved: claimResult.removed.length,
+    claimsPending: record.claimReview ? record.claimReview.pending.length : 0,
   });
 });
 
