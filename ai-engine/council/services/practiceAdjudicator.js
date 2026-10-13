@@ -140,7 +140,9 @@ function renderPracticeBlock(accepted, pendingCount) {
   ].join('\n');
 }
 
-function buildClaudeReviewPrompt(metadata, pending) {
+function buildClaudeReviewPrompt(metadata, pending, claims) {
+  claims = claims || [];
+  if (!pending.length) return buildClaimPrompt(metadata, claims, true);
   const head = [
     `你是高中${metadata.subject || ''}老師。以下是「${metadata.school || ''} ${metadata.grade || ''} ${metadata.subject || ''} ${metadata.unit || ''}」教材練習題中，`,
     '本地模型自動裁決沒有通過的題目。請逐題判斷原稿答案是否正確，每題只回覆一行，格式必須完全如下（不要加其他說明）：',
@@ -162,7 +164,54 @@ function buildClaudeReviewPrompt(metadata, pending) {
     ...(p.checks && p.checks.quote ? [`相關教材原文：「${p.checks.quote}」`] : []),
     '',
   ].join('\n'));
-  return head.concat(body).join('\n');
+  return head.concat(body).join('\n') + (claims.length ? `\n\n${buildClaimPrompt(metadata, claims, false)}` : '');
+}
+
+// 2026-10-13（第 2 階段）：交叉審議中沒有定論的陳述（分段結論不一致、兩次判斷不一致、
+// 證據不足、無根據）。Final.md 中以「⚠️尚待人工覆核（VERDICT）：陳述」呈現。
+function claimMarker(c) {
+  return `⚠️尚待人工覆核（${c.verdict}）：${c.claim}`;
+}
+
+function buildClaimPrompt(metadata, claims, standalone) {
+  if (!claims.length) return '';
+  const head = standalone
+    ? [`你是高中${metadata.subject || ''}老師，正在審查「${metadata.school || ''} ${metadata.grade || ''} ${metadata.subject || ''} ${metadata.unit || ''}」的教材重點。`]
+    : ['---', '', '第二部分：教材重點中，本地模型沒有定論的陳述。'];
+  return head.concat([
+    '請依教材內容與學科知識判斷每條陳述是否正確，每條只回覆一行，格式如下（不要加其他說明）：',
+    '',
+    'C1：成立',
+    'C2：不成立',
+    'C3：無法判斷',
+    '',
+  ], claims.map((c, i) => `## C${i + 1}（${c.reason || c.verdict}）\n${c.claim}\n`)).join('\n');
+}
+
+// 成立 → 拿掉 ⚠️ 標記，保留陳述；不成立、無法判斷 → 從 Final.md 刪除這條陳述。
+function applyClaimReview(markdown, claims, replyText) {
+  const verdicts = {};
+  String(replyText || '').split(/\r?\n/).forEach((line) => {
+    const m = /^\s*[*\-]*\s*C\s*(\d+)\s*[：:.、]\s*(.+?)\s*$/.exec(line);
+    if (m) verdicts[Number(m[1])] = m[2];
+  });
+  let md = markdown;
+  const confirmed = [];
+  const removed = [];
+  const unanswered = [];
+  claims.forEach((c, i) => {
+    const v = verdicts[i + 1];
+    if (!v) { unanswered.push(i + 1); return; }
+    const marker = claimMarker(c);
+    if (/^成立/.test(v)) {
+      md = md.split(marker).join(c.claim);
+      confirmed.push(c);
+    } else {
+      md = md.split(`${marker}\n\n`).join('').split(`\n\n${marker}`).join('').split(marker).join('');
+      removed.push({ claim: c, verdict: /無法判斷/.test(v) ? '無法判斷' : '不成立' });
+    }
+  });
+  return { markdown: md, confirmed, removed, unanswered };
 }
 
 // Claude 的回覆 -> { accepted:[item], dropped:[{item, verdict}], unanswered:[index] }
@@ -203,5 +252,5 @@ function replacePracticeBlock(markdown, accepted, pendingCount) {
 
 module.exports = {
   adjudicatePractice, collectCandidates, buildBlindSolvePrompt, renderPracticeBlock, buildClaudeReviewPrompt,
-  applyClaudeReview, replacePracticeBlock, PRACTICE_START, PRACTICE_END,
+  applyClaudeReview, replacePracticeBlock, applyClaimReview, claimMarker, PRACTICE_START, PRACTICE_END,
 };

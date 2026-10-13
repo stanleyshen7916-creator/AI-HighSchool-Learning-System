@@ -592,10 +592,11 @@ AHS.CouncilUpload = (function () {
           var d = pr.data;
           var reviewStatus = el("p", { class: "upl-status" });
           var summary = el("p", { class: "upl-hint", text: "練習題自動裁決：共 " + d.total + " 題，已收錄 " + d.accepted + " 題，待 Claude 最終審查 " + d.pending.length + " 題。" });
-          if (!d.pending.length) { finalSlot.appendChild(summary); return; }
+          var claims = d.claims || [];
+          if (!d.pending.length && !claims.length) { finalSlot.appendChild(summary); return; }
           var promptBox = el("textarea", { class: "upl-textarea", rows: "10", readonly: "readonly", spellcheck: "false" });
           promptBox.value = d.prompt;
-          var replyBox = el("textarea", { class: "upl-textarea", rows: "6", spellcheck: "false", placeholder: "把 Claude 的回覆貼在這裡（每題一行，例如「P1：正確」「P2：答案應為 C」）" });
+          var replyBox = el("textarea", { class: "upl-textarea", rows: "6", spellcheck: "false", placeholder: "把 Claude 的回覆貼在這裡（每題一行，例如「P1：正確」「P2：答案應為 C」「C1：成立」）" });
           var copyBtn = button("複製審查包", null, function () {
             promptBox.select();
             var done = function () { status(reviewStatus, "已複製。請貼到 Claude 網頁版，再把回覆貼回下方。", "ok"); };
@@ -613,14 +614,16 @@ AHS.CouncilUpload = (function () {
               saved = r.data.content;
               editor.value = saved;
               status(reviewStatus, "已套用：收錄 " + r.data.added + " 題、不收錄 " + r.data.dropped + " 題（刪除與無法判斷）" +
-                (r.data.stillPending ? "，還有 " + r.data.stillPending + " 題沒有回覆，仍待審" : "") + "。Final.md 目前共 " + r.data.accepted + " 題練習題。", "ok");
+                (r.data.stillPending ? "，還有 " + r.data.stillPending + " 題沒有回覆，仍待審" : "") + "。Final.md 目前共 " + r.data.accepted + " 題練習題。" +
+                (claims.length ? "陳述：確認 " + r.data.claimsConfirmed + " 條、刪除 " + r.data.claimsRemoved + " 條" + (r.data.claimsPending ? "、仍待審 " + r.data.claimsPending + " 條" : "") + "。" : ""), "ok");
             });
           });
           finalSlot.appendChild(el("details", { class: "upl-details", open: "open" }, [
-            el("summary", { text: "練習題 Claude 最終審查（" + d.pending.length + " 題）" }),
+            el("summary", { text: "Claude 最終審查（練習題 " + d.pending.length + " 題、陳述 " + claims.length + " 條）" }),
             summary,
             el("ul", { class: "upl-list" }, d.pending.map(function (p) { return el("li", { text: p.id + "　" + p.reason + "　" + p.question.slice(0, 40) }); })),
-            el("p", { class: "upl-hint", text: "回覆「正確」或「答案應為 X」的題目會收進 Final.md；「刪除」與「無法判斷」不收錄。" }),
+            claims.length ? el("ul", { class: "upl-list" }, claims.map(function (c) { return el("li", { text: c.id + "　" + (c.escalate ? "【兩次判斷或分段結論不一致】" : "") + c.claim.slice(0, 50) }); })) : null,
+            el("p", { class: "upl-hint", text: "練習題：回覆「正確」或「答案應為 X」收進 Final.md，「刪除」與「無法判斷」不收錄。陳述：「成立」拿掉 ⚠️ 標記保留，「不成立」與「無法判斷」從 Final.md 刪除。" }),
             promptBox,
             el("div", { class: "upl-actions" }, [copyBtn]),
             replyBox,

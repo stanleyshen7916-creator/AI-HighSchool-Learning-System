@@ -1,3 +1,5 @@
+// 2026-10-13: 這支測試的 Ollama 假回應是逐次排定的，關閉第 2 階段新增的「換個問法再判斷」。
+process.env.MULTIAI_SECOND_OPINION = 'off';
 const request = require('supertest');
 const fs = require('fs');
 const path = require('path');

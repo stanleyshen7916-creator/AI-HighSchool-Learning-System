@@ -852,20 +852,136 @@ function buildClaimVerificationPrompt(sourceText, claimText) {
   ].join('\n');
 }
 
-async function verifyClaimAgainstSource(sourceText, claimText, model, url, timeoutMs) {
-  const fitted = fitSourceIntoPrompt((src) => buildClaimVerificationPrompt(src, claimText), sourceText, claimText);
-  if (!fitted) throw failure('單一 Claim 裁決 prompt 超過模型最大 context', FAILURE_REASON.CONTEXT_OVERFLOW);
-  const raw = await callOllamaAdjudication(fitted.prompt, model, url, timeoutMs);
+// 2026-10-13：實測 qwen2.5:7b 會把「原文沒提到」判成 CONTRADICTED（理由寫「未提及」）。
+// 矛盾必須是原文寫了不同的內容；理由自陳沒提到時，以程式改判為 INSUFFICIENT_EVIDENCE。
+const NOT_MENTIONED = /未提及|沒有提及|未提到|沒有提到|沒提到|未涉及|沒有相關|无相关|没有提及|未包含|沒有包含/;
+
+function parseVerification(raw) {
   const parsed = extractJsonObject(raw);
+  const reason = typeof parsed.reason === 'string' && parsed.reason.trim() ? parsed.reason.trim() : null;
+  let verdict = VALID_VERDICTS.has(parsed.verdict) ? parsed.verdict : null;
+  if (verdict === VERDICTS.CONTRADICTED && reason && NOT_MENTIONED.test(reason)) verdict = VERDICTS.INSUFFICIENT_EVIDENCE;
   return {
-    windowed: fitted.windowed,
     quoted_source_span:
       typeof parsed.quoted_source_span === 'string' && parsed.quoted_source_span.trim()
         ? parsed.quoted_source_span.trim()
         : null,
-    verdict: VALID_VERDICTS.has(parsed.verdict) ? parsed.verdict : null,
-    reason: typeof parsed.reason === 'string' && parsed.reason.trim() ? parsed.reason.trim() : null,
+    verdict,
+    reason,
   };
+}
+
+// 2026-10-13（審議改版第 2 階段）：SOURCE 超過模型一次能讀的長度時，不再只挑「最相關的段落」
+// 一次裁決（可能漏看其他段落而誤判證據不足），改為分段處理再彙整：
+//   1. 依段落把 SOURCE 切成多段（每段不超過 CHUNK_TOKENS，相鄰兩段重疊一小部分）。
+//   2. 先依與陳述的相關程度排序（③ 先找相關段落），從最相關的段落開始逐段裁決；
+//      前 CHUNK_FIRST_PASS 段若沒有任何段落支持或牴觸，就繼續檢查其餘每一段。
+//   3. 彙整：任一段支持且引用逐字命中完整 SOURCE → 成立；有段落牴觸、沒有段落支持 → 矛盾；
+//      每段都沒提到 → 證據不足；有段落支持也有段落牴觸 → 證據不足並標記 escalate，
+//      交給 Claude 最終審查。
+const CHUNK_TOKENS = Number(process.env.OLLAMA_CHUNK_TOKENS) || 6000;
+const CHUNK_OVERLAP_CHARS = 200;
+const CHUNK_FIRST_PASS = 3;
+const CHUNK_RELEVANCE_RATIO = Number(process.env.OLLAMA_CHUNK_RELEVANCE_RATIO) || 0.3;
+
+function splitSourceChunks(sourceText, maxTokens) {
+  const chunks = [];
+  let current = '';
+  splitSourceParagraphs(sourceText).forEach((para) => {
+    const next = current ? `${current}\n\n${para}` : para;
+    if (current && estimateTokenCount(next) > maxTokens) {
+      chunks.push(current);
+      current = `${current.slice(-CHUNK_OVERLAP_CHARS)}\n\n${para}`;
+    } else {
+      current = next;
+    }
+  });
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+function relevanceOf(chunk, focus) {
+  let hits = 0;
+  bigramsOf(chunk).forEach((bg) => { if (focus.has(bg)) hits += 1; });
+  return hits;
+}
+
+async function verifyClaimInChunks(sourceText, claimText, model, url, timeoutMs) {
+  const overhead = estimateTokenCount(buildClaimVerificationPrompt('', claimText));
+  const budget = Math.min(CHUNK_TOKENS, CONTEXT_SAFE_TOKEN_LIMIT - overhead - 64);
+  if (budget < 512) throw failure('單一 Claim 裁決 prompt 超過模型最大 context', FAILURE_REASON.CONTEXT_OVERFLOW);
+  const focus = bigramsOf(claimText);
+  const all = splitSourceChunks(sourceText, budget)
+    .map((text, index) => ({ text, index, score: relevanceOf(text, focus) }))
+    .sort((a, b) => b.score - a.score || a.index - b.index);
+  // ③ 先找相關段落：只檢查與陳述用字明顯相關的段落（相關度至少為最相關段落的
+  // CHUNK_RELEVANCE_RATIO），完全無關的段落不可能支持或牴觸這條陳述，不必逐段詢問
+  // （實測一段約 50 秒，逐段掃完 11 段要 7 分鐘）。至少檢查最相關的一段。
+  const best = all.length ? all[0].score : 0;
+  const ranked = all.filter((c, i) => i === 0 || (c.score > 0 && c.score >= best * CHUNK_RELEVANCE_RATIO));
+  const results = [];
+  for (let i = 0; i < ranked.length; i += 1) {
+    const decisive = results.some((r) => r.verdict === VERDICTS.SUPPORTED || r.verdict === VERDICTS.CONTRADICTED);
+    if (i >= CHUNK_FIRST_PASS && decisive) break;
+    // eslint-disable-next-line no-await-in-loop
+    const r = parseVerification(await callOllamaAdjudication(buildClaimVerificationPrompt(ranked[i].text, claimText), model, url, timeoutMs));
+    results.push(r);
+    if (r.verdict === VERDICTS.SUPPORTED && r.quoted_source_span && sourceText.includes(r.quoted_source_span)) break;
+  }
+  const supported = results.filter((r) => r.verdict === VERDICTS.SUPPORTED);
+  const contradicted = results.filter((r) => r.verdict === VERDICTS.CONTRADICTED);
+  const chunked = { checked: results.length, total: all.length, relevant: ranked.length };
+  if (supported.length && contradicted.length) {
+    return {
+      windowed: true, chunked, escalate: true, quoted_source_span: null, verdict: VERDICTS.INSUFFICIENT_EVIDENCE,
+      reason: `分段裁決結論不一致：有段落支持（${supported[0].reason || '—'}），也有段落牴觸（${contradicted[0].reason || '—'}），交由 Claude 最終審查。`,
+    };
+  }
+  const pick = supported.find((r) => r.quoted_source_span && sourceText.includes(r.quoted_source_span))
+    || supported[0] || contradicted[0] || results.find((r) => r.verdict) || results[0] || {};
+  return {
+    windowed: true, chunked,
+    quoted_source_span: pick.quoted_source_span || null,
+    verdict: pick.verdict || VERDICTS.INSUFFICIENT_EVIDENCE,
+    reason: pick.reason ? `${pick.reason}（分段裁決：檢查 ${results.length}/${all.length} 段）` : `每一段都沒有提到（分段裁決：檢查 ${results.length}/${all.length} 段）`,
+  };
+}
+
+async function verifyClaimAgainstSource(sourceText, claimText, model, url, timeoutMs) {
+  const full = buildClaimVerificationPrompt(sourceText, claimText);
+  if (!isContextSafe(full)) return verifyClaimInChunks(sourceText, claimText, model, url, timeoutMs);
+  return Object.assign({ windowed: false }, parseVerification(await callOllamaAdjudication(full, model, url, timeoutMs)));
+}
+
+// 2026-10-13（審議改版第 2 階段，強化作法 ④）：同一條陳述用另一種問法再判斷一次。
+// 只對「需要模型語意判斷」的結果做：判為成立但沒有可逐字核對的引用，或判為矛盾。
+// 逐字命中 SOURCE 的成立結果已由 SOURCE Truth Gate 確定，不再重問。兩次結論不一致時，
+// 改判證據不足並標記 escalate，交給 Claude 最終審查。
+function buildSecondOpinionPrompt(sourceText, claimText) {
+  return [
+    '你是高中教材的審稿老師。請檢查下方【陳述】是否與【教材原文】衝突。',
+    '判斷規則：原文明確寫出與陳述不同的內容 → conflict 填 true；原文的內容與陳述一致或可以推得陳述 → conflict 填 false；',
+    '原文完全沒有相關內容、無法判斷 → conflict 填 null。',
+    '只輸出一個 JSON 物件：{ "conflict": true | false | null, "reason": "簡短理由" }',
+    '',
+    '【教材原文】',
+    sourceText,
+    '',
+    '【陳述】',
+    claimText,
+  ].join('\n');
+}
+
+async function secondOpinion(sourceText, claimText, model, url, timeoutMs) {
+  const fitted = fitSourceIntoPrompt((src) => buildSecondOpinionPrompt(src, claimText), sourceText, claimText);
+  if (!fitted) return null;
+  const parsed = extractJsonObject(await callOllamaAdjudication(fitted.prompt, model, url, timeoutMs));
+  return { conflict: typeof parsed.conflict === 'boolean' ? parsed.conflict : null, reason: typeof parsed.reason === 'string' ? parsed.reason : null };
+}
+
+function needsSecondOpinion(v, sourceText) {
+  if (v.verdict === VERDICTS.CONTRADICTED) return true;
+  return v.verdict === VERDICTS.SUPPORTED && !(v.quoted_source_span && sourceText.includes(v.quoted_source_span));
 }
 
 // 抽取階段只找出 Claim、不裁決；這裡才是真正決定每個 Claim verdict／引用的地方，
@@ -893,17 +1009,37 @@ async function verifyAllClaims(claims, sourceText, model, url, timeoutMs) {
       continue;
     }
 
+    let escalate = !!verification.escalate;
+    let reason = verification.reason || '（模型未提供理由）';
+    let verdict = verification.verdict || VERDICTS.INSUFFICIENT_EVIDENCE;
+    if (!escalate && SECOND_OPINION_ENABLED && needsSecondOpinion(verification, sourceText)) {
+      let second = null;
+      try { second = await secondOpinion(sourceText, claim.claim, model, url, timeoutMs); } catch (_) { second = null; }
+      const disagree = second && second.conflict !== null &&
+        ((verdict === VERDICTS.SUPPORTED && second.conflict === true) || (verdict === VERDICTS.CONTRADICTED && second.conflict === false));
+      if (disagree) {
+        escalate = true;
+        reason = `兩次判斷不一致：第一次判為 ${verdict}（${reason}）；換個問法再判斷，結論相反（${second.reason || '—'}），交由 Claude 最終審查。`;
+        verdict = VERDICTS.INSUFFICIENT_EVIDENCE;
+      }
+    }
+
     results.push({
       ...claim,
-      quoted_source_span: verification.quoted_source_span,
-      verdict: verification.verdict || VERDICTS.INSUFFICIENT_EVIDENCE,
-      reason: verification.reason || '（模型未提供理由）',
-      confidence: verification.verdict ? 1 : 0,
+      quoted_source_span: escalate ? null : verification.quoted_source_span,
+      verdict,
+      reason,
+      confidence: verification.verdict && !escalate ? 1 : 0,
       ...(verification.windowed ? { source_windowed: true } : {}),
+      ...(verification.chunked ? { chunked: verification.chunked } : {}),
+      ...(escalate ? { escalate: true } : {}),
     });
   }
   return results;
 }
+
+// 測試用：MULTIAI_SECOND_OPINION=off 關閉強化作法 ④（既有測試的 Ollama 假回應是逐次排定的）。
+const SECOND_OPINION_ENABLED = process.env.MULTIAI_SECOND_OPINION !== 'off';
 
 // verifyAllClaims 已經對每個 Claim 各自做過一次低負載裁決，理論上罕見字元精確度已經很高；
 // 這裡是防禦性的「第二次獨立確認」，只在 deterministic SOURCE Truth Gate 仍判定
@@ -1467,6 +1603,13 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     adjudicationRecord: {
       // 2026-10-12：練習題自動裁決結果；pending 供上傳頁產生「Claude 最終審查包」。
       practice: practice ? { total: practice.total, accepted: practice.accepted, pending: practice.pending, resolved: [] } : null,
+      // 2026-10-13（第 2 階段）：沒有定論的陳述（證據不足、無根據、分段或兩次判斷不一致）交 Claude 最終審查。
+      claimReview: mode === 'llm_semantic' ? {
+        pending: claims
+          .filter((c) => (c.verdict === VERDICTS.UNSUPPORTED || c.verdict === VERDICTS.INSUFFICIENT_EVIDENCE) && sectionsOfClaim(c).length)
+          .map((c) => ({ claim: c.claim, verdict: c.verdict, reason: c.reason, escalate: !!c.escalate })),
+        resolved: [],
+      } : null,
       adjudicator: mode === 'llm_semantic' ? model : 'n/a（fallback，未執行 semantic adjudication）',
       adjudication_mode: mode,
       failure_reason: failureReason,
@@ -1894,6 +2037,7 @@ module.exports = {
   parseClaimAdjudicationResponse,
   verifyClaimAgainstSource,
   verifyAllClaims,
+  splitSourceChunks,
   retryDowngradedClaims,
   buildSourcePlausibilityPrompt,
   checkSourcePlausibility,
