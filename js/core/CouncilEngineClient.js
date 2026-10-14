@@ -84,6 +84,9 @@ AHS.CouncilEngineClient = (function () {
     /* 2026-10-12: 練習題 Claude 最終審查包 */
     practiceReview: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/practice-review"); },
     applyPracticeReview: function (filename, reply) { return request("POST", "/api/finals/" + enc(filename) + "/practice-review", { reply: reply }); },
+    /* 2026-10-14: 原文辨識協助包（OCR 看不清楚的照片交給 ChatGPT／Gemini 網頁版轉錄） */
+    ocrHelpCheck: function (sourceText, filename) { return request("POST", "/api/ocr-help/check", { sourceText: sourceText, filename: filename || null }); },
+    ocrHelpMerge: function (payload) { return request("POST", "/api/ocr-help/merge", payload); },
     upload: function (files) {
       var form = new FormData();
       Array.prototype.forEach.call(files, function (f) { form.append("files", f, f.name); });
