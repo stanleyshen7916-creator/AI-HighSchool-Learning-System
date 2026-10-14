@@ -438,6 +438,8 @@ AHS.CouncilUpload = (function () {
         uploadBtn.disabled = false;
         if (r.error) { status(uploadStatus, r.error.message, "error"); return; }
         state.sessionId = r.data.sessionId;
+        /* 單一檔案的本文沒有檔案標記，原文辨識協助包以這個檔名代表整份本文 */
+        state.uploadFilename = r.data.files && r.data.files.length === 1 ? r.data.files[0].filename : null;
         sourceText.value = r.data.text || "";
         status(uploadStatus, "完成：" + r.data.files.map(function (f) { return f.filename + "（" + f.length + " 字）"; }).join("、") +
           "。原始檔已保存，建立教材包時會放進 source/。", "ok");
@@ -481,11 +483,78 @@ AHS.CouncilUpload = (function () {
         "請開始依序輸出完整十五章節內容。"
       ]).join("\n");
     }
+    /* 2026-10-14 原文辨識協助包：本機 Qwen 找出 OCR 看不清楚的照片，只把那些檔名交給
+       ChatGPT／Gemini 網頁版逐字轉錄；貼回後逐句比對，兩方一致就自動更正，三方都不同才讓管理者選。 */
+    var ocrStatus = el("p", { class: "upl-status" });
+    var ocrPages = el("div");
+    var ocrConflicts = el("div");
+    var ocrGpt = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 ChatGPT 的轉錄（以「=== 檔名 ===」分段）" });
+    var ocrGemini = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 Gemini 的轉錄（以「=== 檔名 ===」分段）" });
+    var ocrPrompt = null;
+    var ocrCheckBtn = button("檢查 OCR 看不清楚的頁面", null, function () {
+      if (!sourceText.value.trim()) { status(ocrStatus, "請先上傳或貼上教材本文。", "error"); return; }
+      ocrCheckBtn.disabled = true;
+      status(ocrStatus, "本機 Qwen 檢查中…每段約需數十秒。");
+      client.ocrHelpCheck(sourceText.value, state.uploadFilename).then(function (r) {
+        ocrCheckBtn.disabled = false;
+        if (r.error) { status(ocrStatus, r.error.message, "error"); return; }
+        ocrPrompt = r.data.prompt;
+        AHS.UI.mount(ocrPages, el("ul", {}, (r.data.pages || []).map(function (p) {
+          return el("li", { text: (p.file || "（整份教材本文）") + "：" + p.reasons.join("；") });
+        })));
+        if (!r.data.pages || !r.data.pages.length) {
+          status(ocrStatus, r.data.checked ? "沒有找到看不清楚的頁面，不需要轉錄。" : "本機 Qwen 無法完成檢查（" + (r.data.reason || "未知原因") + "），可稍後再試。", r.data.checked ? "ok" : "error");
+          return;
+        }
+        status(ocrStatus, "共 " + r.data.pages.length + " 頁需要轉錄。" + (ocrPrompt ? "按「複製轉錄 Prompt」，連同這些照片貼到 ChatGPT 與 Gemini 網頁版。" : "上傳時沒有檔名，請把整份照片交給 ChatGPT 與 Gemini 轉錄。"), "ok");
+      });
+    });
+    var ocrCopyBtn = button("複製轉錄 Prompt", null, function () {
+      if (!ocrPrompt) { status(ocrStatus, "請先檢查 OCR 看不清楚的頁面。", "error"); return; }
+      copyText(ocrPrompt).then(function () { status(ocrStatus, "已複製。轉錄完成後把兩份結果貼到下面。", "ok"); },
+        function () { status(ocrStatus, "瀏覽器不允許複製，請改用 Ctrl+C。", "error"); });
+    });
+    function showConflicts(conflicts) {
+      AHS.UI.mount(ocrConflicts, el("div", {}, conflicts.map(function (c) {
+        var row = el("div", { class: "upl-status" });
+        var choices = [["保留 OCR", c.local], ["用 ChatGPT", c.gpt], ["用 Gemini", c.gemini]].filter(function (x) { return x[1]; });
+        AHS.UI.mount(row, el("div", {}, [
+          el("p", { text: c.id + "（" + c.file + "）　OCR：" + c.local + (c.gpt ? "　／ChatGPT：" + c.gpt : "") + (c.gemini ? "　／Gemini：" + c.gemini : "") }),
+          el("div", { class: "upl-actions" }, choices.map(function (x) {
+            return button(x[0], null, function () {
+              if (x[1] !== c.local) sourceText.value = sourceText.value.replace(c.local, x[1]);
+              AHS.UI.mount(row, el("p", { class: "upl-status", text: c.id + " 已選定：" + x[1] }));
+            });
+          }))
+        ]));
+        return row;
+      })));
+    }
+    var ocrMergeBtn = button("比對並套用到教材本文", "primary", function () {
+      if (!ocrGpt.value.trim() && !ocrGemini.value.trim()) { status(ocrStatus, "請至少貼上一份轉錄。", "error"); return; }
+      client.ocrHelpMerge({ sourceText: sourceText.value, filename: state.uploadFilename, gpt: ocrGpt.value, gemini: ocrGemini.value }).then(function (r) {
+        if (r.error) { status(ocrStatus, r.error.message, "error"); return; }
+        sourceText.value = r.data.text;
+        showConflicts(r.data.conflicts || []);
+        status(ocrStatus, "自動更正 " + r.data.corrections.length + " 句、補回 " + r.data.additions.length + " 句" +
+          (r.data.conflicts.length ? "；" + r.data.conflicts.length + " 句三方不一致，請在下面選定。" : "。") +
+          "已寫回教材本文；若這份教材已審議過，請重新執行三方交叉審議。", "ok");
+      });
+    });
+    var ocrHelpBox = el("details", { class: "upl-images" }, [
+      el("summary", { text: "原文辨識協助包（OCR 有錯字或整頁辨識不出來時使用）" }),
+      el("div", { class: "upl-actions" }, [ocrCheckBtn, ocrCopyBtn]),
+      ocrStatus, ocrPages,
+      field("ChatGPT 轉錄", ocrGpt), field("Gemini 轉錄", ocrGemini),
+      el("div", { class: "upl-actions" }, [ocrMergeBtn]),
+      ocrConflicts
+    ]);
     var uploadCard = card("2　上傳原始檔", "支援 PDF、圖片（掃描或拍照的課本頁）與 MinerU 解析好的 .md／.txt；多個檔案依檔名順序合併。", [
       field("選擇檔案", fileInput),
       el("div", { class: "upl-actions" }, [uploadBtn]),
       uploadStatus,
       field("教材本文（SOURCE）", sourceText),
+      ocrHelpBox,
       imagesSlot,
       el("div", { class: "upl-actions" }, [button("複製三方 AI 專用 Prompt", null, function () {
         copyText(buildPrompt()).then(function () {

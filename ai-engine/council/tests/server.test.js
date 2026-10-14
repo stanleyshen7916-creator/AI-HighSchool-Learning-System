@@ -752,7 +752,8 @@ describe('POST /api/upload', () => {
 
     expect(res.status).toBe(200);
     // 依檔名排序（a-first.txt 在 b-second.txt 之前）合併，而非依上傳順序
-    expect(res.body.text).toBe('第一段內容\n\n第二段內容');
+    // 2026-10-14：多個檔案時每段前有檔案標記（原文辨識協助包用），審議前會拿掉
+    expect(res.body.text).toBe('<!-- 檔案：a-first.txt -->\n第一段內容\n\n<!-- 檔案：b-second.txt -->\n第二段內容');
     expect(res.body.files).toEqual([
       { filename: 'a-first.txt', length: '第一段內容'.length },
       { filename: 'b-second.txt', length: '第二段內容'.length },

@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const {
   runTriCouncil,
   checkOllamaAvailable,
+  checkSourcePlausibility,
   assembleCouncilFinal,
   generateCouncilMarkdown,
   DEFAULT_ADJUDICATION_TIMEOUT_MS,
@@ -17,6 +18,7 @@ const {
 const { createPackageBuilder } = require('./platform/PackageBuilder');
 const { createGitPublishQueue } = require('./platform/GitPublishQueue');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
+const ocrHelp = require('./services/ocrHelp');
 const { parseFrontmatter } = require('./platform/FinalParser');
 
 const app = express();
@@ -443,7 +445,7 @@ async function runAssembleCouncil({ metadata, drafts, sourceText, sourceRef }, {
   // adjudication.json／platform_dist index 三者可證明屬於同一次 run（P11）。
   const runId = crypto.randomUUID();
 
-  const council = await assembleCouncilFinal(metadata, drafts, sourceText, { timeoutMs, sourceRef, sourceId, runId });
+  const council = await assembleCouncilFinal(metadata, drafts, ocrHelp.stripMarkers(sourceText), { timeoutMs, sourceRef, sourceId, runId });
   const markdown = generateCouncilMarkdown({ school, grade, subject, unit, category, council });
   const filename = `${safeSlug(school)}_${safeSlug(grade)}_${safeSlug(subject)}_${safeSlug(unit)}_${safeSlug(category)}_Final.md`;
 
@@ -733,7 +735,10 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
   try {
     files.forEach((file) => { file.originalname = decodeOriginalName(file.originalname); });
     const parts = await extractTextFromFiles(files);
-    const mergedText = parts.map((part) => part.text).join('\n\n');
+    // 2026-10-14：多個檔案時每段前加上檔案標記，原文辨識協助包才能把可疑文字對回是哪張照片。
+    const mergedText = parts.length > 1
+      ? parts.map((part) => `${ocrHelp.fileMarker(part.filename)}\n${part.text}`).join('\n\n')
+      : parts.map((part) => part.text).join('\n\n');
     const sessionId = keepOriginals(files);
     return res.status(200).json({
       text: mergedText,
@@ -749,6 +754,36 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
       }
     });
   }
+});
+
+// 2026-10-14 原文辨識協助包：找出 OCR 看不清楚的照片，只列出那些檔名給 ChatGPT／Gemini 網頁版轉錄。
+// 單一檔案上傳的教材本文沒有檔案標記，此時以 filename 當作整份本文的檔名。
+function withFileMarker(sourceText, filename) {
+  const text = String(sourceText || '');
+  return filename && !ocrHelp.segmentsOf(text)[0].file ? `${ocrHelp.fileMarker(filename)}\n${text}` : text;
+}
+
+app.post('/api/ocr-help/check', async (req, res) => {
+  const { sourceText, filename } = req.body || {};
+  if (!sourceText || !String(sourceText).trim()) return res.status(400).json({ error: '缺少教材本文' });
+  const text = withFileMarker(sourceText, filename);
+  try {
+    const plausibility = await checkSourcePlausibility(ocrHelp.stripMarkers(text));
+    const pack = ocrHelp.buildHelpPack(text, plausibility.suspiciousSpans);
+    return res.status(200).json({ checked: plausibility.checked !== false, reason: plausibility.reason || null, ...pack });
+  } catch (error) {
+    return res.status(500).json({ error: `原文合理性檢查失敗：${error.message}` });
+  }
+});
+
+// 貼回 ChatGPT 與 Gemini 的轉錄，逐句三方比對後回傳更正後的教材本文與待選定的衝突。
+app.post('/api/ocr-help/merge', (req, res) => {
+  const { sourceText, gpt, gemini, filename } = req.body || {};
+  if (!sourceText || (!gpt && !gemini)) return res.status(400).json({ error: '需要教材本文與至少一份轉錄' });
+  const text = withFileMarker(sourceText, filename);
+  const result = ocrHelp.mergeTranscriptions(text, gpt || '', gemini || '');
+  if (text !== String(sourceText)) result.text = ocrHelp.stripMarkers(result.text);
+  return res.status(200).json(result);
 });
 
 // ---- 學習平台整合（2026-09-29）----------------------------------------------
