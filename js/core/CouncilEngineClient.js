@@ -87,6 +87,8 @@ AHS.CouncilEngineClient = (function () {
     /* 2026-10-14: 原文辨識協助包（OCR 看不清楚的照片交給 ChatGPT／Gemini 網頁版轉錄） */
     ocrHelpCheck: function (sourceText, filename) { return request("POST", "/api/ocr-help/check", { sourceText: sourceText, filename: filename || null }); },
     ocrHelpMerge: function (payload) { return request("POST", "/api/ocr-help/merge", payload); },
+    /* 2026-10-14: 送 Claude 最終審查的比例與標準答案集筆數 */
+    adjudicationStats: function () { return request("GET", "/api/stats/adjudication"); },
     upload: function (files) {
       var form = new FormData();
       Array.prototype.forEach.call(files, function (f) { form.append("files", f, f.name); });

@@ -19,6 +19,8 @@ const { createPackageBuilder } = require('./platform/PackageBuilder');
 const { createGitPublishQueue } = require('./platform/GitPublishQueue');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
+const goldSet = require('./services/goldSet');
+const { computeStats } = require('./services/adjudicationStats');
 const { parseFrontmatter } = require('./platform/FinalParser');
 
 const app = express();
@@ -468,6 +470,8 @@ async function runAssembleCouncil({ metadata, drafts, sourceText, sourceRef }, {
   // Final.md」直接載回三方初稿重跑，不必重貼三家；建立教材包時也一併放進 source/。
   fs.writeFileSync(path.join(OUTPUTS_DIR, `${filename}.drafts.json`), JSON.stringify({
     savedAt: new Date().toISOString(), runId, metadata, sourceRef: sourceRef || null, drafts,
+    // 2026-10-14：一併保存教材本文，標準答案集（goldSet）記錄裁決時需要當時的本文快照。
+    sourceText: ocrHelp.stripMarkers(sourceText),
   }, null, 2), 'utf8');
 
   fs.mkdirSync(PLATFORM_DIST_DIR, { recursive: true });
@@ -939,12 +943,35 @@ app.post('/api/finals/:filename/practice-review', (req, res) => {
     }]);
   }
   fs.writeFileSync(recordPath, JSON.stringify(record, null, 2), 'utf8');
+  // 2026-10-14（⑤）：每一筆裁決進標準答案集，附上當時的教材本文快照（2026-10-14 以前的審議沒有保存本文）。
+  let goldRecorded = 0;
+  try {
+    const draftsPath = `${finalPath}.drafts.json`;
+    const saved = fs.existsSync(draftsPath) ? JSON.parse(fs.readFileSync(draftsPath, 'utf8')) : {};
+    const { frontmatter } = parseFrontmatter(content);
+    goldRecorded = goldSet.appendRulings(DATA_DIR, goldSet.rulingsFrom({
+      final: path.basename(finalPath), frontmatter, sourceHash: goldSet.saveSource(DATA_DIR, saved.sourceText),
+      practiceResult: result, claimResult,
+    }));
+  } catch (error) {
+    console.warn(`標準答案集記錄失敗（不影響審查結果）：${error.message}`);
+  }
   return res.status(200).json({
+    goldRecorded,
     added: result.accepted.length, dropped: result.dropped.length, stillPending: stillPending.length,
     accepted: accepted.length, content,
     claimsConfirmed: claimResult.confirmed.length, claimsRemoved: claimResult.removed.length,
     claimsPending: record.claimReview ? record.claimReview.pending.length : 0,
   });
+});
+
+// 2026-10-14（⑥）：送 Claude 最終審查的比例，以及標準答案集（⑤）累積的筆數。
+app.get('/api/stats/adjudication', (req, res) => {
+  try {
+    return res.status(200).json(Object.assign(computeStats(OUTPUTS_DIR), { gold: goldSet.summarize(goldSet.readRulings(DATA_DIR)) }));
+  } catch (error) {
+    return res.status(500).json({ error: `統計失敗：${error.message}` });
+  }
 });
 
 function uploadSessionFiles(sessionId) {

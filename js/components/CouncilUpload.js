@@ -1005,11 +1005,54 @@ AHS.CouncilUpload = (function () {
       }
     });
 
+    /* 2026-10-14 審議統計：本機 Qwen 沒有定論、送 Claude 最終審查的比例（⑥），與標準答案集累積筆數（⑤） */
+    var statsStatus = el("p", { class: "upl-status" });
+    var statsBody = el("div");
+    function pct(x) { return x === null || x === undefined ? "—" : x + "%"; }
+    function statsRow(name, b) {
+      return el("tr", {}, [
+        el("td", { text: name }), el("td", { class: "num", text: String(b.finals) }),
+        el("td", { class: "num", text: b.claims.toClaude + "/" + b.claims.total }), el("td", { class: "num", text: pct(b.claimEscalationRate) }),
+        el("td", { class: "num", text: b.claims.confirmed + "/" + (b.claims.confirmed + b.claims.removed) }),
+        el("td", { class: "num", text: b.practice.toClaude + "/" + b.practice.total }), el("td", { class: "num", text: pct(b.practiceEscalationRate) })
+      ]);
+    }
+    function refreshStats() {
+      status(statsStatus, "統計中…");
+      client.adjudicationStats().then(function (r) {
+        if (r.error) { status(statsStatus, r.error.message, "error"); return; }
+        var d = r.data;
+        var head = el("tr", {}, ["範圍", "教材數", "陳述送審", "比例", "Claude 判成立", "練習題送審", "比例"].map(function (t, i) {
+          return el("th", { class: i ? "num" : "", text: t });
+        }));
+        var rows = [statsRow("全部", d.overall)].concat(Object.keys(d.bySubject).map(function (k) { return statsRow(k, d.bySubject[k]); }));
+        var g = d.gold;
+        AHS.UI.mount(statsBody, el("div", {}, [
+          el("div", { class: "upl-stats-wrap" }, [el("table", { class: "upl-stats" }, [el("thead", {}, [head]), el("tbody", {}, rows)])]),
+          el("p", { class: "upl-hint", text: "「Claude 判成立」越高，代表本機模型越常把正確內容判為沒有定論（過度保守）。" +
+            (d.legacy || d.fallback ? "不計入：" + [
+              d.legacy ? d.legacy + " 份 2026-10-12 以前的審議（沒有送審紀錄）" : null,
+              d.fallback ? d.fallback + " 份未完成語意裁決（備援模式）" : null
+            ].filter(Boolean).join("、") + "。" : "") }),
+          el("h3", { class: "upl-subtitle", text: "標準答案集" }),
+          el("p", { class: "upl-hint", text: "累積 " + g.total + " 筆裁決（陳述 " + g.claims.total + "、練習題 " + g.practice.total + "），其中 " + g.scorable +
+            " 筆可用於回歸測試。換模型前後在命令列執行：docker exec ahs-council-council-engine-1 node tools/gold-eval.js --model <模型名稱>" })
+        ]));
+        status(statsStatus, "", "ok");
+      });
+    }
+    var statsCard = card("審議統計", "每次貼回 Claude 審查結果後更新。比例越低，代表本機模型越能自行定論。", [
+      el("div", { class: "upl-actions" }, [button("重新整理", null, refreshStats)]),
+      statsStatus, statsBody
+    ]);
+
     var modes = [
       { id: "new", name: "上傳新教材", cards: [metaCard, uploadCard, draftsCard, councilCard, packageCard],
         sub: "上傳課本或講義 → 三方 AI 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" },
       { id: "supplement", name: "為既有教材加題", cards: supplementCards.cards,
-        sub: "為已上架的教材補出新的練習題：Claude 出題 → 另開新對話獨立作答核對 → 預覽確認後併入該課題庫。僅管理者可見。" }
+        sub: "為已上架的教材補出新的練習題：Claude 出題 → 另開新對話獨立作答核對 → 預覽確認後併入該課題庫。僅管理者可見。" },
+      { id: "stats", name: "審議統計", cards: [statsCard],
+        sub: "本機 Qwen 沒有定論、送 Claude 最終審查的比例，以及標準答案集的累積情形。僅管理者可見。" }
     ];
     var headSub = el("p", { class: "upl-head__sub" });
     var tabs = el("div", { class: "upl-tabs", role: "tablist" });
@@ -1021,6 +1064,7 @@ AHS.CouncilUpload = (function () {
         if (m.id === id) { headSub.textContent = m.sub; }
       });
       if (id === "supplement") { supplementCards.refresh(); }
+      if (id === "stats") { refreshStats(); reviewCard.setAttribute("hidden", "hidden"); } else { reviewCard.removeAttribute("hidden"); }
     }
     modes.forEach(function (m) {
       m.tab = el("button", { type: "button", class: "upl-tab", role: "tab", text: m.name });
@@ -1034,7 +1078,7 @@ AHS.CouncilUpload = (function () {
         headSub
       ]),
       engineCard, tabs
-    ].concat(modes[0].cards, supplementCards.cards, [reviewCard]));
+    ].concat(modes[0].cards, supplementCards.cards, [statsCard, reviewCard]));
     showMode("new");
     checkEngine();
     return root;
