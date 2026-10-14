@@ -475,6 +475,13 @@ function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, dra
     '這個階段「只負責抽取與初步分類」，不需要裁決 verdict、不需要逐字引用 SOURCE——',
     '這兩件事會由後續針對「單一 Claim」的獨立步驟處理。',
     '',
+    '整合原則（擷取三家的優點）：',
+    '1. 同一件事有多家寫法時，採用最正確、最完整、最清楚的一種當主文，再把其他家多出來的細節（例如多舉的例子）併入。',
+    '2. 只有一家寫到的內容也要保留，不得因為其他家沒寫就省略。',
+    '3. 每個 claim 標註 type：fact（事實型：定義、年代、人名、數據、課文原句、公式等，必須能在教材原文找到依據）',
+    '   或 teaching（教學型：記憶口訣、解題技巧、比較整理、延伸思考、易錯提醒等教材本來就不會寫的教學內容）。',
+    '4. claims 依教學順序排列：先定義，再說明，再舉例，最後提醒。',
+    '',
     '這個小節「一定」有內容（至少一份初稿寫了東西），所以你「必須」在下面兩者之一',
     '回應：抽出至少一個 claim，或是回報 unresolved（三方說法都不足以形成一個可驗證',
     '的陳述時使用——不得為了湊數而捏造或過度延伸，直接誠實回報 unresolved 即可，',
@@ -483,7 +490,7 @@ function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, dra
     '「只」輸出一個 JSON 物件，不得輸出任何 JSON 以外的文字：',
     '',
     '有 claim 時：',
-    '{ "claims": [ { "claim_id": "c1", "claim": "融合後的陳述文字（繁體中文，不得出現 ChatGPT/Gemini/Claude 字樣）" } ] }',
+    '{ "claims": [ { "claim_id": "c1", "claim": "融合後的陳述文字（繁體中文，不得出現 ChatGPT/Gemini/Claude 字樣）", "type": "fact 或 teaching" } ] }',
     '',
     '無法形成可驗證 claim 時：',
     '{ "claims": [], "unresolved": { "reason": "簡短說明為什麼三方說法不足以形成可驗證陳述" } }',
@@ -550,7 +557,10 @@ async function extractClaimsPerSection(metadata, sourceText, draftSectionMaps, m
     }
 
     anySectionSucceeded = true;
-    claims.push(...parsedSection.claims);
+    const bySource = { gpt: snippets.chatgpt, gemini: snippets.gemini, claude: snippets.claude };
+    const extracted = parsedSection.claims.map((c) => ({ ...c, origins: provenanceOf(c.claim, bySource) }));
+    // 模型明確回報 unresolved（沒有抽出任何陳述）時尊重它的判斷，不補入。
+    claims.push(...extracted, ...(extracted.length ? uncoveredDraftClaims(sectionKey, bySource, extracted) : []));
     unresolvedSections.push(...parsedSection.unresolvedSections);
   }
 
@@ -614,7 +624,32 @@ function parseClaimObject(raw_claim, index) {
     reason: typeof claim.reason === 'string' && claim.reason.trim() ? claim.reason.trim() : '（模型未提供理由）',
     confidence,
     overridden: false,
+    // 2026-10-13（第 3 階段）：fact 事實型（須有教材依據）／teaching 教學型（不矛盾即收）。
+    type: claim.type === 'teaching' ? 'teaching' : claim.type === 'fact' ? 'fact' : null,
   };
+}
+
+// 第 3 階段：模型沒標 type 時，依小節推定：延伸思考、常考題型、易錯陷阱、跨課連結、易混淆概念
+// 多為教學型內容；其餘小節為事實型。
+const TEACHING_SECTIONS = new Set(['⑨延伸思考', '⑩易混淆概念', '⑪常考題型', '⑫易錯陷阱', '⑬跨課連結']);
+
+// 第 3 階段：每條陳述出自哪幾家，由程式判斷（不靠模型自報）：陳述的雙字詞有一半以上出現在
+// 某家初稿這個小節的內容中，就算出自那一家；都不到一半時，取重疊最多的一家。
+const DRAFT_NAMES = { gpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude' };
+function provenanceOf(claimText, snippetsByDraft) {
+  const cb = bigramsOf(claimText);
+  if (!cb.size) return [];
+  const scores = Object.keys(snippetsByDraft)
+    .filter((k) => snippetsByDraft[k] && snippetsByDraft[k].trim())
+    .map((k) => {
+      const sb = bigramsOf(snippetsByDraft[k]);
+      let hit = 0;
+      cb.forEach((bg) => { if (sb.has(bg)) hit += 1; });
+      return { name: DRAFT_NAMES[k] || k, ratio: hit / cb.size };
+    })
+    .sort((a, b) => b.ratio - a.ratio);
+  const strong = scores.filter((x) => x.ratio >= 0.5).map((x) => x.name);
+  return strong.length ? strong : scores.length && scores[0].ratio > 0 ? [scores[0].name] : [];
 }
 
 function parseUnresolvedSectionsArray(rawArray) {
@@ -660,7 +695,7 @@ function parseSectionClaimResponse(raw, sectionKey) {
     const parsedClaim = parseClaimObject(raw_claim, index);
     // 這次呼叫只問了 sectionKey 這一個小節，不採信模型自己回報的 section／sections——
     // 呼叫端本來就知道答案，用呼叫端的值覆寫，避免模型張冠李戴到別的小節。
-    return { ...parsedClaim, section: sectionKey, sections: [sectionKey] };
+    return { ...parsedClaim, section: sectionKey, sections: [sectionKey], type: parsedClaim.type || (TEACHING_SECTIONS.has(sectionKey) ? 'teaching' : 'fact') };
   });
 
   const unresolvedRaw =
@@ -1202,6 +1237,65 @@ function computeDocumentCompleteness(sectionCoverage, claims) {
 // Final reconstruction：只有 SUPPORTED 的 Claim 才能以「已驗證事實」姿態進入 Final。
 // UNSUPPORTED / INSUFFICIENT_EVIDENCE 的內容可保留但必須明確標示待覆核，
 // CONTRADICTED 的內容一律排除，不得進入 Final（Final SOURCE Truth Gate 第一原則）。
+// 2026-10-13（第 3 階段）：獨家優點不遺漏。實測 qwen2.5:7b 抽取時常只留下一家的說法，
+// 其他家獨有的內容（例如另一家多寫的史實、記憶口訣）被丟掉。這裡以程式補齊：把三家這個
+// 小節的內容切成句子，任何一句的雙字詞有一半以上沒有出現在已抽出的陳述中，就把這句補成一條
+// 陳述（記錄出處），之後一樣經過逐條裁決。
+const TEACHING_HINT = /口訣|記憶|技巧|小撇步|提醒|注意|易錯|陷阱|比較|延伸|思考|聯想|訣竅/;
+function draftSentences(text) {
+  return String(text || '')
+    .split(/\n+|(?<=[。！？；])/)
+    .map((t) => t.replace(/^[\s>*\-•#\d.、（）()]+/, '').replace(/\*\*/g, '').trim())
+    .filter((t) => t.length >= 8 && !/ChatGPT|Gemini|Claude/.test(t) && !/^(\(?[A-E]\)|Q\s*\d|答案|詳解)/.test(t));
+}
+function uncoveredDraftClaims(sectionKey, bySource, extracted) {
+  const covered = new Set();
+  extracted.forEach((c) => bigramsOf(c.claim).forEach((bg) => covered.add(bg)));
+  const added = [];
+  Object.keys(bySource).forEach((draft) => {
+    draftSentences(bySource[draft]).forEach((sentence) => {
+      const bg = bigramsOf(sentence);
+      if (!bg.size) return;
+      let hit = 0;
+      bg.forEach((x) => { if (covered.has(x)) hit += 1; });
+      if (hit / bg.size >= 0.5) return;
+      bg.forEach((x) => covered.add(x));
+      added.push({
+        claim_id: `auto_${added.length + 1}`, section: sectionKey, sections: [sectionKey], claim: sentence,
+        quoted_source_span: null, verdict: null, reason: '（由程式補入：初稿獨有內容）', confidence: 0.5, overridden: false,
+        type: TEACHING_HINT.test(sentence) || TEACHING_SECTIONS.has(sectionKey) ? 'teaching' : 'fact',
+        origins: provenanceOf(sentence, bySource), auto_added: true,
+      });
+    });
+  });
+  return added;
+}
+
+// 2026-10-13（第 3 階段）：教學型內容（口訣、技巧、延伸、易錯提醒…）教材本來就不會寫，
+// 只要不與教材矛盾就收錄，標為「教學補充」，不列入待人工覆核，也不交 Claude 審查。
+// 兩次判斷或分段結論不一致（escalate）的仍交 Claude。
+function markTeachingSupplements(claims) {
+  return claims.map((c) => (c.type === 'teaching' && !c.escalate &&
+    (c.verdict === VERDICTS.UNSUPPORTED || c.verdict === VERDICTS.INSUFFICIENT_EVIDENCE)
+    ? { ...c, teaching_supplement: true } : c));
+}
+
+// 2026-10-13（第 3 階段）：整合依據——每家被採用了幾條、獨家貢獻有哪些（寫進 ⑭）。
+// 採用＝進入 Final.md 正文的陳述（成立，或教學補充）。
+function computeMergeReport(claims) {
+  const adopted = (claims || []).filter((c) => c.verdict === VERDICTS.SUPPORTED || c.teaching_supplement);
+  const report = {};
+  Object.values(DRAFT_NAMES).forEach((name) => { report[name] = { adopted: 0, exclusive: [] }; });
+  adopted.forEach((c) => {
+    (c.origins || []).forEach((name) => {
+      if (!report[name]) report[name] = { adopted: 0, exclusive: [] };
+      report[name].adopted += 1;
+      if ((c.origins || []).length === 1) report[name].exclusive.push(c.claim);
+    });
+  });
+  return { adopted: adopted.length, teaching: adopted.filter((c) => c.teaching_supplement).length, byDraft: report };
+}
+
 function assembleClaimsIntoSections(claims) {
   const sections = {};
   SECTION_DEFS.forEach((def) => {
@@ -1229,7 +1323,9 @@ function assembleClaimsIntoSections(claims) {
     const text =
       claim.verdict === VERDICTS.SUPPORTED
         ? claim.claim
-        : `⚠️尚待人工覆核（${claim.verdict}）：${claim.claim}`;
+        : claim.teaching_supplement
+          ? `【教學補充】${claim.claim}`
+          : `⚠️尚待人工覆核（${claim.verdict}）：${claim.claim}`;
 
     targetSections.forEach((section) => {
       if (!bySection.has(section)) bySection.set(section, []);
@@ -1465,7 +1561,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
         sourceWindowed = Boolean(extracted.sourceWindowed) || verified.some((c) => c.source_windowed);
         const allDraftsText = [drafts.chatgpt, drafts.gemini, drafts.claude].filter(Boolean).join('\n');
         const firstPass = applySourceTruthGate(verified, trimmedSource, allDraftsText);
-        const gated = await retryDowngradedClaims(firstPass, trimmedSource, model, url, timeoutMs); // 防禦性第二次確認
+        const gated = markTeachingSupplements(await retryDowngradedClaims(firstPass, trimmedSource, model, url, timeoutMs)); // 防禦性第二次確認；教學型內容不矛盾即收
 
         const claimTextMap = {};
         gated.forEach((claim, index) => {
@@ -1529,7 +1625,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
 
     const contradictedCount = claims.filter((c) => c.verdict === VERDICTS.CONTRADICTED).length;
     const unsupportedCount = claims.filter(
-      (c) => c.verdict === VERDICTS.UNSUPPORTED || c.verdict === VERDICTS.INSUFFICIENT_EVIDENCE,
+      (c) => (c.verdict === VERDICTS.UNSUPPORTED || c.verdict === VERDICTS.INSUFFICIENT_EVIDENCE) && !c.teaching_supplement,
     ).length;
     // Gate 2：有內容的小節裡，只要有任何一個小節「完全沒被處理到」（既沒有 claim，也沒有
     // 模型明確回報的 unresolved 狀態），就不得 PASS——這正是真實發生過的失敗案例（13 個
@@ -1577,6 +1673,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     claims,
     sections,
     practice,
+    mergeReport: mode === 'llm_semantic' ? computeMergeReport(claims) : null,
     meta: {
       mode:
         mode === 'llm_semantic'
@@ -1606,7 +1703,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
       // 2026-10-13（第 2 階段）：沒有定論的陳述（證據不足、無根據、分段或兩次判斷不一致）交 Claude 最終審查。
       claimReview: mode === 'llm_semantic' ? {
         pending: claims
-          .filter((c) => (c.verdict === VERDICTS.UNSUPPORTED || c.verdict === VERDICTS.INSUFFICIENT_EVIDENCE) && sectionsOfClaim(c).length)
+          .filter((c) => (c.verdict === VERDICTS.UNSUPPORTED || c.verdict === VERDICTS.INSUFFICIENT_EVIDENCE) && !c.teaching_supplement && sectionsOfClaim(c).length)
           .map((c) => ({ claim: c.claim, verdict: c.verdict, reason: c.reason, escalate: !!c.escalate })),
         resolved: [],
       } : null,
@@ -1634,6 +1731,10 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
         reason: claim.reason,
         confidence: claim.confidence,
         overridden_by_source_truth_gate: Boolean(claim.overridden),
+        origins: claim.origins || [],
+        type: claim.type || null,
+        teaching_supplement: Boolean(claim.teaching_supplement),
+        escalate: Boolean(claim.escalate),
       })),
       validation: {
         // Gate 2：這個欄位過去永遠等於 mode === 'llm_semantic'，從未真的檢查過小節
@@ -1705,6 +1806,15 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `ChatGPT/Web 貢獻節數：${council.contributions?.gpt ?? 0}/13`,
     `Gemini/Web 貢獻節數：${council.contributions?.gemini ?? 0}/13`,
     `Claude/Web 貢獻節數：${council.contributions?.claude ?? 0}/13`,
+    ...(council.mergeReport ? [
+      '',
+      `整合依據：正文共採用 ${council.mergeReport.adopted} 條陳述（其中教學補充 ${council.mergeReport.teaching} 條）。各家被採用的條數與獨家貢獻（只有這一家寫到的內容）：`,
+      ...Object.keys(council.mergeReport.byDraft).map((name) => {
+        const r = council.mergeReport.byDraft[name];
+        const ex = r.exclusive.slice(0, 5).map((t) => `「${t.length > 40 ? `${t.slice(0, 40)}…` : t}」`).join('、');
+        return `- ${name}：採用 ${r.adopted} 條，獨家貢獻 ${r.exclusive.length} 條${ex ? `：${ex}${r.exclusive.length > 5 ? ' 等' : ''}` : ''}`;
+      }),
+    ] : []),
     ...(council.practice && council.practice.total ? [
       '',
       `練習題自動裁決：共 ${council.practice.total} 題（題幹相同者合併），通過 ${council.practice.accepted.length} 題、待 Claude 最終審查 ${council.practice.pending.length} 題。`,
@@ -2038,6 +2148,9 @@ module.exports = {
   verifyClaimAgainstSource,
   verifyAllClaims,
   splitSourceChunks,
+  provenanceOf,
+  markTeachingSupplements,
+  computeMergeReport,
   retryDowngradedClaims,
   buildSourcePlausibilityPrompt,
   checkSourcePlausibility,
