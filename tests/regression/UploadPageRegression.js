@@ -84,6 +84,12 @@ function fakeEngine(window, log, mode) {
       return reply(201, Object.assign({}, DRAFT, { materialId: "tm_19", kind: "supplement", supplementOf: "tm_7", warnings: [],
         questions: [{ question: "題目 1", options: ["a", "b", "c", "d"], answer: "b", explanation: "詳解 1", knowledgePoint: "弧長", difficulty: "易" }] }));
     }
+    if (u === "/api/stats/adjudication") {
+      const b = { finals: 1, claims: { total: 4, toClaude: 2, confirmed: 1, removed: 1, pending: 0, disagreement: 1 },
+        practice: { total: 5, toClaude: 2, auto: 3, added: 1, dropped: 1, pending: 0 }, claimEscalationRate: 50, practiceEscalationRate: 40, claudeConfirmRate: 50 };
+      return reply(200, { overall: b, bySubject: { "地球科學": b }, finals: [], legacy: 3, fallback: 0,
+        gold: { total: 4, scorable: 3, claims: { total: 2, byRuling: {} }, practice: { total: 2, byRuling: {} } } });
+    }
     return reply(404, { error: "not found" });
   };
 }
@@ -264,6 +270,17 @@ async function main() {
   check("建立草稿送出勾選的題號與核對當時的內容", !!cd && JSON.stringify(cd.body.accept) === "[1,2]" && cd.body.authorText === "Q1. …" && cd.body.parentId === "tm_7");
   check("預覽標示補充題庫與原教材", doc.body.textContent.indexOf("補充題庫 → tm_7") !== -1 && doc.body.textContent.indexOf("併入 tm_7 的題庫") !== -1);
   check("加題流程 Console errors = 0", consoleErrors.length === 0);
+
+  /* 2026-10-14 審議統計分頁 */
+  console.log("\n[5c] 審議統計");
+  click(buttonByText(doc, "審議統計"));
+  await settle();
+  check("切換後只顯示統計卡＋引擎", visibleCards().length === 2 && visibleCards().some((c) => c.textContent.indexOf("陳述送審") !== -1));
+  check("向引擎取統計：GET /api/stats/adjudication", log.some((c) => c.url.indexOf("/api/stats/adjudication") !== -1));
+  check("顯示全部與各科的送審比例", doc.body.textContent.indexOf("50%") !== -1 && doc.body.textContent.indexOf("地球科學") !== -1);
+  check("顯示標準答案集筆數與回歸測試指令", doc.body.textContent.indexOf("累積 4 筆裁決") !== -1 && doc.body.textContent.indexOf("tools/gold-eval.js") !== -1);
+  check("不計入的舊版紀錄有說明", doc.body.textContent.indexOf("不計入：3 份 2026-10-12 以前的審議") !== -1);
+  check("統計 Console errors = 0", consoleErrors.length === 0);
   window.close();
 
   console.log("\n[6] 引擎未啟動");

@@ -190,3 +190,8 @@
 @media (max-width: 560px) {
   .upl-grid { grid-template-columns: minmax(0, 1fr); }
 }
+/* 2026-10-14 審議統計（送 Claude 最終審查的比例） */
+.upl-stats { width: 100%; border-collapse: collapse; font-size: 13px; color: var(--text); }
+.upl-stats th, .upl-stats td { padding: 6px 8px; border-bottom: 1px solid var(--line-strong); text-align: left; }
+.upl-stats td.num, .upl-stats th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.upl-stats-wrap { overflow-x: auto; }
