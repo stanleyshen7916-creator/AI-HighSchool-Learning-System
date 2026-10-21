@@ -33,7 +33,7 @@ AHS.VisualLesson = (function () {
     /* 教材包 tm_N（含 tm_N_q3 這類題目 id）取 tm_N；舊版教材庫（data/materials/*.js）
        的紀錄 id（如 biology-g11-origin-and-evolution-of-life）原樣比對 materialIds。 */
     var m = /^(tm_\d+)(?:_|$)/.exec(String(idOrItem));
-    return m ? m[1] : String(idOrItem);
+    return m ? m[1] : String(idOrItem).replace(/-q\d+$/, "");
   }
 
   function forMaterial(idOrItem) {
@@ -67,6 +67,7 @@ AHS.VisualLesson = (function () {
       if (Array.isArray(opts.materialIds) &&
           !lesson.materialIds.some(function (id) { return opts.materialIds.indexOf(id) !== -1; })) { return; }
       lesson.cards.forEach(function (card) {
+        if (opts.section && card.section !== opts.section) { return; }
         var s = scoreCard(card, text);
         if (s >= MIN_SCORE && (!best || s > best.score)) { best = { lesson: lesson, card: card, score: s }; }
       });
@@ -76,12 +77,22 @@ AHS.VisualLesson = (function () {
 
   function forQuestion(q) {
     if (!q) { return null; }
-    var lesson = forMaterial(q.id || q.questionId || q.sourceId);
+    var key = null, lesson = null;
+    [q.sourceId, q.materialId, q.id, q.questionId].some(function (id) {
+      var l = id ? forMaterial(id) : null;
+      if (l) { lesson = l; key = materialKey(id); }
+      return !!l;
+    });
     if (!lesson) { return null; }
     /* knowledgePoint names the concept directly, so it decides first; the
-       stem is only a fallback (it often mentions several ideas at once). */
-    return match(q.knowledgePoint || "", { lesson: lesson }) ||
-      match(q.text || q.question || "", { lesson: lesson });
+       stem is only a fallback (it often mentions several ideas at once).
+       A package that is one whole text (e.g. a single 國文 lesson) can name
+       its card in materialCards, used when neither mentions a keyword. */
+    var fallback = lesson.materialCards && lesson.materialCards[key] ? card(lesson, lesson.materialCards[key]) : null;
+    var opts = { lesson: lesson, section: fallback ? fallback.section : null };
+    var hit = match(q.knowledgePoint || "", opts) || match(q.text || q.question || "", opts);
+    if (hit) { return hit; }
+    return fallback ? { lesson: lesson, card: fallback, score: 0 } : null;
   }
 
   function lessonUrl(lesson, cardId) {
