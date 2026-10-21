@@ -42,5 +42,9 @@
 1. 教材包上架後執行 `node docs/TeachingMaterials/scripts/VisualLessonCoverage.js --semester <學期>`，列出還沒有圖解教材的教材包。
 2. 依六段格式做教材頁，放在本資料夾，載入 `shared/` 三個共用檔。題目與頁碼以課本原始檔核對；文科的「公式」以核心觀念、句型或因果關係取代。
 3. 在 `js/data/VisualLessonData.js` 加一筆：`materialIds` 填該章所有 tm_N（課本＋補充題庫），卡片 `keywords` 以題庫的 `knowledgePoint` 用語為主。
+   - 舊版教材庫（`data/materials/*.js`）的紀錄也可以放進 `materialIds`（填該檔的 `ID`）。
+   - 一個教材包就是一整課（例如國文、英文的單課）、題目常常沒有關鍵詞時，用 `materialCards: { tm_N: "F3" }` 指定預設卡片；關鍵詞比對也只會在該卡片所屬的那一節裡進行。
+   - 內容來源：教材頁的六段內容寫在 `src/<lessonId>.js`，用 `node docs/TeachingMaterials/scripts/BuildVisualLesson.js <lessonId>` 產生 html（測試會檢查兩者一致）。
+   - 著作權：古典詩文可引用原文；現代文學、英文課文只說明意象、手法與句型，不整段引用。
 4. 再跑一次覆蓋率報告，直到題目全部對應（`--strict` 不會失敗）。
 5. 執行 `npm run verify`、`npm test`，以及 Playwright `visual-lesson-201`（會自動對每一份教材頁檢查：每題正解判對、逐步圖解走得完、每張圖都有畫出來、沒有腳本錯誤）。

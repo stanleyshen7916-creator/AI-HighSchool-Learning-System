@@ -322,5 +322,31 @@ AHS.VisualLessonData = [
       { id: "F12", section: "4", title: "〈玉山去來〉：時間為經、見聞為緯", keywords: ["玉山", "永遠的山", "陳列", "登山", "冷杉", "森林界線", "風口", "雲", "山脈", "氤氳", "情景交融", "無痕山林", "LNT", "高山", "日出", "隊伍", "山峰", "山名"] },
       { id: "F13", section: "4", title: "〈燭之武退秦師〉：一張地圖說服秦伯", keywords: ["燭之武", "秦伯", "秦穆公", "晉文公", "晉侯", "鄭文公", "佚之狐", "左傳", "春秋", "越國以鄙遠", "東道主", "行李", "闕秦", "子犯", "晉君", "鄭"] }
     ]
+  },
+  {
+    lessonId: "ENG_H2_S1",
+    href: "docs/TeachingMaterials/lessons/ENG_H2_S1.html",
+    title: "高二英文・圖解教材",
+    subject: "英文",
+    materialIds: ["tm_61", "tm_51", "tm_49", "tm_48", "tm_72", "english-g11-day-i-broke-the-rules"],
+    source: "英文 Lesson 1 The Day I Broke the Rules、L3 Prometheus、R1 3D Printing、單字練習",
+    /* 一包一課：題目沒提到關鍵詞時，對應該課的卡片 */
+    materialCards: { tm_51: "F1", tm_61: "F1", "english-g11-day-i-broke-the-rules": "F1", tm_49: "F5", tm_48: "F7", tm_72: "F8" },
+    sections: [
+      { id: "1", title: "Lesson 1 The Day I Broke the Rules" },
+      { id: "2", title: "L3 Prometheus" },
+      { id: "3", title: "R1 3D Printing" },
+      { id: "4", title: "單字練習：一字多義與搭配詞" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "故事地圖：規則、衝突、選擇", keywords: ["文章主旨", "人物性格", "言外之意", "細節理解", "推論", "人物情緒", "課文出處", "Billy", "Ronald", "narrator", "hospital", "rule", "hug", "Santa", "germs", "passage"] },
+      { id: "F2", section: "1", title: "句型：find / consider + it + adj. + to VR", keywords: ["find/consider", "虛受詞", "consider it", "find it", "feel it", "think it", "Combine the sentences"] },
+      { id: "F3", section: "1", title: "句型：It seems that… ↔ S seems to V", keywords: ["It seems", "It appears", "seems to", "appears to", "seem"] },
+      { id: "F4", section: "1", title: "字群與片語：一次記一整串", keywords: ["字彙", "片語", "反義片語", "詞性辨識", "OPPOSITE", "employ", "terminal", "tremendous", "frighten", "contact", "warmth", "prompt", "confine", "sparkle", "stretch", "refus", "hesitat", "drowsy", "frail", "pass away", "make a difference", "after all", "cheer", "turn down", "be about to", "聽力策略"] },
+      { id: "F5", section: "2", title: "故事弧線：從禮物分配到盜火", keywords: ["Prometheus", "Epimetheus", "Zeus", "Mecone", "clay", "fire", "gifts", "offerings", "upright", "humankind"] },
+      { id: "F6", section: "2", title: "時間軸：by the time ＋ 過去完成式", keywords: ["By the time", "by the time", "had run", "Angry about", "so that", "expanded"] },
+      { id: "F7", section: "3", title: "積層製造：一層一層長出來", keywords: ["3D", "printing", "printed", "capable of", "enable", "make use of", "bionic", "prosthetic", "coral"] },
+      { id: "F8", section: "4", title: "一字多義、搭配詞與同反義", keywords: ["award", "rough", "process", "vision", "comfort", "communicate", "aware", "run the risk", "burst", "cave in", "vanish", "temporary", "county"] }
+    ]
   }
 ];
