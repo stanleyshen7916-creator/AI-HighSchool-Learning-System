@@ -61,7 +61,7 @@ function gAxes(g,G,x0,x1,y0,y1,C,ystep){
   L(g,G.X(x0),G.Y(0),G.X(x1),G.Y(0),C.ink,1.2);
   if(x0<0&&x1>0) L(g,G.X(0),G.Y(y0),G.X(0),G.Y(y1),C.ink,1.2);
 }
-function plot(g,G,f,a,b,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w; g.lineJoin='round'; g.setLineDash(dash||[]); g.beginPath(); var N=Math.max(2,Math.ceil((b-a)*80)); for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N, y=f(x); if(i) g.lineTo(G.X(x),G.Y(y)); else g.moveTo(G.X(x),G.Y(y)); } g.stroke(); g.restore(); }
+function plot(g,G,f,a,b,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w; g.lineJoin='round'; g.setLineDash(dash||[]); g.beginPath(); var N=Math.min(1600,Math.max(2,Math.ceil((b-a)*80))); for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N, y=f(x); if(i) g.lineTo(G.X(x),G.Y(y)); else g.moveTo(G.X(x),G.Y(y)); } g.stroke(); g.restore(); }
 function unitAxes(g,F,C,m){ m=m||1.3; L(g,F.X(-m),F.Y(0),F.X(m),F.Y(0),C.grid,1); L(g,F.X(0),F.Y(-m),F.X(0),F.Y(m),C.grid,1); }
 
 /* 通用互動圖：滑桿 data-k、播放 data-play、步驟 data-step */
@@ -111,7 +111,7 @@ function radFmt(v){ return v.toFixed(2)+'（'+deg(v)+'）'; }
 function ra(g,F,p,u,v,s,c){ var a=[p[0]+u[0]*s,p[1]+u[1]*s], b=[a[0]+v[0]*s,a[1]+v[1]*s], d=[p[0]+v[0]*s,p[1]+v[1]*s]; g.save(); g.strokeStyle=c; g.lineWidth=1.2; g.beginPath(); g.moveTo(F.X(a[0]),F.Y(a[1])); g.lineTo(F.X(b[0]),F.Y(b[1])); g.lineTo(F.X(d[0]),F.Y(d[1])); g.stroke(); g.restore(); }
 function seg(g,F,p,q,c,w,dash){ L(g,F.X(p[0]),F.Y(p[1]),F.X(q[0]),F.Y(q[1]),c,w,dash); }
 function arcAt(g,F,p,r,a0,a1,c,w){ g.save(); g.strokeStyle=c; g.lineWidth=w||1.8; g.beginPath(); g.arc(F.X(p[0]),F.Y(p[1]),r*F.sx,-a0,-a1,a1>a0); g.stroke(); g.restore(); }
-function plotClip(g,G,f,a,b,ymax,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w; g.setLineDash(dash||[]); g.beginPath(); var N=Math.ceil((b-a)*120), pen=false; for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N, y=f(x); if(!isFinite(y)||Math.abs(y)>ymax){ pen=false; continue; } if(pen) g.lineTo(G.X(x),G.Y(y)); else { g.moveTo(G.X(x),G.Y(y)); pen=true; } } g.stroke(); g.restore(); }
+function plotClip(g,G,f,a,b,ymax,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w; g.setLineDash(dash||[]); g.beginPath(); var N=Math.min(1600,Math.max(2,Math.ceil((b-a)*120))), pen=false; for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N, y=f(x); if(!isFinite(y)||Math.abs(y)>ymax){ pen=false; continue; } if(pen) g.lineTo(G.X(x),G.Y(y)); else { g.moveTo(G.X(x),G.Y(y)); pen=true; } } g.stroke(); g.restore(); }
 function vline(g,G,x,y0,y1,c,dash,w){ L(g,G.X(x),G.Y(y0),G.X(x),G.Y(y1),c,w||1.5,dash||[5,4]); }
 function steps(arr){ return function(s){ return arr[s.step]; }; }
 function norm(v){ var l=Math.hypot(v[0],v[1])||1; return [v[0]/l,v[1]/l]; }
