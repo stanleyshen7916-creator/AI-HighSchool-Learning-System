@@ -42,15 +42,19 @@ AHS.VisualLesson = (function () {
 
   function normalize(s) { return String(s || "").replace(/\s+/g, "").toLowerCase(); }
 
+  /* Each matched keyword scores its length; a keyword the text STARTS with
+     earns a one-time bonus, because knowledge points name their main topic
+     first (「疊合與三角方程式」is a 疊合 question, not an equation one). */
+  var LEAD_BONUS = 6;
   function scoreCard(card, text) {
     var t = normalize(text);
     if (!t) { return 0; }
-    var score = 0;
+    var score = 0, lead = false;
     (card.keywords || []).concat([card.title]).forEach(function (kw) {
       var k = normalize(kw);
-      if (k && t.indexOf(k) !== -1) { score += k.length; }
+      if (k && t.indexOf(k) !== -1) { score += k.length; if (t.indexOf(k) === 0) { lead = true; } }
     });
-    return score;
+    return score + (lead ? LEAD_BONUS : 0);
   }
 
   function match(text, opts) {

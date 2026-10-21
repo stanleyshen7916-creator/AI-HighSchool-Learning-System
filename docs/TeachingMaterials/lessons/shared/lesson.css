@@ -1,0 +1,111 @@
+/* docs/TeachingMaterials/lessons/shared/lesson.css — 圖解教材共用樣式（方格紙講義＋教學卡＋嵌入模式）。 */
+/* 版面概念：方格紙上的講義頁。老師紅筆＝重點與互動指標，青綠＝角度/弧，金黃＝對照量 */
+:root{
+  --paper:#ECF0F5; --gridbg:#E0E6EE; --sheet:#FFFFFF; --ink:#1B2640; --muted:#5A677E;
+  --grid:#DCE2EB; --line:#C8D1DE; --chip:#F1F4F8;
+  --red:#C2362B; --teal:#0E7A74; --gold:#A46A10; --blue:#3454B4;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-math:"STIX Two Text","Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1420; --gridbg:#141C2B; --sheet:#161F30; --ink:#E5EAF3; --muted:#94A1B8;
+  --grid:#25314A; --line:#2E3B55; --chip:#1C2639;
+  --red:#FF7B6C; --teal:#45C3B8; --gold:#E7B04C; --blue:#8DA8FF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1420; --gridbg:#141C2B; --sheet:#161F30; --ink:#E5EAF3; --muted:#94A1B8;
+  --grid:#25314A; --line:#2E3B55; --chip:#1C2639;
+  --red:#FF7B6C; --teal:#45C3B8; --gold:#E7B04C; --blue:#8DA8FF; color-scheme:dark}
+
+body{background-color:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  background-image:linear-gradient(var(--gridbg) 1px,transparent 1px),linear-gradient(90deg,var(--gridbg) 1px,transparent 1px);
+  background-size:28px 28px}
+.wrap{max-width:920px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:28px}
+.top{display:grid;gap:10px}
+.eyebrow{font-size:13px;letter-spacing:.12em;color:var(--muted);font-weight:500}
+h1{font-family:var(--f-display);font-weight:900;font-size:clamp(2.2rem,6vw,3.2rem);line-height:1.15;margin:0;text-wrap:balance}
+h1 small{display:block;font-size:.42em;font-weight:700;color:var(--muted);margin-top:6px;letter-spacing:.04em}
+.pilot{border:1.5px dashed var(--red);color:var(--red);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--sheet)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;align-items:center}
+.tag{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:500;white-space:nowrap}
+.tag.src{color:var(--teal)} .tag.std{color:var(--gold)} .tag.add{color:var(--blue)}
+.prog{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-4px;padding:8px 4px;display:flex;gap:8px;overflow-x:auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+nav.toc a{flex:none;text-decoration:none;color:var(--ink);font-size:13px;border:1px solid var(--line);background:var(--sheet);border-radius:999px;padding:3px 12px}
+nav.toc a:hover{border-color:var(--red);color:var(--red)}
+section{display:grid;gap:18px}
+h2{font-family:var(--f-display);font-size:1.6rem;margin:0;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+h2 .no{color:var(--red);font-family:var(--f-math);font-size:1.1em}
+.plan{border:1px dashed var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;background:var(--sheet);font-size:14px}
+.plan b{display:block;font-size:12px;letter-spacing:.1em;color:var(--muted);font-weight:500}
+@media (max-width:640px){.plan{grid-template-columns:1fr}}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px;min-width:0}
+.card-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card-h .pg{font-size:12px;color:var(--muted);white-space:nowrap}
+.card-h .code{font-family:var(--f-math);color:var(--muted);font-size:14px}
+.card-h h3{margin:0;font-family:var(--f-display);font-size:1.25rem;flex:1 1 auto;text-wrap:balance}
+.say{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start}
+.say .who{background:var(--red);color:var(--sheet);font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;margin-top:4px;white-space:nowrap}
+.say p{margin:0}
+.formula{font-family:var(--f-math);font-size:1.45rem;text-align:center;background:var(--chip);border-radius:8px;padding:12px;overflow-x:auto;line-height:1.6}
+.formula i{font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.15;margin:0 2px}
+.fr>span+span{border-top:1.5px solid currentColor}
+.viz{display:grid;gap:10px}
+.cv{min-width:0}
+.cv canvas{display:block;width:100%;border:1px solid var(--line);border-radius:8px;background:var(--sheet)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.sl{display:grid;grid-template-columns:auto minmax(120px,220px) auto;gap:8px;align-items:center;font-size:14px}
+.sl span{font-family:var(--f-math);font-style:italic;font-size:1.05rem}
+.sl output{font-variant-numeric:tabular-nums;color:var(--muted);min-width:5.5em}
+input[type=range]{accent-color:var(--red);width:100%}
+button.play{font:inherit;font-size:13px;border:1px solid var(--red);color:var(--red);background:transparent;border-radius:999px;padding:3px 14px;cursor:pointer}
+button.play:hover{background:var(--red);color:var(--sheet)}
+button.play:disabled{opacity:.35;cursor:default;background:transparent;color:var(--red)}
+.stepno{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.out{margin:0;font-size:14px;background:var(--chip);border-radius:8px;padding:8px 12px;font-variant-numeric:tabular-nums;overflow-x:auto}
+.out b{color:var(--red)}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.notes{grid-template-columns:1fr}}
+.notes div{border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14.5px}
+.notes b{display:block;font-size:13px;margin-bottom:2px}
+.space b{color:var(--teal)} .trap b{color:var(--red)}
+
+.qc{border:1.5px dashed var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;font-size:14.5px}
+.qc .q{margin:0}
+.qc .q b{color:var(--red);margin-right:8px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices button{font:inherit;font-family:var(--f-math);font-size:15px;color:var(--ink);background:var(--chip);border:1.5px solid var(--line);border-radius:8px;padding:4px 14px;cursor:pointer}
+.choices button:hover{border-color:var(--ink)}
+.choices button[aria-pressed="true"]{border-color:var(--blue);color:var(--blue)}
+.choices button.right{border-color:var(--teal);color:var(--teal);font-weight:700}
+.choices button.wrong{border-color:var(--red);color:var(--red);text-decoration:line-through}
+.check{font:inherit;font-size:13px;border:none;background:var(--ink);color:var(--sheet);border-radius:999px;padding:4px 16px;cursor:pointer;justify-self:start}
+.fb{margin:0;min-height:1.4em}
+.fb .ok{color:var(--teal)} .fb .no{color:var(--red)}
+details.sol summary{cursor:pointer;font-weight:700;color:var(--blue)}
+details.sol[open] summary{margin-bottom:10px}
+
+.done{display:inline-flex;gap:8px;align-items:center;font-size:14px;color:var(--muted);justify-self:start;cursor:pointer}
+.done input{accent-color:var(--teal);width:18px;height:18px}
+.foot{font-size:14px;color:var(--muted);display:grid;gap:8px}
+.foot h2{font-size:1.2rem;color:var(--ink)}
+.foot ul{margin:0;padding-left:1.2em}
+.foot a{color:var(--blue)}
+[hidden]{display:none!important}
+
+/* 平台嵌入模式（由 js/ui/VisualLessonFrame.js 以 ?embed=1 / ?card=Fn 載入） */
+.is-embed body{background-image:none}
+.is-embed .wrap{padding-block:16px 24px}
+.is-embed .top,.is-embed nav.toc{display:none}
+.is-embed article.card{scroll-margin-top:16px}
+.is-embed .wrap{max-width:980px;padding-block:20px 120px}
+.is-card .wrap{padding-block:4px 8px;gap:0;padding-left:4px;padding-right:4px}
+.is-card .top,.is-card nav.toc,.is-card .plan,.is-card section>h2,.is-card .foot{display:none}
+.is-card section{display:none}
+.is-card section.has-focus{display:grid}
+.is-card .card{display:none}
+.is-card .card.is-focus{display:grid}
+.is-card body{background:var(--sheet)}

@@ -94,3 +94,50 @@ test("圖解教材：學習助教查「疊合」附上公式卡片", async ({ pa
   await expect.poll(async () => parseInt(await frameEl.evaluate((f) => f.style.height || "0"), 10)).toBeGreaterThan(600);
   expect(errors).toEqual([]);
 });
+
+/* 每一份圖解教材（js/data/VisualLessonData.js）都跑一次：每題正解判對、每個逐步圖解走到最後、
+   每張圖都有畫出東西、沒有腳本錯誤。新增科目時不用改這個測試。 */
+const LESSONS = (function () {
+  const win = {};
+  const src = require("fs").readFileSync(require("path").join(__dirname, "../../js/data/VisualLessonData.js"), "utf8");
+  new Function("window", src.replace("window.AHS = window.AHS || {};", "window.AHS = window.AHS || {}; var AHS = window.AHS;"))(win);
+  return win.AHS.VisualLessonData;
+})();
+for (const lesson of LESSONS) {
+  test("圖解教材品質檢查：" + lesson.lessonId, async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await page.goto("file://" + require("path").join(__dirname, "../..", lesson.href));
+    const result = await page.evaluate(async () => {
+      const out = { wrongJudged: [], unfinishedSteps: [], blank: [] };
+      for (const q of document.querySelectorAll(".qc")) {
+        const box = q.querySelector(".choices");
+        const ans = box.getAttribute("data-answer").split(",");
+        ans.forEach((a) => box.querySelector('[data-c="' + a + '"]').click());
+        const chk = q.querySelector("[data-check]");
+        if (chk) { chk.click(); }
+        if (!/答對/.test(q.querySelector(".fb").textContent)) { out.wrongJudged.push(q.getAttribute("data-q")); }
+        const sol = q.querySelector("details.sol");
+        if (sol) { sol.open = true; }
+      }
+      await new Promise((r) => setTimeout(r, 200));
+      for (const v of document.querySelectorAll(".viz[id^='s-']")) {
+        const next = v.querySelector('[data-step="1"]');
+        let guard = 0;
+        while (next && !next.disabled && guard++ < 20) { next.click(); }
+        if (next && !next.disabled) { out.unfinishedSteps.push(v.id); }
+      }
+      await new Promise((r) => setTimeout(r, 200));
+      for (const c of document.querySelectorAll(".viz canvas")) {
+        const g = c.getContext("2d");
+        const ok = c.width > 0 && g.getImageData(0, 0, c.width, c.height).data.some((x, i) => i % 4 === 3 && x > 0);
+        if (!ok) { out.blank.push(c.closest(".viz").id); }
+      }
+      return out;
+    });
+    expect(result.wrongJudged).toEqual([]);
+    expect(result.unfinishedSteps).toEqual([]);
+    expect(result.blank).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+}
