@@ -94,5 +94,77 @@ AHS.VisualLessonData = [
       { id: "F10", section: "2-3", title: "實驗1：打點計時器", keywords: ["打點計時器實驗", "打點計時器", "實驗1", "點痕", "紙帶"] },
       { id: "F11", section: "2-4", title: "相對速度 v_AB = v_A − v_B", keywords: ["相對速度", "相對運動", "相對位移", "相對加速度"] }
     ]
+  },
+  {
+    lessonId: "CHE_H2_Ch1_Stoichiometry",
+    href: "docs/TeachingMaterials/lessons/CHE_H2_Ch1_Stoichiometry.html",
+    title: "第1章 化學計量與反應熱・圖解教材",
+    subject: "化學",
+    materialIds: ["tm_12", "tm_13", "tm_26"],
+    source: "課本第9～52頁、講義 1-1、1-2、實驗活動1",
+    sections: [
+      { id: "1-0", title: "物質的特性與鑑定" },
+      { id: "1-1", title: "化學反應式的平衡及應用" },
+      { id: "1-2", title: "化學反應中的能量變化" }
+    ],
+    cards: [
+      { id: "F1", section: "1-0", title: "純物質與混合物：看加熱曲線", keywords: ["純物質與混合物", "純物質", "混合物", "加熱曲線", "物質鑑定", "鑑定", "熔點", "沸點"] },
+      { id: "F2", section: "1-0", title: "色層分析與比移值 Rf", keywords: ["色層分析法", "色層分析", "比移值", "Rf"] },
+      { id: "F3", section: "1-1", title: "平衡反應式：原子守恆", keywords: ["反應式平衡", "平衡反應式", "化學式推導", "原子守恆", "質量守恆"] },
+      { id: "F4", section: "1-1", title: "化學計量：係數比 = 莫耳數比", keywords: ["化學計量", "計量", "係數比", "氣體體積比", "莫耳比", "倍比定律", "分子反應圖", "當量", "滴定", "燃燒產物", "質量比例", "連續反應", "電石", "濃度變化", "氣體反應體積", "燃燒反應與空氣"] },
+      { id: "F5", section: "1-1", title: "限量試劑與產率", keywords: ["限量試劑", "產率計算", "產率", "剩餘量", "沉澱量"] },
+      { id: "F6", section: "1-1", title: "氧化還原與電子守恆", keywords: ["氧化還原", "氧化數", "電子守恆", "氧化劑", "還原劑", "離子鑑定"] },
+      { id: "F7", section: "1-2", title: "反應熱 ΔH：吸熱與放熱", keywords: ["反應熱位能圖", "反應熱概念", "反應熱基本性質", "各類反應熱正負值", "位能圖", "能量形式", "熱含量", "物質狀態", "吸熱", "放熱", "反應熱與生活"] },
+      { id: "F8", section: "1-2", title: "熱化學方程式：倍數與逆寫", keywords: ["熱化學反應式", "熱化學方程式", "反應熱倍數關係", "倍數", "逆寫"] },
+      { id: "F9", section: "1-2", title: "生成熱、燃燒熱與赫斯定律", keywords: ["赫斯定律", "莫耳生成熱", "莫耳燃燒熱", "生成熱", "燃燒熱", "同素異形體", "加成性", "氫化熱", "生質能量", "分解反應途徑"] },
+      { id: "F10", section: "1-2", title: "卡計：Q = m·s·ΔT", keywords: ["卡計", "比熱", "溶解熱", "絕熱", "線性外插"] }
+    ]
+  },
+  {
+    lessonId: "CHE_H2_Ch2_Gases",
+    href: "docs/TeachingMaterials/lessons/CHE_H2_Ch2_Gases.html",
+    title: "第2章 氣體・圖解教材",
+    subject: "化學",
+    materialIds: ["tm_28", "tm_29", "tm_30", "tm_31", "tm_32"],
+    source: "課本與講義 第2章（2-1 氣體的性質、2-2 氣體的基本定律、2-3 理想氣體、2-4 氣體的分壓）",
+    sections: [
+      { id: "2-1", title: "氣體的性質與壓力" },
+      { id: "2-2", title: "氣體的基本定律" },
+      { id: "2-3", title: "理想氣體" },
+      { id: "2-4", title: "氣體的分壓" }
+    ],
+    cards: [
+      { id: "F1", section: "2-1", title: "氣體壓力與單位換算", keywords: ["壓力單位換算", "氣體的通性", "氣體的共同性", "液體壓力", "體積單位換算", "大氣壓", "托里切利", "atm", "mmHg"] },
+      { id: "F2", section: "2-1", title: "開口式與閉口式壓力計", keywords: ["壓力計的使用", "壓力計的計算", "開口式壓力計", "閉口式壓力計", "壓力計"] },
+      { id: "F3", section: "2-2", title: "波以耳定律：P₁V₁ = P₂V₂", keywords: ["波以耳定律", "波以耳", "汞柱封氣", "J 型管", "U 形管"] },
+      { id: "F4", section: "2-2", title: "查理定律：V₁/T₁ = V₂/T₂", keywords: ["查理定律", "查理", "絕對溫度", "絕對零度", "定容下壓力與溫度"] },
+      { id: "F5", section: "2-2", title: "亞佛加厥定律與莫耳體積", keywords: ["亞佛加厥定律", "亞佛加厥", "莫耳體積", "氣體體積", "22.4", "STP", "莫耳數增加", "莫耳數"] },
+      { id: "F6", section: "2-3", title: "理想氣體方程式 PV = nRT", keywords: ["理想氣體方程式", "PV＝nRT", "PM＝dRT", "PM = dRT", "求分子量", "求密度", "氣體定律綜合", "氣體定律"] },
+      { id: "F7", section: "2-3", title: "理想氣體與真實氣體", keywords: ["理想氣體與真實氣體", "理想氣體的性質", "真實氣體", "氣體動力論"] },
+      { id: "F8", section: "2-4", title: "道耳頓分壓定律與莫耳分率", keywords: ["道耳頓分壓定律", "分壓定律", "分壓", "莫耳分率", "混合時發生反應", "平均分子量"] },
+      { id: "F9", section: "2-4", title: "飽和蒸氣壓與排水集氣", keywords: ["排水集氣法", "排水集氣", "飽和蒸氣壓", "蒸氣壓", "水蒸氣"] }
+    ]
+  },
+  {
+    lessonId: "CHE_H2_Ch3_Solutions",
+    href: "docs/TeachingMaterials/lessons/CHE_H2_Ch3_Solutions.html",
+    title: "第3章 液態與溶液・圖解教材",
+    subject: "化學",
+    materialIds: ["tm_39"],
+    source: "課本 第3章 液態與溶液",
+    sections: [
+      { id: "3-1", title: "物質的三態與蒸氣壓" },
+      { id: "3-2", title: "溶液的性質與依數性質" }
+    ],
+    cards: [
+      { id: "F1", section: "3-1", title: "相變化與熔化熱、汽化熱", keywords: ["物質狀態變化", "狀態變化", "相變化", "熔化熱", "汽化熱", "加熱曲線", "潛熱"] },
+      { id: "F2", section: "3-1", title: "飽和蒸氣壓與沸點", keywords: ["飽和蒸氣壓", "沸點較高", "正常沸點", "沸騰", "蒸發", "沸點"] },
+      { id: "F3", section: "3-1", title: "相對溼度", keywords: ["相對溼度", "水蒸氣分壓", "溼度"] },
+      { id: "F4", section: "3-2", title: "拉午耳定律 P = X·P°", keywords: ["拉午耳", "理想溶液", "莫耳分率", "非揮發性", "溶液的蒸氣壓"] },
+      { id: "F5", section: "3-2", title: "依數性質：蒸氣壓下降與沸點上升", keywords: ["依數性質", "沸點上升", "水溶液沸點", "蔗糖", "K_b", "Kb"] },
+      { id: "F6", section: "3-2", title: "電解質與凡特何夫因子 i", keywords: ["凡特何夫", "凝固點下降", "凝固點最低", "凝固點", "電解質", "CaCl"] },
+      { id: "F7", section: "3-2", title: "亨利定律：氣體的溶解度", keywords: ["亨利定律", "亨利", "氣體溶解度", "溶解度"] },
+      { id: "F8", section: "3-2", title: "滲透壓與細胞", keywords: ["滲透壓", "滲透", "紅血球", "高張", "低張", "等張", "半透膜"] }
+    ]
   }
 ];
