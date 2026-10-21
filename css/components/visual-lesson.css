@@ -1,6 +1,6 @@
 /* css/components/visual-lesson.css — 2026-10-21 圖解教材（互動）.
-   Frame + toolbar for js/ui/VisualLessonFrame.js (教材中心 / 學習助教),
-   plus the 教材中心 preview tabs and card badge for materials that have one. */
+   js/ui/VisualLessonFrame.js（學習助教的公式卡片）, js/ui/VisualLessonReader.js
+   （教材中心的全螢幕閱讀畫面）and the 互動圖解 badge on material cards. */
 
 .vlesson { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .vlesson__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
@@ -10,17 +10,12 @@
   border: 1px solid var(--brand-line);
 }
 .vlesson__meta { font-size: 12px; color: var(--text-muted); flex: 1 1 200px; min-width: 0; }
-.vlesson__jump {
-  font: inherit; font-size: 13px; padding: 4px 8px; border-radius: var(--radius-sm);
-  border: 1px solid var(--line-strong); background-color: var(--card); color: var(--text);
-}
 .vlesson__open { font-size: 13px; font-weight: 700; color: var(--brand-strong); text-decoration: none; white-space: nowrap; }
 .vlesson__open:hover { text-decoration: underline; }
 .vlesson__frame {
-  display: block; width: 100%; height: 72vh; min-height: 420px; border: 1px solid var(--line);
+  display: block; width: 100%; height: 520px; border: 1px solid var(--line);
   border-radius: var(--radius-md); background-color: #ffffff;
 }
-.vlesson__frame--card { height: 520px; min-height: 0; }
 
 /* 學習助教：泡泡裡的單一公式卡片要比文字泡泡寬 */
 .tutor-msg.tutor-msg--wide { max-width: 100%; width: 100%; }
@@ -37,19 +32,107 @@
 .vlesson-toggle__btn:hover { background-color: var(--brand-soft); }
 .vlesson-toggle__btn[aria-expanded="true"] { background-color: var(--brand-soft); }
 
-/* 教材中心：有圖解教材的教材，預覽視窗加寬並分成兩個分頁 */
-.mat-preview--lesson { max-width: 1080px; }
-.mat-preview__tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
-.mat-preview__tab {
-  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 8px 14px;
-  color: var(--text-muted); background: none; border: 0; border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
-}
-.mat-preview__tab[aria-selected="true"] { color: var(--brand-strong); border-bottom-color: var(--brand); }
-.mat-preview__tabpanel { display: flex; flex-direction: column; gap: 14px; }
 .mat-card__lesson {
   position: absolute; right: 10px; bottom: 10px; padding: 2px 8px; border-radius: var(--radius-pill);
   font-size: 11px; font-weight: 800; color: var(--brand-ink); background-color: var(--card);
   border: 1px solid var(--brand-line);
 }
-.mat-preview__tabpanel[hidden], .vlesson[hidden] { display: none; }
+.vlesson[hidden] { display: none; }
+
+/* ---- 教材中心：全螢幕閱讀畫面（js/ui/VisualLessonReader.js）------------- */
+.vreader {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 120;
+  display: flex; flex-direction: column; background-color: var(--bg);
+}
+.vreader[hidden] { display: none; }
+.vreader__head {
+  display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap;
+  padding: 10px 20px; background-color: var(--card); border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+}
+.vreader__back {
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  padding: 8px 14px; border-radius: var(--radius-pill); color: var(--text);
+  background-color: var(--bg); border: 1px solid var(--line);
+}
+.vreader__back:hover { border-color: var(--brand-line); color: var(--brand-strong); }
+.vreader__heading { flex: 1 1 280px; min-width: 0; }
+.vreader__eyebrow {
+  margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vreader__subject {
+  flex: 0 0 auto; padding: 1px 8px; border-radius: var(--radius-pill); font-weight: 800;
+  color: var(--brand-ink); background-color: var(--brand-soft);
+}
+.vreader__title {
+  margin: 2px 0 0; font-size: 20px; font-weight: 800; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vreader__tabs { display: flex; gap: 4px; padding: 4px; border-radius: var(--radius-pill); background-color: var(--bg); }
+.vreader__tab {
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 7px 16px;
+  border: 0; border-radius: var(--radius-pill); color: var(--text-muted); background: none;
+}
+.vreader__tab[aria-selected="true"] { color: #ffffff; background-color: var(--brand); }
+.vreader__actions { display: flex; align-items: center; gap: 8px; }
+.vreader__btn {
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; text-decoration: none;
+  padding: 8px 16px; border-radius: var(--radius-pill); color: var(--brand-strong);
+  background-color: var(--card); border: 1px solid var(--brand-line);
+}
+.vreader__btn--primary { color: #ffffff; background-color: var(--brand); border-color: var(--brand); }
+.vreader__jump {
+  display: none; font: inherit; font-size: 14px; padding: 7px 10px; max-width: 240px;
+  border-radius: var(--radius-sm); border: 1px solid var(--line-strong); background-color: var(--card); color: var(--text);
+}
+.vreader__jump[hidden] { display: none; }
+
+.vreader__body { flex: 1 1 auto; min-height: 0; display: flex; }
+.vreader__pane { flex: 1 1 auto; min-width: 0; min-height: 0; }
+.vreader__pane[hidden] { display: none; }
+.vreader__pane--lesson { display: grid; grid-template-columns: 280px minmax(0, 1fr); }
+.vreader__pane--text { overflow: auto; }
+.vreader__text { max-width: 900px; margin: 0 auto; padding: 24px 20px 48px; display: flex; flex-direction: column; gap: 16px; }
+
+.vreader__nav {
+  overflow: auto; padding: 16px 12px 32px; background-color: var(--card); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.vreader__progress { display: flex; flex-direction: column; gap: 6px; padding: 0 6px; }
+.vreader__progress-text { font-size: 13px; font-weight: 700; color: var(--text); }
+.vreader__progress-bar { display: block; height: 6px; border-radius: var(--radius-pill); background-color: var(--bg); overflow: hidden; }
+.vreader__progress-fill { display: block; height: 100%; width: 0; background-color: var(--ok); transition: width .3s ease; }
+.vreader__group-title { margin: 0 0 4px; padding: 0 6px; font-size: 13px; font-weight: 800; color: var(--text); display: flex; gap: 6px; }
+.vreader__group-no { color: var(--brand-strong); }
+.vreader__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.vreader__item {
+  width: 100%; display: grid; grid-template-columns: 34px minmax(0, 1fr) 16px; align-items: center; gap: 6px;
+  font: inherit; font-size: 13.5px; text-align: left; cursor: pointer; padding: 7px 8px;
+  border: 0; border-radius: var(--radius-sm); color: var(--text); background: none;
+}
+.vreader__item:hover { background-color: var(--bg); }
+.vreader__item.is-active { background-color: var(--brand-soft); color: var(--brand-ink); font-weight: 700; }
+.vreader__item-code { font-size: 12px; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.vreader__item.is-active .vreader__item-code { color: var(--brand-strong); }
+.vreader__item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vreader__item-check { font-size: 12px; font-weight: 800; color: var(--ok); visibility: hidden; }
+.vreader__item.is-done .vreader__item-check { visibility: visible; }
+.vreader__stage { min-width: 0; min-height: 0; }
+.vreader__frame { display: block; width: 100%; height: 100%; border: 0; background-color: #ffffff; }
+.vreader button:focus-visible, .vreader a:focus-visible, .vreader select:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+@media (max-width: 900px) {
+  .vreader__head { padding: 8px 12px; gap: 8px 10px; }
+  .vreader__heading { order: 2; flex-basis: 100%; }
+  .vreader__title { font-size: 17px; }
+  .vreader__tabs { order: 3; }
+  .vreader__actions { order: 4; margin-left: auto; }
+  .vreader__pane--lesson { grid-template-columns: minmax(0, 1fr); }
+  .vreader__nav { display: none; }
+  .vreader__jump { display: inline-block; }
+}
+@media (max-width: 560px) {
+  .vreader__actions .vreader__btn:not(.vreader__btn--primary) { display: none; }
+  .vreader__jump { max-width: 150px; }
+}

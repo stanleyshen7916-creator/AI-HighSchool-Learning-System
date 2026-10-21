@@ -6,8 +6,8 @@
      embed (?embed=1) and single-card (?card=Fn) modes and reports height;
    - AHS.VisualLesson: material lookup, keyword matching, every 1-1～1-4
      question of tm_7 maps to the expected formula card;
-   - 教材中心: a material with a lesson opens on the 互動圖解 tab, others
-     are unchanged; the card shows a 互動圖解 badge;
+   - 教材中心: a material with a lesson opens the full-screen reader
+     (公式目錄 + 教材頁 + 文字教材 tab); others keep the preview modal;
    - 學習助教: searching a concept adds the formula card; quiz feedback gets
      a 看互動圖解 toggle;
    - materials.html / tutor.html load the data, util, frame and CSS.
@@ -93,13 +93,6 @@ console.log("\n[2] 查詢與比對");
 
 console.log("\n[3] 畫面元件");
 {
-  const full = AHS.VisualLessonFrame.full(LESSON);
-  const frame = full.querySelector("iframe");
-  check("完整教材：iframe 載入 embed 模式", frame && /\?embed=1&theme=light$/.test(frame.getAttribute("src")));
-  check("完整教材：跳到公式選單列出全部卡片", full.querySelectorAll("select option[value^=F]").length === LESSON.cards.length);
-  const sel = full.querySelector("select");
-  sel.value = "F10"; sel.dispatchEvent(new window.Event("change"));
-  check("完整教材：選公式後跳到該卡片", /#F10$/.test(frame.getAttribute("src")));
   const one = AHS.VisualLessonFrame.card(LESSON, "F14");
   check("單一公式：iframe 載入 card 模式", /\?card=F14&theme=light$/.test(one.querySelector("iframe").getAttribute("src")));
   check("單一公式：不存在的卡片回傳 null", AHS.VisualLessonFrame.card(LESSON, "F99") === null);
@@ -119,33 +112,50 @@ console.log("\n[3] 畫面元件");
 console.log("\n[4] 教材中心與學習助教");
 {
   const prev = fs.readFileSync(path.join(REPO, "js/ui/MaterialPreview.js"), "utf8");
-  check("預覽視窗：有圖解教材時加入分頁", /lessonTabs\(lesson, bodyChildren\)/.test(prev) && /互動圖解/.test(prev) && /文字教材與練習/.test(prev));
+  check("預覽：有圖解教材時改開全螢幕閱讀畫面", /AHS\.VisualLessonReader\.open\(/.test(prev));
   const card = fs.readFileSync(path.join(REPO, "js/ui/MaterialCard.js"), "utf8");
   check("教材卡片：顯示互動圖解標籤", /mat-card__lesson/.test(card));
   const tutor = fs.readFileSync(path.join(REPO, "js/components/AiTutor.js"), "utf8");
   check("學習助教：查觀念後附上公式卡片", /pushVisual\(text\)/.test(tutor) && /VisualLessonFrame\.card\(/.test(tutor));
   check("學習助教：出題詳解附上看互動圖解", /visualForQuestion\(q\)/.test(tutor) && /cardToggle\(/.test(tutor));
-  ["materials.html", "tutor.html"].forEach((page) => {
+  [["materials.html", "js/ui/VisualLessonReader.js"], ["tutor.html", "js/ui/VisualLessonFrame.js"]].forEach(([page, ui]) => {
     const html = fs.readFileSync(path.join(REPO, page), "utf8");
     const i = (s) => html.indexOf(s);
     check(page + "：載入資料、工具、元件與 CSS（順序正確）",
-      i("js/core/UI.js") < i("js/ui/VisualLessonFrame.js") && i("js/data/VisualLessonData.js") < i("js/utils/VisualLesson.js") &&
-      i("js/utils/VisualLesson.js") < i("js/ui/VisualLessonFrame.js") && i("css/components/visual-lesson.css") !== -1);
+      i("js/core/UI.js") < i(ui) && i("js/data/VisualLessonData.js") < i("js/utils/VisualLesson.js") &&
+      i("js/utils/VisualLesson.js") < i(ui) && i("css/components/visual-lesson.css") !== -1);
   });
   const mp = new JSDOM("<!doctype html><html><body></body></html>", { runScripts: "outside-only" });
   const w = mp.window; w.AHS = {};
-  ["js/core/UI.js", "js/core/Icons.js", "js/data/AppConfig.js", "js/data/VisualLessonData.js", "js/utils/VisualLesson.js", "js/ui/VisualLessonFrame.js", "js/ui/MaterialPreview.js"].forEach((f) => {
+  ["js/core/UI.js", "js/core/Icons.js", "js/data/AppConfig.js", "js/data/VisualLessonData.js", "js/utils/VisualLesson.js", "js/ui/VisualLessonReader.js", "js/ui/MaterialPreview.js"].forEach((f) => {
     w.eval(fs.readFileSync(path.join(REPO, f), "utf8"));
   });
   if (!w.AHS.Subjects) { w.AHS.Subjects = { math: { name: "數學" } }; }
-  const withLesson = w.AHS.MaterialPreview.open({ id: "m1", originKey: "tm_7", title: "三角函數", subject: "math", fileType: "" }, function () {});
-  const tabs = withLesson.querySelectorAll(".mat-preview__tab");
-  check("預覽視窗（tm_7）：兩個分頁、預設互動圖解", tabs.length === 2 && tabs[0].getAttribute("aria-selected") === "true" && !!withLesson.querySelector("#mat-preview-panel-lesson iframe"));
+  w.document.body.appendChild(w.document.createElement("div"));
+  const reader = w.AHS.MaterialPreview.open({ id: "m1", originKey: "tm_7", title: "第1章：三角函數（很長的教材名稱）", subject: "math", grade: "高二", fileType: "" }, function () {});
+  w.document.body.appendChild(reader);
+  check("閱讀畫面（tm_7）：全螢幕、短標題、完整名稱在提示", reader.classList.contains("vreader") &&
+    reader.querySelector(".vreader__title").textContent === "第1章 三角函數・圖解教材" &&
+    reader.querySelector(".vreader__heading").getAttribute("title") === "第1章：三角函數（很長的教材名稱）");
+  check("閱讀畫面：iframe 載入 embed 模式", /\?embed=1&theme=light$/.test(reader.querySelector(".vreader__frame").getAttribute("src")));
+  const items = reader.querySelectorAll(".vreader__item");
+  check("閱讀畫面：公式目錄 15 項、分 4 節", items.length === 15 && reader.querySelectorAll(".vreader__group").length === 4);
+  check("閱讀畫面：下拉選單 15 項（窄螢幕用）", reader.querySelectorAll(".vreader__jump option").length === 15);
+  check("閱讀畫面：預設第一個公式為目前位置", items[0].classList.contains("is-active"));
+  items[9].click();
+  check("閱讀畫面：點目錄切換目前位置", items[9].classList.contains("is-active") && !items[0].classList.contains("is-active") && reader.querySelector(".vreader__jump").value === "F10");
+  const fw = reader.querySelector(".vreader__frame").contentWindow;
+  w.dispatchEvent(new w.MessageEvent("message", { data: { type: "ahs-visual-lesson:state", active: "F3", done: ["F1", "F2"] }, source: fw }));
+  check("閱讀畫面：依教材頁回報更新位置與進度", !fw || (items[2].classList.contains("is-active") &&
+    items[0].classList.contains("is-done") && reader.querySelector(".vreader__progress-text").textContent === "已完成 2 / 15"));
+  const tabs = reader.querySelectorAll(".vreader__tab");
   tabs[1].click();
-  check("預覽視窗（tm_7）：切到文字教材", withLesson.querySelector("#mat-preview-panel-lesson").hasAttribute("hidden") && !withLesson.querySelector("#mat-preview-panel-text").hasAttribute("hidden"));
-  check("預覽視窗（tm_7）：加寬", withLesson.querySelector(".mat-preview").classList.contains("mat-preview--lesson"));
+  check("閱讀畫面：切到文字教材與練習", reader.querySelector("#vreader-pane-lesson").hasAttribute("hidden") && !reader.querySelector("#vreader-pane-text").hasAttribute("hidden"));
+  check("閱讀畫面：開啟時鎖住背景捲動", w.document.body.style.overflow === "hidden");
+  reader.querySelector(".vreader__back").click();
+  check("閱讀畫面：返回教材中心會關閉並還原捲動", !reader.parentNode && w.document.body.style.overflow === "");
   const plain = w.AHS.MaterialPreview.open({ id: "m2", originKey: "tm_11", title: "直線運動", subject: "math", fileType: "" }, function () {});
-  check("預覽視窗（其他教材）：維持原樣", !plain.querySelector(".mat-preview__tab") && !plain.querySelector(".mat-preview--lesson"));
+  check("預覽視窗（其他教材）：維持原本的小視窗", plain.classList.contains("mat-preview__overlay") && !plain.querySelector(".vreader__nav"));
 }
 
 console.log("\nVisualLessonRegression: " + pass + " PASS / " + fail + " FAIL");

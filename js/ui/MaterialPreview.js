@@ -59,44 +59,33 @@ AHS.MaterialPreview = (function () {
     ]);
   }
 
-  /* lessonTabs(lesson, textChildren) — 2026-10-21: [tab bar, 互動圖解 panel,
-     文字教材與練習 panel]. The lesson frame is built only when its tab is
-     first shown, so the text tab never pays for the iframe. */
-  function lessonTabs(lesson, textChildren) {
-    var tabs = [
-      { key: "lesson", label: "互動圖解" },
-      { key: "text", label: "文字教材與練習" }
-    ];
-    var panels = {
-      lesson: el("div", { class: "mat-preview__tabpanel", role: "tabpanel", id: "mat-preview-panel-lesson" }),
-      text: el("div", { class: "mat-preview__tabpanel", role: "tabpanel", id: "mat-preview-panel-text", hidden: "hidden" }, textChildren)
-    };
-    var bar = el("div", { class: "mat-preview__tabs", role: "tablist" });
-    function show(key) {
-      Array.prototype.forEach.call(bar.children, function (b) {
-        b.setAttribute("aria-selected", b.getAttribute("data-tab") === key ? "true" : "false");
-      });
-      Object.keys(panels).forEach(function (k) {
-        if (k === key) { panels[k].removeAttribute("hidden"); } else { panels[k].setAttribute("hidden", "hidden"); }
-      });
-      if (key === "lesson" && !panels.lesson.firstChild) { panels.lesson.appendChild(AHS.VisualLessonFrame.full(lesson)); }
+  /* textSections(item) — 教材內容 / AI 重點整理 / AI 練習題, the same
+     sections this modal shows below the file preview. */
+  function textSections(item) {
+    var nodes = [];
+    if (AHS.MaterialContentView && typeof AHS.MaterialContentView.create === "function") {
+      nodes.push(AHS.MaterialContentView.create(item).node);
     }
-    tabs.forEach(function (t) {
-      var b = el("button", {
-        type: "button", class: "mat-preview__tab", role: "tab", "data-tab": t.key,
-        "aria-controls": "mat-preview-panel-" + t.key, text: t.label
-      });
-      b.addEventListener("click", function () { show(t.key); });
-      bar.appendChild(b);
-    });
-    show("lesson");
-    return [bar, panels.lesson, panels.text];
+    if (AHS.MaterialSummaryCard && typeof AHS.MaterialSummaryCard.create === "function") {
+      nodes.push(AHS.MaterialSummaryCard.create(item).node);
+    }
+    if (AHS.MaterialQuestionCard && typeof AHS.MaterialQuestionCard.create === "function") {
+      nodes.push(AHS.MaterialQuestionCard.create(item).node);
+    }
+    return nodes;
   }
 
   /* open(item, onDownload) — item: runtime record. onDownload(item) is
      invoked only when the user explicitly clicks 下載教材. Returns the
      overlay node. */
   function open(item, onDownload) {
+    /* 2026-10-21 教材中心改版: a material with an interactive visual lesson
+       opens full-screen in AHS.VisualLessonReader (公式目錄＋教材頁), with the
+       sections this modal would show under its「文字教材與練習」tab. */
+    var lesson = (AHS.VisualLesson && AHS.VisualLessonReader) ? AHS.VisualLesson.forMaterial(item) : null;
+    if (lesson) {
+      return AHS.VisualLessonReader.open({ item: item, lesson: lesson, textNodes: textSections(item), onDownload: onDownload });
+    }
     var subjName = (AHS.Subjects[item.subject] || { name: "其他" }).name;
     var ext = String(item.fileType || "").toLowerCase();
     /* HF-8.2.003: MIME fallback also reads the stored payload's type, so
@@ -187,39 +176,13 @@ AHS.MaterialPreview = (function () {
     });
     footChildren.push(dlBtn);
 
-    /* Sprint AI-105 · Task AI105-06: 教材內容 section — renders the
-       material's real `content` field (Markdown/HTML), additive,
-       placed before the AI-derived sections below since it is the
-       source content those sections are derived from. No new Runtime;
-       reads the same AHS.MaterialRuntime record every other section
-       here already reads. */
-    if (AHS.MaterialContentView && typeof AHS.MaterialContentView.create === "function") {
-      bodyChildren.push(AHS.MaterialContentView.create(item).node);
-    }
-
-    /* EO-S8.3.004: AI 重點整理 section. Rendered from the Summary
-       capability's output; the「開始 AI 分析」button coordinates through
-       AITutorService without re-parsing the material. */
-    if (AHS.MaterialSummaryCard && typeof AHS.MaterialSummaryCard.create === "function") {
-      bodyChildren.push(AHS.MaterialSummaryCard.create(item).node);
-    }
-
-    /* EO-S8.3.006: AI 練習題 section, after 重點整理 (教材→AI 重點→AI
-       題目). Questions come from QuestionGenerationRuntime via
-       AITutorService; the buttons never re-analyse the material. */
-    if (AHS.MaterialQuestionCard && typeof AHS.MaterialQuestionCard.create === "function") {
-      bodyChildren.push(AHS.MaterialQuestionCard.create(item).node);
-    }
-
-    /* 2026-10-21 圖解教材（互動）: a material with a visual lesson opens on
-       an「互動圖解」tab (the lesson in an iframe); everything above stays,
-       unchanged, under「文字教材與練習」. */
-    var lesson = (AHS.VisualLesson && AHS.VisualLessonFrame) ? AHS.VisualLesson.forMaterial(item) : null;
-    if (lesson) { bodyChildren = lessonTabs(lesson, bodyChildren); }
+    /* 教材內容 (Sprint AI-105 AI105-06) → AI 重點整理 (EO-S8.3.004) → AI
+       練習題 (EO-S8.3.006), shared with AHS.VisualLessonReader's text tab. */
+    textSections(item).forEach(function (n) { bodyChildren.push(n); });
 
     overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
 
-    var panel = el("div", { class: "mat-preview" + (lesson ? " mat-preview--lesson" : "") }, [
+    var panel = el("div", { class: "mat-preview" }, [
       el("div", { class: "mat-preview__head" }, [
         el("h2", { class: "mat-preview__title", text: item.title }),
         closeX
