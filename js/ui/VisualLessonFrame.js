@@ -3,9 +3,7 @@
    Shows a lesson from AHS.VisualLessonData inside an <iframe>, so the
    lesson's own canvas/CSS never mixes with the platform's.
 
-     full(lesson)              教材中心: the whole lesson, fixed-height frame
-                               with its own scroll + a「跳到公式」selector and
-                               an「開新分頁」link.
+     (教材中心's whole-lesson view is js/ui/VisualLessonReader.js.)
      card(lesson, cardId)      學習助教: one formula card only; the frame
                                grows to the card's real height (the lesson
                                posts it with postMessage, which also works
@@ -42,34 +40,6 @@ AHS.VisualLessonFrame = (function () {
   function sectionTitle(lesson, sectionId) {
     var s = (lesson.sections || []).filter(function (x) { return x.id === sectionId; })[0];
     return s ? s.title : "";
-  }
-
-  function full(lesson) {
-    var VL = AHS.VisualLesson;
-    var frame = el("iframe", {
-      class: "vlesson__frame", src: VL.lessonUrl(lesson), title: lesson.title, loading: "lazy"
-    });
-    var select = el("select", { class: "vlesson__jump", "aria-label": "跳到公式", id: "vlesson-jump-" + lesson.lessonId });
-    select.appendChild(el("option", { value: "", text: "跳到公式…" }));
-    (lesson.sections || []).forEach(function (s) {
-      var group = el("optgroup", { label: s.id + " " + s.title });
-      lesson.cards.filter(function (c) { return c.section === s.id; }).forEach(function (c) {
-        group.appendChild(el("option", { value: c.id, text: c.title }));
-      });
-      select.appendChild(group);
-    });
-    select.addEventListener("change", function () {
-      if (select.value) { frame.setAttribute("src", VL.lessonUrl(lesson, select.value)); }
-    });
-    return el("div", { class: "vlesson vlesson--full" }, [
-      el("div", { class: "vlesson__bar" }, [
-        el("span", { class: "vlesson__badge", text: "互動圖解" }),
-        el("span", { class: "vlesson__meta", text: lesson.cards.length + " 個公式・" + (lesson.source || "") }),
-        select,
-        el("a", { class: "vlesson__open", href: lesson.href, target: "_blank", rel: "noopener", text: "開新分頁" })
-      ]),
-      frame
-    ]);
   }
 
   function card(lesson, cardId) {
@@ -109,5 +79,5 @@ AHS.VisualLessonFrame = (function () {
     return holder;
   }
 
-  return { full: full, card: card, cardToggle: cardToggle };
+  return { card: card, cardToggle: cardToggle };
 })();

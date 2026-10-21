@@ -117,6 +117,9 @@ details.sol[open] summary{margin-bottom:10px}
 /* 平台嵌入模式（由 js/ui/VisualLessonFrame.js 以 ?embed=1 / ?card=Fn 載入） */
 .is-embed body{background-image:none}
 .is-embed .wrap{padding-block:16px 24px}
+.is-embed .top,.is-embed nav.toc{display:none}
+.is-embed article.card{scroll-margin-top:16px}
+.is-embed .wrap{max-width:980px;padding-block:20px 120px}
 .is-card .wrap{padding-block:4px 8px;gap:0;padding-left:4px;padding-right:4px}
 .is-card .top,.is-card nav.toc,.is-card .plan,.is-card section>h2,.is-card .foot{display:none}
 .is-card section{display:none}
@@ -1394,6 +1397,19 @@ VL.progress = {key:KEY, get:loadP};
   var r=document.documentElement, id=r.getAttribute('data-card');
   if(id){ var c=document.getElementById(id); if(c){ c.classList.add('is-focus'); var s=c.closest('section'); if(s) s.classList.add('has-focus'); } }
   if(!r.classList.contains('is-embed')||window.parent===window) return;
+  /* 教材中心閱讀畫面：回報目前位置與完成進度，接收「跳到公式」 */
+  if(!id){
+    var cards=[].slice.call(document.querySelectorAll('article.card[id^=F]')), act=null, tick=0;
+    function state(){ var a=cards[0]&&cards[0].id; cards.forEach(function(c){ if(c.getBoundingClientRect().top<=140) a=c.id; });
+      if((window.innerHeight+window.scrollY)>=document.documentElement.scrollHeight-4&&cards.length) a=cards[cards.length-1].id;
+      var p=loadP(), done=cards.map(function(c){return c.id;}).filter(function(k){return p[k];});
+      try{ window.parent.postMessage({type:'ahs-visual-lesson:state',active:a,done:done},'*'); }catch(e){} act=a; }
+    window.addEventListener('scroll',function(){ if(tick) return; tick=requestAnimationFrame(function(){ tick=0; state(); }); },{passive:true});
+    boxes.forEach(function(b){ b.addEventListener('change',state); });
+    window.addEventListener('message',function(ev){ var d=ev&&ev.data; if(!d||d.type!=='ahs-visual-lesson:goto') return; var c=document.getElementById(d.card); if(c&&/^F\d+$/.test(d.card)) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); });
+    if(location.hash){ var h=document.getElementById(location.hash.slice(1)); if(h) h.scrollIntoView(); }
+    window.addEventListener('load',state); setTimeout(state,200);
+  }
   var last=0;
   function post(){ var h=Math.ceil(document.body.getBoundingClientRect().height); if(h&&Math.abs(h-last)>1){ last=h; try{ window.parent.postMessage({type:'ahs-visual-lesson:height',card:id||null,height:h},'*'); }catch(e){} } }
   if(window.ResizeObserver){ new ResizeObserver(post).observe(document.body); }
