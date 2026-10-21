@@ -1,0 +1,406 @@
+/* lessons/src/PHY_H2_Ch2_LinearMotion.js — 高二物理 第2章 直線運動（tm_11／tm_44／tm_53）.
+   內容依教材包 tm_11 summary.json（課本第12～24頁）；g 取 10 m/s²（與教材題目一致）；答案已驗算。 */
+"use strict";
+module.exports = {
+  lessonId: "PHY_H2_Ch2_LinearMotion",
+  title: "直線運動圖解教材",
+  eyebrow: "物理 ・ 第 2 章 ・ 高二上",
+  h1: "直線運動",
+  h1small: "把每一張運動圖看懂",
+  subject: "PHY",
+  unit: "PHY-H2-CH2",
+  sections: [
+    {
+      id: "2-1", short: "運動學簡介", title: "運動學簡介",
+      plan: { goal: "分清位移與路徑長、速度與速率，會用 v 和 a 的方向判斷加速或減速。", prereq: "數線、正負號代表方向。", time: "約 2 節課。課本第12～14頁。" },
+      cards: [
+        {
+          id: "F1", title: "位移與路徑長", page: "課本 2-1", tags: ["src"],
+          say: "你從教室走到福利社，再走回來一半。<b>位移</b>只看「起點到終點」，是一支箭頭，有方向；<b>路徑長</b>是你真正走了多少路，一定是正的。按播放，看兩個數字怎麼分道揚鑣。",
+          formula: "位移 Δ<i>x</i> = <i>x</i><sub>末</sub> − <i>x</i><sub>初</sub>（向量，可正可負）　　路徑長 = 實際走過的總距離（純量，恆正）",
+          widget: { id: "w-path", aria: "物體在直線上先往右再往左，位移箭頭與路徑長", rw: 0.3, rn: 0.55,
+            controls: [{ k: "t", label: "時間 t", min: 0, max: 5, step: 0.05 }], play: { k: "t", dur: 5000 } },
+          space: "前 3 秒兩個數字一樣大；一往回走，路徑長繼續增加，位移反而變小。只有「一直往同一個方向走」時兩者才相等。",
+          trap: "把位移和路徑長當成同一件事。只在單一方向運動時才相等。",
+          quiz: { q: "小明從 x = +2 m 走到 x = +8 m，再走回 x = +4 m。他的位移和路徑長各是多少？", answer: "b", options: [
+            { c: "a", text: "位移 +10 m，路徑長 10 m", why: "位移只看起點（+2）到終點（+4），不管中間走了多少。" },
+            { c: "b", text: "位移 +2 m，路徑長 10 m" },
+            { c: "c", text: "位移 +4 m，路徑長 10 m", why: "+4 是終點位置，位移要用終點減起點：4 − 2。" },
+            { c: "d", text: "位移 +2 m，路徑長 2 m", why: "路徑長是真正走過的距離：6 m + 4 m。" }] },
+          sol: { id: "s-F1", aria: "逐步圖解：先走 6 m，再退 4 m" }
+        },
+        {
+          id: "F2", title: "平均速度與平均速率", page: "課本 2-1", tags: ["src"],
+          say: "平均速度 = 位移 ÷ 時間，平均速率 = 路徑長 ÷ 時間。在 x-t 圖上，平均速度就是兩點連線的<b>斜率</b>；把兩點靠得超近，連線變成切線，就是那一瞬間的<b>瞬時速度</b>。",
+          formula: "平均速度 = <span class=\"fr\"><span>Δ<i>x</i></span><span>Δ<i>t</i></span></span>（x-t 圖割線斜率）　　平均速率 = <span class=\"fr\"><span>路徑長</span><span>Δ<i>t</i></span></span>　　瞬時速度 = x-t 圖切線斜率",
+          widget: { id: "w-avgv", aria: "x-t 圖上兩點的割線斜率代表平均速度", rw: 0.45, rn: 0.8,
+            controls: [{ k: "t1", label: "t₁", min: 0, max: 4.5, step: 0.1 }, { k: "t2", label: "t₂", min: 0.5, max: 5, step: 0.1 }] },
+          space: "把 t₁ 和 t₂ 拉得很近，紅色割線就貼成切線，平均速度就變成瞬時速度。",
+          trap: "以為平均速率就是平均速度的大小。有折返時，平均速率會比較大。",
+          quiz: { q: "承上題，小明全程花了 5 秒。他的平均速度和平均速率是？", answer: "a", options: [
+            { c: "a", text: "平均速度 0.4 m/s，平均速率 2 m/s" },
+            { c: "b", text: "平均速度 2 m/s，平均速率 2 m/s", why: "平均速度要用位移（+2 m）除以時間，不是路徑長。" },
+            { c: "c", text: "平均速度 0.8 m/s，平均速率 2 m/s", why: "位移是 +2 m，不是 +4 m（終點位置）。" },
+            { c: "d", text: "平均速度 0.4 m/s，平均速率 0.4 m/s", why: "平均速率用路徑長 10 m 除以 5 s。" }] },
+          sol: { id: "s-F2", aria: "逐步圖解：割線斜率與路徑長" }
+        },
+        {
+          id: "F3", title: "加速度與加速、減速", page: "課本 2-1", tags: ["src"],
+          say: "a 是負的就是在減速嗎？<b>不一定！</b>要看速度和加速度是不是同一個方向。同方向：越跑越快；反方向：越跑越慢。下面拉 v 和 a，看車子是踩油門還是踩煞車。",
+          formula: "<i>a</i> = <span class=\"fr\"><span>Δ<i>v</i></span><span>Δ<i>t</i></span></span>　　<i>v</i> · <i>a</i> &gt; 0 加速　　<i>v</i> · <i>a</i> &lt; 0 減速",
+          widget: { id: "w-acc", aria: "車子的速度箭頭與加速度箭頭，判斷加速或減速", rw: 0.3, rn: 0.55,
+            controls: [{ k: "v", label: "速度 v", min: -10, max: 10, step: 1 }, { k: "a", label: "加速度 a", min: -4, max: 4, step: 1 }] },
+          space: "藍色箭頭（v）和紅色箭頭（a）指同一邊就是加速，指相反邊就是減速，跟正負號本身無關。",
+          trap: "看到 a < 0 就說「減速」。v 也是負的話，其實是往負方向越跑越快。",
+          quiz: { q: "一物體 v = −5 m/s，a = −2 m/s²。它正在？", answer: "c", options: [
+            { c: "a", text: "減速，因為 a 是負的", why: "要看 v 和 a 的方向。兩者都是負的，同方向。" },
+            { c: "b", text: "等速", why: "a ≠ 0，速度一定在變。" },
+            { c: "c", text: "往負方向加速（越來越快）" },
+            { c: "d", text: "往正方向減速", why: "v 是負的，它正往負方向跑。" }] },
+          sol: { id: "s-F3", aria: "逐步圖解：兩個箭頭同方向" }
+        }
+      ]
+    },
+    {
+      id: "2-2", short: "物體運動圖", title: "物體運動圖",
+      plan: { goal: "會讀三張運動圖：x-t 圖斜率、v-t 圖斜率與面積、a-t 圖面積各代表什麼。", prereq: "斜率、面積；2-1 的定義。", time: "約 3 節課。課本第15～17頁。" },
+      cards: [
+        {
+          id: "F4", title: "x-t 圖：斜率 = 速度", page: "課本 2-2", tags: ["src"],
+          say: "x-t 圖上任一點畫切線，切線多陡，速度就多大；往上斜是正、往下斜是負、平的就是停住。上下兩張圖對照看：上面切線的斜率，就是下面 v-t 圖的高度。",
+          formula: "<i>v</i> = x-t 圖的切線斜率",
+          widget: { id: "w-xt", aria: "x-t 圖切線斜率對應 v-t 圖的高度", rw: 0.55, rn: 1.0,
+            controls: [{ k: "t", label: "時間 t", min: 0, max: 8, step: 0.05 }], play: { k: "t", dur: 6000 } },
+          space: "t = 4 s 時切線是平的：位置最高，速度剛好是 0。過了這一點，切線往下斜，v 變負，開始往回走。",
+          trap: "以為 x-t 圖的「高度」是速度。高度是位置，斜率才是速度。",
+          quiz: { q: "某物 x-t 圖是一條直線，從 (0 s, 2 m) 到 (4 s, 10 m)。它的速度是？", answer: "a", options: [
+            { c: "a", text: "2 m/s" },
+            { c: "b", text: "2.5 m/s", why: "10 ÷ 4 用到的是位置，要用位移 10 − 2 = 8 m。" },
+            { c: "c", text: "8 m/s", why: "8 m 是位移，還要除以時間 4 s。" },
+            { c: "d", text: "0.5 m/s", why: "斜率是 Δx ÷ Δt，不是 Δt ÷ Δx。" }] },
+          sol: { id: "s-F4", aria: "逐步圖解：直線的斜率" }
+        },
+        {
+          id: "F5", title: "v-t 圖：斜率 = 加速度、面積 = 位移", page: "課本 2-2", tags: ["src"],
+          say: "v-t 圖有兩個寶藏：<b>斜率是加速度</b>，<b>和時間軸圍成的面積是位移</b>。注意：時間軸下面的面積要算<b>負的</b>，因為那時候在往回走。按播放，看面積怎麼長出來。",
+          formula: "<i>a</i> = v-t 圖斜率　　位移 = v-t 圖面積（軸上為正、軸下為負）　　路徑長 = 面積的絕對值相加",
+          widget: { id: "w-vt", aria: "v-t 圖下的面積累積成位移，軸下的面積為負", rw: 0.45, rn: 0.8,
+            controls: [{ k: "t", label: "時間 t", min: 0, max: 6, step: 0.05 }], play: { k: "t", dur: 5000 } },
+          space: "到 t = 3 s 位移最大；之後面積跑到軸下（紅色），位移開始變小，路徑長卻一直增加。",
+          trap: "把面積全部當正的加起來，算出來的是路徑長，不是位移。",
+          quiz: { q: "某物 v-t 圖是直線：t = 0 時 v = +6 m/s，t = 6 s 時 v = −6 m/s。0～6 s 的位移和路徑長是？", answer: "a", options: [
+            { c: "a", text: "位移 0 m，路徑長 18 m" },
+            { c: "b", text: "位移 18 m，路徑長 18 m", why: "軸下那塊三角形面積要算負的。" },
+            { c: "c", text: "位移 36 m，路徑長 36 m", why: "每塊三角形面積是 ½ × 3 × 6 = 9 m，兩塊共 18 m。" },
+            { c: "d", text: "位移 0 m，路徑長 0 m", why: "它真的有移動，先往前 9 m 再往回 9 m。" }] },
+          sol: { id: "s-F5", aria: "逐步圖解：兩塊三角形一正一負" }
+        },
+        {
+          id: "F6", title: "a-t 圖：面積 = 速度變化量", page: "課本 2-2", tags: ["src"],
+          say: "a-t 圖下的面積是 Δv，<b>速度改變了多少</b>，不是位移。所以要知道某時刻的速度，還要加上一開始的速度 v₀。",
+          formula: "Δ<i>v</i> = a-t 圖面積　　<i>v</i> = <i>v</i><sub>0</sub> + Δ<i>v</i>",
+          widget: { id: "w-at", aria: "a-t 圖面積累積成速度變化，下方畫出 v-t 圖", rw: 0.55, rn: 1.0,
+            controls: [{ k: "t", label: "時間 t", min: 0, max: 5, step: 0.05 }, { k: "v0", label: "初速 v₀", min: -6, max: 6, step: 1 }], play: { k: "t", dur: 5000 } },
+          space: "改 v₀：上面的 a-t 圖完全不變，下面的 v-t 圖整條上下平移。a-t 圖只告訴你「變了多少」。",
+          trap: "把 a-t 圖面積當成位移，或忘了加上初速。",
+          quiz: { q: "物體初速 4 m/s，接著以 3 m/s² 等加速 2 秒。2 秒末的速度是？", answer: "b", options: [
+            { c: "a", text: "6 m/s", why: "6 m/s 只是 a-t 圖的面積 Δv，還要加上初速 4 m/s。" },
+            { c: "b", text: "10 m/s" },
+            { c: "c", text: "14 m/s", why: "這是 4 + 3 × 2 + 4 嗎？Δv = 3 × 2 = 6，只要加一次初速。" },
+            { c: "d", text: "2 m/s", why: "加速度是正的，速度會變大。" }] },
+          sol: { id: "s-F6", aria: "逐步圖解：面積是 Δv，再加初速" }
+        }
+      ]
+    },
+    {
+      id: "2-3", short: "等加速運動", title: "等加速運動（含實驗1）",
+      plan: { goal: "會用等加速三公式解題，處理自由落體、鉛直上拋，並從打點計時器紙帶求速度與加速度。", prereq: "2-2 的 v-t 圖面積；梯形面積。", time: "約 4 節課。課本第18～22頁。" },
+      cards: [
+        {
+          id: "F7", title: "等加速運動三公式", page: "課本 2-3", tags: ["src", "add"],
+          say: "三條公式都可以從 v-t 圖看出來。速度是一條斜直線：<b>v = v₀ + at</b>。位移是下面的梯形面積，拆成藍色長方形 v₀t 和金色三角形 ½at²。把時間消掉，就得到第三條。",
+          formula: "<i>v</i> = <i>v</i><sub>0</sub> + <i>at</i>　　Δ<i>x</i> = <i>v</i><sub>0</sub><i>t</i> + ½<i>at</i>²　　<i>v</i>² = <i>v</i><sub>0</sub>² + 2<i>a</i>Δ<i>x</i>",
+          widget: { id: "w-uam", aria: "v-t 圖下梯形面積拆成長方形與三角形", rw: 0.48, rn: 0.85,
+            controls: [{ k: "v0", label: "初速 v₀", min: 0, max: 20, step: 1 }, { k: "a", label: "加速度 a", min: -4, max: 4, step: 0.5 }, { k: "t", label: "時間 t", min: 0, max: 8, step: 0.1 }] },
+          space: "把 a 調成負的：金色三角形翻到長方形「裡面」，表示要扣掉，梯形變成往下斜。",
+          trap: "煞車問題 a 要代負值；題目沒給時間時，直接用第三條公式最快。",
+          quiz: { q: "汽車以 10 m/s 行駛，煞車後以 2 m/s² 等減速直到停止。煞車距離是？", answer: "a", options: [
+            { c: "a", text: "25 m" },
+            { c: "b", text: "50 m", why: "v² = v₀² + 2aΔx，分母是 2a = 4，不是 2。" },
+            { c: "c", text: "5 m", why: "5 是停下來需要的秒數，不是距離。" },
+            { c: "d", text: "100 m", why: "100 是 v₀²，還要除以 2|a| = 4。" }] },
+          sol: { id: "s-F7", aria: "逐步圖解：v-t 圖下的三角形面積" }
+        },
+        {
+          id: "F8", title: "自由落體", page: "課本 2-3", tags: ["src", "add"],
+          say: "從靜止放手，只受重力：v₀ = 0、a = g。下面像頻閃照片一樣，每隔 0.5 秒拍一張。仔細看：每段間隔越來越大，而且比例剛好是 <b>1 : 3 : 5 : 7</b>。",
+          formula: "<i>v</i> = <i>gt</i>　　<i>h</i> = ½<i>gt</i>²　　<i>v</i>² = 2<i>gh</i>　（<i>g</i> = 10 m/s²）",
+          widget: { id: "w-fall", aria: "自由落體頻閃圖與下落距離", rw: 0.48, rn: 0.85,
+            controls: [{ k: "t", label: "時間 t", min: 0, max: 3, step: 0.05 }], play: { k: "t", dur: 3000 } },
+          space: "每 0.5 秒的間隔：1.25、3.75、6.25、8.75 m，正好 1 : 3 : 5 : 7。這就是 h ∝ t² 的樣子。",
+          trap: "用 h = gt 或忘了 ½。距離跟時間平方成正比。",
+          quiz: { q: "物體由靜止自由落下 3 秒（g = 10 m/s²）。落下的距離與當時的速度是？", answer: "b", options: [
+            { c: "a", text: "30 m，30 m/s", why: "距離要用 ½gt² = ½ × 10 × 9。" },
+            { c: "b", text: "45 m，30 m/s" },
+            { c: "c", text: "90 m，30 m/s", why: "少乘了 ½。" },
+            { c: "d", text: "45 m，15 m/s", why: "速度是 gt = 30 m/s，平均速度才是 15 m/s。" }] },
+          sol: { id: "s-F8", aria: "逐步圖解：v-t 三角形面積" }
+        },
+        {
+          id: "F9", title: "鉛直上拋", page: "課本 2-3", tags: ["src"],
+          say: "把球往上丟，取向上為正，加速度一直是 <b>−g</b>。球越飛越慢，到最高點速度變 0，然後掉回來。最高點那一瞬間速度是 0，可是加速度呢？<b>還是 −10 m/s²</b>，重力一直都在！",
+          formula: "上升時間 <i>t</i><sub>1</sub> = <span class=\"fr\"><span><i>v</i><sub>0</sub></span><span><i>g</i></span></span>　　最高高度 <i>H</i> = <span class=\"fr\"><span><i>v</i><sub>0</sub>²</span><span>2<i>g</i></span></span>　　上升、下降對稱",
+          widget: { id: "w-throw", aria: "鉛直上拋的位置、速度箭頭與加速度箭頭", rw: 0.48, rn: 0.85,
+            controls: [{ k: "v0", label: "初速 v₀", min: 10, max: 30, step: 5 }, { k: "t", label: "時間 t", min: 0, max: 1, step: 0.01 }], play: { k: "t", dur: 4000 } },
+          space: "紅色加速度箭頭從頭到尾都朝下、長度不變；藍色速度箭頭先朝上變短，到最高點消失，再朝下變長。上升和下降花的時間一樣。",
+          trap: "以為最高點 a = 0。最高點只是 v = 0，物體還是受重力。",
+          quiz: { q: "鉛直上拋的小球到達最高點的瞬間，它的加速度是？", answer: "b", options: [
+            { c: "a", text: "0，因為停住了", why: "停住的是速度。重力沒有消失，加速度仍是 g。" },
+            { c: "b", text: "向下 10 m/s²" },
+            { c: "c", text: "向上 10 m/s²", why: "重力永遠向下。" },
+            { c: "d", text: "要看初速多大", why: "不管怎麼丟，空中只受重力，加速度都是 g 向下。" }] },
+          sol: { id: "s-F9", aria: "逐步圖解：v-t 圖穿過時間軸時斜率不變" }
+        },
+        {
+          id: "F10", title: "實驗1：打點計時器", page: "課本 實驗1", tags: ["src", "add"],
+          say: "打點計時器每 0.02 秒在紙帶上打一個點。等加速時，點越來越疏。每 4 個間隔取一段（0.08 s），段長 ÷ 0.08 s 就是那段中間時刻的平均速度；相鄰兩段的長度差都一樣，這就是等加速的證據。",
+          formula: "Δ<i>t</i> = 4 × 0.02 s = 0.08 s　　<i>v</i><sub>中點</sub> = <span class=\"fr\"><span>段長</span><span>Δ<i>t</i></span></span>　　<i>a</i> = <span class=\"fr\"><span>相鄰兩段長度差</span><span>(Δ<i>t</i>)²</span></span>",
+          widget: { id: "w-tape", aria: "紙帶上的點痕間距越來越大，每 4 格取一段", rw: 0.4, rn: 0.75,
+            controls: [{ k: "a", label: "加速度", min: 50, max: 400, step: 25 }] },
+          space: "把加速度調大：每一段都變長，相鄰兩段的「差」也變大。差值固定不變，就是等加速度。",
+          trap: "時間算成點的個數 × 0.02。第 4 點到第 8 點是 4 個「間隔」，不是 5 個點。",
+          quiz: { q: "打點頻率 50 Hz。第 4 點到第 8 點距離 6.0 cm，這段的平均速度是？", answer: "a", options: [
+            { c: "a", text: "75 cm/s" },
+            { c: "b", text: "60 cm/s", why: "第 4 到第 8 點是 4 個間隔（0.08 s），不是 5 個（0.10 s）。" },
+            { c: "c", text: "300 cm/s", why: "6.0 ÷ 0.02 只算了一個間隔的時間。" },
+            { c: "d", text: "0.48 cm/s", why: "速度是距離 ÷ 時間，不是距離 × 時間。" }] },
+          sol: { id: "s-F10", aria: "逐步圖解：數間隔、算時間、算速度" }
+        }
+      ]
+    },
+    {
+      id: "2-4", short: "相對運動", title: "相對運動",
+      plan: { goal: "會算「B 看 A」的相對位移、相對速度，分清誰看誰。", prereq: "向量的正負號；2-1 速度。", time: "約 1 至 2 節課。課本第23～24頁。" },
+      cards: [
+        {
+          id: "F11", title: "相對速度 v_AB = v_A − v_B", page: "課本 2-4", tags: ["src"],
+          say: "坐在火車 B 上看旁邊的火車 A，A 看起來跑多快？把自己的速度「扣掉」就好：<b>B 看 A 的速度 = v_A − v_B</b>。下面切換到「B 的視角」，B 就停在原地，看 A 怎麼動。",
+          formula: "<i>x</i><sub>AB</sub> = <i>x</i><sub>A</sub> − <i>x</i><sub>B</sub>　　<i>v</i><sub>AB</sub> = <i>v</i><sub>A</sub> − <i>v</i><sub>B</sub>　　<i>a</i><sub>AB</sub> = <i>a</i><sub>A</sub> − <i>a</i><sub>B</sub>（B 看 A）",
+          widget: { id: "w-rel", aria: "兩台車在道路上，可切換成地面或 B 的視角", rw: 0.36, rn: 0.65,
+            controls: [{ k: "va", label: "v_A", min: -30, max: 30, step: 5 }, { k: "vb", label: "v_B", min: -30, max: 30, step: 5 },
+              { k: "view", label: "視角", min: 0, max: 1, step: 1 }, { k: "t", label: "時間", min: 0, max: 3, step: 0.05 }], play: { k: "t", dur: 3000 } },
+          space: "兩車同向等速時，在 B 的視角裡 A 幾乎不動；反向時，A 一下子就衝過去了，相對速度是兩者速率相加。",
+          trap: "反方向時忘了變號，或把「B 看 A」寫成 v_B − v_A。",
+          quiz: { q: "A 車向東 20 m/s，B 車向西 15 m/s（取東為正）。B 看 A 的速度是？", answer: "b", options: [
+            { c: "a", text: "向東 5 m/s", why: "B 向西，v_B = −15，v_A − v_B = 20 − (−15)。" },
+            { c: "b", text: "向東 35 m/s" },
+            { c: "c", text: "向西 35 m/s", why: "這是 A 看 B（v_B − v_A）。題目問 B 看 A。" },
+            { c: "d", text: "向西 5 m/s", why: "反方向運動，相對速率是兩者相加。" }] },
+          sol: { id: "s-F11", aria: "逐步圖解：先寫正負號再相減" }
+        }
+      ]
+    }
+  ],
+  footer: [
+    "課本：高二物理 第2章 直線運動（課本第12～24頁）。本機原始檔「物理/PHY_H2_第二章_直線運動_PDFp*.pdf」。",
+    "內容依平台教材包 tm_11（經 GPT／Gemini／Claude 交叉審查之 Final 版）；g 取 10 m/s²，與教材題目一致；小試身手答案已驗算。"
+  ],
+  script: String.raw`
+var G10=10;
+/* 共用：一般座標框 */
+function graph(c,R,b){ return frame(R,b[0],b[1],b[2],b[3],26,false); }
+function arrowH(g,x1,y,x2,col,w,lab){ if(Math.abs(x2-x1)<2){ return; } L(g,x1,y,x2,y,col,w||3); var d=x2>x1?1:-1; g.save(); g.fillStyle=col; g.beginPath(); g.moveTo(x2,y); g.lineTo(x2-d*9,y-5); g.lineTo(x2-d*9,y+5); g.closePath(); g.fill(); g.restore(); if(lab) T(g,lab,(x1+x2)/2,y-11,col,12,'center','700'); }
+function arrowV(g,x,y1,y2,col,w,lab){ if(Math.abs(y2-y1)<2){ return; } L(g,x,y1,x,y2,col,w||3); var d=y2>y1?1:-1; g.save(); g.fillStyle=col; g.beginPath(); g.moveTo(x,y2); g.lineTo(x-5,y2-d*9); g.lineTo(x+5,y2-d*9); g.closePath(); g.fill(); g.restore(); if(lab) T(g,lab,x+8,(y1+y2)/2,col,12,'left','700'); }
+function fillUnder(g,G,f,a,b,col,base){ base=base||0; if(b<=a) return; g.save(); g.fillStyle=col; g.beginPath(); g.moveTo(G.X(a),G.Y(base)); var N=Math.max(2,Math.ceil((b-a)*60)); for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N; g.lineTo(G.X(x),G.Y(f(x))); } g.lineTo(G.X(b),G.Y(base)); g.closePath(); g.fill(); g.restore(); }
+
+/* F1／F2 行程：2→8（3 s）再 8→4（2 s），速率 2 m/s */
+function trip(t){ return t<=3 ? 2+2*t : 8-2*(t-3); }
+function pathLen(t){ return t<=3 ? 2*t : 6+2*(t-3); }
+function track(g,c,C,t,showPath){ var G=frame(full(c),-0.5,10.5,-1.5,2.2,24,false), x=trip(t);
+  L(g,G.X(0),G.Y(0),G.X(10),G.Y(0),C.ink,1.5); for(var k=0;k<=10;k++){ L(g,G.X(k),G.Y(0)-5,G.X(k),G.Y(0)+5,C.ink,1); T(g,String(k),G.X(k),G.Y(0)+18,C.muted,11,'center'); }
+  T(g,'x (m)',G.X(10.4),G.Y(0)+18,C.muted,11,'right');
+  if(showPath){ var y1=1.1; L(g,G.X(2),G.Y(y1),G.X(Math.min(x,8)),G.Y(y1),C.gold,4); if(t>3){ L(g,G.X(8),G.Y(y1+0.45),G.X(x),G.Y(y1+0.45),C.gold,4); L(g,G.X(8),G.Y(y1),G.X(8),G.Y(y1+0.45),C.gold,2); } T(g,'路徑',G.X(1.9),G.Y(y1),C.gold,11,'right','700'); }
+  arrowH(g,G.X(2),G.Y(-0.85),G.X(x),C.red,4,'位移'); dot(g,G.X(2),G.Y(0),5,C.muted); T(g,'起點',G.X(2),G.Y(0)-14,C.muted,11,'center');
+  box(g,G.X(x)-10,G.Y(0)-28,20,20,alpha(C.blue,0.85),null); T(g,'人',G.X(x),G.Y(0)-18,C.sheet,11,'center','700'); }
+widget('w-path',{state:{t:0},rw:0.3,rn:0.55,
+  fmt:{t:function(v){return v.toFixed(2)+' s';}},
+  draw:function(g,c,s){ track(g,c,c.C,s.t,true); },
+  out:function(s){ var x=trip(s.t); return '位置 x = '+x.toFixed(2)+' m　｜　位移 = '+x.toFixed(2)+' − 2 = <b>'+nf(x-2)+' m</b>　｜　路徑長 = <b>'+pathLen(s.t).toFixed(2)+' m</b>'; }
+});
+widget('s-F1',{state:{},steps:3,rw:0.3,rn:0.55,
+  draw:function(g,c,s){ track(g,c,c.C,[3,5,5][s.step],s.step<2); },
+  out:steps(['先從 +2 走到 +8：走了 6 m，這時位移也是 +6 m。','再從 +8 走回 +4：又走了 4 m，路徑長累計 <b>10 m</b>。','位移只看起點和終點：+4 − (+2) = <b>+2 m</b>（紅色箭頭）。'])
+});
+function xtTrip(g,c,C,t1,t2,chord){ var G=frame(full(c),-0.4,5.4,-0.8,10,26,false); axes(g,G,[0,5.2,0,9.6],C,{xstep:1,ystep:2,xlabel:'t (s)',ylabel:'x (m)'});
+  plot(g,G,trip,0,5,C.ink,2.5); if(chord){ L(g,G.X(t1),G.Y(trip(t1)),G.X(t2),G.Y(trip(t2)),C.red,3); dot(g,G.X(t1),G.Y(trip(t1)),5,C.red); dot(g,G.X(t2),G.Y(trip(t2)),5,C.red); } }
+widget('w-avgv',{state:{t1:0,t2:5},rw:0.45,rn:0.8,
+  fmt:{t1:function(v){return v.toFixed(1)+' s';},t2:function(v){return v.toFixed(1)+' s';}},
+  constrain:function(s,k){ if(s.t2<s.t1+0.1){ if(k==='t1') s.t2=Math.min(5,s.t1+0.1); else s.t1=Math.max(0,s.t2-0.1); } },
+  draw:function(g,c,s){ xtTrip(g,c,c.C,s.t1,s.t2,true); },
+  out:function(s){ var dx=trip(s.t2)-trip(s.t1), dt=s.t2-s.t1, pl=pathLen(s.t2)-pathLen(s.t1); return '平均速度 = Δx/Δt = '+nf(dx)+' ÷ '+dt.toFixed(1)+' = <b>'+nf(dx/dt)+' m/s</b>（紅線斜率）　｜　平均速率 = '+pl.toFixed(2)+' ÷ '+dt.toFixed(1)+' = <b>'+(pl/dt).toFixed(2)+' m/s</b>'; }
+});
+widget('s-F2',{state:{},steps:3,rw:0.45,rn:0.8,
+  draw:function(g,c,s){ xtTrip(g,c,c.C,0,5,s.step>=1); },
+  out:steps(['x-t 圖：0～3 s 從 2 m 升到 8 m，3～5 s 降到 4 m。','平均速度 = 位移 ÷ 時間 = (4 − 2) ÷ 5 = <b>0.4 m/s</b>，就是紅色割線的斜率。','平均速率 = 路徑長 ÷ 時間 = 10 ÷ 5 = <b>2 m/s</b>。有折返，所以比平均速度大。'])
+});
+
+/* F3 加減速 */
+function car(g,c,C,v,a){ var G=frame(full(c),-12,12,-2,2.4,20,false); L(g,G.X(-11.5),G.Y(-0.4),G.X(11.5),G.Y(-0.4),C.ink,1.5);
+  box(g,G.X(-1.6),G.Y(0.6),3.2*G.sx,1*G.sy,alpha(C.ink,0.85),null); dot(g,G.X(-0.9),G.Y(-0.4)-2,6,C.ink); dot(g,G.X(0.9),G.Y(-0.4)-2,6,C.ink);
+  arrowH(g,G.X(0),G.Y(1.4),G.X(v),C.blue,4,'v = '+v); arrowH(g,G.X(0),G.Y(-1.3),G.X(a*2.5),C.red,4,'a = '+a);
+  T(g,'＋ 方向 →',G.X(11.5),G.Y(2.2),C.muted,11,'right'); }
+widget('w-acc',{state:{v:6,a:-2},rw:0.3,rn:0.55,
+  fmt:{v:function(v){return v+' m/s';},a:function(v){return v+' m/s²';}},
+  draw:function(g,c,s){ car(g,c,c.C,s.v,s.a); },
+  out:function(s){ var p=s.v*s.a; return 'v × a = '+s.v+' × '+s.a+' = '+p+'　→　<b>'+(s.v===0?'從靜止開始，往 a 的方向加速':s.a===0?'等速':p>0?'加速（越來越快）':'減速（越來越慢）')+'</b>'; }
+});
+widget('s-F3',{state:{},steps:2,rw:0.3,rn:0.55,
+  draw:function(g,c,s){ car(g,c,c.C,-5,s.step?-2:0); },
+  out:steps(['v = −5 m/s：車子往負方向（左）跑。','a = −2 m/s²：也指向左邊，跟速度<b>同方向</b>。所以是<b>往負方向加速</b>，越跑越快。'])
+});
+
+/* F4 x-t 切線 */
+function xf(t){ return 10-0.5*(t-4)*(t-4); } function vf(t){ return -(t-4); }
+widget('w-xt',{state:{t:1},rw:0.55,rn:1.0,
+  fmt:{t:function(v){return v.toFixed(2)+' s';}},
+  draw:function(g,c,s){ var C=c.C, h=c.h, top={x:0,y:0,w:c.w,h:h*0.55}, bot={x:0,y:h*0.55,w:c.w,h:h*0.45};
+    var G=frame(top,-0.5,8.6,-0.6,11,24,false); axes(g,G,[0,8.4,0,10.6],C,{xstep:1,ystep:2,xlabel:'t (s)',ylabel:'x (m)'});
+    plot(g,G,xf,0,8,C.ink,2.5); var x=xf(s.t), m=vf(s.t); L(g,G.X(s.t-1.4),G.Y(x-1.4*m),G.X(s.t+1.4),G.Y(x+1.4*m),C.red,3); dot(g,G.X(s.t),G.Y(x),5,C.red);
+    var H=frame(bot,-0.5,8.6,-4.8,4.8,22,false); axes(g,H,[0,8.4,-4.4,4.4],C,{xstep:1,ystep:2,xlabel:'t (s)',ylabel:'v (m/s)',y0:0});
+    plot(g,H,vf,0,8,C.muted,1.5,[4,4]); plot(g,H,vf,0,s.t,C.blue,3); L(g,H.X(s.t),H.Y(0),H.X(s.t),H.Y(m),C.red,3); dot(g,H.X(s.t),H.Y(m),5,C.red); },
+  out:function(s){ return 't = '+s.t.toFixed(2)+' s：x = '+xf(s.t).toFixed(2)+' m，切線斜率 = <b>v = '+nf(vf(s.t))+' m/s</b>'+(Math.abs(vf(s.t))<0.03?'（切線水平，瞬間停住）':''); }
+});
+widget('s-F4',{state:{},steps:2,rw:0.45,rn:0.8,
+  draw:function(g,c,s){ var C=c.C, G=frame(full(c),-0.4,5,-0.8,12,26,false); axes(g,G,[0,4.8,0,11.5],C,{xstep:1,ystep:2,xlabel:'t (s)',ylabel:'x (m)'});
+    L(g,G.X(0),G.Y(2),G.X(4),G.Y(10),C.ink,3); dot(g,G.X(0),G.Y(2),5,C.ink); dot(g,G.X(4),G.Y(10),5,C.ink);
+    if(s.step){ L(g,G.X(0),G.Y(2),G.X(4),G.Y(2),C.blue,3,[5,4]); L(g,G.X(4),G.Y(2),G.X(4),G.Y(10),C.gold,3,[5,4]); T(g,'Δt = 4 s',G.X(2),G.Y(2)+14,C.blue,12,'center','700'); T(g,'Δx = 8 m',G.X(4)+8,G.Y(6),C.gold,12,'left','700'); } },
+  out:steps(['兩點：(0, 2) 和 (4, 10)。直線的斜率處處相同，就是速度。','斜率 = Δx ÷ Δt = (10 − 2) ÷ (4 − 0) = 8 ÷ 4 = <b>2 m/s</b>。'])
+});
+
+/* F5 v-t 面積 */
+function v5(t){ return 6-2*t; }
+function vtArea(g,c,C,t,label){ var G=frame(full(c),-0.5,6.6,-7.5,7.5,26,false); axes(g,G,[0,6.4,-7,7],C,{xstep:1,ystep:2,xlabel:'t (s)',ylabel:'v (m/s)',y0:0});
+  fillUnder(g,G,v5,0,Math.min(t,3),alpha(C.teal,0.35)); if(t>3) fillUnder(g,G,v5,3,t,alpha(C.red,0.3));
+  plot(g,G,v5,0,6,C.ink,2.5); if(label){ T(g,'+9 m',G.X(1),G.Y(1.5),C.teal,14,'center','700'); if(t>=6) T(g,'−9 m',G.X(5),G.Y(-1.5),C.red,14,'center','700'); } }
+widget('w-vt',{state:{t:2},rw:0.45,rn:0.8,
+  fmt:{t:function(v){return v.toFixed(2)+' s';}},
+  draw:function(g,c,s){ vtArea(g,c,c.C,s.t,false); },
+  out:function(s){ var t=s.t, d=6*t-t*t, p=t<=3?d:9+(t-3)*(t-3); return '斜率 a = <b>−2 m/s²</b>　｜　位移（面積代數和）= <b>'+nf(d)+' m</b>　｜　路徑長 = <b>'+p.toFixed(2)+' m</b>'; }
+});
+widget('s-F5',{state:{},steps:3,rw:0.45,rn:0.8,
+  draw:function(g,c,s){ vtArea(g,c,c.C,[3,6,6][s.step],true); },
+  out:steps(['0～3 s 在軸上方：三角形面積 ½ × 3 × 6 = <b>+9 m</b>（往前走）。','3～6 s 在軸下方：面積 ½ × 3 × 6 = 9，但要算 <b>−9 m</b>（往回走）。','位移 = 9 + (−9) = <b>0 m</b>；路徑長 = 9 + 9 = <b>18 m</b>。'])
+});
+
+/* F6 a-t 面積 */
+function a6(t){ return t<3?2:-1; } function v6(v0,t){ return t<=3? v0+2*t : v0+6-(t-3); }
+widget('w-at',{state:{t:2,v0:0},rw:0.55,rn:1.0,
+  fmt:{t:function(v){return v.toFixed(2)+' s';},v0:function(v){return v+' m/s';}},
+  draw:function(g,c,s){ var C=c.C, h=c.h, top={x:0,y:0,w:c.w,h:h*0.42}, bot={x:0,y:h*0.42,w:c.w,h:h*0.58};
+    var G=frame(top,-0.4,5.6,-1.8,2.8,22,false); axes(g,G,[0,5.4,-1.5,2.5],C,{xstep:1,ystep:1,xlabel:'t (s)',ylabel:'a (m/s²)',y0:0});
+    fillUnder(g,G,a6,0,Math.min(s.t,3),alpha(C.teal,0.35)); if(s.t>3) fillUnder(g,G,a6,3,s.t,alpha(C.red,0.3));
+    L(g,G.X(0),G.Y(2),G.X(3),G.Y(2),C.ink,2.5); L(g,G.X(3),G.Y(2),G.X(3),G.Y(-1),C.ink,1,[3,3]); L(g,G.X(3),G.Y(-1),G.X(5),G.Y(-1),C.ink,2.5);
+    var H=frame(bot,-0.4,5.6,-7,14,22,false); axes(g,H,[0,5.4,-6,13],C,{xstep:1,ystep:3,xlabel:'t (s)',ylabel:'v (m/s)',y0:0});
+    plot(g,H,function(t){return v6(s.v0,t);},0,5,C.muted,1.5,[4,4]); plot(g,H,function(t){return v6(s.v0,t);},0,s.t,C.blue,3); dot(g,H.X(s.t),H.Y(v6(s.v0,s.t)),5,C.red); dot(g,H.X(0),H.Y(s.v0),4,C.gold); T(g,'v₀',H.X(0)+8,H.Y(s.v0)-8,C.gold,12,'left','700'); },
+  out:function(s){ var dv=v6(0,s.t); return 'a-t 圖面積 Δv = <b>'+nf(dv)+' m/s</b>　→　v = v₀ + Δv = '+s.v0+' + '+nf(dv)+' = <b>'+nf(s.v0+dv)+' m/s</b>'; }
+});
+widget('s-F6',{state:{},steps:2,rw:0.4,rn:0.75,
+  draw:function(g,c,s){ var C=c.C, G=frame(full(c),-0.4,2.8,-0.8,4,26,false); axes(g,G,[0,2.6,0,3.6],C,{xstep:1,ystep:1,xlabel:'t (s)',ylabel:'a (m/s²)'});
+    box(g,G.X(0),G.Y(3),2*G.sx,3*G.sy,alpha(C.teal,0.35),C.ink,2); T(g,'面積 = 3 × 2 = 6',G.X(1),G.Y(1.5),C.teal,14,'center','700');
+    if(s.step) T(g,'v = 4 + 6 = 10 m/s',G.X(1),G.Y(3.6),C.red,14,'center','700'); },
+  out:steps(['a-t 圖：a = 3 m/s² 持續 2 s，長方形面積 = 3 × 2 = <b>6 m/s</b>，這是速度「增加了多少」。','再加上初速：v = 4 + 6 = <b>10 m/s</b>。'])
+});
+
+/* F7 三公式 */
+function uamDraw(g,c,C,v0,a,t,lab){ var vmax=Math.max(v0,v0+a*8,4)+2, vmin=Math.min(0,v0+a*8)-2, G=frame(full(c),-0.6,8.8,vmin,vmax,26,false);
+  axes(g,G,[0,8.6,vmin+1,vmax-0.5],C,{xstep:1,ystep:Math.max(2,Math.round((vmax-vmin)/8)),xlabel:'t (s)',ylabel:'v (m/s)',y0:0});
+  var v=v0+a*t; box(g,G.X(0),G.Y(v0),t*G.sx,v0*G.sy,alpha(C.blue,0.22),null);
+  g.save(); g.fillStyle=alpha(a>=0?C.gold:C.red,0.35); g.beginPath(); g.moveTo(G.X(0),G.Y(v0)); g.lineTo(G.X(t),G.Y(v)); g.lineTo(G.X(t),G.Y(v0)); g.closePath(); g.fill(); g.restore();
+  plot(g,G,function(x){return v0+a*x;},0,8.5,C.muted,1.5,[4,4]); L(g,G.X(0),G.Y(v0),G.X(t),G.Y(v),C.ink,3); dot(g,G.X(t),G.Y(v),5,C.red);
+  if(lab){ T(g,lab[0],G.X(t/2),G.Y(v0/2),C.blue,13,'center','700'); T(g,lab[1],G.X(t*0.7),G.Y((v0+v)/2+(a>=0?0.6:-0.6)),a>=0?C.gold:C.red,13,'center','700'); } }
+widget('w-uam',{state:{v0:6,a:1.5,t:4},rw:0.48,rn:0.85,
+  fmt:{v0:function(v){return v+' m/s';},a:function(v){return nf(v,1)+' m/s²';},t:function(v){return v.toFixed(1)+' s';}},
+  draw:function(g,c,s){ uamDraw(g,c,c.C,s.v0,s.a,s.t,['v₀t','½at²']); },
+  out:function(s){ var v=s.v0+s.a*s.t, dx=s.v0*s.t+0.5*s.a*s.t*s.t; return 'v = '+s.v0+' + ('+nf(s.a,1)+')('+s.t.toFixed(1)+') = <b>'+nf(v)+'</b>　｜　Δx = 藍 '+(s.v0*s.t).toFixed(2)+' + 金 '+nf(0.5*s.a*s.t*s.t)+' = <b>'+nf(dx)+' m</b>　｜　檢查 v² = '+(v*v).toFixed(2)+'，v₀² + 2aΔx = '+(s.v0*s.v0+2*s.a*dx).toFixed(2)+' ✓'; }
+});
+widget('s-F7',{state:{},steps:3,rw:0.48,rn:0.85,
+  draw:function(g,c,s){ var C=c.C, G=frame(full(c),-0.6,6.5,-1.5,12,26,false); axes(g,G,[0,6.3,0,11.5],C,{xstep:1,ystep:2,xlabel:'t (s)',ylabel:'v (m/s)'});
+    L(g,G.X(0),G.Y(10),G.X(5),G.Y(0),C.ink,3); dot(g,G.X(5),G.Y(0),5,C.red); T(g,'停下：t = 10 ÷ 2 = 5 s',G.X(5),G.Y(0)-14,C.red,12,'center','700');
+    if(s.step>=1){ g.save(); g.fillStyle=alpha(C.teal,0.3); g.beginPath(); g.moveTo(G.X(0),G.Y(0)); g.lineTo(G.X(0),G.Y(10)); g.lineTo(G.X(5),G.Y(0)); g.closePath(); g.fill(); g.restore(); T(g,'面積 ½ × 5 × 10 = 25',G.X(1.6),G.Y(3),C.teal,14,'center','700'); } },
+  out:steps(['v-t 圖從 10 m/s 直線降到 0，斜率 −2，所以 5 s 停下。','煞車距離就是三角形面積：½ × 5 × 10 = <b>25 m</b>。','或直接用 v² = v₀² + 2aΔx：0 = 10² + 2(−2)Δx，Δx = 100 ÷ 4 = <b>25 m</b>。'])
+});
+
+/* F8 自由落體 */
+function fallDraw(g,c,C,t,showV){ var P=panels(c,0.42), G=frame(P[0],-1,3,-48,3,20,false);
+  L(g,G.X(0),G.Y(0),G.X(0),G.Y(-46),C.ink,1.2); for(var h=0;h<=45;h+=5){ L(g,G.X(0),G.Y(-h),G.X(0.25),G.Y(-h),C.ink,1); T(g,h+' m',G.X(-0.1),G.Y(-h),C.muted,10,'right'); }
+  for(var k=0;k*0.5<=t+1e-9;k++){ var tk=k*0.5, hk=5*tk*tk; dot(g,G.X(1),G.Y(-hk),7,alpha(C.blue,k*0.5<t-1e-9?0.35:1)); if(k>0){ var hp=5*(tk-0.5)*(tk-0.5); T(g,(hk-hp).toFixed(2),G.X(1.4),G.Y(-(hk+hp)/2),C.gold,11,'left','700'); } }
+  var hn=5*t*t; dot(g,G.X(1),G.Y(-hn),8,C.red);
+  var H=frame(P[1],-0.3,3.3,-3,34,24,false); axes(g,H,[0,3.2,0,32],C,{xstep:0.5,ystep:5,xlabel:'t (s)',ylabel:'v (m/s)'});
+  fillUnder(g,H,function(x){return G10*x;},0,t,alpha(C.teal,0.3)); L(g,H.X(0),H.Y(0),H.X(t),H.Y(G10*t),C.ink,3); dot(g,H.X(t),H.Y(G10*t),5,C.red);
+  if(showV) T(g,'面積 = 下落距離',H.X(t*0.62),H.Y(G10*t*0.28),C.teal,12,'center','700'); }
+widget('w-fall',{state:{t:2},rw:0.48,rn:0.85,
+  fmt:{t:function(v){return v.toFixed(2)+' s';}},
+  draw:function(g,c,s){ fallDraw(g,c,c.C,s.t,true); },
+  out:function(s){ return 't = '+s.t.toFixed(2)+' s：v = gt = <b>'+(G10*s.t).toFixed(1)+' m/s</b>　h = ½gt² = <b>'+(5*s.t*s.t).toFixed(2)+' m</b>　｜　金色數字：每 0.5 s 的間隔 1 : 3 : 5 : 7…'; }
+});
+widget('s-F8',{state:{},steps:2,rw:0.48,rn:0.85,
+  draw:function(g,c,s){ fallDraw(g,c,c.C,3,s.step>=1); },
+  out:steps(['3 秒末的速度：v = gt = 10 × 3 = <b>30 m/s</b>。','距離 = v-t 圖三角形面積 = ½ × 3 × 30 = <b>45 m</b>（就是 ½gt²）。'])
+});
+
+/* F9 鉛直上拋 */
+function throwDraw(g,c,C,v0,t,mark){ var T1=v0/G10, tt=t, H=v0*v0/(2*G10), P=panels(c,0.3), y=v0*tt-5*tt*tt, v=v0-G10*tt;
+  var F=frame(P[0],-1,1.4,-0.1*H-2,H*1.12+2,16,false); L(g,F.X(-0.6),F.Y(0),F.X(0.9),F.Y(0),C.ink,1.5); L(g,F.X(0),F.Y(H),F.X(0.6),F.Y(H),C.gold,1.2,[4,3]); T(g,'H',F.X(0.65),F.Y(H),C.gold,12,'left','700');
+  dot(g,F.X(0),F.Y(y),9,C.blue); if(Math.abs(v)>0.3) arrowV(g,F.X(0)-14,F.Y(y),F.Y(y)-v*2.2,C.blue,3,''); arrowV(g,F.X(0)+14,F.Y(y),F.Y(y)+26,C.red,3,'');
+  T(g,'v',F.X(0)-24,F.Y(y),C.blue,12,'right','700'); T(g,'a = −g',F.X(0)+20,F.Y(y)+16,C.red,11,'left','700');
+  var Gv=frame(P[1],-0.2*T1,2.15*T1,-v0*1.15,v0*1.15,24,false); axes(g,Gv,[0,2.1*T1,-v0*1.1,v0*1.1],C,{xstep:Math.max(0.5,Math.round(T1/2*2)/2),ystep:10,xlabel:'t (s)',ylabel:'v (m/s)',y0:0});
+  plot(g,Gv,function(x){return v0-G10*x;},0,2*T1,C.muted,1.5,[4,4]); plot(g,Gv,function(x){return v0-G10*x;},0,tt,C.ink,3); dot(g,Gv.X(tt),Gv.Y(v),5,C.red);
+  if(mark){ dot(g,Gv.X(T1),Gv.Y(0),6,C.red); T(g,'最高點：v = 0，斜率仍是 −10',Gv.X(T1)+8,Gv.Y(0)-12,C.red,12,'left','700'); } }
+widget('w-throw',{state:{v0:20,t:0.3},rw:0.48,rn:0.85,
+  fmt:{v0:function(v){return v+' m/s';},t:function(v){return Math.round(v*100)+'%';}},
+  draw:function(g,c,s){ throwDraw(g,c,c.C,s.v0,s.t*2*s.v0/G10,false); },
+  out:function(s){ var T1=s.v0/G10, tt=s.t*2*T1, v=s.v0-G10*tt, y=s.v0*tt-5*tt*tt; return 't = '+tt.toFixed(2)+' s：高度 '+y.toFixed(2)+' m，v = <b>'+nf(v)+' m/s</b>，a = <b>−10 m/s²</b>　｜　上升時間 v₀/g = '+T1.toFixed(1)+' s，最高 H = v₀²/2g = '+(s.v0*s.v0/20).toFixed(1)+' m'; }
+});
+widget('s-F9',{state:{},steps:2,rw:0.48,rn:0.85,
+  draw:function(g,c,s){ throwDraw(g,c,c.C,20,s.step?2:1,s.step>=1); },
+  out:steps(['上升途中：速度向上變小，加速度 −10 m/s² 向下。v-t 圖是一條斜率 −10 的直線。','到最高點 v-t 線剛好穿過時間軸：<b>v = 0</b>，但這條線的斜率沒有變，<b>a 仍是向下 10 m/s²</b>。'])
+});
+
+/* F10 打點計時器（cm、s） */
+var VL_TAPE=null;
+function tapeDraw(g,c,C,a,hiSeg){ var v0=40, dt=0.02, N=16, xs=[]; for(var n=0;n<=N;n++){ var t=n*dt; xs.push(v0*t+0.5*a*t*t); }
+  var len=xs[N], G=frame(full(c),-0.05*len,len*1.05,-1.6,1.4,16,false);
+  box(g,G.X(-0.02*len),G.Y(0.45),len*1.04*G.sx,0.9*G.sy,alpha(C.gold,0.12),C.line,1);
+  xs.forEach(function(x,i){ dot(g,G.X(x),G.Y(0),i%4===0?4.5:3,i%4===0?C.ink:C.muted); if(i%4===0) T(g,String(i),G.X(x),G.Y(0)-16,C.ink,11,'center','700'); });
+  var segs=[]; for(var k=0;k<4;k++){ var d=xs[4*k+4]-xs[4*k]; segs.push(d); var col=hiSeg===k?C.red:C.teal; L(g,G.X(xs[4*k])+2,G.Y(-0.75),G.X(xs[4*k+4])-2,G.Y(-0.75),col,4); T(g,d.toFixed(2)+' cm',G.X((xs[4*k]+xs[4*k+4])/2),G.Y(-1.15),col,12,'center','700'); }
+  return segs; }
+widget('w-tape',{state:{a:200},rw:0.4,rn:0.75,
+  fmt:{a:function(v){return v+' cm/s²';}},
+  draw:function(g,c,s){ VL_TAPE=tapeDraw(g,c,c.C,s.a,-1); },
+  out:function(s){ var sg=VL_TAPE||[]; var vs=sg.map(function(d){return (d/0.08).toFixed(1);}); var diff=sg.length>1?(sg[1]-sg[0]):0; return '每段 0.08 s：段長 '+sg.map(function(d){return d.toFixed(2);}).join('、')+' cm　→　中點速度 '+vs.join('、')+' cm/s　｜　相鄰段長差 '+diff.toFixed(3)+' cm，a = 差 ÷ 0.08² = <b>'+(diff/0.0064).toFixed(0)+' cm/s²</b>'; }
+});
+widget('s-F10',{state:{},steps:3,rw:0.4,rn:0.75,
+  draw:function(g,c,s){ var C=c.C, G=frame(full(c),-0.5,9.5,-1.4,1.4,20,false); L(g,G.X(0),G.Y(0),G.X(9),G.Y(0),C.line,1);
+    for(var i=0;i<=8;i++){ var x=i*1.0+0.03*i*i; dot(g,G.X(x),G.Y(0),i===4||i===8?6:3.5,i===4||i===8?C.red:C.muted); T(g,String(i),G.X(x),G.Y(0)-16,C.ink,11,'center',i===4||i===8?'700':'500'); }
+    if(s.step>=1){ for(var j=4;j<8;j++){ var a=j+0.03*j*j, b=(j+1)+0.03*(j+1)*(j+1); L(g,G.X(a)+3,G.Y(0.6),G.X(b)-3,G.Y(0.6),C.blue,3); T(g,'0.02',G.X((a+b)/2),G.Y(0.6)-11,C.blue,10,'center','700'); } }
+    if(s.step>=2){ var x4=4+0.48, x8=8+1.92; L(g,G.X(x4),G.Y(-0.8),G.X(x8),G.Y(-0.8),C.teal,4); T(g,'6.0 cm ÷ 0.08 s = 75 cm/s',G.X((x4+x8)/2),G.Y(-1.15),C.teal,13,'center','700'); } },
+  out:steps(['第 4 點到第 8 點。','中間有 <b>4 個間隔</b>，每個 0.02 s：Δt = 4 × 0.02 = <b>0.08 s</b>。','平均速度 = 6.0 ÷ 0.08 = <b>75 cm/s</b>（這是第 6 點那一刻的瞬時速度）。'])
+});
+
+/* F11 相對運動 */
+function relDraw(g,c,C,va,vb,view,t){ var G=frame(full(c),-60,60,-2.4,2.4,16,false), xa=-10+va*t, xb=10+vb*t, off=view?xb-10:0;
+  L(g,G.X(-60),G.Y(0),G.X(60),G.Y(0),C.ink,1.3); for(var m=-60;m<=60;m+=10){ var mx=m-off; mx=((mx+60)%120+120)%120-60; L(g,G.X(mx),G.Y(0),G.X(mx),G.Y(-0.3),C.grid,2); }
+  function vehicle(x,y,col,lab,v){ var px=x-off; box(g,G.X(px)-22,G.Y(y)-12,44,24,alpha(col,0.85),null); T(g,lab,G.X(px),G.Y(y),C.sheet,12,'center','700'); var vv=view?(lab==='A'?va-vb:0):v; if(vv) arrowH(g,G.X(px),G.Y(y)-22,G.X(px)+vv*2.4,col,3,(vv>0?'+':'')+vv+' m/s'); }
+  vehicle(xa,1,C.red,'A',va); vehicle(xb,-1.2,C.blue,'B',vb);
+  T(g,view?'B 的視角：B 停在原地':'地面視角',G.X(-59),G.Y(2.2),C.muted,12,'left','700'); T(g,'東（＋）→',G.X(59),G.Y(2.2),C.muted,11,'right'); }
+widget('w-rel',{state:{va:20,vb:-15,view:0,t:0},rw:0.36,rn:0.65,
+  fmt:{va:function(v){return v+' m/s';},vb:function(v){return v+' m/s';},view:function(v){return v?'B 的視角':'地面';},t:function(v){return v.toFixed(2)+' s';}},
+  draw:function(g,c,s){ relDraw(g,c,c.C,s.va,s.vb,s.view,s.t); },
+  out:function(s){ var r=s.va-s.vb; return 'B 看 A：v_AB = v_A − v_B = '+s.va+' − ('+s.vb+') = <b>'+(r>0?'+':'')+r+' m/s</b>'+(r>0?'（向東）':r<0?'（向西）':'（看起來不動）'); }
+});
+widget('s-F11',{state:{},steps:3,rw:0.36,rn:0.65,
+  draw:function(g,c,s){ relDraw(g,c,c.C,20,-15,s.step>=2?1:0,0); },
+  out:steps(['取東為正：v_A = <b>+20</b> m/s，v_B 向西所以是 <b>−15</b> m/s。','B 看 A：v_AB = v_A − v_B = 20 − (−15) = <b>+35 m/s</b>。','換到 B 的視角，A 以 <b>35 m/s 向東</b>衝過來。反向運動，相對速率是兩者相加。'])
+});
+`
+};

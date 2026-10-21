@@ -70,7 +70,7 @@ console.log("\n[2] 查詢與比對");
   check("tm_7 找得到圖解教材", VL.forMaterial("tm_7") === LESSON);
   check("補充題庫 tm_57 也對應同一份", VL.forMaterial({ originKey: "tm_57" }) === LESSON);
   check("題目 id tm_7_q3 對應到教材", VL.forMaterial("tm_7_q3") === LESSON);
-  check("其他教材沒有圖解教材", VL.forMaterial("tm_11") === null && VL.forMaterial("tm_70") === null);
+  check("其他教材沒有圖解教材", VL.forMaterial("tm_3") === null && VL.forMaterial("tm_4") === null);
   check("「疊合」→ 疊合公式", (VL.match("疊合") || {}).card.id === "F14");
   check("「倍角公式」→ 二倍角", (VL.match("倍角公式") || {}).card.id === "F12");
   check("「兩直線夾角」→ F11", (VL.match("兩直線夾角") || {}).card.id === "F11");
@@ -102,6 +102,9 @@ console.log("\n[2] 查詢與比對");
     withLesson.length >= 1 && withLesson.every((r) => r.questions > 0 && r.matched === r.questions));
 }
 
+check("產生器：lessons/src 的教材頁都已重新產生（BuildVisualLesson --check）",
+  require(path.join(REPO, "docs/TeachingMaterials/scripts/BuildVisualLesson.js")).run([], true).length === 0);
+
 console.log("\n[3] 畫面元件");
 {
   const one = AHS.VisualLessonFrame.card(LESSON, "F14");
@@ -127,7 +130,7 @@ console.log("\n[4] 教材中心與學習助教");
   const card = fs.readFileSync(path.join(REPO, "js/ui/MaterialCard.js"), "utf8");
   check("教材卡片：顯示互動圖解標籤", /mat-card__lesson/.test(card));
   const tutor = fs.readFileSync(path.join(REPO, "js/components/AiTutor.js"), "utf8");
-  check("學習助教：查觀念後附上公式卡片", /pushVisual\(text\)/.test(tutor) && /VisualLessonFrame\.card\(/.test(tutor));
+  check("學習助教：查觀念後附上公式卡片", /pushWithVisual\(/.test(tutor) && /VisualLessonFrame\.card\(/.test(tutor));
   check("學習助教：出題詳解附上看互動圖解", /visualForQuestion\(q\)/.test(tutor) && /cardToggle\(/.test(tutor));
   [["materials.html", "js/ui/VisualLessonReader.js"], ["tutor.html", "js/ui/VisualLessonFrame.js"]].forEach(([page, ui]) => {
     const html = fs.readFileSync(path.join(REPO, page), "utf8");
@@ -165,7 +168,7 @@ console.log("\n[4] 教材中心與學習助教");
   check("閱讀畫面：開啟時鎖住背景捲動", w.document.body.style.overflow === "hidden");
   reader.querySelector(".vreader__back").click();
   check("閱讀畫面：返回教材中心會關閉並還原捲動", !reader.parentNode && w.document.body.style.overflow === "");
-  const plain = w.AHS.MaterialPreview.open({ id: "m2", originKey: "tm_11", title: "直線運動", subject: "math", fileType: "" }, function () {});
+  const plain = w.AHS.MaterialPreview.open({ id: "m2", originKey: "tm_3", title: "高一公民考卷", subject: "math", fileType: "" }, function () {});
   check("預覽視窗（其他教材）：維持原本的小視窗", plain.classList.contains("mat-preview__overlay") && !plain.querySelector(".vreader__nav"));
 }
 
