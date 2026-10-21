@@ -1,0 +1,55 @@
+/* css/components/visual-lesson.css — 2026-10-21 圖解教材（互動）.
+   Frame + toolbar for js/ui/VisualLessonFrame.js (教材中心 / 學習助教),
+   plus the 教材中心 preview tabs and card badge for materials that have one. */
+
+.vlesson { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.vlesson__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.vlesson__badge {
+  display: inline-flex; align-items: center; padding: 2px 10px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 800; color: var(--brand-ink); background-color: var(--brand-soft);
+  border: 1px solid var(--brand-line);
+}
+.vlesson__meta { font-size: 12px; color: var(--text-muted); flex: 1 1 200px; min-width: 0; }
+.vlesson__jump {
+  font: inherit; font-size: 13px; padding: 4px 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong); background-color: var(--card); color: var(--text);
+}
+.vlesson__open { font-size: 13px; font-weight: 700; color: var(--brand-strong); text-decoration: none; white-space: nowrap; }
+.vlesson__open:hover { text-decoration: underline; }
+.vlesson__frame {
+  display: block; width: 100%; height: 72vh; min-height: 420px; border: 1px solid var(--line);
+  border-radius: var(--radius-md); background-color: #ffffff;
+}
+.vlesson__frame--card { height: 520px; min-height: 0; }
+
+/* 學習助教：泡泡裡的單一公式卡片要比文字泡泡寬 */
+.tutor-msg.tutor-msg--wide { max-width: 100%; width: 100%; }
+.tutor-msg--wide .tutor-msg__bubble { width: 100%; box-sizing: border-box; }
+.tutor-msg--wide .tutor-msg__col { flex: 1 1 auto; min-width: 0; }
+.tutor-msg__bubble .vlesson { margin-top: 8px; width: 100%; }
+.tutor-quiz__feedback .vlesson-toggle .vlesson { width: 100%; }
+.vlesson-toggle { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.vlesson-toggle__btn {
+  align-self: flex-start; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  padding: 4px 14px; border-radius: var(--radius-pill); color: var(--brand-strong);
+  background-color: var(--card); border: 1px solid var(--brand-line);
+}
+.vlesson-toggle__btn:hover { background-color: var(--brand-soft); }
+.vlesson-toggle__btn[aria-expanded="true"] { background-color: var(--brand-soft); }
+
+/* 教材中心：有圖解教材的教材，預覽視窗加寬並分成兩個分頁 */
+.mat-preview--lesson { max-width: 1080px; }
+.mat-preview__tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.mat-preview__tab {
+  font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; padding: 8px 14px;
+  color: var(--text-muted); background: none; border: 0; border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.mat-preview__tab[aria-selected="true"] { color: var(--brand-strong); border-bottom-color: var(--brand); }
+.mat-preview__tabpanel { display: flex; flex-direction: column; gap: 14px; }
+.mat-card__lesson {
+  position: absolute; right: 10px; bottom: 10px; padding: 2px 8px; border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 800; color: var(--brand-ink); background-color: var(--card);
+  border: 1px solid var(--brand-line);
+}
+.mat-preview__tabpanel[hidden], .vlesson[hidden] { display: none; }

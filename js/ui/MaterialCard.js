@@ -103,7 +103,10 @@ AHS.MaterialCard = (function () {
         class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
       }, [el("span", { text: subj.name })]),
       el("span", { class: "mat-card__thumb-icon",
-        style: "color:" + subj.hex, html: AHS.Icons.book() })
+        style: "color:" + subj.hex, html: AHS.Icons.book() }),
+      /* 2026-10-21: materials with an interactive visual lesson say so. */
+      (AHS.VisualLesson && AHS.VisualLesson.forMaterial(item))
+        ? el("span", { class: "mat-card__lesson", text: "互動圖解" }) : null
     ]);
 
     /* 收藏 Icon — reflects item.favorite (Runtime). Quick toggle stays
