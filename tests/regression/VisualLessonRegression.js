@@ -48,7 +48,11 @@ console.log("\n[1] 資料與教材頁");
     const exists = fs.existsSync(file);
     check(l.lessonId + "：教材頁存在", exists);
     if (!exists) { return; }
-    const html = fs.readFileSync(file, "utf8");
+    const own = fs.readFileSync(file, "utf8");
+    /* lessons share docs/TeachingMaterials/lessons/shared/ (boot, runtime, css) */
+    const shared = ["LessonBoot.js", "LessonRuntime.js", "lesson.css"].map((n) => fs.readFileSync(path.join(path.dirname(file), "shared", n), "utf8")).join("\n");
+    check(l.lessonId + "：載入共用引擎（boot／runtime／css）", /src="shared\/LessonBoot\.js"/.test(own) && /src="shared\/LessonRuntime\.js"/.test(own) && /href="shared\/lesson\.css"/.test(own));
+    const html = own + "\n" + shared;
     check(l.lessonId + "：每張卡片都在教材頁中", l.cards.every((c) => html.indexOf('id="' + c.id + '"') !== -1));
     check(l.lessonId + "：卡片 id 不重複", new Set(l.cards.map((c) => c.id)).size === l.cards.length);
     check(l.lessonId + "：每張卡片都屬於某一節", l.cards.every((c) => l.sections.some((s) => s.id === c.section)));
@@ -89,6 +93,13 @@ console.log("\n[2] 查詢與比對");
   const chapterQs = tm7.questions.filter((q) => /^1-[1-4]/.test(q.knowledgePoint || ""));
   check("tm_7 課本 23 題全部對應到公式卡片", chapterQs.length === 23 &&
     chapterQs.every((q) => VL.forQuestion({ id: q.id, knowledgePoint: q.knowledgePoint, text: q.question })));
+}
+
+{
+  const cov = require(path.join(REPO, "docs/TeachingMaterials/scripts/VisualLessonCoverage.js")).report();
+  const withLesson = cov.filter((r) => r.lesson);
+  check("覆蓋率：有圖解教材的教材，每一題都對應到卡片（" + withLesson.map((r) => r.materialId + " " + r.matched + "/" + r.questions).join("、") + "）",
+    withLesson.length >= 1 && withLesson.every((r) => r.questions > 0 && r.matched === r.questions));
 }
 
 console.log("\n[3] 畫面元件");
