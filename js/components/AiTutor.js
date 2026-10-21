@@ -203,13 +203,11 @@ AHS.AiTutor = (function () {
       } else if (reply.type === "quiz") {
         runQuiz({ subject: chatSubject.value || undefined, count: 5, weakFirst: true });
       } else if (reply.type === "search") {
-        push(aiBubble(searchResults(reply)));
-        pushVisual(text);
+        pushWithVisual(searchResults(reply), text);
       } else {
         var nodes = textLines(reply.message);
         if (reply.topics && reply.topics.length) { nodes.push(topicChips(reply.topics)); }
-        push(aiBubble(nodes, reply.actions, sendMessage));
-        pushVisual(text);
+        pushWithVisual(nodes, text, reply.actions);
       }
     }
 
@@ -223,18 +221,19 @@ AHS.AiTutor = (function () {
       var key = chatSubject.value;
       return !key || !AHS.Subjects || !AHS.Subjects[key] || AHS.Subjects[key].name === lesson.subject;
     }
-    function pushVisual(text) {
-      if (!AHS.VisualLesson || !AHS.VisualLessonFrame) { return; }
-      var query = SA && typeof SA.cleanQuery === "function" ? SA.cleanQuery(text) : text;
-      var m = AHS.VisualLesson.match(query, { materialIds: workspaceMaterialIds() });
-      if (!m || !subjectAllows(m.lesson)) { return; }
-      var frame = AHS.VisualLessonFrame.card(m.lesson, m.card.id);
-      if (!frame) { return; }
-      var node = aiBubble([
-        el("span", { class: "tutor-msg__line", text: "這個觀念有互動圖解，拖拖看圖上的滑桿，再做下面的小試身手：" }),
-        frame
-      ]);
-      node.classList.add("tutor-msg--wide");
+    /* The reply bubble itself carries the formula card (one bubble per reply). */
+    function pushWithVisual(nodes, text, actions) {
+      var frame = null;
+      if (AHS.VisualLesson && AHS.VisualLessonFrame) {
+        var query = SA && typeof SA.cleanQuery === "function" ? SA.cleanQuery(text) : text;
+        var m = AHS.VisualLesson.match(query, { materialIds: workspaceMaterialIds() });
+        if (m && subjectAllows(m.lesson)) { frame = AHS.VisualLessonFrame.card(m.lesson, m.card.id); }
+      }
+      if (frame) {
+        nodes = nodes.concat([el("span", { class: "tutor-msg__line tutor-msg__line--visual", text: "這個觀念有互動圖解，拖拖看圖上的滑桿，再做下面的小試身手：" }), frame]);
+      }
+      var node = aiBubble(nodes, actions, sendMessage);
+      if (frame) { node.classList.add("tutor-msg--wide"); }
       push(node);
     }
     function visualForQuestion(q) {

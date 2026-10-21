@@ -43,5 +43,56 @@ AHS.VisualLessonData = [
       { id: "F14", section: "1-4", title: "疊合公式", keywords: ["正餘弦函數的疊合", "疊合成", "正餘弦疊合", "疊合公式", "疊合", "表示為(r,α)數對", "求振幅r值", "a sin x + b cos x"] },
       { id: "F15", section: "1-4", title: "疊合求區間最大值、最小值", keywords: ["限定區間求極值", "區間求極值", "限定區間", "區間內的最大值", "區間最大值", "區間最小值"] }
     ]
+  },
+  {
+    lessonId: "PHY_H2_Ch1_Uncertainty",
+    href: "docs/TeachingMaterials/lessons/PHY_H2_Ch1_Uncertainty.html",
+    title: "第1章 測量與不確定度・圖解教材",
+    subject: "物理",
+    materialIds: ["tm_10", "tm_43", "tm_52"],
+    source: "課本第1～25頁（1-1 簡介不確定度、1-2 不確定度的組合、1-3 物理量的因次）",
+    sections: [
+      { id: "1-1", title: "簡介不確定度" },
+      { id: "1-2", title: "不確定度的組合" },
+      { id: "1-3", title: "物理量的因次" }
+    ],
+    cards: [
+      { id: "F1", section: "1-1", title: "從誤差到不確定度", keywords: ["從誤差到不確定度", "誤差與不確定度", "誤差vs不確定度", "誤差", "真值", "ISO"] },
+      { id: "F2", section: "1-1", title: "A 類評估：u = s／√n", keywords: ["A類評估", "A類計算", "不確定度的A類評估", "樣本標準差", "標準差", "n-1"] },
+      { id: "F3", section: "1-1", title: "B 類評估：u = 最小刻度／(2√3)", keywords: ["B類評估", "不確定度的B類評估", "最小刻度", "電壓表", "均勻分布"] },
+      { id: "F4", section: "1-1", title: "進位規則與結果表示", keywords: ["進位規則", "有效數字", "進位", "結果表示"] },
+      { id: "F5", section: "1-2", title: "A、B 類組合不確定度", keywords: ["A、B類組合", "A類與B類的組合", "組合不確定度", "合成不確定度"] },
+      { id: "F6", section: "1-2", title: "加減法組合", keywords: ["加減法組合", "加法組合", "減法組合", "物理量加減後"] },
+      { id: "F7", section: "1-2", title: "乘除法組合：相對不確定度", keywords: ["乘除法組合", "乘法組合", "除法組合", "物理量乘除後", "相對不確定度", "密度"] },
+      { id: "F8", section: "1-3", title: "基本因次與常見物理量", keywords: ["常見物理量因次", "物理量的因次", "因次概念", "因次辨識", "因次：功", "因次：動量", "基本因次", "因次"] },
+      { id: "F9", section: "1-3", title: "因次分析推導公式", keywords: ["因次分析推導", "因次推導", "因次分析", "單擺週期", "彈簧週期"] }
+    ]
+  },
+  {
+    lessonId: "PHY_H2_Ch2_LinearMotion",
+    href: "docs/TeachingMaterials/lessons/PHY_H2_Ch2_LinearMotion.html",
+    title: "第2章 直線運動・圖解教材",
+    subject: "物理",
+    materialIds: ["tm_11", "tm_44", "tm_53"],
+    source: "課本第12～24頁（2-1 運動學簡介、2-2 物體運動圖、2-3 等加速運動、實驗1、2-4 相對運動）",
+    sections: [
+      { id: "2-1", title: "運動學簡介" },
+      { id: "2-2", title: "物體運動圖" },
+      { id: "2-3", title: "等加速運動（含實驗1）" },
+      { id: "2-4", title: "相對運動" }
+    ],
+    cards: [
+      { id: "F1", section: "2-1", title: "位移與路徑長", keywords: ["位移與路徑長", "路徑長", "位移"] },
+      { id: "F2", section: "2-1", title: "平均速度與平均速率", keywords: ["平均速度與平均速率", "平均速度", "平均速率", "速度與速率", "瞬時速度", "速率"] },
+      { id: "F3", section: "2-1", title: "加速度與加速、減速", keywords: ["加速度的意義", "平均加速度", "加速度", "加速", "減速"] },
+      { id: "F4", section: "2-2", title: "x-t 圖：斜率 = 速度", keywords: ["x-t圖", "位置函數", "位置時間圖", "x-t"] },
+      { id: "F5", section: "2-2", title: "v-t 圖：斜率 = 加速度、面積 = 位移", keywords: ["三大運動圖", "v-t圖", "運動圖", "v-t"] },
+      { id: "F6", section: "2-2", title: "a-t 圖：面積 = 速度變化量", keywords: ["a-t圖", "速度變化量", "a-t"] },
+      { id: "F7", section: "2-3", title: "等加速運動三公式", keywords: ["等加速運動公式", "等加速運動", "等加速位移公式", "等加速末速公式", "無時間公式", "煞車減速", "煞車", "等加速"] },
+      { id: "F8", section: "2-3", title: "自由落體", keywords: ["自由落體", "自由落下"] },
+      { id: "F9", section: "2-3", title: "鉛直上拋", keywords: ["鉛直上拋運動", "鉛直上拋", "上拋", "最高點"] },
+      { id: "F10", section: "2-3", title: "實驗1：打點計時器", keywords: ["打點計時器實驗", "打點計時器", "實驗1", "點痕", "紙帶"] },
+      { id: "F11", section: "2-4", title: "相對速度 v_AB = v_A − v_B", keywords: ["相對速度", "相對運動", "相對位移", "相對加速度"] }
+    ]
   }
 ];

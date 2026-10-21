@@ -115,6 +115,22 @@ function plotClip(g,G,f,a,b,ymax,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWid
 function vline(g,G,x,y0,y1,c,dash,w){ L(g,G.X(x),G.Y(y0),G.X(x),G.Y(y1),c,w||1.5,dash||[5,4]); }
 function steps(arr){ return function(s){ return arr[s.step]; }; }
 function norm(v){ var l=Math.hypot(v[0],v[1])||1; return [v[0]/l,v[1]/l]; }
+/* ---- 通用：可重現的亂數、常態分布、直角座標軸、長條 ---- */
+function seeded(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function gauss(r){ var u=Math.max(1e-9,r()), v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v); }
+/* axes(g,G,box,C,o): o={xstep,ystep,xfmt,yfmt,xlabel,ylabel,x0,y0} — 一般直角座標（非 π 刻度） */
+function axes(g,G,b,C,o){ o=o||{}; var xs=o.xstep||1, ys=o.ystep||1, xf=o.xfmt||function(v){return String(+v.toFixed(3)).replace('-','−');}, yf=o.yfmt||xf;
+  for(var x=Math.ceil(b[0]/xs)*xs; x<=b[1]+1e-9; x+=xs){ L(g,G.X(x),G.Y(b[2]),G.X(x),G.Y(b[3]),C.grid,1); T(g,xf(x),G.X(x),G.Y(o.y0!=null?o.y0:b[2])+13,C.muted,11,'center'); }
+  for(var y=Math.ceil(b[2]/ys)*ys; y<=b[3]+1e-9; y+=ys){ L(g,G.X(b[0]),G.Y(y),G.X(b[1]),G.Y(y),C.grid,1); T(g,yf(y),G.X(o.x0!=null?o.x0:b[0])-6,G.Y(y),C.muted,11,'right'); }
+  var X0=o.x0!=null?o.x0:b[0], Y0=o.y0!=null?o.y0:b[2];
+  L(g,G.X(b[0]),G.Y(Y0),G.X(b[1]),G.Y(Y0),C.ink,1.3); L(g,G.X(X0),G.Y(b[2]),G.X(X0),G.Y(b[3]),C.ink,1.3);
+  if(o.xlabel) T(g,o.xlabel,G.X(b[1]),G.Y(Y0)-10,C.muted,11,'right'); if(o.ylabel) T(g,o.ylabel,G.X(X0)+6,G.Y(b[3])+6,C.muted,11,'left'); }
+function box(g,x,y,w,h,fill,stroke,lw){ g.save(); if(fill){ g.fillStyle=fill; g.fillRect(x,y,w,h); } if(stroke){ g.strokeStyle=stroke; g.lineWidth=lw||1.5; g.strokeRect(x,y,w,h); } g.restore(); }
+function fmtSig(v){ return String(v).replace('-','−'); }
+/* 不確定度進位：無條件進位到 2 位有效數字；回傳 {u, dec}（dec＝小數位數，可為負） */
+function ceilSig2(u){ var dec=1-Math.floor(Math.log10(u)), p=Math.pow(10,dec), v=Math.ceil(u*p-1e-9)/p; if(v>=Math.pow(10,2-dec)-1e-12){ dec-=1; p/=10; v=Math.ceil(u*p-1e-9)/p; } return {u:v, dec:dec}; }
+function fixed(v,dec){ return dec>0? v.toFixed(dec) : String(Math.round(v)); }
+
 
 function lessonStart(){
 /* 重繪：視窗大小、主題切換、字型載入、展開圖解 */

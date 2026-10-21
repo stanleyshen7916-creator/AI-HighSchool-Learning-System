@@ -136,3 +136,4 @@
   .vreader__actions .vreader__btn:not(.vreader__btn--primary) { display: none; }
   .vreader__jump { max-width: 150px; }
 }
+.tutor-msg__line--visual { margin-top: 10px; font-weight: 700; color: var(--brand-ink); }
