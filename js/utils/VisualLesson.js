@@ -30,8 +30,10 @@ AHS.VisualLesson = (function () {
     if (typeof idOrItem === "object") {
       return materialKey(idOrItem.originKey || idOrItem.materialId || idOrItem.sourceId || idOrItem.id);
     }
+    /* 教材包 tm_N（含 tm_N_q3 這類題目 id）取 tm_N；舊版教材庫（data/materials/*.js）
+       的紀錄 id（如 biology-g11-origin-and-evolution-of-life）原樣比對 materialIds。 */
     var m = /^(tm_\d+)(?:_|$)/.exec(String(idOrItem));
-    return m ? m[1] : null;
+    return m ? m[1] : String(idOrItem);
   }
 
   function forMaterial(idOrItem) {

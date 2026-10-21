@@ -19,6 +19,9 @@ const fs = require("fs");
 const path = require("path");
 
 const REPO = path.join(__dirname, "..", "..");
+/* 舊版教材庫（data/materials/*.js）的紀錄 id，圖解教材也可以對應它們 */
+const REPO_RECORD_IDS = fs.readdirSync(path.join(REPO, "data/materials")).filter((f) => /\.js$/.test(f))
+  .map((f) => (/var ID = "([^"]+)"/.exec(fs.readFileSync(path.join(REPO, "data/materials", f), "utf8")) || [])[1]).filter(Boolean);
 let pass = 0, fail = 0;
 function check(name, cond) {
   if (cond) { pass++; console.log("  PASS  " + name); }
@@ -56,7 +59,9 @@ console.log("\n[1] 資料與教材頁");
     check(l.lessonId + "：每張卡片都在教材頁中", l.cards.every((c) => html.indexOf('id="' + c.id + '"') !== -1));
     check(l.lessonId + "：卡片 id 不重複", new Set(l.cards.map((c) => c.id)).size === l.cards.length);
     check(l.lessonId + "：每張卡片都屬於某一節", l.cards.every((c) => l.sections.some((s) => s.id === c.section)));
-    check(l.lessonId + "：對應的教材包都存在", l.materialIds.every((id) => fs.existsSync(path.join(REPO, "docs/TeachingMaterials/materials", id, "metadata.json"))));
+    check(l.lessonId + "：對應的教材包都存在", l.materialIds.every((id) => /^tm_\d+$/.test(id)
+      ? fs.existsSync(path.join(REPO, "docs/TeachingMaterials/materials", id, "metadata.json"))
+      : REPO_RECORD_IDS.indexOf(id) !== -1));
     const js = html.replace(/\/\*[\s\S]*?\*\//g, "");
     check(l.lessonId + "：沒有禁用的瀏覽器 API", !/\blocalStorage\b|\bindexedDB\b|\bfetch\s*\(|XMLHttpRequest|^\s*(import|export)\s/m.test(js));
     check(l.lessonId + "：支援 embed／card 模式並回報高度", /is-embed/.test(html) && /is-card/.test(html) && /ahs-visual-lesson:height/.test(html));
@@ -71,6 +76,8 @@ console.log("\n[2] 查詢與比對");
   check("補充題庫 tm_57 也對應同一份", VL.forMaterial({ originKey: "tm_57" }) === LESSON);
   check("題目 id tm_7_q3 對應到教材", VL.forMaterial("tm_7_q3") === LESSON);
   check("其他教材沒有圖解教材", VL.forMaterial("tm_3") === null && VL.forMaterial("tm_4") === null);
+  check("舊版教材庫的紀錄也對應得到（生物第1章）", (VL.forMaterial({ id: "mat_9", originKey: "biology-g11-origin-and-evolution-of-life" }) || {}).lessonId === "BIO_H2_CellOriginPlants");
+  check("沒登錄的舊版教材庫紀錄不對應", VL.forMaterial({ originKey: "civics-g10-ch5-6-exam-20260730" }) === null && VL.forMaterial({ id: "mat_1" }) === null);
   check("「疊合」→ 疊合公式", (VL.match("疊合") || {}).card.id === "F14");
   check("「倍角公式」→ 二倍角", (VL.match("倍角公式") || {}).card.id === "F12");
   check("「兩直線夾角」→ F11", (VL.match("兩直線夾角") || {}).card.id === "F11");
