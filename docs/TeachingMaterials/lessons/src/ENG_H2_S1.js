@@ -1,0 +1,328 @@
+/* lessons/src/ENG_H2_S1.js — 高二英文：Lesson 1 The Day I Broke the Rules（tm_61、tm_51、舊版教材庫）、
+   L3 Prometheus（tm_49）、R1 3D Printing（tm_48）、單字練習（tm_72）.
+   英文的「公式」是句型與用法；課文不整段引用，只用自編例句與關鍵片語說明。圖為示意。 */
+"use strict";
+module.exports = {
+  lessonId: "ENG_H2_S1",
+  title: "高二英文圖解教材",
+  eyebrow: "英文 ・ Lesson 1、L3、R1、單字 ・ 高二上",
+  h1: "句型看得見，故事畫得出",
+  h1small: "把文法拆成積木、把故事畫成地圖",
+  subject: "ENG",
+  unit: "ENG-H2-S1",
+  sections: [
+    {
+      id: "1", short: "Lesson 1", title: "Lesson 1 The Day I Broke the Rules",
+      plan: { goal: "能依「規則 → 衝突 → 選擇 → 結果」說出故事；會用 find/consider it adj. to VR 與 It seems that 改寫；記住本課字群與片語。", prereq: "國中的不定詞、that 子句。", time: "約 5 節課。" },
+      cards: [
+        {
+          id: "F1", title: "故事地圖：規則、衝突、選擇", page: "Lesson 1", tags: ["src"],
+          say: "敘事者在醫院扮成 Ronald McDonald 逗病童開心，工作有兩條規定，而且<b>各有理由</b>：<b>不可以單獨探視</b>（怕嚇到孩子）、<b>不可以有身體接觸</b>（怕把細菌傳給孩子）。遇到末期病童 Billy 想要一個擁抱，他猶豫了，最後還是抱了他。結尾那句 <b>after all</b>：人生有些事情比規定更重要。",
+          formula: "Rules（規定＋理由）→ Conflict（Billy 想要擁抱）→ Choice（猶豫後破例擁抱）→ Result：Some things in life, after all, were more important.",
+          widget: { id: "w-story1", aria: "Lesson 1 故事地圖：規則、衝突、選擇與結果；天平代表規定與更重要的事", rw: 0.42, rn: 1.0,
+            controls: [{ k: "k", label: "情節", min: 0, max: 3, step: 1 }], play: { k: "k", dur: 5000 } },
+          space: "右邊的天平一開始倒向「規定」，到了 Billy 開口那一刻慢慢傾斜，最後倒向「更重要的事」。",
+          trap: "把兩條規定的理由對調：單獨探視怕「嚇到孩子」，身體接觸怕「傳染細菌」。也不要一看到 break the rules 就判定敘事者錯了。",
+          quiz: { q: "Why was physical contact forbidden?", answer: "c", options: [
+            { c: "a", text: "It could frighten the children.", why: "那是「不可單獨探視」的理由。" },
+            { c: "b", text: "The hospital was too busy.", why: "課文沒有這樣說。" },
+            { c: "c", text: "It could pass germs to the children." },
+            { c: "d", text: "Ronald didn't like children.", why: "與課文相反，他覺得這份工作很有意義。" }] },
+          sol: { id: "s-F1", aria: "逐步圖解：兩條規定與理由" }
+        },
+        {
+          id: "F2", title: "句型：find / consider + it + adj. + to VR", page: "Lesson 1 句型", tags: ["src"],
+          say: "「做某件事」很長，不想放在受詞位置時，就先放一個<b>虛受詞 it</b> 占位子，真正的受詞（to VR）丟到句尾。像 He found <b>it</b> rewarding <b>to bring laughter to sick kids</b>：it 就是 to bring laughter to sick kids。",
+          formula: "S + find / consider / feel / think + <b>it</b> + adj. / N + <b>to VR</b>　（it ＝ 虛受詞，代替後面的 to VR）",
+          widget: { id: "w-itobj", aria: "句型積木：把 to VR 移到句尾，用 it 占住受詞的位置", rw: 0.4, rn: 0.95,
+            controls: [{ k: "v", label: "動詞", min: 0, max: 3, step: 1 }, { k: "a", label: "形容詞", min: 0, max: 3, step: 1 }, { k: "s", label: "改寫", min: 0, max: 1, step: 1 }] },
+          space: "按「改寫」：紅色的 to VR 積木整塊滑到句尾，原來的位置換成一塊小小的 it，兩條線連起來表示它們是同一個東西。",
+          trap: "漏掉 it（Many people consider important to...），或把 to VR 寫成 V-ing。",
+          quiz: { q: "Many people consider ______ important to set goals for their lives.", answer: "b", options: [
+            { c: "a", text: "that", why: "這裡要用虛受詞 it 代替後面的不定詞。" },
+            { c: "b", text: "it" },
+            { c: "c", text: "this", why: "虛受詞固定用 it。" },
+            { c: "d", text: "（不填）", why: "受詞位置不能空著，要放 it。" }] },
+          sol: { id: "s-F2", aria: "逐步圖解：找出真正的受詞" }
+        },
+        {
+          id: "F3", title: "句型：It seems that… ↔ S seems to V", page: "Lesson 1 句型", tags: ["src"],
+          say: "It seems / appears that + 子句，可以把子句的主詞「抬」到句首，改成 <b>S + seems to V</b>。時態要對齊：that 子句和 seems 同時，用 <b>to VR</b>；that 子句比 seems 更早，用 <b>to have p.p.</b>；正在進行，用 <b>to be V-ing</b>。",
+          formula: "It seems that S + V（同時）→ S seems to VR　｜　It seems that S + 過去式（較早）→ S seems to have p.p.　｜　進行中 → S seems to be V-ing",
+          widget: { id: "w-seem", aria: "It seems that 子句改寫成 seem to 的句型變形", rw: 0.4, rn: 0.95,
+            controls: [{ k: "k", label: "例句", min: 0, max: 3, step: 1 }] },
+          space: "看主詞積木：它從 that 後面跳到句首，that 子句的動詞變成 to…，時間先後決定 to 後面長什麼樣子。",
+          trap: "子句比 seems 早發生，卻寫成 seems to VR；應該用 seems to have p.p.。",
+          quiz: { q: "It seems that Ben was sick last week. → Ben seems ______ sick last week.", answer: "d", options: [
+            { c: "a", text: "to be", why: "生病發生在「上週」，比 seems（現在）早，要用完成式不定詞。" },
+            { c: "b", text: "being", why: "seem 後面接不定詞。" },
+            { c: "c", text: "that he was", why: "改寫後主詞已經在句首，不再用 that 子句。" },
+            { c: "d", text: "to have been" }] },
+          sol: { id: "s-F3", aria: "逐步圖解：比較兩個時間點" }
+        },
+        {
+          id: "F4", title: "字群與片語：一次記一整串", page: "Lesson 1 字彙", tags: ["src"],
+          say: "單字要整串記：employ（雇用）→ employer（雇主）→ employee（員工）→ employment（雇用、就業）；hesitate → hesitation；refuse → refusal；frighten → fright。片語也成對記：<b>turn down</b>（拒絕）的反義是 accept；<b>make a difference</b>（產生影響）、<b>after all</b>（畢竟）、<b>pass away</b>（去世，委婉說法）、<b>be about to</b>（正要）。",
+          formula: "詞性：-er／-ee（人）、-ment／-al／-tion（名詞）、-ly（副詞）　｜　片語：turn down ↔ accept、cheer…up、pass on…to、make a difference、after all、pass away、be about to",
+          widget: { id: "w-family", aria: "Lesson 1 字群樹：同一字根的名詞、動詞、形容詞、副詞", rw: 0.42, rn: 1.0,
+            controls: [{ k: "k", label: "字群", min: 0, max: 5, step: 1 }] },
+          space: "同一棵樹的枝條用顏色分詞性：藍是動詞、綠是名詞、橘是形容詞、紫是副詞。看到題目的空格，先決定要哪一種顏色。",
+          trap: "字義對了，詞性卻錯了。例如 She hesitated 是動詞，without hesitation 才是名詞。",
+          quiz: { q: "Which phrase has the OPPOSITE meaning of \"accept\"?", answer: "a", options: [
+            { c: "a", text: "turn down" },
+            { c: "b", text: "cheer up", why: "cheer up 是讓人振作。" },
+            { c: "c", text: "pass on", why: "pass on 是傳遞。" },
+            { c: "d", text: "make a difference", why: "make a difference 是產生影響。" }] },
+          sol: { id: "s-F4", aria: "逐步圖解：反義片語配對" }
+        }
+      ]
+    },
+    {
+      id: "2", short: "Prometheus", title: "L3 Prometheus",
+      plan: { goal: "能依 Opening → Build-up → Climax → Ending 排出故事，並掌握 by the time＋過去完成式、分詞構句與 so that。", prereq: "過去式、被動語態。", time: "約 4 節課。" },
+      cards: [
+        {
+          id: "F5", title: "故事弧線：從禮物分配到盜火", page: "L3", tags: ["src"],
+          say: "Prometheus 用<b>黏土（out of clay）</b>造人，弟弟 Epimetheus 負責分禮物：速度、力量、毛皮、翅膀全給了動物，輪到人類時已經<b>用完了（had run out of gifts）</b>。Prometheus 只好補償人類：讓人<b>直立（upright）</b>，再<b>從太陽偷火</b>給人。宙斯在 Mecone 被兩份祭品騙了，最後只拿到骨頭，一氣之下拿走火；火被偷回來後，Prometheus 被<b>放逐並鎖起來</b>受罰，成了人類的捍衛者。",
+          formula: "Opening：用黏土造人 → Build-up：禮物分完、人類最弱 → Climax：Mecone 祭品、宙斯收回火、盜火 → Ending：Prometheus 被放逐、鎖住受罰",
+          widget: { id: "w-prom", aria: "Prometheus 故事弧線與禮物分配長條圖", rw: 0.45, rn: 1.05,
+            controls: [{ k: "k", label: "情節", min: 0, max: 6, step: 1 }], play: { k: "k", dur: 7000 } },
+          space: "左邊長條圖：動物一格一格拿到禮物，人類那一列一直是空的，直到 Prometheus 補上「直立」和「火」。右邊弧線最高點就是 Climax。",
+          trap: "把 Climax 提前到開頭；或把 Epimetheus（分禮物）和 Prometheus（造人、盜火）搞混。",
+          quiz: { q: "What did Epimetheus give animals?", answer: "c", options: [
+            { c: "a", text: "Fire and an upright posture.", why: "那是 Prometheus 給人類的。" },
+            { c: "b", text: "Clay and bones.", why: "黏土是造人的材料，骨頭是 Mecone 的祭品。" },
+            { c: "c", text: "Speed, strength, fur, and wings." },
+            { c: "d", text: "Nothing at all.", why: "什麼都沒拿到的是人類。" }] },
+          sol: { id: "s-F5", aria: "逐步圖解：禮物分配給誰" }
+        },
+        {
+          id: "F6", title: "時間軸：by the time ＋ 過去完成式", page: "L3 文法", tags: ["src", "add"],
+          say: "過去完成式（had p.p.）是「過去的過去」。先找<b>時間基準點</b>：By the time Epimetheus got to human beings（過去），他<b>早就</b>把禮物用完了 → he <b>had run</b> out of gifts。另外兩個常考：分詞構句 <b>Angry about being tricked, Zeus…</b>（＝Because Zeus was angry…），以及表目的的 <b>so that</b>。",
+          formula: "By the time + S + 過去式, S + had p.p.（更早）　｜　By the time + S + 現在式, S + will have p.p.　｜　分詞構句：Angry about…, S + V ＝ Because S was angry about…",
+          widget: { id: "w-perfect", aria: "時間軸：現在、過去基準點與更早的過去完成式事件", rw: 0.36, rn: 0.85,
+            controls: [{ k: "k", label: "例句", min: 0, max: 2, step: 1 }] },
+          space: "時間軸上先插一根紅色的基準旗子（by the time 那個時間），比它更早發生的事放在左邊，就用 had p.p.。",
+          trap: "把 by the time 後面的時間當成較早的事件，或把過去完成式寫成未來完成式。",
+          quiz: { q: "By the time Epimetheus got to human beings, he ______ out of gifts.", answer: "b", options: [
+            { c: "a", text: "runs", why: "整件事發生在過去，不能用現在式。" },
+            { c: "b", text: "had run" },
+            { c: "c", text: "will have run", why: "未來完成式搭配 by the time + 現在式。" },
+            { c: "d", text: "has run", why: "現在完成式的基準點是現在，這裡基準點在過去。" }] },
+          sol: { id: "s-F6", aria: "逐步圖解：找基準點，再看誰比較早" }
+        }
+      ]
+    },
+    {
+      id: "3", short: "3D Printing", title: "R1 3D Printing",
+      plan: { goal: "理解積層製造的原理與應用，會用 be capable of V-ing、enable sb to VR、make use of 等用法。", prereq: "動名詞與不定詞。", time: "約 2 節課。" },
+      cards: [
+        {
+          id: "F7", title: "積層製造：一層一層長出來", page: "R1", tags: ["src", "add"],
+          say: "傳統做法像雕刻，從一大塊材料<b>削掉</b>不要的部分；3D 列印（additive manufacturing）剛好相反，是把材料<b>一層一層疊上去</b>。所以能做出很複雜、又客製化的東西：便宜的義肢、人工珊瑚礁，甚至兩天蓋好的建築。課文常考的用法：be <b>capable of</b> V-ing、<b>enable</b> sb <b>to</b> VR、<b>make use of</b>。",
+          formula: "Additive（積層）：層層堆疊　vs.　Subtractive（減法）：從整塊削去　｜　be capable of + V-ing　｜　enable sb + to VR　｜　make use of（≒ take advantage of）",
+          widget: { id: "w-print", aria: "3D 列印噴頭一層一層堆疊成形，與從整塊材料削去的方式比較", rw: 0.42, rn: 0.9,
+            controls: [{ k: "m", label: "方式", min: 0, max: 1, step: 1 }, { k: "t", label: "進度", min: 0, max: 1, step: 0.01 }], play: { k: "t", dur: 6000 } },
+          space: "切到「積層」按播放：噴頭左右來回，每走一趟物件就高一層；切到「減法」：材料從大塊被削掉，旁邊留下一堆廢料。",
+          trap: "be capable of 後面接 V-ing；be able to 後面才接 VR。",
+          quiz: { q: "The new robotic arm is capable of ______ complex surgical procedures.", answer: "a", options: [
+            { c: "a", text: "performing" },
+            { c: "b", text: "perform", why: "of 是介系詞，後面要接 V-ing。" },
+            { c: "c", text: "to perform", why: "那是 be able to 的用法。" },
+            { c: "d", text: "performed", why: "這裡不是被動或過去分詞。" }] },
+          sol: { id: "s-F7", aria: "逐步圖解：capable of 與 able to 的差別" }
+        }
+      ]
+    },
+    {
+      id: "4", short: "單字", title: "單字練習：一字多義與搭配詞",
+      plan: { goal: "能依語境判斷一字多義與詞性，記住常用搭配詞與同反義字。", prereq: "無。", time: "約 1 節課。" },
+      cards: [
+        {
+          id: "F8", title: "一字多義、搭配詞與同反義", page: "單字練習", tags: ["src"],
+          say: "同一個字放進不同句子，意思會變：<b>process</b> an application 是「審核申請」，process A into B 是「把 A 加工成 B」。記單字要連搭配一起記：<b>communicate with</b>、<b>be aware of</b>、<b>run the risk of + V-ing</b>。同義、反義也成對記：vanish ＝ disappear；temporary ↔ permanent。",
+          formula: "一字多義：award、rough、process、vision、comfort　｜　搭配：communicate with、be aware of、run the risk of V-ing、burst sb's bubble、cave in　｜　同義 vanish＝disappear　反義 temporary↔permanent",
+          widget: { id: "w-poly", aria: "一字多義卡：同一個字在不同語境的意思與詞性", rw: 0.42, rn: 1.0,
+            controls: [{ k: "w", label: "單字", min: 0, max: 4, step: 1 }, { k: "s", label: "語境", min: 0, max: 2, step: 1 }] },
+          space: "中間是單字，外面三個圈是三種語境。先看空格前後的字（詞性、搭配），再決定是哪一個圈。",
+          trap: "只背中文意思、不背搭配，例如寫成 communicate to children、run the risk to do。",
+          quiz: { q: "「與孩子溝通」的正確搭配是？", answer: "c", options: [
+            { c: "a", text: "communicate to children", why: "communicate 與人溝通要用 with。" },
+            { c: "b", text: "communicate children", why: "communicate 是不及物用法，要加 with。" },
+            { c: "c", text: "communicate with children" },
+            { c: "d", text: "communicate at children", why: "沒有這種搭配。" }] },
+          sol: { id: "s-F8", aria: "逐步圖解：用搭配詞判斷" }
+        }
+      ]
+    }
+  ],
+  footer: [
+    "課本：長榮版英文 Lesson 1 The Day I Broke the Rules；正心版 L1、L3 Prometheus、R1 3D Printing；長榮版單字練習。",
+    "課文受著作權保護，本頁不整段引用，只用自編例句與關鍵片語說明；圖為示意。"
+  ],
+  script: String.raw`
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function lerp(a,b,u){ return a+(b-a)*u; }
+function B(g,G,x0,y0,x1,y1,fill,stroke,lw){ box(g,G.X(Math.min(x0,x1)),G.Y(Math.max(y0,y1)),Math.abs(x1-x0)*G.sx,Math.abs(y1-y0)*G.sy,fill,stroke,lw); }
+function circle(g,x,y,r,fill,stroke,w,dash){ g.save(); g.beginPath(); g.arc(x,y,Math.max(0,r),0,TAU); if(fill){ g.fillStyle=fill; g.fill(); } if(stroke){ g.strokeStyle=stroke; g.lineWidth=w||1.5; g.setLineDash(dash||[]); g.stroke(); } g.restore(); }
+function arrow(g,x1,y1,x2,y2,c,w,dash){ var a=Math.atan2(y2-y1,x2-x1), h=6+(w||2)*2; L(g,x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||2,dash); g.save(); g.fillStyle=c; g.beginPath(); g.moveTo(x2,y2); g.lineTo(x2-h*Math.cos(a-0.4),y2-h*Math.sin(a-0.4)); g.lineTo(x2-h*Math.cos(a+0.4),y2-h*Math.sin(a+0.4)); g.closePath(); g.fill(); g.restore(); }
+function tw(g,txt,fs,wt){ g.save(); g.font=(wt||'700')+' '+fs+'px "Noto Sans TC",sans-serif'; var w=g.measureText(txt).width; g.restore(); return w; }
+function chip(g,x,y,txt,col,fs,on){ var w=tw(g,txt,fs)+16, h=fs+14; box(g,x,y-h/2,w,h,alpha(col,on?0.85:0.16),col,on?2:1.2); T(g,txt,x+w/2,y,on?'#ffffff':col,fs,'center','700'); return w; }
+var GREEN='#3f8f4a', ORANGE='#e08a2c', PURPLE='#7d5ba6';
+
+/* F1 故事地圖 */
+var ST=[['Rules','兩條規定：不可單獨探視（怕嚇到孩子）、不可身體接觸（怕傳染細菌）'],['Conflict','末期病童 Billy 很虛弱（frail），想要 Ronald 的擁抱'],['Choice','Ronald 猶豫（hesitate），看見 Billy 眼中的希望，決定破例擁抱'],['Result','Billy 告訴媽媽：見不到聖誕老人也沒關係，因為 Ronald 抱了他 —— after all, some things are more important']];
+function story1Draw(g,c,C,k){ var P=panels(c,0.55), fs=c.narrow?11:13, G=frame(P[0],0,10,0,5,10,false);
+  ST.forEach(function(s,i){ var y=4.3-i*1.15, on=i===k, col=[C.blue,ORANGE,PURPLE,GREEN][i]; B(g,G,0.2,y-0.45,9.8,y+0.45,alpha(col,on?0.22:0.06),col,on?2.5:1); T(g,(i+1)+'. '+s[0],G.X(0.4),G.Y(y),col,fs+1,'left','700'); T(g,['不單獨探視、不身體接觸','Billy 想要一個擁抱','猶豫 → 破例擁抱','有些事更重要'][i],G.X(9.6),G.Y(y),on?C.ink:C.muted,fs-1,'right',on?'700':'500'); if(i<3) arrow(g,G.X(5),G.Y(y-0.47),G.X(5),G.Y(y-0.68),C.muted,1.5); });
+  var H=frame(P[1],-3,3,-2.6,2.6,8,true), tilt=[-0.32,-0.12,0.12,0.32][k];
+  g.save(); g.fillStyle=C.ink; g.beginPath(); g.moveTo(H.X(0),H.Y(0.2)); g.lineTo(H.X(-0.35),H.Y(-1.0)); g.lineTo(H.X(0.35),H.Y(-1.0)); g.closePath(); g.fill(); g.restore();
+  var dx=2.3*Math.cos(tilt), dy=2.3*Math.sin(tilt); L(g,H.X(-dx),H.Y(0.2-dy),H.X(dx),H.Y(0.2+dy),C.ink,4);
+  box(g,H.X(-dx)-30,H.Y(0.2-dy)-34,60,30,alpha(C.blue,0.25),C.blue,1.5); T(g,'Rules',H.X(-dx),H.Y(0.2-dy)-19,C.blue,fs,'center','700');
+  box(g,H.X(dx)-38,H.Y(0.2+dy)-34,76,30,alpha(GREEN,0.25),GREEN,1.5); T(g,'A hug',H.X(dx),H.Y(0.2+dy)-19,GREEN,fs,'center','700');
+  T(g,k===3?'Some things are more important.':'',H.X(0),H.Y(-1.8),GREEN,fs,'center','700'); }
+widget('w-story1',{state:{k:0},rw:0.42,rn:1.0,fmt:{k:function(v){ return ST[v][0]; }},
+  draw:function(g,c,s){ story1Draw(g,c,c.C,s.k); },
+  out:function(s){ return '<b>'+ST[s.k][0]+'</b>：'+ST[s.k][1]; }
+});
+widget('s-F1',{state:{},steps:2,rw:0.42,rn:1.0,
+  draw:function(g,c,s){ story1Draw(g,c,c.C,0); },
+  out:steps(['兩條規定各有理由：不可單獨探視 → 怕<b>嚇到</b>孩子。','不可身體接觸 → 怕<b>把細菌傳給</b>孩子（pass germs to the children）→ 答案。'])
+});
+
+/* F2 虛受詞 it */
+var IV=['find','consider','think','feel'], IA=[['rewarding','to bring laughter to sick kids'],['important','to set goals'],['hard','to say no to a child'],['necessary','to follow the rules']];
+function itDraw(g,c,C,v,a,sh){ var W=c.w, H=c.h, fs=c.narrow?12:15, y1=H*0.3, y2=H*0.72, x0=12;
+  T(g,sh?'改寫後（it 占位）':'原本的想法（受詞太長）',x0,y1-36,C.muted,fs-2,'left','700');
+  var parts=sh?[['He',C.ink],[IV[v]+(v===3?'s':'s'),C.blue],['it',C.red],[IA[a][0],ORANGE],[IA[a][1],C.red]]:[['He',C.ink],[IV[v]+'s',C.blue],[IA[a][1],C.red],[IA[a][0],ORANGE]];
+  var x=x0, pos={}; parts.forEach(function(p,i){ var on=p[1]===C.red; var w=chip(g,x,y1,p[0],p[1],fs,on); pos[i]=[x,w]; x+=w+8; });
+  if(!sh) T(g,'✘ He finds to bring … rewarding（不自然）',x0,y1+34,C.muted,fs-2,'left');
+  else { var a1=pos[2], a2=pos[4]; g.save(); g.strokeStyle=C.red; g.lineWidth=2; g.setLineDash([5,4]); g.beginPath(); g.moveTo(a1[0]+a1[1]/2,y1+16); g.quadraticCurveTo((a1[0]+a2[0]+a2[1]/2)/2,y1+60,a2[0]+a2[1]/2,y1+16); g.stroke(); g.restore(); T(g,'it ＝ 後面的 to VR（虛受詞）',(a1[0]+a2[0]+a2[1]/2)/2,y1+62,C.red,fs-2,'center','700'); }
+  T(g,'公式',x0,y2-24,C.muted,fs-2,'left','700'); var xx=x0; [['S',C.ink],['find / consider / think / feel',C.blue],['it',C.red],['adj. / N',ORANGE],['to VR',C.red]].forEach(function(p){ xx+=chip(g,xx,y2+6,p[0],p[1],fs-2,false)+6; }); }
+widget('w-itobj',{state:{v:0,a:0,s:1},rw:0.4,rn:0.95,fmt:{v:function(x){ return IV[x]; },a:function(x){ return IA[x][0]; },s:function(x){ return x?'用 it 改寫':'原本'; }},
+  draw:function(g,c,s){ itDraw(g,c,c.C,s.v,s.a,s.s); },
+  out:function(s){ return 'He '+IV[s.v]+'s <b>it</b> '+IA[s.a][0]+' <b>'+IA[s.a][1]+'</b>.　（it ＝ '+IA[s.a][1]+'）'; }
+});
+widget('s-F2',{state:{},steps:2,rw:0.4,rn:0.95,
+  draw:function(g,c,s){ itDraw(g,c,c.C,1,1,s.step); },
+  out:steps(['真正被認為「重要」的是 to set goals —— 這串太長，不放在 consider 後面。','consider 後面先放虛受詞 <b>it</b>，to set goals 移到句尾 → 答案是 it。'])
+});
+
+/* F3 seem */
+var SM=[['It seems that he is tired.','He','seems','to be tired.','同時：to VR'],['It seems that Ben was sick last week.','Ben','seems','to have been sick last week.','較早：to have p.p.'],['It appears that she is studying.','She','appears','to be studying.','進行中：to be V-ing'],['It seemed that they had left.','They','seemed','to have left.','較早：to have p.p.']];
+function seemDraw(g,c,C,k){ var W=c.w, H=c.h, fs=c.narrow?12:15, x0=12, y1=H*0.25, y2=H*0.65, s=SM[k];
+  T(g,'改寫前',x0,y1-30,C.muted,fs-2,'left','700');
+  var w1=chip(g,x0,y1,'It seems that',C.muted,fs,false); var subj=s[0].replace(/^It (seems|appears|seemed) that /,''); var w2=chip(g,x0+w1+8,y1,subj,C.ink,fs,false);
+  T(g,'改寫後',x0,y2-30,C.muted,fs-2,'left','700');
+  var a=chip(g,x0,y2,s[1],C.red,fs,true), b=chip(g,x0+a+8,y2,s[2],C.blue,fs,false), d=chip(g,x0+a+b+16,y2,s[3],ORANGE,fs,true);
+  arrow(g,x0+w1+30,y1+16,x0+a/2,y2-18,C.red,2,[5,4]); T(g,'主詞搬到句首',x0+w1+40,(y1+y2)/2,C.red,fs-2,'left','700');
+  T(g,s[4],x0+a+b+16+d/2,y2+30,ORANGE,fs-1,'center','700'); }
+widget('w-seem',{state:{k:1},rw:0.4,rn:0.95,fmt:{k:function(v){ return SM[v][4]; }},
+  draw:function(g,c,s){ seemDraw(g,c,c.C,s.k); },
+  out:function(s){ var x=SM[s.k]; return x[0]+' → <b>'+x[1]+' '+x[2]+' '+x[3]+'</b>（'+x[4]+'）'; }
+});
+widget('s-F3',{state:{},steps:2,rw:0.4,rn:0.95,
+  draw:function(g,c,s){ seemDraw(g,c,c.C,s.step?1:0); },
+  out:steps(['seems 是現在；「生病」發生在 last week，比現在早。','比 seems 早的事要用 <b>to have p.p.</b>：Ben seems <b>to have been</b> sick last week → 答案。'])
+});
+
+/* F4 字群 */
+var FAM=[['employ',[['employ','v. 雇用','v'],['employer','n. 雇主','n'],['employee','n. 員工','n'],['employment','n. 雇用、就業','n']]],['hesitate',[['hesitate','v. 猶豫','v'],['hesitation','n. 猶豫','n']]],['refuse',[['refuse','v. 拒絕','v'],['refusal','n. 拒絕','n'],['turn down','ph. 拒絕（↔ accept）','v']]],['tremendous',[['tremendous','adj. 巨大的','a'],['tremendously','adv. 非常','d']]],['frighten',[['frighten','v. 使害怕','v'],['fright','n. 驚嚇','n'],['frightened','adj. 感到害怕的','a']]],['ill',[['ill','adj. 生病的','a'],['illness','n. 疾病','n'],['terminal','adj. 末期的；n. 航廈','a']]]];
+function famDraw(g,c,C,k){ var W=c.w, H=c.h, fs=c.narrow?11:14, f=FAM[k], cx=W*0.22, cy=H*0.5, col={v:C.blue,n:GREEN,a:ORANGE,d:PURPLE};
+  chip(g,12,cy,f[0],C.ink,fs+3,true);
+  var n=f[1].length; f[1].forEach(function(w,i){ var y=H*(0.12+0.76*(n===1?0.5:i/(n-1))), x=W*(c.narrow?0.42:0.38); L(g,12+tw(g,f[0],fs+3)+16,cy,x,y,col[w[2]],2); chip(g,x,y,w[0],col[w[2]],fs+1,false); T(g,w[1],x+tw(g,w[0],fs+1)+26,y,C.ink,fs,'left','700'); });
+  [['動詞','v'],['名詞','n'],['形容詞','a'],['副詞','d']].forEach(function(p,i){ box(g,W-90,10+i*20,10,10,col[p[1]],null); T(g,p[0],W-74,15+i*20,C.muted,11,'left'); }); }
+widget('w-family',{state:{k:0},rw:0.42,rn:1.0,fmt:{k:function(v){ return FAM[v][0]; }},
+  draw:function(g,c,s){ famDraw(g,c,c.C,s.k); },
+  out:function(s){ return FAM[s.k][1].map(function(w){ return '<b>'+w[0]+'</b> '+w[1]; }).join('　｜　'); }
+});
+var OPP=[['accept','turn down'],['agree with','disagree with'],['go for','go against']];
+function oppDraw(g,c,C,step){ var W=c.w, H=c.h, fs=c.narrow?12:15; OPP.forEach(function(p,i){ var y=H*(0.22+0.28*i), on=i===0&&step===1; chip(g,20,y,p[0],C.blue,fs,false); L(g,W*0.42,y,W*0.55,y,on?C.red:C.grid,on?3:1.5); T(g,'↔',W*0.485,y-12,on?C.red:C.muted,fs,'center','700'); chip(g,W*0.58,y,p[1],on?C.red:GREEN,fs,on); }); }
+widget('s-F4',{state:{},steps:2,rw:0.42,rn:1.0,
+  draw:function(g,c,s){ oppDraw(g,c,c.C,s.step); },
+  out:steps(['反義片語成對記：accept ↔ ?、agree with ↔ disagree with、go for ↔ go against。','accept（接受）的反義是 <b>turn down</b>（拒絕）→ 答案。'])
+});
+
+/* F5 Prometheus */
+var PE=[['Opening','Prometheus 用黏土造人（out of clay）',0.2],['Build-up','Epimetheus 把速度、力量、毛皮、翅膀都給了動物',0.35],['Build-up','輪到人類時禮物已用完（had run out of gifts）',0.45],['Build-up','Prometheus 讓人類直立（upright）',0.55],['Climax','Mecone 兩份祭品，宙斯只拿到骨頭 → 憤怒收回火',0.85],['Climax','Prometheus 從太陽偷火給人類',1.0],['Ending','Prometheus 被放逐、鎖住受罰，成為人類的捍衛者',0.4]];
+var CR=[['animals',['speed','strength','fur','wings']],['humans',[]]];
+function promDraw(g,c,C,k){ var P=panels(c,0.5), fs=c.narrow?10:12, G=frame(P[0],0,10,0,6,10,false);
+  var gifts=['speed','strength','fur','wings'], given=k>=1?4:0;
+  T(g,'Gifts',G.X(0.2),G.Y(5.7),C.ink,fs+1,'left','700');
+  gifts.forEach(function(gf,i){ var on=i<given; B(g,G,2.4+i*1.85,3.6,4.1+i*1.85,4.6,on?alpha(GREEN,0.5):alpha(C.muted,0.1),on?GREEN:C.grid,1); T(g,gf,G.X(3.25+i*1.85),G.Y(4.1),on?C.ink:C.muted,fs,'center','700'); });
+  T(g,'animals',G.X(0.2),G.Y(4.1),GREEN,fs+1,'left','700'); T(g,'humans',G.X(0.2),G.Y(2.3),C.blue,fs+1,'left','700');
+  var hg=[]; if(k>=3) hg.push('upright'); if(k>=5) hg.push('fire'); if(k===4&&hg.length===1){}
+  [0,1].forEach(function(i){ var on=i<hg.length; B(g,G,2.4+i*1.85,1.8,4.1+i*1.85,2.8,on?alpha(i?C.red:C.blue,0.5):alpha(C.muted,0.08),on?(i?C.red:C.blue):C.grid,1); if(on) T(g,hg[i],G.X(3.25+i*1.85),G.Y(2.3),C.ink,fs,'center','700'); });
+  if(k===2) T(g,'had run out of gifts!',G.X(8.3),G.Y(2.3),C.red,fs+1,'center','700');
+  T(g,'by Epimetheus（動物）／ by Prometheus（人類）',G.X(0.2),G.Y(0.8),C.muted,fs-1,'left');
+  var H=frame(P[1],-0.3,6.3,-0.4,1.3,12,false);
+  g.save(); g.strokeStyle=alpha(C.ink,0.4); g.lineWidth=2; g.beginPath(); PE.forEach(function(e,i){ if(i) g.lineTo(H.X(i),H.Y(e[2])); else g.moveTo(H.X(i),H.Y(e[2])); }); g.stroke(); g.restore();
+  PE.forEach(function(e,i){ var on=i===k; dot(g,H.X(i),H.Y(e[2]),on?7:4,on?C.red:i<k?C.ink:C.muted); if(on) T(g,e[0],H.X(i),H.Y(e[2])-14,C.red,fs+1,i>4?'right':'center','700'); });
+  T(g,'故事弧線',H.X(-0.2),H.Y(1.25),C.muted,fs,'left','700'); }
+widget('w-prom',{state:{k:2},rw:0.45,rn:1.05,fmt:{k:function(v){ return PE[v][0]; }},
+  draw:function(g,c,s){ promDraw(g,c,c.C,s.k); },
+  out:function(s){ return '<b>'+PE[s.k][0]+'</b>：'+PE[s.k][1]; }
+});
+widget('s-F5',{state:{},steps:2,rw:0.45,rn:1.05,
+  draw:function(g,c,s){ promDraw(g,c,c.C,s.step?2:1); },
+  out:steps(['Epimetheus 把 <b>speed, strength, fur, wings</b> 全給了動物 → 答案。','輪到人類時已經什麼都不剩；upright 和 fire 是後來 Prometheus 給人類的。'])
+});
+
+/* F6 時間軸 */
+var PF=[['By the time Epimetheus got to human beings, he had run out of gifts.','got to human beings','had run out of gifts','過去','had p.p.'],['By the time the guests arrived, we had finished cooking.','the guests arrived','had finished cooking','過去','had p.p.'],['By the time you get home, I will have finished my homework.','you get home','will have finished','未來','will have p.p.']];
+function pfDraw(g,c,C,k){ var G=frame(full(c),-0.2,10.2,-1.6,2.6,14,false), fs=c.narrow?11:13, p=PF[k], fut=k===2, ref=fut?7.8:5.2, ev=fut?6.2:2.8;
+  L(g,G.X(0),G.Y(0),G.X(10),G.Y(0),C.ink,2); arrow(g,G.X(9.6),G.Y(0),G.X(10.1),G.Y(0),C.ink,2);
+  L(g,G.X(fut?4:8),G.Y(-0.3),G.X(fut?4:8),G.Y(0.3),C.ink,2); T(g,'現在 now',G.X(fut?4:8),G.Y(-0.6),C.ink,fs,'center','700');
+  L(g,G.X(ref),G.Y(0),G.X(ref),G.Y(1.7),C.red,3); g.save(); g.fillStyle=C.red; g.beginPath(); g.moveTo(G.X(ref),G.Y(1.7)); g.lineTo(G.X(ref)+26,G.Y(1.5)); g.lineTo(G.X(ref),G.Y(1.3)); g.closePath(); g.fill(); g.restore();
+  T(g,'基準點：'+p[1],G.X(ref),G.Y(2.1),C.red,fs,'center','700');
+  dot(g,G.X(ev),G.Y(0),8,C.blue); T(g,p[2],G.X(ev),G.Y(0.6),C.blue,fs,'center','700'); T(g,'（更早完成）',G.X(ev),G.Y(-0.6),C.blue,fs-1,'center');
+  arrow(g,G.X(ev)+10,G.Y(0.25),G.X(ref)-6,G.Y(0.25),C.blue,1.5,[4,3]);
+  T(g,p[3]+'的基準點 → '+p[4],G.X(0),G.Y(-1.3),C.ink,fs+1,'left','700'); }
+widget('w-perfect',{state:{k:0},rw:0.36,rn:0.85,fmt:{k:function(v){ return PF[v][4]; }},
+  draw:function(g,c,s){ pfDraw(g,c,c.C,s.k); },
+  out:function(s){ return PF[s.k][0]; }
+});
+widget('s-F6',{state:{},steps:2,rw:0.36,rn:0.85,
+  draw:function(g,c,s){ pfDraw(g,c,c.C,s.step?0:0); },
+  out:steps(['基準點：By the time Epimetheus <b>got</b> to human beings —— 過去式，基準點在過去。','用完禮物比基準點更早 → 過去完成式 <b>had run</b> out of gifts → 答案。'])
+});
+
+/* F7 3D 列印 */
+function printDraw(g,c,C,m,t){ var G=frame(full(c),-5,5,-0.4,5.2,10,true), fs=c.narrow?11:13;
+  function wid(h){ return 1.2+0.9*Math.sin(h*0.9)+0.35*Math.cos(h*2.3); }
+  L(g,G.X(-4.6),G.Y(0),G.X(4.6),G.Y(0),C.ink,3);
+  if(m===0){ var layers=Math.floor(t*40), lh=0.1;
+    for(var i=0;i<layers;i++){ var h=i*lh, w=wid(h); B(g,G,-w,h,w,h+lh*0.92,alpha(i%2?C.blue:C.teal,0.55)); }
+    var cur=layers*lh, w2=wid(cur), nx=-w2+((t*40)%1)*2*w2; L(g,G.X(-4.6),G.Y(cur+0.9),G.X(4.6),G.Y(cur+0.9),C.muted,2); B(g,G,nx-0.25,cur+0.4,nx+0.25,cur+1.0,alpha(C.ink,0.8)); g.save(); g.fillStyle=C.ink; g.beginPath(); g.moveTo(G.X(nx-0.12),G.Y(cur+0.4)); g.lineTo(G.X(nx+0.12),G.Y(cur+0.4)); g.lineTo(G.X(nx),G.Y(cur+0.15)); g.closePath(); g.fill(); g.restore();
+    T(g,'Additive：第 '+layers+' 層',G.X(-4.8),G.Y(4.9),C.blue,fs+1,'left','700'); T(g,'材料幾乎不浪費、形狀可以很複雜',G.X(-4.8),G.Y(4.4),C.muted,fs-1,'left'); }
+  else { var blockW=2.3, cut=t; B(g,G,-blockW,0,blockW,4.0,alpha(C.muted,0.25*(1-cut)),C.muted,1);
+    for(var j=0;j<40;j++){ var h2=j*0.1, w3=wid(h2), ww=lerp(blockW,w3,cut); B(g,G,-ww,h2,ww,h2+0.092,alpha(C.teal,0.55)); }
+    var r=seeded(3); for(var q=0;q<Math.floor(cut*40);q++) dot(g,G.X(3.2+r()*1.3),G.Y(0.15+r()*0.6),3,alpha(ORANGE,0.8));
+    T(g,'Subtractive：從整塊削去',G.X(-4.8),G.Y(4.9),ORANGE,fs+1,'left','700'); T(g,'右下是削下來的廢料',G.X(-4.8),G.Y(4.4),C.muted,fs-1,'left'); } }
+widget('w-print',{state:{m:0,t:0.5},rw:0.42,rn:0.9,fmt:{m:function(v){ return v?'減法（削去）':'積層（3D 列印）'; },t:function(v){ return Math.round(v*100)+'%'; }},
+  draw:function(g,c,s){ printDraw(g,c,c.C,s.m,s.t); },
+  out:function(s){ return s.m?'傳統減法製造：從一大塊材料削掉不要的部分，會產生廢料':'<b>Additive manufacturing</b>：噴頭一層一層堆疊材料 → 適合客製化（義肢、人工珊瑚礁、建築）'; }
+});
+var CAP=[['be capable of','+ V-ing','The arm is capable of performing surgery.'],['be able to','+ VR','The arm is able to perform surgery.'],['enable sb','+ to VR','It enables doctors to practice.']];
+function capDraw(g,c,C,step){ var W=c.w, H=c.h, fs=c.narrow?11:14; CAP.forEach(function(p,i){ var y=H*(0.2+0.3*i), on=(step===0&&i===0)||(step===1&&i>0); var w=chip(g,14,y,p[0],on?C.red:C.blue,fs+1,on); chip(g,24+w,y,p[1],on?C.red:ORANGE,fs+1,false); T(g,p[2],14,y+26,C.muted,fs-1,'left'); }); }
+widget('s-F7',{state:{},steps:2,rw:0.42,rn:0.9,
+  draw:function(g,c,s){ capDraw(g,c,c.C,s.step); },
+  out:steps(['capable <b>of</b>：of 是介系詞，後面接 V-ing → <b>performing</b>（答案）。','對照：be able <b>to</b> + VR、enable sb <b>to</b> + VR。看到 to 才接原形。'])
+});
+
+/* F8 一字多義 */
+var PW=[['process',[['n. 過程','the learning process'],['v. 審核、處理','process an application'],['v. 加工','process milk into cheese']]],['rough',[['adj. 粗糙的','rough skin'],['adj. 大致的','a rough idea'],['adj. 艱難的','a rough day']]],['vision',[['n. 視力','have good vision'],['n. 遠見','a leader with vision'],['n. 願景','a vision for the future']]],['comfort',[['n. 舒適','live in comfort'],['v. 安慰','comfort a crying child'],['n. 安慰','words of comfort']]],['award',[['n. 獎項','win an award'],['v. 頒發','be awarded a prize'],['n. 獎金','a cash award']]]];
+var COL=[['communicate','with'],['be aware','of'],['run the risk','of + V-ing'],['burst sb\'s','bubble'],['cave','in']];
+function polyDraw(g,c,C,w,s,showCol){ var W=c.w, H=c.h, fs=c.narrow?11:13, cx=W*(c.narrow?0.5:0.3), cy=H*0.42, R=Math.min(W,H)*0.3, f=PW[w];
+  circle(g,cx,cy,34,alpha(C.ink,0.85),null); T(g,f[0],cx,cy,'#ffffff',fs+2,'center','700');
+  f[1].forEach(function(m,i){ var a=-PI/2+i*TAU/3, x=cx+R*Math.cos(a), y=cy+R*Math.sin(a)*0.8, on=i===s; L(g,cx+34*Math.cos(a),cy+34*Math.sin(a)*0.8,x-10*Math.cos(a),y-10*Math.sin(a),on?C.red:C.grid,on?3:1.5); circle(g,x,y,on?12:8,on?C.red:alpha(C.blue,0.4),null); T(g,m[0],x,y+(i===0?-24:22),on?C.red:C.ink,fs,'center','700'); T(g,m[1],x,y+(i===0?-42:40),on?C.ink:C.muted,fs-1,'center',on?'700':'500'); });
+  if(!c.narrow){ var x0=W*0.62; T(g,'搭配詞',x0,24,C.ink,fs+1,'left','700'); COL.forEach(function(p,i){ var y=56+i*((H-70)/COL.length), on=showCol&&i===0; var ww=chip(g,x0,y,p[0],on?C.red:C.blue,fs,on); chip(g,x0+ww+6,y,p[1],on?C.red:ORANGE,fs,false); }); T(g,'vanish ＝ disappear　temporary ↔ permanent',x0,H-14,C.muted,fs-1,'left','700'); } }
+widget('w-poly',{state:{w:0,s:1},rw:0.42,rn:1.0,fmt:{w:function(v){ return PW[v][0]; },s:function(v){ return '語境 '+(v+1); }},
+  draw:function(g,c,s){ polyDraw(g,c,c.C,s.w,s.s,false); },
+  out:function(s){ var m=PW[s.w][1][s.s]; return '<b>'+PW[s.w][0]+'</b>：'+m[0]+'　例：'+m[1]; }
+});
+widget('s-F8',{state:{},steps:2,rw:0.42,rn:1.0,
+  draw:function(g,c,s){ polyDraw(g,c,c.C,0,0,true); if(c.narrow){ var fs=12; var w=chip(g,14,c.h-24,'communicate',c.C.red,fs,true); chip(g,20+w,c.h-24,'with',ORANGE,fs,false); } },
+  out:steps(['「與某人溝通」是固定搭配：communicate <b>with</b> sb。','所以「與孩子溝通」＝ <b>communicate with children</b> → 答案。'])
+});
+`
+};
