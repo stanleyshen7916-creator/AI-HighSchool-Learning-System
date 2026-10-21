@@ -59,6 +59,40 @@ AHS.MaterialPreview = (function () {
     ]);
   }
 
+  /* lessonTabs(lesson, textChildren) — 2026-10-21: [tab bar, 互動圖解 panel,
+     文字教材與練習 panel]. The lesson frame is built only when its tab is
+     first shown, so the text tab never pays for the iframe. */
+  function lessonTabs(lesson, textChildren) {
+    var tabs = [
+      { key: "lesson", label: "互動圖解" },
+      { key: "text", label: "文字教材與練習" }
+    ];
+    var panels = {
+      lesson: el("div", { class: "mat-preview__tabpanel", role: "tabpanel", id: "mat-preview-panel-lesson" }),
+      text: el("div", { class: "mat-preview__tabpanel", role: "tabpanel", id: "mat-preview-panel-text", hidden: "hidden" }, textChildren)
+    };
+    var bar = el("div", { class: "mat-preview__tabs", role: "tablist" });
+    function show(key) {
+      Array.prototype.forEach.call(bar.children, function (b) {
+        b.setAttribute("aria-selected", b.getAttribute("data-tab") === key ? "true" : "false");
+      });
+      Object.keys(panels).forEach(function (k) {
+        if (k === key) { panels[k].removeAttribute("hidden"); } else { panels[k].setAttribute("hidden", "hidden"); }
+      });
+      if (key === "lesson" && !panels.lesson.firstChild) { panels.lesson.appendChild(AHS.VisualLessonFrame.full(lesson)); }
+    }
+    tabs.forEach(function (t) {
+      var b = el("button", {
+        type: "button", class: "mat-preview__tab", role: "tab", "data-tab": t.key,
+        "aria-controls": "mat-preview-panel-" + t.key, text: t.label
+      });
+      b.addEventListener("click", function () { show(t.key); });
+      bar.appendChild(b);
+    });
+    show("lesson");
+    return [bar, panels.lesson, panels.text];
+  }
+
   /* open(item, onDownload) — item: runtime record. onDownload(item) is
      invoked only when the user explicitly clicks 下載教材. Returns the
      overlay node. */
@@ -177,9 +211,15 @@ AHS.MaterialPreview = (function () {
       bodyChildren.push(AHS.MaterialQuestionCard.create(item).node);
     }
 
+    /* 2026-10-21 圖解教材（互動）: a material with a visual lesson opens on
+       an「互動圖解」tab (the lesson in an iframe); everything above stays,
+       unchanged, under「文字教材與練習」. */
+    var lesson = (AHS.VisualLesson && AHS.VisualLessonFrame) ? AHS.VisualLesson.forMaterial(item) : null;
+    if (lesson) { bodyChildren = lessonTabs(lesson, bodyChildren); }
+
     overlay.addEventListener("click", function (e) { if (e.target === overlay) { close(); } });
 
-    var panel = el("div", { class: "mat-preview" }, [
+    var panel = el("div", { class: "mat-preview" + (lesson ? " mat-preview--lesson" : "") }, [
       el("div", { class: "mat-preview__head" }, [
         el("h2", { class: "mat-preview__title", text: item.title }),
         closeX

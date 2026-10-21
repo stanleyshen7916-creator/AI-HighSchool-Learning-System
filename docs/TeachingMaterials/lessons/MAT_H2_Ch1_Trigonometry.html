@@ -1,0 +1,1408 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三角函數圖解教材</title>
+<script>
+/* 嵌入參數：embed=1（教材中心）、card=F10（學習助教只顯示單一公式）、theme=light */
+(function(){
+  var p={}; String(location.search||'').replace(/^\?/,'').split('&').forEach(function(kv){ if(!kv) return; var i=kv.indexOf('='); p[decodeURIComponent(i<0?kv:kv.slice(0,i))]=decodeURIComponent(i<0?'':kv.slice(i+1)); });
+  var r=document.documentElement;
+  if(p.embed==='1'||p.card) r.classList.add('is-embed');
+  if(p.card&&/^F\d+$/.test(p.card)){ r.classList.add('is-card'); r.setAttribute('data-card',p.card); }
+  if(p.theme==='light'||p.theme==='dark') r.setAttribute('data-theme',p.theme);
+})();
+</script>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&family=STIX+Two+Text:ital,wght@0,500;1,500&display=swap">
+<style>
+/* 版面概念：方格紙上的講義頁。老師紅筆＝重點與互動指標，青綠＝角度/弧，金黃＝對照量 */
+:root{
+  --paper:#ECF0F5; --gridbg:#E0E6EE; --sheet:#FFFFFF; --ink:#1B2640; --muted:#5A677E;
+  --grid:#DCE2EB; --line:#C8D1DE; --chip:#F1F4F8;
+  --red:#C2362B; --teal:#0E7A74; --gold:#A46A10; --blue:#3454B4;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-math:"STIX Two Text","Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1420; --gridbg:#141C2B; --sheet:#161F30; --ink:#E5EAF3; --muted:#94A1B8;
+  --grid:#25314A; --line:#2E3B55; --chip:#1C2639;
+  --red:#FF7B6C; --teal:#45C3B8; --gold:#E7B04C; --blue:#8DA8FF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1420; --gridbg:#141C2B; --sheet:#161F30; --ink:#E5EAF3; --muted:#94A1B8;
+  --grid:#25314A; --line:#2E3B55; --chip:#1C2639;
+  --red:#FF7B6C; --teal:#45C3B8; --gold:#E7B04C; --blue:#8DA8FF; color-scheme:dark}
+
+body{background-color:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  background-image:linear-gradient(var(--gridbg) 1px,transparent 1px),linear-gradient(90deg,var(--gridbg) 1px,transparent 1px);
+  background-size:28px 28px}
+.wrap{max-width:920px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:28px}
+.top{display:grid;gap:10px}
+.eyebrow{font-size:13px;letter-spacing:.12em;color:var(--muted);font-weight:500}
+h1{font-family:var(--f-display);font-weight:900;font-size:clamp(2.2rem,6vw,3.2rem);line-height:1.15;margin:0;text-wrap:balance}
+h1 small{display:block;font-size:.42em;font-weight:700;color:var(--muted);margin-top:6px;letter-spacing:.04em}
+.pilot{border:1.5px dashed var(--red);color:var(--red);border-radius:8px;padding:10px 14px;font-size:14px;background:var(--sheet)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;align-items:center}
+.tag{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:500;white-space:nowrap}
+.tag.src{color:var(--teal)} .tag.std{color:var(--gold)} .tag.add{color:var(--blue)}
+.prog{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-4px;padding:8px 4px;display:flex;gap:8px;overflow-x:auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+nav.toc a{flex:none;text-decoration:none;color:var(--ink);font-size:13px;border:1px solid var(--line);background:var(--sheet);border-radius:999px;padding:3px 12px}
+nav.toc a:hover{border-color:var(--red);color:var(--red)}
+section{display:grid;gap:18px}
+h2{font-family:var(--f-display);font-size:1.6rem;margin:0;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+h2 .no{color:var(--red);font-family:var(--f-math);font-size:1.1em}
+.plan{border:1px dashed var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;background:var(--sheet);font-size:14px}
+.plan b{display:block;font-size:12px;letter-spacing:.1em;color:var(--muted);font-weight:500}
+@media (max-width:640px){.plan{grid-template-columns:1fr}}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px;min-width:0}
+.card-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card-h .pg{font-size:12px;color:var(--muted);white-space:nowrap}
+.card-h .code{font-family:var(--f-math);color:var(--muted);font-size:14px}
+.card-h h3{margin:0;font-family:var(--f-display);font-size:1.25rem;flex:1 1 auto;text-wrap:balance}
+.say{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start}
+.say .who{background:var(--red);color:var(--sheet);font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;margin-top:4px;white-space:nowrap}
+.say p{margin:0}
+.formula{font-family:var(--f-math);font-size:1.45rem;text-align:center;background:var(--chip);border-radius:8px;padding:12px;overflow-x:auto;line-height:1.6}
+.formula i{font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.85em;line-height:1.15;margin:0 2px}
+.fr>span+span{border-top:1.5px solid currentColor}
+.viz{display:grid;gap:10px}
+.cv{min-width:0}
+.cv canvas{display:block;width:100%;border:1px solid var(--line);border-radius:8px;background:var(--sheet)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.sl{display:grid;grid-template-columns:auto minmax(120px,220px) auto;gap:8px;align-items:center;font-size:14px}
+.sl span{font-family:var(--f-math);font-style:italic;font-size:1.05rem}
+.sl output{font-variant-numeric:tabular-nums;color:var(--muted);min-width:5.5em}
+input[type=range]{accent-color:var(--red);width:100%}
+button.play{font:inherit;font-size:13px;border:1px solid var(--red);color:var(--red);background:transparent;border-radius:999px;padding:3px 14px;cursor:pointer}
+button.play:hover{background:var(--red);color:var(--sheet)}
+button.play:disabled{opacity:.35;cursor:default;background:transparent;color:var(--red)}
+.stepno{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.out{margin:0;font-size:14px;background:var(--chip);border-radius:8px;padding:8px 12px;font-variant-numeric:tabular-nums;overflow-x:auto}
+.out b{color:var(--red)}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.notes{grid-template-columns:1fr}}
+.notes div{border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14.5px}
+.notes b{display:block;font-size:13px;margin-bottom:2px}
+.space b{color:var(--teal)} .trap b{color:var(--red)}
+
+.qc{border:1.5px dashed var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;font-size:14.5px}
+.qc .q{margin:0}
+.qc .q b{color:var(--red);margin-right:8px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices button{font:inherit;font-family:var(--f-math);font-size:15px;color:var(--ink);background:var(--chip);border:1.5px solid var(--line);border-radius:8px;padding:4px 14px;cursor:pointer}
+.choices button:hover{border-color:var(--ink)}
+.choices button[aria-pressed="true"]{border-color:var(--blue);color:var(--blue)}
+.choices button.right{border-color:var(--teal);color:var(--teal);font-weight:700}
+.choices button.wrong{border-color:var(--red);color:var(--red);text-decoration:line-through}
+.check{font:inherit;font-size:13px;border:none;background:var(--ink);color:var(--sheet);border-radius:999px;padding:4px 16px;cursor:pointer;justify-self:start}
+.fb{margin:0;min-height:1.4em}
+.fb .ok{color:var(--teal)} .fb .no{color:var(--red)}
+details.sol summary{cursor:pointer;font-weight:700;color:var(--blue)}
+details.sol[open] summary{margin-bottom:10px}
+
+.done{display:inline-flex;gap:8px;align-items:center;font-size:14px;color:var(--muted);justify-self:start;cursor:pointer}
+.done input{accent-color:var(--teal);width:18px;height:18px}
+.foot{font-size:14px;color:var(--muted);display:grid;gap:8px}
+.foot h2{font-size:1.2rem;color:var(--ink)}
+.foot ul{margin:0;padding-left:1.2em}
+.foot a{color:var(--blue)}
+[hidden]{display:none!important}
+
+/* 平台嵌入模式（由 js/ui/VisualLessonFrame.js 以 ?embed=1 / ?card=Fn 載入） */
+.is-embed body{background-image:none}
+.is-embed .wrap{padding-block:16px 24px}
+.is-card .wrap{padding-block:4px 8px;gap:0;padding-left:4px;padding-right:4px}
+.is-card .top,.is-card nav.toc,.is-card .plan,.is-card section>h2,.is-card .foot{display:none}
+.is-card section{display:none}
+.is-card section.has-focus{display:grid}
+.is-card .card{display:none}
+.is-card .card.is-focus{display:grid}
+.is-card body{background:var(--sheet)}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="ahs-vl-root" data-ahs-module="VisualLesson" data-ahs-subject="MATH" data-ahs-unit="MATH-3A-CH1">
+  <header class="top">
+    <div class="eyebrow">數學 3A ・ 第 1 章 ・ 高二上</div>
+    <h1>三角函數<small>用圖看懂每一條公式</small></h1>
+    <div class="legend">
+      <span class="tag src">依上傳教材</span>
+      <span class="tag add">老師補充</span>
+      <span class="prog" id="prog">已完成 0 / 15</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="本頁目錄">
+    <a href="#s1-1">1-1 弧度量</a><a href="#s1-2">1-2 三角函數的圖形</a><a href="#s1-3">1-3 和角與差角</a><a href="#s1-4">1-4 疊合</a>
+  </nav>
+
+  <section id="s1-1">
+    <h2><span class="no">1-1</span>弧度量</h2>
+    <div class="plan">
+      <div><b>本節目標</b>知道「弳」就是拿半徑去量弧，會用 θ = s/r、扇形面積和度弳換算解題。</div>
+      <div><b>先備知識</b>圓周長 2πr、圓面積 πr²、高一的廣義角。</div>
+      <div><b>建議節數</b>約 3 至 4 節課，最後一節做圓錐和摺扇應用題。課本範圍 p.2–13。</div>
+    </div>
+
+    <!-- F1 -->
+    <article class="card" id="F1" data-ahs-formula="MATH-3A-1-1-F1">
+      <div class="card-h"><span class="code">1-1 · F1</span><h3>弧度（弳）的定義</h3><span class="pg">課本 p.2–5</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>好，大家先想像手上有一條繩子，長度剛好跟半徑一樣。把它沿著圓周彎上去貼好，繩子兩端跟圓心連起來，夾出來的角就叫 <b>1 弳</b>。所以弳其實只是在問一件事：「這段弧，有幾個半徑那麼長？」就這樣，沒有很難。</p></div>
+      <div class="formula"><i>θ</i> = <span class="fr"><span><i>s</i></span><span><i>r</i></span></span>　　⇔　　<i>s</i> = <i>r</i><i>θ</i></div>
+      <div class="viz" id="w-radian">
+        <div class="cv"><canvas aria-label="圓與半徑彎成弧長的示意圖"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>θ</span><input type="range" id="w-radian-t" data-k="t" min="0" max="6.28" step="0.01"><output data-v="t"></output></label>
+          <label class="sl"><span>r</span><input type="range" id="w-radian-r" data-k="r" min="0.8" max="3" step="0.1"><output data-v="r"></output></label>
+          <label class="sl"><span>彎繩</span><input type="range" id="w-radian-b" data-k="b" min="0" max="1" step="0.01"><output data-v="b"></output></label>
+          <button class="play" type="button" data-play="b" data-dur="2200">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>拖拖看「彎繩」，紅色那段就會貼上圓周。再把 r 拉大拉小：圓變了，可是 1 弳那個角完全沒變。所以弳只看比例，跟圓多大沒關係。</div>
+        <div class="trap"><b>常見錯誤</b>很多同學以為 1 弳很小，其實它有 57.3° 那麼大！一整圈只塞得下大約 6.28 段半徑，2π 就是這樣來的。</div>
+      </div>
+      <div class="qc" data-q="F1">
+        <p class="q"><b>小試身手</b>半徑 6 的圓上，有一段長度 9 的弧。它所對的圓心角是幾弳？</p>
+        <div class="choices" data-answer="b">
+          <button type="button" data-c="a" data-why="你可能把 r 和 s 放反了。記得是「弧長 ÷ 半徑」。">2/3</button>
+          <button type="button" data-c="b">3/2</button>
+          <button type="button" data-c="c" data-why="乘起來是 rθ 那條式子的用法喔，這題是已知 s 和 r 求 θ。">54</button>
+          <button type="button" data-c="d" data-why="弳度不一定帶 π。這題的答案是一個單純的比值。">3π/2</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F1"><div class="cv"><canvas aria-label="逐步圖解：用半徑長去量弧長"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F1" data-done="F1">我會了</label>
+    </article>
+
+    <!-- F2 -->
+    <article class="card" id="F2" data-ahs-formula="MATH-3A-1-1-F2">
+      <div class="card-h"><span class="code">1-1 · F2</span><h3>扇形面積</h3><span class="pg">課本 p.6–9</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>扇形面積這條公式，老師真的不希望你用背的。你想像切披薩：把扇形切成很多細細的一片，然後一片正放、一片倒放排排看。是不是越排越像長方形？高就是 r，底是弧長的一半。長方形面積是底乘高，公式就出來了。</p></div>
+      <div class="formula"><i>A</i> = <span class="fr"><span>1</span><span>2</span></span><i>r</i><sup>2</sup><i>θ</i> = <span class="fr"><span>1</span><span>2</span></span><i>r</i><i>s</i></div>
+      <div class="viz" id="w-sector">
+        <div class="cv"><canvas aria-label="扇形切片後交錯拼成近似長方形"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>r</span><input type="range" id="w-sector-r" data-k="r" min="1" max="3" step="0.1"><output data-v="r"></output></label>
+          <label class="sl"><span>θ</span><input type="range" id="w-sector-t" data-k="t" min="0.3" max="3.14" step="0.01"><output data-v="t"></output></label>
+          <label class="sl"><span>片數</span><input type="range" id="w-sector-n" data-k="n" min="2" max="48" step="2"><output data-v="n"></output></label>
+          <button class="play" type="button" data-play="n" data-dur="3500">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>按播放，片數越切越多，拼出來的邊就越直，越像「底 ½s、高 r」的長方形。偷偷跟你說，以後學積分，用的就是這種「切細再加起來」的想法。</div>
+        <div class="trap"><b>常見錯誤</b>θ 直接代角度進去。公式裡的 θ 一定要用弳！題目給 120°，先換成 2π/3 再算。</div>
+      </div>
+      <div class="qc" data-q="F2">
+        <p class="q"><b>小試身手</b>一把摺扇完全打開時，圓心角是 120°。扇骨長 30 cm，扇面寬 18 cm（扇面在外側，靠近圓心的部分沒有扇面）。扇面的面積是多少 cm²？</p>
+        <div class="choices" data-answer="c">
+          <button type="button" data-c="a" data-why="這是整個大扇形的面積，還沒扣掉靠近圓心、沒有扇面的那一塊喔。">300π</button>
+          <button type="button" data-c="b" data-why="小心：扇面寬 18 不是小扇形半徑。小扇形半徑是 30 − 18 = 12。">192π</button>
+          <button type="button" data-c="c">252π</button>
+          <button type="button" data-c="d" data-why="看起來是直接用 120 代進 θ 了。θ 要先換成弳：120° = 2π/3。">54000</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F2"><div class="cv"><canvas aria-label="逐步圖解：大扇形減小扇形"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F2" data-done="F2">我會了</label>
+    </article>
+
+    <!-- F3 -->
+    <article class="card" id="F3" data-ahs-formula="MATH-3A-1-1-F3">
+      <div class="card-h"><span class="code">1-1 · F3</span><h3>度與弳的換算</h3><span class="pg">課本 p.2–5</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>換算這邊，你只要記一句話就好：<b>半圈 = 180° = π</b>。其他通通用比例去換，不用背一堆數字。下面這個量角器很特別，外圈是度、內圈是弳。你轉轉看，兩種講法其實指的是同一個角。</p></div>
+      <div class="formula">π 弳 = 180°　　1° = <span class="fr"><span>π</span><span>180</span></span> 弳 ≈ 0.0175 弳　　1 弳 = <span class="fr"><span>180°</span><span>π</span></span> ≈ 57.3°</div>
+      <div class="viz" id="w-dial">
+        <div class="cv"><canvas aria-label="外圈度數、內圈弳度的雙刻度量角器"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>角度</span><input type="range" id="w-dial-d" data-k="d" min="0" max="360" step="1"><output data-v="d"></output></label>
+          <button class="play" type="button" data-play="d" data-dur="6000">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>金色虛線是 1 弳的位置，比 60° 小一點點。π/6、π/4、π/3、π/2 這幾個位置，你把它們想成時鐘上的刻度，會比背數字快很多。</div>
+        <div class="trap"><b>常見錯誤</b>計算機停在 DEG 模式，卻輸入弳度。如果你算 sin(π/6) 跑出 0.0091 而不是 0.5，八成就是模式沒切。</div>
+      </div>
+      <div class="qc" data-q="F3">
+        <p class="q"><b>小試身手</b>140° 換成弳度是多少？</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">7π/9</button>
+          <button type="button" data-c="b" data-why="你可能把 180° 當成 2π 了。記得半圈才是 π。">7π/18</button>
+          <button type="button" data-c="c" data-why="分子分母顛倒了。140° 比半圈小，答案應該比 π 小。">9π/7</button>
+          <button type="button" data-c="d" data-why="這是 140 × 180 ÷ π，方向乘反了。度換弳是乘 π/180。">8021</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F3"><div class="cv"><canvas aria-label="逐步圖解：把半圈切成九等份"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F3" data-done="F3">我會了</label>
+    </article>
+
+    <!-- F4 -->
+    <article class="card" id="F4" data-ahs-formula="MATH-3A-1-1-F4">
+      <div class="card-h"><span class="code">1-1 · F4</span><h3>應用：圓錐展開成扇形</h3><span class="pg">課本 1-1</span><span class="tag src">依上傳教材</span><span class="tag add">老師補充</span></div>
+      <div class="say"><span class="who">老師說</span><p>大家都戴過生日派對那種尖尖的帽子吧？拿剪刀沿著一條斜邊剪開、攤平，就會得到一個扇形。這種題目只要抓住一句話：<b>帽口那一圈有多長，扇形的弧就有多長</b>。扇形的半徑呢，就是帽子的斜邊，也就是母線 l。</p></div>
+      <div class="formula">2π<i>R</i> = <i>l</i><i>θ</i>　⇒　<i>θ</i> = <span class="fr"><span>2π<i>R</i></span><span><i>l</i></span></span>　　側面積 = <span class="fr"><span>1</span><span>2</span></span><i>l</i><sup>2</sup><i>θ</i> = π<i>R</i><i>l</i></div>
+      <div class="viz" id="w-cone">
+        <div class="cv"><canvas aria-label="圓錐與其側面展開扇形，底圓周對應扇形弧長"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>R</span><input type="range" id="w-cone-R" data-k="R" min="0.5" max="2" step="0.05"><output data-v="R"></output></label>
+          <label class="sl"><span>l</span><input type="range" id="w-cone-l" data-k="l" min="1" max="3.5" step="0.05"><output data-v="l"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>你看，金色同時出現在圓錐底和扇形的弧上，因為它們根本是同一條線。把 R 拉到很接近 l，帽子變得很扁，扇形就快變成一整個圓了。</div>
+        <div class="trap"><b>常見錯誤</b>把圓錐的高 h 當成扇形半徑。扇形半徑是斜邊 l 喔！高要另外算：h = √(l² − R²)。</div>
+      </div>
+      <div class="qc" data-q="F4">
+        <p class="q"><b>小試身手</b>一個圓錐的底半徑是 3、母線長是 9。把側面攤開成扇形，圓心角是多少？</p>
+        <div class="choices" data-answer="b">
+          <button type="button" data-c="a" data-why="R/l = 1/3 只是比例，還要乘上一整圈的 2π 才是角度。">1/3 弳</button>
+          <button type="button" data-c="b">2π/3（120°）</button>
+          <button type="button" data-c="c" data-why="扇形半徑是 9（母線），不是 3。弧長 6π 除以 9 才對。">2π（360°）</button>
+          <button type="button" data-c="d" data-why="可能用了高 h 當半徑。扇形半徑是母線 9。">π/2（90°）</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F4"><div class="cv"><canvas aria-label="逐步圖解：底圓周等於扇形弧長"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F4" data-done="F4">我會了</label>
+    </article>
+  </section>
+
+  <section id="s1-2">
+    <h2><span class="no">1-2</span>三角函數的圖形</h2>
+    <div class="plan">
+      <div><b>本節目標</b>從單位圓看懂 sin、cos、tan 的圖形，會判讀振幅、週期、平移，並用正弦函數建立週期模型。</div>
+      <div><b>先備知識</b>1-1 弧度量、廣義角的三角比、函數圖形的平移。</div>
+      <div><b>建議節數</b>約 6 至 7 節課。課本範圍 p.14–39。</div>
+    </div>
+    <!-- F5 -->
+    <article class="card" id="F5" data-ahs-formula="MATH-3A-1-2-F1">
+      <div class="card-h"><span class="code">1-2 · F1</span><h3>正弦函數 y = sin x</h3><span class="pg">課本 p.14–19</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>sin x 的圖，很多人是硬背形狀。其實它就只是「單位圓上一個點的高度」。點沿著圓走多長的弧，右邊的 x 就走多遠，然後把高度記下來。繞完一圈，波就畫完一個週期。來，先按播放看一次。</p></div>
+      <div class="formula">定義域 ℝ　值域 [−1, 1]　週期 2π　振幅 1<br><span style="font-size:.8em">對稱軸 <i>x</i> = <span class="fr"><span>π</span><span>2</span></span> + <i>n</i>π　　對稱中心 (<i>n</i>π, 0)</span></div>
+      <div class="viz" id="w-sin">
+        <div class="cv"><canvas aria-label="單位圓上點的高度描出正弦曲線"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>x</span><input type="range" id="w-sin-x" data-k="x" min="0" max="6.283" step="0.01"><output data-v="x"></output></label>
+          <button class="play" type="button" data-play="x" data-dur="6000">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>左邊青綠色的弧，被「拉直」變成右邊 x 軸上的青綠線段，兩段一樣長。這就是為什麼畫函數圖時 x 一定用弳，因為它就是弧長。</div>
+        <div class="trap"><b>常見錯誤</b>以為 sin x 在 x = π 最小。其實點走到最左邊時高度是 0，要到 3π/2（正下方）才是最低的 −1。</div>
+      </div>
+      <div class="qc" data-q="F5">
+        <p class="q"><b>小試身手</b>在 0 ≤ x ≤ 2π 中，sin x = 1/2 的解有哪些？（可複選，選好按「檢查」）</p>
+        <div class="choices" data-answer="a,c" data-multi>
+          <button type="button" data-c="a" aria-pressed="false">π/6</button>
+          <button type="button" data-c="b" aria-pressed="false" data-why="π/3 的高度是 √3/2，比 1/2 高。在單位圓上看一下就知道了。">π/3</button>
+          <button type="button" data-c="c" aria-pressed="false">5π/6</button>
+          <button type="button" data-c="d" aria-pressed="false" data-why="7π/6 在第三象限，點在 x 軸下面，高度是 −1/2。">7π/6</button>
+        </div>
+        <button class="check" type="button" data-check>檢查</button>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F5"><div class="cv"><canvas aria-label="逐步圖解：水平線 y=1/2 與單位圓、正弦曲線的交點"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span>
+              <label class="sl" data-only-step="3"><span>k</span><input type="range" id="s-F5-k" data-k="k" min="-1.2" max="1.2" step="0.01"><output data-v="k"></output></label></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F5" data-done="F5">我會了</label>
+    </article>
+  
+    <!-- F6 cos -->
+    <article class="card" id="F6" data-ahs-formula="MATH-3A-1-2-F2" data-ahs-source="p.14–39">
+      <div class="card-h"><span class="code">1-2 · F2</span><h3>餘弦函數 y = cos x</h3><span class="pg">課本 1-2</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>cos x 不用重新學一次！它跟 sin x 根本是同一條波，只是往左挪了 π/2。你拖拖看下面的滑桿，把 sin x 慢慢往左推，推到 π/2 的時候，它就跟 cos x 疊在一起了。</p></div>
+      <div class="formula">cos <i>x</i> = sin(<i>x</i> + <span class="fr"><span>π</span><span>2</span></span>)<br><span style="font-size:.8em">對稱軸 <i>x</i> = <i>n</i>π　　對稱中心 (<span class="fr"><span>π</span><span>2</span></span> + <i>n</i>π, 0)　　其他性質與 sin x 相同</span></div>
+      <div class="viz" id="w-cos">
+        <div class="cv"><canvas aria-label="sin x 向左平移變成 cos x"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>左移</span><input type="range" id="w-cos-s" data-k="s" min="0" max="1.5708" step="0.01"><output data-v="s"></output></label>
+          <button class="play" type="button" data-play="s" data-dur="2500">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>盯著那個最高點：它從 π/2 一路滑到 0。最高點搬家了，對稱軸也跟著搬，所以 cos x 的對稱軸是 x = 0、π、2π…</div>
+        <div class="trap"><b>常見錯誤</b>以為 sin 和 cos 的對稱軸一樣。記一句：cos 的對稱軸、對稱中心，都是 sin 的「左移 π/2」。</div>
+      </div>
+      <div class="qc" data-q="F6">
+        <p class="q"><b>小試身手</b>下列哪一條是 y = cos x 圖形的對稱軸？</p>
+        <div class="choices" data-answer="b">
+          <button type="button" data-c="a" data-why="x = π/2 是 sin x 的對稱軸。cos x 在 x = π/2 時剛好是 0，那是對稱中心喔。">x = π/2</button>
+          <button type="button" data-c="b">x = π</button>
+          <button type="button" data-c="c" data-why="π/4 不是最高點也不是最低點，鉛直線要通過最高或最低點才會是對稱軸。">x = π/4</button>
+          <button type="button" data-c="d" data-why="cos(3π/2) = 0，(3π/2, 0) 是對稱中心，不是對稱軸。">x = 3π/2</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F6"><div class="cv"><canvas aria-label="逐步圖解：對稱軸跟著平移"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F6" data-done="F6">我會了</label>
+    </article>
+
+    <!-- F7 平移伸縮 -->
+    <article class="card" id="F7" data-ahs-formula="MATH-3A-1-2-F3" data-ahs-source="p.20–25">
+      <div class="card-h"><span class="code">1-2 · F3</span><h3>平移與伸縮：y = a sin(bx − h) + k</h3><span class="pg">課本 p.20–25</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>這條式子看起來很嚇人，其實四個字母各管一件事：<b>a 管高矮</b>（振幅）、<b>b 管胖瘦</b>（週期 2π/b）、<b>h 管左右</b>、<b>k 管上下</b>。來，一個一個拉，看它們各自做了什麼。</p></div>
+      <div class="formula"><i>y</i> = <i>a</i> sin(<i>b</i><i>x</i> − <i>h</i>) + <i>k</i>　＝　<i>a</i> sin <i>b</i>(<i>x</i> − <span class="fr"><span><i>h</i></span><span><i>b</i></span></span>) + <i>k</i><br><span style="font-size:.8em">振幅 <i>a</i>　週期 <span class="fr"><span>2π</span><span><i>b</i></span></span>　右移 <span class="fr"><span><i>h</i></span><span><i>b</i></span></span>　上移 <i>k</i></span></div>
+      <div class="viz" id="w-gen">
+        <div class="cv"><canvas aria-label="調整 a、b、h、k 觀察正弦圖形的平移與伸縮"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>a</span><input type="range" id="w-gen-a" data-k="a" min="0.5" max="2.5" step="0.1"><output data-v="a"></output></label>
+          <label class="sl"><span>b</span><input type="range" id="w-gen-b" data-k="b" min="0.5" max="3" step="0.1"><output data-v="b"></output></label>
+          <label class="sl"><span>h</span><input type="range" id="w-gen-h" data-k="h" min="-3.14" max="3.14" step="0.01"><output data-v="h"></output></label>
+          <label class="sl"><span>k</span><input type="range" id="w-gen-k" data-k="k" min="-1" max="1" step="0.1"><output data-v="k"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>只動 h 的時候注意看：b 越大，同一個 h 讓圖形移動得越少。因為真正的位移是 h/b，不是 h。</div>
+        <div class="trap"><b>常見錯誤</b>看到 sin(3x − π) 就說「右移 π」。要先把 3 提出來：sin 3(x − π/3)，右移的是 <b>π/3</b>。</div>
+      </div>
+      <div class="qc" data-q="F7">
+        <p class="q"><b>小試身手</b>y = 2 sin(3x − π) + 1 的圖形，可以由 y = sin x 怎麼變過來？</p>
+        <div class="choices" data-answer="c">
+          <button type="button" data-c="a" data-why="h 要除以 b！3x − π = 3(x − π/3)，右移的是 π/3。">週期 2π/3，右移 π，振幅 2，上移 1</button>
+          <button type="button" data-c="b" data-why="週期是 2π ÷ b = 2π/3，不是 2π × 3。b 越大，圖形越「擠」。">週期 6π，右移 π/3，振幅 2，上移 1</button>
+          <button type="button" data-c="c">週期 2π/3，右移 π/3，振幅 2，上移 1</button>
+          <button type="button" data-c="d" data-why="減號是往右移喔。x − π/3 代表要等 x 多走 π/3 才追上原本的位置。">週期 2π/3，左移 π/3，振幅 2，上移 1</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F7"><div class="cv"><canvas aria-label="逐步圖解：先伸縮、再平移、再上下"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F7" data-done="F7">我會了</label>
+    </article>
+
+    <!-- F8 週期模型 -->
+    <article class="card" id="F8" data-ahs-formula="MATH-3A-1-2-F4" data-ahs-source="p.30–31">
+      <div class="card-h"><span class="code">1-2 · F4</span><h3>週期模型：月球亮面比例</h3><span class="pg">課本 p.30–31 例題 5</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>課本這題超生活：每兩天記一次月亮亮的比例，點畫出來一看，欸，像不像一條正弦波？那我們就來「調」一條 sin 曲線去貼這些點。四個滑桿調到剛好貼住，你就自己把模型做出來了。</p></div>
+      <div class="formula"><i>y</i> = <i>a</i> sin(<i>b</i><i>x</i> − <i>h</i>) + <i>k</i>　　週期 <i>T</i> = 2 ×（最高點 <i>x</i> − 最低點 <i>x</i>）　　<i>a</i> = <span class="fr"><span>最大 − 最小</span><span>2</span></span>　　<i>k</i> = <span class="fr"><span>最大 + 最小</span><span>2</span></span></div>
+      <div class="viz" id="w-moon">
+        <div class="cv"><canvas aria-label="月球亮面比例資料點與正弦模型"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>週期 T</span><input type="range" id="w-moon-T" data-k="T" min="20" max="36" step="1"><output data-v="T"></output></label>
+          <label class="sl"><span>a</span><input type="range" id="w-moon-a" data-k="a" min="0.2" max="0.7" step="0.05"><output data-v="a"></output></label>
+          <label class="sl"><span>k</span><input type="range" id="w-moon-k" data-k="k" min="0.2" max="0.8" step="0.05"><output data-v="k"></output></label>
+          <label class="sl"><span>最低點</span><input type="range" id="w-moon-m" data-k="m" min="0" max="14" step="1"><output data-v="m"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>「平均誤差」越小代表貼得越好。你會發現 T 只要差一點點，後面的點就整排歪掉，週期是最關鍵的參數。</div>
+        <div class="trap"><b>常見錯誤</b>把「最高點到最低點」的距離當週期。那只是半個週期，要乘 2。</div>
+      </div>
+      <div class="qc" data-q="F8">
+        <p class="q"><b>小試身手</b>資料中最高點是 (22, 1)、最低點是 (8, 0)，而且兩點之間沒有別的最高或最低點。這個模型的週期是幾天？</p>
+        <div class="choices" data-answer="b">
+          <button type="button" data-c="a" data-why="22 − 8 = 14 只是從最低走到最高，是半個週期而已。">14</button>
+          <button type="button" data-c="b">28</button>
+          <button type="button" data-c="c" data-why="22 是最高點出現的那天，不是週期。">22</button>
+          <button type="button" data-c="d" data-why="30 是資料記錄的天數範圍，跟週期無關。">30</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F8"><div class="cv"><canvas aria-label="逐步圖解：由最高最低點求週期、振幅、平移"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F8" data-done="F8">我會了</label>
+    </article>
+
+    <!-- F9 tan -->
+    <article class="card" id="F9" data-ahs-formula="MATH-3A-1-2-F5" data-ahs-source="p.32–35">
+      <div class="card-h"><span class="code">1-2 · F5</span><h3>正切函數 y = tan x</h3><span class="pg">課本 p.32–35</span><span class="tag src">依上傳教材</span><span class="tag add">老師補充</span></div>
+      <div class="say"><span class="who">老師說</span><p>tan x 在單位圓上也看得到：在 x = 1 的地方立一條直線，叫它「切線」。把角的終邊一路延長，打到切線上的高度，就是 tan x。角越接近 90°，終邊越接近跟切線平行，就打不到了，這就是漸近線的由來。</p></div>
+      <div class="formula">定義域 {<i>x</i> | <i>x</i> ≠ <span class="fr"><span>π</span><span>2</span></span> + <i>n</i>π}　值域 ℝ　週期 π　對稱於原點</div>
+      <div class="viz" id="w-tan">
+        <div class="cv"><canvas aria-label="單位圓切線上的高度描出正切曲線"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>x</span><input type="range" id="w-tan-x" data-k="x" min="-1.5" max="1.5" step="0.01"><output data-v="x"></output></label>
+          <button class="play" type="button" data-play="x" data-dur="5000">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>把 x 拉到 1.5 附近，看左邊那條延長線變得多陡。它衝出畫面時，右邊的曲線也剛好衝向漸近線。</div>
+        <div class="trap"><b>常見錯誤</b>以為 tan 的週期跟 sin 一樣是 2π。角轉半圈（加 π），終邊還是同一條直線，打到切線的位置一樣，所以週期是 π。</div>
+      </div>
+      <div class="qc" data-q="F9">
+        <p class="q"><b>小試身手</b>關於 y = tan x 在 0 ≤ x ≤ 2π 的圖形，哪一個正確？</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">週期 π，漸近線 x = π/2 和 x = 3π/2</button>
+          <button type="button" data-c="b" data-why="週期不是 2π。θ 和 θ + π 的終邊在同一條直線上，tan 值一樣。">週期 2π，漸近線只有 x = π/2</button>
+          <button type="button" data-c="c" data-why="x = 0、π、2π 是 tan x = 0 的地方（跟 x 軸的交點），不是漸近線。">週期 π，漸近線 x = 0、π、2π</button>
+          <button type="button" data-c="d" data-why="週期對了，但 3π/2 也是 cos x = 0 的地方，那邊也有一條漸近線。">週期 π，漸近線只有 x = π/2</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F9"><div class="cv"><canvas aria-label="逐步圖解：漸近線與週期"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F9" data-done="F9">我會了</label>
+    </article>
+  </section>
+
+  <section id="s1-3">
+    <h2><span class="no">1-3</span>三角的和角與差角公式</h2>
+    <div class="plan">
+      <div><b>本節目標</b>看懂和差角公式從哪裡來，會用它算特殊角、兩直線夾角，再推出倍角與半角。</div>
+      <div><b>先備知識</b>單位圓上 P(cos θ, sin θ)、直角三角形、斜率 = tan(傾斜角)。</div>
+      <div><b>建議節數</b>約 5 至 6 節課。課本範圍 p.40–54。</div>
+    </div>
+
+    <!-- F10 和角 -->
+    <article class="card" id="F10" data-ahs-formula="MATH-3A-1-3-F1" data-ahs-source="p.40–43">
+      <div class="card-h"><span class="code">1-3 · F1</span><h3>和角與差角公式</h3><span class="pg">課本 p.40–43</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>這六條公式很多人硬背，背到考試就搞混。我們用一個長方形把它「看」出來：一根長度 1 的棒子斜斜立著，角度是 α + β。它有多高？就是 sin(α+β)。下面這張圖把那個高度拆成兩段，兩段加起來就是公式。</p></div>
+      <div class="formula">sin(<i>α</i> ± <i>β</i>) = sin<i>α</i> cos<i>β</i> ± cos<i>α</i> sin<i>β</i>　<span style="font-size:.7em;color:var(--teal)">正弦同號</span><br>cos(<i>α</i> ± <i>β</i>) = cos<i>α</i> cos<i>β</i> ∓ sin<i>α</i> sin<i>β</i>　<span style="font-size:.7em;color:var(--red)">餘弦異號</span></div>
+      <div class="viz" id="w-sum">
+        <div class="cv"><canvas aria-label="長方形拆解 sin(α+β) 與 cos(α+β)"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>α</span><input type="range" id="w-sum-a" data-k="a" min="0.1" max="1.2" step="0.01"><output data-v="a"></output></label>
+          <label class="sl"><span>β</span><input type="range" id="w-sum-b" data-k="b" min="0.1" max="1.2" step="0.01"><output data-v="b"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>右邊那條直的邊：青綠 + 金色 = 棒子的高 sin(α+β)。上面那條橫的邊：藍色 − 紅色 = 棒子的水平距離 cos(α+β)。cos 是「減」，因為紅色那段是往回退的。</div>
+        <div class="trap"><b>常見錯誤</b>以為 sin(α+β) = sin α + sin β。拉滑桿看看，兩邊數字完全不一樣。</div>
+      </div>
+      <div class="qc" data-q="F10">
+        <p class="q"><b>小試身手</b>（課本例題 2）設 0 &lt; α &lt; π/2、π/2 &lt; β &lt; π，且 cos α = 5/13、sin β = 4/5。求 sin(α + β)。</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">−16/65</button>
+          <button type="button" data-c="b" data-why="β 在第二象限，cos β 是負的！cos β = −3/5，不是 3/5。">56/65</button>
+          <button type="button" data-c="c" data-why="這是 cos(α + β) 的答案。題目問的是 sin。">−63/65</button>
+          <button type="button" data-c="d" data-why="數字對了，正負號再檢查一下：12/13 × (−3/5) 是負的，而且比 20/65 大。">16/65</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F10"><div class="cv"><canvas aria-label="逐步圖解：在單位圓上找缺少的三角比"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F10" data-done="F10">我會了</label>
+    </article>
+
+    <!-- F11 兩直線夾角 -->
+    <article class="card" id="F11" data-ahs-formula="MATH-3A-1-3-F2" data-ahs-source="p.44–46">
+      <div class="card-h"><span class="code">1-3 · F2</span><h3>正切差角與兩直線夾角</h3><span class="pg">課本 p.44–46 例題 4</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>斜率其實就是 tan(傾斜角)。兩條直線的夾角，就是兩個傾斜角相減。所以夾角的 tan，直接套正切差角公式就好。你把兩條線轉轉看，夾角的數字會跟著變。</p></div>
+      <div class="formula">tan(<i>α</i> − <i>β</i>) = <span class="fr"><span>tan<i>α</i> − tan<i>β</i></span><span>1 + tan<i>α</i> tan<i>β</i></span></span> = <span class="fr"><span><i>m</i><sub>1</sub> − <i>m</i><sub>2</sub></span><span>1 + <i>m</i><sub>1</sub><i>m</i><sub>2</sub></span></span></div>
+      <div class="viz" id="w-lines">
+        <div class="cv"><canvas aria-label="兩直線的傾斜角與夾角"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>m₁</span><input type="range" id="w-lines-m1" data-k="m1" min="-4" max="8" step="0.05"><output data-v="m1"></output></label>
+          <label class="sl"><span>m₂</span><input type="range" id="w-lines-m2" data-k="m2" min="-4" max="6" step="0.05"><output data-v="m2"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>兩條直線相交會有兩組對頂角，一個 θ、一個 180° − θ，所以答案通常要寫兩個。試試讓 m₁m₂ = −1，夾角剛好 90°，分母變成 0。</div>
+        <div class="trap"><b>常見錯誤</b>直接拿斜率相減當作夾角。斜率是 tan 值，不是角度，要用差角公式。</div>
+      </div>
+      <div class="qc" data-q="F11">
+        <p class="q"><b>小試身手</b>（課本隨堂練習）求兩直線 y = 2x + 3 與 y = ⅓x − 2 的夾角。</p>
+        <div class="choices" data-answer="b">
+          <button type="button" data-c="a" data-why="2 − ⅓ = 5/3 只是斜率差，不是 tan(夾角)。分母 1 + 2 × ⅓ 也要算進去。">約 59°</button>
+          <button type="button" data-c="b">45° 或 135°</button>
+          <button type="button" data-c="c" data-why="夾角的 tan 是 1，不是 √3。再算一次分母：1 + 2 × ⅓ = 5/3。">60° 或 120°</button>
+          <button type="button" data-c="d" data-why="兩直線相交有兩種夾角，45° 和它的補角 135° 都要寫。">只有 45°</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F11"><div class="cv"><canvas aria-label="逐步圖解：傾斜角相減"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F11" data-done="F11">我會了</label>
+    </article>
+
+    <!-- F12 倍角 -->
+    <article class="card" id="F12" data-ahs-formula="MATH-3A-1-3-F3" data-ahs-source="p.47">
+      <div class="card-h"><span class="code">1-3 · F3</span><h3>二倍角公式</h3><span class="pg">課本 p.47 例題 5</span><span class="tag src">依上傳教材</span><span class="tag add">老師補充</span></div>
+      <div class="say"><span class="who">老師說</span><p>倍角公式課本是用「和角公式代 α = β」推出來的，很快。老師再給你看一個圖：從圓最左邊的 A 點拉一條線到圓上的 P，在 A 看到的角是 θ，在圓心看到的角剛好是 2θ。用這個三角形，sin 2θ 和 cos 2θ 都能直接量出來。</p></div>
+      <div class="formula">sin 2<i>θ</i> = 2 sin<i>θ</i> cos<i>θ</i><br>cos 2<i>θ</i> = cos²<i>θ</i> − sin²<i>θ</i> = 2cos²<i>θ</i> − 1 = 1 − 2sin²<i>θ</i>　　tan 2<i>θ</i> = <span class="fr"><span>2tan<i>θ</i></span><span>1 − tan²<i>θ</i></span></span></div>
+      <div class="viz" id="w-double">
+        <div class="cv"><canvas aria-label="圓周角 θ 與圓心角 2θ 推出倍角公式"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>θ</span><input type="range" id="w-double-t" data-k="t" min="0.05" max="1.5" step="0.01"><output data-v="t"></output></label>
+          <button class="play" type="button" data-play="t" data-dur="4000">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>AB 是直徑，所以 ∠APB 一定是直角，AP = 2cos θ。P 的高度 = AP × sin θ = 2 sin θ cos θ，這就是 sin 2θ。</div>
+        <div class="trap"><b>常見錯誤</b>cos 2θ 只記一種寫法。題目只給 sin，就用 1 − 2sin²θ；只給 cos，就用 2cos²θ − 1。</div>
+      </div>
+      <div class="qc" data-q="F12">
+        <p class="q"><b>小試身手</b>（課本例題 5）設 π &lt; θ &lt; 3π/2，且 cos θ = −3/5。求 sin 2θ。</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">24/25</button>
+          <button type="button" data-c="b" data-why="θ 在第三象限，sin θ 也是負的（−4/5）。負負得正。">−24/25</button>
+          <button type="button" data-c="c" data-why="這是 cos 2θ = (−3/5)² − (−4/5)² 的答案，題目問 sin 2θ。">−7/25</button>
+          <button type="button" data-c="d" data-why="少乘了一個 2。sin 2θ = 2 sin θ cos θ。">12/25</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F12"><div class="cv"><canvas aria-label="逐步圖解：第三象限的 θ 與 2θ"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F12" data-done="F12">我會了</label>
+    </article>
+
+    <!-- F13 半角 -->
+    <article class="card" id="F13" data-ahs-formula="MATH-3A-1-3-F4" data-ahs-source="p.47–50">
+      <div class="card-h"><span class="code">1-3 · F4</span><h3>半角公式</h3><span class="pg">課本 p.47–50 例題 8</span><span class="tag src">依上傳教材</span><span class="tag add">老師補充</span></div>
+      <div class="say"><span class="who">老師說</span><p>半角就是把剛剛那張圖倒過來看：圓心角是 θ，從 A 看過去就變成 θ/2。所以 tan(θ/2) 就是那個三角形的「高 ÷ 底」，高是 sin θ，底是 1 + cos θ。一張圖就搞定，根號都不用開。</p></div>
+      <div class="formula">sin<span class="fr"><span><i>θ</i></span><span>2</span></span> = ±√<span class="fr"><span>1 − cos<i>θ</i></span><span>2</span></span>　cos<span class="fr"><span><i>θ</i></span><span>2</span></span> = ±√<span class="fr"><span>1 + cos<i>θ</i></span><span>2</span></span>　tan<span class="fr"><span><i>θ</i></span><span>2</span></span> = <span class="fr"><span>sin<i>θ</i></span><span>1 + cos<i>θ</i></span></span></div>
+      <div class="viz" id="w-half">
+        <div class="cv"><canvas aria-label="圓心角 θ 對應圓周角 θ/2"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>θ</span><input type="range" id="w-half-t" data-k="t" min="0.1" max="3" step="0.01"><output data-v="t"></output></label>
+          <button class="play" type="button" data-play="t" data-dur="4000">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>把 θ 拉大，A 那邊的角也跟著變大，但永遠只有圓心角的一半。這是圓周角定理，高一學過的。</div>
+        <div class="trap"><b>常見錯誤</b>用 sin、cos 的半角公式時忘了「±」。要先看 θ/2 落在哪個象限，再決定正負號。</div>
+      </div>
+      <div class="qc" data-q="F13">
+        <p class="q"><b>小試身手</b>（課本例題 8）滑板坡道給高手的角度是 θ，tan θ = 4/3（θ 是銳角）。給初學者的角度減為一半，坡度 tan(θ/2) 是多少？</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">1/2</button>
+          <button type="button" data-c="b" data-why="角度減半，tan 值不會跟著減半。tan 不是一次函數。">2/3</button>
+          <button type="button" data-c="c" data-why="分子分母放反了。tan(θ/2) = sin θ ÷ (1 + cos θ)。">2</button>
+          <button type="button" data-c="d" data-why="這是 sin(θ/2) = √((1 − 3/5)/2) 的結果。題目問的是坡度，也就是 tan。">√5/5</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F13"><div class="cv"><canvas aria-label="逐步圖解：3-4-5 三角形與半角"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F13" data-done="F13">我會了</label>
+    </article>
+  </section>
+
+  <section id="s1-4">
+    <h2><span class="no">1-4</span>正餘弦函數的疊合</h2>
+    <div class="plan">
+      <div><b>本節目標</b>會把 a sin x + b cos x 化成 r sin(x + α)，並用它求最大值、最小值。</div>
+      <div><b>先備知識</b>和角公式、單位圓上的點、y = r sin(x + α) 的圖形。</div>
+      <div><b>建議節數</b>約 4 節課。課本範圍 p.55–67。</div>
+    </div>
+
+    <!-- F14 疊合 -->
+    <article class="card" id="F14" data-ahs-formula="MATH-3A-1-4-F1" data-ahs-source="p.55–58">
+      <div class="card-h"><span class="code">1-4 · F1</span><h3>疊合公式</h3><span class="pg">課本 p.55–58</span><span class="tag src">依上傳教材</span><span class="tag add">老師補充</span></div>
+      <div class="say"><span class="who">老師說</span><p>兩條波加在一起，居然還是一條漂亮的正弦波！為什麼？看左邊：a sin x 和 b cos x 可以想成兩根互相垂直的箭頭，一起轉圈。頭尾接起來，合起來的箭頭長度固定是 √(a² + b²)，它的高度就是兩條波相加。按播放，看它轉。</p></div>
+      <div class="formula"><i>a</i> sin<i>x</i> + <i>b</i> cos<i>x</i> = <i>r</i> sin(<i>x</i> + <i>α</i>)<br><span style="font-size:.8em"><i>r</i> = √(<i>a</i>² + <i>b</i>²)　　cos<i>α</i> = <span class="fr"><span><i>a</i></span><span><i>r</i></span></span>，sin<i>α</i> = <span class="fr"><span><i>b</i></span><span><i>r</i></span></span>（點 (<i>a</i>, <i>b</i>) 的方向角）</span></div>
+      <div class="viz" id="w-fuse">
+        <div class="cv"><canvas aria-label="兩個旋轉向量相加，高度描出疊合後的正弦曲線"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>a</span><input type="range" id="w-fuse-a" data-k="a" min="-2" max="2" step="0.1"><output data-v="a"></output></label>
+          <label class="sl"><span>b</span><input type="range" id="w-fuse-b" data-k="b" min="-2" max="2" step="0.1"><output data-v="b"></output></label>
+          <label class="sl"><span>x</span><input type="range" id="w-fuse-x" data-k="x" min="0" max="6.283" step="0.01"><output data-v="x"></output></label>
+          <button class="play" type="button" data-play="x" data-dur="6000">▶ 播放</button>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>紅色箭頭的長度 r 永遠不變，只是一直轉，所以合成的波振幅就是 r。α 就是點 (a, b) 的方向角，直接在左圖量。</div>
+        <div class="trap"><b>常見錯誤</b>a 或 b 是負的時候，α 不在第一象限。要看點 (a, b) 落在哪個象限再決定 α。</div>
+      </div>
+      <div class="qc" data-q="F14">
+        <p class="q"><b>小試身手</b>（課本例題 2）把 y = −√3 sin x + cos x 化成 r sin(x + θ) 的形式（r &gt; 0）。</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">2 sin(x + 5π/6)</button>
+          <button type="button" data-c="b" data-why="a = −√3 是負的！點 (−√3, 1) 在第二象限，方向角不是 π/6。">2 sin(x + π/6)</button>
+          <button type="button" data-c="c" data-why="−π/6 的 sin 是 −1/2，但 sin θ = b/r = 1/2 是正的。點 (−√3, 1) 在第二象限。">2 sin(x − π/6)</button>
+          <button type="button" data-c="d" data-why="r = √(a² + b²) = √(3 + 1) = 2，要記得開根號。">4 sin(x + 5π/6)</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F14"><div class="cv"><canvas aria-label="逐步圖解：找點、量長度、量角度"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F14" data-done="F14">我會了</label>
+    </article>
+
+    <!-- F15 區間極值 -->
+    <article class="card" id="F15" data-ahs-formula="MATH-3A-1-4-F2" data-ahs-source="p.59–61">
+      <div class="card-h"><span class="code">1-4 · F2</span><h3>疊合求區間最大值、最小值</h3><span class="pg">課本 p.59–61 例題 3、4</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>化成 r sin(x + α) 之後，全範圍的最大值就是 r、最小值是 −r。但考試最愛限定範圍！這時候要把 x + α 的範圍畫在單位圓上，看那段弧最高爬到哪、最低掉到哪。下面拉兩個滑桿改範圍，紅色弧就是 x + α 能走到的地方。</p></div>
+      <div class="formula"><i>y</i> = −√3 sin<i>x</i> + cos<i>x</i> = 2 sin(<i>x</i> + <span class="fr"><span>5π</span><span>6</span></span>)　　−2 ≤ <i>y</i> ≤ 2（不限範圍時）</div>
+      <div class="viz" id="w-ext">
+        <div class="cv"><canvas aria-label="限定 x 範圍時，單位圓上的弧與函數圖形的最大最小值"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>起點</span><input type="range" id="w-ext-L" data-k="L" min="0" max="6.28" step="0.01"><output data-v="L"></output></label>
+          <label class="sl"><span>終點</span><input type="range" id="w-ext-U" data-k="U" min="0" max="6.28" step="0.01"><output data-v="U"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>只要紅色弧有經過圓的最上面（π/2），最大值就是 2；沒經過的話，最高點會落在弧的某一端。最小值看最下面（3π/2）同理。</div>
+        <div class="trap"><b>常見錯誤</b>不管範圍，直接回答 ±r。一定要先檢查 x + α 的範圍有沒有包含 π/2 和 3π/2。</div>
+      </div>
+      <div class="qc" data-q="F15">
+        <p class="q"><b>小試身手</b>（課本例題 3）y = −√3 sin x + cos x 在 0 ≤ x ≤ π 的最大值和最小值是多少？</p>
+        <div class="choices" data-answer="a">
+          <button type="button" data-c="a">最大 1，最小 −2</button>
+          <button type="button" data-c="b" data-why="2 是全範圍的最大值。x + 5π/6 的範圍是 [5π/6, 11π/6]，沒有經過 π/2，所以到不了 2。">最大 2，最小 −2</button>
+          <button type="button" data-c="c" data-why="最小值有到 −2：x + 5π/6 = 3π/2 時（x = 2π/3），在範圍內。">最大 1，最小 −1</button>
+          <button type="button" data-c="d" data-why="最大值到不了 2，弧沒有經過圓的最上面。">最大 2，最小 −1</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F15"><div class="cv"><canvas aria-label="逐步圖解：把範圍畫在單位圓上"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F15" data-done="F15">我會了</label>
+    </article>
+  </section>
+
+
+  <footer class="foot">
+    <h2>參考資料</h2>
+    <ul>
+      <li>課本掃描檔：本機「數學/2.pdf」（p.2–49）與「數學/50.pdf」（p.50–67）。經核對，1-3 實際範圍為 p.40–54、1-4 由 p.55 開始。</li>
+      <li>F1、F2 題目數據改編自內壢高中公開的高中數學（3）A 習作 1-1：<a href="https://www.nksh.tyc.edu.tw/ischool/wr/file/1/12649/fd3b760e69133a717f0b1445a6912f97.pdf" target="_blank" rel="noopener">nksh.tyc.edu.tw</a></li>
+      <li>課綱範圍：數學 A 含弧度量、扇形、sin/cos/tan 圖形、和差角與疊合：<a href="https://www.elvs.chc.edu.tw/resource/openfid.php?id=7414" target="_blank" rel="noopener">108 課綱數學 A／B 比較表</a></li>
+      <li>單位圓描繪正弦曲線的互動做法參考：<a href="https://www.geogebra.org/m/BguXwDht" target="_blank" rel="noopener">GeoGebra｜Unit Circle and Sine Graph</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var AHS = window.AHS = window.AHS || {};
+var VL = AHS.VisualLesson = AHS.VisualLesson || {};
+VL.meta = {schema:'AHS-VL-1', subject:'MATH', unit:'MATH-3A-CH1', version:'0.3.0'};
+VL.widgets = VL.widgets || {};
+var renders = [];
+var PI = Math.PI, TAU = 2*PI;
+var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function tok(n){ return getComputedStyle(document.documentElement).getPropertyValue('--'+n).trim(); }
+function pal(){ return {ink:tok('ink'),muted:tok('muted'),grid:tok('grid'),red:tok('red'),teal:tok('teal'),gold:tok('gold'),blue:tok('blue'),sheet:tok('sheet')}; }
+function alpha(c,a){ if(!c||c[0]!=='#') return c; var h=c.slice(1); if(h.length===3) h=h.replace(/(.)/g,'$1$1'); var n=parseInt(h,16); return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=b; b=a%b; a=t; } return a; }
+function piFrac(n,d){ if(n===0) return '0'; var g=gcd(n,d); n/=g; d/=g; var top=(n===1?'':n===-1?'−':n)+'π'; return d===1?top:top+'/'+d; }
+
+function frame(R,x0,x1,y0,y1,pad,eq){
+  pad = pad==null?20:pad;
+  var sx=(R.w-2*pad)/(x1-x0), sy=(R.h-2*pad)/(y1-y0);
+  if(eq){ var s=Math.min(sx,sy); sx=sy=s; }
+  var cx=R.x+R.w/2, cy=R.y+R.h/2, mx=(x0+x1)/2, my=(y0+y1)/2;
+  return {X:function(x){return cx+(x-mx)*sx;}, Y:function(y){return cy-(y-my)*sy;}, sx:sx, sy:sy};
+}
+function full(c){ return {x:0,y:0,w:c.w,h:c.h}; }
+function panels(c,split){
+  if(!c.narrow){ var lw=c.w*split; return [{x:0,y:0,w:lw,h:c.h},{x:lw,y:0,w:c.w-lw,h:c.h}]; }
+  var th=c.h*0.46; return [{x:0,y:0,w:c.w,h:th},{x:0,y:th,w:c.w,h:c.h-th}];
+}
+function L(g,x1,y1,x2,y2,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w||1.5; g.lineCap='round'; g.setLineDash(dash||[]); g.beginPath(); g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke(); g.restore(); }
+function T(g,s,x,y,c,size,align,weight){ g.save(); g.fillStyle=c; g.font=(weight||'500')+' '+(size||13)+'px "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif'; g.textAlign=align||'left'; g.textBaseline='middle'; g.fillText(s,x,y); g.restore(); }
+function dot(g,x,y,r,c){ g.save(); g.fillStyle=c; g.beginPath(); g.arc(x,y,r,0,TAU); g.fill(); g.restore(); }
+function wArc(g,F,cx,cy,r,a0,a1,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w||2; g.lineCap='round'; g.setLineDash(dash||[]); g.beginPath(); g.arc(F.X(cx),F.Y(cy),r*F.sx,-a0,-a1,a1>a0); g.stroke(); g.restore(); }
+function wSector(g,F,cx,cy,r,a0,a1,fill){ g.save(); g.fillStyle=fill; g.beginPath(); g.moveTo(F.X(cx),F.Y(cy)); g.arc(F.X(cx),F.Y(cy),r*F.sx,-a0,-a1,a1>a0); g.closePath(); g.fill(); g.restore(); }
+function wRing(g,F,r1,r2,a0,a1,fill){ g.save(); g.fillStyle=fill; g.beginPath(); g.arc(F.X(0),F.Y(0),r2*F.sx,-a0,-a1,true); g.arc(F.X(0),F.Y(0),r1*F.sx,-a1,-a0,false); g.closePath(); g.fill(); g.restore(); }
+function wRay(g,F,r,a,c,w,dash,r0){ r0=r0||0; L(g,F.X(r0*Math.cos(a)),F.Y(r0*Math.sin(a)),F.X(r*Math.cos(a)),F.Y(r*Math.sin(a)),c,w,dash); }
+function wText(g,F,s,r,a,c,size,w){ T(g,s,F.X(r*Math.cos(a)),F.Y(r*Math.sin(a)),c,size||12,'center',w||'700'); }
+function poly(g,F,pts,fill,stroke){ g.save(); g.beginPath(); pts.forEach(function(p,i){ if(i) g.lineTo(F.X(p[0]),F.Y(p[1])); else g.moveTo(F.X(p[0]),F.Y(p[1])); }); g.closePath(); if(fill){g.fillStyle=fill; g.fill();} if(stroke){g.strokeStyle=stroke; g.lineWidth=1; g.stroke();} g.restore(); }
+function piHalf(k){ if(k%2===0){ var n=k/2; return n===1?'π':n===-1?'−π':n+'π'; } return k===1?'π/2':k===-1?'−π/2':(k<0?'−'+(-k):k)+'π/2'; }
+function gAxes(g,G,x0,x1,y0,y1,C,ystep){
+  for(var k=Math.ceil(x0/(PI/2)); k*PI/2<=x1+1e-9; k++){ var X=G.X(k*PI/2); L(g,X,G.Y(y0),X,G.Y(y1),C.grid,1); if(k) T(g,piHalf(k),X,G.Y(0)+13,C.muted,11,'center'); }
+  ystep=ystep||1;
+  for(var y=Math.ceil(y0/ystep)*ystep; y<=y1+1e-9; y+=ystep){ if(Math.abs(y)<1e-9) continue; var Y=G.Y(y); L(g,G.X(x0),Y,G.X(x1),Y,C.grid,1); T(g,String(+y.toFixed(2)).replace('-','−'),G.X(0)-6,Y,C.muted,11,'right'); }
+  L(g,G.X(x0),G.Y(0),G.X(x1),G.Y(0),C.ink,1.2);
+  if(x0<0&&x1>0) L(g,G.X(0),G.Y(y0),G.X(0),G.Y(y1),C.ink,1.2);
+}
+function plot(g,G,f,a,b,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w; g.lineJoin='round'; g.setLineDash(dash||[]); g.beginPath(); var N=Math.max(2,Math.ceil((b-a)*80)); for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N, y=f(x); if(i) g.lineTo(G.X(x),G.Y(y)); else g.moveTo(G.X(x),G.Y(y)); } g.stroke(); g.restore(); }
+function unitAxes(g,F,C,m){ m=m||1.3; L(g,F.X(-m),F.Y(0),F.X(m),F.Y(0),C.grid,1); L(g,F.X(0),F.Y(-m),F.X(0),F.Y(m),C.grid,1); }
+
+/* 通用互動圖：滑桿 data-k、播放 data-play、步驟 data-step */
+function widget(id,o){
+  var root=document.getElementById(id); if(!root) return;
+  var cv=root.querySelector('canvas'), st=o.state, inputs=root.querySelectorAll('[data-k]');
+  var nSteps=o.steps||0; if(nSteps) st.step=st.step||0;
+  function fmt(k){ var v=st[k]; return o.fmt&&o.fmt[k]?o.fmt[k](v):(+v).toFixed(2); }
+  function syncAll(){
+    inputs.forEach(function(i){ var k=i.getAttribute('data-k'); i.value=st[k]; var lab=root.querySelector('[data-v="'+k+'"]'); if(lab) lab.textContent=fmt(k); });
+    if(nSteps){
+      var no=root.querySelector('[data-stepno]'); if(no) no.textContent='第 '+(st.step+1)+' / '+nSteps+' 步';
+      root.querySelectorAll('[data-step]').forEach(function(b){ var d=+b.getAttribute('data-step'); b.disabled=(d<0&&st.step===0)||(d>0&&st.step===nSteps-1); });
+      root.querySelectorAll('[data-only-step]').forEach(function(el){ el.hidden = st.step !== +el.getAttribute('data-only-step'); });
+    }
+  }
+  function render(){
+    var pw=cv.parentElement.clientWidth; if(!pw) return;
+    var narrow=pw<560, h=Math.round(pw*(narrow?o.rn:o.rw)), d=window.devicePixelRatio||1;
+    cv.width=Math.round(pw*d); cv.height=Math.round(h*d); cv.style.height=h+'px';
+    var g=cv.getContext('2d'); g.setTransform(d,0,0,d,0,0); g.clearRect(0,0,pw,h);
+    o.draw(g,{w:pw,h:h,narrow:narrow,C:pal()},st);
+    var out=root.querySelector('[data-out]'); if(out&&o.out) out.innerHTML=o.out(st);
+  }
+  inputs.forEach(function(inp){ var k=inp.getAttribute('data-k'); inp.addEventListener('input',function(){ st[k]=parseFloat(inp.value); if(o.constrain) o.constrain(st,k); syncAll(); render(); }); });
+  root.querySelectorAll('[data-step]').forEach(function(b){ b.addEventListener('click',function(){ st.step=Math.max(0,Math.min(nSteps-1,st.step+(+b.getAttribute('data-step')))); syncAll(); render(); }); });
+  root.querySelectorAll('[data-play]').forEach(function(btn){
+    var k=btn.getAttribute('data-play'), inp=root.querySelector('[data-k="'+k+'"]'), raf=0;
+    btn.addEventListener('click',function(){
+      var mn=parseFloat(inp.min), mx=parseFloat(inp.max);
+      if(raf){ cancelAnimationFrame(raf); raf=0; btn.textContent='▶ 播放'; return; }
+      if(reduceMotion){ st[k]=mx; syncAll(); render(); return; }
+      var dur=parseFloat(btn.getAttribute('data-dur')||'4000'), start=st[k]; if(start>=mx-1e-6) start=mn;
+      var t0=null; btn.textContent='❚❚ 暫停';
+      function step(ts){ if(t0===null) t0=ts-(start-mn)/(mx-mn)*dur; var u=Math.min(1,(ts-t0)/dur); var v=mn+(mx-mn)*u; var sp=parseFloat(inp.step)||0; st[k]=sp>=1?Math.round(v/sp)*sp:v; syncAll(); render(); if(u<1) raf=requestAnimationFrame(step); else { raf=0; btn.textContent='▶ 播放'; } }
+      raf=requestAnimationFrame(step);
+    });
+  });
+  syncAll(); renders.push(render); VL.widgets[id]={state:st,render:render}; render();
+}
+VL.register = widget;
+
+/* 共用繪圖：圓錐與展開扇形 */
+function drawCone(g,F,R,l,C,lab){
+  var h=Math.sqrt(l*l-R*R), e=0.32;
+  function ell(a0,a1,col,w,dash){ g.save(); g.strokeStyle=col; g.lineWidth=w; g.setLineDash(dash||[]); g.beginPath(); for(var i=0;i<=60;i++){ var p=a0+(a1-a0)*i/60, x=R*Math.cos(p), y=e*R*Math.sin(p); if(i) g.lineTo(F.X(x),F.Y(y)); else g.moveTo(F.X(x),F.Y(y)); } g.stroke(); g.restore(); }
+  poly(g,F,[[-R,0],[R,0],[0,h]],alpha(C.red,0.06));
+  ell(0,PI,C.gold,1.5,[4,4]); ell(PI,TAU,C.gold,3.5);
+  L(g,F.X(0),F.Y(0),F.X(0),F.Y(h),C.muted,1.2,[4,3]); L(g,F.X(0),F.Y(0),F.X(R),F.Y(0),C.ink,1.5);
+  L(g,F.X(-R),F.Y(0),F.X(0),F.Y(h),C.red,2.5); L(g,F.X(R),F.Y(0),F.X(0),F.Y(h),C.red,2.5);
+  T(g,lab.l,F.X(R/2)+8,F.Y(h/2),C.red,14,'left','700'); if(lab.h) T(g,lab.h,F.X(0)-6,F.Y(h/2),C.muted,13,'right','700'); T(g,lab.R,F.X(R/2),F.Y(0)-10,C.ink,13,'center','700');
+  T(g,lab.base,F.X(0),F.Y(-e*R)+16,C.gold,12,'center','700');
+}
+function drawUnfold(g,G,R,l,C,lab,opt){
+  opt=opt||{}; var th=TAU*R/l, a0=-PI/2-th/2, a1=-PI/2+th/2;
+  if(opt.full){ wArc(g,G,0,0,l,0,TAU,C.muted,1.5,[5,5]); }
+  wSector(g,G,0,0,l,a0,a1,alpha(opt.fillTeal?C.teal:C.red,opt.fillTeal?0.18:0.08)); wArc(g,G,0,0,l,a0,a1,C.gold,3.5);
+  wRay(g,G,l,a0,C.red,2.5); wRay(g,G,l,a1,C.red,2.5);
+  wArc(g,G,0,0,0.17*l,a0,a1,C.teal,2); T(g,lab.th||'θ',G.X(0)+10,G.Y(-0.26*l),C.teal,14,'left','700');
+  T(g,lab.l,G.X(0.5*l*Math.cos(a1))+8,G.Y(0.5*l*Math.sin(a1)),C.red,14,'left','700');
+  T(g,lab.arc,G.X(0),G.Y(-l)+16,C.gold,12,'center','700');
+  dot(g,G.X(0),G.Y(0),3,C.ink);
+}
+
+/* ===== 主互動圖 ===== */
+
+/* F1 弧度定義 */
+widget('w-radian',{state:{t:1,r:1.6,b:0},rw:0.56,rn:0.95,
+  fmt:{t:function(v){return v.toFixed(2)+' 弳';},r:function(v){return v.toFixed(1);},b:function(v){return Math.round(v*100)+'%';}},
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-3.6,3.6,-3.6,3.6,14,true);
+    unitAxes(g,F,C,3.5);
+    wArc(g,F,0,0,s.r,0,TAU,C.muted,1.2);
+    if(s.t>0){ wSector(g,F,0,0,s.r,0,s.t,alpha(C.teal,0.14)); wArc(g,F,0,0,s.r,0,s.t,C.teal,4); }
+    wRay(g,F,s.r,0,C.ink,2); wRay(g,F,s.r,s.t,C.ink,2);
+    for(var k=1;k<=6;k++){ wRay(g,F,s.r*1.08,k,C.gold,2,null,s.r*0.92); wText(g,F,k===1?'1 弳':String(k),s.r*1.2,k,C.gold,12); }
+    g.save(); g.strokeStyle=C.red; g.lineWidth=4; g.lineCap='round'; g.beginPath();
+    for(var i=0;i<=48;i++){ var u=i/48, x=s.r*(1-s.b)+s.r*Math.cos(u)*s.b, y=s.r*u*(1-s.b)+s.r*Math.sin(u)*s.b; if(i) g.lineTo(F.X(x),F.Y(y)); else g.moveTo(F.X(x),F.Y(y)); }
+    g.stroke(); g.restore();
+    T(g,'長度 r 的繩',F.X(s.r)+10,F.Y(s.r*0.5*(1-s.b)+s.r*Math.sin(0.5)*s.b)-6,C.red,12,'left','700');
+    T(g,'r',F.X(s.r/2),F.Y(0)+12,C.ink,13,'center','700');
+    if(s.t>0.15){ wArc(g,F,0,0,0.3,0,s.t,C.teal,1.5); wText(g,F,'θ',0.55,s.t/2,C.teal,15); }
+    dot(g,F.X(0),F.Y(0),3,C.ink);
+  },
+  out:function(s){ return 'θ = '+s.t.toFixed(2)+' 弳 ≈ '+(s.t*180/PI).toFixed(1)+'°　｜　弧長 s = rθ = '+s.r.toFixed(1)+' × '+s.t.toFixed(2)+' = <b>'+(s.r*s.t).toFixed(2)+'</b>　｜　s ÷ r = <b>'+s.t.toFixed(2)+'</b>（跟 r 無關）'; }
+});
+
+/* F2 扇形面積 */
+widget('w-sector',{state:{r:2,t:1.6,n:8},rw:0.5,rn:1.2,
+  fmt:{r:function(v){return v.toFixed(1);},t:function(v){return v.toFixed(2)+' 弳';},n:function(v){return Math.round(v)+' 片';}},
+  draw:function(g,c,s){
+    var C=c.C, P=panels(c,0.44), n=Math.round(s.n), d=s.t/n;
+    var F=frame(P[0],-3.2,3.2,-0.5,3.3,16,true), cols=[alpha(C.teal,0.42),alpha(C.gold,0.42)];
+    T(g,'① 切成 '+n+' 片',P[0].x+10,P[0].y+14,C.muted,12);
+    for(var i=0;i<n;i++) wSector(g,F,0,0,s.r,i*d,(i+1)*d,cols[i%2]);
+    wArc(g,F,0,0,s.r,0,s.t,C.teal,3);
+    wRay(g,F,s.r,0,C.ink,1.5); wRay(g,F,s.r,s.t,C.ink,1.5);
+    T(g,'r',F.X(s.r/2),F.Y(0)+12,C.ink,13,'center','700');
+    var G=frame(P[1],-0.3,5.4,-0.8,3.4,16,true), w=2*s.r*Math.sin(d/2), h=s.r*Math.cos(d/2);
+    T(g,'② 一正一反交錯排',P[1].x+10,P[1].y+14,C.muted,12);
+    for(i=0;i<n;i++){
+      var k=Math.floor(i/2), pts;
+      if(i%2===0) pts=[[k*w,0],[(k+1)*w,0],[(k+0.5)*w,h]]; else pts=[[(k+0.5)*w,h],[(k+1.5)*w,h],[(k+1)*w,0]];
+      poly(g,G,pts,cols[i%2],C.sheet);
+    }
+    var W=n/2*w;
+    g.save(); g.strokeStyle=C.red; g.lineWidth=1.5; g.setLineDash([5,4]); g.strokeRect(G.X(0),G.Y(h),W*G.sx,h*G.sy); g.restore();
+    T(g,'底 ≈ ½s = '+(s.r*s.t/2).toFixed(2),G.X(W/2),G.Y(0)+14,C.red,12,'center','700');
+    T(g,'高 ≈ r',G.X(0)-6,G.Y(h/2),C.red,12,'right','700');
+  },
+  out:function(s){ var n=Math.round(s.n), d=s.t/n, approx=n/2*2*s.r*Math.sin(d/2)*s.r*Math.cos(d/2), A=0.5*s.r*s.r*s.t;
+    return '扇形面積 A = ½r²θ = ½ × '+s.r.toFixed(1)+'² × '+s.t.toFixed(2)+' = <b>'+A.toFixed(3)+'</b>　｜　拼出來的面積 = '+approx.toFixed(3)+'（差 '+(A-approx).toFixed(3)+'，切越多片越接近）'; }
+});
+
+/* F3 度與弳換算 */
+widget('w-dial',{state:{d:60},rw:0.62,rn:0.95,
+  fmt:{d:function(v){return Math.round(v)+'°';}},
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-1.6,1.6,-1.6,1.6,10,true), a=s.d*PI/180;
+    if(a>0) wSector(g,F,0,0,1.2,0,a,alpha(C.teal,0.12));
+    wArc(g,F,0,0,1.2,0,TAU,C.ink,1.5); wArc(g,F,0,0,0.98,0,TAU,C.muted,1,[2,4]);
+    for(var e=0;e<360;e+=10){ var t=e*PI/180; wRay(g,F,e%30===0?1.3:1.26,t,C.ink,1,null,1.2); if(e%30===0) wText(g,F,e+'°',1.44,t,C.ink,11,'500'); }
+    for(var k=0;k<12;k++){ var tk=k*PI/6; wRay(g,F,0.98,tk,C.teal,1.5,null,0.92); wText(g,F,piFrac(k,6),0.78,tk,C.teal,11); }
+    wRay(g,F,1.2,1,C.gold,2,[4,3]);
+    T(g,'1 弳',F.X(0.5*Math.cos(1))+8,F.Y(0.5*Math.sin(1))-4,C.gold,12,'left','700');
+    if(a>0) wArc(g,F,0,0,0.25,0,a,C.red,2);
+    wRay(g,F,1.3,a,C.red,3);
+    dot(g,F.X(1.2*Math.cos(a)),F.Y(1.2*Math.sin(a)),5,C.red); dot(g,F.X(0),F.Y(0),3,C.ink);
+    T(g,'外圈：度',8,14,C.ink,12); T(g,'內圈：弳',8,32,C.teal,12,'left','700');
+  },
+  out:function(s){ var d=Math.round(s.d); return d+'° = '+d+' × π/180 = <b>'+piFrac(d,180)+' 弳</b> ≈ '+(d*PI/180).toFixed(4)+' 弳'; }
+});
+
+/* F4 圓錐展開 */
+widget('w-cone',{state:{R:1.2,l:3},rw:0.5,rn:1.2,
+  fmt:{R:function(v){return v.toFixed(2);},l:function(v){return v.toFixed(2);}},
+  constrain:function(s,k){ if(s.l<s.R+0.1){ if(k==='R') s.l=Math.min(3.5,s.R+0.1); else s.R=Math.max(0.5,s.l-0.1); if(s.l<s.R+0.1) s.R=s.l-0.1; } },
+  draw:function(g,c,s){
+    var C=c.C, P=panels(c,0.46);
+    T(g,'圓錐（R、l、h）',P[0].x+10,P[0].y+14,C.muted,12);
+    drawCone(g,frame(P[0],-2.3,2.3,-0.9,3.6,16,true),s.R,s.l,C,{l:'l',h:'h',R:'R',base:'底圓周 2πR'});
+    T(g,'沿母線剪開攤平',P[1].x+10,P[1].y+14,C.muted,12);
+    drawUnfold(g,frame(P[1],-3.7,3.7,-3.9,3.5,16,true),s.R,s.l,C,{l:'l',arc:'弧長 = 2πR'});
+  },
+  out:function(s){ var th=TAU*s.R/s.l; return 'θ = 2πR / l = <b>'+th.toFixed(3)+' 弳</b>（≈ '+(th*180/PI).toFixed(1)+'°）　｜　側面積 = πRl = <b>'+(PI*s.R*s.l).toFixed(3)+'</b>　｜　h = √(l² − R²) = '+Math.sqrt(s.l*s.l-s.R*s.R).toFixed(3); }
+});
+
+/* F5 y = sin x */
+widget('w-sin',{state:{x:1},rw:0.42,rn:1.1,
+  fmt:{x:function(v){return v.toFixed(2)+'（'+Math.round(v*180/PI)+'°）';}},
+  draw:function(g,c,s){
+    var C=c.C, P=panels(c,0.35), x=s.x, cx=Math.cos(x), sy=Math.sin(x);
+    var F=frame(P[0],-1.35,1.35,-1.35,1.35,14,true), G=frame(P[1],-0.3,6.65,-1.4,1.4,22,false);
+    T(g,'單位圓',P[0].x+10,P[0].y+14,C.muted,12); T(g,'y = sin x',P[1].x+30,P[1].y+14,C.muted,12);
+    unitAxes(g,F,C); wArc(g,F,0,0,1,0,TAU,C.muted,1.2);
+    if(x>0) wArc(g,F,0,0,1,0,x,C.teal,4);
+    L(g,F.X(0),F.Y(0),F.X(cx),F.Y(sy),C.ink,1.5);
+    L(g,F.X(cx),F.Y(0),F.X(cx),F.Y(sy),C.red,3);
+    dot(g,F.X(cx),F.Y(sy),5,C.ink); T(g,'P',F.X(cx*1.15),F.Y(sy*1.15),C.ink,12,'center','700');
+    gAxes(g,G,-0.3,6.65,-1.4,1.4,C,1);
+    plot(g,G,Math.sin,0,TAU,C.muted,1.2,[4,4]);
+    if(x>0){ plot(g,G,Math.sin,0,x,C.red,3); L(g,G.X(0),G.Y(0),G.X(x),G.Y(0),C.teal,4); }
+    L(g,G.X(x),G.Y(0),G.X(x),G.Y(sy),C.red,3);
+    dot(g,G.X(x),G.Y(sy),5,C.red);
+    if(!c.narrow) L(g,F.X(cx),F.Y(sy),G.X(x),G.Y(sy),C.red,1,[3,4]);
+  },
+  out:function(s){ return '弧長 x = '+s.x.toFixed(2)+'（青綠）　→　P 的高度 sin x = <b>'+Math.sin(s.x).toFixed(3)+'</b>（紅）'; }
+});
+
+/* ===== 小試身手：逐步圖解 ===== */
+
+/* S-F1：用半徑去量弧長 9 */
+widget('s-F1',{state:{},steps:4,rw:0.5,rn:0.9,
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-8.5,8.5,-8,8,14,true), r=6;
+    unitAxes(g,F,C,7.5); wArc(g,F,0,0,r,0,TAU,C.muted,1.2);
+    wRay(g,F,r,0,C.ink,2); T(g,'r = 6',F.X(3),F.Y(0)+13,C.ink,12,'center','700');
+    if(s.step===0){ wArc(g,F,0,0,r,0,1.5,C.teal,4); wText(g,F,'弧長 9',r+1.1,0.75,C.teal,13); }
+    if(s.step>=1){ wArc(g,F,0,0,r,0,1,C.red,5); wText(g,F,'1 個半徑（6）',r+1.6,0.5,C.red,12); wRay(g,F,r,1,C.ink,1.5,[4,3]); }
+    if(s.step>=2){ wArc(g,F,0,0,r,1,1.5,C.gold,5); wText(g,F,'半個半徑（3）',r+1.6,1.25,C.gold,12); }
+    if(s.step>=3){ wRay(g,F,r,1.5,C.ink,2); wSector(g,F,0,0,r,0,1.5,alpha(C.teal,0.12)); wArc(g,F,0,0,1.4,0,1.5,C.teal,2); wText(g,F,'θ = 3/2',2.6,0.75,C.teal,14); }
+    dot(g,F.X(0),F.Y(0),3,C.ink);
+  },
+  out:function(s){ return ['先把題目畫出來：半徑 6，圓周上一段長 9 的弧。','拿一個半徑那麼長（6）沿著弧貼上去，剛好是 <b>1 弳</b>。','剩下 9 − 6 = 3，只有半個半徑長，所以再加 <b>0.5 弳</b>。','加起來 1.5 個半徑：θ = 9 ÷ 6 = <b>3/2 弳</b>（約 85.9°）。'][s.step]; }
+});
+
+/* S-F2：摺扇＝大扇形 − 小扇形 */
+widget('s-F2',{state:{},steps:3,rw:0.5,rn:0.8,
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-33,33,-5,34,14,true), a0=PI/6, a1=5*PI/6;
+    wSector(g,F,0,0,30,a0,a1,alpha(C.gold,s.step===0?0.3:0.1));
+    wArc(g,F,0,0,30,a0,a1,C.gold,3); wRay(g,F,30,a0,C.ink,1.5); wRay(g,F,30,a1,C.ink,1.5);
+    wText(g,F,'30',17,a0-0.08,C.ink,12); wArc(g,F,0,0,4,a0,a1,C.teal,2); wText(g,F,'120°',6.5,PI/2,C.teal,12);
+    if(s.step>=1){ wSector(g,F,0,0,12,a0,a1,alpha(C.red,0.22)); wArc(g,F,0,0,12,a0,a1,C.red,2.5); wText(g,F,'12（扇柄，沒有扇面）',9.5,PI/2+0.02,C.red,12); wText(g,F,'扇面寬 18',22,a1+0.12,C.muted,12,'500'); }
+    if(s.step>=2){ wRing(g,F,12,30,a0,a1,alpha(C.teal,0.35)); wText(g,F,'扇面',21,PI/2,C.teal,15); }
+    dot(g,F.X(0),F.Y(0),3,C.ink);
+  },
+  out:function(s){ return ['先看成一整個大扇形：半徑 30，圓心角 120° = 2π/3。<br>A<sub>大</sub> = ½ × 30² × 2π/3 = <b>300π</b>','靠近圓心那一塊沒有扇面。它的半徑是 30 − 18 = 12：<br>A<sub>小</sub> = ½ × 12² × 2π/3 = <b>48π</b>','扇面 = 大扇形 − 小扇形 = 300π − 48π = <b>252π cm²</b>。<br>也可以一步算：½ × 2π/3 × (30² − 12²) = 252π。'][s.step]; }
+});
+
+/* S-F3：半圈切成 9 份 */
+widget('s-F3',{state:{},steps:3,rw:0.55,rn:0.85,
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-1.6,1.6,-0.45,1.55,14,true), u=PI/9;
+    L(g,F.X(-1.4),F.Y(0),F.X(1.4),F.Y(0),C.grid,1);
+    wSector(g,F,0,0,1.2,0,PI,alpha(C.gold,s.step===0?0.22:0.08)); wArc(g,F,0,0,1.2,0,PI,C.gold,3);
+    T(g,'半圈 = 180° = π',F.X(0),F.Y(-0.22),C.gold,13,'center','700');
+    if(s.step>=1){ for(var k=1;k<9;k++) wRay(g,F,1.2,k*u,C.muted,1,[3,3]); for(k=0;k<9;k++) wText(g,F,String(k+1),1.34,(k+0.5)*u,C.muted,11,'500'); }
+    if(s.step>=2){ wSector(g,F,0,0,1.2,0,7*u,alpha(C.teal,0.3)); wRay(g,F,1.25,7*u,C.red,3); wArc(g,F,0,0,0.3,0,7*u,C.red,2); wText(g,F,'140°',0.48,3.5*u,C.red,13); }
+    dot(g,F.X(0),F.Y(0),3,C.ink);
+  },
+  out:function(s){ return ['記住唯一要背的：半圈 = 180° = π。','140 和 180 的最大公因數是 20，所以把半圈切成 180 ÷ 20 = 9 份，每份 20° = <b>π/9</b>。','140° 是其中 140 ÷ 20 = 7 份，所以 140° = 7 × π/9 = <b>7π/9</b>。'][s.step]; }
+});
+
+/* S-F4：R=3、l=9 */
+widget('s-F4',{state:{},steps:4,rw:0.5,rn:1.2,
+  draw:function(g,c,s){
+    var C=c.C, P=panels(c,0.42);
+    T(g,'圓錐：R = 3、l = 9',P[0].x+10,P[0].y+14,C.muted,12);
+    drawCone(g,frame(P[0],-2.3,2.3,-0.9,3.6,16,true),1,3,C,{l:'9',R:'3',base:'底圓周 = 2π·3 = 6π'});
+    if(s.step===0) return;
+    T(g,'攤開：扇形半徑是 9',P[1].x+10,P[1].y+14,C.muted,12);
+    drawUnfold(g,frame(P[1],-3.7,3.7,-3.9,3.5,16,true),1,3,C,{l:'9',arc:'弧長 6π',th:s.step>=2?'θ = 2π/3':'θ'},{full:s.step>=1,fillTeal:s.step>=3});
+  },
+  out:function(s){ return ['帽口那一圈：2π × 3 = <b>6π</b>。','攤開後扇形半徑是母線 9。虛線是「如果是一整個圓」：圓周 2π × 9 = 18π。','弧只有 6π，占整圈 6π ÷ 18π = <b>1/3</b>，所以 θ = 2π × 1/3 = <b>2π/3</b>（120°）。','順便算側面積：整個圓面積 81π，取 1/3 就是 <b>27π</b>（= πRl = π·3·9）。'][s.step]; }
+});
+
+/* S-F5：sin x = 1/2 */
+widget('s-F5',{state:{k:0.5},steps:4,rw:0.42,rn:1.1,
+  fmt:{k:function(v){return 'y = '+v.toFixed(2);}},
+  draw:function(g,c,s){
+    var C=c.C, P=panels(c,0.35), k=s.step<3?0.5:s.k;
+    var F=frame(P[0],-1.35,1.35,-1.35,1.35,14,true), G=frame(P[1],-0.3,6.65,-1.4,1.4,22,false);
+    unitAxes(g,F,C); wArc(g,F,0,0,1,0,TAU,C.muted,1.2);
+    L(g,F.X(-1.3),F.Y(k),F.X(1.3),F.Y(k),C.red,2,[6,4]); T(g,'y = '+(s.step<3?'1/2':k.toFixed(2)),F.X(1.3),F.Y(k)-10,C.red,12,'right','700');
+    var sols=[];
+    if(Math.abs(k)<=1){ var a=Math.asin(k); sols = Math.abs(Math.abs(k)-1)<1e-9 ? [k>0?PI/2:3*PI/2] : [a<0?a+TAU:a, PI-a]; }
+    sols.forEach(function(x,i){ var px=Math.cos(x), py=Math.sin(x); L(g,F.X(0),F.Y(0),F.X(px),F.Y(py),C.ink,1.5); dot(g,F.X(px),F.Y(py),5,i?C.gold:C.teal); if(s.step>=1){ wArc(g,F,0,0,0.25+0.12*i,0,x,i?C.gold:C.teal,2); } });
+    if(s.step===1){ T(g,'π/6',F.X(0.42*Math.cos(PI/12))+6,F.Y(0.42*Math.sin(PI/12)),C.teal,12,'left','700'); T(g,'5π/6',F.X(-0.6),F.Y(0.62),C.gold,12,'center','700'); L(g,F.X(0),F.Y(-1.3),F.X(0),F.Y(1.3),C.muted,1.2,[2,3]); }
+    if(s.step>=2){
+      gAxes(g,G,-0.3,6.65,-1.4,1.4,C,1);
+      plot(g,G,Math.sin,0,TAU,C.ink,2);
+      L(g,G.X(0),G.Y(k),G.X(6.6),G.Y(k),C.red,2,[6,4]);
+      if(s.step===2) L(g,G.X(PI/2),G.Y(-1.35),G.X(PI/2),G.Y(1.35),C.gold,1.5,[3,3]);
+      sols.forEach(function(x,i){ L(g,G.X(x),G.Y(0),G.X(x),G.Y(k),C.muted,1,[2,3]); dot(g,G.X(x),G.Y(k),5,i?C.gold:C.teal); });
+      if(!c.narrow) sols.forEach(function(x,i){ L(g,F.X(Math.cos(x)),F.Y(k),G.X(x),G.Y(k),i?C.gold:C.teal,1,[2,4]); });
+    }
+  },
+  out:function(s){
+    if(s.step<3) return ['sin x 就是單位圓上點的「高度」。畫一條高度 1/2 的水平線，跟圓交在<b>兩個點</b>。','右邊那點：30°-60°-90° 三角形裡，對邊是斜邊的一半，所以 x = <b>π/6</b>。左邊那點跟它對稱 y 軸，x = π − π/6 = <b>5π/6</b>。','換到函數圖看：水平線 y = 1/2 跟曲線交在 π/6 和 5π/6，兩點對稱於金色虛線 x = π/2，這就是對稱軸。','' ][s.step];
+    var k=s.k, n = Math.abs(k)>1 ? 0 : (Math.abs(Math.abs(k)-1)<0.005 ? 1 : 2);
+    return '換你試試：拖動 k，看 sin x = k 有幾個解。現在 k = '+k.toFixed(2)+'，在 0 ≤ x &lt; 2π 中有 <b>'+n+' 個解</b>'+(n===0?'（|k| &gt; 1，水平線碰不到圓）':n===1?'（剛好碰到最高或最低點）':'')+'。';
+  }
+});
+
+
+/* ===== 1-2 ～ 1-4 共用小工具 ===== */
+function nf(v,d){ d=d==null?2:d; var s=Math.abs(v).toFixed(d); return (v<0&&+s!==0?'−':'')+s; }
+function deg(v){ return Math.round(v*180/PI)+'°'; }
+function radFmt(v){ return v.toFixed(2)+'（'+deg(v)+'）'; }
+function ra(g,F,p,u,v,s,c){ var a=[p[0]+u[0]*s,p[1]+u[1]*s], b=[a[0]+v[0]*s,a[1]+v[1]*s], d=[p[0]+v[0]*s,p[1]+v[1]*s]; g.save(); g.strokeStyle=c; g.lineWidth=1.2; g.beginPath(); g.moveTo(F.X(a[0]),F.Y(a[1])); g.lineTo(F.X(b[0]),F.Y(b[1])); g.lineTo(F.X(d[0]),F.Y(d[1])); g.stroke(); g.restore(); }
+function seg(g,F,p,q,c,w,dash){ L(g,F.X(p[0]),F.Y(p[1]),F.X(q[0]),F.Y(q[1]),c,w,dash); }
+function arcAt(g,F,p,r,a0,a1,c,w){ g.save(); g.strokeStyle=c; g.lineWidth=w||1.8; g.beginPath(); g.arc(F.X(p[0]),F.Y(p[1]),r*F.sx,-a0,-a1,a1>a0); g.stroke(); g.restore(); }
+function plotClip(g,G,f,a,b,ymax,c,w,dash){ g.save(); g.strokeStyle=c; g.lineWidth=w; g.setLineDash(dash||[]); g.beginPath(); var N=Math.ceil((b-a)*120), pen=false; for(var i=0;i<=N;i++){ var x=a+(b-a)*i/N, y=f(x); if(!isFinite(y)||Math.abs(y)>ymax){ pen=false; continue; } if(pen) g.lineTo(G.X(x),G.Y(y)); else { g.moveTo(G.X(x),G.Y(y)); pen=true; } } g.stroke(); g.restore(); }
+function vline(g,G,x,y0,y1,c,dash,w){ L(g,G.X(x),G.Y(y0),G.X(x),G.Y(y1),c,w||1.5,dash||[5,4]); }
+function steps(arr){ return function(s){ return arr[s.step]; }; }
+/* 圓周角圖：A(−1,0)、圓心角 t、P(cos t, sin t) */
+function inscribed(g,F,C,t,mode){
+  var A=[-1,0], B=[1,0], P=[Math.cos(t),Math.sin(t)], H=[P[0],0];
+  wArc(g,F,0,0,1,0,TAU,C.muted,1.2); seg(g,F,[-1.25,0],[1.25,0],C.grid,1);
+  seg(g,F,P,B,C.muted,1.2,[4,3]); ra(g,F,P,norm([A[0]-P[0],A[1]-P[1]]),norm([B[0]-P[0],B[1]-P[1]]),0.09,C.muted);
+  wSector(g,F,0,0,1,0,t,alpha(C.teal,0.08)); seg(g,F,[0,0],P,C.ink,1.5);
+  seg(g,F,A,P,C.red,3); seg(g,F,P,H,C.teal,3.5); seg(g,F,A,H,C.gold,3.5);
+  if(Math.abs(P[1])>0.08) ra(g,F,H,[P[0]>A[0]?-1:1,0],[0,P[1]>0?1:-1],0.07,C.ink);
+  arcAt(g,F,A,0.3,0,t/2,C.red,2); arcAt(g,F,[0,0],0.18,0,t,C.blue,2);
+  var lt = mode==='half' ? ['θ/2','θ'] : ['θ','2θ'];
+  T(g,lt[0],F.X(-1+0.45*Math.cos(t/4)),F.Y(0.45*Math.sin(t/4)),C.red,13,'center','700');
+  T(g,lt[1],F.X(0.32*Math.cos(t/2)),F.Y(0.32*Math.sin(t/2))-4,C.blue,13,'center','700');
+  T(g,'A',F.X(-1)-12,F.Y(0)+10,C.ink,12,'center','700'); T(g,'B',F.X(1)+10,F.Y(0)+10,C.ink,12,'center','700'); T(g,'O',F.X(0),F.Y(0)+12,C.ink,12,'center','700');
+  T(g,'P',F.X(P[0]*1.1),F.Y(P[1]*1.1),C.ink,12,'center','700');
+  dot(g,F.X(P[0]),F.Y(P[1]),4.5,C.ink);
+}
+function norm(v){ var l=Math.hypot(v[0],v[1])||1; return [v[0]/l,v[1]/l]; }
+
+/* F6 cos */
+widget('w-cos',{state:{s:0.6},rw:0.36,rn:0.7,
+  fmt:{s:function(v){return v.toFixed(2)+'（'+deg(v)+'）';}},
+  draw:function(g,c,s){
+    var C=c.C, G=frame(full(c),-0.5,6.9,-1.45,1.45,22,false);
+    gAxes(g,G,-0.5,6.9,-1.45,1.45,C,1);
+    plot(g,G,Math.sin,-0.5,6.9,C.muted,1.3,[4,4]); plot(g,G,Math.cos,-0.5,6.9,C.gold,1.3,[2,4]);
+    plot(g,G,function(x){return Math.sin(x+s.s);},-0.5,6.9,C.red,3);
+    var px=PI/2-s.s; vline(g,G,px,-1.45,1.45,C.red,[3,3],1); dot(g,G.X(px),G.Y(1),5,C.red);
+    if(s.s>0.05){ L(g,G.X(PI/2),G.Y(1.22),G.X(px),G.Y(1.22),C.red,2); T(g,'←',G.X(px)-4,G.Y(1.22),C.red,13,'right','700'); }
+    T(g,'灰虛線 sin x　金點線 cos x　紅 sin(x + 左移量)',G.X(-0.4),G.Y(-1.35),C.muted,11);
+  },
+  out:function(s){ var d=Math.abs(s.s-PI/2)<0.01; return '目前畫的是 y = sin(x + '+s.s.toFixed(2)+')，最高點在 x = '+nf(PI/2-s.s)+(d?'　→　<b>跟 cos x 完全重合！</b>':'。再往左推，推到 π/2 ≈ 1.57。'); }
+});
+widget('s-F6',{state:{},steps:3,rw:0.36,rn:0.7,
+  draw:function(g,c,s){
+    var C=c.C, G=frame(full(c),-0.5,6.9,-1.45,1.45,22,false), axes, f;
+    gAxes(g,G,-0.5,6.9,-1.45,1.45,C,1);
+    if(s.step===0){ f=Math.sin; axes=[PI/2,3*PI/2]; } else { plot(g,G,Math.sin,-0.5,6.9,C.muted,1.2,[4,4]); f=Math.cos; axes=[0,PI,2*PI]; }
+    axes.forEach(function(a){ vline(g,G,a,-1.4,1.4,C.gold,[5,4],2); });
+    plot(g,G,f,-0.5,6.9,C.red,3);
+    if(s.step===2){ var d=0.8; [PI-d,PI+d].forEach(function(x){ dot(g,G.X(x),G.Y(Math.cos(x)),5,C.teal); }); L(g,G.X(PI-d),G.Y(Math.cos(PI-d)),G.X(PI+d),G.Y(Math.cos(PI+d)),C.teal,1.5,[3,3]); }
+  },
+  out:steps(['先看 y = sin x：對稱軸（金色）是通過最高、最低點的 x = π/2、3π/2。','整條往左移 π/2 變成 cos x，對稱軸也一起左移：x = 0、<b>π</b>、2π。','驗證 x = π：左右各走一樣遠，兩個青綠點一樣高，所以 <b>x = π 是對稱軸</b>。x = π/2、3π/2 則是 cos x 的對稱中心。'])
+});
+
+/* F7 平移伸縮 */
+function genDraw(g,G,C,a,b,h,k,col){ plot(g,G,function(x){return a*Math.sin(b*x-h)+k;},-0.5,6.9,col,3); }
+widget('w-gen',{state:{a:2,b:2,h:1,k:0.5},rw:0.5,rn:0.85,
+  fmt:{a:function(v){return v.toFixed(1);},b:function(v){return v.toFixed(1);},h:function(v){return nf(v);},k:function(v){return nf(v,1);}},
+  draw:function(g,c,s){
+    var C=c.C, G=frame(full(c),-0.5,6.9,-3.7,3.7,22,false), T0=TAU/s.b, sh=s.h/s.b;
+    gAxes(g,G,-0.5,6.9,-3.7,3.7,C,1);
+    plot(g,G,Math.sin,-0.5,6.9,C.muted,1.3,[4,4]);
+    L(g,G.X(-0.5),G.Y(s.k),G.X(6.9),G.Y(s.k),C.gold,1.5,[6,4]);
+    genDraw(g,G,C,s.a,s.b,s.h,s.k,C.red);
+    var xm=(s.h+PI/2)/s.b; while(xm-T0>=-0.3) xm-=T0; while(xm<0) xm+=T0;
+    if(xm<6.6){ L(g,G.X(xm),G.Y(s.k),G.X(xm),G.Y(s.k+s.a),C.blue,2.5); T(g,'振幅 '+s.a.toFixed(1),G.X(xm)+6,G.Y(s.k+s.a/2),C.blue,12,'left','700'); }
+    if(xm+T0<6.85){ var yb=Math.min(3.45,s.k+s.a+0.3); L(g,G.X(xm),G.Y(yb),G.X(xm+T0),G.Y(yb),C.teal,2.5); vline(g,G,xm,yb-0.12,yb+0.12,C.teal,[],2.5); vline(g,G,xm+T0,yb-0.12,yb+0.12,C.teal,[],2.5); T(g,'週期 '+T0.toFixed(2),G.X(xm+T0/2),G.Y(yb)-9,C.teal,12,'center','700'); }
+    if(Math.abs(sh)>0.02){ var y0=s.k; L(g,G.X(0),G.Y(y0),G.X(sh),G.Y(y0),C.red,2.5); dot(g,G.X(sh),G.Y(y0),4,C.red); T(g,(sh>0?'右移 ':'左移 ')+Math.abs(sh).toFixed(2),G.X(sh/2),G.Y(y0)+13,C.red,12,'center','700'); }
+  },
+  out:function(s){ return 'y = '+s.a.toFixed(1)+' sin('+s.b.toFixed(1)+'x '+(s.h>=0?'− ':'+ ')+Math.abs(s.h).toFixed(2)+') '+(s.k>=0?'+ ':'− ')+Math.abs(s.k).toFixed(1)+'　｜　振幅 <b>'+s.a.toFixed(1)+'</b>　週期 2π/'+s.b.toFixed(1)+' = <b>'+(TAU/s.b).toFixed(2)+'</b>　水平移動 h/b = <b>'+nf(s.h/s.b)+'</b>　值域 ['+nf(s.k-s.a,1)+', '+nf(s.k+s.a,1)+']'; }
+});
+widget('s-F7',{state:{},steps:4,rw:0.45,rn:0.8,
+  draw:function(g,c,s){
+    var C=c.C, G=frame(full(c),-0.5,6.9,-1.6,3.6,22,false), T0=TAU/3;
+    gAxes(g,G,-0.5,6.9,-1.6,3.6,C,1);
+    var prev=[[1,1,0,0],[1,3,0,0],[1,3,PI,0]][s.step-1], cur=[[1,1,0,0],[1,3,0,0],[1,3,PI,0],[2,3,PI,1]][s.step];
+    if(prev) genDraw(g,G,C,prev[0],prev[1],prev[2],prev[3],alpha(C.muted,0.7));
+    genDraw(g,G,C,cur[0],cur[1],cur[2],cur[3],C.red);
+    if(s.step===1){ L(g,G.X(0),G.Y(1.3),G.X(T0),G.Y(1.3),C.teal,2.5); T(g,'週期 2π/3',G.X(T0/2),G.Y(1.3)-10,C.teal,12,'center','700'); }
+    if(s.step===2){ L(g,G.X(0),G.Y(0),G.X(PI/3),G.Y(0),C.red,3); T(g,'右移 π/3',G.X(PI/6),G.Y(0)+14,C.red,12,'center','700'); }
+    if(s.step===3){ L(g,G.X(-0.5),G.Y(1),G.X(6.9),G.Y(1),C.gold,1.5,[6,4]); var xm=PI/3+PI/6; L(g,G.X(xm),G.Y(1),G.X(xm),G.Y(3),C.blue,2.5); T(g,'振幅 2',G.X(xm)+6,G.Y(2),C.blue,12,'left','700'); T(g,'中線 y = 1',G.X(6.8),G.Y(1)-10,C.gold,12,'right','700'); }
+  },
+  out:steps(['從 y = sin x 開始，週期 2π。','<b>先處理 b = 3</b>：y = sin 3x，水平壓縮成 1/3，週期變 2π/3。','把式子寫成 sin 3(x − π/3)：整條<b>右移 π/3</b>（不是 π！）。','最後鉛直拉長 2 倍、上移 1：y = 2 sin(3x − π) + 1。<br>答案：週期 2π/3、右移 π/3、振幅 2、上移 1。'])
+});
+
+/* F8 月球模型 */
+var MOON=[42,24,10,2,0,8,23,43,66,85,97,100,92,77,60,41];
+function moonFrame(c){ return frame(full(c),-2,31.5,-0.18,1.18,20,false); }
+function moonAxes(g,G,C){
+  for(var d=0;d<=30;d+=2){ L(g,G.X(d),G.Y(0),G.X(d),G.Y(1.05),d%4===0?C.grid:alpha(C.grid,0.5),1); if(d%4===0) T(g,String(d),G.X(d),G.Y(0)+12,C.muted,11,'center'); }
+  [0.5,1].forEach(function(y){ L(g,G.X(0),G.Y(y),G.X(30.5),G.Y(y),C.grid,1); T(g,(y*100)+'%',G.X(0)-6,G.Y(y),C.muted,11,'right'); });
+  L(g,G.X(0),G.Y(0),G.X(30.8),G.Y(0),C.ink,1.2); L(g,G.X(0),G.Y(0),G.X(0),G.Y(1.1),C.ink,1.2);
+  T(g,'經過天數',G.X(30.5),G.Y(0)-10,C.muted,11,'right');
+}
+function moonPts(g,G,C,hi){ MOON.forEach(function(v,i){ var x=2*i, y=v/100; dot(g,G.X(x),G.Y(y),hi&&(x===8||x===22)?6:4,hi&&(x===8||x===22)?C.red:C.ink); }); }
+function moonModel(T,a,k,m){ var b=TAU/T, h=b*m+PI/2; return function(x){ return a*Math.sin(b*x-h)+k; }; }
+widget('w-moon',{state:{T:24,a:0.4,k:0.5,m:6},rw:0.48,rn:0.8,
+  fmt:{T:function(v){return v+' 天';},a:function(v){return v.toFixed(2);},k:function(v){return v.toFixed(2);},m:function(v){return '第 '+v+' 天';}},
+  draw:function(g,c,s){ var C=c.C, G=moonFrame(c); moonAxes(g,G,C); plot(g,G,moonModel(s.T,s.a,s.k,s.m),0,30.5,C.teal,3); moonPts(g,G,C,false); },
+  out:function(s){ var f=moonModel(s.T,s.a,s.k,s.m), e=0; MOON.forEach(function(v,i){ e+=Math.abs(f(2*i)-v/100); }); e=e/MOON.length*100;
+    var best=s.T===28&&Math.abs(s.a-0.5)<1e-6&&Math.abs(s.k-0.5)<1e-6&&s.m===8;
+    return '模型：y = '+s.a.toFixed(2)+' sin(2π/'+s.T+' · x − h) + '+s.k.toFixed(2)+'　｜　平均誤差 <b>'+e.toFixed(1)+'%</b>'+(best?'　→　<b>跟課本的答案一樣！</b>週期 28、a = k = ½':'（試著調到 5% 以下）'); }
+});
+widget('s-F8',{state:{},steps:4,rw:0.48,rn:0.8,
+  draw:function(g,c,s){
+    var C=c.C, G=moonFrame(c); moonAxes(g,G,C); moonPts(g,G,C,true);
+    T(g,'(8, 0)',G.X(8),G.Y(0)-14,C.red,12,'center','700'); T(g,'(22, 1)',G.X(22),G.Y(1)+16,C.red,12,'center','700');
+    if(s.step>=1){ L(g,G.X(8),G.Y(1.1),G.X(22),G.Y(1.1),C.gold,2.5); vline(g,G,8,0,1.12,C.gold,[3,3],1); vline(g,G,22,0,1.12,C.gold,[3,3],1); T(g,'半個週期 = 14',G.X(15),G.Y(1.1)-9,C.gold,12,'center','700'); }
+    if(s.step>=2){ L(g,G.X(0),G.Y(0.5),G.X(30.5),G.Y(0.5),C.blue,1.5,[6,4]); L(g,G.X(24.5),G.Y(0.5),G.X(24.5),G.Y(1),C.blue,2.5); T(g,'a = ½',G.X(24.5)+6,G.Y(0.75),C.blue,12,'left','700'); T(g,'k = ½',G.X(30.4),G.Y(0.5)+11,C.blue,12,'right','700'); }
+    if(s.step>=3) plot(g,G,moonModel(28,0.5,0.5,8),0,30.5,C.teal,3);
+  },
+  out:steps(['先在資料裡找最低點 (8, 0) 和最高點 (22, 1)。','從最低走到最高只走了<b>半個週期</b>：22 − 8 = 14。','所以週期 T = 2 × 14 = <b>28</b>，b = 2π/28 = π/14。振幅 a = (1 − 0)/2 = ½，中線 k = (1 + 0)/2 = ½。','最後讓 x = 8 時剛好在最低點：π/14 × 8 − h = −π/2，得 h = 15π/14。<br>模型 y = ½ sin(πx/14 − 15π/14) + ½，跟資料點貼得很好。'])
+});
+
+/* F9 tan */
+function tanPanels(g,c,C,x,showGraph,extra){
+  var P=panels(c,0.38), F=frame(P[0],-1.5,1.7,-2.7,2.7,14,true), G=frame(P[1],-4.9,4.9,-3,3,22,false), t=Math.tan(x);
+  unitAxes(g,F,C,1.4); wArc(g,F,0,0,1,0,TAU,C.muted,1.2);
+  L(g,F.X(1),F.Y(-2.6),F.X(1),F.Y(2.6),C.gold,2); T(g,'切線 x = 1',F.X(1)+4,F.Y(-2.45),C.gold,11,'left','700');
+  var vis=Math.abs(t)<2.6;
+  seg(g,F,[0,0],vis?[1,t]:[Math.cos(x)*2.8,Math.sin(x)*2.8],C.ink,1.5,[4,3]);
+  if(vis){ seg(g,F,[1,0],[1,t],C.red,4); dot(g,F.X(1),F.Y(t),5,C.red); }
+  dot(g,F.X(Math.cos(x)),F.Y(Math.sin(x)),4.5,C.ink); wArc(g,F,0,0,0.3,0,x,C.teal,2);
+  if(extra) extra(F,G);
+  if(!showGraph) return;
+  gAxes(g,G,-4.9,4.9,-3,3,C,1);
+  [-3*PI/2,-PI/2,PI/2,3*PI/2].forEach(function(a){ vline(g,G,a,-3,3,C.red,[6,4],1.3); });
+  plotClip(g,G,Math.tan,-4.9,4.9,3,C.muted,1.3,[4,4]);
+  plotClip(g,G,Math.tan,-PI/2+0.001,x,3,C.red,3);
+  if(vis){ L(g,G.X(x),G.Y(0),G.X(x),G.Y(t),C.red,3); dot(g,G.X(x),G.Y(t),5,C.red); if(!c.narrow) L(g,F.X(1),F.Y(t),G.X(x),G.Y(t),C.red,1,[3,4]); }
+}
+widget('w-tan',{state:{x:0.8},rw:0.45,rn:1.15,
+  fmt:{x:function(v){return radFmt(v);}},
+  draw:function(g,c,s){ tanPanels(g,c,c.C,s.x,true); },
+  out:function(s){ var t=Math.tan(s.x); return 'x = '+s.x.toFixed(2)+'　→　終邊打到切線的高度 tan x = <b>'+nf(t,3)+'</b>'+(Math.abs(t)>2.6?'（太高了，衝出畫面）':''); }
+});
+widget('s-F9',{state:{},steps:3,rw:0.45,rn:1.15,
+  draw:function(g,c,s){
+    var C=c.C;
+    if(s.step===0){ tanPanels(g,c,C,1.47,false,function(F){ seg(g,F,[0,0],[Math.cos(PI/2)*2.6,2.6],C.blue,1.5,[2,3]); T(g,'x = π/2 時：終邊和切線平行',F.X(-1.4),F.Y(2.5),C.blue,11,'left','700'); }); return; }
+    var P=panels(c,0.38), G=frame(P[1],-0.4,6.7,-3,3,22,false), F=frame(P[0],-1.5,1.7,-2.7,2.7,14,true), x=0.6;
+    unitAxes(g,F,C,1.4); wArc(g,F,0,0,1,0,TAU,C.muted,1.2); L(g,F.X(1),F.Y(-2.6),F.X(1),F.Y(2.6),C.gold,2);
+    gAxes(g,G,-0.4,6.7,-3,3,C,1); [PI/2,3*PI/2].forEach(function(a){ vline(g,G,a,-3,3,C.red,[6,4],2); });
+    plotClip(g,G,Math.tan,-0.4,6.7,3,C.ink,2.5);
+    if(s.step===2){
+      seg(g,F,[Math.cos(x+PI)*1.2,Math.sin(x+PI)*1.2],[1,Math.tan(x)],C.teal,2); dot(g,F.X(Math.cos(x)),F.Y(Math.sin(x)),5,C.teal); dot(g,F.X(Math.cos(x+PI)),F.Y(Math.sin(x+PI)),5,C.gold); dot(g,F.X(1),F.Y(Math.tan(x)),5,C.red);
+      T(g,'x',F.X(Math.cos(x))+8,F.Y(Math.sin(x))-6,C.teal,12,'left','700'); T(g,'x + π',F.X(Math.cos(x+PI))-6,F.Y(Math.sin(x+PI))+12,C.gold,12,'right','700');
+      dot(g,G.X(x),G.Y(Math.tan(x)),5,C.teal); dot(g,G.X(x+PI),G.Y(Math.tan(x)),5,C.gold); L(g,G.X(x),G.Y(Math.tan(x)),G.X(x+PI),G.Y(Math.tan(x)),C.red,1.5,[3,3]); T(g,'相差 π',G.X(x+PI/2),G.Y(Math.tan(x))-10,C.red,12,'center','700');
+    }
+  },
+  out:steps(['x 接近 π/2 時，終邊幾乎跟切線平行，永遠打不到：tan(π/2) 沒有定義。','所以凡是 cos x = 0 的地方都是漸近線。在 0 ≤ x ≤ 2π 中有兩條：<b>x = π/2 和 x = 3π/2</b>。','x 和 x + π 的終邊在同一條直線上（方向相反），打到切線的同一點，所以 <b>週期是 π</b>。'])
+});
+
+/* F10 和角：長方形 */
+widget('w-sum',{state:{a:0.5,b:0.6},rw:0.62,rn:1.0,
+  fmt:{a:function(v){return radFmt(v);},b:function(v){return radFmt(v);}},
+  constrain:function(s,k){ if(s.a+s.b>1.5){ if(k==='a') s.b=Math.max(0.1,1.5-s.a); else s.a=Math.max(0.1,1.5-s.b); } },
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-0.35,1.35,-0.15,1.12,16,true), a=s.a, b=s.b;
+    var Q=[Math.cos(b)*Math.cos(a),Math.cos(b)*Math.sin(a)], P=[Math.cos(a+b),Math.sin(a+b)], R=[Q[0],0], S=[Q[0],P[1]], Y=[0,P[1]];
+    seg(g,F,[0,0],[1.25,0],C.grid,1); seg(g,F,[0,0],[0,1.08],C.grid,1);
+    poly(g,F,[[0,0],R,S,Y],alpha(C.blue,0.04),C.line);
+    poly(g,F,[[0,0],R,Q],alpha(C.teal,0.12)); poly(g,F,[Q,S,P],alpha(C.gold,0.14));
+    seg(g,F,[0,0],P,C.ink,3); seg(g,F,[0,0],Q,C.ink,1.8); seg(g,F,Q,P,C.ink,1.8);
+    ra(g,F,Q,norm([-Q[0],-Q[1]]),norm([P[0]-Q[0],P[1]-Q[1]]),0.045,C.ink); ra(g,F,R,[-1,0],[0,1],0.035,C.ink);
+    seg(g,F,R,Q,C.teal,4.5); seg(g,F,Q,S,C.gold,4.5); seg(g,F,[0,0],R,C.blue,4.5); seg(g,F,P,S,C.red,4.5);
+    arcAt(g,F,[0,0],0.16,0,a,C.teal,2); arcAt(g,F,[0,0],0.24,a,a+b,C.gold,2);
+    T(g,'α',F.X(0.22*Math.cos(a/2)),F.Y(0.22*Math.sin(a/2)),C.teal,13,'center','700');
+    T(g,'β',F.X(0.31*Math.cos(a+b/2)),F.Y(0.31*Math.sin(a+b/2)),C.gold,13,'center','700');
+    T(g,'1',F.X(P[0]/2)-8,F.Y(P[1]/2),C.ink,13,'right','700');
+    T(g,'cos β',F.X(Q[0]*0.55)+4,F.Y(Q[1]*0.55)+12,C.ink,11,'left','500');
+    T(g,'sin β',F.X((Q[0]+P[0])/2)+6,F.Y((Q[1]+P[1])/2)-4,C.ink,11,'left','500');
+    T(g,'cosα cosβ',F.X(R[0]/2),F.Y(0)+13,C.blue,12,'center','700');
+    T(g,'sinα cosβ',F.X(R[0])+6,F.Y(Q[1]/2),C.teal,12,'left','700');
+    T(g,'cosα sinβ',F.X(R[0])+6,F.Y((Q[1]+S[1])/2),C.gold,12,'left','700');
+    T(g,'sinα sinβ',F.X((P[0]+S[0])/2),F.Y(S[1])-11,C.red,12,'center','700');
+    T(g,'P',F.X(P[0]),F.Y(P[1])-11,C.ink,12,'center','700'); dot(g,F.X(P[0]),F.Y(P[1]),4,C.ink);
+  },
+  out:function(s){ var a=s.a,b=s.b, sa=Math.sin(a),ca=Math.cos(a),sb=Math.sin(b),cb=Math.cos(b);
+    return 'P 的高度：sin(α+β) = '+Math.sin(a+b).toFixed(3)+' ＝ <span style="color:var(--teal)">sinα cosβ</span> + <span style="color:var(--gold)">cosα sinβ</span> = '+(sa*cb).toFixed(3)+' + '+(ca*sb).toFixed(3)+' ✓<br>P 的水平距離：cos(α+β) = '+Math.cos(a+b).toFixed(3)+' ＝ <span style="color:var(--blue)">cosα cosβ</span> − <span style="color:var(--red)">sinα sinβ</span> = '+(ca*cb).toFixed(3)+' − '+(sa*sb).toFixed(3)+' ✓<br>對照：sin α + sin β = '+(sa+sb).toFixed(3)+'，跟 sin(α+β) <b>不一樣</b>。'; }
+});
+widget('s-F10',{state:{},steps:4,rw:0.62,rn:0.85,
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-1.6,1.6,-1.25,1.25,14,true), A=[5/13,12/13], B=[-3/5,4/5];
+    unitAxes(g,F,C,1.4); wArc(g,F,0,0,1,0,TAU,C.muted,1.2);
+    poly(g,F,[[0,0],[A[0],0],A],alpha(C.teal,0.15)); seg(g,F,[0,0],A,C.teal,2.5); seg(g,F,[A[0],0],A,C.teal,2,[3,3]);
+    T(g,'5',F.X(A[0]/2),F.Y(0)+12,C.teal,12,'center','700'); T(g,'12',F.X(A[0])+6,F.Y(A[1]/2),C.teal,12,'left','700'); T(g,'13',F.X(A[0]/2)-8,F.Y(A[1]/2),C.teal,12,'right','700'); T(g,'α',F.X(0.2),F.Y(0.12),C.teal,13,'center','700');
+    if(s.step>=1){ poly(g,F,[[0,0],[B[0],0],B],alpha(C.gold,0.15)); seg(g,F,[0,0],B,C.gold,2.5); seg(g,F,[B[0],0],B,C.gold,2,[3,3]); arcAt(g,F,[0,0],0.12,0,Math.atan2(B[1],B[0]),C.gold,1.5);
+      T(g,'−3',F.X(B[0]/2),F.Y(0)+12,C.gold,12,'center','700'); T(g,'4',F.X(B[0])-6,F.Y(B[1]/2),C.gold,12,'right','700'); T(g,'β',F.X(-0.05),F.Y(0.22),C.gold,13,'center','700'); }
+    if(s.step>=3){ var t=Math.atan2(A[1],A[0])+Math.atan2(B[1],B[0]), Pp=[Math.cos(t),Math.sin(t)]; seg(g,F,[0,0],Pp,C.red,3); seg(g,F,[Pp[0],0],Pp,C.red,3); dot(g,F.X(Pp[0]),F.Y(Pp[1]),5,C.red); T(g,'α+β',F.X(Pp[0]*1.18),F.Y(Pp[1]*1.18)-10,C.red,12,'center','700'); T(g,'高度 −16/65',F.X(Pp[0])+8,F.Y(Pp[1])+22,C.red,12,'left','700'); }
+  },
+  out:steps(['α 在第一象限、cos α = 5/13：畫 5-12-13 直角三角形，得 <b>sin α = 12/13</b>。','β 在第二象限、sin β = 4/5：點在左上方，畫 3-4-5 三角形。x 座標是負的，所以 <b>cos β = −3/5</b>。','代公式（正弦同號）：<br>sin(α+β) = sinα cosβ + cosα sinβ = 12/13 × (−3/5) + 5/13 × 4/5 = −36/65 + 20/65 = <b>−16/65</b>','檢查：α+β 的終邊落在第三象限，高度一點點低於 x 軸，跟 −16/65 ≈ −0.25 吻合。'])
+});
+
+/* F11 兩直線夾角 */
+function incl(m){ var a=Math.atan(m); return a<0?a+PI:a; }
+function linesDraw(g,c,C,m1,m2,showTheta){
+  var F=frame(full(c),-3.2,3.2,-1.2,3.2,16,true), a=incl(m1), b=incl(m2);
+  seg(g,F,[-3.1,0],[3.1,0],C.ink,1.2);
+  function ln(m,col){ var x0=-3.1,x1=3.1, y0=m*x0, y1=m*x1; if(Math.abs(m)>1e-6){ var cl=function(x){ return Math.max(-1.15,Math.min(3.15,x)); }; var yA=cl(y0), yB=cl(y1); x0=yA/m; x1=yB/m; y0=yA; y1=yB; } seg(g,F,[x0,y0],[x1,y1],col,3); }
+  ln(m1,C.red); ln(m2,C.blue);
+  arcAt(g,F,[0,0],0.55,0,a,C.red,2); arcAt(g,F,[0,0],0.85,0,b,C.blue,2);
+  T(g,'α',F.X(0.68*Math.cos(a/2)),F.Y(0.68*Math.sin(a/2)),C.red,13,'center','700');
+  T(g,'β',F.X(0.98*Math.cos(b/2))+4,F.Y(0.98*Math.sin(b/2)),C.blue,13,'center','700');
+  if(showTheta){ var lo=Math.min(a,b), hi=Math.max(a,b); wSector(g,F,0,0,1.5,lo,hi,alpha(C.teal,0.2)); arcAt(g,F,[0,0],1.5,lo,hi,C.teal,2.5); T(g,'θ',F.X(1.75*Math.cos((lo+hi)/2)),F.Y(1.75*Math.sin((lo+hi)/2)),C.teal,15,'center','700'); }
+  dot(g,F.X(0),F.Y(0),3,C.ink);
+}
+widget('w-lines',{state:{m1:7,m2:0.75},rw:0.5,rn:0.8,
+  fmt:{m1:function(v){return nf(v);},m2:function(v){return nf(v);}},
+  draw:function(g,c,s){ linesDraw(g,c,c.C,s.m1,s.m2,true); },
+  out:function(s){ var a=incl(s.m1), b=incl(s.m2), den=1+s.m1*s.m2, th=Math.abs(a-b); if(th>PI/2) th=PI-th;
+    var t = Math.abs(den)<1e-9 ? '分母 1 + m₁m₂ = 0 → 兩線<b>垂直</b>，夾角 90°' : 'tan(α − β) = ('+nf(s.m1)+' − '+nf(s.m2)+') ÷ (1 + '+nf(s.m1)+' × '+nf(s.m2)+') = <b>'+nf((s.m1-s.m2)/den,3)+'</b>';
+    return t+'　｜　夾角 <b>'+(th*180/PI).toFixed(1)+'°</b> 或 '+(180-th*180/PI).toFixed(1)+'°'; }
+});
+widget('s-F11',{state:{},steps:3,rw:0.5,rn:0.8,
+  draw:function(g,c,s){ linesDraw(g,c,c.C,2,1/3,s.step>=1); },
+  out:steps(['斜率就是 tan(傾斜角)：tan α = 2、tan β = ⅓。','套正切差角公式：tan θ = (2 − ⅓) ÷ (1 + 2 × ⅓) = (5/3) ÷ (5/3) = <b>1</b>。','tan θ = 1，所以 θ = 45°。兩直線相交有一對互補的角，答案是 <b>45° 或 135°</b>。'])
+});
+
+/* F12 倍角 */
+widget('w-double',{state:{t:0.55},rw:0.62,rn:0.9,
+  fmt:{t:function(v){return radFmt(v);}},
+  draw:function(g,c,s){ inscribed(g,frame(full(c),-1.35,1.35,-1.2,1.2,14,true),c.C,2*s.t,'double'); },
+  out:function(s){ var t=s.t, st=Math.sin(t), ct=Math.cos(t);
+    return 'AP = 2cos θ = '+(2*ct).toFixed(3)+'<br><span style="color:var(--teal)">高 PH</span> = AP × sin θ = 2 sinθ cosθ = '+(2*st*ct).toFixed(3)+'　＝ sin 2θ = '+Math.sin(2*t).toFixed(3)+' ✓<br><span style="color:var(--gold)">底 AH</span> = AP × cos θ = 2cos²θ = '+(2*ct*ct).toFixed(3)+'　＝ 1 + cos 2θ　→　cos 2θ = 2cos²θ − 1 = '+(2*ct*ct-1).toFixed(3)+' ✓'; }
+});
+widget('s-F12',{state:{},steps:3,rw:0.62,rn:0.85,
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-1.6,1.6,-1.25,1.25,14,true), th=PI+Math.acos(3/5), P=[-3/5,-4/5];
+    unitAxes(g,F,C,1.4); wArc(g,F,0,0,1,0,TAU,C.muted,1.2);
+    arcAt(g,F,[0,0],0.2,0,th,C.teal,2); seg(g,F,[0,0],P,C.teal,2.5); seg(g,F,[P[0],0],P,C.teal,2,[3,3]); dot(g,F.X(P[0]),F.Y(P[1]),5,C.teal);
+    T(g,'θ',F.X(-0.28),F.Y(0.12),C.teal,13,'center','700'); T(g,'(−3/5, −4/5)',F.X(P[0])-6,F.Y(P[1])+14,C.teal,12,'right','700');
+    if(s.step>=2){ var t2=2*th, Q=[Math.cos(t2),Math.sin(t2)]; seg(g,F,[0,0],Q,C.red,3); seg(g,F,[Q[0],0],Q,C.red,3); dot(g,F.X(Q[0]),F.Y(Q[1]),5,C.red); T(g,'2θ 的終邊',F.X(Q[0]*1.15),F.Y(Q[1]*1.15),C.red,12,'center','700'); T(g,'高 24/25',F.X(Q[0])-8,F.Y(Q[1]/2),C.red,12,'right','700'); }
+  },
+  out:steps(['π &lt; θ &lt; 3π/2，θ 在<b>第三象限</b>，cos θ = −3/5。畫出 3-4-5 三角形，點在左下方，所以 <b>sin θ = −4/5</b>（也是負的）。','sin 2θ = 2 sin θ cos θ = 2 × (−4/5) × (−3/5) = <b>24/25</b>。<br>順便：cos 2θ = cos²θ − sin²θ = 9/25 − 16/25 = −7/25，tan 2θ = −24/7。','檢查：2θ 轉過一圈多一點，終邊落在第二象限，高度正（sin 2θ = 24/25）、x 座標負（cos 2θ = −7/25），全部吻合。'])
+});
+
+/* F13 半角 */
+widget('w-half',{state:{t:1.2},rw:0.62,rn:0.9,
+  fmt:{t:function(v){return radFmt(v);}},
+  draw:function(g,c,s){ inscribed(g,frame(full(c),-1.35,1.35,-1.2,1.2,14,true),c.C,s.t,'half'); },
+  out:function(s){ var t=s.t; return 'tan(θ/2) = <span style="color:var(--teal)">高 PH</span> ÷ <span style="color:var(--gold)">底 AH</span> = sin θ ÷ (1 + cos θ) = '+Math.sin(t).toFixed(3)+' ÷ '+(1+Math.cos(t)).toFixed(3)+' = <b>'+(Math.sin(t)/(1+Math.cos(t))).toFixed(3)+'</b>　｜　直接算 tan(θ/2) = '+Math.tan(t/2).toFixed(3)+' ✓'; }
+});
+widget('s-F13',{state:{},steps:3,rw:0.62,rn:0.9,
+  draw:function(g,c,s){
+    var C=c.C, F=frame(full(c),-1.35,1.35,-1.2,1.2,14,true), t=Math.atan2(4,3);
+    if(s.step===0){ unitAxes(g,F,C,1.3); wArc(g,F,0,0,1,0,TAU,C.muted,1.2); var P=[3/5,4/5]; poly(g,F,[[0,0],[P[0],0],P],alpha(C.teal,0.15)); seg(g,F,[0,0],P,C.ink,2); seg(g,F,[P[0],0],P,C.teal,3); seg(g,F,[0,0],[P[0],0],C.gold,3);
+      T(g,'3/5',F.X(0.3),F.Y(0)+12,C.gold,12,'center','700'); T(g,'4/5',F.X(P[0])+6,F.Y(0.4),C.teal,12,'left','700'); T(g,'θ',F.X(0.15),F.Y(0.08),C.blue,13,'center','700'); dot(g,F.X(P[0]),F.Y(P[1]),5,C.ink); return; }
+    inscribed(g,F,C,t,'half');
+    if(s.step===2){ T(g,'高 4/5',F.X(3/5)+8,F.Y(0.4),C.teal,13,'left','700'); T(g,'底 1 + 3/5 = 8/5',F.X(-0.2),F.Y(0)+32,C.gold,13,'center','700'); }
+  },
+  out:steps(['tan θ = 4/3 且 θ 是銳角：畫 3-4-5 三角形，單位圓上的點是 P(3/5, 4/5)，所以 cos θ = 3/5、sin θ = 4/5。','從圓最左邊的 A 點看 P，看到的角剛好是 <b>θ/2</b>（圓心角的一半）。','tan(θ/2) = 高 ÷ 底 = (4/5) ÷ (1 + 3/5) = (4/5) ÷ (8/5) = <b>1/2</b>。<br>初學者坡道的坡度是 1/2。'])
+});
+
+/* F14 疊合：旋轉向量 */
+function fuseDraw(g,c,C,a,b,x,opt){
+  opt=opt||{};
+  var P=panels(c,0.4), F=frame(P[0],-3.1,3.1,-3.1,3.1,12,true), G=frame(P[1],-0.3,6.65,-3.1,3.1,22,false), r=Math.hypot(a,b), al=Math.atan2(b,a);
+  unitAxes(g,F,C,3); wArc(g,F,0,0,r,0,TAU,C.grid,1.2,[3,3]);
+  var A=[a*Math.cos(x),a*Math.sin(x)], S=[A[0]-b*Math.sin(x),A[1]+b*Math.cos(x)];
+  seg(g,F,[0,0],A,C.teal,3); seg(g,F,A,S,C.gold,3); seg(g,F,[0,0],S,C.red,3.5); dot(g,F.X(S[0]),F.Y(S[1]),5,C.red);
+  T(g,'r = '+r.toFixed(2),F.X(-3),F.Y(2.85),C.red,12,'left','700');
+  gAxes(g,G,-0.3,6.65,-3.1,3.1,C,1);
+  plot(g,G,function(t){return a*Math.sin(t);},0,TAU,C.teal,1.5,[4,4]); plot(g,G,function(t){return b*Math.cos(t);},0,TAU,C.gold,1.5,[4,4]);
+  plot(g,G,function(t){return a*Math.sin(t)+b*Math.cos(t);},0,TAU,C.red,3);
+  var y=a*Math.sin(x)+b*Math.cos(x); L(g,G.X(x),G.Y(0),G.X(x),G.Y(y),C.red,2); dot(g,G.X(x),G.Y(y),5,C.red);
+  if(!c.narrow) L(g,F.X(S[0]),F.Y(S[1]),G.X(x),G.Y(y),C.red,1,[3,4]);
+  T(g,'青 a sin x　金 b cos x　紅 相加',G.X(0),G.Y(-2.95),C.muted,11);
+  return {r:r,al:al};
+}
+widget('w-fuse',{state:{a:1,b:1,x:0.8},rw:0.45,rn:1.15,
+  fmt:{a:function(v){return nf(v,1);},b:function(v){return nf(v,1);},x:function(v){return v.toFixed(2);}},
+  draw:function(g,c,s){ fuseDraw(g,c,c.C,s.a,s.b,s.x); },
+  out:function(s){ var r=Math.hypot(s.a,s.b), al=Math.atan2(s.b,s.a); if(r<1e-9) return 'a、b 不能同時為 0。';
+    return nf(s.a,1)+' sin x '+(s.b>=0?'+ ':'− ')+Math.abs(s.b).toFixed(1)+' cos x = <b>'+r.toFixed(2)+' sin(x '+(al>=0?'+ ':'− ')+Math.abs(al).toFixed(2)+')</b>　｜　r = √('+nf(s.a,1)+'² + '+nf(s.b,1)+'²) = '+r.toFixed(2)+'　α = '+nf(al)+'（'+Math.round(al*180/PI)+'°）　｜　最大 '+r.toFixed(2)+'、最小 −'+r.toFixed(2); }
+});
+widget('s-F14',{state:{},steps:4,rw:0.45,rn:1.15,
+  draw:function(g,c,s){
+    var C=c.C, a=-Math.sqrt(3), b=1;
+    if(s.step===3){ fuseDraw(g,c,C,a,b,0.6); var G=frame(panels(c,0.4)[1],-0.3,6.65,-3.1,3.1,22,false); plot(g,G,function(t){return 2*Math.sin(t+5*PI/6);},0,TAU,C.blue,1.5,[2,3]); return; }
+    var P=panels(c,0.4), F=frame(c.narrow?full(c):{x:0,y:0,w:c.w,h:c.h},-3.1,3.1,-1.2,2.4,14,true);
+    seg(g,F,[-3,0],[3,0],C.ink,1); seg(g,F,[0,-1.1],[0,2.3],C.ink,1);
+    var Q=[a,b]; dot(g,F.X(a),F.Y(b),6,C.red); T(g,'(−√3, 1)',F.X(a),F.Y(b)-14,C.red,13,'center','700');
+    seg(g,F,[a,0],Q,C.muted,1.2,[3,3]); seg(g,F,[0,b],Q,C.muted,1.2,[3,3]);
+    if(s.step>=1){ seg(g,F,[0,0],Q,C.red,3); wArc(g,F,0,0,2,0,PI,C.grid,1.2,[3,3]); T(g,'r = 2',F.X(a/2)+4,F.Y(b/2)+14,C.red,13,'center','700'); }
+    if(s.step>=2){ arcAt(g,F,[0,0],0.5,0,5*PI/6,C.teal,2.5); T(g,'α = 5π/6（150°）',F.X(0.2),F.Y(0.75),C.teal,13,'left','700'); }
+  },
+  out:steps(['把係數當成座標：a = −√3、b = 1，點 (−√3, 1) 在<b>第二象限</b>。','點到原點的距離就是 r：r = √(3 + 1) = <b>2</b>。','方向角 α 要滿足 cos α = −√3/2、sin α = 1/2，在第二象限，所以 <b>α = 5π/6</b>。','所以 −√3 sin x + cos x = <b>2 sin(x + 5π/6)</b>。右圖把 2 sin(x + 5π/6) 用藍色點線疊上去，跟紅色曲線完全重合，所以看起來只有一條。'])
+});
+
+/* F15 區間極值 */
+var AL=5*PI/6;
+function extDraw(g,c,C,Lx,Ux,opt){
+  opt=opt||{};
+  var P=panels(c,0.36), F=frame(P[0],-1.45,1.45,-1.35,1.35,14,true), G=frame(P[1],-0.3,6.65,-2.5,2.5,22,false), f=function(x){ return 2*Math.sin(x+AL); };
+  unitAxes(g,F,C); wArc(g,F,0,0,1,0,TAU,C.muted,1.2);
+  dot(g,F.X(0),F.Y(1),3.5,C.muted); dot(g,F.X(0),F.Y(-1),3.5,C.muted); T(g,'π/2',F.X(0)+6,F.Y(1)-8,C.muted,11,'left'); T(g,'3π/2',F.X(0)+6,F.Y(-1)+9,C.muted,11,'left');
+  var mx=-9, mn=9, xmx=0, xmn=0, N=400;
+  for(var i=0;i<=N;i++){ var x=Lx+(Ux-Lx)*i/N, y=f(x); if(y>mx+1e-12){mx=y;xmx=x;} if(y<mn-1e-12){mn=y;xmn=x;} }
+  if(opt.arc!==false){ wArc(g,F,0,0,1,Lx+AL,Ux+AL,C.red,5); dot(g,F.X(Math.cos(Lx+AL)),F.Y(Math.sin(Lx+AL)),4,C.red); }
+  if(opt.marks!==false){ dot(g,F.X(Math.cos(xmx+AL)),F.Y(Math.sin(xmx+AL)),6,C.teal); dot(g,F.X(Math.cos(xmn+AL)),F.Y(Math.sin(xmn+AL)),6,C.gold);
+    L(g,F.X(-1.4),F.Y(mx/2),F.X(1.4),F.Y(mx/2),C.teal,1,[3,3]); L(g,F.X(-1.4),F.Y(mn/2),F.X(1.4),F.Y(mn/2),C.gold,1,[3,3]); }
+  gAxes(g,G,-0.3,6.65,-2.5,2.5,C,1);
+  plot(g,G,f,0,TAU,C.muted,1.3,[4,4]);
+  if(opt.arc!==false){ g.save(); g.fillStyle=alpha(C.red,0.07); g.fillRect(G.X(Lx),G.Y(2.4),(Ux-Lx)*G.sx,4.8*G.sy); g.restore(); plot(g,G,f,Lx,Ux,C.red,3); }
+  if(opt.marks!==false){ dot(g,G.X(xmx),G.Y(mx),6,C.teal); dot(g,G.X(xmn),G.Y(mn),6,C.gold);
+    T(g,'最大 '+nf(mx),G.X(xmx)+8,G.Y(mx)-10,C.teal,12,'left','700'); T(g,'最小 '+nf(mn),G.X(xmn)+8,G.Y(mn)+12,C.gold,12,'left','700'); }
+  return {mx:mx,mn:mn,xmx:xmx,xmn:xmn};
+}
+widget('w-ext',{state:{L:0,U:PI},rw:0.42,rn:1.1,
+  fmt:{L:function(v){return radFmt(v);},U:function(v){return radFmt(v);}},
+  constrain:function(s,k){ if(s.U<s.L+0.05){ if(k==='L') s.U=Math.min(6.28,s.L+0.05); else s.L=Math.max(0,s.U-0.05); } },
+  draw:function(g,c,s){ VL._ext=extDraw(g,c,c.C,s.L,s.U); },
+  out:function(s){ var r=VL._ext||{mx:0,mn:0,xmx:0,xmn:0}; return x0str(s)+'　→　x + 5π/6 的範圍 ['+nf(s.L+AL)+', '+nf(s.U+AL)+']（紅色弧）<br>最大值 <b>'+nf(r.mx,3)+'</b>（x = '+nf(r.xmx)+'）　最小值 <b>'+nf(r.mn,3)+'</b>（x = '+nf(r.xmn)+'）'; }
+});
+function x0str(s){ return nf(s.L)+' ≤ x ≤ '+nf(s.U); }
+widget('s-F15',{state:{},steps:4,rw:0.42,rn:1.1,
+  draw:function(g,c,s){ var C=c.C; extDraw(g,c,C,0,PI,{arc:s.step>=1,marks:s.step>=2}); },
+  out:steps(['先疊合：y = −√3 sin x + cos x = 2 sin(x + 5π/6)。灰虛線是它的完整圖形。','0 ≤ x ≤ π，所以 x + 5π/6 的範圍是 [5π/6, 11π/6]。畫在單位圓上就是紅色這段弧。','紅色弧<b>沒有經過最上面（π/2）</b>，最高點在起點 5π/6，sin = 1/2；弧<b>有經過最下面（3π/2）</b>，sin = −1。','最大值 2 × ½ = <b>1</b>（x + 5π/6 = 5π/6，x = 0）；最小值 2 × (−1) = <b>−2</b>（x + 5π/6 = 3π/2，x = 2π/3）。'])
+});
+
+/* 重繪：視窗大小、主題切換、字型載入、展開圖解 */
+var pend=0; function renderAll(){ if(pend) return; pend=requestAnimationFrame(function(){ pend=0; renders.forEach(function(r){ r(); }); }); }
+VL.renderAll = renderAll;
+window.addEventListener('resize',renderAll);
+if(window.matchMedia){ var mq=window.matchMedia('(prefers-color-scheme: dark)'); if(mq.addEventListener) mq.addEventListener('change',renderAll); }
+if(window.MutationObserver) new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(renderAll);
+document.querySelectorAll('details.sol').forEach(function(d){ d.addEventListener('toggle',renderAll); });
+
+/* 作答判斷 */
+document.querySelectorAll('.qc').forEach(function(q){
+  var box=q.querySelector('.choices'), fb=q.querySelector('.fb'), sol=q.querySelector('details.sol');
+  var ans=box.getAttribute('data-answer').split(','), multi=box.hasAttribute('data-multi');
+  function judge(picked){
+    var ok = picked.length===ans.length && picked.every(function(p){ return ans.indexOf(p)>=0; }), why='';
+    box.querySelectorAll('button[data-c]').forEach(function(b){ var c=b.getAttribute('data-c'); b.classList.toggle('right', ok && ans.indexOf(c)>=0); b.classList.toggle('wrong', picked.indexOf(c)>=0 && ans.indexOf(c)<0); if(picked.indexOf(c)>=0 && ans.indexOf(c)<0 && b.getAttribute('data-why')) why=b.getAttribute('data-why'); });
+    if(!ok && !why && multi) why = picked.length<ans.length ? '還少選了，答案不只一個喔。' : '再檢查一下有沒有多選。';
+    fb.innerHTML = ok ? '<b class="ok">答對了！</b>打開下面的圖解，看看老師是怎麼想的。' : '<b class="no">再想一下。</b>'+why;
+    if(ok && sol && !sol.open) sol.open = true;
+    VL.answers = VL.answers || {}; VL.answers[q.getAttribute('data-q')] = {picked:picked, correct:ok};
+  }
+  box.querySelectorAll('button[data-c]').forEach(function(b){ b.addEventListener('click',function(){
+    if(multi){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true'); b.classList.remove('right','wrong'); }
+    else judge([b.getAttribute('data-c')]);
+  }); });
+  var chk=q.querySelector('[data-check]');
+  if(chk) chk.addEventListener('click',function(){ var picked=[]; box.querySelectorAll('button[aria-pressed="true"]').forEach(function(b){ picked.push(b.getAttribute('data-c')); }); judge(picked); });
+});
+
+/* 學習進度（僅 sessionStorage，符合平台規範） */
+var KEY='AHS.VL.MATH-3A-CH1.progress', boxes=document.querySelectorAll('[data-done]');
+function loadP(){ try{ return JSON.parse(sessionStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+function saveP(p){ try{ sessionStorage.setItem(KEY,JSON.stringify(p)); }catch(e){} }
+function showP(){ var p=loadP(), n=0; boxes.forEach(function(b){ if(p[b.getAttribute('data-done')]) n++; }); var el=document.getElementById('prog'); if(el) el.textContent='已完成 '+n+' / '+boxes.length; }
+var p0=loadP(); boxes.forEach(function(b){ var k=b.getAttribute('data-done'); b.checked=!!p0[k]; b.addEventListener('change',function(){ var p=loadP(); p[k]=b.checked; saveP(p); showP(); }); });
+showP();
+VL.progress = {key:KEY, get:loadP};
+
+/* 嵌入：單一公式模式標記焦點卡片，並把高度回報給平台（postMessage，跨 file:// 亦可用） */
+(function(){
+  var r=document.documentElement, id=r.getAttribute('data-card');
+  if(id){ var c=document.getElementById(id); if(c){ c.classList.add('is-focus'); var s=c.closest('section'); if(s) s.classList.add('has-focus'); } }
+  if(!r.classList.contains('is-embed')||window.parent===window) return;
+  var last=0;
+  function post(){ var h=Math.ceil(document.body.getBoundingClientRect().height); if(h&&Math.abs(h-last)>1){ last=h; try{ window.parent.postMessage({type:'ahs-visual-lesson:height',card:id||null,height:h},'*'); }catch(e){} } }
+  if(window.ResizeObserver){ new ResizeObserver(post).observe(document.body); }
+  window.addEventListener('load',post); document.addEventListener('toggle',post,true); setTimeout(post,300);
+  renderAll();
+})();
+
+})();
+</script>
+
+</body>
+</html>

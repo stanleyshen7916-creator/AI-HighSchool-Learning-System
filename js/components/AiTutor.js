@@ -167,6 +167,9 @@ AHS.AiTutor = (function () {
           var rich = AHS.ExplanationSupplement ? AHS.ExplanationSupplement.render(q, result.explanation) : null;
           if (rich) { feedback.appendChild(el("div", { class: "tutor-quiz__explain tutor-quiz__explain--rich" }, [rich])); }
           else if (result.explanation) { feedback.appendChild(el("p", { class: "tutor-quiz__explain", text: "詳解：" + result.explanation })); }
+          /* 2026-10-21 圖解教材（互動）: the formula card behind this question. */
+          var visual = visualForQuestion(q);
+          if (visual) { feedback.appendChild(visual); }
           feedback.removeAttribute("hidden");
           scrollBottom();
           askNext(questions, index + 1, score);
@@ -201,11 +204,49 @@ AHS.AiTutor = (function () {
         runQuiz({ subject: chatSubject.value || undefined, count: 5, weakFirst: true });
       } else if (reply.type === "search") {
         push(aiBubble(searchResults(reply)));
+        pushVisual(text);
       } else {
         var nodes = textLines(reply.message);
         if (reply.topics && reply.topics.length) { nodes.push(topicChips(reply.topics)); }
         push(aiBubble(nodes, reply.actions, sendMessage));
+        pushVisual(text);
       }
+    }
+
+    /* ---- 互動圖解（2026-10-21）---------------------------------------- */
+    /* Only lessons of materials in this student's Workspace, and of the
+       subject picked in the chat's subject selector (if any). */
+    function workspaceMaterialIds() {
+      return SA ? SA.sources().map(function (s) { return s.sourceId; }) : [];
+    }
+    function subjectAllows(lesson) {
+      var key = chatSubject.value;
+      return !key || !AHS.Subjects || !AHS.Subjects[key] || AHS.Subjects[key].name === lesson.subject;
+    }
+    function pushVisual(text) {
+      if (!AHS.VisualLesson || !AHS.VisualLessonFrame) { return; }
+      var query = SA && typeof SA.cleanQuery === "function" ? SA.cleanQuery(text) : text;
+      var m = AHS.VisualLesson.match(query, { materialIds: workspaceMaterialIds() });
+      if (!m || !subjectAllows(m.lesson)) { return; }
+      var frame = AHS.VisualLessonFrame.card(m.lesson, m.card.id);
+      if (!frame) { return; }
+      var node = aiBubble([
+        el("span", { class: "tutor-msg__line", text: "這個觀念有互動圖解，拖拖看圖上的滑桿，再做下面的小試身手：" }),
+        frame
+      ]);
+      node.classList.add("tutor-msg--wide");
+      push(node);
+    }
+    function visualForQuestion(q) {
+      if (!AHS.VisualLesson || !AHS.VisualLessonFrame) { return null; }
+      var m = AHS.VisualLesson.forQuestion(q);
+      if (!m) { return null; }
+      var toggle = AHS.VisualLessonFrame.cardToggle(m.lesson, m.card.id, function () {
+        var msg = toggle && toggle.closest ? toggle.closest(".tutor-msg") : null;
+        if (msg) { msg.classList.add("tutor-msg--wide"); }
+        scrollBottom();
+      });
+      return toggle;
     }
 
     /* ---- 我哪裡弱／今天讀什麼 ------------------------------------------ */
