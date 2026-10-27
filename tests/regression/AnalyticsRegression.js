@@ -328,8 +328,8 @@ console.log("\n[7] Platform Tutor Engine — 只讀取 Learning Analytics，不�
     !!built && built.message.includes("教材閱讀完成") && built.message.includes("20%"));
 }
 
-/* ---- 8. Assessment Mode — 原始試卷／AI 練習不得混用 (AI-117-08) */
-console.log("\n[8] Assessment Mode — 原始試卷／AI 練習分流，不得混用");
+/* ---- 8. 原始試卷與 AI 題合併 (2026-10-27；取代 AI-117-08 的分流) */
+console.log("\n[8] 原始試卷與 AI／補充題合併為同一份題庫");
 {
   const { window } = loadPage("quiz.html", {});
   const Q = window.AHS.QuestionRuntime;
@@ -341,24 +341,14 @@ console.log("\n[8] Assessment Mode — 原始試卷／AI 練習分流，不得�
       options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
       questionSource: "AI_GENERATED", origin: "AI" }
   ]);
-  window.AHS.TeachingMaterialLoader.importAssessmentModeVariants("teaching_material_rt_9", Q.getSet("teaching_material_rt_9"));
-
-  check("原始試卷 examId 只含 questionSource=ORIGINAL", Q.hasExam("teaching_material_rt_9__original") &&
-    Q.getSet("teaching_material_rt_9__original").every((q) => q.questionSource === "ORIGINAL"));
-  check("AI 練習 examId 只含 questionSource=AI_GENERATED", Q.hasExam("teaching_material_rt_9__ai") &&
-    Q.getSet("teaching_material_rt_9__ai").every((q) => q.questionSource === "AI_GENERATED"));
-  check("兩種模式彼此不混用（原始試卷不含 AI 題目，AI 練習不含原始題目）",
-    Q.getSet("teaching_material_rt_9__original").every((q) => q.id !== "q_a1") &&
-    Q.getSet("teaching_material_rt_9__ai").every((q) => q.id !== "q_o1"));
+  check("Loader 不再提供 __original／__ai 分流", typeof window.AHS.TeachingMaterialLoader.importAssessmentModeVariants === "undefined");
 
   const ExamRt = window.AHS.ExamRuntime;
-  const s1 = ExamRt.startFromExam("teaching_material_rt_9__original", { subject: "civics", title: "原始試卷" });
-  check("ExamRuntime 可針對「原始試卷」單獨啟動一場 Session", !!s1 && s1.totalQuestions === 1);
+  const s1 = ExamRt.startFromExam("teaching_material_rt_9", { subject: "civics", title: "教材" });
+  check("同一場 Session 同時含原始題與 AI 題", !!s1 && s1.totalQuestions === 2);
   const abandoned = ExamRt.abandon(s1.examId);
-  check("切換模式時 abandon() 不會產生任何評分/錯題/歷史紀錄（非真正繳交）",
+  check("abandon() 不會產生任何評分/錯題/歷史紀錄（非真正繳交）",
     abandoned === null && window.AHS.WrongBookRuntime.list().length === 0 && window.AHS.HistoryRuntime.list().length === 0);
-  const s2 = ExamRt.startFromExam("teaching_material_rt_9__ai", { subject: "civics", title: "AI 練習" });
-  check("abandon() 後可切換至「AI 練習」啟動新 Session（單一運作中考試限制未被破壞）", !!s2 && s2.totalQuestions === 1);
 }
 
 /* ---- 9. Random Exam Session — Question ID 不變，Display Order 真實 Random (AI-117-09) */

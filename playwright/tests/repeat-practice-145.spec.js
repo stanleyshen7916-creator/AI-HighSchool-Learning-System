@@ -50,7 +50,7 @@ test("AI-145：平時練習完成後「再次出題」— 真實再抽一組不�
       if (!AHS || !AHS.QuestionRuntime || !AHS.QuestionBankRuntime) { return; }
       if (AHS.QuestionBankRuntime.hasBank(examId)) { return; } // already seeded by an earlier navigation
       const questions = [];
-      for (let i = 1; i <= 25; i++) {
+      for (let i = 1; i <= 50; i++) {
         questions.push({
           id: "rp" + i, index: i, subject: "math", text: "AI-145 平時練習題 " + i,
           type: "single_choice", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
@@ -73,10 +73,10 @@ test("AI-145：平時練習完成後「再次出題」— 真實再抽一組不�
   const firstExamId = await page.evaluate(() => window.AHS.ExamRuntime.getCurrent().examId);
   const firstIds = await page.evaluate((examId) =>
     window.AHS.QuestionRuntime.getSet(examId).map((q) => q.id).sort(), firstExamId);
-  expect(firstIds.length).toBe(10); // FORMAL_EXAM_QUESTION_COUNT
+  expect(firstIds.length).toBe(20); // FORMAL_EXAM_QUESTION_COUNT（2026-10-27 起 20 題）
 
   // Real click-through: answer every question, then finish.
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
     // 2026-10-08: 計算／填充題沒有選項，輸入答案作答（js/ui/QuestionCard.js）。
     if (await page.locator(".qcard-option").count()) {
       await page.locator(".qcard-option").first().click();
@@ -105,8 +105,8 @@ test("AI-145：平時練習完成後「再次出題」— 真實再抽一組不�
 
   const secondIds = await page.evaluate((examId) =>
     window.AHS.QuestionRuntime.getSet(examId).map((q) => q.id).sort(), secondExamId);
-  expect(secondIds.length).toBe(10);
-  // Bank has 25 real questions, far more than the 10 drawn per round —
+  expect(secondIds.length).toBe(20);
+  // Bank has 50 real questions, far more than the 20 drawn per round —
   // a real different combination, not the same set shown again.
   expect(secondIds).not.toEqual(firstIds);
 

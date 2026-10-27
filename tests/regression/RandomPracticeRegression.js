@@ -111,12 +111,12 @@ console.log("\n[3] 測驗中心：綜合隨機練習");
   check("開始一份綜合隨機練習", !!session && /^random_practice_/.test(session.examId) && !!doc.querySelector(".qcard"));
   const qs = AHS.QuestionRuntime.getSet(session.examId);
   const materials = new Set(qs.map((q) => q.sourceTitle));
-  check("10 題、跨多課", qs.length === 10 && materials.size >= 2);
+  check("20 題、跨多課", qs.length === 20 && materials.size >= 2);
   check("全部是國文", qs.every((q) => q.subject === "chinese"));
-  check("題號為 1～10（作答順序由 ExamRuntime 另外打亂）", qs.map((q) => q.index).sort((x, y) => x - y).join() === "1,2,3,4,5,6,7,8,9,10");
+  check("題號為 1～20（作答順序由 ExamRuntime 另外打亂）", qs.map((q) => q.index).sort((x, y) => x - y).join() === Array.from({ length: 20 }, (_, i) => i + 1).join());
 
   /* answer every question with a wrong option where possible, then finish */
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 22; i++) {
     const q = AHS.QuestionRuntime.getSet(session.examId)[i] || null;
     const opts = [...doc.querySelectorAll(".qcard-option")];
     const wrong = q ? opts.find((o) => o.getAttribute("data-key") && o.getAttribute("data-key") !== q.correctAnswer) : null;
@@ -130,7 +130,7 @@ console.log("\n[3] 測驗中心：綜合隨機練習");
   check("答錯的題目進入知識弱點", wrongs.length > 0);
   check("知識弱點記錄題目自己的課名，不是「綜合隨機練習」", wrongs.every((w) => w.title && w.title.indexOf("綜合隨機練習") === -1 && materials.has(w.title)));
 
-  /* next round brings the unmastered wrong questions back (at most 4) */
+  /* next round brings the unmastered wrong questions back (at most 40% of 20 = 8) */
   const back = [...doc.querySelectorAll("button")].find((b) => b.textContent.indexOf("返回測驗中心") !== -1);
   if (back) { click(back); }
   const chinese2 = [...doc.querySelectorAll(".quiz-filter__subject")].find((b) => b.textContent.trim() === "國文");
@@ -139,7 +139,7 @@ console.log("\n[3] 測驗中心：綜合隨機練習");
   const second = AHS.QuestionRuntime.getSet(AHS.ExamRuntime.getCurrent().examId);
   const wrongIds = new Set(wrongs.map((w) => w.questionId));
   const again = second.filter((q) => wrongIds.has(q.id)).length;
-  check("下一次綜合隨機練習會再出答錯的題目（最多 4 題）", again === Math.min(4, wrongIds.size));
+  check("下一次綜合隨機練習會再出答錯的題目（最多 8 題）", again === Math.min(8, wrongIds.size));
   check("Console errors = 0", consoleErrors.length === 0);
 }
 

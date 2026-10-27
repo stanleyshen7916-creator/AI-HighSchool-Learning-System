@@ -39,8 +39,8 @@ AHS.QuizParts = AHS.QuizParts || {};
   }
 
   /* 平時練習（原正式測驗）每次固定抽題數 — 與 AHS.QuestionBankRuntime.
-     drawCycle() 搭配，一份題庫題數不足 10 題時誠實只給實際題數，不湊數。 */
-  var FORMAL_EXAM_QUESTION_COUNT = 10;
+     drawCycle() 搭配，一份題庫題數不足 20 題時誠實只給實際題數，不湊數。 */
+  var FORMAL_EXAM_QUESTION_COUNT = 20;  /* 2026-10-27 平時練習每次 20 題 */
 
   function chip(subjectKey) {
     var subj = AHS.Subjects[subjectKey];
@@ -193,6 +193,8 @@ AHS.QuizParts = AHS.QuizParts || {};
            不足時誠實顯示實際題數，不湊數）— 卡片上的「共 N 題」對應的是
            這次實際會考的題數，不是題庫總題數。 */
         count: Math.min(FORMAL_EXAM_QUESTION_COUNT, set.length),
+        /* 考前總複習 lists the whole set: 「共 N 題」 there is the real total. */
+        total: set.length,
         progress: stats.progress,
         accuracy: stats.accuracy,
         best: stats.best,
@@ -281,10 +283,10 @@ AHS.QuizParts = AHS.QuizParts || {};
     if (!materialId || !AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function") { return []; }
     var examId = "teaching_material_" + materialId;
     var set = AHS.QuestionRuntime.hasExam(examId) ? AHS.QuestionRuntime.getSet(examId) : [];
-    /* 2026-10-08: Practice Mode answers with a single click, so it keeps
-       single-choice and true/false questions only; multi-select and
-       self-graded questions are taken in the exam view (QuestionCard.js). */
-    return AHS.QuestionKind ? set.filter(function (q) { return AHS.QuestionKind.isChoice(q); }) : set;
+    /* 2026-10-27: 考前總複習 covers the WHOLE question set (單選、多選、
+       選填) so its count matches the material — QuizPracticeView answers
+       multi-select by toggling and 選填 by typed, auto-graded inputs. */
+    return set;
   }
 
   function isRealLearningQuestion(record) {

@@ -1,13 +1,14 @@
-/* tests/regression/MixedSourceExamRegression.js — 2026-10-01.
+/* tests/regression/MixedSourceExamRegression.js — 2026-10-01, rewritten 2026-10-27.
 
-   tm_1 is an exam paper (ORIGINAL questions) that now also has a 補充題庫
-   (tm_18, AI_GENERATED). Assessment Mode says the two are never mixed in
-   one exam ("不得混用"). Verifies, on real data (高一下 g1s2):
-   - 開始測驗 on tm_1 opens its 原始試卷 variant: only ORIGINAL questions;
-   - the 原始試卷 / AI 練習 toggle is shown, and AI 練習 has only AI questions;
-   - the variant sessions carry the material's subject (they used to start
-     without meta and crash the exam view);
-   - a single-source material still gets the usual drawn 平時練習 set.
+   Materials whose questions come from more than one source (原始試卷
+   ORIGINAL + AI_GENERATED／PAST_EXAM 補充題庫) used to open a 原始試卷 /
+   AI 練習 split; the split loaded a whole variant (e.g. 77 題) as 平時練習.
+   2026-10-27 (使用者要求合併): one merged question set per material.
+   Verifies, on real data:
+   - 開始測驗 on a mixed material draws ONE 平時練習 set of at most 20
+     from the merged bank (__formal_), with no 原始試卷／AI 練習 toggle;
+   - over repeated draws both sources appear (merged, not split);
+   - the session carries the material's subject.
 
    Run: node tests/regression/MixedSourceExamRegression.js */
 "use strict";
@@ -46,30 +47,30 @@ function loadPage(htmlFile, workspace) {
 function click(node) { node.dispatchEvent(new node.ownerDocument.defaultView.MouseEvent("click", { bubbles: true, cancelable: true })); }
 function rowFor(doc, text) { return [...doc.querySelectorAll(".quiz-row")].find((r) => r.textContent.indexOf(text) !== -1); }
 
-console.log("MixedSourceExam Regression — 原題＋補充題的教材不混用");
-const { window, doc, consoleErrors } = loadPage("quiz.html");
-const AHS = window.AHS;
+console.log("MixedSourceExam Regression — 原題＋補充題合併為同一份題庫");
 
-click(rowFor(doc, "正弦定理").querySelector(".quiz-row__start"));
-let session = AHS.ExamRuntime.getCurrent();
-check("tm_1 開始測驗：進入原始試卷", !!session && /__original$/.test(session.examId) && !!doc.querySelector(".qcard"));
-let qs = AHS.QuestionRuntime.getSet(session.examId);
-check("原始試卷只有原題（ORIGINAL）", qs.length > 0 && qs.every((q) => q.questionSource === "ORIGINAL"));
-check("測驗帶有科目（數學）", session.subject === "math");
-const toggle = [...doc.querySelectorAll(".qexam__mode-btn")].map((b) => b.textContent);
-/* 2026-10-02: tm_1's practice side now holds AI questions (tm_18) and past
-   學測數學A questions (tm_27), so the toggle reads 「補充練習（AI＋歷屆試題）」. */
-check("顯示「原始試卷／補充練習（AI＋歷屆試題）」切換", toggle.length === 2 && toggle[0].indexOf("原始試卷") !== -1 &&
-  toggle[1].indexOf("補充練習（AI＋歷屆試題）") !== -1);
+function checkMerged(label, workspace, rowText, sourceRe) {
+  const pg = loadPage("quiz.html", workspace);
+  click(rowFor(pg.doc, rowText).querySelector(".quiz-row__start"));
+  const s1 = pg.window.AHS.ExamRuntime.getCurrent();
+  const qs = s1 ? pg.window.AHS.QuestionRuntime.getSet(s1.examId) : [];
+  check(label + "：平時練習抽一組（__formal_），最多 20 題", !!s1 && /__formal_\d+$/.test(s1.examId) && qs.length > 0 && qs.length <= 20);
+  check(label + "：不顯示「原始試卷／AI 練習」切換", pg.doc.querySelectorAll(".qexam__mode-btn").length === 0 && !!pg.doc.querySelector(".qcard"));
+  const base = s1.examId.replace(/__formal_\d+$/, "");
+  const sources = {};
+  qs.concat(...Array.from({ length: 12 }, () => pg.window.AHS.QuestionBankRuntime.drawCycle(base, 20)))
+    .forEach((q) => { sources[q.questionSource === "ORIGINAL" ? "orig" : "extra"] = true; });
+  check(label + "：原題與補充題都出現在同一份題庫", !!sources.orig && !!sources.extra);
+  check(label + "：沒有 __original／__ai 分流題庫", !pg.window.AHS.QuestionRuntime.hasExam(base + "__original") && !pg.window.AHS.QuestionRuntime.hasExam(base + "__ai"));
+  if (sourceRe) { check(label + "：抽到的題目都屬於這份教材", qs.every((q) => sourceRe.test(q.id))); }
+  check(label + "：Console errors = 0", pg.consoleErrors.length === 0);
+  return s1;
+}
 
-click([...doc.querySelectorAll(".qexam__mode-btn")][1]);
-session = AHS.ExamRuntime.getCurrent();
-qs = AHS.QuestionRuntime.getSet(session.examId);
-check("切到補充練習：只有 AI 題與歷屆試題（含 tm_18、tm_27），沒有原題", /__ai$/.test(session.examId) && qs.length >= 14 &&
-  qs.every((q) => q.questionSource === "AI_GENERATED" || q.questionSource === "PAST_EXAM") &&
-  qs.some((q) => /^tm_18_q/.test(q.id)) && qs.some((q) => /^tm_27_q/.test(q.id)));
-check("補充練習也帶有科目", session.subject === "math" && !!doc.querySelector(".qcard"));
-check("Console errors = 0", consoleErrors.length === 0);
+const s1 = checkMerged("tm_1（數學 正弦定理）", undefined, "正弦定理", /^tm_(1|18|27)_q/);
+check("測驗帶有科目（數學）", s1.subject === "math");
+checkMerged("tm_29（竹圍 化學 氣體）", { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] }, "第二章：氣體", /^tm_(29|30|31|32)_q/);
+checkMerged("tm_7（長榮 數學 三角函數）", { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] }, "第1章：三角函數", null);
 
 /* single-source material (tm_2, ORIGINAL only) keeps the drawn set */
 {
@@ -77,39 +78,6 @@ check("Console errors = 0", consoleErrors.length === 0);
   click(rowFor(second.doc, "演化與生物分類").querySelector(".quiz-row__start"));
   const s2 = second.window.AHS.ExamRuntime.getCurrent();
   check("只有一種題目來源的教材照常抽題（__formal_）", !!s2 && /__formal_\d+$/.test(s2.examId));
-  check("不顯示切換", second.doc.querySelectorAll(".qexam__mode-btn").length === 0);
-}
-
-/* 2026-10-04: tm_29（竹圍高中化學課本 第二章 氣體）本身是 AI 題；課本原題放在補充題庫
-   tm_30（ORIGINAL），另有 AI 加題 tm_31 與歷屆試題 tm_32。原始試卷只出課本原題。 */
-{
-  const zw = loadPage("quiz.html", { studentId: "student_c", schoolId: "zwsh", semesterIds: ["g2s1"] });
-  click(rowFor(zw.doc, "第二章：氣體").querySelector(".quiz-row__start"));
-  const s3 = zw.window.AHS.ExamRuntime.getCurrent();
-  const orig = zw.window.AHS.QuestionRuntime.getSet(s3.examId);
-  check("tm_29 原始試卷：只抽課本原題（tm_30）", /__original$/.test(s3.examId) && orig.length >= 10 &&
-    orig.every((q) => q.questionSource === "ORIGINAL" && /^tm_30_q/.test(q.id)));
-  click([...zw.doc.querySelectorAll(".qexam__mode-btn")][1]);
-  const s4 = zw.window.AHS.ExamRuntime.getCurrent();
-  const extra = zw.window.AHS.QuestionRuntime.getSet(s4.examId);
-  check("tm_29 補充練習：原 AI 題＋AI 加題（tm_31）＋歷屆試題（tm_32），共 36 題", /__ai$/.test(s4.examId) && extra.length === 36 &&
-    extra.some((q) => /^tm_31_q/.test(q.id)) && extra.filter((q) => q.questionSource === "PAST_EXAM").length === 6);
-  check("竹圍高中 Console errors = 0", zw.consoleErrors.length === 0);
-}
-
-/* 2026-10-07: tm_7（長榮數學課本 第1章 三角函數）本身是 AI 題；課本原題放在補充題庫
-   tm_50（ORIGINAL）。原始試卷只出課本原題，補充練習是原本的 AI 題。 */
-{
-  const cj = loadPage("quiz.html", { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] });
-  click(rowFor(cj.doc, "第1章：三角函數").querySelector(".quiz-row__start"));
-  const s5 = cj.window.AHS.ExamRuntime.getCurrent();
-  const orig7 = cj.window.AHS.QuestionRuntime.getSet(s5.examId);
-  check("tm_7 原始試卷：只抽課本原題（tm_50）", /__original$/.test(s5.examId) && orig7.length >= 10 &&
-    orig7.every((q) => q.questionSource === "ORIGINAL" && /^tm_50_q/.test(q.id)));
-  click([...cj.doc.querySelectorAll(".qexam__mode-btn")][1]);
-  const ai7 = cj.window.AHS.QuestionRuntime.getSet(cj.window.AHS.ExamRuntime.getCurrent().examId);
-  check("tm_7 補充練習：原本的 AI 題", ai7.length >= 10 && ai7.every((q) => q.questionSource === "AI_GENERATED"));
-  check("長榮高二上 Console errors = 0", cj.consoleErrors.length === 0);
 }
 
 console.log("\nMixedSourceExamRegression: " + pass + " PASS / " + fail + " FAIL");

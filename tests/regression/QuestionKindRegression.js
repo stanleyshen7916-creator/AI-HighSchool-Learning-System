@@ -54,15 +54,16 @@ const { window, doc, consoleErrors } = loadPage("quiz.html");
 const AHS = window.AHS;
 const QK = AHS.QuestionKind;
 const idMap = AHS.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {};
-const set7 = AHS.QuestionRuntime.getSet("teaching_material_" + idMap.tm_7 + "__original");
+/* 2026-10-27: 原始試卷與 AI 題合併，tm_7 只有一份題庫。 */
+const set7 = AHS.QuestionRuntime.getSet("teaching_material_" + idMap.tm_7);
 const set28 = AHS.QuestionRuntime.getSet("teaching_material_" + idMap.tm_28);
 
 console.log("\n[1] 載入");
 const tf = set7.find((q) => q.type === "true_false");
 const calc = set7.find((q) => q.type === "calculation");
 const multi = set28.find((q) => q.answerMode === "multi");
-/* 2026-10-27: 計算題改輸入作答自動批改，答案無法自動比對的長篇作答不出題（110 → 77 題）。 */
-check("tm_7 原始試卷含是非題與計算題（之前只有單選題）", !!tf && !!calc && set7.length >= 70);
+/* 2026-10-27: 計算題改輸入作答自動批改，答案無法自動比對的長篇作答不出題。 */
+check("tm_7 題庫含是非題與計算題（之前只有單選題）", !!tf && !!calc && set7.length >= 70);
 check("計算題都能自動批改（長篇作答不出題）", set7.filter((q) => QK.kindOf(q) === "self").every((q) => QK.gradable({ type: q.type, answer: q.answerText })));
 check("是非題：選項為「正確／錯誤」，答案為其中一個 key",
   JSON.stringify(tf.options.map((o) => o.text)) === JSON.stringify(["正確", "錯誤"]) && ["A", "B"].indexOf(tf.correctAnswer) !== -1);
@@ -144,10 +145,31 @@ console.log("\n[3] 批改與知識弱點");
   check("自評答錯的計算題進入知識弱點", !!wbCalc && wbCalc.correctAnswer === QK.SELF_CORRECT && wbCalc.yourAnswer === QK.SELF_WRONG);
 }
 
-console.log("\n[4] 平時練習（點一下就作答）");
+console.log("\n[4] 考前總複習：整份題庫（單選、多選、選填）");
 {
+  /* 2026-10-27: 考前總複習列出整份題庫，題數與教材一致。 */
   const practice = AHS.QuizParts.realExamQuestionsFor(idMap.tm_7);
-  check("只保留單選與是非題，不含多選與自評題", practice.length > 0 && practice.every((q) => QK.isChoice(q)) && practice.some((q) => q.type === "true_false"));
+  check("考前總複習題數 = 教材題庫題數", practice.length === set7.length);
+  check("含單選、是非、多選與選填題", ["choice", "multi", "self"].every((k) => practice.some((q) => QK.kindOf(q) === k)) && practice.some((q) => q.type === "true_false"));
+  const entry = AHS.QuizParts.repositoryExamCatalog().find((e) => e._repoExamId === "teaching_material_" + idMap.tm_7);
+  check("列表「共 N 題」：考前總複習為整份題數，平時練習為 20 題", !!entry && entry.total === set7.length && entry.count === 20);
+
+  const R = AHS.QuizParts.renderRealQuestionBody;
+  const fillQ = practice.find((q) => QK.kindOf(q) === "self" && QK.parts(q.answerText).length === 1);
+  let got = null;
+  const fillCard = R(fillQ, (id, ok) => { got = ok; });
+  const input = fillCard.querySelector(".quiz-practice__fill-input");
+  input.value = QK.parts(fillQ.answerText)[0];
+  input.dispatchEvent(new window.Event("input", { bubbles: true }));
+  click(fillCard.querySelector(".quiz-practice__submit"));
+  check("選填題：輸入正確答案自動判定答對，並顯示答案文字", got === true && fillCard.querySelector(".quiz-practice__answer").textContent.indexOf(fillQ.answerText) !== -1);
+
+  const multiQ = set28.find((q) => QK.kindOf(q) === "multi");
+  got = null;
+  const multiCard = R(multiQ, (id, ok) => { got = ok; });
+  QK.multiKeys(multiQ.correctAnswer).forEach((k) => click(multiCard.querySelector('.quiz-practice__option--btn[data-key="' + k + '"]')));
+  click(multiCard.querySelector(".quiz-practice__submit"));
+  check("多選題：可複選，全部選對判定答對", got === true && multiCard.querySelectorAll(".quiz-practice__option--btn.is-correct").length === QK.multiKeys(multiQ.correctAnswer).length);
 }
 check("Console errors = 0（測驗中心）", consoleErrors.length === 0);
 

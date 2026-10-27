@@ -23,7 +23,6 @@ AHS.QuizCenter = (function () {
     repositoryExamCatalog = P.repositoryExamCatalog,
     openChapterPicker = P.openChapterPicker,
     buildListView = P.buildListView,
-    baseAssessmentExamId = P.baseAssessmentExamId,
     baseFormalExamId = P.baseFormalExamId,
     buildExamView = P.buildExamView,
     buildReviewView = P.buildReviewView,
@@ -133,21 +132,12 @@ AHS.QuizCenter = (function () {
       showExam(session.examId);
     }
 
-    /* switchAssessmentMode(baseExamId, mode) — Sprint AI-117 AI-117-08.
-       Abandons (never grades) the currently-running session, then starts
-       a fresh one scoped to exactly the chosen mode's question set. */
-    function switchAssessmentMode(baseExamId, mode) {
-      var current = AHS.ExamRuntime.getCurrent();
-      if (current && typeof AHS.ExamRuntime.abandon === "function") { AHS.ExamRuntime.abandon(current.examId); }
-      tryDirectExamEntry(baseExamId + (mode === "original" ? "__original" : "__ai"));
-    }
-
     function showExam(examId) {
       var session = AHS.ExamRuntime.getCurrent();
       if (!session || session.examId !== examId) { showList(); return; }
       AHS.UI.mount(root, buildExamView(session, function () { showExam(examId); }, function () {
         finishExam(examId);
-      }, switchAssessmentMode, function () {
+      }, function () {
         finishExamEarly(examId);
       }));
     }
@@ -226,10 +216,7 @@ AHS.QuizCenter = (function () {
        平時練習 random-10 rework: when `examId` is a real material's own
        base exam id (the one TeachingMaterialLoader.js already built a
        permanent AHS.QuestionBankRuntime bank for via ensureBank() at
-       import time — never the "__original"/"__ai" Assessment Mode
-       variants switchAssessmentMode() passes here, which have no bank
-       of their own and fall through to the unchanged whole-set path
-       below), each attempt now draws up to FORMAL_EXAM_QUESTION_COUNT
+       import time), each attempt now draws up to FORMAL_EXAM_QUESTION_COUNT
        real questions via AHS.QuestionBankRuntime.drawCycle() — a
        persisted "shuffled bag" that never repeats a question until
        every question in the bank has been drawn once (可重複，但每一題
@@ -238,16 +225,6 @@ AHS.QuizCenter = (function () {
        completely unchanged (same additive-variant convention
        startDrawnSession() below already established). */
     function tryDirectExamEntry(examId) {
-      /* 2026-10-01: a material can now hold BOTH original exam questions
-         and AI questions (a 補充題庫 added to an exam paper, e.g. tm_1).
-         The drawn 平時練習 set below would mix them, against Assessment
-         Mode's "不得混用" — so such a material opens its 原始試卷 variant,
-         and the exam view's own toggle switches to AI 練習. Materials with
-         one question source keep the drawn set exactly as before. */
-      if (/^teaching_material_/.test(examId) && !/__(original|ai)$/.test(examId) &&
-          AHS.QuestionRuntime.hasExam(examId + "__original") && AHS.QuestionRuntime.hasExam(examId + "__ai")) {
-        examId = examId + "__original";
-      }
       if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.drawCycle === "function" &&
           AHS.QuestionBankRuntime.hasBank(examId)) {
         var drawn = AHS.QuestionBankRuntime.drawCycle(examId, FORMAL_EXAM_QUESTION_COUNT);
@@ -275,13 +252,6 @@ AHS.QuizCenter = (function () {
       }
       var meta = (AHS.TeachingMaterialLoader && typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function")
         ? AHS.TeachingMaterialLoader.resolveExamMeta(examId) : null;
-      /* 2026-10-01: the __original/__ai Assessment Mode variants share their
-         base material's meta (resolveExamMeta() only knows the base id);
-         without it the session had no subject and the exam view crashed. */
-      if (!meta && examId !== baseAssessmentExamId(examId) && AHS.TeachingMaterialLoader &&
-          typeof AHS.TeachingMaterialLoader.resolveExamMeta === "function") {
-        meta = AHS.TeachingMaterialLoader.resolveExamMeta(baseAssessmentExamId(examId));
-      }
       var session = AHS.ExamRuntime.startFromExam(examId, meta || {});
       if (!session) { showList(); return null; }
       showExam(session.examId);
@@ -468,9 +438,7 @@ AHS.QuizCenter = (function () {
        questions from baseExamId's already-built, permanent QuestionBank
        (AHS.QuestionBankRuntime.drawRandom() — never fabricated; an
        honestly small bank returns fewer than 10). Imported under a
-       derived examId (same additive-variant convention
-       importAssessmentModeVariants() above already established with
-       "__original"/"__ai") so the entire existing ExamRuntime/
+       derived examId so the entire existing ExamRuntime/
        QuestionRuntime/AutoGrader/WrongBook/History/KnowledgeMastery chain
        runs completely unmodified — this is real "Wiring", not a new
        grading path. meta is resolved from the REAL baseExamId (not the

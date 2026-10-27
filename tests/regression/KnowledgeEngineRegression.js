@@ -375,7 +375,7 @@ console.log("\n[9] QuizCenter — 平時練習完成後「再次出題」真實�
   const A = window.AHS;
   const examId = "teaching_material_rt_retry";
   const bankQuestions = [];
-  for (let i = 1; i <= 25; i++) {
+  for (let i = 1; i <= 50; i++) {
     bankQuestions.push({
       id: "rq" + i, index: i, subject: "math", text: "t" + i, type: "single_choice",
       options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
@@ -391,8 +391,8 @@ console.log("\n[9] QuizCenter — 平時練習完成後「再次出題」真實�
 
   const firstSession = A.ExamRuntime.getCurrent();
   check("進入即真實抽出一組 Exam Session（非清單）", !!firstSession && firstSession.status === "running");
-  check("每次固定抽 FORMAL_EXAM_QUESTION_COUNT（10）題（Bank 有 25 題）",
-    firstSession && firstSession.totalQuestions === 10);
+  check("每次固定抽 FORMAL_EXAM_QUESTION_COUNT（20）題（Bank 有 50 題）",
+    firstSession && firstSession.totalQuestions === 20);
   const firstExamId = firstSession.examId;
   const firstIds = A.QuestionRuntime.getSet(firstExamId).map((q) => q.id).sort();
 
@@ -402,7 +402,7 @@ console.log("\n[9] QuizCenter — 平時練習完成後「再次出題」真實�
      then click 下一題 until the last question's 完成測驗 button appears,
      then click it — the one real path that reaches finishExam()'s own
      onFinish handler and mounts the real 檢討 (Review) screen. */
-  for (let guard = 0; guard < 20; guard++) {
+  for (let guard = 0; guard < 60; guard++) {
     const current = A.ExamRuntime.getCurrent();
     if (!current) { break; }
     const q = A.QuestionRuntime.getSet(firstExamId)[current.currentIndex];
@@ -426,10 +426,32 @@ console.log("\n[9] QuizCenter — 平時練習完成後「再次出題」真實�
     check("新 Session 的 examId 與第一次不同（同一天可重複進行，非同一組再顯示一次）",
       secondSession && secondSession.examId !== firstExamId);
     const secondIds = secondSession ? A.QuestionRuntime.getSet(secondSession.examId).map((q) => q.id).sort() : [];
-    check("Bank 25 題遠大於每次抽 10 題，「再次出題」真實抽到不同題目組合（非同一組題目重複做）",
+    check("Bank 50 題遠大於每次抽 20 題，「再次出題」真實抽到不同題目組合（非同一組題目重複做）",
       JSON.stringify(secondIds) !== JSON.stringify(firstIds));
-    check("兩次都誠實只抽 10 題（drawCycle 上限不變）", secondIds.length === 10);
+    check("兩次都誠實只抽 20 題（drawCycle 上限不變）", secondIds.length === 20);
   }
+}
+
+console.log("\n[9b] QuizCenter — 原始試卷與補充題庫合併：平時練習從整份題庫抽 20 題（2026-10-27）");
+{
+  const { window } = loadPage("quiz.html");
+  const A = window.AHS;
+  const base = "teaching_material_rt_mixed";
+  const mk = (p, n, src) => Array.from({ length: n }, (_, i) => ({
+    id: p + (i + 1), index: i + 1, subject: "math", text: "t" + i, type: "single_choice", questionSource: src,
+    options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A", knowledgePoint: "kp", materialId: "rt_mixed"
+  }));
+  const all = mk("o", 60, "ORIGINAL").concat(mk("a", 17, "AI_GENERATED"));
+  A.QuestionRuntime.importQuestions(base, all);
+  A.QuestionBankRuntime.ensureBank(base, all);
+  const mount = A.QuizCenter.create(undefined, undefined, undefined, base);
+  window.document.body.appendChild(mount);
+  const s1 = A.ExamRuntime.getCurrent();
+  check("混合教材的平時練習只抽 20 題（不是整份 77 題）", !!s1 && s1.totalQuestions === 20);
+  check("沒有「原始試卷／AI 練習」切換", !window.document.querySelector(".qexam__mode-btn"));
+  const seen = {};
+  for (let k = 0; k < 4; k++) { A.QuestionBankRuntime.drawCycle(base, 20).forEach((q) => { seen[q.id[0]] = true; }); }
+  check("抽題來源為合併後的整份題庫（原始題與補充題都會出現）", !!seen.o && !!seen.a);
 }
 
 /* ---- 10. QuizCenter — 背景 Repository Pull 重新渲染時不得蓋掉正在跑的

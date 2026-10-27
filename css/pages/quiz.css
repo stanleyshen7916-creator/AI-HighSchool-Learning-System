@@ -201,14 +201,6 @@
 .qexam__subject { font-size: 12px; font-weight: 700; border-radius: var(--radius-pill); padding: 4px 10px; }
 .qexam__title { margin: 0; font-size: 18px; font-weight: 800; }
 
-/* Sprint AI-117 AI-117-08 Assessment Mode toggle (原始試卷／AI 練習). */
-.qexam__mode-toggle { display: flex; gap: 8px; margin-left: auto; }
-.qexam__mode-btn {
-  font-size: 12px; font-weight: 700; border-radius: var(--radius-pill);
-  padding: 4px 12px; border: 1px solid var(--line);
-  background: transparent; color: var(--text-muted); cursor: pointer;
-}
-.qexam__mode-btn.is-active { background: var(--brand-soft); color: var(--brand); border-color: transparent; }
 
 .qcard { display: flex; flex-direction: column; gap: 16px; }
 .qcard__head { display: flex; align-items: center; gap: 10px; }
@@ -516,6 +508,11 @@
 .quiz-practice__assess { display: flex; align-items: center; gap: 8px; }
 .quiz-practice__assess[hidden] { display: none; }
 .quiz-practice__assess-label { font-size: 13px; color: var(--text-muted); }
+/* 2026-10-27 考前總複習的選填題：每一格輸入答案。 */
+.quiz-practice__fill { display: flex; align-items: center; gap: 8px; }
+.quiz-practice__fill-no { font-weight: 700; color: var(--text-muted); min-width: 28px; }
+.quiz-practice__fill-input { flex: 1 1 auto; min-width: 0; max-width: 360px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 10px 12px; font: inherit; font-size: 16px; color: var(--text); background-color: var(--card); }
+.quiz-practice__fill-input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
 .quiz-practice__result { margin: 10px 0 0; font-size: 14px; font-weight: 700; }
 .quiz-practice__result.is-correct { color: #15803d; }
 .quiz-practice__result.is-wrong { color: #b91c1c; }

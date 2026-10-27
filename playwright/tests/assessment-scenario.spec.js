@@ -1,21 +1,16 @@
 /* playwright/tests/assessment-scenario.spec.js — Sprint AI-117 AI-117-14
    Playwright Assessment Scenario.
 
-   原始試卷 -> AI 題庫 -> Random Exam -> Statistics -> WrongBook -> Review
-   -> Learning Analytics, verified consistent, in a REAL browser
-   (Chromium via Playwright, not jsdom).
+   原始試卷＋AI 題（2026-10-27 起合併為同一份題庫）-> Random Exam ->
+   Statistics -> WrongBook -> Review -> Learning Analytics, verified
+   consistent, in a REAL browser (Chromium via Playwright, not jsdom).
 
    Scoping note (flagged, not silently narrowed): AHS.QuestionRuntime is
    intentionally memory-only (never sessionStorage-persisted, per this
    app's own existing design — see js/runtime/TeachingMaterialLoader.js's
-   own header) and quiz.html's real Assessment Mode toggle only appears
-   once a real Teaching-Material Package with BOTH ORIGINAL and
-   AI_GENERATED questions has already been imported through the full
-   pipeline (Sprint AI-115) — this Sprint doesn't ship one. Rather than
-   fabricate a Package just to click a UI toggle, this scenario drives
-   the exact same real, unmodified functions (QuestionRuntime.
-   importQuestions/shuffleOrder, TeachingMaterialLoader.
-   importAssessmentModeVariants, ExamRuntime.startFromExam/abandon,
+   own header). This scenario drives the exact same real, unmodified
+   functions (QuestionRuntime.importQuestions/shuffleOrder,
+   ExamRuntime.startFromExam,
    AutoGrader.grade, WrongBookRuntime.sync, HistoryRuntime.record) inside
    a real Chromium page via page.evaluate() — genuinely executing in the
    real browser runtime this Sprint's own QA Architecture requires, not
@@ -27,7 +22,7 @@
 const { test, expect } = require("../helpers/fixtures.js");
 const { fileUrl } = require("../helpers/urls.js");
 
-test("Assessment Scenario：原始試卷／AI 練習分流 -> Random Exam -> Statistics/WrongBook/Review 全部一致", async ({ page }) => {
+test("Assessment Scenario：原始試卷＋AI 題合併 -> Random Exam -> Statistics/WrongBook/Review 全部一致", async ({ page }) => {
   await page.goto(fileUrl("quiz"));
 
   const setup = await page.evaluate(() => {
@@ -44,30 +39,27 @@ test("Assessment Scenario：原始試卷／AI 練習分流 -> Random Exam -> Sta
         options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "A",
         questionSource: "AI_GENERATED", origin: "AI", materialId: "rt_assess" }
     ]);
-    AHS.TeachingMaterialLoader.importAssessmentModeVariants(examBase, AHS.QuestionRuntime.getSet(examBase));
+    const merged = AHS.QuestionRuntime.getSet(examBase);
+    const mergedOk = typeof AHS.TeachingMaterialLoader.importAssessmentModeVariants === "undefined" &&
+      merged.some((q) => q.questionSource === "ORIGINAL") && merged.some((q) => q.questionSource === "AI_GENERATED");
 
-    const originalOk = AHS.QuestionRuntime.hasExam(examBase + "__original") &&
-      AHS.QuestionRuntime.getSet(examBase + "__original").every((q) => q.questionSource === "ORIGINAL");
-    const aiOk = AHS.QuestionRuntime.hasExam(examBase + "__ai") &&
-      AHS.QuestionRuntime.getSet(examBase + "__ai").every((q) => q.questionSource === "AI_GENERATED");
-
-    // Random Exam Session: shuffle the 原始試卷 set and confirm IDs survive.
-    const beforeIds = AHS.QuestionRuntime.getSet(examBase + "__original").map((q) => q.id).sort();
-    AHS.QuestionRuntime.shuffleOrder(examBase + "__original");
-    const afterIds = AHS.QuestionRuntime.getSet(examBase + "__original").map((q) => q.id).sort();
+    // Random Exam Session: shuffle the merged set and confirm IDs survive.
+    const beforeIds = merged.map((q) => q.id).sort();
+    AHS.QuestionRuntime.shuffleOrder(examBase);
+    const afterIds = AHS.QuestionRuntime.getSet(examBase).map((q) => q.id).sort();
     const idsUnchanged = beforeIds.join(",") === afterIds.join(",");
 
-    // Take the 原始試卷 exam for real: one right, one wrong.
-    const session = AHS.ExamRuntime.startFromExam(examBase + "__original", { subject: "math", title: "Assessment 測試" });
+    // Take the merged exam for real: two right, one wrong.
+    const session = AHS.ExamRuntime.startFromExam(examBase, { subject: "math", title: "Assessment 測試" });
     const qs = AHS.QuestionRuntime.getSet(session.examId);
-    qs.forEach((q) => AHS.AnswerRuntime.saveAnswer(session.examId, q.id, q.id === "aq_o1" ? "A" : "WRONG"));
+    qs.forEach((q) => AHS.AnswerRuntime.saveAnswer(session.examId, q.id, q.id === "aq_o2" ? "WRONG" : "A"));
     const finished = AHS.ExamRuntime.finish(session.examId);
     const graded = AHS.AutoGrader.grade(finished);
     AHS.WrongBookRuntime.sync(graded);
     AHS.HistoryRuntime.record(graded);
 
     return {
-      originalOk, aiOk, idsUnchanged,
+      mergedOk, idsUnchanged,
       totalCount: graded.totalCount, correctCount: graded.correctCount,
       wrongCount: AHS.WrongBookRuntime.list().length,
       statsAccuracy: AHS.StatisticsRuntime.overview().avgAccuracy,
@@ -82,13 +74,12 @@ test("Assessment Scenario：原始試卷／AI 練習分流 -> Random Exam -> Sta
     };
   });
 
-  expect(setup.originalOk, "原始試卷只含 ORIGINAL 題目").toBe(true);
-  expect(setup.aiOk, "AI 練習只含 AI_GENERATED 題目").toBe(true);
+  expect(setup.mergedOk, "原始題與 AI 題在同一份題庫").toBe(true);
   expect(setup.idsUnchanged, "Random Exam Session：shuffle 後 Question ID 集合不變").toBe(true);
-  expect(setup.totalCount).toBe(2);
-  expect(setup.correctCount).toBe(1);
+  expect(setup.totalCount).toBe(3);
+  expect(setup.correctCount).toBe(2);
   expect(setup.wrongCount).toBe(1);
-  expect(setup.statsAccuracy).toBe(50);
+  expect(setup.statsAccuracy).toBe(67);
 
   /* 真實導航到錯題本／複習中心，確認畫面呈現與剛才的真實批改結果一致 —
      不是再次呼叫 evaluate() 讀 Runtime，而是讀真正 render 出來的 DOM。 */
