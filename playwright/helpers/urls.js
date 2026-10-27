@@ -19,7 +19,8 @@ const PAGES = {
   learning: "learning.html",
   tutor: "tutor.html",
   dashboard: "dashboard.html",
-  monthexam: "monthexam.html"
+  monthexam: "monthexam.html",
+  examarchive: "exam-archive.html"
 };
 
 function fileUrl(pageKeyOrFile) {

@@ -1,0 +1,36 @@
+{
+  "materialId": "tm_76",
+  "knowledgePoints": [
+    {
+      "name": "亞佛加厥定律",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "壓力單位換算",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "壓力計的使用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "壓力計的計算",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "氣體的通性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "液體壓力 P ＝ d × h",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-27T07:50:44.503Z"
+}

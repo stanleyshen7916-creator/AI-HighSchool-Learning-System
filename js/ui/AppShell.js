@@ -14,6 +14,7 @@ AHS.AppShell = (function () {
     materials: "materials.html",
     quiz: "quiz.html",
     monthexam: "monthexam.html",
+    examarchive: "exam-archive.html",
     wrongbook: "wrongbook.html",
     summary: "summary.html",
     review: "review.html",

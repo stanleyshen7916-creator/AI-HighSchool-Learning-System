@@ -34,6 +34,7 @@ AHS.Icons = (function () {
     book: '<path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/>',
     monthexam: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M12 13v3l2 1"/>',
     quiz: '<path d="M9 4h9a2 2 0 0 1 2 2v14l-4-2-4 2-4-2V6a2 2 0 0 1 2-2z"/><path d="M9 9h6M9 13h4"/>',
+    examarchive: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 15h7M9 19h4"/>',
     wrong: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/>',
     summary: '<path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
     learning: '<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>',

@@ -1,0 +1,51 @@
+/* css/pages/exam-archive.css — 月考資料（2026-10-27）。沿用 tokens.css 的變數。 */
+.xa { display: flex; flex-direction: column; gap: var(--space-4); max-width: 920px; }
+.xa-list, .xa-subject { display: flex; flex-direction: column; gap: var(--space-4); }
+.xa-title { margin: 0; font-size: 22px; color: var(--text); }
+.xa-sub { margin: 6px 0 0; font-size: 14px; line-height: 1.7; color: var(--text-muted); }
+.xa-empty { margin: 0; color: var(--text-faint); }
+.xa-exam__title, .xa-paper__title { margin: 0; font-size: 18px; color: var(--text); }
+.xa-paper__meta { margin: 6px 0 0; font-size: 14px; color: var(--text-muted); }
+.xa-paper__notes { margin: 8px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.7; color: var(--text-muted); }
+
+.xa-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.xa-tab {
+  border: 1px solid var(--line-strong); border-radius: var(--radius-pill); padding: 8px 14px;
+  font-family: inherit; font-size: 14px; font-weight: 700; background: var(--card); color: var(--text); cursor: pointer;
+}
+.xa-tab:hover { border-color: var(--brand); color: var(--brand-ink); }
+.xa-tab.is-active { border-color: var(--brand); background: var(--brand); color: #ffffff; }
+
+.xa-section { display: flex; flex-direction: column; gap: var(--space-2); }
+.xa-section__title { margin: 0; font-size: 17px; color: var(--brand-ink); }
+.xa-qs { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+.xa-q { padding: 14px 16px; border-radius: var(--radius-md); background: var(--card); border: 1px solid var(--line); }
+.xa-q--passage { background: var(--bg); }
+.xa-q__head { margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+.xa-q__no { font-weight: 800; color: var(--text); }
+.xa-q__type { font-size: 12px; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--brand-soft); color: var(--brand-ink); }
+.xa-text { margin: 0 0 10px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.xa-quote { padding: 10px 12px; border-left: 3px solid var(--brand-line); background: var(--bg); border-radius: 6px; }
+.xa-note { margin: 0 0 10px; font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+.xa-passage__title { margin: 0 0 8px; font-weight: 700; line-height: 1.6; }
+.xa-wordbank { margin: 0 0 10px; padding: 8px 12px; border: 1px dashed var(--line-strong); border-radius: 6px; line-height: 1.8; }
+.xa-opts { margin: 0 0 10px; padding: 0; list-style: none; display: grid; gap: 4px; line-height: 1.6; overflow-wrap: anywhere; }
+
+.xa-figure { margin: 0 0 12px; }
+.xa-figure img { display: block; max-width: 100%; height: auto; max-height: 420px; border-radius: 6px; background: #ffffff; }
+.xa-table-wrap { margin: 0 0 10px; overflow-x: auto; }
+.xa-table { border-collapse: collapse; font-size: 14px; }
+.xa-table th, .xa-table td { border: 1px solid var(--line-strong); padding: 6px 10px; text-align: center; vertical-align: top; line-height: 1.6; }
+.xa-table th { background: var(--bg); }
+
+.xa-expl { border-top: 1px dashed var(--line-strong); padding-top: 8px; }
+.xa-expl summary { cursor: pointer; font-weight: 700; color: var(--brand-ink); }
+.xa-expl__body { margin-top: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg); font-size: 14px; }
+.xa-answer { margin: 0 0 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.xa-basis { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-pill); }
+.xa-basis--ok { background: #e7f6ec; color: #18794e; }
+.xa-basis--infer { background: var(--brand-soft); color: var(--brand-ink); }
+.xa-basis--low { background: #fff4e5; color: #8a4b00; }
+.xa-topic, .xa-lesson, .xa-gap { margin: 0 0 4px; font-size: 13px; color: var(--text-muted); }
+.xa-gap { color: #8a4b00; }
+.xa-lesson a { color: var(--brand-ink); font-weight: 700; }

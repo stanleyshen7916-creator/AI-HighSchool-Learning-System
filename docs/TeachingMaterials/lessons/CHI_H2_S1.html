@@ -17,7 +17,7 @@
     <div class="legend">
       <span class="tag src">依上傳教材</span>
       <span class="tag add">老師補充</span>
-      <span class="prog" id="prog">已完成 0 / 13</span>
+      <span class="prog" id="prog">已完成 0 / 14</span>
     </div>
   </header>
 
@@ -358,6 +358,40 @@
       </div>
       <label class="done"><input type="checkbox" id="done-F9" data-done="F9">我會了</label>
     </article>
+
+    <!-- F14 -->
+    <article class="card" id="F14" data-ahs-formula="CHI-H2-S1-3-F14" data-ahs-source="第三課">
+      <div class="card-h"><span class="code">3 · F14</span><h3>名詞並列與唐宋詩之別</h3><span class="pg">第三課</span><span class="tag src">依上傳教材</span><span class="tag add">老師補充</span></div>
+      <div class="say"><span class="who">老師說</span><p>「<b>桃李春風一杯酒，江湖夜雨十年燈</b>」整聯沒有動詞，只把六個名詞詞組排在一起：桃李、春風、一杯酒｜江湖、夜雨、十年燈。讀者自己把畫面接起來——當年春日相聚飲酒，如今各自漂泊、十年孤燈。這種寫法叫<b>名詞並列</b>（列錦）。黃庭堅是<b>宋代</b>江西詩派的開創者；宋詩常「<b>以文為詩、以議論為詩、以才學為詩</b>」，喜歡說理、用典，唐詩則多<b>情景交融</b>。</p></div>
+      <div class="formula">名詞並列：句中只有名詞（詞組），省略動詞（雞聲茅店月，人跡板橋霜）｜ 唐詩：重情韻、情景交融 ｜ 宋詩：以文為詩、以議論為詩、以才學為詩（說理、用典）</div>
+      <div class="viz" id="w-noun">
+        <div class="cv"><canvas aria-label="名詞並列：把詩句拆成名詞積木"></canvas></div>
+        <div class="ctl">
+          <label class="sl"><span>詩句</span><input type="range" id="w-noun-k" data-k="k" min="0" max="3" step="1"><output data-v="k"></output></label>
+        </div>
+        <p class="out" data-out></p>
+      </div>
+      <div class="notes">
+        <div class="space"><b>空間感</b>把一句拆成幾塊名詞積木，每一塊都是一個鏡頭；積木之間沒有動詞，畫面靠讀者自己剪接。</div>
+        <div class="trap"><b>常見錯誤</b>看到「大漠孤煙直」也以為是名詞並列。「直」是謂語，句子有主語和謂語，不是只有名詞。</div>
+      </div>
+      <div class="qc" data-q="F14">
+        <p class="q"><b>小試身手</b>下列詩句，全由名詞（詞組）並列、沒有動詞的是？</p>
+        <div class="choices" data-answer="b">
+          <button type="button" data-c="a" data-why="「垂」「闊」「湧」「流」都是謂語。">星垂平野闊，月湧大江流</button>
+          <button type="button" data-c="b">雞聲茅店月，人跡板橋霜</button>
+          <button type="button" data-c="c" data-why="「直」「圓」是謂語。">大漠孤煙直，長河落日圓</button>
+          <button type="button" data-c="d" data-why="「綠」在這裡當動詞用（轉品）。">春風又綠江南岸</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+        <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
+          <div class="viz" id="s-F14"><div class="cv"><canvas aria-label="逐步圖解：先找有沒有動詞"></canvas></div>
+            <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
+            <p class="out" data-out></p></div>
+        </details>
+      </div>
+      <label class="done"><input type="checkbox" id="done-F14" data-done="F14">我會了</label>
+    </article>
   </section>
 
   <section id="s4">
@@ -685,6 +719,21 @@ widget('w-allude',{state:{k:2},rw:0.48,rn:1.05,fmt:{k:function(v){ return AL[v][
 widget('s-F9',{state:{},steps:2,rw:0.48,rn:1.05,
   draw:function(g,c,s){ alDraw(g,c,c.C,s.step?2:3); },
   out:steps(['先排除：「三折肱」在下一句「治病不蘄三折肱」。','「持家但有四立壁」← <b>家徒四壁</b>：家裡只剩四面牆，形容清貧 → 答案。'])
+});
+
+/* F14 名詞並列 */
+var NP=[['桃李春風一杯酒','桃李｜春風｜一杯酒','昔日春天相聚飲酒（黃庭堅〈寄黃幾復〉，宋）'],['江湖夜雨十年燈','江湖｜夜雨｜十年燈','十年漂泊、夜雨孤燈'],['雞聲茅店月','雞聲｜茅店｜月','溫庭筠〈商山早行〉（唐）：清晨趕路'],['枯藤老樹昏鴉','枯藤｜老樹｜昏鴉','馬致遠〈天淨沙・秋思〉（元曲）：蕭瑟秋景']];
+function pw(g,t,fs){ g.save(); g.font='700 '+fs+'px "Noto Sans TC",sans-serif'; var w=g.measureText(t).width+18; g.restore(); return w; }
+function npDraw(g,c,C,k){ var W=c.w, H=c.h, fs=c.narrow?11:14, rh=(H-20)/NP.length, xl=c.narrow?8:20, xr=W*(c.narrow?0.44:0.4);
+  NP.forEach(function(a,i){ var y=10+i*rh+rh/2, on=i===k; T(g,a[0],xl,y-9,on?C.red:C.ink,fs+1,'left','700'); T(g,a[2],xl,y+13,on?C.ink:C.muted,fs-3,'left',on?'700':'500');
+    var x=xr; a[1].split('｜').forEach(function(p,j){ var w=pw(g,p,fs); pill(g,x+w/2,y,p,[C.blue,PURPLE,ORANGE][j],on,fs); x+=w+6; }); }); }
+widget('w-noun',{state:{k:0},rw:0.48,rn:1.05,fmt:{k:function(v){ return NP[v][0]; }},
+  draw:function(g,c,s){ npDraw(g,c,c.C,s.k); },
+  out:function(s){ return '「'+NP[s.k][0]+'」→ <b>'+NP[s.k][1]+'</b>：'+NP[s.k][2]; }
+});
+widget('s-F14',{state:{},steps:2,rw:0.48,rn:1.05,
+  draw:function(g,c,s){ npDraw(g,c,c.C,s.step?2:-1); },
+  out:steps(['先找動詞：「垂、闊、湧、流」「直、圓」「綠」都是謂語，這些句子不是只有名詞。','「雞聲｜茅店｜月，人跡｜板橋｜霜」六個名詞詞組並列、沒有動詞 → 答案。'])
 });
 
 /* F10 狼與雁 */

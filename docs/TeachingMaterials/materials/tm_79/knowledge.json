@@ -1,0 +1,61 @@
+{
+  "materialId": "tm_79",
+  "knowledgePoints": [
+    {
+      "name": "by + V-ing",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "despite + N／V-ing",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "keep + V-ing",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "make + O + adj.",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "not … until",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "with + N + left",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "代名詞 those",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "代名詞：one … the other",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分詞構句（主動）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "分詞構句（結果）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "否定句 either",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-27T07:58:27.619Z"
+}

@@ -128,6 +128,8 @@ AHS.AppConfig = {
       { id: "quiz", label: "測驗中心", icon: "quiz" },
       /* 2026-10-05：模擬月考專區（js/components/MonthExam.js） */
       { id: "monthexam", label: "模擬月考", icon: "monthexam" },
+      /* 2026-10-27：月考資料（js/components/ExamArchive.js）——歷次段考題目與解析 */
+      { id: "examarchive", label: "月考資料", icon: "examarchive" },
       { id: "wrongbook", label: "知識弱點", icon: "wrong" },
       /* 2026-09-30：Sprint AI-138 因「尚未串接真實 AI」而隱藏此入口；改為
          只根據教材回答的「學習助教」後恢復（PO 同意）。 */
