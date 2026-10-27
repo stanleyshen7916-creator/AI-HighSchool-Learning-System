@@ -18,7 +18,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/MAT_H2_Ch1_Trigonometry.html",
     title: "第1章 三角函數・圖解教材",
     subject: "數學",
-    materialIds: ["tm_7", "tm_50", "tm_57", "tm_77"],
+    materialIds: ["tm_7", "tm_50", "tm_57", "tm_77", "tm_80"],
     source: "課本 p.2–67（1-1 p.2–13、1-2 p.14–39、1-3 p.40–54、1-4 p.55–67）",
     sections: [
       { id: "1-1", title: "弧度量" },
@@ -172,7 +172,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/ESC_H2_EarthHistoryAstronomy.html",
     title: "地球的歷史與天文・圖解教材",
     subject: "地球科學",
-    materialIds: ["tm_17", "tm_55", "tm_60", "tm_68", "tm_69", "tm_70"],
+    materialIds: ["tm_17", "tm_55", "tm_60", "tm_68", "tm_69", "tm_70", "tm_82"],
     source: "地球科學 主題 1～11（地球的歷史、恆星與宇宙、天球與四季）",
     sections: [
       { id: "1-2", title: "地球的起源與地質年代" },
@@ -201,7 +201,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/BIO_H2_CellOriginPlants.html",
     title: "細胞膜運輸・生命起源・植物體・圖解教材",
     subject: "生物",
-    materialIds: ["tm_5", "tm_20", "tm_54", "tm_56", "biology-g11-origin-and-evolution-of-life", "biology-g11-ch1-handout-review"],
+    materialIds: ["tm_5", "tm_20", "tm_54", "tm_56", "tm_81", "biology-g11-origin-and-evolution-of-life", "biology-g11-ch1-handout-review"],
     source: "生物 細胞膜與物質運輸、第1章 生物的起源與演化、第2章 植物體的形態、構造與功能",
     sections: [
       { id: "0", title: "細胞膜構造與物質運輸" },

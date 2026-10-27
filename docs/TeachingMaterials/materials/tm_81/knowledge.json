@@ -1,0 +1,56 @@
+{
+  "materialId": "tm_81",
+  "knowledgePoints": [
+    {
+      "name": "單子葉與雙子葉植物莖的比較",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "木本莖：心材與邊材",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "根尖分區的功能",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "根尖的分區：根毛",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "根尖的分區：生長點",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "根的構造：內皮與卡氏帶",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "維管束與形成層",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "維管束：韌皮部與木質部的位置",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "葉的構造：柵狀組織",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "葉的構造：氣孔與葉肉",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-27T08:40:35.209Z"
+}
