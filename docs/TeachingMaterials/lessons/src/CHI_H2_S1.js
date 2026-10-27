@@ -162,6 +162,21 @@ module.exports = {
             { c: "c", text: "風馬牛不相及", why: "與北海、南海的距離有關，不是這一句。" },
             { c: "d", text: "家徒四壁" }] },
           sol: { id: "s-F9", aria: "逐步圖解：四立壁與三折肱" }
+        },
+        {
+          id: "F14", title: "名詞並列與唐宋詩之別", page: "第三課", tags: ["src", "add"],
+          say: "「<b>桃李春風一杯酒，江湖夜雨十年燈</b>」整聯沒有動詞，只把六個名詞詞組排在一起：桃李、春風、一杯酒｜江湖、夜雨、十年燈。讀者自己把畫面接起來——當年春日相聚飲酒，如今各自漂泊、十年孤燈。這種寫法叫<b>名詞並列</b>（列錦）。黃庭堅是<b>宋代</b>江西詩派的開創者；宋詩常「<b>以文為詩、以議論為詩、以才學為詩</b>」，喜歡說理、用典，唐詩則多<b>情景交融</b>。",
+          formula: "名詞並列：句中只有名詞（詞組），省略動詞（雞聲茅店月，人跡板橋霜）｜ 唐詩：重情韻、情景交融 ｜ 宋詩：以文為詩、以議論為詩、以才學為詩（說理、用典）",
+          widget: { id: "w-noun", aria: "名詞並列：把詩句拆成名詞積木", rw: 0.48, rn: 1.05,
+            controls: [{ k: "k", label: "詩句", min: 0, max: 3, step: 1 }] },
+          space: "把一句拆成幾塊名詞積木，每一塊都是一個鏡頭；積木之間沒有動詞，畫面靠讀者自己剪接。",
+          trap: "看到「大漠孤煙直」也以為是名詞並列。「直」是謂語，句子有主語和謂語，不是只有名詞。",
+          quiz: { q: "下列詩句，全由名詞（詞組）並列、沒有動詞的是？", answer: "b", options: [
+            { c: "a", text: "星垂平野闊，月湧大江流", why: "「垂」「闊」「湧」「流」都是謂語。" },
+            { c: "b", text: "雞聲茅店月，人跡板橋霜" },
+            { c: "c", text: "大漠孤煙直，長河落日圓", why: "「直」「圓」是謂語。" },
+            { c: "d", text: "春風又綠江南岸", why: "「綠」在這裡當動詞用（轉品）。" }] },
+          sol: { id: "s-F14", aria: "逐步圖解：先找有沒有動詞" }
         }
       ]
     },
@@ -403,6 +418,21 @@ widget('w-allude',{state:{k:2},rw:0.48,rn:1.05,fmt:{k:function(v){ return AL[v][
 widget('s-F9',{state:{},steps:2,rw:0.48,rn:1.05,
   draw:function(g,c,s){ alDraw(g,c,c.C,s.step?2:3); },
   out:steps(['先排除：「三折肱」在下一句「治病不蘄三折肱」。','「持家但有四立壁」← <b>家徒四壁</b>：家裡只剩四面牆，形容清貧 → 答案。'])
+});
+
+/* F14 名詞並列 */
+var NP=[['桃李春風一杯酒','桃李｜春風｜一杯酒','昔日春天相聚飲酒（黃庭堅〈寄黃幾復〉，宋）'],['江湖夜雨十年燈','江湖｜夜雨｜十年燈','十年漂泊、夜雨孤燈'],['雞聲茅店月','雞聲｜茅店｜月','溫庭筠〈商山早行〉（唐）：清晨趕路'],['枯藤老樹昏鴉','枯藤｜老樹｜昏鴉','馬致遠〈天淨沙・秋思〉（元曲）：蕭瑟秋景']];
+function pw(g,t,fs){ g.save(); g.font='700 '+fs+'px "Noto Sans TC",sans-serif'; var w=g.measureText(t).width+18; g.restore(); return w; }
+function npDraw(g,c,C,k){ var W=c.w, H=c.h, fs=c.narrow?11:14, rh=(H-20)/NP.length, xl=c.narrow?8:20, xr=W*(c.narrow?0.44:0.4);
+  NP.forEach(function(a,i){ var y=10+i*rh+rh/2, on=i===k; T(g,a[0],xl,y-9,on?C.red:C.ink,fs+1,'left','700'); T(g,a[2],xl,y+13,on?C.ink:C.muted,fs-3,'left',on?'700':'500');
+    var x=xr; a[1].split('｜').forEach(function(p,j){ var w=pw(g,p,fs); pill(g,x+w/2,y,p,[C.blue,PURPLE,ORANGE][j],on,fs); x+=w+6; }); }); }
+widget('w-noun',{state:{k:0},rw:0.48,rn:1.05,fmt:{k:function(v){ return NP[v][0]; }},
+  draw:function(g,c,s){ npDraw(g,c,c.C,s.k); },
+  out:function(s){ return '「'+NP[s.k][0]+'」→ <b>'+NP[s.k][1]+'</b>：'+NP[s.k][2]; }
+});
+widget('s-F14',{state:{},steps:2,rw:0.48,rn:1.05,
+  draw:function(g,c,s){ npDraw(g,c,c.C,s.step?2:-1); },
+  out:steps(['先找動詞：「垂、闊、湧、流」「直、圓」「綠」都是謂語，這些句子不是只有名詞。','「雞聲｜茅店｜月，人跡｜板橋｜霜」六個名詞詞組並列、沒有動詞 → 答案。'])
 });
 
 /* F10 狼與雁 */

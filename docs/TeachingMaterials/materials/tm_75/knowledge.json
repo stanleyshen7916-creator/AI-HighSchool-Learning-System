@@ -1,0 +1,96 @@
+{
+  "materialId": "tm_75",
+  "knowledgePoints": [
+    {
+      "name": "化學計量換算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "卡計原理、溶解熱計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "反應熱概念辨析",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體體積比＝莫耳比",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "沉澱滴定當量點分析",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "熱化學反應式應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "物質狀態對反應熱的影響",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "產率計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "由莫耳燃燒熱求反應熱",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "由莫耳生成熱求反應熱",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳燃燒熱計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳生成熱定義辨析",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳生成熱與莫耳燃燒熱定義",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫耳生成熱／燃燒熱為零的條件",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "赫斯定律代數關係",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "赫斯定律加成性",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "赫斯定律求生成熱",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "限量試劑與圖形判讀",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-27T07:50:44.439Z"
+}

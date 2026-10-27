@@ -1,0 +1,56 @@
+{
+  "materialId": "tm_77",
+  "knowledgePoints": [
+    {
+      "name": "一般正弦函數的週期",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "二倍角公式的幾何應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "倍角化簡後再疊合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "半角與倍角公式：象限判斷",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "弓形面積與扇形面積",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正餘弦疊合的性質",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "由極值求參數",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "疊合求最大值與最小值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "疊合的幾何應用：限定區間求極值",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "疊合解三角方程式",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-27T07:54:38.147Z"
+}

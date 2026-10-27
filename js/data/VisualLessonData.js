@@ -18,7 +18,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/MAT_H2_Ch1_Trigonometry.html",
     title: "第1章 三角函數・圖解教材",
     subject: "數學",
-    materialIds: ["tm_7", "tm_50", "tm_57"],
+    materialIds: ["tm_7", "tm_50", "tm_57", "tm_77"],
     source: "課本 p.2–67（1-1 p.2–13、1-2 p.14–39、1-3 p.40–54、1-4 p.55–67）",
     sections: [
       { id: "1-1", title: "弧度量" },
@@ -100,7 +100,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/CHE_H2_Ch1_Stoichiometry.html",
     title: "第1章 化學計量與反應熱・圖解教材",
     subject: "化學",
-    materialIds: ["tm_12", "tm_13", "tm_26"],
+    materialIds: ["tm_12", "tm_13", "tm_26", "tm_75"],
     source: "課本第9～52頁、講義 1-1、1-2、實驗活動1",
     sections: [
       { id: "1-0", title: "物質的特性與鑑定" },
@@ -125,7 +125,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/CHE_H2_Ch2_Gases.html",
     title: "第2章 氣體・圖解教材",
     subject: "化學",
-    materialIds: ["tm_28", "tm_29", "tm_30", "tm_31", "tm_32"],
+    materialIds: ["tm_28", "tm_29", "tm_30", "tm_31", "tm_32", "tm_76"],
     source: "課本與講義 第2章（2-1 氣體的性質、2-2 氣體的基本定律、2-3 理想氣體、2-4 氣體的分壓）",
     sections: [
       { id: "2-1", title: "氣體的性質與壓力" },
@@ -297,7 +297,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/CHI_H2_S1.html",
     title: "高二國文・圖解教材",
     subject: "國文",
-    materialIds: ["tm_62", "tm_64", "tm_65", "tm_66", "tm_67", "tm_74", "chinese-g11-laoshan-daoshi", "chinese-g11-inventions-changed-world", "chinese-g11-jinti-shixuan"],
+    materialIds: ["tm_62", "tm_64", "tm_65", "tm_66", "tm_67", "tm_74", "chinese-g11-laoshan-daoshi", "chinese-g11-inventions-changed-world", "chinese-g11-jinti-shixuan", "tm_78"],
     source: "國文 〈勞山道士〉〈發明為需求之母〉〈近體詩選〉〈狼之獨步〉〈雁〉〈劉姥姥〉〈玉山去來〉〈燭之武退秦師〉",
     /* 正心版的教材包一包就是一課：題目沒提到關鍵詞時，直接對應該課的卡片 */
     materialCards: { tm_64: "F10", tm_65: "F10", tm_74: "F11", tm_67: "F12", tm_66: "F13" },
@@ -317,6 +317,7 @@ AHS.VisualLessonData = [
       { id: "F7", section: "3", title: "〈旅夜書懷〉：大景與小我", keywords: ["旅夜書懷", "杜甫", "詩聖", "沙鷗"] },
       { id: "F8", section: "3", title: "〈夜雨寄北〉：重複與時空交錯", keywords: ["夜雨寄北", "李商隱", "巴山夜雨", "何當", "章法", "重複"] },
       { id: "F9", section: "3", title: "〈寄黃幾復〉：用典", keywords: ["寄黃幾復", "黃庭堅", "用典", "典故", "江西詩派", "山谷", "四立壁", "三折肱"] },
+      { id: "F14", section: "3", title: "名詞並列與唐宋詩之別", keywords: ["名詞並列", "名詞詞組", "列錦", "唐詩與宋詩", "宋詩的特色", "宋代詩人"] },
       { id: "F10", section: "4", title: "〈狼之獨步〉與〈雁〉：動物意象比較", keywords: ["狼之獨步", "狼", "長嗥", "紀弦", "白萩", "雁", "地平線", "雲翳", "戰慄", "獨來獨往", "搖撼", "虛無", "現代派", "笠詩社", "兩首詩", "意象", "修辭辨識", "詞語解釋", "主旨推論", "比較閱讀", "文意判讀", "核心概念", "短答題"] },
       { id: "F11", section: "4", title: "〈劉姥姥〉：人物關係與性格", keywords: ["劉姥姥", "紅樓夢", "石頭記", "榮國府", "鳳姐", "王熙鳳", "鴛鴦", "李紈", "賈母", "黛玉", "瀟湘館", "大觀園", "薛寶釵", "薛姨媽", "篾片", "豐兒"] },
       { id: "F12", section: "4", title: "〈玉山去來〉：時間為經、見聞為緯", keywords: ["玉山", "永遠的山", "陳列", "登山", "冷杉", "森林界線", "風口", "雲", "山脈", "氤氳", "情景交融", "無痕山林", "LNT", "高山", "日出", "隊伍", "山峰", "山名"] },
@@ -328,15 +329,16 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/ENG_H2_S1.html",
     title: "高二英文・圖解教材",
     subject: "英文",
-    materialIds: ["tm_61", "tm_51", "tm_49", "tm_48", "tm_72", "english-g11-day-i-broke-the-rules"],
+    materialIds: ["tm_61", "tm_51", "tm_49", "tm_48", "tm_72", "english-g11-day-i-broke-the-rules", "tm_79"],
     source: "英文 Lesson 1 The Day I Broke the Rules、L3 Prometheus、R1 3D Printing、單字練習",
     /* 一包一課：題目沒提到關鍵詞時，對應該課的卡片 */
-    materialCards: { tm_51: "F1", tm_61: "F1", "english-g11-day-i-broke-the-rules": "F1", tm_49: "F5", tm_48: "F7", tm_72: "F8" },
+    materialCards: { tm_51: "F1", tm_61: "F1", "english-g11-day-i-broke-the-rules": "F1", tm_49: "F5", tm_48: "F7", tm_72: "F8", tm_79: "F9" },
     sections: [
       { id: "1", title: "Lesson 1 The Day I Broke the Rules" },
       { id: "2", title: "L3 Prometheus" },
       { id: "3", title: "R1 3D Printing" },
-      { id: "4", title: "單字練習：一字多義與搭配詞" }
+      { id: "4", title: "單字練習：一字多義與搭配詞" },
+      { id: "5", title: "段考文法：綜合測驗常考句型" }
     ],
     cards: [
       { id: "F1", section: "1", title: "故事地圖：規則、衝突、選擇", keywords: ["文章主旨", "人物性格", "言外之意", "細節理解", "推論", "人物情緒", "課文出處", "Billy", "Ronald", "narrator", "hospital", "rule", "hug", "Santa", "germs", "passage"] },
@@ -346,7 +348,8 @@ AHS.VisualLessonData = [
       { id: "F5", section: "2", title: "故事弧線：從禮物分配到盜火", keywords: ["Prometheus", "Epimetheus", "Zeus", "Mecone", "clay", "fire", "gifts", "offerings", "upright", "humankind"] },
       { id: "F6", section: "2", title: "時間軸：by the time ＋ 過去完成式", keywords: ["By the time", "by the time", "had run", "Angry about", "so that", "expanded"] },
       { id: "F7", section: "3", title: "積層製造：一層一層長出來", keywords: ["3D", "printing", "printed", "capable of", "enable", "make use of", "bionic", "prosthetic", "coral"] },
-      { id: "F8", section: "4", title: "一字多義、搭配詞與同反義", keywords: ["award", "rough", "process", "vision", "comfort", "communicate", "aware", "run the risk", "burst", "cave in", "vanish", "temporary", "county"] }
+      { id: "F8", section: "4", title: "一字多義、搭配詞與同反義", keywords: ["award", "rough", "process", "vision", "comfort", "communicate", "aware", "run the risk", "burst", "cave in", "vanish", "temporary", "county"] },
+      { id: "F9", section: "5", title: "段考文法：代名詞、介系詞與分詞構句", keywords: ["段考文法", "綜合測驗", "the other", "with + N + left", "despite", "not … until", "make + O + adj.", "keep + V-ing", "否定句 either"] },
     ]
   }
 ];

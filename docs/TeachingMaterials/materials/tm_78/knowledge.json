@@ -1,0 +1,51 @@
+{
+  "materialId": "tm_78",
+  "knowledgePoints": [
+    {
+      "name": "修辭：示現",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "內容理解",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "出處：聊齋志異",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "唐詩與宋詩",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字詞：何術之求（賓語提前）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "字音：雙聲與疊韻",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "寫作手法：名詞並列",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "近體詩格律",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-27T07:58:27.618Z"
+}

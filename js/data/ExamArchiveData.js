@@ -22,11 +22,11 @@ AHS.ExamArchiveData = {
   gaps: {
     "math-exp": "數學第 2 章 指數（平台尚無教材）",
     "math-log": "數學第 2 章 對數（平台尚無教材）",
-    "chi-phonetics": "國文 字音字形・詞義（平台尚無專門練習）",
+    "chi-phonetics": "國文 字音字形・詞義（尚無圖解教材卡片）",
     "chi-shuizhengju": "國文〈水證據——給河流〉（平台尚無此課）",
     "chi-reading": "國文 課外閱讀題組（平台尚無專門練習）",
     "bio-nutrients": "生物 植物必需元素（平台教材未涵蓋）",
-    "eng-grammar": "英文 Book3 綜合測驗文法（平台尚無專門練習）",
+    "eng-grammar": "英文 Book3 綜合測驗字彙與片語（平台尚無長榮題庫）",
     "eng-structure": "英文 篇章結構（平台尚無專門練習）"
   },
   subjects: []

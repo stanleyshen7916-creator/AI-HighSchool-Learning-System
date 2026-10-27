@@ -154,6 +154,27 @@ module.exports = {
           sol: { id: "s-F8", aria: "逐步圖解：用搭配詞判斷" }
         }
       ]
+    },
+    {
+      id: "5", short: "段考文法", title: "段考文法：綜合測驗常考句型",
+      plan: { goal: "做綜合測驗時，能先看空格後面接名詞還是子句，再判斷代名詞、介系詞、連接詞與分詞構句。", prereq: "Lesson 1、L3 的句型。", time: "約 1 節課。" },
+      cards: [
+        {
+          id: "F9", title: "段考文法：代名詞、介系詞與分詞構句", page: "段考綜合測驗", tags: ["add"],
+          say: "綜合測驗的文法空格，先看<b>空格後面接什麼</b>：接名詞用介系詞（<b>despite</b> the rain、<b>with</b> one week left、<b>by</b> stealing fire），接子句用連接詞（although、until）。代名詞看<b>數量與指的是誰</b>：兩者中的另一個用 <b>the other</b>，代替前面的複數名詞用 <b>those</b>。分詞構句先找<b>主詞</b>：主詞主動做這件事用 <b>V-ing</b>，被動用 p.p.。",
+          formula: "the other（兩者之另一）｜ those（＝前面的複數名詞）｜ with + N + V-ing／p.p.／adj. ｜ despite + N／V-ing；although + 子句 ｜ not … until … ｜ make + O + adj. ｜ keep／by + V-ing ｜ 否定的「也」：either ｜ 分詞構句：主動 V-ing、被動 p.p.",
+          widget: { id: "w-gram", aria: "段考常考句型積木與例句", rw: 0.45, rn: 1.1,
+            controls: [{ k: "k", label: "句型", min: 0, max: 5, step: 1 }] },
+          space: "每一列左邊是句型積木，右邊是例句。遇到空格，先判斷後面是名詞還是子句，再決定放哪一塊積木。",
+          trap: "Despite 後面接子句（Despite it rained ✗）；否定句的「也」寫成 too；分詞構句的主詞是主動，卻用了 p.p.。",
+          quiz: { q: "______ the heavy traffic, we arrived on time.", answer: "c", options: [
+            { c: "a", text: "Although", why: "although 後面要接子句（S + V）。" },
+            { c: "b", text: "Because of", why: "語意是「儘管」，不是原因。" },
+            { c: "c", text: "Despite" },
+            { c: "d", text: "Until", why: "until 表示時間，語意不合。" }] },
+          sol: { id: "s-F9", aria: "逐步圖解：先看空格後面接什麼" }
+        }
+      ]
     }
   ],
   footer: [
@@ -323,6 +344,20 @@ widget('w-poly',{state:{w:0,s:1},rw:0.42,rn:1.0,fmt:{w:function(v){ return PW[v]
 widget('s-F8',{state:{},steps:2,rw:0.42,rn:1.0,
   draw:function(g,c,s){ polyDraw(g,c,c.C,0,0,true); if(c.narrow){ var fs=12; var w=chip(g,14,c.h-24,'communicate',c.C.red,fs,true); chip(g,20+w,c.h-24,'with',ORANGE,fs,false); } },
   out:steps(['「與某人溝通」是固定搭配：communicate <b>with</b> sb。','所以「與孩子溝通」＝ <b>communicate with children</b> → 答案。'])
+});
+
+/* F9 段考文法 */
+var GR=[['the other','One is a cat; the other is a dog.','兩者之中的另一個'],['those','The boys in A are taller than those in B.','those ＝ the boys'],['with + N + left','With a week left, he studied hard.','附帶狀況：還剩一週'],['despite + N','Despite the rain, we went out.','後面接名詞；although 接子句'],['not … until','I didn\'t know until I asked.','直到……才'],['分詞構句','Believing it was safe, he went on.','主詞 he 主動相信 → V-ing']];
+function grDraw(g,c,C,k){ var W=c.w, H=c.h, fs=c.narrow?11:13, rh=(H-20)/GR.length, x=W*(c.narrow?0.44:0.32);
+  GR.forEach(function(r,i){ var y=10+i*rh+rh/2, on=i===k; chip(g,10,y,r[0],[C.blue,GREEN,ORANGE,PURPLE,C.red,C.blue][i],fs,on);
+    T(g,r[1],x,y-8,on?C.ink:C.muted,c.narrow?fs-2:fs,'left',on?'700':'500'); T(g,r[2],x,y+11,on?C.red:C.muted,fs-2,'left','500'); }); }
+widget('w-gram',{state:{k:0},rw:0.45,rn:1.1,fmt:{k:function(v){ return GR[v][0]; }},
+  draw:function(g,c,s){ grDraw(g,c,c.C,s.k); },
+  out:function(s){ return '<b>'+GR[s.k][0]+'</b>：'+GR[s.k][1]+'（'+GR[s.k][2]+'）'; }
+});
+widget('s-F9',{state:{},steps:2,rw:0.45,rn:1.1,
+  draw:function(g,c,s){ grDraw(g,c,c.C,s.step?3:-1); },
+  out:steps(['先看空格後面：the heavy traffic 是名詞片語，不是子句 → 不能用 although。','語意是「儘管塞車，仍準時到」：讓步＋名詞 → <b>Despite</b> → 答案。'])
 });
 `
 };

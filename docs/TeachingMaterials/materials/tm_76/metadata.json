@@ -1,0 +1,23 @@
+{
+  "materialId": "tm_76",
+  "school": "cjsh",
+  "semester": "g2s1",
+  "subject": "化學",
+  "grade": "高二",
+  "publisher": null,
+  "chapter": "第二章：氣體（2-1 氣體的性質、2-2 氣體的基本定律、2-3 理想氣體、2-4 氣體的分壓）",
+  "unit": "補充題庫（段考題型：開口式／閉口式壓力計、非水銀液柱換算、壓力單位）",
+  "keywords": [
+    "壓力計",
+    "開口式壓力計",
+    "閉口式壓力計",
+    "液柱壓力",
+    "壓力單位換算",
+    "亞佛加厥定律"
+  ],
+  "difficulty": null,
+  "source": "補充題庫",
+  "uploadDate": "2026-10-27T00:00:00Z",
+  "version": "1",
+  "materialType": "REFERENCE"
+}
