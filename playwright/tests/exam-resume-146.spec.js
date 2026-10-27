@@ -75,12 +75,13 @@ test("AI-146：ahs:repository-pulled 背景重新渲染，不得蓋掉正在進�
   // Runtime），證明沒有卡死：完成後同一頁再次點其他教材的「開始測驗」也
   // 要真的能成功進入，而不是被剛剛那個已經結束的 Session 卡住。
   for (let i = 0; i < 20; i++) {
-    // 2026-10-08: 計算／填充題沒有選項 — 看答案後自評（js/ui/QuestionCard.js）。
+    // 2026-10-08: 計算／填充題沒有選項，輸入答案作答（js/ui/QuestionCard.js）。
     if (await page.locator(".qcard-option").count()) {
       await page.locator(".qcard-option").first().click();
     } else {
-      await page.locator(".qcard-self__reveal").click();
-      await page.locator(".qcard-self__grade").first().click();
+      // 2026-10-27: 改為輸入作答（js/ui/QuestionCard.js），不再「看答案」自評。
+      for (const inp of await page.locator(".qcard-self__input").all()) { await inp.fill("0"); }
+      await page.locator(".qcard-self__save").click();
     }
     const finishBtn = page.locator(".qnav__finish");
     if (await finishBtn.count()) { await finishBtn.click(); break; }

@@ -47,7 +47,7 @@ AHS.MonthExam = (function () {
       var subjects = RT().listSubjects();
       var head = el("header", { class: "mx-head" }, [
         el("h1", { class: "mx-title", text: "模擬月考專區" }),
-        el("p", { class: "mx-sub", text: "每科作答 60 分鐘，按「開始作答」後即開始計時，時間到自動交卷，未作答視為答錯。數學 30 題（題組另計，含題組最多 50 題），其他科 50 題；每次重新隨機出題。" })
+        el("p", { class: "mx-sub", text: "每科作答 60 分鐘，按「開始作答」後即開始計時，時間到自動交卷，未作答視為答錯。有段考考卷的科目依段考的題型、題數與配分出題（數學有選填題，輸入答案作答）；其他科 50 題。每次重新隨機出題。" })
       ]);
       var body = [head];
       if (notice) { body.push(el("p", { class: "mx-notice", text: notice })); }
@@ -68,11 +68,23 @@ AHS.MonthExam = (function () {
       var status = el("p", { class: "mx-status", hidden: "hidden" });
 
       function selected() { return s.materials.filter(function (m) { return chosen[m.materialId]; }).map(function (m) { return m.materialId; }); }
+      var bp = RT().blueprintFor(s.subject);
+      var KIND = { single: "單選", multi: "多選", fill: "選填" };
       function refresh() {
         var ids = selected();
         var pool = s.materials.filter(function (m) { return chosen[m.materialId]; }).reduce(function (n, m) { return n + m.count; }, 0);
-        var need = s.subject === "數學" ? 30 : 50;
-        poolText.textContent = "範圍內題庫 " + pool + " 題" + (pool && pool < need ? "（不足 " + need + " 題，將全部出題）" : "");
+        if (bp) {
+          /* 2026-10-27：依段考結構出題，顯示各題型的題數是否足夠。 */
+          var have = RT().poolCounts(ids);
+          var need = {};
+          bp.sections.forEach(function (x) { need[x.kind] = (need[x.kind] || 0) + x.count; });
+          poolText.textContent = "範圍內題庫：" + Object.keys(need).map(function (k) {
+            return KIND[k] + " " + have[k] + " 題" + (have[k] < need[k] ? "（不足 " + need[k] + " 題）" : "");
+          }).join("、");
+        } else {
+          var needN = s.subject === "數學" ? 30 : 50;
+          poolText.textContent = "範圍內題庫 " + pool + " 題" + (pool && pool < needN ? "（不足 " + needN + " 題，將全部出題）" : "");
+        }
         startBtn.disabled = !ids.length || !pool;
       }
 
@@ -122,6 +134,7 @@ AHS.MonthExam = (function () {
       refresh();
       return el("article", { class: "card mx-card" }, [
         el("div", { class: "mx-card__head" }, [el("h2", { class: "mx-card__title", text: s.subject }), poolText]),
+        bp ? el("p", { class: "mx-range-src", text: "試卷結構：" + bp.source + "滿分 " + RT().blueprintTotal(bp) + " 分。" }) : null,
         srcText, list, el("div", { class: "mx-actions" }, actions), status
       ]);
     }
@@ -152,9 +165,38 @@ AHS.MonthExam = (function () {
         progress.textContent = "已作答 " + (s ? Object.keys(s.answers).length : 0) + " / " + total;
       }
 
+      /* 2026-10-27：依段考結構分部分（js/data/MonthExamBlueprint.js），選填題輸入答案。 */
+      var multiHint = function (sec) {
+        if (!sec || !sec.scoring || sec.scoring === "all") { return "【多選題，全部選對才得分】"; }
+        return { n2k: "【多選題，答錯 k 個選項得 (n−2k)/n 題分】", "8520": "【多選題，8-5-2-0 計分】", fifth: "【多選題，每答錯 1 個選項倒扣 1/5 題分】" }[sec.scoring];
+      };
       var questions = session.items.map(function (it, idx) {
         var q = RT().findQuestion(it.qid);
         if (!q) { return null; }
+        var sec = session.sections && it.section != null ? session.sections[it.section] : null;
+        var head = el("p", { class: "mx-q__text", text: (idx + 1) + ". " + (it.multi ? multiHint(sec) : "") + q.question });
+        var fig = q.figureSvg ? el("div", { class: "mx-q__figure", html: q.figureSvg }) : null;
+        if (it.fill) {
+          var prev = RT().active() ? RT().active().answers[it.qid] : session.answers[it.qid];
+          var boxes = [];
+          for (var k = 0; k < (it.parts || 1); k += 1) {
+            boxes.push(el("input", { type: "text", class: "mx-fill__input", autocomplete: "off",
+              "aria-label": "第 " + (idx + 1) + " 題" + (it.parts > 1 ? "第 " + (k + 1) + " 格" : "") + "答案",
+              value: Array.isArray(prev) && prev[k] != null ? prev[k] : "" }));
+          }
+          boxes.forEach(function (b) {
+            b.addEventListener("input", function () {
+              if (!RT().answer(it.qid, boxes.map(function (x) { return x.value; }))) { finish(true); return; }
+              updateProgress();
+            });
+          });
+          return el("li", { class: "mx-q" }, [head, fig,
+            el("p", { class: "mx-fill__hint", text: "選填：輸入答案（可用分數、√、π，例如 2/3、3√2；有多個值時依序以「、」分隔），" + (it.parts > 1 ? "每一格都答對" : "答對") + "才給分。" }),
+            el("ol", { class: "mx-fill" }, boxes.map(function (b, k) {
+              return el("li", {}, [it.parts > 1 ? el("span", { class: "mx-fill__no", text: "(" + (k + 1) + ")" }) : null, b]);
+            }))
+          ]);
+        }
         /* 2026-10-09: 多選題可複選；選項自帶 (A) 代號時不再加字母前綴。 */
         var labeled = RT().selfLabeled(q);
         var picked = function (opt) {
@@ -172,13 +214,23 @@ AHS.MonthExam = (function () {
           });
           return b;
         });
-        return el("li", { class: "mx-q" }, [
-          el("p", { class: "mx-q__text", text: (idx + 1) + ". " + (it.multi ? "【多選題，全部選對才得分】" : "") + q.question }),
-          /* 2026-10-10: 題目附圖（題組題常要看圖作答）。 */
-          q.figureSvg ? el("div", { class: "mx-q__figure", html: q.figureSvg }) : null,
-          el("div", { class: "mx-opts" }, btns)
-        ]);
+        return el("li", { class: "mx-q" }, [head, fig, el("div", { class: "mx-opts" }, btns)]);
       });
+
+      /* 依部分分段：每部分一個標題（題號連續）。 */
+      var body = [];
+      if (session.sections) {
+        session.sections.forEach(function (sec, si) {
+          var items = [];
+          var first = null;
+          session.items.forEach(function (it, i) { if (it.section === si && questions[i]) { items.push(questions[i]); if (first == null) { first = i + 1; } } });
+          if (!items.length) { return; }
+          body.push(el("h2", { class: "mx-section", text: sec.title + (sec.count < sec.want ? "　範圍內只有 " + sec.count + " 題（段考 " + sec.want + " 題）" : "") }));
+          body.push(el("ol", { class: "mx-qs", start: String(first) }, items));
+        });
+      } else {
+        body.push(el("ol", { class: "mx-qs" }, questions));
+      }
 
       function finish(timedOut) {
         stopTimer();
@@ -197,10 +249,12 @@ AHS.MonthExam = (function () {
         el("span", { class: "mx-bar__subject", text: session.subject + " 模擬月考（" + total + " 題）" }),
         clock, progress, submitBtn
       ]);
-      var notes = session.poolSize < (session.subject === "數學" ? 30 : 50)
-        ? el("p", { class: "mx-notice", text: "範圍內題庫只有 " + session.poolSize + " 題，本次全部出題。" }) : null;
-      show(el("div", { class: "mx-exam" }, [bar, notes, el("ol", { class: "mx-qs" }, questions), el("div", { class: "mx-actions" }, [submitBtn.cloneNode(true)])]));
-      root.querySelector(".mx-qs + .mx-actions button").addEventListener("click", function () { submitBtn.click(); });
+      var notes = session.sections ? el("p", { class: "mx-sub", text: "試卷結構依" + session.source })
+        : session.poolSize < (session.subject === "數學" ? 30 : 50)
+          ? el("p", { class: "mx-notice", text: "範圍內題庫只有 " + session.poolSize + " 題，本次全部出題。" }) : null;
+      var bottom = el("div", { class: "mx-actions" }, [submitBtn.cloneNode(true)]);
+      show(el("div", { class: "mx-exam" }, [bar, notes].concat(body, [bottom])));
+      bottom.querySelector("button").addEventListener("click", function () { submitBtn.click(); });
 
       function tick() {
         var left = RT().remainingMs(session);
@@ -220,8 +274,22 @@ AHS.MonthExam = (function () {
       function drawRows() {
         AHS.UI.mount(listSlot, el("div", {}, r.rows.map(function (row, i) {
           if (wrongOnly && row.correct) { return null; }
+          var pts = row.points != null && r.sections ? el("p", { class: "mx-pts", text: "得分 " + row.earned + " / " + row.points }) : null;
+          if (row.fill) {
+            return el("li", { class: "mx-q " + (row.correct ? "is-correct" : "is-wrong"), value: String(i + 1) }, [
+              el("p", { class: "mx-q__text", text: (i + 1) + ". " + row.question }),
+              (function () { var fq = RT().findQuestion(row.qid); return fq && fq.figureSvg ? el("div", { class: "mx-q__figure", html: fq.figureSvg }) : null; })(),
+              pts,
+              el("ul", { class: "mx-ans" }, [
+                el("li", { class: "is-answer", text: "正確答案：" + row.answer }),
+                el("li", { class: row.correct ? "is-answer" : "is-given", text: "你的答案：" + (row.given == null ? "未作答" : row.given) + (row.correct ? "　✔" : "　✘") })
+              ]),
+              row.explanation ? el("div", { class: "mx-expl" }, [el("strong", { text: "詳解　" }), el("span", { text: row.explanation })]) : null
+            ]);
+          }
           return el("li", { class: "mx-q " + (row.correct ? "is-correct" : "is-wrong"), value: String(i + 1) }, [
             el("p", { class: "mx-q__text", text: (i + 1) + ". " + row.question }),
+            pts,
             (function () { var fq = RT().findQuestion(row.qid); return fq && fq.figureSvg ? el("div", { class: "mx-q__figure", html: fq.figureSvg }) : null; })(),
             el("ul", { class: "mx-ans" }, row.options.map(function (o, k) {
               var isAns = row.correctOptions ? row.correctOptions.indexOf(o) !== -1 : o === row.answer;
@@ -246,7 +314,8 @@ AHS.MonthExam = (function () {
         notice ? el("p", { class: "mx-notice", text: notice }) : null,
         el("article", { class: "card mx-card mx-score" }, [
           el("h1", { class: "mx-title", text: r.subject + " 模擬月考成績" }),
-          el("p", { class: "mx-score__num", text: r.score + " 分" }),
+          el("p", { class: "mx-score__num", text: (r.sections ? r.rawScore + " / " + r.maxScore : r.score) + " 分" }),
+          r.sections && r.maxScore !== 100 ? el("p", { class: "mx-sub", text: "換算百分制：" + r.score + " 分" }) : null,
           el("p", { text: "答對 " + r.correct + " / " + r.total + " 題　未作答 " + r.unanswered + " 題" + (r.timedOut ? "　（時間到自動交卷）" : "") }),
           el("p", { class: "mx-sub", text: "錯題已加入「知識弱點」。" }),
           el("div", { class: "mx-actions" }, [

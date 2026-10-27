@@ -61,7 +61,9 @@ console.log("\n[1] 載入");
 const tf = set7.find((q) => q.type === "true_false");
 const calc = set7.find((q) => q.type === "calculation");
 const multi = set28.find((q) => q.answerMode === "multi");
-check("tm_7 原始試卷含是非題與計算題（之前只有單選題）", !!tf && !!calc && set7.length >= 100);
+/* 2026-10-27: 計算題改輸入作答自動批改，答案無法自動比對的長篇作答不出題（110 → 77 題）。 */
+check("tm_7 原始試卷含是非題與計算題（之前只有單選題）", !!tf && !!calc && set7.length >= 70);
+check("計算題都能自動批改（長篇作答不出題）", set7.filter((q) => QK.kindOf(q) === "self").every((q) => QK.gradable({ type: q.type, answer: q.answerText })));
 check("是非題：選項為「正確／錯誤」，答案為其中一個 key",
   JSON.stringify(tf.options.map((o) => o.text)) === JSON.stringify(["正確", "錯誤"]) && ["A", "B"].indexOf(tf.correctAnswer) !== -1);
 check("計算題：自評題，答案 key 為 SELF_CORRECT，帶有答案文字", QK.kindOf(calc) === "self" && calc.correctAnswer === QK.SELF_CORRECT && calc.answerText.length > 0);
@@ -94,14 +96,19 @@ console.log("\n[2] 題卡");
   let saved = null;
   const card = AHS.QuestionCard.create(calc, null, (k) => { saved = k; });
   doc.body.appendChild(card);
-  const grades = card.querySelector(".qcard-self__grades");
-  check("計算題：先顯示「看答案」，答案與自評按鈕隱藏、沒有選項",
-    !!card.querySelector(".qcard-self__reveal") && grades.classList.contains("is-hidden") && !card.querySelector(".qcard-option"));
-  click(card.querySelector(".qcard-self__reveal"));
-  check("按「看答案」→ 顯示答案文字與自評按鈕",
-    !grades.classList.contains("is-hidden") && card.querySelector(".qcard-self__answer-text").textContent === calc.answerText);
-  click(card.querySelector('.qcard-self__grade[data-key="SELF_CORRECT"]'));
-  check("按「我答對了」→ 存 SELF_CORRECT", saved === QK.SELF_CORRECT);
+  const inputs = [...card.querySelectorAll(".qcard-self__input")];
+  const want = QK.parts(calc.answerText);
+  check("計算題：沒有「看答案」、沒有選項，每一格一個輸入框",
+    !card.querySelector(".qcard-self__reveal") && !card.querySelector(".qcard-option") && inputs.length === want.length && inputs.length > 0);
+  check("作答中不顯示答案文字", card.textContent.indexOf(calc.answerText) === -1);
+  inputs.forEach((inp) => { inp.value = "999999"; });
+  click(card.querySelector(".qcard-self__save"));
+  check("輸入錯誤答案 → 存輸入文字（不是 SELF_CORRECT）", saved === want.map(() => "999999").join("；"));
+  inputs.forEach((inp, i) => { inp.value = want[i]; });
+  click(card.querySelector(".qcard-self__save"));
+  check("輸入正確答案 → 自動判定 SELF_CORRECT", saved === QK.SELF_CORRECT);
+  const card2 = AHS.QuestionCard.create(calc, "999999", () => {});
+  check("回到這題：輸入框還原為上次輸入", card2.querySelector(".qcard-self__input").value === "999999");
   card.remove();
 }
 {

@@ -94,6 +94,14 @@ AHS.MonthExamRuntime = (function () {
     });
   }
 
+  /* 選填題只收「答案是數值」的題目（數字、分數、√、π、度與常見單位），
+     像 y = sin(x − π/2) 這種要寫式子的題目不出。 */
+  var NUMERIC_PART = /^[\s\d.,，、\-−+＋×*/÷√π()（）°′≤≥<>＜＞=＝或約≈]*(?:[a-zA-Zμ°℃%²³⁻¹/\s]*|弳|度|公分|公尺|公里|秒|克|莫耳)$/;
+  function numericAnswer(answer) {
+    var QK = AHS.QuestionKind;
+    return QK.parts(answer).every(function (p) { return /\d|π|√/.test(p) && NUMERIC_PART.test(String(p).replace(/^[a-zA-Zθαβ]\s*[=＝]\s*/, "")); });
+  }
+
   var MULTI_ANSWER = /^(\([A-G]\)){2,}$/;
   var LETTER_ANSWER = /^\(([A-G])\)$/;
   var SELF_LABEL = /^\s*[(（]\s*[A-Ga-g]\s*[)）]/;
@@ -102,6 +110,11 @@ AHS.MonthExamRuntime = (function () {
      question can't be asked here (not single-choice, or its answer doesn't
      match its options). */
   function spec(q) {
+    /* 2026-10-27 選填：可自動批改的計算／填充題，輸入答案作答（AHS.QuestionKind）。 */
+    var QK = AHS.QuestionKind;
+    if (q && QK && QK.modeOfPackage(q) === "self") {
+      return QK.gradable(q) && numericAnswer(q.answer) ? { multi: false, fill: true, parts: QK.parts(q.answer), correct: [] } : null;
+    }
     if (!q || String(q.type || q.questionType || "") !== "single_choice") { return null; }
     var opts = Array.isArray(q.options) ? q.options : [];
     if (opts.length < 2) { return null; }
@@ -119,6 +132,40 @@ AHS.MonthExamRuntime = (function () {
   }
 
   function usable(q) { return !!spec(q); }
+
+  /* 題目的作答方式：single、multi、fill；不能出題時為 null。 */
+  function kindOf(q) {
+    var sp = spec(q);
+    return !sp ? null : sp.fill ? "fill" : sp.multi ? "multi" : "single";
+  }
+
+  /* 目前學校／學期、該科的段考結構（js/data/MonthExamBlueprint.js）；沒有時為 null。 */
+  function blueprintFor(subject) {
+    var all = (AHS.MonthExamBlueprint && AHS.MonthExamBlueprint.blueprints) || {};
+    var ws = workspace();
+    if (!ws) { return null; }
+    var hit = null;
+    (ws.semesterIds || []).forEach(function (sem) {
+      var b = all[ws.schoolId + "|" + sem];
+      if (!hit && b && b[subject]) { hit = b[subject]; }
+    });
+    return hit;
+  }
+
+  function blueprintTotal(bp) {
+    return Math.round(bp.sections.reduce(function (n, sec) { return n + sec.count * sec.points; }, 0) * 10) / 10;
+  }
+
+  /* 多選題得分：n 個選項、答錯（多選或漏選）k 個。未作答 0 分。 */
+  function multiPoints(rule, points, n, k, answered) {
+    if (!answered) { return 0; }
+    var r;
+    if (rule === "n2k") { r = Math.max(0, (n - 2 * k) / n); }
+    else if (rule === "8520") { r = [8, 5, 2][k] != null ? [8, 5, 2][k] / 8 : 0; }
+    else if (rule === "fifth") { r = Math.max(0, 1 - k / 5); }
+    else { r = k === 0 ? 1 : 0; }
+    return Math.round(points * r * 100) / 100;
+  }
 
   function selfLabeled(q) {
     return (q.options || []).some(function (o) { return SELF_LABEL.test(String(o)); });
@@ -231,10 +278,57 @@ AHS.MonthExamRuntime = (function () {
     return out;
   }
 
-  /* buildPaper(subject, materialIds, rng) -> { questions, poolSize, limit } */
+  function unitsOf(pool) {
+    var groups = {};
+    var units = [];
+    pool.forEach(function (q) {
+      var k = groupKeyOf(q);
+      if (!k) { units.push([q]); return; }
+      if (!groups[k]) { groups[k] = []; units.push(groups[k]); }
+      groups[k].push(q);
+    });
+    units.forEach(function (u) {
+      u.sort(function (a, b) { return Number(a.questionNumber || 0) - Number(b.questionNumber || 0); });
+    });
+    return units;
+  }
+
+  /* 依段考結構出題：每一部分從同題型的題目抽，題組整組一起抽、不超過該部分題數；
+     範圍內題目不夠時如實回報（sections[i].count < want）。 */
+  function buildBlueprintPaper(bp, materialIds, rng) {
+    var pool = questionsFor(materialIds);
+    var used = {};
+    var questions = [];
+    var sections = bp.sections.map(function (sec, si) {
+      var units = unitsOf(pool.filter(function (q) { return !used[q.id] && kindOf(q) === sec.kind; }));
+      var n = 0;
+      shuffle(units, rng).forEach(function (u) {
+        if (n + u.length > sec.count) { return; }
+        u.forEach(function (q) { used[q.id] = true; questions.push(Object.assign({}, q, { sectionIndex: si })); });
+        n += u.length;
+      });
+      return { title: sec.title, kind: sec.kind, want: sec.count, count: n, points: sec.points, scoring: sec.scoring || "" };
+    });
+    var kinds = {};
+    pool.forEach(function (q) { var k = kindOf(q); kinds[k] = (kinds[k] || 0) + 1; });
+    return { questions: questions, poolSize: pool.length, poolByKind: kinds, sections: sections, source: bp.source,
+      limit: sections.map(function (x) { return x.title.replace(/（.*$/, "") + " " + x.want + " 題"; }).join("、") };
+  }
+
+  /* 範圍內各題型的題數：{ single, multi, fill }。 */
+  function poolCounts(materialIds) {
+    var out = { single: 0, multi: 0, fill: 0 };
+    questionsFor(materialIds).forEach(function (q) { var k = kindOf(q); if (k) { out[k] += 1; } });
+    return out;
+  }
+
+  /* buildPaper(subject, materialIds, rng) -> { questions, poolSize, limit[, sections] } */
   function buildPaper(subject, materialIds, rng) {
     rng = rng || Math.random;
-    var pool = questionsFor(materialIds);
+    var bp = blueprintFor(subject);
+    if (bp) { return buildBlueprintPaper(bp, materialIds, rng); }
+    /* 沒有段考結構：原本的出題方式（單選＋多選，不出選填）。 */
+    var pool = questionsFor(materialIds).filter(function (q) { return kindOf(q) !== "fill"; });
     var groups = {};
     var units = [];
     pool.forEach(function (q) {
@@ -291,9 +385,15 @@ AHS.MonthExamRuntime = (function () {
       startedAt: opts.now || Date.now(),
       durationMs: DURATION_MS,
       poolSize: paper.poolSize,
+      sections: paper.sections || null,
+      source: paper.source || "",
       items: paper.questions.map(function (q) {
-        var idx = q.options.map(function (_, i) { return i; });
-        return { qid: q.id, multi: spec(q).multi, order: selfLabeled(q) ? idx : shuffle(idx, rng) };
+        var sp = spec(q);
+        var idx = (q.options || []).map(function (_, i) { return i; });
+        var item = { qid: q.id, multi: sp.multi, order: sp.fill || selfLabeled(q) ? idx : shuffle(idx, rng) };
+        if (sp.fill) { item.fill = true; item.parts = sp.parts.length; }
+        if (q.sectionIndex != null) { item.section = q.sectionIndex; }
+        return item;
       }),
       answers: {}
     };
@@ -312,7 +412,11 @@ AHS.MonthExamRuntime = (function () {
     var s = active();
     if (!s || remainingMs(s, now) <= 0) { return false; } /* 時間到不得再作答 */
     var item = s.items.filter(function (it) { return it.qid === qid; })[0];
-    if (item && item.multi) {
+    if (item && item.fill) {
+      /* 選填：optionText 為各格輸入的文字陣列；全部清空時視為未作答。 */
+      var typed = (Array.isArray(optionText) ? optionText : [optionText]).map(function (x) { return String(x == null ? "" : x); });
+      if (typed.some(function (x) { return x.trim(); })) { s.answers[qid] = typed; } else { delete s.answers[qid]; }
+    } else if (item && item.multi) {
       var cur = Array.isArray(s.answers[qid]) ? s.answers[qid].slice() : [];
       var at = cur.indexOf(optionText);
       if (at === -1) { cur.push(optionText); } else { cur.splice(at, 1); }
@@ -332,6 +436,18 @@ AHS.MonthExamRuntime = (function () {
     var rows = s.items.map(function (it) {
       var q = findQuestion(it.qid) || { id: it.qid, question: "（題目已不存在）", options: [], answer: null };
       var given = Object.prototype.hasOwnProperty.call(s.answers, it.qid) ? s.answers[it.qid] : null;
+      var sec = s.sections && it.section != null ? s.sections[it.section] : null;
+      if (it.fill) {
+        var typed = Array.isArray(given) ? given : [];
+        var filled = typed.some(function (x) { return String(x).trim(); });
+        var ok = filled && AHS.QuestionKind && AHS.QuestionKind.keyForInput({ answerText: q.answer }, typed) === AHS.QuestionKind.SELF_CORRECT;
+        return {
+          qid: it.qid, materialId: q.materialId, question: q.question, options: [], fill: true, section: it.section,
+          answer: String(q.answer == null ? "" : q.answer), given: filled ? typed.join("；") : null,
+          correct: !!ok, points: sec ? sec.points : 1, earned: ok ? (sec ? sec.points : 1) : 0,
+          explanation: q.explanation || "", knowledgePoint: q.knowledgePoint || ""
+        };
+      }
       var sp = spec(q) || { multi: false, correct: [] };
       var givenList = given == null ? [] : (Array.isArray(given) ? given : [given]);
       var letters = function (list) {
@@ -345,16 +461,28 @@ AHS.MonthExamRuntime = (function () {
         answer: sp.multi ? letters(sp.correct) : (sp.correct[0] != null ? sp.correct[0] : q.answer),
         given: given == null ? null : (sp.multi ? letters(givenList) : given),
         correct: givenList.length > 0 && sameSet(givenList, sp.correct),
-        explanation: q.explanation || "", knowledgePoint: q.knowledgePoint || ""
+        explanation: q.explanation || "", knowledgePoint: q.knowledgePoint || "",
+        section: it.section, points: sec ? sec.points : 1,
+        earned: (function () {
+          var pts = sec ? sec.points : 1;
+          var allRight = givenList.length > 0 && sameSet(givenList, sp.correct);
+          if (!sp.multi) { return allRight ? pts : 0; }
+          var k = (q.options || []).filter(function (o) { return (sp.correct.indexOf(o) !== -1) !== (givenList.indexOf(o) !== -1); }).length;
+          return multiPoints(sec ? sec.scoring : "all", pts, (q.options || []).length, k, givenList.length > 0);
+        })()
       };
     });
     var correct = rows.filter(function (r) { return r.correct; }).length;
+    var maxScore = s.sections ? Math.round(s.sections.reduce(function (n, x) { return n + x.count * x.points; }, 0) * 100) / 100 : rows.length;
+    var rawScore = Math.round(rows.reduce(function (n, r) { return n + (r.earned || 0); }, 0) * 100) / 100;
     var result = {
       id: s.id, subject: s.subject, materialIds: s.materialIds,
       startedAt: s.startedAt, submittedAt: opts.now || Date.now(),
       timedOut: !!opts.timedOut, total: rows.length, correct: correct,
       unanswered: rows.filter(function (r) { return r.given == null; }).length,
-      score: rows.length ? Math.round(correct / rows.length * 1000) / 10 : 0,
+      /* score：換算成百分制（有段考結構時依配分，否則依答對題數）。 */
+      score: maxScore ? Math.round(rawScore / maxScore * 1000) / 10 : 0,
+      rawScore: rawScore, maxScore: maxScore, sections: s.sections || null,
       rows: rows
     };
     var history = load(KEY_HISTORY, []) || [];
@@ -468,7 +596,8 @@ AHS.MonthExamRuntime = (function () {
             questionId: r.qid, knowledgePoint: r.knowledgePoint, text: r.question, options: r.options,
             /* 多選題存成知識弱點通用的代號字串（"BD"），重做時才能正確比對。 */
             yourAnswer: r.given == null ? "（未作答）" : (r.multi ? r.given.replace(/[()]/g, "") : r.given),
-            correctAnswer: r.multi ? r.answer.replace(/[()]/g, "") : r.answer,
+            /* 選填題在知識弱點以計算題（輸入作答）重做：答案 key 為 SELF_CORRECT。 */
+            correctAnswer: r.fill && AHS.QuestionKind ? AHS.QuestionKind.SELF_CORRECT : r.multi ? r.answer.replace(/[()]/g, "") : r.answer,
             explanation: r.explanation, materialId: r.materialId
           };
         })
@@ -501,6 +630,11 @@ AHS.MonthExamRuntime = (function () {
     setRange: setRange,
     rangeKey: rangeKey,
     buildPaper: buildPaper,
+    kindOf: kindOf,
+    poolCounts: poolCounts,
+    blueprintFor: blueprintFor,
+    blueprintTotal: blueprintTotal,
+    multiPoints: multiPoints,
     groupKeyOf: groupKeyOf,
     start: start,
     active: active,

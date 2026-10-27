@@ -69,3 +69,16 @@
 .mx-ans .is-given { background: #fdecec; color: #b42318; }
 .mx-given { margin: 6px 0 0; color: #b42318; font-size: 13px; font-weight: 600; }
 .mx-expl { margin-top: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg); line-height: 1.7; font-size: 14px; }
+
+/* 2026-10-27：依段考結構分部分、選填題、每題得分 */
+.mx-section { margin: var(--space-2) 0 0; font-size: 17px; color: var(--brand-ink); }
+.mx-fill__hint { margin: 0 0 8px; font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+.mx-fill { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.mx-fill li { display: flex; align-items: center; gap: 8px; }
+.mx-fill__no { flex: 0 0 auto; font-weight: 800; color: var(--text-muted); }
+.mx-fill__input {
+  flex: 1 1 auto; min-width: 0; max-width: 360px; padding: 10px 12px; border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); font: inherit; font-size: 16px; background: var(--card); color: var(--text);
+}
+.mx-fill__input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+.mx-pts { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--brand-ink); }
