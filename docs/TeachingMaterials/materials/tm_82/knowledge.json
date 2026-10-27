@@ -1,0 +1,36 @@
+{
+  "materialId": "tm_82",
+  "knowledgePoints": [
+    {
+      "name": "化石對比：共存區間",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "哈伯定律的計算",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "哈伯定律與宇宙膨脹",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "標準化石的條件",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "相對地質年代：疊置與截切定律",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "紅移與都卜勒效應",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-27T08:40:35.257Z"
+}

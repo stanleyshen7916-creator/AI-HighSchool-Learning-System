@@ -47,6 +47,9 @@ AHS.QuestionCard = (function () {
     return match ? (match.section || "") : "";
   }
 
+  /* 計算／填充題輸入過的文字（答對時作答 key 只存 SELF_CORRECT，回到這題時用來還原輸入框）。 */
+  var typedMemory = {};
+
   /* create(question, selectedKey, onSelect) */
   function create(question, selectedKey, onSelect) {
     var subj = AHS.Subjects[question.subject];
@@ -90,36 +93,47 @@ AHS.QuestionCard = (function () {
       return btn;
     });
 
-    /* 計算／填充題：先自己算，按「看答案」後依答案自評。 */
+    /* 計算／填充題（2026-10-27）：同月考選填，每一格輸入答案後按「確定答案」，
+       依標準答案自動批改（AHS.QuestionKind.keyForInput）。作答中不顯示答案，
+       交卷後才在成績頁看答案與詳解。 */
     var selfBlock = null;
     if (kind === "self") {
       var QK = AHS.QuestionKind;
-      var answered = selectedKey === QK.SELF_CORRECT || selectedKey === QK.SELF_WRONG;
-      var answerBox = el("div", { class: "qcard-self__answer" + (answered ? "" : " is-hidden") }, [
-        el("p", { class: "qcard-self__answer-label", text: "答案" }),
-        el("p", { class: "qcard-self__answer-text", text: QK.answerText(question) })
-      ]);
-      var gradeBtn = function (key, text, mod) {
-        var b = el("button", {
-          type: "button", class: "qcard-self__grade qcard-self__grade--" + mod + (selectedKey === key ? " is-selected" : ""),
-          "aria-pressed": selectedKey === key ? "true" : "false", "data-key": key, text: text
+      var want = QK.parts(QK.answerText(question));
+      var prior = selectedKey === QK.SELF_CORRECT ? (typedMemory[question.id] || want)
+        : (selectedKey ? String(selectedKey).split("；") : (typedMemory[question.id] || []));
+      var inputs = want.map(function (w, i) {
+        return el("input", {
+          type: "text", class: "qcard-self__input", inputmode: "text", autocomplete: "off",
+          "aria-label": want.length > 1 ? "第 " + (i + 1) + " 格答案" : "答案",
+          value: prior[i] != null ? prior[i] : ""
         });
-        b.addEventListener("click", function () { if (typeof onSelect === "function") { onSelect(key); } });
-        return b;
-      };
-      var grades = el("div", { class: "qcard-self__grades" + (answered ? "" : " is-hidden") }, [
-        gradeBtn(QK.SELF_CORRECT, "我答對了", "ok"),
-        gradeBtn(QK.SELF_WRONG, "我答錯了", "wrong")
-      ]);
-      var revealBtn = el("button", { type: "button", class: "qcard-self__reveal" + (answered ? " is-hidden" : ""), text: "看答案" });
-      revealBtn.addEventListener("click", function () {
-        answerBox.classList.remove("is-hidden");
-        grades.classList.remove("is-hidden");
-        revealBtn.classList.add("is-hidden");
       });
+      var status = el("p", { class: "qcard-self__status", "aria-live": "polite", text: selectedKey ? "已作答（交卷後公布答案）" : "" });
+      var save = function () {
+        var typed = inputs.map(function (inp) { return inp.value; });
+        typedMemory[question.id] = typed;
+        var key = QK.keyForInput(question, typed);
+        if (!key) { status.textContent = want.length > 1 ? "每一格都要填答案。" : "請輸入答案。"; return; }
+        if (typeof onSelect === "function") { onSelect(key); }
+      };
+      inputs.forEach(function (inp, i) {
+        inp.addEventListener("keydown", function (e) {
+          if (e.key !== "Enter") { return; }
+          e.preventDefault();
+          if (i < inputs.length - 1) { inputs[i + 1].focus(); } else { save(); }
+        });
+      });
+      var saveBtn = el("button", { type: "button", class: "qcard-self__save", text: "確定答案" });
+      saveBtn.addEventListener("click", save);
       selfBlock = el("div", { class: "qcard-self" }, [
-        el("p", { class: "qcard-self__hint", text: "請先在紙上計算或寫出答案，再按「看答案」，依答案自評。" }),
-        revealBtn, answerBox, grades
+        el("p", { class: "qcard-self__hint", text: want.length > 1
+          ? "依序在每一格輸入答案（數字可用分數、√、π，例如 2/3、3√2），全部答對才算答對。"
+          : "輸入答案（數字可用分數、√、π，例如 2/3、3√2），按「確定答案」。" }),
+        el("ol", { class: "qcard-self__fields" }, inputs.map(function (inp, i) {
+          return el("li", {}, [want.length > 1 ? el("span", { class: "qcard-self__no", text: "(" + (i + 1) + ")" }) : null, inp]);
+        })),
+        saveBtn, status
       ]);
     }
 

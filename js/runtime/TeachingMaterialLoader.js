@@ -321,6 +321,8 @@ AHS.TeachingMaterialLoader = (function () {
         correctAnswer = q.answer === "正確" ? "A" : "B";
       } else if (mode === "self") {
         if (!AHS.QuestionKind || !String(q.answer || "").trim()) { return; }
+        /* 2026-10-27: 改為輸入作答自動批改，答案無法自動比對的（長篇作答、問答題）不出題。 */
+        if (!AHS.QuestionKind.gradable(q)) { return; }
         options = [];
         correctAnswer = AHS.QuestionKind.SELF_CORRECT;
         answerText = String(q.answer);

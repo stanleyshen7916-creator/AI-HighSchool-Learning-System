@@ -131,5 +131,57 @@ console.log("\n[5] 2026-10-09 也收舊版教材庫（國文、英文）的單�
   check("可作答與批改", r4.correct === 1 && r4.total === 1);
 }
 
+console.log("\n[6] 2026-10-27 依段考結構出題、配分與選填題");
+{
+  require(path.join(REPO, "js/utils/QuestionKind.js"));
+  AHS.MaterialRepository = null;
+  AHS.MonthExamBlueprint = { blueprints: { "zwsh|g2s1": { "數學": { source: "測試結構。", sections: [
+    { title: "一、單選題", kind: "single", count: 3, points: 4 },
+    { title: "二、多選題", kind: "multi", count: 2, points: 8, scoring: "8520" },
+    { title: "三、選填題", kind: "fill", count: 2, points: 6 }] } } } };
+  const opts5 = ["(A) a", "(B) b", "(C) c", "(D) d", "(E) e"];
+  const bpQs = [];
+  for (let i = 1; i <= 6; i++) bpQs.push(q("tm_95", i));
+  bpQs.push(Object.assign(q("tm_95", 7), { options: opts5, answer: "(A)(C)" }), Object.assign(q("tm_95", 8), { options: opts5, answer: "(B)(D)(E)" }),
+    Object.assign(q("tm_95", 9), { options: opts5, answer: "(A)(B)" }));
+  bpQs.push({ id: "tm_95_q10", questionNumber: "10", type: "fill_blank", question: "F1", answer: "2/3", explanation: "e" },
+    { id: "tm_95_q11", questionNumber: "11", type: "calculation", question: "F2", answer: "(1) 3√2；(2) π/4", explanation: "e" },
+    { id: "tm_95_q12", questionNumber: "12", type: "calculation", question: "F3", answer: "y ＝ sin(x − π/2)", explanation: "e" },
+    { id: "tm_95_q13", questionNumber: "13", type: "fill_blank", question: "F4", answer: "5", explanation: "e" });
+  AHS.TeachingMaterialData.push({ materialId: "tm_95", material: { subject: "數學", school: "zwsh", semester: "g2s1", chapter: "第二章" }, questions: bpQs });
+  check("要寫式子的計算題不當選填（只收數值答案）", RT.kindOf(bpQs[11]) === null && RT.kindOf(bpQs[9]) === "fill" && RT.kindOf(bpQs[10]) === "fill");
+  const paper = RT.buildPaper("數學", ["tm_95"]);
+  const bySec = [0, 1, 2].map((si) => paper.questions.filter((x) => x.sectionIndex === si));
+  check("依結構抽題：單選 3、多選 2、選填 2，各部分題型正確",
+    bySec[0].length === 3 && bySec[1].length === 2 && bySec[2].length === 2 &&
+    bySec[0].every((x) => RT.kindOf(x) === "single") && bySec[1].every((x) => RT.kindOf(x) === "multi") && bySec[2].every((x) => RT.kindOf(x) === "fill"));
+  check("計分規則：8-5-2-0、(n−2k)/n、倒扣 1/5、未作答 0 分",
+    RT.multiPoints("8520", 8, 5, 0, true) === 8 && RT.multiPoints("8520", 8, 5, 1, true) === 5 && RT.multiPoints("8520", 8, 5, 2, true) === 2 &&
+    RT.multiPoints("8520", 8, 5, 3, true) === 0 && RT.multiPoints("n2k", 4, 5, 1, true) === 2.4 && RT.multiPoints("fifth", 2.4, 5, 2, true) === 1.44 &&
+    RT.multiPoints("n2k", 4, 5, 0, false) === 0);
+  const t3 = 30000000;
+  const s4 = RT.start("數學", ["tm_95"], { now: t3, rng: () => 0.1 });
+  check("試卷記錄各部分與配分", s4.sections.length === 3 && s4.sections[2].points === 6 && s4.items.filter((x) => x.fill).length === 2);
+  s4.items.forEach((it) => {
+    const fq = RT.findQuestion(it.qid);
+    if (it.fill) { RT.answer(it.qid, AHS.QuestionKind.parts(fq.answer), t3 + 1); }
+    else if (it.multi) { RT.answer(it.qid, fq.options[0], t3 + 1); }
+    else { RT.answer(it.qid, fq.answer, t3 + 1); }
+  });
+  const r5 = RT.submit({ now: t3 + 2 });
+  const fills = r5.rows.filter((x) => x.fill);
+  check("選填題輸入正確答案得滿分（分數、√、π）", fills.length === 2 && fills.every((x) => x.correct && x.earned === 6));
+  check("總分依配分計算，滿分 = 3×4 + 2×8 + 2×6 = 40", r5.maxScore === 40 && r5.rawScore === 12 + 12 + r5.rows.filter((x) => x.multi).reduce((n, x) => n + x.earned, 0) &&
+    r5.score === Math.round(r5.rawScore / 40 * 1000) / 10);
+  const s5 = RT.start("數學", ["tm_95"], { now: t3 + 10 });
+  const fillIt = s5.items.find((x) => x.fill);
+  RT.answer(fillIt.qid, ["999", "999"].slice(0, fillIt.parts), t3 + 11);
+  const r6 = RT.submit({ now: t3 + 12 });
+  const wf = r6.rows.find((x) => x.qid === fillIt.qid);
+  check("選填答錯 0 分，錯題以計算題（SELF_CORRECT）加入知識弱點", !wf.correct && wf.earned === 0 &&
+    synced[synced.length - 1].wrong.some((w) => w.questionId === fillIt.qid && w.correctAnswer === AHS.QuestionKind.SELF_CORRECT));
+  AHS.MonthExamBlueprint = null;
+}
+
 console.log("\nMonthExamRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);

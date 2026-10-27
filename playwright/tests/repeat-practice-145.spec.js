@@ -77,12 +77,13 @@ test("AI-145：平時練習完成後「再次出題」— 真實再抽一組不�
 
   // Real click-through: answer every question, then finish.
   for (let i = 0; i < 10; i++) {
-    // 2026-10-08: 計算／填充題沒有選項 — 看答案後自評（js/ui/QuestionCard.js）。
+    // 2026-10-08: 計算／填充題沒有選項，輸入答案作答（js/ui/QuestionCard.js）。
     if (await page.locator(".qcard-option").count()) {
       await page.locator(".qcard-option").first().click();
     } else {
-      await page.locator(".qcard-self__reveal").click();
-      await page.locator(".qcard-self__grade").first().click();
+      // 2026-10-27: 改為輸入作答（js/ui/QuestionCard.js），不再「看答案」自評。
+      for (const inp of await page.locator(".qcard-self__input").all()) { await inp.fill("0"); }
+      await page.locator(".qcard-self__save").click();
     }
     const finishBtn = page.locator(".qnav__finish");
     if (await finishBtn.count()) { await finishBtn.click(); break; }
