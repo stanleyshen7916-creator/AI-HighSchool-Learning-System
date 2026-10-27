@@ -384,28 +384,9 @@ AHS.TeachingMaterialLoader = (function () {
     return compatible;
   }
 
-  /* Sprint AI-117 AI-117-08 Assessment Mode: "原始試卷"（真實上傳教材，
-     questionSource=ORIGINAL）與"AI 題庫"（questionSource=AI_GENERATED）
-     "不得混用" — imported here as two ADDITIONAL, separate examIds
-     alongside the existing combined one (examId itself, kept 100%
-     unchanged for every existing caller/link — no existing behavior
-     removed), so a caller that explicitly wants one mode can load only
-     that mode's questions, never both under one running exam. Skips a
-     variant entirely (never importQuestions() with an empty array,
-     matching this file's own existing "no-op when nothing real exists"
-     rule) when this material genuinely has no question of that source —
-     most materials will only ever have one real variant. */
-  function importAssessmentModeVariants(examId, questions) {
-    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.importQuestions !== "function") { return; }
-    var original = questions.filter(function (q) { return q.questionSource === "ORIGINAL"; });
-    /* 2026-10-01: the practice side is every non-ORIGINAL question — AI
-       questions and past national exam questions (PAST_EXAM, 補充題庫) —
-       so the material's own exam paper (原始試卷) is never mixed with them. */
-    var aiGenerated = questions.filter(function (q) { return q.questionSource === "AI_GENERATED" || q.questionSource === "PAST_EXAM"; });
-    if (original.length) { AHS.QuestionRuntime.importQuestions(examId + "__original", original); }
-    if (aiGenerated.length) { AHS.QuestionRuntime.importQuestions(examId + "__ai", aiGenerated); }
-  }
-
+  /* 2026-10-27: 原始試卷與 AI／補充題不再分成 __original／__ai 兩份
+     （使用者要求合併）— 每份教材只有一份題庫 examId，平時練習從整份
+     題庫抽題，考前總複習列出整份題庫。 */
   /* Re-run on every page load where AHS.QuestionRuntime is present —
      that Runtime is intentionally memory-only, so its store is always
      empty on a fresh page load regardless of what an earlier page
@@ -419,7 +400,6 @@ AHS.TeachingMaterialLoader = (function () {
     var questions = buildExamCompatibleQuestions(entry, runtimeMaterialId);
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
-    importAssessmentModeVariants(examId, questions);
     /* Sprint AI-121 AI-121-03: build-once QuestionBank, real content
        only. hasExam() already guarded this call site to "first time
        this examId's questions are known this session" above, so this
@@ -664,7 +644,6 @@ AHS.TeachingMaterialLoader = (function () {
     var questions = repoExamCompatibleQuestions(record, runtimeMaterialId);
     if (!questions.length) { return; }
     AHS.QuestionRuntime.importQuestions(examId, questions);
-    importAssessmentModeVariants(examId, questions);
     if (AHS.QuestionBankRuntime && typeof AHS.QuestionBankRuntime.ensureBank === "function") {
       AHS.QuestionBankRuntime.ensureBank(examId, questions);
     }
@@ -760,7 +739,6 @@ AHS.TeachingMaterialLoader = (function () {
        Assessment Mode split directly (same function loadQuestions()/
        loadMaterialRepositoryEntry() already call internally above — not
        a second implementation for tests to drift from). */
-    importAssessmentModeVariants: importAssessmentModeVariants,
     pullFromRepository: pullFromRepository
   };
 })();

@@ -175,7 +175,7 @@ AHS.QuizParts = AHS.QuizParts || {};
            repeating it made the meta so long it squeezed the title to a
            couple of characters. Full text stays available as a tooltip. */
         var repoShowChapter = entry.chapter && String(entry.title || "").indexOf(entry.chapter) === -1;
-        var repoMeta = (repoShowChapter ? entry.chapter : "") + "（共 " + entry.count + " 題）";
+        var repoMeta = (repoShowChapter ? entry.chapter : "") + "（共 " + entry.total + " 題）";
         var row = el("button", { type: "button", class: "quiz-practice__row", title: entry.title + "　" + repoMeta }, [
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
@@ -463,13 +463,26 @@ AHS.QuizParts = AHS.QuizParts || {};
     var resultBanner = el("p", { class: "quiz-practice__result", "aria-live": "polite", hidden: "hidden" });
     var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
     var submitted = false;
-    var optionBtns;
+    var optionBtns = [];
+    /* 2026-10-27: 多選題可複選、選填題輸入答案自動批改（同平時練習） */
+    var QK = AHS.QuestionKind;
+    var kind = QK ? QK.kindOf(q) : "choice";
+
+    function answerLabel() {
+      if (kind === "self") { return QK.answerText(q); }
+      if (kind === "multi") {
+        var labelOf = {};
+        (AHS.OptionOrder ? AHS.OptionOrder.order(q) : []).forEach(function (o) { labelOf[o.key] = o.label; });
+        return QK.describe(q, q.correctAnswer, function (k) { return labelOf[k] || k; });
+      }
+      return AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer;
+    }
 
     function renderAnswer() {
       answerSlot.innerHTML = "";
       answerSlot.appendChild(el("div", { class: "quiz-practice__answer-block" }, [
         el("strong", { text: "標準答案：" }),
-        el("span", { text: AHS.OptionOrder ? AHS.OptionOrder.describe(q, q.correctAnswer) : q.correctAnswer })
+        el("span", { text: answerLabel() })
       ]));
       var rich = richExplanation(q, q.explanation, "quiz-practice__exp-rich");
       if (q.explanation || rich) {
@@ -505,9 +518,12 @@ AHS.QuizParts = AHS.QuizParts || {};
       resultBanner.textContent = isCorrect ? "答對了！" : "答錯了，已加入知識弱點。";
       resultBanner.classList.add(isCorrect ? "is-correct" : "is-wrong");
       resultBanner.removeAttribute("hidden");
+      var rightKeys = kind === "multi" ? QK.multiKeys(q.correctAnswer) : [q.correctAnswer];
+      var pickedKeys = kind === "multi" ? QK.multiKeys(pickedKey) : [pickedKey];
       optionBtns.forEach(function (b) {
-        if (b.dataset.key === q.correctAnswer) { b.classList.add("is-correct"); }
-        if (b.dataset.key === pickedKey && pickedKey !== q.correctAnswer) { b.classList.add("is-wrong"); }
+        var k = b.dataset.key;
+        if (rightKeys.indexOf(k) !== -1) { b.classList.add("is-correct"); }
+        else if (pickedKeys.indexOf(k) !== -1) { b.classList.add("is-wrong"); }
       });
       renderAnswer();
       syncRealPracticeAnswer(isCorrect, pickedKey);
@@ -516,29 +532,61 @@ AHS.QuizParts = AHS.QuizParts || {};
 
     /* 2026-09-30: fixed per-question display order (AHS.OptionOrder);
        data-key keeps the ORIGINAL key. */
-    var displayedOptions = AHS.OptionOrder ? AHS.OptionOrder.order(q)
+    var displayedOptions = kind === "self" ? [] : AHS.OptionOrder ? AHS.OptionOrder.order(q)
       : (q.options || []).map(function (o) { return { key: o.key, text: o.text, label: o.key }; });
+    var multiPicked = {};
     optionBtns = displayedOptions.map(function (o) {
       var b = el("button", {
         type: "button", class: "quiz-practice__option quiz-practice__option--btn", "data-key": o.key
       }, [el("span", { text: o.label + "、" + o.text })]);
       b.addEventListener("click", function () {
         if (submitted) { return; }
-        optionBtns.forEach(function (x) { x.classList.remove("is-picked"); });
-        b.classList.add("is-picked");
-        realPick = o.key;
-        realConfirm.removeAttribute("disabled");
+        if (kind === "multi") {
+          multiPicked[o.key] = !multiPicked[o.key];
+          b.classList.toggle("is-picked", multiPicked[o.key]);
+          var keys = Object.keys(multiPicked).filter(function (k) { return multiPicked[k]; });
+          realPick = keys.length ? QK.joinKeys(keys) : null;
+        } else {
+          optionBtns.forEach(function (x) { x.classList.remove("is-picked"); });
+          b.classList.add("is-picked");
+          realPick = o.key;
+        }
+        if (realPick === null) { realConfirm.setAttribute("disabled", "disabled"); } else { realConfirm.removeAttribute("disabled"); }
       });
       return b;
+    });
+    /* 選填題：每一格輸入答案，「確認」後依標準答案自動判定。 */
+    var fillParts = kind === "self" ? QK.parts(QK.answerText(q)) : [];
+    var fillInputs = fillParts.map(function (p, i) {
+      var input = el("input", { type: "text", class: "quiz-practice__fill-input", "aria-label": "第 " + (i + 1) + " 格答案", autocomplete: "off" });
+      input.addEventListener("input", function () {
+        var ready = fillInputs.every(function (x) { return x.value.trim(); });
+        if (ready) { realConfirm.removeAttribute("disabled"); } else { realConfirm.setAttribute("disabled", "disabled"); }
+      });
+      return input;
+    });
+    var fillRows = fillInputs.map(function (input, i) {
+      return el("label", { class: "quiz-practice__fill" }, [
+        fillInputs.length > 1 ? el("span", { class: "quiz-practice__fill-no", text: "(" + (i + 1) + ")" }) : null, input
+      ].filter(Boolean));
     });
     /* 2026-10-04: picking only selects (can still change); 「確認」 checks the answer. */
     var realPick = null;
     var realConfirm = el("button", { type: "button", class: "quiz-practice__submit", text: "確認", disabled: "disabled" });
     realConfirm.addEventListener("click", function () {
-      if (submitted || realPick === null) { return; }
+      if (submitted) { return; }
+      if (kind === "self") {
+        var key = QK.keyForInput(q, fillInputs.map(function (x) { return x.value; }));
+        if (key === null) { return; }
+        fillInputs.forEach(function (x) { x.setAttribute("readonly", "readonly"); });
+        realPick = key;
+      }
+      if (realPick === null) { return; }
       realConfirm.setAttribute("disabled", "disabled");
       finishSubmit(realPick);
     });
+    var hint = kind === "multi" ? "多選題：選出所有正確的選項，全部選對才算答對。"
+      : kind === "self" ? "依序在每一格輸入答案（可用分數、√、π），全部答對才算答對。" : "";
 
     /* Sprint AI-122 AI-122-02: 難度／考點 always visible (not gated behind
        submit), matching Exam Mode's own .qcard__meta convention exactly —
@@ -555,9 +603,11 @@ AHS.QuizParts = AHS.QuizParts || {};
 
     return el("section", { class: "card quiz-practice__question", "aria-label": "練習題" }, [
       el("p", { class: "quiz-practice__q-text", text: q.text }),
+      q.figureSvg ? el("div", { class: "qcard__figure", html: q.figureSvg }) : null,
       (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(q) : null),
       metaBits.length ? el("p", { class: "quiz-practice__meta", text: metaBits.join("　") }) : null,
-      el("div", { class: "quiz-practice__options" }, optionBtns.concat([realConfirm])),
+      hint ? el("p", { class: "quiz-practice__meta", text: hint }) : null,
+      el("div", { class: "quiz-practice__options" }, optionBtns.concat(fillRows, [realConfirm])),
       resultBanner,
       answerSlot
     ]);

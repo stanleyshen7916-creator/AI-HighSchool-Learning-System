@@ -411,7 +411,7 @@ AHS.QuizParts = AHS.QuizParts || {};
           checkbox,
           el("span", { class: "qpick-row-text" }, [
             el("span", { class: "qpick-row-title", text: it.title }),
-            el("span", { class: "qpick-row-meta", text: (showChapter ? it.chapter + "・" : "") + "共 " + it.count + " 題" })
+            el("span", { class: "qpick-row-meta", text: (showChapter ? it.chapter + "・" : "") + "共 " + (mode === "practice" ? it.total : it.count) + " 題" })
           ])
         ]);
         checkbox.addEventListener("change", function () {

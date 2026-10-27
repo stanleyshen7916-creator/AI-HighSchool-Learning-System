@@ -1,4 +1,4 @@
-/* js/components/quiz/QuizExamView.js — 測驗中心 (quiz.html), exam-taking view (incl. the 原始試卷 / AI 練習 toggle) and the result
+/* js/components/quiz/QuizExamView.js — 測驗中心 (quiz.html), exam-taking view and the result
    review view.
 
    Split out of js/components/QuizCenter.js on 2026-10-01 (that file had
@@ -14,23 +14,13 @@ AHS.QuizParts = AHS.QuizParts || {};
   var el = (window.AHS && AHS.UI) ? AHS.UI.el : undefined; /* EO-S7.0-HOTFIX-001: never throw at load time */
   var richExplanation = P.richExplanation;
 
-  /* baseAssessmentExamId(examId) — Sprint AI-117 AI-117-08: strips the
-     "__original"/"__ai" Assessment Mode suffix (see
-     js/runtime/TeachingMaterialLoader.js's importAssessmentModeVariants())
-     to recover the underlying teaching_material_<id> examId both mode
-     variants share. */
-  function baseAssessmentExamId(examId) {
-    return String(examId || "").replace(/__original$|__ai$/, "");
-  }
-
   /* baseFormalExamId(examId) — Sprint AI-145 (使用者需求：平時練習需支援
      當日多次進行，且不是同一組題目重複做): tryDirectExamEntry()'s own
      drawCycle branch (below) always derives its running examId as
      "<realExamId>__formal_<Date.now()>" before calling showExam() — the
      one place that suffix is ever produced. Recovering the original,
      undecorated examId from it (and ONLY it — returns null for any other
-     shape, e.g. Mock catalog exams, __original/__ai Assessment Mode
-     sessions, or __retest sessions) lets the Review screen offer a real
+     shape, e.g. Mock catalog exams or __retest sessions) lets the Review screen offer a real
      "再次出題" action: call tryDirectExamEntry() again with that same
      real examId, which draws the NEXT batch from QuestionBankRuntime's
      already-persisted shuffled bag (drawCycle()'s own "never repeats
@@ -42,62 +32,15 @@ AHS.QuizParts = AHS.QuizParts || {};
     return m ? m[1] : null;
   }
 
-  /* assessmentModeToggle(session, onSwitchMode) — Sprint AI-117 AI-117-08
-     Assessment Mode. Renders "□ 原始試卷 □ AI 練習" ONLY when this exam's
-     base id genuinely has both real variants loaded (AHS.QuestionRuntime.
-     hasExam() — never a fake/forced choice when a material only ever had
-     one source of questions). "不得混用": each click abandons the
-     currently-running session (never grades/records it — see
-     ExamRuntime.abandon()'s own header) and starts a brand-new session
-     scoped to exactly one mode's question set; the two modes' questions
-     are never in QuestionRuntime under the same running examId at once. */
-  function assessmentModeToggle(session, onSwitchMode) {
-    if (typeof onSwitchMode !== "function") { return null; }
-    if (!AHS.QuestionRuntime || typeof AHS.QuestionRuntime.hasExam !== "function") { return null; }
-    var base = baseAssessmentExamId(session.examId);
-    if (!/^teaching_material_/.test(base)) { return null; }
-    var hasOriginal = AHS.QuestionRuntime.hasExam(base + "__original");
-    var hasAi = AHS.QuestionRuntime.hasExam(base + "__ai");
-    if (!hasOriginal || !hasAi) { return null; }
-    var currentMode = session.examId === base + "__original" ? "original"
-      : session.examId === base + "__ai" ? "ai" : null;
-
-    function modeBtn(mode, label) {
-      var btn = el("button", {
-        type: "button",
-        class: "qexam__mode-btn" + (currentMode === mode ? " is-active" : ""),
-        "aria-pressed": currentMode === mode ? "true" : "false",
-        text: (currentMode === mode ? "☑ " : "□ ") + label
-      });
-      btn.addEventListener("click", function () {
-        if (currentMode !== mode) { onSwitchMode(base, mode); }
-      });
-      return btn;
-    }
-
-    /* 2026-10-01: the practice side may also hold past national exam
-       questions (PAST_EXAM) — say so instead of calling them all AI. */
-    var practice = AHS.QuestionRuntime.getSet(base + "__ai");
-    var pastCount = practice.filter(function (q) { return q.questionSource === "PAST_EXAM"; }).length;
-    var practiceLabel = !pastCount ? "AI 練習" : pastCount === practice.length ? "歷屆試題練習" : "補充練習（AI＋歷屆試題）";
-    return el("div", { class: "qexam__mode-toggle", role: "group", "aria-label": "Assessment Mode" }, [
-      modeBtn("original", "原始試卷"),
-      modeBtn("ai", practiceLabel)
-    ]);
-  }
-
   /* ---- Exam-taking view --------------------------------------------------
      session: ExamRuntime session record. rerender(): callback so the
      navigator/card can trigger a full re-render of this view after each
      interaction (selecting an answer, moving between questions).
-     onSwitchMode(baseExamId, mode) — Sprint AI-117 AI-117-08, optional/
-     additive: every existing caller that omits it keeps this view's
-     exact prior behavior (assessmentModeToggle() returns null without
-     it). onFinishEarly() — 完成測試 hotfix, optional/additive: passed
+     onFinishEarly() — 完成測試 hotfix, optional/additive: passed
      straight through to QuestionNavigator so a "完成測試" button is
      always visible regardless of currentIndex; omitted entirely means
      no button renders (QuestionNavigator's own additive default). */
-  function buildExamView(session, rerender, onFinish, onSwitchMode, onFinishEarly) {
+  function buildExamView(session, rerender, onFinish, onFinishEarly) {
     var questions = AHS.QuestionRuntime.getSet(session.examId);
     var currentQuestion = questions[session.currentIndex];
     var answers = AHS.AnswerRuntime.getAnswers(session.examId);
@@ -127,9 +70,8 @@ AHS.QuizParts = AHS.QuizParts || {};
         style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a",
         text: subj.name
       }),
-      el("h1", { class: "qexam__title", text: session.title }),
-      assessmentModeToggle(session, onSwitchMode)
-    ].filter(Boolean));
+      el("h1", { class: "qexam__title", text: session.title })
+    ]);
 
     return el("div", { class: "qexam" }, [header, card, nav]);
   }
@@ -218,9 +160,7 @@ AHS.QuizParts = AHS.QuizParts || {};
     return el("div", { class: "qreview" }, [summary, list, actions]);
   }
 
-  P.baseAssessmentExamId = baseAssessmentExamId;
   P.baseFormalExamId = baseFormalExamId;
-  P.assessmentModeToggle = assessmentModeToggle;
   P.buildExamView = buildExamView;
   P.buildReviewView = buildReviewView;
 })(AHS.QuizParts);

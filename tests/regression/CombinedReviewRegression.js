@@ -178,7 +178,7 @@ console.log("\n[2] 平時練習 — 勾選 2 課並確認，真實開始「一�
      correct even if the real fixture content changes later. */
   const expectedPerChapter = realExamIds.map((examId) => {
     const bank = AHS.QuestionBankRuntime.getBank(examId);
-    return Math.min(10, bank.length); /* FORMAL_EXAM_QUESTION_COUNT */
+    return Math.min(20, bank.length); /* FORMAL_EXAM_QUESTION_COUNT（2026-10-27 起 20 題） */
   });
 
   click(doc.querySelector(".quiz-combine-btn"));
@@ -249,7 +249,7 @@ console.log("\n[4] 考前總複習 — Repository 教材區塊真實顯示合併
   check("Repository 教材清單真實顯示合併複習按鈕", !!combineBtn);
 
   /* Real, pre-combine full question counts (考前總複習 涵蓋題庫「全部」
-     題目，不像平時練習有 10 題上限) — derived from AHS.QuestionRuntime
+     題目，不像平時練習有 20 題上限) — derived from AHS.QuestionRuntime
      directly, never hardcoded. */
   const expectedTotal = realExamIds.reduce((sum, examId) => sum + AHS.QuestionRuntime.getSet(examId).length, 0);
 
@@ -272,7 +272,7 @@ console.log("\n[4] 考前總複習 — Repository 教材區塊真實顯示合併
   check("合併練習標題仍真實顯示科目「國文」", !!title && title.textContent.indexOf("國文") !== -1);
 
   const total = doc.querySelectorAll(".qpv__body").length ? Number((title.textContent.match(/第 1 \/ (\d+) 題/) || [])[1]) : 0;
-  check("合併練習真實涵蓋 3 課「全部」題目總和（" + expectedTotal + " 題，非平時練習的 10 題上限）", total === expectedTotal);
+  check("合併練習真實涵蓋 3 課「全部」題目總和（" + expectedTotal + " 題，非平時練習的 20 題上限）", total === expectedTotal);
 }
 
 /* ---- 5. 端對端 — 合併測驗仍走真實 ExamRuntime->AutoGrader->WrongBook 鏈 */
