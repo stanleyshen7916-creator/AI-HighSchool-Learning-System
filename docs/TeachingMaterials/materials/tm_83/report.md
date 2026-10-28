@@ -6,15 +6,15 @@ generator after any Repository change and this file regenerates with it.
 ## Metadata
 - 科目：國文
 - 年級：高二
-- 章節：第一課 勞山道士（平時考） / 平時考：學習評量（三）第一課〈勞山道士〉
+- 章節：第一課 勞山道士（平時考） / 平時考：學習評量（三）第一課〈勞山道士〉（摘錄）
 - 教材類型：EXAM
 - 版本：1
 
 ## Package Status
 - Manifest status：complete
 - Lifecycle Stage：IMPORTED
-- Validation：190 PASS / 0 FAIL
+- Validation：150 PASS / 0 FAIL
 
 ## Content Summary
 - 核心概念：4 項
-- 題目數：36 題
+- 題目數：28 題
