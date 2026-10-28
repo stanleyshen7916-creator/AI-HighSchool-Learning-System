@@ -297,7 +297,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/CHI_H2_S1.html",
     title: "高二國文・圖解教材",
     subject: "國文",
-    materialIds: ["tm_62", "tm_64", "tm_65", "tm_66", "tm_67", "tm_74", "chinese-g11-laoshan-daoshi", "chinese-g11-inventions-changed-world", "chinese-g11-jinti-shixuan", "tm_78"],
+    materialIds: ["tm_62", "tm_64", "tm_65", "tm_66", "tm_67", "tm_74", "chinese-g11-laoshan-daoshi", "chinese-g11-inventions-changed-world", "chinese-g11-jinti-shixuan", "tm_78", "tm_83"],
     source: "國文 〈勞山道士〉〈發明為需求之母〉〈近體詩選〉〈狼之獨步〉〈雁〉〈劉姥姥〉〈玉山去來〉〈燭之武退秦師〉",
     /* 正心版的教材包一包就是一課：題目沒提到關鍵詞時，直接對應該課的卡片 */
     materialCards: { tm_64: "F10", tm_65: "F10", tm_74: "F11", tm_67: "F12", tm_66: "F13" },

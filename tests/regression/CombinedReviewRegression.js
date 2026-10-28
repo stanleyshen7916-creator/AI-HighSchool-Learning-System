@@ -154,11 +154,12 @@ console.log("\n[1] 平時練習列表 — 真實顯示「選擇多課合併複�
   click(chineseChip);
 
   /* 2026-10-09: 國文另有 tm_62（第一～三課單選／多選補充練習，Package track），
-     分頁裡共 4 列；這裡驗證的「三課」仍是舊版教材庫的 3 個課別。 */
+     2026-10-28 再加 tm_83（第一課平時考），分頁裡共 5 列；這裡驗證的「三課」
+     仍是舊版教材庫的 3 個課別。 */
   const rows = doc.querySelectorAll(".qpick-row");
   const checkboxes = doc.querySelectorAll(".qpick-row input[type='checkbox']");
   const lessonBoxes = Array.prototype.filter.call(checkboxes, (cb) => realExamIds.indexOf(cb.getAttribute("data-exam-id")) !== -1);
-  check("點擊國文分頁後真實列出 3 個可複選課別（第一課／第二課／第三課／近體詩選），另加 1 份補充練習", lessonBoxes.length === 3 && rows.length === 4);
+  check("點擊國文分頁後真實列出 3 個可複選課別（第一課／第二課／第三課／近體詩選），另加補充練習與平時考各 1 份", lessonBoxes.length === 3 && rows.length === 5);
   check("每個課別 checkbox 都帶有真實 examId（可追溯回真實 QuestionRuntime exam）",
     Array.prototype.every.call(checkboxes, (cb) => !!cb.getAttribute("data-exam-id")));
 
