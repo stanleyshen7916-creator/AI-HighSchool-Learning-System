@@ -1,0 +1,455 @@
+/* lessons/src/ESC_H2_Unit3_Geology.js — 高二地球科學：單元3 地質（tm_84）.
+   內容依教材包 tm_84 summary.json（課本單元3 主題12～14，以自己的話改寫）；
+   地震波速、板塊剖面、臺灣構造等圖皆為示意；小試身手答案已逐題核對。 */
+"use strict";
+module.exports = {
+  lessonId: "ESC_H2_Unit3_Geology",
+  title: "地質圖解教材",
+  eyebrow: "地球科學 ・ 單元3 主題 12～14 ・ 高二上",
+  h1: "地質：固體地球與板塊",
+  h1small: "從地震波看進地球，再看板塊怎麼推出臺灣",
+  subject: "ESC",
+  unit: "ESC-H2-U3",
+  sections: [
+    {
+      id: "12", short: "固體地球的結構", title: "固體地球的結構（主題12）",
+      plan: { goal: "分清 P 波與 S 波，會用波速變化找出地球分層與三個不連續面，比較大陸與海洋的岩石圈。", prereq: "波的縱波與橫波、固液氣三態。", time: "約 3 節課。" },
+      cards: [
+        {
+          id: "F1", title: "地震波：P 波與 S 波", page: "主題12", tags: ["src"],
+          say: "地震波分兩種走法：<b>P 波</b>像推彈簧，粒子前後擠來擠去（縱波），固體、液體、氣體都能傳，跑最快，所以最先到；<b>S 波</b>像甩繩子，粒子上下晃（橫波），只能在固體裡傳，跑得比較慢。",
+          formula: "P 波：縱波（疏密波），振動方向 ∥ 前進方向，固液氣皆可傳，最快（初達波）<br>S 波：橫波（剪力波），振動方向 ⊥ 前進方向，只能通過固態，較慢（次達波）",
+          widget: { id: "w-wave", aria: "P 波與 S 波通過時，介質粒子的振動方式", rw: 0.42, rn: 0.85,
+            controls: [{ k: "t", label: "時間", min: 0, max: 1, step: 0.01 }, { k: "m", label: "固態／液態", min: 0, max: 1, step: 1 }], play: { k: "t", dur: 4000 } },
+          space: "上排的點左右擠成一團團（P 波），下排的點上下排成波浪（S 波）。把介質切到「液態」，S 波那一排就不動了。",
+          trap: "以為 S 波比較快，或以為 S 波可以穿過液體。地震時「先上下、後左右」搖，就是 P 波先到、S 波後到。",
+          quiz: { q: "地震波由正下方垂直傳到地表，房子的搖晃順序為何？", answer: "b", options: [
+            { c: "a", text: "先水平搖晃，後垂直搖晃", why: "P 波比較快先到，它造成的是垂直搖晃。" },
+            { c: "b", text: "先垂直搖晃，後水平搖晃" },
+            { c: "c", text: "先後都是垂直搖晃", why: "S 波的振動方向與前進方向垂直，往上傳時造成水平搖晃。" },
+            { c: "d", text: "先後都是水平搖晃", why: "P 波的振動與前進方向平行，往上傳就是上下晃。" }] },
+          sol: { id: "s-F1", aria: "逐步圖解：P 波先到、S 波後到" }
+        },
+        {
+          id: "F2", title: "地球內部分層與不連續面", page: "主題12", tags: ["src"],
+          say: "地震波跑進地球，速度會在幾個深度突然改變，那裡就是<b>不連續面</b>，也就是兩層的分界。最重要的線索：S 波到了 <b>2890 公里</b>就消失，表示下面那層（外核）是<b>液態</b>。",
+          formula: "莫氏不連續面：地殼／地函（組成不同）　古氏不連續面（約 2890 km）：地函／外核（組成與狀態都不同）<br>雷曼不連續面（約 5150 km）：外核（液態）／內核（固態）（狀態不同）",
+          widget: { id: "w-depth", aria: "地球內部 P 波、S 波速度隨深度的變化（示意）", rw: 0.5, rn: 1.0,
+            controls: [{ k: "d", label: "深度（公里）", min: 0, max: 6371, step: 10 }], play: { k: "d", dur: 6000 } },
+          space: "把深度往下拉：到 2890 公里，紅線（P 波）突然掉下來、藍線（S 波）直接斷掉；到 5150 公里，P 波又變快一點。",
+          trap: "把莫氏不連續面當成岩石圈和軟流圈的交界。莫氏面在岩石圈裡面，是地殼和地函的分界。",
+          quiz: { q: "S 波在深度約 2890～5150 公里之間無法傳遞，可推知這一層是？", answer: "c", options: [
+            { c: "a", text: "固態的地函", why: "S 波可以通過固態，地函裡 S 波還在。" },
+            { c: "b", text: "固態的內核", why: "內核在 5150 公里以下。" },
+            { c: "c", text: "液態的外核" },
+            { c: "d", text: "部分熔融的軟流圈", why: "軟流圈只是 S 波變慢，S 波仍可通過，而且它在地函上部。" }] },
+          sol: { id: "s-F2", aria: "逐步圖解：三個不連續面" }
+        },
+        {
+          id: "F3", title: "岩石圈、軟流圈與大陸／海洋地殼", page: "主題12", tags: ["src"],
+          say: "地殼加上軟流圈以上的地函，合稱<b>岩石圈</b>，也就是<b>板塊</b>。下面的軟流圈有少量熔融、比較軟，板塊就在上面慢慢移動。大陸地殼又厚又輕（花岡岩質），海洋地殼又薄又重（玄武岩質）。",
+          formula: "大陸：地殼約 35 km、花岡岩質、密度小；岩石圈約 120 km　　海洋：地殼約 7 km、玄武岩質、密度大；岩石圈約 65 km<br>軟流圈：部分熔融、可塑性高、S 波變慢（低速帶），但仍是固態　　推論內部組成：捕獲岩（地函）、鐵隕石（地核）",
+          widget: { id: "w-litho", aria: "大陸地區與海洋地區的地殼、岩石圈與軟流圈剖面", rw: 0.45, rn: 0.9,
+            controls: [{ k: "r", label: "海洋 ⟷ 大陸", min: 0, max: 1, step: 1 }] },
+          space: "左右兩欄比一比：大陸那欄地殼（米色）厚了 5 倍，岩石圈底也比較深；海洋那欄地殼雖薄，顏色比較深（玄武岩，密度大）。",
+          trap: "以為軟流圈是液態。軟流圈只有一小部分熔融，整體還是固態，只是比較能流動。",
+          quiz: { q: "下列關於大陸地殼與海洋地殼的比較，何者正確？", answer: "a", options: [
+            { c: "a", text: "大陸地殼較厚，密度較小" },
+            { c: "b", text: "海洋地殼較厚，密度較大", why: "海洋地殼只有約 7 公里，比大陸地殼薄。" },
+            { c: "c", text: "大陸地殼以玄武岩為主", why: "大陸地殼以花岡岩質為主，玄武岩是海洋地殼。" },
+            { c: "d", text: "兩者厚度差不多，只是組成不同", why: "大陸約 35 公里、海洋約 7 公里，差很多。" }] },
+          sol: { id: "s-F3", aria: "逐步圖解：地殼、岩石圈、軟流圈" }
+        }
+      ]
+    },
+    {
+      id: "13", short: "板塊運動", title: "板塊運動（主題13）",
+      plan: { goal: "知道大陸漂移、海底擴張、板塊構造三個學說的證據，比較三種板塊邊界的受力、斷層、火成岩與地震，會判斷斷層類型與熱點。", prereq: "主題12 的岩石圈與軟流圈。", time: "約 5 節課。" },
+      cards: [
+        {
+          id: "F4", title: "從大陸漂移到海底擴張", page: "主題13", tags: ["src"],
+          say: "<b>韋格納</b>（1912）發現大陸能拼起來，但說不出大陸為什麼會動。1960 年代<b>海斯</b>提出海底擴張：新的海洋地殼在<b>中洋脊</b>長出來，往兩邊推開，所以越遠越老。冷卻時岩石會「記住」當時的地磁方向，地磁又會倒轉，於是海床留下兩側對稱的正反條紋。",
+          formula: "大陸漂移證據：海岸線吻合、同種化石、古冰川擦痕、古氣候（缺點：無法說明動力）<br>海底擴張證據：離中洋脊越遠 → 岩石越老、沉積物越厚、地磁條紋兩側對稱　　擴張速率 = 距離 ÷ 時間",
+          widget: { id: "w-spread", aria: "中洋脊兩側海床隨時間擴張，地磁正反條紋對稱分布", rw: 0.42, rn: 0.85,
+            controls: [{ k: "t", label: "時間（百萬年）", min: 0, max: 4, step: 0.05 }], play: { k: "t", dur: 6000 } },
+          space: "按播放：每一段新海床都從中間長出來再往外推，深色（正磁場）和淺色（反磁場）條紋在左右兩邊一模一樣。",
+          trap: "把「海底岩石年齡對稱」當成大陸漂移的證據。這是海底擴張的證據；韋格納當時還沒有海底資料。",
+          quiz: { q: "中洋脊兩側各約 100 公里內的海床，年齡由 0 增加到約 400 萬年。海床平均擴張速率約為每年多少公分？", answer: "c", options: [
+            { c: "a", text: "25 公分", why: "100 公里 = 10⁷ 公分，除以 4×10⁶ 年是 2.5，不是 25。" },
+            { c: "b", text: "0.25 公分", why: "單位換算：1 公里 = 10⁵ 公分。" },
+            { c: "c", text: "2.5 公分" },
+            { c: "d", text: "5 公分", why: "要用單側的距離除以時間：100 公里 ÷ 400 萬年。" }] },
+          sol: { id: "s-F4", aria: "逐步圖解：從中洋脊往外算速率" }
+        },
+        {
+          id: "F5", title: "張裂型板塊邊界：中洋脊與裂谷", page: "主題13", tags: ["src"],
+          say: "<b>板塊構造學說</b>把兩個學說接起來：岩石圈分成好幾塊板塊，被下方地函的熱對流帶著走。兩塊板塊往外拉開的地方是<b>張裂型</b>邊界：熱物質上湧，冒出玄武岩質岩漿，受張力形成<b>正斷層</b>，只有淺源地震。",
+          formula: "張裂型：受張力 → 正斷層；玄武岩；淺源地震；地形：中洋脊（海洋）、裂谷（大陸，如東非裂谷）",
+          widget: { id: "w-div", aria: "張裂型板塊邊界：兩板塊分離、岩漿上湧、正斷層", rw: 0.42, rn: 0.85,
+            controls: [{ k: "t", label: "拉開程度", min: 0, max: 1, step: 0.01 }], play: { k: "t", dur: 4000 } },
+          space: "兩塊板塊往左右退開，中間的岩漿（橘色）往上補，冷卻後變成新的玄武岩地殼。中央下陷的裂谷兩側是一階一階的正斷層。",
+          trap: "以為張裂型邊界會有深源地震。這裡岩石圈又薄又熱，只會有淺源地震。",
+          quiz: { q: "從中洋脊中央裂谷湧出的岩漿，在海床冷卻後主要形成哪一種岩石？", answer: "b", options: [
+            { c: "a", text: "花岡岩", why: "花岡岩是大陸地殼的岩石。" },
+            { c: "b", text: "玄武岩" },
+            { c: "c", text: "安山岩", why: "安山岩主要出現在隱沒帶上方的火山島弧。" },
+            { c: "d", text: "大理岩", why: "大理岩是變質岩，不是岩漿冷卻形成的。" }] },
+          sol: { id: "s-F5", aria: "逐步圖解：上湧、拉張、新地殼" }
+        },
+        {
+          id: "F6", title: "聚合型板塊邊界：隱沒與碰撞", page: "主題13", tags: ["src"],
+          say: "兩塊板塊撞在一起時，只要有一邊是密度較大的<b>海洋岩石圈</b>，它就會往下插（<b>隱沒</b>），形成海溝，上方冒出安山岩的<b>火山島弧</b>，震源沿著板塊越來越深（班尼奧夫帶）。兩邊都是大陸，誰也沉不下去，就擠成高山。",
+          formula: "海－陸、海－海：隱沒 → 海溝、火山島弧（安山岩），淺、中、深源地震（班尼奧夫帶）<br>陸－陸：不隱沒 → 碰撞造山（喜馬拉雅山），褶皺、逆斷層、變質岩　　環太平洋地震帶 ≈ 火環（隱沒帶）",
+          widget: { id: "w-conv", aria: "三種聚合型板塊邊界的剖面與震源分布", rw: 0.45, rn: 0.9,
+            controls: [{ k: "k", label: "類型", min: 0, max: 2, step: 1 }] },
+          space: "切換類型看：海－陸、海－海都有一塊板塊斜插下去，紅點（震源）沿著它由淺到深排一列；陸－陸沒有往下插，而是隆起成山。",
+          trap: "以為最深的海溝在張裂型邊界。海溝是隱沒的地形，屬於聚合型。",
+          quiz: { q: "下列哪一種板塊聚合，<b>不會</b>發生隱沒？", answer: "c", options: [
+            { c: "a", text: "海洋岩石圈 vs. 大陸岩石圈", why: "海洋岩石圈密度大，會隱沒到大陸之下。" },
+            { c: "b", text: "海洋岩石圈 vs. 海洋岩石圈", why: "較老、較重的那一塊會隱沒。" },
+            { c: "c", text: "大陸岩石圈 vs. 大陸岩石圈" },
+            { c: "d", text: "老的海洋岩石圈 vs. 年輕的海洋岩石圈", why: "老的密度較大，會隱沒到年輕的之下。" }] },
+          sol: { id: "s-F6", aria: "逐步圖解：海陸、海海、陸陸" }
+        },
+        {
+          id: "F7", title: "錯動型板塊邊界：轉形斷層", page: "主題13", tags: ["src"],
+          say: "中洋脊不是一條直線，而是被切成好幾段、互相錯開。連接兩段中洋脊的那條斷層，兩側是<b>不同板塊</b>、往相反方向滑，這叫<b>轉形斷層</b>（錯動型邊界）：不張裂也不隱沒，只有淺源地震，少有火山。",
+          formula: "錯動型：受剪力 → 轉形斷層；兩側為不同板塊；只有淺源地震；少火山（例：聖安地列斯斷層）<br>兩段中洋脊之間才是板塊邊界；兩段之外的破裂帶，兩側同屬一塊板塊、同向移動，不是邊界",
+          widget: { id: "w-tf", aria: "兩段錯開的中洋脊之間的轉形斷層與兩側板塊運動方向", rw: 0.42, rn: 0.85,
+            controls: [{ k: "t", label: "時間", min: 0, max: 1, step: 0.01 }], play: { k: "t", dur: 5000 } },
+          space: "盯著中間那一段：上下兩側的箭頭方向相反，一直在磨，所以有地震；外側兩段的箭頭同方向，沒有相對錯動。",
+          trap: "把整條破裂帶都當成轉形斷層。只有夾在兩段中洋脊之間的那段才是板塊邊界。",
+          quiz: { q: "美國聖安地列斯斷層兩側分屬北美洲板塊與太平洋板塊，只有淺源地震、沒有火山。它屬於？", answer: "d", options: [
+            { c: "a", text: "張裂型邊界的正斷層", why: "兩側是水平錯動，不是拉開。" },
+            { c: "b", text: "聚合型邊界的逆斷層", why: "沒有隱沒也沒有造山，而且只有淺源地震。" },
+            { c: "c", text: "板塊內部的平移斷層", why: "兩側屬於不同板塊，所以是邊界上的轉形斷層。" },
+            { c: "d", text: "錯動型邊界的轉形斷層" }] },
+          sol: { id: "s-F7", aria: "逐步圖解：找出真正的邊界段" }
+        },
+        {
+          id: "F8", title: "判斷斷層類型", page: "主題13", tags: ["src"],
+          say: "想像斷層面是一座溜滑梯，坐在上面的是<b>上盤</b>。上盤往下滑是正常的，叫<b>正斷層</b>（受張力）；上盤被推上去，叫<b>逆斷層</b>（受壓力）。兩塊水平錯開叫<b>平移斷層</b>：站在其中一塊，看對面往右就是右移，往左就是左移。",
+          formula: "正斷層：張力，上盤下移，兩地距離變遠　　逆斷層：壓力，上盤上移，兩地距離縮短<br>平移斷層：剪力，水平錯動；站在一側看對面 → 往右＝右移、往左＝左移",
+          widget: { id: "w-fault", aria: "正斷層、逆斷層與平移斷層的錯動方式", rw: 0.42, rn: 0.85,
+            controls: [{ k: "k", label: "類型", min: 0, max: 2, step: 1 }, { k: "s", label: "錯動量", min: 0, max: 1, step: 0.01 }], play: { k: "s", dur: 3000 } },
+          space: "正斷層和逆斷層看剖面：上盤（右邊那塊）沿斜面往下或往上走；平移斷層從上往下看：兩塊沿斷層線一左一右滑開。",
+          trap: "判斷右移或左移時看錯對象。永遠站在其中一塊、看「對面那塊」往哪邊移。",
+          quiz: { q: "斷層沿南北方向延伸。你站在東側，看到西側的地塊往北移。這是哪一種斷層？", answer: "d", options: [
+            { c: "a", text: "正斷層", why: "正斷層是上下錯動，這裡是水平錯動。" },
+            { c: "b", text: "逆斷層", why: "逆斷層也是上下錯動。" },
+            { c: "c", text: "左移斷層", why: "站在東側面向西，北方在右手邊，對面是往右移。" },
+            { c: "d", text: "右移斷層" }] },
+          sol: { id: "s-F8", aria: "逐步圖解：站在一側看對面" }
+        },
+        {
+          id: "F9", title: "熱點與板塊移動方向", page: "主題13", tags: ["src"],
+          say: "地函深處有一股固定不動的熱柱，叫<b>熱點</b>。板塊從上面滑過，就像紙在蠟燭上方移動，一路燒出一排洞：熱點正上方的火山最新、還在噴，被帶走的越遠越老、變成死火山。所以從新排到老的方向，就是板塊移動的方向。",
+          formula: "熱點相對地函固定　→　火山島由新到老排成一列　→　新 → 老 的方向 = 板塊移動方向（例：夏威夷，位於太平洋板塊內部）",
+          widget: { id: "w-hot", aria: "板塊在固定熱點上方移動，形成由新到老的火山島鏈", rw: 0.42, rn: 0.85,
+            controls: [{ k: "t", label: "時間（百萬年）", min: 0, max: 8, step: 0.05 }], play: { k: "t", dur: 6000 } },
+          space: "熱柱（紅）一直在同一個位置，板塊往左走，島一座座被帶離，數字（年齡）越往左越大。",
+          trap: "以為熱點跟著板塊走，或以為熱點一定在板塊邊界。夏威夷就在太平洋板塊的正中間。",
+          quiz: { q: "熱點形成的火山島鏈，最年輕的火山島位於哪裡？", answer: "a", options: [
+            { c: "a", text: "熱點正上方" },
+            { c: "b", text: "離熱點最遠的那一端", why: "最遠的是最早形成、被帶走最久的，最老。" },
+            { c: "c", text: "島鏈中間", why: "年齡是依序排列的，最年輕的在熱點上方。" },
+            { c: "d", text: "各島年齡相同", why: "島是一座一座輪流形成的，年齡不同。" }] },
+          sol: { id: "s-F9", aria: "逐步圖解：島一座座被帶走" }
+        }
+      ]
+    },
+    {
+      id: "14", short: "臺灣的板塊構造", title: "臺灣的板塊構造（主題14）",
+      plan: { goal: "說出臺灣位於哪兩個板塊之間、兩個方向相反的隱沒帶，以及臺灣各地區的岩石與構造特色。", prereq: "主題13 的聚合型板塊邊界與斷層類型。", time: "約 2 節課。" },
+      cards: [
+        {
+          id: "F10", title: "臺灣的雙向隱沒", page: "主題14", tags: ["src"],
+          say: "臺灣夾在<b>歐亞板塊</b>和<b>菲律賓海板塊</b>之間，花東縱谷就是兩塊板塊在陸地上的縫合線。最特別的是有兩個方向相反的隱沒：東北部是菲律賓海板塊<b>往北</b>插到歐亞板塊下面；南部則是歐亞板塊前緣的海洋岩石圈<b>往東</b>插到菲律賓海板塊下面。",
+          formula: "東北：菲律賓海板塊往北隱沒 → 琉球海溝、琉球火山島弧，震源往北漸深<br>南部：歐亞板塊往東隱沒 → 馬尼拉海溝、呂宋火山島弧，震源往東漸深　　判斷法：震源往哪邊變深，板塊就往哪邊隱沒",
+          widget: { id: "w-tw", aria: "臺灣周圍的板塊、海溝與兩個方向相反的隱沒帶（示意）", rw: 0.55, rn: 1.1,
+            controls: [{ k: "p", label: "剖面：南部 ⟷ 東北", min: 0, max: 1, step: 1 }] },
+          space: "左邊是平面圖：東北方的琉球海溝和南方的馬尼拉海溝，鋸齒都指向隱沒方向。右邊的剖面跟著切換：東北剖面往北傾，南部剖面往東傾。",
+          trap: "以為臺灣南部也是菲律賓海板塊往下插。南部是歐亞板塊前緣的海洋岩石圈往東隱沒，方向剛好相反。",
+          quiz: { q: "臺灣東北外海的震源由南往北越來越深，表示哪一個板塊往哪個方向隱沒？", answer: "b", options: [
+            { c: "a", text: "歐亞板塊往南隱沒到菲律賓海板塊之下", why: "如果是往南隱沒，震源應該往南變深。" },
+            { c: "b", text: "菲律賓海板塊往北隱沒到歐亞板塊之下" },
+            { c: "c", text: "歐亞板塊往東隱沒到菲律賓海板塊之下", why: "這是臺灣南部的情形，震源往東漸深。" },
+            { c: "d", text: "兩板塊只有水平錯動、沒有隱沒", why: "有由淺到深的震源分布，就表示有隱沒。" }] },
+          sol: { id: "s-F10", aria: "逐步圖解：兩個方向相反的隱沒帶" }
+        },
+        {
+          id: "F11", title: "臺灣的地質分區與岩石", page: "主題14", tags: ["src"],
+          say: "從西往東走過臺灣：澎湖是玄武岩火山島；西部麓山帶被擠出一條條南北向的<b>逆斷層</b>（車籠埔斷層就是其中一條）；中央山脈褶皺、斷層和<b>變質岩</b>最多，越往東變質度越高；過了花東縱谷，海岸山脈、綠島、蘭嶼是呂宋島弧的<b>安山岩</b>，原本屬於菲律賓海板塊。",
+          formula: "澎湖：玄武岩（歐亞板塊）　北部大屯火山、龜山島：安山岩（琉球島弧）　西部麓山帶：南北向逆斷層<br>中央山脈：褶皺、逆斷層、變質岩，越往東變質度越高　　海岸山脈、綠島、蘭嶼：安山岩（呂宋島弧，菲律賓海板塊）",
+          widget: { id: "w-twgeo", aria: "臺灣中部東西向地質剖面與各區岩石（示意）", rw: 0.42, rn: 0.85,
+            controls: [{ k: "i", label: "區域（西→東）", min: 0, max: 5, step: 1 }] },
+          space: "剖面從左（西）到右（東）：西邊的地層被推成一片片往東傾的逆斷層，中央山脈顏色越往東越深（變質度越高），花東縱谷右邊就換成菲律賓海板塊的火山岩。",
+          trap: "把車籠埔斷層當成板塊邊界。它是板塊擠壓造成的板塊內部斷層，邊界在花東縱谷。",
+          quiz: { q: "下列臺灣各地的岩石配對，何者正確？", answer: "a", options: [
+            { c: "a", text: "澎湖群島：玄武岩" },
+            { c: "b", text: "海岸山脈：花岡岩", why: "海岸山脈是呂宋島弧的安山岩。" },
+            { c: "c", text: "中央山脈：以安山岩為主", why: "中央山脈以變質岩與沉積岩為主，並有大量褶皺與逆斷層。" },
+            { c: "d", text: "大屯火山群：玄武岩", why: "大屯火山與龜山島屬琉球島弧，以安山岩為主。" }] },
+          sol: { id: "s-F11", aria: "逐步圖解：由西往東走過臺灣" }
+        }
+      ]
+    }
+  ],
+  footer: [
+    "本圖解教材內容依教材包 tm_84（長榮中學高二地球科學課本 單元3 地質，主題12～14）的重點以自己的話改寫，不照抄課本。",
+    "地震波速、地球分層深度與板塊剖面為示意圖；數值（2890、5150、6371 公里，地殼與岩石圈厚度）依課本。",
+    "練習題請到測驗中心的「單元3 地質」：學測題 20 題與 AI 自編題 30 題。"
+  ],
+  script: String.raw`
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function circle(g,x,y,r,fill,stroke,w){ g.save(); g.beginPath(); g.arc(x,y,r,0,TAU); if(fill){ g.fillStyle=fill; g.fill(); } if(stroke){ g.strokeStyle=stroke; g.lineWidth=w||1.5; g.stroke(); } g.restore(); }
+function arrow(g,x1,y1,x2,y2,c,w){ L(g,x1,y1,x2,y2,c,w||2.5); var a=Math.atan2(y2-y1,x2-x1), h=9; g.save(); g.fillStyle=c; g.beginPath(); g.moveTo(x2,y2); g.lineTo(x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)); g.lineTo(x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)); g.closePath(); g.fill(); g.restore(); }
+function rect(g,G,x0,y0,x1,y1,fill,stroke){ box(g,Math.min(G.X(x0),G.X(x1)),Math.min(G.Y(y0),G.Y(y1)),Math.abs(G.X(x1)-G.X(x0)),Math.abs(G.Y(y1)-G.Y(y0)),fill,stroke,1); }
+
+/* F1 P 波與 S 波 */
+function waveDraw(g,c,C,t,liquid,show){ var G=frame(full(c),0,10,-3.2,3.2,18,false), ph=t*TAU*2;
+  [['P 波（縱波）：粒子前後擠壓',1.7,0],['S 波（橫波）：粒子上下振動',-1.4,1]].forEach(function(r){ if(show!=null&&show!==r[2]) return;
+    T(g,r[0],G.X(0.2),G.Y(r[1]+1.15),r[2]?C.blue:C.red,13,'left','700');
+    for(var i=0;i<34;i++){ var x0=0.4+i*0.27, dx=0, dy=0, on=!(r[2]&&liquid);
+      if(on){ var a=Math.sin(x0*1.6-ph); if(r[2]) dy=0.55*a; else dx=0.18*a; }
+      dot(g,G.X(x0+dx),G.Y(r[1]+dy),4.2,r[2]?C.blue:C.red); }
+    arrow(g,G.X(8.6),G.Y(r[1]-0.75),G.X(9.8),G.Y(r[1]-0.75),C.ink,2); T(g,'前進',G.X(9.2),G.Y(r[1]-1.05),C.muted,11,'center');
+    if(r[2]&&liquid) T(g,'液態：S 波無法傳遞',G.X(5),G.Y(r[1]),C.red,14,'center','700'); }); }
+widget('w-wave',{state:{t:0,m:0},rw:0.42,rn:0.85,fmt:{t:function(v){return Math.round(v*100)+'%';},m:function(v){return v?'液態':'固態';}},
+  draw:function(g,c,s){ waveDraw(g,c,c.C,s.t,s.m===1,null); },
+  out:function(s){ return s.m?'介質是<b>液態</b>：P 波照樣傳，<b>S 波傳不過去</b>。':'介質是<b>固態</b>：P 波（縱波）與 S 波（橫波）都能傳。'; }
+});
+widget('s-F1',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ var C=c.C; if(s.step<2){ waveDraw(g,c,C,0.15,false,s.step); return; }
+    var G=frame(full(c),0,10,0,6,18,false); rect(g,G,0,0,10,1.2,alpha(C.gold,0.35),null); box(g,G.X(4.2),G.Y(3.4),G.X(5.8)-G.X(4.2),G.Y(1.2)-G.Y(3.4),alpha(C.teal,0.35),C.ink,1.5);
+    poly(g,G,[[4,3.4],[5,4.3],[6,3.4]],alpha(C.red,0.5),C.ink);
+    arrow(g,G.X(5),G.Y(0.1),G.X(5),G.Y(1.1),C.ink,2); T(g,'P、S 波往上傳',G.X(5.2),G.Y(0.5),C.muted,11,'left');
+    arrow(g,G.X(3.2),G.Y(2),G.X(3.2),G.Y(3.2),C.red,3); arrow(g,G.X(3.2),G.Y(3.2),G.X(3.2),G.Y(2),C.red,3); T(g,'① P 波先到：上下搖',G.X(2.9),G.Y(4.6),C.red,13,'right','700');
+    arrow(g,G.X(6.6),G.Y(4.8),G.X(8),G.Y(4.8),C.blue,3); arrow(g,G.X(8),G.Y(4.8),G.X(6.6),G.Y(4.8),C.blue,3); T(g,'② S 波後到：左右搖',G.X(7.3),G.Y(5.4),C.blue,13,'center','700'); },
+  out:steps(['P 波：粒子振動方向和前進方向<b>平行</b>，跑最快。','S 波：粒子振動方向和前進方向<b>垂直</b>，比較慢。','從正下方往上傳：P 波先到造成<b>上下搖</b>，S 波後到造成<b>左右搖</b>。'])
+});
+
+/* F2 波速與深度 */
+function vP(d){ return d<35?6.2:d<100?8:d<220?7.8:d<2890?8+5.7*(d-220)/2670:d<5150?8+2.3*(d-2890)/2260:11+0.3*(d-5150)/1221; }
+function vS(d){ return d<35?3.6:d<100?4.5:d<220?4.3:d<2890?4.4+2.9*(d-220)/2670:NaN; }
+function layerOf(d){ return d<35?['地殼（大陸）','固態']:d<100?['岩石圈（上部地函）','固態']:d<220?['軟流圈（低速帶）','固態，部分熔融']:d<2890?['地函','固態']:d<5150?['外核','液態']:['內核','固態']; }
+function depthDraw(g,c,C,d,hl){ var G=frame(full(c),-1.2,15,6600,-250,22,false);
+  [[0,2890,'#f3d9b1','地函'],[2890,5150,'#fff0a6','外核（液態）'],[5150,6371,'#f7c97c','內核']].forEach(function(b){ rect(g,G,0,b[0],14,b[1],alpha(b[2],0.75),null); T(g,b[3],G.X(13.8),G.Y((b[0]+b[1])/2),C.ink,12,'right','700'); });
+  [0,2890,5150,6371].forEach(function(z){ L(g,G.X(0),G.Y(z),G.X(14),G.Y(z),C.grid,1,[4,3]); T(g,String(z),G.X(-0.15),G.Y(z),C.muted,11,'right'); });
+  for(var v=0;v<=14;v+=2) T(g,String(v),G.X(v),G.Y(-150),C.muted,11,'center'); T(g,'波速（公里／秒）',G.X(7),G.Y(-230),C.muted,11,'center');
+  plot(g,{X:function(z){return G.X(vP(z));},Y:G.Y},function(z){return z;},0,6371,C.red,2.5);
+  g.save(); g.strokeStyle=C.blue; g.lineWidth=2.5; g.setLineDash([7,4]); g.beginPath(); for(var z=0;z<=2890;z+=10){ var x=G.X(vS(z)), y=G.Y(z); if(z) g.lineTo(x,y); else g.moveTo(x,y); } g.stroke(); g.restore();
+  T(g,'P 波',G.X(vP(1500))+8,G.Y(1500),C.red,12,'left','700'); T(g,'S 波',G.X(vS(1500))-8,G.Y(1500),C.blue,12,'right','700');
+  if(hl){ hl.forEach(function(h){ L(g,G.X(0),G.Y(h[0]),G.X(14),G.Y(h[0]),C.red,2.5); T(g,h[1],G.X(0.3),G.Y(h[0])-10,C.red,12,'left','700'); }); }
+  if(d!=null){ L(g,G.X(0),G.Y(d),G.X(14),G.Y(d),C.ink,1.5); dot(g,G.X(vP(d)),G.Y(d),5,C.red); if(!isNaN(vS(d))) dot(g,G.X(vS(d)),G.Y(d),5,C.blue); } }
+widget('w-depth',{state:{d:1500},rw:0.5,rn:1.0,fmt:{d:function(v){return Math.round(v)+' km';}},
+  draw:function(g,c,s){ depthDraw(g,c,c.C,s.d,null); },
+  out:function(s){ var l=layerOf(s.d), sv=vS(s.d); return Math.round(s.d)+' 公里：<b>'+l[0]+'</b>（'+l[1]+'）　P 波約 '+vP(s.d).toFixed(1)+' km/s，'+(isNaN(sv)?'<b>S 波無法傳遞</b>':'S 波約 '+sv.toFixed(1)+' km/s'); }
+});
+widget('s-F2',{state:{},steps:3,rw:0.5,rn:1.0,
+  draw:function(g,c,s){ depthDraw(g,c,c.C,null,[[[35,'莫氏不連續面（約 35 km）']],[[2890,'古氏不連續面（2890 km）']],[[5150,'雷曼不連續面（5150 km）']]][s.step]); },
+  out:steps(['<b>莫氏不連續面</b>：地殼和地函的分界，兩邊的<b>組成</b>不同，波速突然變快。','<b>古氏不連續面</b>（2890 km）：地函（固態岩石）和外核（液態鐵鎳）的分界，P 波驟降、<b>S 波消失</b>。','<b>雷曼不連續面</b>（5150 km）：外核（液態）和內核（固態）都是鐵鎳，差在<b>狀態</b>，P 波又變快。'])
+});
+
+/* F3 岩石圈剖面 */
+function lithoDraw(g,c,C,sel,step){ var G=frame(full(c),-0.3,10.3,250,-38,22,false);
+  [[0.4,4.6,'海洋地區',7,65,'#5b6578','玄武岩質'],[5.4,9.6,'大陸地區',35,120,'#d9b98a','花岡岩質']].forEach(function(col,i){ var on=sel==null||sel===i;
+    rect(g,G,col[0],0,col[1],col[4],alpha('#c58a5a',on?0.35:0.15),null);
+    rect(g,G,col[0],col[4],col[1],col[4]+(i?100:160),alpha('#e07b39',on?0.4:0.15),null);
+    rect(g,G,col[0],0,col[1],col[3],alpha(col[5],on?0.9:0.35),C.ink);
+    T(g,col[2],G.X((col[0]+col[1])/2),G.Y(-18),on?C.ink:C.muted,14,'center','700');
+    if(step==null||step>=0) T(g,'地殼 '+col[3]+' km（'+col[6]+'）',G.X((col[0]+col[1])/2),i?G.Y(col[3]/2):G.Y(col[3])+12,C.ink,11,'center','700');
+    if(step==null||step>=1){ L(g,G.X(col[0]),G.Y(col[4]),G.X(col[1]),G.Y(col[4]),C.red,2.5); T(g,'岩石圈底 '+col[4]+' km',G.X((col[0]+col[1])/2),G.Y(col[4])-10,C.red,11,'center','700'); }
+    if(step==null||step>=2) T(g,'軟流圈（部分熔融，仍為固態）',G.X((col[0]+col[1])/2),G.Y(col[4]+45),C.ink,11,'center'); });
+  [0,50,100,150,200,250].forEach(function(z){ T(g,z+'',G.X(-0.1),G.Y(z),C.muted,10,'right'); }); }
+widget('w-litho',{state:{r:1},rw:0.45,rn:0.9,fmt:{r:function(v){return v?'大陸':'海洋';}},
+  draw:function(g,c,s){ lithoDraw(g,c,c.C,s.r,null); },
+  out:function(s){ return s.r?'<b>大陸</b>：地殼約 35 km、花岡岩質、密度小；岩石圈約 120 km。':'<b>海洋</b>：地殼約 7 km、玄武岩質、密度大；岩石圈約 65 km。'; }
+});
+widget('s-F3',{state:{},steps:3,rw:0.45,rn:0.9,
+  draw:function(g,c,s){ lithoDraw(g,c,c.C,null,s.step); },
+  out:steps(['先看地殼：大陸約 35 km（花岡岩質、輕），海洋約 7 km（玄武岩質、重）。','地殼＋其下的上部地函＝<b>岩石圈</b>，就是板塊：大陸約 120 km，海洋約 65 km。','岩石圈下方是<b>軟流圈</b>：部分熔融、可塑性高，S 波變慢，但仍是固態。'])
+});
+
+/* F4 海底擴張 */
+var REV=[0,0.78,0.99,1.07,1.77,1.95,2.58,3.04,3.11,3.22,3.33,3.58,4.0];
+function polarity(age){ var k=0; while(k<REV.length-1&&age>REV[k+1]) k++; return k%2===0; }
+function spreadDraw(g,c,C,t,mark){ var G=frame(full(c),-110,110,-1.4,1.6,18,false), v=25;
+  for(var x=-100;x<100;x+=0.5){ var age=Math.abs(x+0.25)/v; if(age>t) continue; rect(g,G,x,0,x+0.5,0.8,polarity(age)?alpha(C.ink,0.75):alpha(C.gold,0.55),null); }
+  rect(g,G,-100,0,100,-0.6,alpha('#e07b39',0.35),null); T(g,'中洋脊',G.X(0),G.Y(1.25),C.red,12,'center','700');
+  L(g,G.X(0),G.Y(-0.6),G.X(0),G.Y(0.85),C.red,2.5);
+  arrow(g,G.X(-12),G.Y(1.0),G.X(-50),G.Y(1.0),C.ink,2); arrow(g,G.X(12),G.Y(1.0),G.X(50),G.Y(1.0),C.ink,2);
+  for(var a=1;a<=4;a++){ if(a<=t+1e-9){ [-1,1].forEach(function(sg){ var xx=sg*a*v; L(g,G.X(xx),G.Y(0),G.X(xx),G.Y(-0.75),C.muted,1,[3,3]); T(g,a+' 百萬年',G.X(xx),G.Y(-0.95),C.muted,10,'center'); }); } }
+  box(g,G.X(-105),G.Y(1.55),12,12,alpha(C.ink,0.75),null); T(g,'正磁場',G.X(-105)+16,G.Y(1.55)+6,C.ink,11,'left');
+  box(g,G.X(-75),G.Y(1.55),12,12,alpha(C.gold,0.55),null); T(g,'反磁場',G.X(-75)+16,G.Y(1.55)+6,C.ink,11,'left');
+  if(mark){ L(g,G.X(0),G.Y(-1.2),G.X(100),G.Y(-1.2),C.red,2.5); T(g,'100 公里 ÷ 400 萬年 = 2.5 公分／年',G.X(50),G.Y(-1.2)-11,C.red,12,'center','700'); } }
+widget('w-spread',{state:{t:4},rw:0.42,rn:0.85,fmt:{t:function(v){return v.toFixed(2)+' 百萬年';}},
+  draw:function(g,c,s){ spreadDraw(g,c,c.C,s.t,false); },
+  out:function(s){ return '經過 '+s.t.toFixed(2)+' 百萬年：海床向兩側各推出約 '+Math.round(s.t*25)+' 公里（每年 2.5 公分）；條紋<b>以中洋脊為軸對稱</b>。'; }
+});
+widget('s-F4',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ spreadDraw(g,c,c.C,[1,4,4][s.step],s.step===2); },
+  out:steps(['新的海洋地殼在中洋脊生成，冷卻時記下當時的地磁方向。','持續往兩側推開，地磁倒轉留下對稱的正反條紋；離中洋脊越遠，岩石越老。','速率＝距離÷時間：100 公里＝10⁷ 公分，÷ 4×10⁶ 年 = <b>2.5 公分／年</b>。'])
+});
+
+/* F5 張裂型 */
+function divDraw(g,c,C,t,step){ var G=frame(full(c),-10,10,-6,3.2,18,false), gap=0.6+2.2*t;
+  rect(g,G,-10,-6,10,-2.2,alpha('#e07b39',0.35),null); T(g,'軟流圈',G.X(-8.5),G.Y(-4.6),C.ink,12,'left');
+  [-1,1].forEach(function(sg){ var x0=sg*gap/2, x1=sg*10; poly(g,G,[[x0,0],[x1,0],[x1,-2.2],[x0,-2.2]],alpha('#6b7a8f',0.55),C.ink);
+    for(var k=0;k<3;k++){ var fx=sg*(gap/2+0.8+k*0.9); L(g,G.X(fx),G.Y(0),G.X(fx-sg*0.6),G.Y(-1.3),C.ink,1.5); }
+    arrow(g,G.X(sg*(gap/2+2)),G.Y(1.3),G.X(sg*(gap/2+5)),G.Y(1.3),C.ink,2.5); });
+  if(step==null||step>=0){ poly(g,G,[[-gap/2,-2.2],[gap/2,-2.2],[0.25,0.1],[-0.25,0.1]],alpha('#e8642c',0.85),null); arrow(g,G.X(0),G.Y(-5),G.X(0),G.Y(-2.6),'#c0392b',3); }
+  T(g,'受張力 → 正斷層',G.X(-gap/2-3),G.Y(2.4),C.red,12,'center','700'); if(step==null||step>=2) T(g,'新玄武岩地殼',G.X(0),G.Y(2.4),C.teal,12,'center','700'); }
+widget('w-div',{state:{t:0.6},rw:0.42,rn:0.85,fmt:{t:function(v){return Math.round(v*100)+'%';}},
+  draw:function(g,c,s){ divDraw(g,c,c.C,s.t,null); },
+  out:function(s){ return '兩板塊往外拉開，中間的岩漿上湧冷卻成<b>玄武岩</b>；兩側受張力形成<b>正斷層</b>；只有<b>淺源地震</b>。'; }
+});
+widget('s-F5',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ divDraw(g,c,c.C,[0.2,0.6,1][s.step],s.step); },
+  out:steps(['地函的熱物質往上湧，頂起岩石圈。','岩石圈被拉開，受張力形成一階一階的正斷層與中央裂谷。','岩漿冷卻成新的<b>玄武岩</b>海洋地殼。'])
+});
+
+/* F6 聚合型 */
+var CONV=[['海洋 － 大陸','海洋板塊','大陸板塊'],['海洋 － 海洋','較老海洋板塊','較年輕海洋板塊'],['大陸 － 大陸','大陸板塊','大陸板塊']];
+function convDraw(g,c,C,k){ var G=frame(full(c),-10,10,-7,3.6,18,false), oc=alpha('#5b6578',0.7), co=alpha('#d9b98a',0.9), t=CONV[k];
+  rect(g,G,-10,-7,10,-2,alpha('#e07b39',0.28),null);
+  if(k<2){ poly(g,G,[[-10,-0.6],[-1,-0.6],[4,-6.5],[2.6,-6.9],[-1.6,-2],[-10,-2]],oc,C.ink);
+    poly(g,G,[[-1,0],[10,0],[10,-2],[0.6,-2]],k===0?co:alpha('#5b6578',0.5),C.ink);
+    if(k===0) poly(g,G,[[2.5,0],[4.5,1.8],[6.5,0]],co,C.ink);
+    T(g,'海溝',G.X(-1),G.Y(-1.2),C.blue,12,'center','700'); poly(g,G,[[3.2,0],[3.8,1.2],[4.4,0]],alpha('#c0392b',0.8),null); T(g,k?'火山島弧（安山岩）':'火山弧（安山岩）',G.X(3.8),G.Y(2.4),C.red,12,'center','700');
+    var rnd=seeded(7); for(var i=0;i<18;i++){ var u=rnd(), x=-0.6+u*4.4, y=-0.4-u*5.9+(rnd()-0.5)*0.4; dot(g,G.X(x),G.Y(y),3.4,C.red); }
+    T(g,'震源由淺到深（班尼奧夫帶）',G.X(-0.2),G.Y(-5.6),C.red,11,'right','700'); arrow(g,G.X(-7),G.Y(0.9),G.X(-3),G.Y(0.9),C.ink,2.5); }
+  else { poly(g,G,[[-10,0],[-1,0],[0,2.8],[1,0],[10,0],[10,-2],[1.4,-2],[0,-3.4],[-1.4,-2],[-10,-2]],co,C.ink);
+    for(var j=-3;j<=3;j++) L(g,G.X(j*0.55),G.Y(-1.8),G.X(j*0.55+0.4),G.Y(1.6-Math.abs(j)*0.35),C.ink,1.2);
+    T(g,'碰撞造山（褶皺、逆斷層、變質岩）',G.X(0),G.Y(3.3),C.red,12,'center','700');
+    arrow(g,G.X(-7),G.Y(0.9),G.X(-3),G.Y(0.9),C.ink,2.5); arrow(g,G.X(7),G.Y(0.9),G.X(3),G.Y(0.9),C.ink,2.5);
+    var r2=seeded(9); for(var m=0;m<10;m++) dot(g,G.X((r2()-0.5)*4),G.Y(-0.3-r2()*2.2),3.4,C.red); }
+  T(g,t[1],G.X(-7),G.Y(-1.3),C.sheet,12,'center','700'); T(g,t[2],G.X(7),G.Y(-1),k===0||k===2?C.ink:C.sheet,12,'center','700');
+  T(g,t[0],G.X(-9.7),G.Y(3.2),C.ink,14,'left','700'); }
+widget('w-conv',{state:{k:0},rw:0.45,rn:0.9,fmt:{k:function(v){return CONV[v][0];}},
+  draw:function(g,c,s){ convDraw(g,c,c.C,s.k); },
+  out:function(s){ return ['<b>海－陸</b>：海洋板塊隱沒到大陸之下 → 海溝、火山弧（安山岩）、淺中深源地震。','<b>海－海</b>：較老較重的海洋板塊隱沒 → 海溝、火山島弧（如馬里亞納）。','<b>陸－陸</b>：兩邊都輕、不隱沒 → 碰撞造山（如喜馬拉雅山），沒有海溝、少深源地震。'][s.k]; }
+});
+widget('s-F6',{state:{},steps:3,rw:0.45,rn:0.9,
+  draw:function(g,c,s){ convDraw(g,c,c.C,s.step); },
+  out:steps(['海－陸：密度大的海洋岩石圈往下插，形成海溝與火山弧。','海－海：較老、較重的一塊往下插，形成海溝與火山島弧。','陸－陸：都太輕沉不下去，所以<b>不會隱沒</b>，而是擠成高山。'])
+});
+
+/* F7 轉形斷層 */
+function tfDraw(g,c,C,t,step){ var G=frame(full(c),-10,10,-5,5,18,false), off=t*2;
+  rect(g,G,-10,-5,10,5,alpha(C.blue,0.08),null);
+  L(g,G.X(-3),G.Y(4.6),G.X(-3),G.Y(0.6),C.red,4); L(g,G.X(3),G.Y(-0.6),G.X(3),G.Y(-4.6),C.red,4); T(g,'中洋脊',G.X(-3.3),G.Y(4.2),C.red,12,'right','700'); T(g,'中洋脊',G.X(3.3),G.Y(-4.2),C.red,12,'left','700');
+  L(g,G.X(-9.5),G.Y(0),G.X(-3),G.Y(0),C.muted,2,[6,4]); L(g,G.X(3),G.Y(0),G.X(9.5),G.Y(0),C.muted,2,[6,4]);
+  L(g,G.X(-3),G.Y(0),G.X(3),G.Y(0),(step==null||step>=1)?C.ink:C.muted,4);
+  if(step==null||step>=1) T(g,'轉形斷層（板塊邊界）',G.X(0),G.Y(0.6),C.ink,12,'center','700');
+  if(step==null||step>=2){ T(g,'破裂帶（非邊界）',G.X(-6.3),G.Y(0.6),C.muted,11,'center'); T(g,'破裂帶（非邊界）',G.X(6.3),G.Y(0.6),C.muted,11,'center'); }
+  [[-6,2.2,-1],[-6,-2.2,-1],[0,2.2,1],[0,-2.2,-1],[6,2.2,1],[6,-2.2,1]].forEach(function(a){ var x=a[0]+a[2]*(off%1)*0.6; arrow(g,G.X(x-a[2]*1.2),G.Y(a[1]),G.X(x+a[2]*1.2),G.Y(a[1]),a[0]===0?C.red:C.teal,2.5); });
+  var r=seeded(3); for(var i=0;i<9;i++) dot(g,G.X(-2.7+r()*5.4),G.Y((r()-0.5)*0.5),3.2,C.gold); }
+widget('w-tf',{state:{t:0},rw:0.42,rn:0.85,fmt:{t:function(v){return Math.round(v*100)+'%';}},
+  draw:function(g,c,s){ tfDraw(g,c,c.C,s.t,null); },
+  out:function(){ return '只有兩段中洋脊之間（紅色箭頭方向相反）是<b>轉形斷層</b>：兩側不同板塊相對錯動，只有<b>淺源地震</b>（黃點）。'; }
+});
+widget('s-F7',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ tfDraw(g,c,c.C,0.3,s.step); },
+  out:steps(['兩段中洋脊錯開，新地殼從每段中洋脊往兩側推。','夾在中間那段，上下兩側往相反方向走 → <b>轉形斷層</b>，是板塊邊界。','外側兩段雖然也有破裂痕跡，但兩側同向移動，<b>不是</b>板塊邊界。'])
+});
+
+/* F8 斷層類型 */
+var FT=['正斷層（張力）','逆斷層（壓力）','平移斷層（剪力）'];
+function faultDraw(g,c,C,k,s){ var G=frame(full(c),-6,6,-3.6,3.6,18,false);
+  if(k<2){ var dy=(k===0?-1:1)*1.1*s, dx=-dy/3; /* 沿斷層面（斜率 1.2:3.6）滑動，兩塊保持接觸 */
+    poly(g,G,[[-6,1.2],[-0.6,1.2],[0.6,-2.4],[-6,-2.4]],alpha('#c9a66b',0.85),C.ink);
+    poly(g,G,[[-0.6+dx,1.2+dy],[6,1.2+dy],[6,-2.4+dy],[0.6+dx,-2.4+dy]],alpha('#9fb4c7',0.85),C.ink);
+    T(g,'下盤',G.X(-3.5),G.Y(-0.6),C.ink,13,'center','700'); T(g,'上盤',G.X(3.3),G.Y(-0.6+dy),C.ink,13,'center','700');
+    arrow(g,G.X(2),G.Y(2.4),G.X(2+(k===0?0.33:-0.33)),G.Y(2.4+(k===0?-1:1)),C.red,3);
+    [-1,1].forEach(function(sg){ var dir=k===0?sg:-sg; arrow(g,G.X(sg*4.4),G.Y(2.9),G.X(sg*4.4+dir*1.1),G.Y(2.9),C.teal,2.5); });
+    T(g,k===0?'受張力：兩地遠離':'受壓力：兩地靠近',G.X(0),G.Y(3.3),C.teal,12,'center','700'); }
+  else { var m=1.6*s;
+    rect(g,G,-5.5,0,5.5,2.8,alpha('#c9a66b',0.85),C.ink); rect(g,G,-5.5,-2.8,5.5,0,alpha('#9fb4c7',0.85),C.ink);
+    L(g,G.X(-5.5),G.Y(0),G.X(5.5),G.Y(0),C.red,3);
+    L(g,G.X(-0.4-m),G.Y(2.8),G.X(-0.4-m),G.Y(0),C.ink,3); L(g,G.X(-0.4+m),G.Y(0),G.X(-0.4+m),G.Y(-2.8),C.ink,3);
+    arrow(g,G.X(2),G.Y(1.4),G.X(0.4),G.Y(1.4),C.red,3); arrow(g,G.X(-2.8),G.Y(-1.4),G.X(-1.2),G.Y(-1.4),C.red,3);
+    T(g,'俯視：站在下方那塊，看對面往左移 → 左移斷層',G.X(0),G.Y(3.3),C.teal,12,'center','700'); }
+  T(g,FT[k],G.X(-5.8),G.Y(-3.2),C.ink,14,'left','700'); }
+widget('w-fault',{state:{k:0,s:1},rw:0.42,rn:0.85,fmt:{k:function(v){return FT[v];},s:function(v){return Math.round(v*100)+'%';}},
+  draw:function(g,c,s){ faultDraw(g,c,c.C,s.k,s.s); },
+  out:function(s){ return ['<b>正斷層</b>：上盤沿斷層面往下滑，兩地水平距離變遠。','<b>逆斷層</b>：上盤被推上去，兩地水平距離縮短（臺灣西部常見）。','<b>平移斷層</b>：兩塊沿斷層線水平錯開，站在一側看對面往右＝右移、往左＝左移。'][s.k]; }
+});
+widget('s-F8',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ if(s.step<2){ faultDraw(g,c,c.C,2,s.step?1:0.2); return; } var C=c.C, G=frame(full(c),-6,6,-3.6,3.6,18,false);
+    rect(g,G,-0.3,-3,0.3,3,alpha(C.red,0.25),C.red); T(g,'北',G.X(0),G.Y(3.35),C.ink,13,'center','700');
+    rect(g,G,-4.8,-0.6,-1.8,0.6,alpha(C.blue,0.3),C.ink); T(g,'西側（對面）',G.X(-3.3),G.Y(-1.1),C.ink,12,'center','700'); arrow(g,G.X(-3.3),G.Y(0),G.X(-3.3),G.Y(2.2),C.red,3);
+    rect(g,G,1.8,-0.6,4.8,0.6,alpha(C.gold,0.4),C.ink); T(g,'你站在東側',G.X(3.3),G.Y(-1.1),C.ink,12,'center','700'); arrow(g,G.X(2.4),G.Y(0),G.X(0.8),G.Y(0),C.ink,2); T(g,'面向西',G.X(1.6),G.Y(0.5),C.muted,11,'center'); },
+  out:steps(['平移斷層：兩塊地沿著斷層線水平錯開。','判斷時一定要「站在其中一塊，看對面那塊」。','站在東側面向西，北方在你的<b>右手邊</b>；對面往北＝往右 → <b>右移斷層</b>。'])
+});
+
+/* F9 熱點 */
+function hotDraw(g,c,C,t,step){ var G=frame(full(c),-14,4,-4.5,3.6,18,false), v=1.4;
+  rect(g,G,-14,-4.5,4,-1.2,alpha('#e07b39',0.3),null); rect(g,G,-14,-1.2,4,0,alpha('#6b7a8f',0.55),C.ink); T(g,'板塊往左移 ←',G.X(-12.5),G.Y(-0.6),C.sheet,12,'left','700');
+  poly(g,G,[[-0.5,-4.5],[0.5,-4.5],[0.35,-1.2],[-0.35,-1.2]],alpha('#c0392b',0.75),null); T(g,'熱點（固定）',G.X(0.7),G.Y(-3.6),C.red,12,'left','700');
+  for(var a=0;a<=t+1e-9;a+=1){ var x=-(t-a)*v, h=Math.max(0.5,2.2-0.25*(t-a)); if(x<-13.5) continue; var live=t-a<0.6;
+    poly(g,G,[[x-1,0],[x,h],[x+1,0]],live?alpha('#c0392b',0.85):alpha('#8d6e63',0.85),C.ink); if(step==null||step>=1) T(g,(t-a).toFixed(0)+'',G.X(x),G.Y(h+0.5),C.ink,11,'center','700'); }
+  if(step==null||step>=2){ arrow(g,G.X(-1),G.Y(3.2),G.X(-9),G.Y(3.2),C.teal,2.5); T(g,'新 → 老 ＝ 板塊移動方向',G.X(-5),G.Y(2.75),C.teal,12,'center','700'); } }
+widget('w-hot',{state:{t:6},rw:0.42,rn:0.85,fmt:{t:function(v){return v.toFixed(1)+' 百萬年';}},
+  draw:function(g,c,s){ hotDraw(g,c,c.C,s.t,null); },
+  out:function(){ return '熱點上方的火山最<b>年輕</b>（紅色，活火山）；越往左越老（數字＝年齡，百萬年），從新到老的方向就是<b>板塊移動方向</b>。'; }
+});
+widget('s-F9',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ hotDraw(g,c,c.C,[1,5,7][s.step],s.step); },
+  out:steps(['熱柱固定不動，正上方冒出火山島。','板塊往左移，舊島被帶離熱點、變成死火山，熱點上方又長出新島。','島的年齡由新到老排一列，<b>新 → 老</b>的方向就是板塊移動的方向。'])
+});
+
+/* F10 臺灣雙向隱沒 */
+function twMap(g,P,C,p){ var G=frame(P,118,125,20.5,26.5,14,true);
+  rect(g,G,118,20.5,121.2,26.5,alpha('#d9b98a',0.25),null); rect(g,G,121.2,20.5,125,26.5,alpha(C.blue,0.12),null);
+  poly(g,G,[[121.5,25.3],[122,25],[121.5,24],[121.2,23],[120.8,22],[120.6,22.6],[120.1,23.2],[120.2,24.3],[120.8,25]],alpha('#7fb3a6',0.9),C.ink);
+  L(g,G.X(121.25),G.Y(24.1),G.X(121.1),G.Y(22.8),C.red,2.5); T(g,'花東縱谷',G.X(121.35),G.Y(23.4),C.red,10,'left','700');
+  g.save(); g.strokeStyle=C.ink; g.lineWidth=2.5; g.beginPath(); for(var x=122;x<=125;x+=0.1){ var y=24.4-0.25*(x-122); if(x===122) g.moveTo(G.X(x),G.Y(y)); else g.lineTo(G.X(x),G.Y(y)); } g.stroke(); g.restore();
+  for(var x2=122.2;x2<=124.8;x2+=0.5){ var y2=24.4-0.25*(x2-122); poly(g,G,[[x2-0.12,y2],[x2+0.12,y2],[x2,y2+0.22]],C.ink,null); }
+  T(g,'琉球海溝',G.X(123.6),G.Y(23.65),C.ink,11,'center','700');
+  L(g,G.X(120.2),G.Y(21.9),G.X(119.8),G.Y(20.6),C.ink,2.5); for(var y3=20.8;y3<=21.8;y3+=0.4){ var x3=120.2-0.4*(21.9-y3)/1.3; poly(g,G,[[x3,y3-0.1],[x3,y3+0.1],[x3+0.22,y3]],C.ink,null); }
+  T(g,'馬尼拉海溝',G.X(119.6),G.Y(21.2),C.ink,11,'right','700');
+  T(g,'歐亞板塊',G.X(118.9),G.Y(25.8),C.ink,12,'center','700'); T(g,'菲律賓海板塊',G.X(123.4),G.Y(21.6),C.blue,12,'center','700');
+  arrow(g,G.X(123.8),G.Y(22.3),G.X(122.5),G.Y(23.2),C.blue,2.5);
+  if(p===1) rect(g,G,121.9,23.3,122.5,25.6,null,C.red); else rect(g,G,119.4,21.4,121.3,22.1,null,C.red); }
+function twSec(g,P,C,p){ var G=frame(P,0,10,-6,2.4,14,false);
+  /* 左側一律畫上覆板塊：東北剖面左＝北（歐亞），南部剖面左＝東（菲律賓海） */
+  rect(g,G,0,-6,10,-1.6,alpha('#e07b39',0.25),null);
+  poly(g,G,[[0,0],[5.2,0],[5.2,-1.6],[0,-1.6]],alpha(p?'#d9b98a':'#7fb3a6',0.75),C.ink);
+  poly(g,G,[[10,-0.4],[5.4,-0.4],[1.2,-5.6],[2.4,-5.9],[6.2,-1.8],[10,-1.8]],alpha('#5b6578',0.7),C.ink);
+  poly(g,G,[[3.6,0],[4.1,1.1],[4.6,0]],alpha('#c0392b',0.8),null);
+  var r=seeded(5); for(var i=0;i<12;i++){ var u=r(); dot(g,G.X(5.6-u*4),G.Y(-0.5-u*5),3,C.red); }
+  T(g,p?'北':'東',G.X(0.3),G.Y(2),C.muted,12,'left','700'); T(g,p?'南':'西',G.X(9.7),G.Y(2),C.muted,12,'right','700');
+  T(g,p?'歐亞板塊':'菲律賓海板塊',G.X(2.4),G.Y(-0.9),C.ink,11,'center','700');
+  T(g,p?'菲律賓海板塊（往北隱沒）':'歐亞板塊（往東隱沒）',G.X(7.6),G.Y(-2.6),C.sheet,11,'center','700');
+  T(g,p?'琉球火山島弧':'呂宋火山島弧',G.X(4.1),G.Y(1.6),C.red,11,'center','700');
+  T(g,p?'東北部：震源往北漸深':'南部：震源往東漸深',G.X(5),G.Y(-5.4),C.red,12,'center','700'); }
+widget('w-tw',{state:{p:1},rw:0.55,rn:1.1,fmt:{p:function(v){return v?'東北部':'南部';}},
+  draw:function(g,c,s){ var P=panels(c,0.5); twMap(g,P[0],c.C,s.p); twSec(g,P[1],c.C,s.p); },
+  out:function(s){ return s.p?'<b>東北部</b>：菲律賓海板塊往北隱沒到歐亞板塊下方 → 琉球海溝、琉球火山島弧（大屯火山、龜山島）。':'<b>南部</b>：歐亞板塊前緣的海洋岩石圈往東隱沒到菲律賓海板塊下方 → 馬尼拉海溝、呂宋火山島弧（綠島、蘭嶼、海岸山脈）。'; }
+});
+widget('s-F10',{state:{},steps:3,rw:0.55,rn:1.1,
+  draw:function(g,c,s){ var P=panels(c,0.5); twMap(g,P[0],c.C,s.step===2?0:1); twSec(g,P[1],c.C,s.step===2?0:1); },
+  out:steps(['臺灣夾在歐亞板塊與菲律賓海板塊之間，<b>花東縱谷</b>是兩板塊在陸上的縫合帶。','東北部：震源往<b>北</b>漸深 → 菲律賓海板塊往北隱沒。','南部：震源往<b>東</b>漸深 → 歐亞板塊往東隱沒，方向和東北部相反。'])
+});
+
+/* F11 臺灣地質剖面 */
+var TWR=[['澎湖',0,1.2,'玄武岩火山島（歐亞板塊）','#5b6578'],['西部平原',1.2,3,'沉積物（最年輕）','#e8d38a'],['西部麓山帶',3,5,'沉積岩，南北向逆斷層','#d6b97a'],['中央山脈',5,8,'褶皺、逆斷層、變質岩，越往東變質度越高','#9a86b5'],['花東縱谷',8,8.6,'兩板塊的縫合帶','#e07b39'],['海岸山脈',8.6,10,'安山岩（呂宋島弧，菲律賓海板塊）','#7fb3a6']];
+function twgDraw(g,c,C,sel){ var G=frame(full(c),-0.2,10.2,-3.2,3.6,16,false);
+  TWR.forEach(function(r,i){ var on=sel==null||sel===i, h=i===0?0.6:i===1?0.4:i===2?1.2:i===3?2.6:i===4?0.2:1.4;
+    poly(g,G,[[r[1],-2.2],[r[2],-2.2],[r[2],h*(i===3?0.75:1)],[r[1],h]],alpha(r[4],on?0.9:0.35),C.ink);
+    T(g,r[0],G.X((r[1]+r[2])/2),G.Y(h+0.55+(i===4?0.4:0)),on?C.ink:C.muted,11,'center','700'); });
+  for(var k=0;k<3;k++){ var x=3.3+k*0.65; L(g,G.X(x),G.Y(-2.2),G.X(x+0.5),G.Y(1),C.red,1.8); }
+  for(var m=0;m<4;m++){ var cx=5.4+m*0.7; g.save(); g.strokeStyle=C.ink; g.lineWidth=1.1; g.beginPath(); for(var t=0;t<=1;t+=0.05){ var xx=cx+t*0.6, yy=-1.6+0.5*Math.sin(t*PI)+m*0.3; if(!t) g.moveTo(G.X(xx),G.Y(yy)); else g.lineTo(G.X(xx),G.Y(yy)); } g.stroke(); g.restore(); }
+  T(g,'西',G.X(0),G.Y(-2.8),C.muted,12,'left','700'); T(g,'東',G.X(10),G.Y(-2.8),C.muted,12,'right','700');
+  arrow(g,G.X(9.9),G.Y(2.8),G.X(8.9),G.Y(2.8),C.blue,2.5); T(g,'菲律賓海板塊推擠',G.X(8.8),G.Y(2.8),C.blue,11,'right','700'); }
+widget('w-twgeo',{state:{i:3},rw:0.42,rn:0.85,fmt:{i:function(v){return TWR[v][0];}},
+  draw:function(g,c,s){ twgDraw(g,c,c.C,s.i); },
+  out:function(s){ return '<b>'+TWR[s.i][0]+'</b>：'+TWR[s.i][3]+'。'; }
+});
+widget('s-F11',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ twgDraw(g,c,c.C,[0,3,5][s.step]); },
+  out:steps(['西邊的<b>澎湖</b>是玄武岩火山島，屬歐亞板塊。','<b>中央山脈</b>被擠壓得最厲害：褶皺、逆斷層、變質岩，越往東變質度越高。','花東縱谷以東的<b>海岸山脈</b>是呂宋島弧的安山岩，原本屬於菲律賓海板塊。'])
+});
+`
+};
