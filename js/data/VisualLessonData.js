@@ -197,6 +197,32 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "ESC_H2_Unit3_Geology",
+    href: "docs/TeachingMaterials/lessons/ESC_H2_Unit3_Geology.html",
+    title: "單元3 地質・圖解教材",
+    subject: "地球科學",
+    materialIds: ["tm_84"],
+    source: "課本 單元3 地質（主題12 固體地球的結構、主題13 板塊運動、主題14 臺灣的板塊構造，p.73～102）",
+    sections: [
+      { id: "12", title: "固體地球的結構" },
+      { id: "13", title: "板塊運動" },
+      { id: "14", title: "臺灣的板塊構造" }
+    ],
+    cards: [
+      { id: "F1", section: "12", title: "地震波：P 波與 S 波", keywords: ["P波與S波", "P波陰影帶", "陰影帶", "地震波的性質", "縱波", "橫波", "初達波", "次達波"] },
+      { id: "F2", section: "12", title: "地球內部分層與不連續面", keywords: ["地球內部分層", "不連續面", "莫氏", "古氏", "雷曼", "地震波速度", "分層", "外核", "內核"] },
+      { id: "F3", section: "12", title: "岩石圈、軟流圈與大陸／海洋地殼", keywords: ["大陸與海洋地殼", "地球內部組成", "岩石圈", "軟流圈", "捕獲岩", "地殼"] },
+      { id: "F4", section: "13", title: "從大陸漂移到海底擴張", keywords: ["大陸漂移", "海底擴張", "地磁倒轉", "韋格納", "海斯"] },
+      { id: "F5", section: "13", title: "張裂型板塊邊界：中洋脊與裂谷", keywords: ["張裂型", "板塊構造學說", "中洋脊", "裂谷", "岩石循環", "三種板塊邊界"] },
+      { id: "F6", section: "13", title: "聚合型板塊邊界：隱沒與碰撞", keywords: ["聚合型", "隱沒帶", "海溝", "火山島弧", "班尼奧夫", "環太平洋", "地震分布", "造山"] },
+      { id: "F7", section: "13", title: "錯動型板塊邊界：轉形斷層", keywords: ["錯動型", "轉形斷層"] },
+      { id: "F8", section: "13", title: "判斷斷層類型", keywords: ["斷層類型", "正斷層", "逆斷層", "平移斷層", "右移", "左移"] },
+      { id: "F9", section: "13", title: "熱點與板塊移動方向", keywords: ["熱點", "夏威夷"] },
+      { id: "F10", section: "14", title: "臺灣的雙向隱沒", keywords: ["臺灣的板塊位置", "臺灣的雙向隱沒", "臺灣的地殼變形", "臺灣的地質綜合", "菲律賓海板塊", "花東縱谷", "琉球", "呂宋"] },
+      { id: "F11", section: "14", title: "臺灣的地質分區與岩石", keywords: ["臺灣的火成岩", "臺灣的岩石", "臺灣的地質分區", "臺灣的造山", "臺灣造山帶", "隆起與侵蝕", "中央山脈", "海岸山脈", "澎湖"] }
+    ]
+  },
+  {
     lessonId: "BIO_H2_CellOriginPlants",
     href: "docs/TeachingMaterials/lessons/BIO_H2_CellOriginPlants.html",
     title: "細胞膜運輸・生命起源・植物體・圖解教材",
