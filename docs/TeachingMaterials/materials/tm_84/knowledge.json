@@ -1,0 +1,161 @@
+{
+  "materialId": "tm_84",
+  "knowledgePoints": [
+    {
+      "name": "P波與S波的性質",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "P波陰影帶",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三種板塊邊界",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "固體星球的形成與分層",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球內部分層：組成與狀態",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地球分層與岩石密度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "地震波速度變化與不連續面",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大陸漂移學說",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大陸與海洋地殼比較",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "岩石循環與板塊邊界",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "張裂型板塊邊界",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "推論地球內部組成的證據",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "斷層類型判別",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "板塊構造學說",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "板塊邊界的地震分布",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "海底擴張學說",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "海底擴張的速率",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "熱點與板塊移動",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "環太平洋地震帶",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "聚合型板塊邊界",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "臺灣的地殼變形",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "臺灣的地質分區",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "臺灣的地質綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "臺灣的岩石分布",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "臺灣的板塊位置",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "臺灣的火成岩分布",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "臺灣的造山運動",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "臺灣的雙向隱沒",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "臺灣造山帶的隆起與侵蝕",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "莫氏、古氏、雷曼不連續面",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "錯動型板塊邊界：轉形斷層",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-29T12:57:54.566Z"
+}
