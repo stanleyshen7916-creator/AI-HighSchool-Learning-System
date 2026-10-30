@@ -476,6 +476,35 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "CHI_H2_S2",
+    href: "docs/TeachingMaterials/lessons/CHI_H2_S2.html",
+    title: "高二國文第五～八課・圖解教材",
+    subject: "國文",
+    materialIds: ["tm_91"],
+    source: "長榮版國文第五課〈燭之武退秦師〉、第六課〈一桿「稱仔」〉、第七課〈鹿港乘桴記〉、第八課〈祖靈遺忘的孩子〉（題解、作者），p.76～127",
+    sections: [
+      { id: "1", title: "第五課〈燭之武退秦師〉" },
+      { id: "2", title: "第六課〈一桿「稱仔」〉" },
+      { id: "3", title: "第七課〈鹿港乘桴記〉" },
+      { id: "4", title: "第八課〈祖靈遺忘的孩子〉" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "出處：左傳與「春秋三傳」", keywords: ["題解與出處", "左傳"] },
+      { id: "F2", section: "1", title: "為什麼圍鄭？誰推薦燭之武？", keywords: ["圍鄭的原因", "人物", "燭之武的推辭與鄭伯"] },
+      { id: "F3", section: "1", title: "燭之武的說辭：三害一利", keywords: ["燭之武的說服策略"] },
+      { id: "F4", section: "1", title: "結局：秦退兵、晉也退兵", keywords: ["晉文公退兵", "結構與人物"] },
+      { id: "F5", section: "1", title: "字詞小卡：通假字與重要注釋", keywords: ["燭之武字詞"] },
+      { id: "F6", section: "2", title: "賴和與日治時期的臺灣", keywords: ["稱仔題解", "作者賴和"] },
+      { id: "F7", section: "2", title: "一桿稱仔、一個名字：雙關與象徵", keywords: ["象徵與雙關", "寫作手法"] },
+      { id: "F8", section: "2", title: "秦得參的命運曲線", keywords: ["得參的遭遇", "稱仔的情節", "結局與後記"] },
+      { id: "F9", section: "2", title: "語言：古漢語、閩南語、日語混在一起", keywords: ["語言特色", "稱仔字詞"] },
+      { id: "F10", section: "3", title: "洪繻：割臺之後「棄生」", keywords: ["鹿港題解", "作者洪繻"] },
+      { id: "F11", section: "3", title: "昔之鹿港 vs 今之鹿港", keywords: ["昔之鹿港", "今昔對比", "修辭", "鹿港字詞"] },
+      { id: "F12", section: "3", title: "鹿港為什麼沒落？一條時間軸", keywords: ["今之鹿港", "鹽田與水患"] },
+      { id: "F13", section: "4", title: "排灣族女兒與外省人妻子", keywords: ["第八課題解", "第八課作者"] }
+    ]
+  },
+  {
     lessonId: "CHI_H2_S1",
     href: "docs/TeachingMaterials/lessons/CHI_H2_S1.html",
     title: "高二國文・圖解教材",
