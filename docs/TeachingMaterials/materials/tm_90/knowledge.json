@@ -1,0 +1,121 @@
+{
+  "materialId": "tm_90",
+  "knowledgePoints": [
+    {
+      "name": "世界都市",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "世界都市的角色",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "互通有無",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "交通革新",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "企業規模與影響力",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "全球依存關係增強",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "全球化的四大面向",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "全球化的意義",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "全球化的正負面影響",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "全球在地化",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "全球意識形成",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "勞資立場與全球化",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "去領域化",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "商品行銷全球",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "國際經濟落差變化",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "垂直分工",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "技術傳播全球",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "時空壓縮",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "水平分工",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "生產區位重組",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "發展條件差異",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "被關閉的美國工廠",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "貧富差距擴大",
+      "source": "both",
+      "refCount": 5
+    }
+  ],
+  "generatedAt": "2026-10-30T06:01:28.768Z"
+}
