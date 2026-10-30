@@ -1,0 +1,111 @@
+{
+  "materialId": "tm_88",
+  "knowledgePoints": [
+    {
+      "name": "人才與體育大國",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "優越的位置",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "全球最有價值品牌",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "多元族群與文化",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "多樣的氣候",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "大都會帶",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "天然災害",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "完整的工業體系",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "富饒的大地",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "產業分布",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "知識經濟",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "礦產資源與頁岩油",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "移民的國度",
+      "source": "question",
+      "refCount": 8
+    },
+    {
+      "name": "美國夢與留學",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "美國的成功方程式",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "美國面臨的挑戰",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "農產出口大國",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "郊區化與大都會帶",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "都市化程度高",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "都市問題",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "鏽帶與陽光帶",
+      "source": "question",
+      "refCount": 5
+    }
+  ],
+  "generatedAt": "2026-10-30T05:25:43.666Z"
+}
