@@ -309,6 +309,32 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "GEO_H2_Ch5_USA",
+    href: "docs/TeachingMaterials/lessons/GEO_H2_Ch5_USA.html",
+    title: "第5章 超級強國的興起與挑戰─美國・圖解教材",
+    subject: "地理",
+    materialIds: ["tm_88"],
+    source: "課本 第5章 超級強國的興起與挑戰─美國（第一節 環境背景、第二節 多元族群共同塑造的文化特色、第三節 產業發展與都市文明、問題探究，p.110～137）",
+    sections: [
+      { id: "1", title: "環境背景" },
+      { id: "2", title: "多元族群共同塑造的文化特色" },
+      { id: "3", title: "產業發展與都市文明" },
+      { id: "4", title: "問題探究：美國發展的前景與挑戰" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "兩洋屏障與地形三區", keywords: ["優越的位置", "富饒的大地", "美國的成功方程式"] },
+      { id: "F2", section: "1", title: "煤、石油與頁岩油革命", keywords: ["礦產資源與頁岩油"] },
+      { id: "F3", section: "1", title: "從溫帶大陸性到地中海型：美國的氣候", keywords: ["多樣的氣候"] },
+      { id: "F4", section: "1", title: "寒害、龍捲風、颶風、地震：美國的天然災害", keywords: ["天然災害"] },
+      { id: "F5", section: "2", title: "移民的國度：誰、什麼時候、從哪裡來", keywords: ["移民的國度"] },
+      { id: "F6", section: "2", title: "族群組成、分布與多元文化", keywords: ["多元族群與文化", "美國夢與留學"] },
+      { id: "F7", section: "3", title: "世界麵包籃：企業化與精準農業", keywords: ["產業分布", "農產出口大國"] },
+      { id: "F8", section: "3", title: "鏽帶、陽光帶與知識經濟", keywords: ["完整的工業體系", "鏽帶與陽光帶", "知識經濟", "全球最有價值品牌"] },
+      { id: "F9", section: "3", title: "摩天大樓、郊區化與大都會帶", keywords: ["都市化程度高", "郊區化與大都會帶", "大都會帶", "都市問題"] },
+      { id: "F10", section: "4", title: "人才、貧富不均與中國崛起", keywords: ["人才與體育大國", "美國面臨的挑戰"] }
+    ]
+  },
+  {
     lessonId: "HIS_H2_Ch3_Islam",
     href: "docs/TeachingMaterials/lessons/HIS_H2_Ch3_Islam.html",
     title: "第3章 伊斯蘭與世界・圖解教材",
