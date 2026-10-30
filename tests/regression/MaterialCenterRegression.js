@@ -115,7 +115,7 @@ console.log("\n[2a] Student A／長榮中學／高二上學期 — 真實看到�
     seedSession: { "ahs:workspace": { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] } }
   });
   const materials = window.AHS.MaterialRuntime.list();
-  check("高二上真實看到 25 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_14/tm_15/tm_16 世界史（原 tm_6 拆分＋新增第2章）、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理、tm_12／tm_28 化學、tm_17 地球科學、tm_54／tm_56 生物第1、2章講義題庫、tm_61 英文第一課單選／多選補充練習、tm_62 國文第一～三課單選／多選補充練習、tm_72 英文單字練習題、tm_83 國文第一課平時考、tm_84 地球科學單元3 地質）", materials.length === 25);
+  check("高二上真實看到 26 筆教材（AI-120-01：不得混入高一下教材；近體詩選三課已合併為一；含 tm_5、第1章生物課本、第1章生物講義、tm_14/tm_15/tm_16 世界史（原 tm_6 拆分＋新增第2章）、tm_7 三角函數、tm_8/tm_9 公民與社會、tm_10/tm_11 物理、tm_12／tm_28 化學、tm_17 地球科學、tm_54／tm_56 生物第1、2章講義題庫、tm_61 英文第一課單選／多選補充練習、tm_62 國文第一～三課單選／多選補充練習、tm_72 英文單字練習題、tm_83 國文第一課平時考、tm_84 地球科學單元3 地質、tm_85 歷史第3章 伊斯蘭與世界）", materials.length === 26);
   check("皆為國文科、英文科、生物科、歷史科、數學科、公民科、物理科、化學科或地球科學科（無高一下的 geography 教材混入）",
     materials.every((m) => m.subject === "chinese" || m.subject === "english" || m.subject === "biology" || m.subject === "history" || m.subject === "math" || m.subject === "civics" || m.subject === "physics" || m.subject === "chemistry" || m.subject === "earthscience"));
   check("包含國文第一課教材（勞山道士）", materials.some((m) => (m.title || "").indexOf("勞山道士") !== -1));
