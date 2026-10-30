@@ -363,6 +363,34 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "GEO_H2_Ch7_Global",
+    href: "docs/TeachingMaterials/lessons/GEO_H2_Ch7_Global.html",
+    title: "第7章 全球化・圖解教材",
+    subject: "地理",
+    materialIds: ["tm_90"],
+    source: "課本 第7章 全球化（第一節 全球化的意義與發展、第二節 經濟地理空間重組、第三節 世界都市、問題探究，p.162～187；p.174～175 未收錄）",
+    sections: [
+      { id: "1", title: "全球化的意義與發展" },
+      { id: "2", title: "經濟地理空間重組" },
+      { id: "3", title: "世界都市" },
+      { id: "4", title: "問題探究：全球化的貢獻與挑戰—美國工廠" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "全球化的四大面向", keywords: ["全球化的意義", "全球化的四大面向"] },
+      { id: "F2", section: "1", title: "發展條件不同，才需要互通有無", keywords: ["發展條件差異", "互通有無"] },
+      { id: "F3", section: "1", title: "時空壓縮：地球變小了", keywords: ["交通革新", "時空壓縮"] },
+      { id: "F4", section: "1", title: "依存、去領域化與全球意識", keywords: ["全球依存關係增強", "去領域化", "全球意識形成"] },
+      { id: "F5", section: "1", title: "全球在地化：同一塊招牌，不同的漢堡", keywords: ["全球在地化"] },
+      { id: "F6", section: "2", title: "垂直分工與水平分工", keywords: ["生產區位重組", "垂直分工", "水平分工"] },
+      { id: "F7", section: "2", title: "商品與技術，越傳越快", keywords: ["商品行銷全球", "技術傳播全球"] },
+      { id: "F8", section: "2", title: "誰搭上了全球化列車？", keywords: ["國際經濟落差變化", "企業規模與影響力"] },
+      { id: "F9", section: "2", title: "大餅變大了，卻分得更不平均", keywords: ["貧富差距擴大"] },
+      { id: "F10", section: "3", title: "世界都市：全球化的火車頭", keywords: ["世界都市", "世界都市的角色"] },
+      { id: "F11", section: "4", title: "被關閉的工廠，重新開張之後", keywords: ["被關閉的美國工廠", "勞資立場與全球化"] },
+      { id: "F12", section: "4", title: "全球化是一把雙面刃", keywords: ["全球化的正負面影響"] }
+    ]
+  },
+  {
     lessonId: "HIS_H2_Ch3_Islam",
     href: "docs/TeachingMaterials/lessons/HIS_H2_Ch3_Islam.html",
     title: "第3章 伊斯蘭與世界・圖解教材",
