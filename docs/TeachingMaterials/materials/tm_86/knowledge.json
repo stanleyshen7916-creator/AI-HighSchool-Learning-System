@@ -1,0 +1,216 @@
+{
+  "materialId": "tm_86",
+  "knowledgePoints": [
+    {
+      "name": "一次大戰後的民族自決",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "一次大戰經過",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三國同盟與三國協約",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "三角貿易",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "中南美洲的殖民統治",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "中南美洲的獨立運動",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "中南美洲的經濟獨立",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "二次大戰後的反殖民運動",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "二次大戰過程",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "亞洲的獨立之路",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "全球貿易下的文化交流",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "勞工與政治運動",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "北美的競逐",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "反戰運動",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "國際聯盟",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "基督教傳教與帝國主義",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "大戰爆發",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "大航海時代的動機",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "女性爭取參政權",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "巴爾幹半島的煙硝",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "巴西甘蔗園",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "巴黎和會與十四點原則",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "戰後和約",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "戰爭對歐洲文明的衝擊",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "新帝國主義",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "東南亞的殖民",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "歐洲文化對其他地區的影響",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "殖民地文化的變遷",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "法西斯主義的崛起",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "瓜分非洲",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "經濟及軍事入侵非洲",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "經濟大恐慌",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "總體戰與聯合國",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "美國參戰",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "美國孤立主義",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "義德的擴張",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "英國統治印度",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "蘇聯共產政權",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "門羅主義",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "開拓新航路",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "非洲大獵",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "非洲的獨立浪潮",
+      "source": "question",
+      "refCount": 3
+    }
+  ],
+  "generatedAt": "2026-10-30T00:34:06.302Z"
+}

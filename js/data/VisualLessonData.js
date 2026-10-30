@@ -307,6 +307,31 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "HIS_H2_Ch4_West",
+    href: "docs/TeachingMaterials/lessons/HIS_H2_Ch4_West.html",
+    title: "第4章 西方與世界・圖解教材",
+    subject: "歷史",
+    materialIds: ["tm_86"],
+    source: "課本 第4章 西方與世界（第1節 近代歐洲的擴張、第2節 兩次世界大戰、第3節 政治運動與反殖民運動興起，p.94～131）",
+    sections: [
+      { id: "1", title: "近代歐洲的擴張" },
+      { id: "2", title: "兩次世界大戰" },
+      { id: "3", title: "政治運動與反殖民運動興起" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "大航海時代：為什麼出海、怎麼走", keywords: ["大航海時代的動機", "開拓新航路", "新航路"] },
+      { id: "F2", section: "1", title: "美洲殖民與三角貿易", keywords: ["三角貿易", "中南美洲的殖民統治", "北美的競逐", "巴西甘蔗園"] },
+      { id: "F3", section: "1", title: "殖民社會階級與中南美洲獨立", keywords: ["中南美洲的獨立運動", "門羅主義"] },
+      { id: "F4", section: "1", title: "新帝國主義與瓜分非洲", keywords: ["新帝國主義", "非洲大獵", "瓜分非洲", "經濟及軍事入侵非洲", "英國統治印度", "東南亞的殖民", "歐洲文化對其他地區的影響"] },
+      { id: "F5", section: "2", title: "第一次世界大戰：結盟、火藥庫與導火線", keywords: ["巴爾幹半島", "三國同盟與三國協約", "大戰爆發", "美國參戰", "一次大戰經過"] },
+      { id: "F6", section: "2", title: "戰後秩序與戰間期：國聯、大恐慌、極權崛起", keywords: ["巴黎和會", "十四點原則", "戰後和約", "國際聯盟", "蘇聯共產政權", "經濟大恐慌", "美國孤立主義", "法西斯主義"] },
+      { id: "F7", section: "2", title: "第二次世界大戰與戰爭的反思", keywords: ["義德的擴張", "二次大戰過程", "總體戰與聯合國", "戰爭對歐洲文明的衝擊", "反戰運動"] },
+      { id: "F8", section: "3", title: "勞工與女性：爭取政治權利", keywords: ["勞工與政治運動", "女性爭取參政權"] },
+      { id: "F9", section: "3", title: "反殖民運動：亞洲、非洲與中南美洲", keywords: ["民族自決", "反殖民運動", "亞洲的獨立之路", "非洲的獨立浪潮", "中南美洲的經濟獨立", "基督教傳教與帝國主義", "殖民地文化的變遷"] },
+      { id: "F10", section: "1", title: "文明相遇的雙向傳播：咖啡、馬鈴薯、紅茶", keywords: ["全球貿易下的文化交流"] }
+    ]
+  },
+  {
     lessonId: "HIS_H2_EuropeEastAsia",
     href: "docs/TeachingMaterials/lessons/HIS_H2_EuropeEastAsia.html",
     title: "歐洲文化・自由與民主・東亞戰爭與冷戰・圖解教材",
