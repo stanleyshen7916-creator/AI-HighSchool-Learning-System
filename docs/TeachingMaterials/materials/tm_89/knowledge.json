@@ -1,0 +1,126 @@
+{
+  "materialId": "tm_89",
+  "knowledgePoints": [
+    {
+      "name": "三角貿易",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "三高三低",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "依賴式經濟",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "區域發展不均",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "南半球的糧倉",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "南方區域的意涵",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "南方區域的發展優勢",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "原住民古文明",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "合成文化",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "多樣的氣候",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "大地主制",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "委內瑞拉的困境",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "島嶼類型",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "布朗特線",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "未來展望",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "殖民地式經濟",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "殖民對政治的影響",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "殖民母國的影響",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "複雜的地形",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "貧富差距大",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "資源的發展與土地利用",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "轉型過程",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "鋰三角",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "高地氣候與垂直分布",
+      "source": "question",
+      "refCount": 3
+    }
+  ],
+  "generatedAt": "2026-10-30T05:44:12.551Z"
+}

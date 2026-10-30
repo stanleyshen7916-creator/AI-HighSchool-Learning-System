@@ -335,6 +335,34 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "GEO_H2_Ch6_South",
+    href: "docs/TeachingMaterials/lessons/GEO_H2_Ch6_South.html",
+    title: "第6章 南方區域的發展與挑戰・圖解教材",
+    subject: "地理",
+    materialIds: ["tm_89"],
+    source: "課本 第6章 南方區域的發展與挑戰（第一節 南方區域的環境背景、第二節 列強入侵與殖民影響、第三節 殖民地式經濟與發展、問題探究，p.138～161）",
+    sections: [
+      { id: "1", title: "南方區域的環境背景" },
+      { id: "2", title: "列強入侵與殖民影響" },
+      { id: "3", title: "殖民地式經濟與發展" },
+      { id: "4", title: "問題探究：南方區域現代發展的優勢與挑戰" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "南方區域與布朗特線", keywords: ["南方區域的意涵", "布朗特線"] },
+      { id: "F2", section: "1", title: "安地斯山脈、三高三低與三種島嶼", keywords: ["複雜的地形", "三高三低", "島嶼類型"] },
+      { id: "F3", section: "1", title: "倒三角形大陸上的多樣氣候", keywords: ["多樣的氣候"] },
+      { id: "F4", section: "1", title: "高地都市與垂直分布", keywords: ["高地氣候與垂直分布", "原住民古文明"] },
+      { id: "F5", section: "1", title: "樹薯、大豆、銅礦與南半球的糧倉", keywords: ["資源的發展與土地利用", "南半球的糧倉"] },
+      { id: "F6", section: "2", title: "三角貿易：繞大西洋一圈", keywords: ["三角貿易"] },
+      { id: "F7", section: "2", title: "殖民母國的影子與合成文化", keywords: ["殖民母國的影響", "合成文化"] },
+      { id: "F8", section: "2", title: "獨立之後：獨裁、政變與移民大遷徙", keywords: ["殖民對政治的影響"] },
+      { id: "F9", section: "3", title: "殖民地式經濟與依賴式經濟", keywords: ["殖民地式經濟", "依賴式經濟"] },
+      { id: "F10", section: "3", title: "大地主、貧富差距與首要型都市", keywords: ["大地主制", "貧富差距大", "區域發展不均"] },
+      { id: "F11", section: "3", title: "轉型三階段與區域結盟", keywords: ["轉型過程", "未來展望"] },
+      { id: "F12", section: "4", title: "鋰三角的機會與委內瑞拉的教訓", keywords: ["南方區域的發展優勢", "鋰三角", "委內瑞拉的困境"] }
+    ]
+  },
+  {
     lessonId: "HIS_H2_Ch3_Islam",
     href: "docs/TeachingMaterials/lessons/HIS_H2_Ch3_Islam.html",
     title: "第3章 伊斯蘭與世界・圖解教材",
