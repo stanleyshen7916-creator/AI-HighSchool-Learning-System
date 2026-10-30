@@ -1,0 +1,161 @@
+{
+  "materialId": "tm_87",
+  "knowledgePoints": [
+    {
+      "name": "冬溫正偏差",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "半島深入海洋",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "哥倫布大交換",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "地中海——歐洲文明的搖籃",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "地理大發現與文化擴散",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "均衡區域發展",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "工業革命",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "工業革命對全球貿易的影響",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "工業革命的影響",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "形成保護政策",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "文明核心轉移至大西洋沿岸",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "日不落國",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "歐洲文明的起源與擴散",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "歐洲氣候類型",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "歐洲結盟歷程",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "歐盟內部矛盾",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "歐盟的緣起與發展",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "歐盟統合原則",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣候溫和溼潤",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "海岸線曲折多港灣",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "產業合作分工",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "申根公約",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "疾病對新大陸的影響",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "經濟實力增強",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "維京人",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "英國脫歐",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "西方文化圈",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "西方文化與生活",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "觀察航海路線看西方文化擴散",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "邊界合作區",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "馬斯垂克條約",
+      "source": "both",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-30T05:08:37.555Z"
+}

@@ -283,6 +283,32 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "GEO_H2_Ch4_Europe",
+    href: "docs/TeachingMaterials/lessons/GEO_H2_Ch4_Europe.html",
+    title: "第4章 歐洲文明的發展與擴散・圖解教材",
+    subject: "地理",
+    materialIds: ["tm_87"],
+    source: "課本 第4章 歐洲文明的發展與擴散（第一節 自然環境、第二節 歐洲文明與經濟發展、第三節 歐盟的區域競爭與合作、問題探究，p.86～109）",
+    sections: [
+      { id: "1", title: "自然環境" },
+      { id: "2", title: "歐洲文明與經濟發展" },
+      { id: "3", title: "歐盟的區域競爭與合作" },
+      { id: "4", title: "問題探究：西方文化圈的形成與特色" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "半島、谷灣與峽灣：一個離海很近的洲", keywords: ["半島深入海洋", "海岸線曲折多港灣", "維京人"] },
+      { id: "F2", section: "1", title: "北大西洋暖流與冬溫正偏差", keywords: ["氣候溫和溼潤", "冬溫正偏差"] },
+      { id: "F3", section: "1", title: "歐洲的氣候類型：6 個城市的氣候圖", keywords: ["歐洲氣候類型"] },
+      { id: "F4", section: "2", title: "文明核心的移動：地中海 → 西歐 → 全世界", keywords: ["歐洲文明的起源與擴散", "地中海——歐洲文明的搖籃", "文明核心轉移至大西洋沿岸", "地理大發現與文化擴散", "西方文化圈"] },
+      { id: "F5", section: "2", title: "哥倫布大交換：餐桌上的世界史", keywords: ["哥倫布大交換"] },
+      { id: "F6", section: "2", title: "工業革命：從英國的煤和鐵開始", keywords: ["工業革命", "工業革命的影響", "工業革命對全球貿易的影響", "日不落國"] },
+      { id: "F7", section: "3", title: "歐盟的發展：從煤鋼共同體到英國脫歐", keywords: ["歐盟的緣起與發展", "歐盟統合原則", "歐洲結盟歷程", "英國脫歐"] },
+      { id: "F8", section: "3", title: "歐盟、申根、歐元：三個圈圈不一樣", keywords: ["申根公約", "馬斯垂克條約"] },
+      { id: "F9", section: "3", title: "結盟的好處與麻煩，以及核心與邊陲", keywords: ["經濟實力增強", "產業合作分工", "形成保護政策", "歐盟內部矛盾", "均衡區域發展", "邊界合作區"] },
+      { id: "F10", section: "4", title: "疾病、聖地牙哥與葡萄酒：西方文化怎麼移植", keywords: ["觀察航海路線看西方文化擴散", "疾病對新大陸的影響", "西方文化與生活"] }
+    ]
+  },
+  {
     lessonId: "HIS_H2_Ch3_Islam",
     href: "docs/TeachingMaterials/lessons/HIS_H2_Ch3_Islam.html",
     title: "第3章 伊斯蘭與世界・圖解教材",
