@@ -1,0 +1,146 @@
+{
+  "materialId": "tm_91",
+  "knowledgePoints": [
+    {
+      "name": "人物",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "今之鹿港",
+      "source": "both",
+      "refCount": 8
+    },
+    {
+      "name": "今昔對比",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "作者洪繻",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "作者賴和",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "修辭",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "圍鄭的原因",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "寫作手法",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "左傳",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "得參的遭遇",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "昔之鹿港",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "晉文公退兵",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "燭之武字詞",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "燭之武的推辭與鄭伯",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "燭之武的說服策略",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "稱仔字詞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "稱仔的情節",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "稱仔題解",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "第八課作者",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "第八課題解",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "結局與後記",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "結構與人物",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "語言特色",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "象徵與雙關",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "題解與出處",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "鹽田與水患",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "鹿港字詞",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "鹿港題解",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-10-30T14:31:26.197Z"
+}
