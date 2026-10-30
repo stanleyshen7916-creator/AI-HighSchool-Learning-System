@@ -1,0 +1,151 @@
+{
+  "materialId": "tm_85",
+  "knowledgePoints": [
+    {
+      "name": "三大火藥帝國",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "什葉派與遜尼派",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "伊斯蘭政權一分為三",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "伊斯蘭政權的宗教寬容",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "伊斯蘭教五功",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "伊斯蘭教傳入中國",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "伊斯蘭教傳入東南亞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "伊斯蘭教教義與古蘭經",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "伊斯蘭教的建立背景",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "伊斯蘭文學",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "伊斯蘭科學",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "伊斯蘭藝術",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "十字軍的影響",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "十字軍運動",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "奧米雅王朝",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "帖木兒帝國",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "智慧宮與翻譯運動",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "東西文化交流的橋梁",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "正統哈里發時期",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "法提馬王朝",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "耶路撒冷：三教共同聖地",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "蒙兀兒帝國",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "蒙兀兒帝國與西方",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "蒙兀兒文化特色",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "蒙古西征與伊斯蘭世界",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "薩法維帝國",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "鄂圖曼帝國",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "鄂圖曼帝國與西方",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "阿拔斯王朝",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-10-30T00:03:54.864Z"
+}

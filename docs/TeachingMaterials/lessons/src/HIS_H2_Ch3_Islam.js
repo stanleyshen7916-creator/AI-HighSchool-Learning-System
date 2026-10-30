@@ -1,0 +1,333 @@
+/* lessons/src/HIS_H2_Ch3_Islam.js — 高二歷史：第3章 伊斯蘭與世界（tm_85）.
+   內容依教材包 tm_85 summary.json（課本 p.72～93，以自己的話改寫）；
+   地圖為示意圖（位置相對關係，非精確比例）；年代皆依課本；小試身手答案已逐題核對。 */
+"use strict";
+module.exports = {
+  lessonId: "HIS_H2_Ch3_Islam",
+  title: "伊斯蘭與世界圖解教材",
+  eyebrow: "歷史 ・ 第3章 ・ 高二上",
+  h1: "伊斯蘭與世界",
+  h1small: "從麥加出發，看伊斯蘭如何連起東西方",
+  subject: "HIS",
+  unit: "HIS-H2-C3",
+  sections: [
+    {
+      id: "1", short: "伊斯蘭文化的發展與擴張", title: "伊斯蘭文化的發展與擴張（第1節）",
+      plan: { goal: "說出伊斯蘭教的建立背景與教義，排出正統哈里發、奧米雅、阿拔斯、法提馬的先後與特色，並理解伊斯蘭文明如何連接東西方。", prereq: "第1章的基督教與拜占庭帝國。", time: "約 3 節課。" },
+      cards: [
+        {
+          id: "F1", title: "伊斯蘭教的建立：從麥加到麥地那", page: "p.72～75", tags: ["src"],
+          say: "阿拉伯半島雖然多沙漠，卻位在<b>東西貿易的十字路口</b>：印度的香料、半島南部的乳香從海路和駱駝商隊經過，<b>麥加</b>就是重要的集散地。穆罕默德隨商隊接觸到猶太教與基督教，提出只有一位真主阿拉，和麥加的多神信仰衝突。<b>622 年</b>他出走麥地那，這一年成為伊斯蘭教紀元元年。",
+          formula: "背景：東西交流樞紐、綠洲城市為貿易中繼站、麥加為集散地　→　穆罕默德：唯一真主阿拉（與麥加多神信仰衝突）<br>622 年 出走麥地那（伊斯蘭教紀元元年）→ 建立神權社會 → 統一阿拉伯半島大部分　　耶路撒冷：猶太教、基督教、伊斯蘭教共同聖地",
+          widget: { id: "w-arab", aria: "阿拉伯半島的海路與陸路貿易，以及麥加、麥地那的位置（示意）", rw: 0.5, rn: 1.0,
+            controls: [{ k: "t", label: "時期", min: 0, max: 2, step: 1 }] },
+          space: "看半島兩邊：左邊紅海、右邊波斯灣都有船，中間駱駝商隊從南往北走，麥加剛好在路線上。切到 622 年，看穆罕默德從麥加往北移到麥地那。",
+          trap: "以為阿拉伯人與世隔絕。半島雖是沙漠，卻正好卡在東西貿易的路線上。",
+          quiz: { q: "穆罕默德於 622 年出走的目的地，以及這一年的意義是？", answer: "b", options: [
+            { c: "a", text: "耶路撒冷；十字軍運動開始", why: "十字軍運動是 1095 年才開始。" },
+            { c: "b", text: "麥地那；伊斯蘭教紀元元年" },
+            { c: "c", text: "大馬士革；奧米雅王朝建立", why: "奧米雅王朝建立於 661 年。" },
+            { c: "d", text: "巴格達；阿拔斯王朝建立", why: "阿拔斯王朝建立於 750 年。" }] },
+          sol: { id: "s-F1", aria: "逐步圖解：貿易、創教、出走" }
+        },
+        {
+          id: "F2", title: "教義與五功", page: "p.76", tags: ["src"],
+          say: "伊斯蘭教把<b>猶太教、基督教和阿拉伯傳統</b>揉在一起，規矩都跟生活綁在一起：每天祈禱、施捨窮人、不喝酒、不吃豬肉、不崇拜偶像，簡單好懂，所以傳得很快。穆斯林把穆罕默德當<b>先知</b>，不是神。《古蘭經》一定用阿拉伯文，讓各地穆斯林說同一種「宗教語言」。",
+          formula: "五功：唸（公開表白信仰）・禮（每日朝麥加禱告五次）・齋（齋戒月日出到日落禁食）・課（捐獻濟貧）・朝（一生至少朝覲麥加一次）<br>「伊斯蘭」＝服從神命　「穆斯林」＝服從者　《古蘭經》以阿拉伯文寫成 → 伊斯蘭世界高度同質",
+          widget: { id: "w-five", aria: "伊斯蘭教五功：唸、禮、齋、課、朝", rw: 0.42, rn: 0.85,
+            controls: [{ k: "i", label: "五功", min: 0, max: 4, step: 1 }] },
+          space: "五功圍成一圈，中間是《古蘭經》。點到「禮」，看朝向麥加的箭頭；點到「朝」，看一生至少一次。",
+          trap: "以為穆斯林把穆罕默德當神崇拜。他是先知，崇拜的唯一對象是真主阿拉。",
+          quiz: { q: "「齋戒月期間，日出到日落禁食」是五功中的哪一項？", answer: "c", options: [
+            { c: "a", text: "唸", why: "唸是公開表白信仰。" },
+            { c: "b", text: "禮", why: "禮是每日朝麥加禱告五次。" },
+            { c: "c", text: "齋" },
+            { c: "d", text: "課", why: "課是捐獻財富濟貧。" }] },
+          sol: { id: "s-F2", aria: "逐步圖解：五功一一對應" }
+        },
+        {
+          id: "F3", title: "擴張與王朝更迭：正統哈里發、奧米雅、阿拔斯", page: "p.77～79", tags: ["src"],
+          say: "穆罕默德死後，由大家推舉的<b>哈里發</b>（繼承者）帶領，四位正統哈里發用寬容、輕稅的方式快速擴張。之後政權變成世襲：<b>奧米雅王朝</b>都大馬士革、穿白衣；<b>阿拔斯王朝</b>推翻奧米雅、遷都巴格達、穿黑衣，是伊斯蘭文明的黃金時代，1258 年被蒙古所滅。",
+          formula: "正統哈里發（632～661）：寬容、因地制宜、不強迫改宗、輕稅；642 滅波斯薩珊、占埃及<br>奧米雅（661～750）：第一個世襲王朝、都大馬士革、白衣大食；732 進攻西歐被法蘭克王國擋下<br>阿拔斯（750～1258）：都巴格達、中央集權、黃金時代、黑衣大食；1258 亡於蒙古",
+          widget: { id: "w-dyn", aria: "632 年到 1258 年伊斯蘭政權的時間軸", rw: 0.36, rn: 0.8,
+            controls: [{ k: "y", label: "年份", min: 632, max: 1258, step: 1 }], play: { k: "y", dur: 7000 } },
+          space: "拖動年份：時間軸上的色塊會亮起當時的政權，下面顯示它的首都和「大食」的顏色。注意 909 年之後，阿拔斯和法提馬同時存在。",
+          trap: "以為阿拔斯王朝是被鄂圖曼滅的。1258 年滅阿拔斯的是蒙古。",
+          quiz: { q: "唐朝稱為「黑衣大食」、建都巴格達、被視為伊斯蘭文明黃金時代的是？", answer: "c", options: [
+            { c: "a", text: "正統哈里發時期", why: "正統哈里發時期還沒有世襲王朝，也沒有遷都巴格達。" },
+            { c: "b", text: "奧米雅王朝", why: "奧米雅都大馬士革，稱白衣大食。" },
+            { c: "c", text: "阿拔斯王朝" },
+            { c: "d", text: "法提馬王朝", why: "法提馬在北非，稱綠衣大食。" }] },
+          sol: { id: "s-F3", aria: "逐步圖解：三個時期依序登場" }
+        },
+        {
+          id: "F4", title: "什葉派、遜尼派與「一分為三」", page: "p.78～79", tags: ["src"],
+          say: "第四任哈里發阿里死後，大家吵「誰來接班」：<b>什葉派</b>說要由阿里的後代（穆罕默德的家族）繼承，<b>遜尼派</b>說要協商產生。後來奧米雅的遺族逃到西班牙重建王朝，北非的什葉派又建立<b>法提馬王朝</b>，十世紀時伊斯蘭政權<b>一分為三</b>。",
+          formula: "什葉派：哈里發由阿里後裔繼承　　遜尼派：哈里發由協商產生（今日約占八成）<br>十世紀一分為三：西亞 阿拔斯（巴格達，黑）｜北非 法提馬（開羅，什葉派，綠）｜西班牙 奧米雅（哥多華，白）",
+          widget: { id: "w-three", aria: "十世紀伊斯蘭政權一分為三的位置（示意）", rw: 0.45, rn: 0.9,
+            controls: [{ k: "i", label: "政權", min: 0, max: 2, step: 1 }] },
+          space: "地圖從西到東：最左邊伊比利半島的西班牙奧米雅、中間北非的法提馬、右邊兩河流域的阿拔斯，三個首都各自發號施令。",
+          trap: "把法提馬當成遜尼派。法提馬是什葉派在北非建立的，以綠色為象徵。",
+          quiz: { q: "什葉派與遜尼派最初的分歧點是？", answer: "a", options: [
+            { c: "a", text: "哈里發應該由誰來繼承" },
+            { c: "b", text: "要不要到麥加朝聖", why: "兩派都要朝覲麥加，這是五功之一。" },
+            { c: "c", text: "《古蘭經》要不要用阿拉伯文", why: "兩派都以阿拉伯文誦讀《古蘭經》。" },
+            { c: "d", text: "要不要禁止偶像崇拜", why: "伊斯蘭教都禁止偶像崇拜，不是分派的原因。" }] },
+          sol: { id: "s-F4", aria: "逐步圖解：分派到分裂" }
+        },
+        {
+          id: "F5", title: "伊斯蘭文明：科學、藝術與文學", page: "p.80～81", tags: ["src"],
+          say: "伊斯蘭世界最厲害的是<b>科學</b>，而且很實用：天文學幫忙航海、醫學裡眼科特別進步，海什木還用實驗證明光線是<b>進入眼睛</b>才看得到。藝術上因為<b>禁止偶像崇拜</b>，不畫人像，改用幾何圖樣、阿拉伯文書法和花草紋。文學代表作是《一千零一夜》。",
+          formula: "科學（成就最高、偏實用）：數學、天文學、醫學（眼科）、光學（海什木《光學之書》）、化學<br>藝術（綜合性）：圓頂、列柱、拱門取自拜占庭；華麗裝飾採自波斯；禁偶像 → 幾何圖樣、書法、花草<br>文學：《一千零一夜》（阿拉伯文，九世紀前後的阿拉伯社會，十八世紀初傳入歐洲）",
+          widget: { id: "w-geo", aria: "伊斯蘭藝術常用的幾何星形圖樣", rw: 0.42, rn: 0.85,
+            controls: [{ k: "n", label: "星形角數", min: 6, max: 12, step: 2 }, { k: "d", label: "繁複度", min: 1, max: 3, step: 1 }] },
+          space: "調整角數和繁複度：同一個星形重複、旋轉、拼接，就能鋪滿整面牆，不需要畫任何人物或動物。",
+          trap: "以為清真寺的圓頂來自波斯。圓頂、列柱、拱門取自拜占庭，波斯風格的是內部華麗的裝飾。",
+          quiz: { q: "伊斯蘭藝術常用幾何圖樣、書法與花草作裝飾，主要原因是？", answer: "d", options: [
+            { c: "a", text: "阿拉伯地區缺乏顏料", why: "與顏料無關，伊斯蘭藝術用色其實很豐富。" },
+            { c: "b", text: "受中國水墨畫影響", why: "課本沒有這種說法，原因是宗教規範。" },
+            { c: "c", text: "法律禁止使用阿拉伯文", why: "相反地，阿拉伯文書法正是常見的裝飾。" },
+            { c: "d", text: "伊斯蘭教嚴禁偶像崇拜" }] },
+          sol: { id: "s-F5", aria: "逐步圖解：從一個星形鋪滿整面牆" }
+        },
+        {
+          id: "F6", title: "東西交流的橋梁：傳入中國、東南亞，傳出到歐洲", page: "p.82～85", tags: ["src"],
+          say: "伊斯蘭帝國坐在歐亞交界，像一座<b>橋</b>。往東：穆斯林商人走陸上、海上絲路到長安、廣州、泉州，元朝時更多中亞穆斯林定居中國；再往東南，印尼、馬來半島也陸續改信。往西：中國的造紙術、印度的數字經穆斯林傳到歐洲；巴格達的<b>智慧宮</b>翻譯希臘古籍，後來成為歐洲文藝復興的基石。",
+          formula: "東傳：七世紀後經陸、海絲路到中國（長安、廣州、泉州）；元代色目人 → 回族、維吾爾族；印尼（約十三、十四世紀）、馬來半島（約十五、十六世紀）<br>西傳：中國造紙術、印度計數系統（阿拉伯數字）；智慧宮翻譯希臘、羅馬、波斯著作 → 文藝復興「回到古代」",
+          widget: { id: "w-bridge", aria: "伊斯蘭世界向東、向東南與向西的文化傳播路線（示意）", rw: 0.45, rn: 0.95,
+            controls: [{ k: "r", label: "路線", min: 0, max: 2, step: 1 }] },
+          space: "切換路線：往東是陸上與海上絲路，往東南是到印尼、馬來半島的海路，往西是把造紙術、數字和希臘古籍送到歐洲。伊斯蘭世界就在中間。",
+          trap: "以為「阿拉伯數字」是阿拉伯人發明的。它源自印度的計數系統，是經由穆斯林傳入西方。",
+          quiz: { q: "所謂「阿拉伯數字」，原本源自哪裡？", answer: "b", options: [
+            { c: "a", text: "阿拉伯半島", why: "阿拉伯人是傳播者，源頭是印度。" },
+            { c: "b", text: "印度" },
+            { c: "c", text: "希臘", why: "希臘傳入的是古典學術著作，數字源自印度。" },
+            { c: "d", text: "中國", why: "中國傳入西方的是造紙術。" }] },
+          sol: { id: "s-F6", aria: "逐步圖解：往東、往東南、往西" }
+        }
+      ]
+    },
+    {
+      id: "2", short: "伊斯蘭世界與西方的互動", title: "伊斯蘭世界與西方的互動（第2節）",
+      plan: { goal: "說明十字軍的背景、經過與影響，排出蒙古西征、帖木兒與三大火藥帝國的順序，比較鄂圖曼、薩法維、蒙兀兒的特色與它們和西方的關係。", prereq: "第1節的伊斯蘭王朝與教派。", time: "約 3 節課。" },
+      cards: [
+        {
+          id: "F7", title: "十字軍運動（1095～1291）", page: "p.86～87", tags: ["src"],
+          say: "十一世紀拜占庭被<b>塞爾柱土耳其</b>逼得很緊，向羅馬教宗求救；耶路撒冷的部分統治者也妨礙基督徒朝聖。<b>1095 年</b>教宗烏爾班二世號召西歐出兵，前後約八次：第一次打下耶路撒冷，第四次卻為了利益攻進基督教大城<b>君士坦丁堡</b>。打仗讓雙方仇恨更深，卻也讓東方的知識和技術流進歐洲。",
+          formula: "背景：拜占庭受塞爾柱土耳其威脅求援＋朝聖受阻　　1095 烏爾班二世號召；約八次（1095～1291）<br>第一次（1099）攻陷耶路撒冷、建封建王國　第四次 攻入君士坦丁堡（拜占庭元氣大傷）　並非單純宗教因素<br>影響：穆斯林與基督徒對立加深；古典文獻、商業技術（股份公司、信用、支票、匯兌）、工藝（水車、齒輪、造紙、造船）傳入歐洲",
+          widget: { id: "w-crus", aria: "1095 年到 1291 年十字軍運動的時間軸", rw: 0.36, rn: 0.8,
+            controls: [{ k: "y", label: "年份", min: 1090, max: 1295, step: 1 }], play: { k: "y", dur: 6000 } },
+          space: "播放時間軸：1099 年第一次十字軍拿下耶路撒冷；第四次轉向君士坦丁堡；1291 年運動結束。下方的箭頭表示同時有東方的知識往西流。",
+          trap: "以為十字軍只打穆斯林。第四次十字軍攻打的是基督教的君士坦丁堡。",
+          quiz: { q: "十字軍運動為歐洲帶來的影響，下列何者正確？", answer: "a", options: [
+            { c: "a", text: "股份公司、信用制度、支票等商業經營技術傳入歐洲" },
+            { c: "b", text: "穆斯林與基督徒從此和解", why: "大量穆斯林遭殺害，雙方對立反而加深。" },
+            { c: "c", text: "歐洲從此斷絕與東方的往來", why: "相反地，東西往來加速。" },
+            { c: "d", text: "十字軍永久控制了耶路撒冷", why: "第一次攻下後，屢遭穆斯林反攻。" }] },
+          sol: { id: "s-F7", aria: "逐步圖解：原因、經過、影響" }
+        },
+        {
+          id: "F8", title: "蒙古西征與帖木兒", page: "p.88", tags: ["src"],
+          say: "十三世紀蒙古大軍西征，<b>1258 年</b>滅了阿拔斯王朝，在中亞、西亞建立欽察、察合臺、伊兒汗國。有趣的是，征服者反被征服：這些汗國的居民多是穆斯林，蒙古統治者後來<b>陸續改信伊斯蘭教</b>。十四世紀的帖木兒更以「伊斯蘭之劍」自居。",
+          formula: "1258 蒙古滅阿拔斯　→　欽察、察合臺、伊兒汗國（統治者陸續改信伊斯蘭；伊兒汗國合贊汗改信並自稱蘇丹）<br>帖木兒帝國（1370～1507）：帖木兒以「伊斯蘭之劍」自居，控制察合臺及部分伊兒汗國",
+          widget: { id: "w-mongol", aria: "蒙古西征後的汗國與帖木兒帝國（示意）", rw: 0.42, rn: 0.85,
+            controls: [{ k: "t", label: "時期", min: 0, max: 2, step: 1 }] },
+          space: "切換時期：先是阿拔斯王朝，接著被蒙古三個汗國取代，最後帖木兒帝國把察合臺和部分伊兒汗國收進來。",
+          trap: "以為蒙古人把伊斯蘭教消滅了。汗國的統治者反而陸續改信伊斯蘭教。",
+          quiz: { q: "1258 年滅亡阿拔斯王朝的是？", answer: "c", options: [
+            { c: "a", text: "鄂圖曼帝國", why: "鄂圖曼十三世紀末才建國，1453 年滅的是拜占庭。" },
+            { c: "b", text: "十字軍", why: "十字軍主要爭奪耶路撒冷一帶。" },
+            { c: "c", text: "蒙古" },
+            { c: "d", text: "帖木兒帝國", why: "帖木兒帝國 1370 年才建立。" }] },
+          sol: { id: "s-F8", aria: "逐步圖解：征服者被征服" }
+        },
+        {
+          id: "F9", title: "三大火藥帝國：鄂圖曼、薩法維、蒙兀兒", page: "p.88～92", tags: ["src"],
+          say: "十六、十七世紀有三個靠軍事立國、擅長火器的伊斯蘭帝國：<b>鄂圖曼</b>在 1453 年攻下君士坦丁堡、滅了拜占庭，蘇萊曼一世時最強；<b>薩法維</b>在伊朗，奉什葉派；<b>蒙兀兒</b>在印度，阿克拜善待印度教徒，奧蘭澤卻迫害印度教徒而由盛轉衰。",
+          formula: "鄂圖曼：1453 攻下君士坦丁堡；蘇萊曼一世（1520～1566）鼎盛；政教合一、宗教寬和；1683 圍攻維也納失敗<br>薩法維（1501～1736）：今伊朗、什葉派（今伊朗什葉派的淵源）、曾聯合西歐對抗鄂圖曼；波斯地毯、絲綢<br>蒙兀兒（1526～1857）：巴卑爾建立；阿克拜親善印度教徒；沙賈汗建泰姬瑪哈陵；奧蘭澤迫害印度教徒 → 叛亂、衰弱",
+          widget: { id: "w-gun", aria: "三大火藥帝國的存續時間與重要事件", rw: 0.4, rn: 0.85,
+            controls: [{ k: "y", label: "年份", min: 1450, max: 1860, step: 1 }], play: { k: "y", dur: 7000 } },
+          space: "拖動年份：三條帶子是三個帝國的存續時間，1500～1700 年三個帝國同時並立；帶子上的點是各自的重要事件。",
+          trap: "把 1453 和 1683 搞混：1453 年鄂圖曼攻下君士坦丁堡；1683 年圍攻維也納失敗，擴張告一段落。",
+          quiz: { q: "今日伊朗以什葉派信仰為主，淵源可追溯到哪一個帝國？", answer: "b", options: [
+            { c: "a", text: "鄂圖曼帝國", why: "鄂圖曼在小亞細亞、巴爾幹一帶，蘇丹是遜尼派。" },
+            { c: "b", text: "薩法維帝國" },
+            { c: "c", text: "蒙兀兒帝國", why: "蒙兀兒在印度。" },
+            { c: "d", text: "法提馬王朝", why: "法提馬雖是什葉派，但在北非，十二世紀就結束了。" }] },
+          sol: { id: "s-F9", aria: "逐步圖解：三個帝國的興衰" }
+        },
+        {
+          id: "F10", title: "鄂圖曼帝國與西方：從恐懼到輕視", page: "p.90、93", tags: ["src"],
+          say: "鄂圖曼最強的時候，歐洲人很害怕：威尼斯的艦隊指揮官看到土耳其艦隊，擔心基督教世界要被毀了。鄂圖曼又卡住歐亞貿易，<b>逼得西歐去找新航道</b>。等到鄂圖曼圍攻維也納失敗、西歐又工業化之後，情勢倒轉，到了二十世紀初，漫畫裡的鄂圖曼只能眼睜睜看著領土被瓜分。",
+          formula: "十五世紀：鄂圖曼強盛，歐洲人恐懼　→　1683 圍攻維也納失敗，擴張告一段落<br>壟斷歐亞陸、海貿易 → 迫使西歐尋找替代航道　→　西歐工業化後，鄂圖曼面臨轉型壓力、受列強虎視眈眈（1908 波士尼亞危機）",
+          widget: { id: "w-otto", aria: "鄂圖曼帝國的強弱與歐洲人的態度變化（示意）", rw: 0.38, rn: 0.8,
+            controls: [{ k: "y", label: "年份", min: 1450, max: 1910, step: 1 }], play: { k: "y", dur: 6000 } },
+          space: "紅線是鄂圖曼的國勢（示意），在 1520～1566 年最高，1683 年後一路往下。三個資料點放在線上，就能看出歐洲人從害怕、有信心到輕視。",
+          trap: "以為鄂圖曼一直和歐洲敵對。課本提到它在擴張中與歐洲國家「有對抗，也有結盟」。",
+          quiz: { q: "鄂圖曼帝國壟斷歐亞之間的陸路與海路貿易，對西歐造成什麼影響？", answer: "d", options: [
+            { c: "a", text: "西歐國家完全放棄海外貿易", why: "相反地，西歐更積極向外發展。" },
+            { c: "b", text: "西歐國家改信伊斯蘭教", why: "課本沒有這樣的敘述。" },
+            { c: "c", text: "西歐國家與鄂圖曼合併", why: "雙方是對抗與結盟並存，沒有合併。" },
+            { c: "d", text: "迫使西歐國家積極尋找替代航道" }] },
+          sol: { id: "s-F10", aria: "逐步圖解：三則資料排先後" }
+        }
+      ]
+    }
+  ],
+  footer: [
+    "本圖解教材內容依教材包 tm_85（長榮中學高二歷史課本 第3章 伊斯蘭與世界，p.72～93）的重點以自己的話改寫，不照抄課本。",
+    "地圖為示意圖，只表示相對位置；國勢曲線為示意；年代皆依課本。",
+    "練習題請到測驗中心的「第3章：伊斯蘭與世界」（47 題，AI 依課文命題）。"
+  ],
+  script: String.raw`
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function arrow(g,x1,y1,x2,y2,c,w){ L(g,x1,y1,x2,y2,c,w||2.5); var a=Math.atan2(y2-y1,x2-x1), h=9; g.save(); g.fillStyle=c; g.beginPath(); g.moveTo(x2,y2); g.lineTo(x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)); g.lineTo(x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)); g.closePath(); g.fill(); g.restore(); }
+function rect(g,G,x0,y0,x1,y1,fill,stroke){ box(g,Math.min(G.X(x0),G.X(x1)),Math.min(G.Y(y0),G.Y(y1)),Math.abs(G.X(x1)-G.X(x0)),Math.abs(G.Y(y1)-G.Y(y0)),fill,stroke,1); }
+function city(g,G,x,y,name,C,hl,al){ dot(g,G.X(x),G.Y(y),hl?6:4,hl?C.red:C.ink); T(g,name,G.X(x)+(al==='right'?-8:8),G.Y(y),hl?C.red:C.ink,12,al||'left',hl?'700':'500'); }
+/* 示意地圖：地中海、阿拉伯半島、兩河、紅海、波斯灣（相對位置） */
+function baseMap(g,G,C){ rect(g,G,-12,-6,12,6,alpha(C.blue,0.12),null);
+  poly(g,G,[[-12,6],[12,6],[12,1.2],[6,1.4],[4.5,0.6],[3,1.6],[1,1.8],[-1,2.4],[-4,2.6],[-6,2.2],[-9,2.6],[-12,2.4]],alpha('#d9c9a3',0.9),null);
+  poly(g,G,[[-12,0.8],[-1,0.8],[0.2,-1],[0.6,-6],[-12,-6]],alpha('#d9c9a3',0.9),null);
+  poly(g,G,[[1.4,0.6],[4,0.6],[5.2,-0.6],[7.6,-2.2],[7,-4.2],[3.6,-5.4],[1.6,-3]],alpha('#e8d38a',0.95),C.ink);
+  poly(g,G,[[4.5,1.4],[12,1.4],[12,-6],[8.4,-6],[7.9,-2.6],[5.4,-0.5]],alpha('#d9c9a3',0.9),null);
+  T(g,'地中海',G.X(-5),G.Y(1.6),C.blue,12,'center','700'); T(g,'紅海',G.X(0.9),G.Y(-2.6),C.blue,11,'center'); T(g,'波斯灣',G.X(7.6),G.Y(-1.2),C.blue,11,'left'); T(g,'阿拉伯半島',G.X(4.5),G.Y(-3.6),C.ink,12,'center','700'); }
+
+/* F1 阿拉伯半島 */
+function arabDraw(g,c,C,t){ var G=frame(full(c),-12,12,-6,6,10,false); baseMap(g,G,C);
+  g.save(); g.strokeStyle=C.gold; g.lineWidth=3; g.setLineDash([8,5]); g.beginPath(); g.moveTo(G.X(5.5),G.Y(-5.2)); g.lineTo(G.X(3.2),G.Y(-2.8)); g.lineTo(G.X(2.6),G.Y(-1.2)); g.lineTo(G.X(1.8),G.Y(0.9)); g.lineTo(G.X(0.5),G.Y(2.8)); g.stroke(); g.restore();
+  T(g,'駱駝商隊（陸路）',G.X(5.6),G.Y(-5.5),'#b8860b',11,'left','700');
+  arrow(g,G.X(-0.3),G.Y(-5.5),G.X(0.4),G.Y(-1.6),C.blue,2.5); arrow(g,G.X(10.5),G.Y(-5.6),G.X(7.8),G.Y(-1.8),C.blue,2.5); T(g,'海路：印度香料',G.X(10.6),G.Y(-5.4),C.blue,11,'right','700');
+  city(g,G,3.2,-2.8,'麥加',C,t===0); city(g,G,2.6,-1.2,'麥地那',C,t>=1); city(g,G,0.5,2.9,'耶路撒冷',C,false); city(g,G,1.4,3.6,'大馬士革',C,false);
+  if(t>=1){ arrow(g,G.X(3.1),G.Y(-2.5),G.X(2.7),G.Y(-1.5),C.red,3); T(g,'622 年 出走',G.X(3.4),G.Y(-1.9),C.red,12,'left','700'); }
+  if(t>=2){ g.save(); g.strokeStyle=C.red; g.lineWidth=2.5; g.setLineDash([5,4]); g.beginPath(); g.moveTo(G.X(1.5),G.Y(0.5)); g.lineTo(G.X(4.2),G.Y(0.5)); g.lineTo(G.X(7.4),G.Y(-2.1)); g.lineTo(G.X(6.8),G.Y(-4.1)); g.lineTo(G.X(3.6),G.Y(-5.2)); g.lineTo(G.X(1.7),G.Y(-3)); g.closePath(); g.stroke(); g.restore(); T(g,'統一半島大部分',G.X(5),G.Y(-4.7),C.red,12,'center','700'); }
+  T(g,['① 東西貿易的十字路口','② 622 年出走麥地那','③ 建立神權社會、統一半島'][t],G.X(-11.5),G.Y(5.2),C.ink,14,'left','700'); }
+var ARAB=['阿拉伯半島位在東西貿易樞紐：海路運來印度香料，駱駝商隊經過綠洲城市，<b>麥加</b>是重要集散地。','穆罕默德主張唯一真主阿拉，與麥加多神信仰衝突，<b>622 年出走麥地那</b>（伊斯蘭教紀元元年）。','在麥地那建立伊斯蘭教的神權社會，逐漸<b>統一阿拉伯半島大部分</b>。'];
+widget('w-arab',{state:{t:0},rw:0.5,rn:1.0,fmt:{t:function(v){return ['創教前','622 年','統一半島'][v];}},
+  draw:function(g,c,s){ arabDraw(g,c,c.C,s.t); }, out:function(s){ return ARAB[s.t]; } });
+widget('s-F1',{state:{},steps:3,rw:0.5,rn:1.0, draw:function(g,c,s){ arabDraw(g,c,c.C,s.step); }, out:steps(ARAB) });
+
+/* F2 五功 */
+var FIVE=[['唸','公開表白信仰：萬物非主，唯有真主'],['禮','每日朝麥加方向禱告五次'],['齋','齋戒月期間日出到日落禁食'],['課','捐獻財富濟貧（天課）'],['朝','一生至少到麥加天房朝覲一次']];
+function fiveDraw(g,c,C,sel){ var G=frame(full(c),-1.6,1.6,-1.25,1.25,12,true);
+  dot(g,G.X(0),G.Y(0),0.42*G.sx,alpha(C.teal,0.25)); T(g,'《古蘭經》',G.X(0),G.Y(0.08),C.ink,14,'center','700'); T(g,'阿拉伯文',G.X(0),G.Y(-0.14),C.muted,11,'center');
+  FIVE.forEach(function(f,i){ var a=PI/2-i*TAU/5, x=Math.cos(a)*0.92, y=Math.sin(a)*0.92, on=sel==null||sel===i;
+    L(g,G.X(0.42*Math.cos(a)),G.Y(0.42*Math.sin(a)),G.X(x*0.78),G.Y(y*0.78),C.grid,2);
+    dot(g,G.X(x),G.Y(y),0.24*G.sx,on?alpha(C.red,0.85):alpha(C.muted,0.25)); T(g,f[0],G.X(x),G.Y(y),on?C.sheet:C.ink,18,'center','700'); });
+  if(sel!=null){ var f=FIVE[sel]; T(g,f[0]+'：'+f[1],G.X(0),G.Y(-1.18),C.red,13,'center','700'); } }
+widget('w-five',{state:{i:1},rw:0.42,rn:0.85,fmt:{i:function(v){return FIVE[v][0];}},
+  draw:function(g,c,s){ fiveDraw(g,c,c.C,s.i); }, out:function(s){ return '<b>'+FIVE[s.i][0]+'</b>：'+FIVE[s.i][1]+'。五功是每位穆斯林都必須遵守的原則。'; } });
+widget('s-F2',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ fiveDraw(g,c,c.C,[null,1,4][s.step]); },
+  out:steps(['五功：唸、禮、齋、課、朝，圍繞著以阿拉伯文寫成的《古蘭經》。','<b>禮</b>：每天朝麥加方向禱告五次。','<b>朝</b>：一生至少一次到麥加的天房朝覲。']) });
+
+/* F3 王朝時間軸 */
+var DYN=[[632,661,'正統哈里發','麥地那等','—','#7fb3a6'],[661,750,'奧米雅王朝','大馬士革','白衣大食','#e8e3d6'],[750,1258,'阿拔斯王朝','巴格達','黑衣大食','#4b4f5c'],[909,1171,'法提馬王朝','開羅（973～）','綠衣大食','#6fae6a']];
+function dynDraw(g,c,C,y,only){ var G=frame(full(c),600,1290,-2.2,2.6,24,false);
+  for(var t=650;t<=1250;t+=100){ L(g,G.X(t),G.Y(-1.3),G.X(t),G.Y(2.3),C.grid,1); T(g,String(t),G.X(t),G.Y(-1.6),C.muted,11,'center'); }
+  DYN.forEach(function(d,i){ if(only!=null&&only.indexOf(i)<0) return; var row=i===3?0.2:1.2, on=y>=d[0]&&y<d[1];
+    rect(g,G,d[0],row,d[1],row+0.8,alpha(d[5],on?0.95:0.45),C.ink); if(i===0) T(g,d[2],G.X(d[0]),G.Y(row-0.3),C.ink,12,'left','700'); else T(g,d[2],G.X((d[0]+Math.min(d[1],1250))/2),G.Y(row+0.4),i===2&&on?C.sheet:C.ink,12,'center','700'); });
+  [[642,'642 滅薩珊、占埃及'],[732,'732 法蘭克擋下'],[1258,'1258 蒙古滅阿拔斯']].forEach(function(e,i){ if(only!=null&&only.length<3&&i===2&&only.indexOf(2)<0) return; dot(g,G.X(e[0]),G.Y(2.3),4,C.red); T(g,e[1],G.X(e[0]),G.Y(2.55-0.0),C.red,11,i===2?'right':'center','700'); });
+  if(y!=null){ L(g,G.X(y),G.Y(-1.3),G.X(y),G.Y(2.2),C.red,2.5); } }
+function dynOut(y){ var on=DYN.filter(function(d){ return y>=d[0]&&y<d[1]; }); if(!on.length) return y+' 年：阿拔斯王朝已被蒙古所滅（1258）。'; return y+' 年：'+on.map(function(d){ return '<b>'+d[2]+'</b>（首都 '+d[3]+(d[4]!=='—'?'，'+d[4]:'')+'）'; }).join('　＋　'); }
+widget('w-dyn',{state:{y:800},rw:0.36,rn:0.8,fmt:{y:function(v){return v+' 年';}},
+  draw:function(g,c,s){ dynDraw(g,c,c.C,s.y,null); }, out:function(s){ return dynOut(s.y); } });
+widget('s-F3',{state:{},steps:3,rw:0.36,rn:0.8,
+  draw:function(g,c,s){ dynDraw(g,c,c.C,[645,700,850][s.step],[[0],[0,1],[0,1,2]][s.step]); },
+  out:steps(['632～661 <b>正統哈里發</b>：推舉產生，寬容、輕稅，642 年滅薩珊、占埃及。','661～750 <b>奧米雅王朝</b>：第一個世襲王朝，都大馬士革，白衣大食。','750～1258 <b>阿拔斯王朝</b>：都巴格達，黃金時代，黑衣大食，1258 年亡於蒙古。']) });
+
+/* F4 一分為三 */
+var THREE=[['西班牙 奧米雅',-10,2.5,'哥多華','奧米雅遺族重建，與阿拔斯長期敵對','#e8e3d6'],['北非 法提馬',-3,-1,'開羅','什葉派建立，綠衣大食','#6fae6a'],['西亞 阿拔斯',7,1.2,'巴格達','遜尼派哈里發，黑衣大食','#4b4f5c']];
+function threeDraw(g,c,C,sel){ var G=frame(full(c),-12,12,-6,6,10,false); baseMap(g,G,C);
+  poly(g,G,[[-12,6],[-7,6],[-7,2.6],[-9,2.6],[-12,2.4]],alpha('#d9c9a3',0.9),C.ink);
+  THREE.forEach(function(r,i){ var on=sel==null||sel===i; dot(g,G.X(r[1]),G.Y(r[2]),(on?1.6:1.2)*G.sx,alpha(r[5],on?0.85:0.35));
+    city(g,G,r[1],r[2]-0.3,r[3],C,on,'left'); T(g,r[0],G.X(r[1]),G.Y(r[2]+1.9),on?C.ink:C.muted,13,'center','700'); });
+  T(g,'十世紀：伊斯蘭政權一分為三',G.X(-11.5),G.Y(-5.3),C.red,13,'left','700'); }
+widget('w-three',{state:{i:1},rw:0.45,rn:0.9,fmt:{i:function(v){return THREE[v][0];}},
+  draw:function(g,c,s){ threeDraw(g,c,c.C,s.i); }, out:function(s){ var r=THREE[s.i]; return '<b>'+r[0]+'</b>：首都 '+r[3]+'；'+r[4]+'。'; } });
+widget('s-F4',{state:{},steps:3,rw:0.45,rn:0.9,
+  draw:function(g,c,s){ threeDraw(g,c,c.C,[2,0,1][s.step]); },
+  out:steps(['阿里死後的繼承爭議：<b>什葉派</b>要阿里後裔，<b>遜尼派</b>要協商產生。阿拔斯延續遜尼派哈里發。','奧米雅王朝被阿拔斯推翻後，遺族在<b>西班牙</b>重建奧米雅王朝。','北非的<b>什葉派</b>建立法提馬王朝，十世紀起伊斯蘭政權一分為三。']) });
+
+/* F5 幾何圖樣 */
+function star(g,cx,cy,r,n,col,lw){ g.save(); g.strokeStyle=col; g.lineWidth=lw; g.beginPath(); for(var k=0;k<=2*n;k++){ var a=-PI/2+k*PI/n, rr=k%2?r*0.45:r; var x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a); if(k) g.lineTo(x,y); else g.moveTo(x,y); } g.closePath(); g.stroke(); g.restore(); }
+function geoDraw(g,c,C,n,d){ var w=c.w,h=c.h, s=Math.min(w,h)/(2*d+1.2); g.save(); g.fillStyle=alpha(C.blue,0.08); g.fillRect(0,0,w,h); g.restore();
+  for(var i=-d-2;i<=d+2;i++) for(var j=-d-2;j<=d+2;j++){ var cx=w/2+i*s*1.6, cy=h/2+j*s*1.6; if(cx<-s||cx>w+s||cy<-s||cy>h+s) continue;
+    star(g,cx,cy,s*0.75,n,(i+j)%2?C.teal:C.blue,2); if(d>=2) star(g,cx,cy,s*0.38,n,C.gold,1.5); if(d>=3){ g.save(); g.translate(cx,cy); g.rotate(PI/n); g.translate(-cx,-cy); star(g,cx,cy,s*0.75,n,alpha(C.red,0.6),1.2); g.restore(); } } }
+widget('w-geo',{state:{n:8,d:2},rw:0.42,rn:0.85,fmt:{n:function(v){return v+' 角';},d:function(v){return ['','簡單','中等','繁複'][v];}},
+  draw:function(g,c,s){ geoDraw(g,c,c.C,s.n,s.d); }, out:function(s){ return s.n+' 角星重複拼接、旋轉疊加：伊斯蘭教<b>嚴禁偶像崇拜</b>，裝飾改用幾何圖樣、書法與花草。'; } });
+widget('s-F5',{state:{},steps:3,rw:0.42,rn:0.85,
+  draw:function(g,c,s){ geoDraw(g,c,c.C,8,s.step+1); },
+  out:steps(['先畫一個星形。','在裡面再套一層、往外重複，圖樣開始變繁複。','旋轉後疊加，就能鋪滿整面牆，完全不需要人物或動物形象。']) });
+
+/* F6 東西交流 */
+var ROUTES=[['往東：到中國','穆斯林商人經陸上、海上絲路來到長安、廣州、泉州；元代色目人定居 → 回族、維吾爾族'],['往東南：印尼、馬來半島','印尼約十三、十四世紀，馬來半島約十五、十六世紀傳入；今印尼八成以上信仰伊斯蘭'],['往西：到歐洲','中國造紙術、印度數字經穆斯林傳入西方；智慧宮翻譯的古典著作成為文藝復興基石']];
+function bridgeDraw(g,c,C,r){ var G=frame(full(c),-12,12,-6,6,10,false); rect(g,G,-12,-6,12,6,alpha(C.blue,0.1),null);
+  rect(g,G,-12,1,-5,6,alpha('#c9d6e8',0.9),C.ink); T(g,'歐洲',G.X(-8.5),G.Y(4),C.ink,14,'center','700');
+  rect(g,G,-4,-2,2,4,alpha('#e8d38a',0.95),C.ink); T(g,'伊斯蘭世界',G.X(-1),G.Y(1.6),C.ink,14,'center','700'); city(g,G,-0.4,0.4,'巴格達（智慧宮）',C,r===2,'center');
+  rect(g,G,6,1,12,6,alpha('#f2c4b6',0.9),C.ink); T(g,'中國',G.X(9),G.Y(4.6),C.ink,14,'center','700'); city(g,G,7,3.2,'長安',C,r===0); city(g,G,9.4,1.6,'泉州',C,r===0); city(g,G,8,1.3,'廣州',C,r===0,'right');
+  rect(g,G,3,-6,7,-1,alpha('#e7c7a1',0.9),C.ink); T(g,'印度',G.X(5),G.Y(-3.2),C.ink,14,'center','700');
+  poly(g,G,[[8,-4],[11.8,-3.4],[11.8,-5.6],[8.4,-5.8]],alpha('#b7d9b0',0.9),C.ink); T(g,'印尼、馬來半島',G.X(10),G.Y(-4.6),C.ink,12,'center','700');
+  if(r===0){ arrow(g,G.X(2),G.Y(2.8),G.X(6),G.Y(3.2),C.red,3); T(g,'陸上絲路',G.X(4),G.Y(3.5),C.red,11,'center','700'); arrow(g,G.X(1.5),G.Y(-1.8),G.X(8.2),G.Y(0.9),C.blue,3); T(g,'海上絲路',G.X(4.6),G.Y(-0.9),C.blue,11,'center','700'); }
+  if(r===1){ arrow(g,G.X(1.5),G.Y(-1.9),G.X(8.4),G.Y(-4.3),C.red,3); T(g,'遠洋貿易',G.X(5),G.Y(-0.3),C.red,11,'center','700'); }
+  if(r===2){ arrow(g,G.X(-4),G.Y(2.4),G.X(-5.2),G.Y(2.4),C.red,3); arrow(g,G.X(6),G.Y(4.4),G.X(2.2),G.Y(3.6),'#b8860b',2.5); T(g,'造紙術',G.X(4.2),G.Y(4.6),'#b8860b',11,'center','700'); arrow(g,G.X(4),G.Y(-1),G.X(1.6),G.Y(-0.4),'#b8860b',2.5); T(g,'數字',G.X(3.4),G.Y(-1.4),'#b8860b',11,'center','700'); T(g,'→ 傳入歐洲',G.X(-6),G.Y(0.4),C.red,12,'center','700'); }
+  T(g,ROUTES[r][0],G.X(-11.6),G.Y(-5.3),C.red,13,'left','700'); }
+widget('w-bridge',{state:{r:0},rw:0.45,rn:0.95,fmt:{r:function(v){return ROUTES[v][0];}},
+  draw:function(g,c,s){ bridgeDraw(g,c,c.C,s.r); }, out:function(s){ return '<b>'+ROUTES[s.r][0]+'</b>：'+ROUTES[s.r][1]+'。'; } });
+widget('s-F6',{state:{},steps:3,rw:0.45,rn:0.95, draw:function(g,c,s){ bridgeDraw(g,c,c.C,s.step); }, out:steps(ROUTES.map(function(r){ return '<b>'+r[0]+'</b>：'+r[1]+'。'; })) });
+
+/* F7 十字軍 */
+var CRU=[[1095,'1095 教宗烏爾班二世號召'],[1099,'1099 第一次十字軍攻陷耶路撒冷'],[1204,'第四次：攻入君士坦丁堡'],[1291,'1291 十字軍運動結束']];
+function cruDraw(g,c,C,y,k){ var G=frame(full(c),1080,1305,-2.4,2.4,24,false);
+  rect(g,G,1095,-0.3,1291,0.3,alpha(C.red,0.25),C.red); for(var t=1100;t<=1300;t+=50){ T(g,String(t),G.X(t),G.Y(-0.8),C.muted,11,'center'); }
+  CRU.forEach(function(e,i){ if(k!=null&&i>k) return; var up=i%2===0, on=y>=e[0]; dot(g,G.X(e[0]),G.Y(0),on?6:4,on?C.red:C.muted); L(g,G.X(e[0]),G.Y(up?0.3:-0.3),G.X(e[0]),G.Y(up?1.3:-1.5),on?C.red:C.grid,1.5); T(g,e[1],G.X(e[0])+(i===3?-4:4),G.Y(up?1.6:-1.8),on?C.ink:C.muted,12,i===3?'right':'left',on?'700':'500'); });
+  if(y!=null) L(g,G.X(y),G.Y(-2.2),G.X(y),G.Y(2.2),C.blue,2);
+  if(k==null||k>=3){ arrow(g,G.X(1290),G.Y(2.1),G.X(1100),G.Y(2.1),C.teal,2.5); T(g,'東方的古典文獻、商業與工藝技術 → 歐洲',G.X(1195),G.Y(2.35),C.teal,11,'center','700'); } }
+widget('w-crus',{state:{y:1100},rw:0.36,rn:0.8,fmt:{y:function(v){return v+' 年';}},
+  draw:function(g,c,s){ cruDraw(g,c,c.C,s.y,null); },
+  out:function(s){ var last=CRU.filter(function(e){ return s.y>=e[0]; }).pop(); return last?s.y+' 年：最近的大事是「<b>'+last[1]+'</b>」。':s.y+' 年：十字軍運動尚未開始；拜占庭正受塞爾柱土耳其威脅。'; } });
+widget('s-F7',{state:{},steps:3,rw:0.36,rn:0.8,
+  draw:function(g,c,s){ cruDraw(g,c,c.C,null,[0,2,3][s.step]); },
+  out:steps(['原因：拜占庭受<b>塞爾柱土耳其</b>威脅而求援、朝聖受阻；1095 年教宗烏爾班二世號召。','經過：第一次攻下耶路撒冷；第四次為了利益攻入<b>君士坦丁堡</b>。','影響：雙方對立加深，但古典文獻、商業與工藝技術傳入歐洲。']) });
+
+/* F8 蒙古與帖木兒 */
+var MON=[['阿拔斯王朝（～1258）',[['阿拔斯王朝',-2,4,'#4b4f5c']]],['1258 後：蒙古三汗國',[['欽察汗國',-6,0,'#f0c27b'],['察合臺汗國',0,6,'#e8945a'],['伊兒汗國',-4,-0.1,'#9a86b5']]],['1370 後：帖木兒帝國',[['欽察汗國',-6,0,'#f0c27b'],['帖木兒帝國',-3,6,'#c0392b']]]];
+function monDraw(g,c,C,t){ var G=frame(full(c),-7,7,-3,3,14,false), st=MON[t];
+  rect(g,G,-7,-3,7,3,alpha(C.blue,0.08),null);
+  st[1].forEach(function(r,i){ var y0=r[0]==='欽察汗國'?0.6:-1.6, y1=r[0]==='欽察汗國'?2.4:0.4; rect(g,G,r[1],y0,r[2],y1,alpha(r[3],0.85),C.ink); T(g,r[0],G.X((r[1]+r[2])/2),G.Y((y0+y1)/2),r[3]==='#4b4f5c'||r[3]==='#c0392b'?C.sheet:C.ink,13,'center','700'); });
+  T(g,'西',G.X(-6.8),G.Y(-2.7),C.muted,11,'left'); T(g,'東',G.X(6.8),G.Y(-2.7),C.muted,11,'right');
+  T(g,st[0],G.X(-6.8),G.Y(2.75),C.red,13,'left','700'); if(t>=1) T(g,'統治者陸續改信伊斯蘭教',G.X(0),G.Y(-2.5),C.teal,12,'center','700'); }
+widget('w-mongol',{state:{t:1},rw:0.42,rn:0.85,fmt:{t:function(v){return ['阿拔斯','蒙古汗國','帖木兒'][v];}},
+  draw:function(g,c,s){ monDraw(g,c,c.C,s.t); },
+  out:function(s){ return ['阿拔斯王朝統治西亞，直到 1258 年。','<b>1258 年蒙古滅阿拔斯</b>，建立欽察、察合臺、伊兒汗國；統治者陸續改信伊斯蘭教。','<b>帖木兒帝國（1370～1507）</b>：帖木兒以「伊斯蘭之劍」自居，控制察合臺及部分伊兒汗國。'][s.t]; } });
+widget('s-F8',{state:{},steps:3,rw:0.42,rn:0.85, draw:function(g,c,s){ monDraw(g,c,c.C,s.step); },
+  out:steps(['十三世紀前：阿拔斯王朝。','1258 年蒙古西征滅阿拔斯，建立三個汗國。','征服者反被征服：汗國統治者改信伊斯蘭；十四世紀帖木兒崛起。']) });
+
+/* F9 三大火藥帝國 */
+var GUN=[['鄂圖曼帝國',1453,1860,'#c0392b',[[1453,'攻下君士坦丁堡'],[1520,'蘇萊曼一世'],[1683,'圍攻維也納失敗']]],['薩法維帝國',1501,1736,'#2e7d6f',[[1501,'建立（什葉派）'],[1736,'結束']]],['蒙兀兒帝國',1526,1857,'#b8860b',[[1526,'巴卑爾建立'],[1556,'阿克拜'],[1628,'沙賈汗（泰姬瑪哈陵）'],[1700,'奧蘭澤後衰弱']]]];
+function gunDraw(g,c,C,y,only){ var G=frame(full(c),1440,1870,-0.6,3.4,24,false);
+  for(var t=1450;t<=1850;t+=50) T(g,String(t),G.X(t),G.Y(-0.35),C.muted,11,'center');
+  GUN.forEach(function(e,i){ if(only!=null&&only!==i) return; var row=2.6-i*1.05, on=y==null||(y>=e[1]&&y<=e[2]);
+    rect(g,G,e[1],row-0.3,e[2],row+0.3,alpha(e[3],on?0.85:0.3),null); T(g,e[0],G.X(e[1])+4,G.Y(row),C.sheet,12,'left','700');
+    e[4].forEach(function(p,j){ dot(g,G.X(p[0]),G.Y(row+0.42),3.5,C.ink); T(g,p[1],G.X(p[0]),G.Y(row+0.62+(j%2)*0.2),C.ink,10,'center'); }); });
+  if(y!=null) L(g,G.X(y),G.Y(-0.1),G.X(y),G.Y(3.3),C.blue,2); }
+widget('w-gun',{state:{y:1600},rw:0.4,rn:0.85,fmt:{y:function(v){return v+' 年';}},
+  draw:function(g,c,s){ gunDraw(g,c,c.C,s.y,null); },
+  out:function(s){ var on=GUN.filter(function(e){ return s.y>=e[1]&&s.y<=e[2]; }).map(function(e){ return e[0]; }); return s.y+' 年：'+(on.length?'<b>'+on.join('、')+'</b> 並存':'三大火藥帝國尚未建立')+'。'; } });
+widget('s-F9',{state:{},steps:3,rw:0.4,rn:0.85, draw:function(g,c,s){ gunDraw(g,c,c.C,null,s.step); },
+  out:steps(['<b>鄂圖曼</b>：1453 年攻下君士坦丁堡滅拜占庭；蘇萊曼一世鼎盛；1683 年圍攻維也納失敗。','<b>薩法維</b>（1501～1736）：今伊朗，奉什葉派，曾聯合西歐對抗鄂圖曼。','<b>蒙兀兒</b>（1526～1857）：阿克拜親善印度教徒；沙賈汗建泰姬瑪哈陵；奧蘭澤迫害印度教徒而衰弱。']) });
+
+/* F10 鄂圖曼與西方 */
+function power(y){ return y<1453?0.55+0.25*(y-1450)/3:y<1566?0.8+0.2*(y-1453)/113:y<1683?1-0.1*(y-1566)/117:Math.max(0.12,0.9-0.78*(y-1683)/227); }
+var OTTO=[[1480,'威尼斯指揮官：擔心基督教世界被毀','恐懼'],[1683,'圍攻維也納失敗；布達之役後歐洲有信心','信心'],[1908,'漫畫：領土被瓜分，束手無策','輕視']];
+function ottoDraw(g,c,C,y,k){ var G=frame(full(c),1440,1920,-0.25,1.25,24,false);
+  for(var t=1450;t<=1900;t+=50) T(g,String(t),G.X(t),G.Y(-0.12),C.muted,11,'center'); T(g,'國勢（示意）',G.X(1445),G.Y(1.18),C.muted,11,'left');
+  plot(g,{X:G.X,Y:function(v){ return G.Y(v); }},power,1450,1910,C.red,3);
+  OTTO.forEach(function(p,i){ if(k!=null&&i>k) return; var on=y==null||y>=p[0]; dot(g,G.X(p[0]),G.Y(power(p[0])),6,on?C.blue:C.muted); T(g,p[2],G.X(p[0]),G.Y(power(p[0])+0.12),on?C.blue:C.muted,13,'center','700'); T(g,p[1],G.X(p[0])+(i===2?-6:6),G.Y(power(p[0])-0.12),on?C.ink:C.muted,10,i===2?'right':'left'); });
+  if(y!=null) L(g,G.X(y),G.Y(0),G.X(y),G.Y(1.1),C.ink,1.5); }
+widget('w-otto',{state:{y:1700},rw:0.38,rn:0.8,fmt:{y:function(v){return v+' 年';}},
+  draw:function(g,c,s){ ottoDraw(g,c,c.C,s.y,null); },
+  out:function(s){ return s.y<1566?s.y+' 年：鄂圖曼國勢上升，歐洲人<b>恐懼</b>；壟斷歐亞貿易，迫使西歐尋找替代航道。':s.y<1683?s.y+' 年：鄂圖曼仍強，與歐洲國家有對抗也有結盟。':s.y+' 年：1683 年後擴張告一段落；西歐工業化，鄂圖曼面臨轉型壓力、被列強<b>虎視眈眈</b>。'; } });
+widget('s-F10',{state:{},steps:3,rw:0.38,rn:0.8, draw:function(g,c,s){ ottoDraw(g,c,c.C,null,s.step); },
+  out:steps(['十五世紀末：鄂圖曼強盛，威尼斯指揮官擔心基督教世界被毀 → <b>恐懼</b>。','1683 年圍攻維也納失敗，布達之役後歐洲人覺得勝利在望 → <b>信心</b>。','1908 年漫畫：鄂圖曼面對領土喪失束手無策 → <b>輕視</b>。']) });
+`
+};

@@ -283,6 +283,30 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "HIS_H2_Ch3_Islam",
+    href: "docs/TeachingMaterials/lessons/HIS_H2_Ch3_Islam.html",
+    title: "第3章 伊斯蘭與世界・圖解教材",
+    subject: "歷史",
+    materialIds: ["tm_85"],
+    source: "課本 第3章 伊斯蘭與世界（第1節 伊斯蘭文化的發展與擴張、第2節 伊斯蘭世界與西方的互動，p.72～93）",
+    sections: [
+      { id: "1", title: "伊斯蘭文化的發展與擴張" },
+      { id: "2", title: "伊斯蘭世界與西方的互動" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "伊斯蘭教的建立：從麥加到麥地那", keywords: ["耶路撒冷", "三教共同聖地", "宗教寬容", "建立背景", "麥加", "麥地那", "穆罕默德"] },
+      { id: "F2", section: "1", title: "教義與五功", keywords: ["教義", "古蘭經", "五功"] },
+      { id: "F3", section: "1", title: "擴張與王朝更迭：正統哈里發、奧米雅、阿拔斯", keywords: ["正統哈里發", "奧米雅王朝", "阿拔斯王朝", "哈里發"] },
+      { id: "F4", section: "1", title: "什葉派、遜尼派與「一分為三」", keywords: ["什葉派與遜尼派", "一分為三", "法提馬王朝", "什葉派", "遜尼派"] },
+      { id: "F5", section: "1", title: "伊斯蘭文明：科學、藝術與文學", keywords: ["伊斯蘭科學", "伊斯蘭藝術", "伊斯蘭文學", "海什木", "一千零一夜"] },
+      { id: "F6", section: "1", title: "東西交流的橋梁：傳入中國、東南亞，傳出到歐洲", keywords: ["傳入中國", "傳入東南亞", "交流的橋梁", "智慧宮", "翻譯運動", "花剌子密"] },
+      { id: "F7", section: "2", title: "十字軍運動（1095～1291）", keywords: ["十字軍運動", "十字軍的影響", "十字軍", "烏爾班二世", "塞爾柱"] },
+      { id: "F8", section: "2", title: "蒙古西征與帖木兒", keywords: ["蒙古西征", "帖木兒", "汗國"] },
+      { id: "F9", section: "2", title: "三大火藥帝國：鄂圖曼、薩法維、蒙兀兒", keywords: ["三大火藥帝國", "火藥帝國", "鄂圖曼帝國", "薩法維帝國", "蒙兀兒帝國", "蒙兀兒文化", "泰姬瑪哈陵"] },
+      { id: "F10", section: "2", title: "鄂圖曼帝國與西方：從恐懼到輕視", keywords: ["鄂圖曼帝國與西方", "歐洲人的心態", "閱讀探究"] }
+    ]
+  },
+  {
     lessonId: "HIS_H2_EuropeEastAsia",
     href: "docs/TeachingMaterials/lessons/HIS_H2_EuropeEastAsia.html",
     title: "歐洲文化・自由與民主・東亞戰爭與冷戰・圖解教材",
