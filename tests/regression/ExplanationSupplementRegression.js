@@ -106,7 +106,9 @@ console.log("\n[4] 教材包未被修改");
     /* 2026-10-21 Project Owner 同意：依課本原始照片更正數學第1章 1-3／1-4 頁碼（1-3 p.40–54、1-4 p.55–67），移除過時的「待補照片再核實」字樣。 */
     "docs/TeachingMaterials/materials/tm_7/metadata.json", "docs/TeachingMaterials/materials/tm_7/report.md", "docs/TeachingMaterials/materials/tm_7/manifest.json", "docs/TeachingMaterials/materials/tm_50/metadata.json", "docs/TeachingMaterials/materials/tm_50/report.md", "docs/TeachingMaterials/materials/tm_50/manifest.json", "docs/TeachingMaterials/materials/tm_57/metadata.json", "docs/TeachingMaterials/materials/tm_57/report.md", "docs/TeachingMaterials/materials/tm_57/manifest.json", "docs/TeachingMaterials/materials/tm_7/material.md",
     /* 2026-10-21 Project Owner 同意（「繼續核對」）：依原始照片補核 1-4 節，移除 summary 的【需確認】註記。 */
-    "docs/TeachingMaterials/materials/tm_7/summary.json"];
+    "docs/TeachingMaterials/materials/tm_7/summary.json",
+    /* 2026-10-30 Project Owner 同意（「依照建議進行修正」）：重排歷史第3章多選題選項順序，讓正解不再集中在前面幾個選項；題目與答案內容不變。 */
+    "docs/TeachingMaterials/materials/tm_85/questionbank.json"];
   try {
     clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString()
       .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]) || APPROVED_EDITS.indexOf(f) !== -1);
