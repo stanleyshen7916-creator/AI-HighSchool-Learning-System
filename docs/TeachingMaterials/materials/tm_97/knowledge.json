@@ -1,0 +1,16 @@
+{
+  "materialId": "tm_97",
+  "knowledgePoints": [
+    {
+      "name": "第八課作者",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "第八課題解",
+      "source": "question",
+      "refCount": 7
+    }
+  ],
+  "generatedAt": "2026-11-01T09:04:12.419Z"
+}

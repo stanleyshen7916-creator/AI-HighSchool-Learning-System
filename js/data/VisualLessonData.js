@@ -527,7 +527,8 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/CHI_H2_S2.html",
     title: "高二國文第五～八課・圖解教材",
     subject: "國文",
-    materialIds: ["tm_91"],
+    /* 2026-11-01：原 tm_91 依課別拆分為 tm_94（第五課）、tm_95（第六課）、tm_96（第七課）、tm_97（第八課）。 */
+    materialIds: ["tm_94", "tm_95", "tm_96", "tm_97"],
     source: "長榮版國文第五課〈燭之武退秦師〉、第六課〈一桿「稱仔」〉、第七課〈鹿港乘桴記〉、第八課〈祖靈遺忘的孩子〉（題解、作者），p.76～127",
     sections: [
       { id: "1", title: "第五課〈燭之武退秦師〉" },
