@@ -108,7 +108,9 @@ console.log("\n[4] 教材包未被修改");
     /* 2026-10-21 Project Owner 同意（「繼續核對」）：依原始照片補核 1-4 節，移除 summary 的【需確認】註記。 */
     "docs/TeachingMaterials/materials/tm_7/summary.json",
     /* 2026-10-30 Project Owner 同意（「依照建議進行修正」）：重排歷史第3章多選題選項順序，讓正解不再集中在前面幾個選項；題目與答案內容不變。 */
-    "docs/TeachingMaterials/materials/tm_85/questionbank.json"];
+    "docs/TeachingMaterials/materials/tm_85/questionbank.json",
+    /* 2026-11-01 Project Owner 同意（「刪除」）：刪掉地理第7章第 24 題詳解中課本沒有寫的伊斯蘭教推論；題目與答案不變。 */
+    "docs/TeachingMaterials/materials/tm_90/questionbank.json"];
   try {
     clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString()
       .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]) || APPROVED_EDITS.indexOf(f) !== -1);
