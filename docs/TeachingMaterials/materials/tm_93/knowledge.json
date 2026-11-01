@@ -1,0 +1,121 @@
+{
+  "materialId": "tm_93",
+  "knowledgePoints": [
+    {
+      "name": "L4 would rather",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L4 句型 be thought to",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L4 單字",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "L4 片語",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L4 聽力策略",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L4 背景與祭壇",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L4 課文理解",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "L4 閱讀策略",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "L5 no…without",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L5 句型 be seen/heard",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L5 單字",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "L5 片語",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L5 聽力策略",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "L5 舞妓與藝妓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "L5 課文理解",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "L5 閱讀策略",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L6 either/neither",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L6 句型 not until",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L6 單字",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "L6 片語",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L6 聽力策略",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "L6 背景與寫作鉤子",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "L6 課文理解",
+      "source": "question",
+      "refCount": 8
+    }
+  ],
+  "generatedAt": "2026-11-01T07:37:52.373Z"
+}
