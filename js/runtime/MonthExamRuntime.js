@@ -236,6 +236,16 @@ AHS.MonthExamRuntime = (function () {
       });
     }
     if (preset) { return { materialIds: preset, source: "admin" }; }
+    /* 2026-11-01 月考範圍：沒有設定時，預設為目前要準備的那次月考的教材（例如第二次月考）；
+       這一科還沒有該次月考的教材時才用全部課次。 */
+    var current = AHS.ExamPeriod ? AHS.ExamPeriod.workspaceCurrent() : null;
+    if (current) {
+      var inPeriod = available.filter(function (id) {
+        var p = AHS.ExamPeriod.ofMaterialId(id);
+        return !!p && p.id === current.id;
+      });
+      if (inPeriod.length) { return { materialIds: inPeriod, source: "period", periodLabel: current.label }; }
+    }
     return { materialIds: available, source: "all" };
   }
 

@@ -213,6 +213,9 @@
 .mat-card__thumb-icon svg { width: 40px; height: 40px; opacity: 0.7; }
 .mat-card__title { margin: 0; font-size: 15px; font-weight: 700; }
 .mat-card__meta { margin: 0; font-size: 12px; color: var(--text-faint); }
+/* 2026-11-01 月考範圍標籤：目前要準備的那次月考較醒目 */
+.mat-card__period { align-self: flex-start; margin: 0; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); background-color: var(--bg); }
+.mat-card__period.is-current { color: var(--brand-strong); background-color: var(--brand-soft); }
 .mat-card__foot { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-faint); }
 .mat-card__progress { font-weight: 700; color: var(--brand); }
 .mat-card__views { display: inline-flex; align-items: center; gap: 4px; }

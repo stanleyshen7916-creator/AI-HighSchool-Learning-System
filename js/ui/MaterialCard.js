@@ -42,6 +42,13 @@ AHS.MaterialCard = (function () {
      - onToggleFavorite(id): toggle favorite in runtime, returns new bool.
      A legacy positional signature (…, onOpenDetail, onDelete,
      onToggleFavorite) is still accepted for backward compatibility. */
+  /* 2026-11-01 月考範圍標籤（第一次／第二次月考）；沒有設定的學校／學期不顯示 */
+  function examPeriodBadge(item) {
+    var p = AHS.ExamPeriod ? AHS.ExamPeriod.ofRuntimeMaterial(item) : null;
+    if (!p) { return null; }
+    return el("p", { class: "mat-card__period" + (p.current ? " is-current" : ""), text: p.label + (p.done ? "（已結束）" : "") });
+  }
+
   function create(item, status, opts, legacyDelete, legacyFav) {
     /* Backward-compat: if opts is a function, treat as onOpenDetail. */
     if (typeof opts === "function") {
@@ -255,6 +262,7 @@ AHS.MaterialCard = (function () {
          必填欄位，見 js/ui/MaterialUploadDialog.js）先前只存在於資料裡，
          卡片上完全看不到，使用者無從分辨/確認每筆教材實際被歸到哪一類——
          現在併入既有 meta 行一起顯示，不新增卡片版位。 */
+      examPeriodBadge(item),
       el("p", { class: "mat-card__meta", text: (item.grade || "") + subj.name + "｜" + item.chapter +
         (item.category ? "｜" + item.category : "") }),
       fileInfo,

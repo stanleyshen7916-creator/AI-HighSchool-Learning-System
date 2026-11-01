@@ -90,6 +90,7 @@ AHS.QuizParts = AHS.QuizParts || {};
         subjChips
       ]),
       el("div", { class: "quiz-filter__row quiz-filter__row--controls" }, [
+        data.periods && data.periods.length > 1 ? select("月考範圍", data.periods, state.period, handlers.onPeriod) : null,
         select("年級", data.gradeOptions, state.grade, handlers.onGrade),
         select("章節", chapterOptions, state.chapter, handlers.onChapter),
         select("難易度", data.difficulties, state.difficulty, handlers.onDifficulty),
@@ -99,6 +100,13 @@ AHS.QuizParts = AHS.QuizParts || {};
       ])
     ]);
   }
+
+  /* 2026-11-01 月考範圍標籤：目前要準備的那次月考用醒目的顏色 */
+  function periodTag(period) {
+    if (!period) { return null; }
+    return el("span", { class: "quiz-row__tag quiz-row__tag--period" + (period.current ? " is-current" : ""), text: period.label });
+  }
+  var ALL_PERIOD = "全部月考範圍";
 
   /* ---- Quiz row -------------------------------------------------------- */
   function quizRow(item, status, onStart) {
@@ -132,6 +140,7 @@ AHS.QuizParts = AHS.QuizParts || {};
         el("h3", { class: "quiz-row__title", text: item.title }),
         el("div", { class: "quiz-row__tags" }, [
           chip(item.subject),
+          periodTag(item.examPeriod),
           el("span", { class: "quiz-row__tag", text: item.grade }),
           el("span", { class: "quiz-row__tag", text: item.chapter })
         ]),
@@ -299,7 +308,9 @@ AHS.QuizParts = AHS.QuizParts || {};
     var diffOk = state.difficulty === state.difficultyAll || it.difficulty.indexOf(state.difficulty) !== -1;
     var typeOk = state.type === state.typeAll || it.type.indexOf(state.type) !== -1;
     var progressOk = !state.onlyIncomplete || it.progress < 100;
-    return subjOk && gradeOk && chapterOk && diffOk && typeOk && progressOk;
+    var periodOk = !state.period || state.period === ALL_PERIOD ||
+      (!!it.examPeriod && state.period.indexOf(it.examPeriod.label) === 0);
+    return subjOk && gradeOk && chapterOk && diffOk && typeOk && progressOk && periodOk;
   }
 
   function sortItems(items, sortKey) {
@@ -411,7 +422,7 @@ AHS.QuizParts = AHS.QuizParts || {};
           checkbox,
           el("span", { class: "qpick-row-text" }, [
             el("span", { class: "qpick-row-title", text: it.title }),
-            el("span", { class: "qpick-row-meta", text: (showChapter ? it.chapter + "・" : "") + "共 " + (mode === "practice" ? it.total : it.count) + " 題" })
+            el("span", { class: "qpick-row-meta", text: (it.examPeriod ? it.examPeriod.label + "・" : "") + (showChapter ? it.chapter + "・" : "") + "共 " + (mode === "practice" ? it.total : it.count) + " 題" })
           ])
         ]);
         checkbox.addEventListener("change", function () {
@@ -481,9 +492,13 @@ AHS.QuizParts = AHS.QuizParts || {};
       type: data.types[0],
       typeAll: data.types[0],
       onlyIncomplete: false,
-      sort: data.sorts[0]
+      sort: data.sorts[0],
+      period: ALL_PERIOD
     };
     var gradeOptions = [ALL_GRADE].concat(data.grades);
+    /* 月考範圍選項：只有目前學校／學期有設定、而且清單裡真的有標示的教材時才顯示 */
+    var periodOptions = (AHS.ExamPeriod && (data.items || []).some(function (it) { return !!it.examPeriod; }))
+      ? [ALL_PERIOD].concat(AHS.ExamPeriod.workspaceOptions().map(function (o) { return o.label; })) : [];
 
     var filterBarContainer = el("div", {});
     var listContainer = el("div", {});
@@ -498,12 +513,13 @@ AHS.QuizParts = AHS.QuizParts || {};
       var chapterOptions = chapterOptionsFor(data.items, state.subject);
       AHS.UI.mount(filterBarContainer, filterBar(
         { subjects: data.subjects, gradeOptions: gradeOptions, difficulties: data.difficulties,
-          types: data.types, sorts: data.sorts },
+          types: data.types, sorts: data.sorts, periods: periodOptions },
         state,
         chapterOptions,
         {
           onSubject: function (id) { state.subject = id; state.chapter = ALL_CHAPTER; renderFilterBar(); renderList(); },
           onGrade: function (v) { state.grade = v; renderList(); },
+          onPeriod: function (v) { state.period = v; renderList(); },
           onChapter: function (v) { state.chapter = v; renderList(); },
           onDifficulty: function (v) { state.difficulty = v; renderList(); },
           onType: function (v) { state.type = v; renderList(); },

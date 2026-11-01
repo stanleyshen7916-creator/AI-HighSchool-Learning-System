@@ -282,6 +282,12 @@ AHS.WrongBook = (function () {
     return { el: headerEl, favBtn: favBtn };
   }
 
+  /* 2026-11-01 錯題列的月考範圍前綴，例如「第二次月考｜知識點」 */
+  function periodPrefix(item) {
+    var pe = AHS.ExamPeriod ? AHS.ExamPeriod.ofWrongItem(item) : null;
+    return pe ? pe.label + "｜" : "";
+  }
+
   /* ---- Export (WB-010) ---------------------------------------------------
      Browser-only download (Blob + object URL + temporary <a download>) —
      no backend. Exports the currently visible (filtered) Wrong Book set as
@@ -459,6 +465,8 @@ AHS.WrongBook = (function () {
     ]);
     clearBtn.addEventListener("click", handlers.onClear);
 
+    var periodLabels = (AHS.ExamPeriod ? AHS.ExamPeriod.workspaceOptions() : []).map(function (o) { return o.label; });
+
     return el("section", { class: "card wb-filter", "aria-label": "篩選錯題" }, [
       search,
       el("div", { class: "wb-filter__row" }, [
@@ -466,6 +474,8 @@ AHS.WrongBook = (function () {
         select("知識點", knowledgeOptions, handlers.onKnowledge),
         select("難易度", data.difficultyOptions, handlers.onDifficulty),
         select("狀態", data.statusOptions, handlers.onStatus),
+        /* 2026-11-01 月考範圍（第一次／第二次月考）：只有目前學校／學期有設定時才出現 */
+        periodLabels.length > 1 ? select("月考範圍", ["全部月考範圍"].concat(periodLabels), handlers.onPeriod) : null,
         select("排序", SORT_OPTIONS, handlers.onSort),
         favToggle,
         clearBtn
@@ -605,7 +615,7 @@ AHS.WrongBook = (function () {
           el("span", { class: "wb-row__index", text: "第 " + (index + 1) + " 題" }),
           el("span", { class: "wb-row__question", text: item.question })
         ]),
-        el("p", { class: "wb-row__meta", text: item.knowledgePoint || "" }),
+        el("p", { class: "wb-row__meta", text: periodPrefix(item) + (item.knowledgePoint || "") }),
         el("div", { class: "wb-row__stats" }, [
           el("span", { class: "wb-row__col wb-row__col--diff" }, [diffTag(deriveDifficulty(item))]),
           /* AI-128: 錯誤次數／正確次數 both shown side by side (was
@@ -1318,6 +1328,7 @@ AHS.WrongBook = (function () {
     var knowledgeFilter = "all";
     var difficultyFilter = "all";
     var statusFilter = "all";
+    var periodFilter = "all"; /* 2026-11-01 月考範圍：all 或「第二次月考」等標籤 */
     var searchText = "";
     var sortKey = "最新錯誤";
     var favoriteOnly = false;
@@ -1387,7 +1398,9 @@ AHS.WrongBook = (function () {
         var statusMatch = isArchivedFilter || statusFilter === "all" || getMasteryStatus(p.item.correctStreak) === statusFilter;
         var searchMatch = !searchText || searchable(p.item).indexOf(searchText) !== -1;
         var favoriteMatch = !favoriteOnly || p.item.bookmarked;
-        return subjectMatch && knowledgeMatch && difficultyMatch && statusMatch && archivedMatch && searchMatch && favoriteMatch;
+        var periodOf = periodFilter === "all" || !AHS.ExamPeriod ? null : AHS.ExamPeriod.ofWrongItem(p.item);
+        var periodMatch = periodFilter === "all" || (!!periodOf && periodFilter.indexOf(periodOf.label) === 0);
+        return subjectMatch && knowledgeMatch && difficultyMatch && statusMatch && archivedMatch && searchMatch && favoriteMatch && periodMatch;
       });
 
       // WB-013: Pagination — slice the matching set to the current page.
@@ -1461,6 +1474,11 @@ AHS.WrongBook = (function () {
       currentPage = 1;
       applyView();
     }
+    function onPeriodFilter(label) {
+      periodFilter = label === "全部月考範圍" ? "all" : label;
+      currentPage = 1;
+      applyView();
+    }
     function onStatusFilter(label) {
       statusFilter = label === "全部狀態" ? "all" : label;
       currentPage = 1;
@@ -1516,6 +1534,7 @@ AHS.WrongBook = (function () {
       knowledgeFilter = "all";
       difficultyFilter = "all";
       statusFilter = "all";
+      periodFilter = "all";
       searchText = "";
       sortKey = "最新錯誤";
       currentPage = 1;
@@ -1553,6 +1572,7 @@ AHS.WrongBook = (function () {
       onKnowledge: onKnowledgeFilter,
       onDifficulty: onDifficultyFilter,
       onStatus: onStatusFilter,
+      onPeriod: onPeriodFilter,
       onSearch: onSearchInput,
       onSort: onSortChange,
       onFavoriteToggle: setFavoriteOnly,

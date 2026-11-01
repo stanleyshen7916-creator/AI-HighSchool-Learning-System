@@ -97,11 +97,14 @@ AHS.MonthExam = (function () {
           srcText.textContent = "範圍：你自行調整";
           refresh();
         });
-        return el("li", {}, [box, el("label", { for: "mx-" + m.materialId, text: m.label + "（" + m.count + " 題）" })]);
+        var pe = AHS.ExamPeriod ? AHS.ExamPeriod.ofMaterialId(m.materialId) : null;
+        return el("li", {}, [box, el("label", { for: "mx-" + m.materialId, text: (pe ? "【" + pe.label + "】" : "") + m.label + "（" + m.count + " 題）" })]);
       }));
 
       srcText.textContent = range.source === "admin" ? "範圍：老師設定的本次月考範圍"
-        : range.source === "student" ? "範圍：你自行調整" : "範圍：全部課次（尚未設定月考範圍）";
+        : range.source === "student" ? "範圍：你自行調整"
+        : range.source === "period" ? "範圍：" + range.periodLabel + "的教材（目前要準備的月考）"
+        : "範圍：全部課次（尚未設定月考範圍）";
 
       var startBtn = button("開始作答", "primary", function () {
         var ids = selected();
