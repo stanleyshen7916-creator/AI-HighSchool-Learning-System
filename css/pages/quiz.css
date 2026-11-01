@@ -101,6 +101,9 @@
 .quiz-row__title { margin: 0 0 6px; font-size: 15px; font-weight: 700; }
 .quiz-row__tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
 .quiz-row__tag { font-size: 11px; color: var(--text-faint); background-color: var(--bg); padding: 2px 8px; border-radius: 6px; }
+/* 2026-11-01 月考範圍標籤：目前要準備的那次月考較醒目 */
+.quiz-row__tag--period { font-weight: 700; }
+.quiz-row__tag--period.is-current { color: var(--brand-strong); background-color: var(--brand-soft); }
 .quiz-row__desc { margin: 0; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .quiz-row__dot-sep { color: var(--text-faint); }
 

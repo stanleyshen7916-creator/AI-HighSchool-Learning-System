@@ -150,6 +150,11 @@ AHS.QuizParts = AHS.QuizParts || {};
        requirement on a list, not a numbered sequence, so left as-is. */
 
     var repoEntries = (!filterMaterialId && typeof onRepoDrillDown === "function") ? repositoryExamCatalog() : [];
+    /* 2026-11-01 月考範圍：目前要準備的那次月考排前面（同一次之內維持原順序） */
+    repoEntries = repoEntries.map(function (e, i) { return { e: e, i: i }; }).sort(function (x, y) {
+      var cx = x.e.examPeriod && x.e.examPeriod.current ? 0 : 1, cy = y.e.examPeriod && y.e.examPeriod.current ? 0 : 1;
+      return cx - cy || x.i - y.i;
+    }).map(function (x) { return x.e; });
     var realQuestions = (filterMaterialId && typeof onRealPractice === "function")
       ? filterByDifficulty(realExamQuestionsFor(filterMaterialId), difficulty,
           function (q) { return difficultyRank(resolveRealQuestionDifficulty(q)); })
@@ -175,7 +180,7 @@ AHS.QuizParts = AHS.QuizParts || {};
            repeating it made the meta so long it squeezed the title to a
            couple of characters. Full text stays available as a tooltip. */
         var repoShowChapter = entry.chapter && String(entry.title || "").indexOf(entry.chapter) === -1;
-        var repoMeta = (repoShowChapter ? entry.chapter : "") + "（共 " + entry.total + " 題）";
+        var repoMeta = (entry.examPeriod ? "【" + entry.examPeriod.label + "】" : "") + (repoShowChapter ? entry.chapter : "") + "（共 " + entry.total + " 題）";
         var row = el("button", { type: "button", class: "quiz-practice__row", title: entry.title + "　" + repoMeta }, [
           el("span", {
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"

@@ -198,7 +198,9 @@ AHS.QuizParts = AHS.QuizParts || {};
         progress: stats.progress,
         accuracy: stats.accuracy,
         best: stats.best,
-        done: stats.done
+        done: stats.done,
+        /* 2026-11-01 月考範圍（第一次／第二次月考），沒有設定的學校／學期為 null */
+        examPeriod: meta.examPeriod || null
       });
     }
 
@@ -206,7 +208,8 @@ AHS.QuizParts = AHS.QuizParts || {};
       if (!entry || !entry.materialId || !entry.material) { return; }
       addEntry(entry.materialId, {
         subjectKey: subjectKeyFromChineseName(entry.material.subject) || entry.material.subject,
-        title: entry.material.title, chapter: entry.material.chapter, grade: entry.material.grade
+        title: entry.material.title, chapter: entry.material.chapter, grade: entry.material.grade,
+        examPeriod: AHS.ExamPeriod ? AHS.ExamPeriod.of(entry.material, entry.materialId) : null
       }, null);
     });
 
@@ -216,7 +219,8 @@ AHS.QuizParts = AHS.QuizParts || {};
         var summary = record.summary || {};
         var bank = record.questionBank || {};
         addEntry(record.id, {
-          subjectKey: meta.subject, title: summary.title, chapter: meta.chapter, grade: meta.grade
+          subjectKey: meta.subject, title: summary.title, chapter: meta.chapter, grade: meta.grade,
+          examPeriod: AHS.ExamPeriod ? AHS.ExamPeriod.ofMaterialId(record.id) : null
         }, bank.singleChoice);
       });
     }

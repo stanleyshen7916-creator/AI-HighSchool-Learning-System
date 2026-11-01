@@ -355,7 +355,7 @@ AHS.MaterialCenter = (function () {
 
     var currentSubject = initialSubject;
     var currentChapter = "all";
-    var currentFilter = { subject: "all", grade: "all", status: "all" };
+    var currentFilter = { subject: "all", grade: "all", status: "all", period: "all" };
     var currentSort = "newest";
     var currentSearch = "";
     var currentCategory = "all";
@@ -380,6 +380,11 @@ AHS.MaterialCenter = (function () {
         var filterGradeMatch = currentFilter.grade === "all" || item.grade === currentFilter.grade;
         var filterStatusMatch = currentFilter.status === "all" ||
           AHS.MaterialFilter.statusOf(item.progress) === currentFilter.status;
+        /* 2026-11-01 月考範圍（第一次／第二次月考） */
+        var periodOf = AHS.ExamPeriod && currentFilter.period && currentFilter.period !== "all"
+          ? AHS.ExamPeriod.ofRuntimeMaterial(item) : null;
+        var filterPeriodMatch = !currentFilter.period || currentFilter.period === "all" ||
+          (!!periodOf && periodOf.id === currentFilter.period);
         /* RC-002: top category tab controls which Group(s) show. */
         var categoryMatch = currentCategory === "all" || item.category === currentCategory;
         /* BUG-010-006: folder filter. "all" = 不限；null = 未分類。 */
@@ -410,7 +415,7 @@ AHS.MaterialCenter = (function () {
           String(item.id || "").toLowerCase().indexOf(keyword) !== -1 ||
           String(folderName).toLowerCase().indexOf(keyword) !== -1;
         return subjMatch && chapMatch && filterSubjMatch && filterGradeMatch &&
-          filterStatusMatch && categoryMatch && folderMatch && toolbarGradeMatch &&
+          filterStatusMatch && filterPeriodMatch && categoryMatch && folderMatch && toolbarGradeMatch &&
           formatMatch && favMatch && searchMatch;
       });
     }
@@ -423,7 +428,7 @@ AHS.MaterialCenter = (function () {
     function resetAllFilters() {
       currentSubject = "all";
       currentChapter = "all";
-      currentFilter = { subject: "all", grade: "all", status: "all" };
+      currentFilter = { subject: "all", grade: "all", status: "all", period: "all" };
       currentSearch = "";
       currentCategory = "all";
       currentFolder = "all";

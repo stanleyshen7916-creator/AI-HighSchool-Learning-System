@@ -61,7 +61,9 @@ AHS.MaterialFilter = (function () {
      of nesting/overlaying. onApply({subject,grade,status}) fires on any
      select change. Panel starts closed; toggled by the button. */
   function create(data, onApply) {
-    var state = { subject: "all", grade: "all", status: "all" };
+    var state = { subject: "all", grade: "all", status: "all", period: "all" };
+    /* 2026-11-01 月考範圍（第一次／第二次月考）：只有目前學校／學期有設定時才出現 */
+    var periodOptions = AHS.ExamPeriod ? AHS.ExamPeriod.workspaceOptions() : [];
 
     var panel = el("div", {
       class: "mat-filter__panel", role: "region", "aria-label": "篩選條件", hidden: "hidden"
@@ -70,7 +72,9 @@ AHS.MaterialFilter = (function () {
       select("年級", [{ id: "all", label: "全部年級" }].concat(
         (data.grades || []).map(function (g) { return { id: g, label: g }; })
       ), function (v) { state.grade = v; onApply(state); }),
-      select("狀態", STATUS_OPTIONS, function (v) { state.status = v; onApply(state); })
+      select("狀態", STATUS_OPTIONS, function (v) { state.status = v; onApply(state); }),
+      periodOptions.length > 1 ? select("月考範圍", [{ id: "all", label: "全部月考範圍" }].concat(periodOptions),
+        function (v) { state.period = v; onApply(state); }) : null
     ]);
 
     var btn = el("button", {
