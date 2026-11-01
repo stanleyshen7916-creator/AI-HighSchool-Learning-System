@@ -413,7 +413,9 @@ AHS.WrongBook = (function () {
   }
 
   /* ---- Filter bar ------------------------------------------------------ */
-  var SORT_OPTIONS = ["預設", "最新錯誤", "錯誤次數", "我的收藏"];
+  /* 2026-11-01（使用者需求「依照時間進行排序」）: 預設改為依時間排序（最近答錯的在最前面），
+     並可改成最早答錯的在前；原本依紀錄先後的「預設」選項移除。 */
+  var SORT_OPTIONS = ["最新錯誤", "最早錯誤", "錯誤次數", "我的收藏"];
 
   function filterBar(data, knowledgeOptions, handlers) {
     handlers = handlers || {};
@@ -1306,8 +1308,9 @@ AHS.WrongBook = (function () {
 
     /* ---- Filter + Search + Sort (combined) ------------------------------- */
     var SORT_COMPARATORS = {
-      "預設": function (a, b) { return a.order - b.order; },
-      "最新錯誤": function (a, b) { return (b.item.lastError || "").localeCompare(a.item.lastError || ""); },
+      /* lastError 只記到日期（YYYY/MM/DD）：同一天的錯題，後新增的排前面。 */
+      "最新錯誤": function (a, b) { return (b.item.lastError || "").localeCompare(a.item.lastError || "") || (b.order - a.order); },
+      "最早錯誤": function (a, b) { return (a.item.lastError || "").localeCompare(b.item.lastError || "") || (a.order - b.order); },
       "錯誤次數": function (a, b) { return (b.item.errorCount || 0) - (a.item.errorCount || 0); },
       "我的收藏": function (a, b) { return (b.item.bookmarked ? 1 : 0) - (a.item.bookmarked ? 1 : 0); }
     };
@@ -1316,7 +1319,7 @@ AHS.WrongBook = (function () {
     var difficultyFilter = "all";
     var statusFilter = "all";
     var searchText = "";
-    var sortKey = "預設";
+    var sortKey = "最新錯誤";
     var favoriteOnly = false;
 
     /* WB-002: Knowledge Point options built from the real Runtime data
@@ -1365,7 +1368,7 @@ AHS.WrongBook = (function () {
     var currentPage = 1;
 
     function applyView() {
-      var ordered = pairs.slice().sort(SORT_COMPARATORS[sortKey] || SORT_COMPARATORS["預設"]);
+      var ordered = pairs.slice().sort(SORT_COMPARATORS[sortKey] || SORT_COMPARATORS["最新錯誤"]);
       var matching = ordered.filter(function (p) {
         var subjectMatch = subjectFilterId === "all" || p.item.subject === subjectFilterId;
         var knowledgeMatch = knowledgeFilter === "all" || p.item.knowledgePoint === knowledgeFilter;
@@ -1514,7 +1517,7 @@ AHS.WrongBook = (function () {
       difficultyFilter = "all";
       statusFilter = "all";
       searchText = "";
-      sortKey = "預設";
+      sortKey = "最新錯誤";
       currentPage = 1;
       refreshKnowledgeSelect("all");
       setFavoriteOnly(false);
