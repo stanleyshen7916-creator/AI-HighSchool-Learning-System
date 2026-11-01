@@ -476,6 +476,53 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "MAT_H2_Ch3_Vector",
+    href: "docs/TeachingMaterials/lessons/MAT_H2_Ch3_Vector.html",
+    title: "高二數學第3章 平面向量・圖解教材",
+    subject: "數學",
+    materialIds: ["tm_92"],
+    source: "長榮版數學第3章 平面向量（3-1 運算、3-2 內積、3-3 應用），p.136～201",
+    sections: [
+      { id: "1", title: "3-1 平面向量的運算" },
+      { id: "2", title: "3-2 平面向量的內積" },
+      { id: "3", title: "3-3 平面向量的應用" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "向量 ＝ 大小 ＋ 方向：用坐標寫下來", keywords: ["向量的意義與表示", "向量的坐標表示"] },
+      { id: "F2", section: "1", title: "加法、減法與係數積：平行四邊形與伸縮", keywords: ["向量的加減法", "係數積與平行"] },
+      { id: "F3", section: "1", title: "線性組合與分點公式：用兩支箭頭鋪滿平面", keywords: ["線性組合", "分點公式與重心"] },
+      { id: "F4", section: "2", title: "內積：一個數，帶著夾角的正負號", keywords: ["內積的定義", "坐標內積與夾角", "垂直的判定"] },
+      { id: "F5", section: "2", title: "正射影：a→ 在 b→ 上的影子", keywords: ["內積的性質", "正射影", "法向量與直線夾角"] },
+      { id: "F6", section: "3", title: "柯西與三角不等式：|cos θ| ≤ 1 的威力", keywords: ["柯西不等式", "三角不等式"] },
+      { id: "F7", section: "3", title: "面積與二階行列式：|a₁b₂ − a₂b₁|", keywords: ["三角形面積與行列式", "二階行列式"] },
+      { id: "F8", section: "3", title: "方程組與克拉瑪公式：兩直線的三種關係", keywords: ["方程組與線性組合", "克拉瑪公式"] }
+    ]
+  },
+  {
+    lessonId: "ENG_H2_S2",
+    href: "docs/TeachingMaterials/lessons/ENG_H2_S2.html",
+    title: "高二英文 Lessons 4–6・圖解教材",
+    subject: "英文",
+    materialIds: ["tm_93"],
+    source: "長榮版英文 Lesson 4 Day of the Dead、Lesson 5 Kyoto: The Heart of Japan、Lesson 6 The Country of the Blind，p.78～151",
+    sections: [
+      { id: "1", title: "Lesson 4 Day of the Dead" },
+      { id: "2", title: "Lesson 5 Kyoto: The Heart of Japan" },
+      { id: "3", title: "Lesson 6 The Country of the Blind" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "兩天、三層、一整夜：亡靈節怎麼過", keywords: ["L4 課文理解", "L4 背景與祭壇", "L4 閱讀策略"] },
+      { id: "F2", section: "1", title: "Lesson 4 字彙：成串記衍生字", keywords: ["L4 單字", "L4 片語"] },
+      { id: "F3", section: "1", title: "句型：be thought to VR / to have p.p.、would rather…than…", keywords: ["L4 句型 be thought to", "L4 would rather", "L4 聽力策略"] },
+      { id: "F4", section: "2", title: "京都的三條線：季節、金閣寺、藝妓", keywords: ["L5 課文理解", "L5 閱讀策略"] },
+      { id: "F5", section: "2", title: "舞妓 vs 藝妓：學徒與專業", keywords: ["L5 舞妓與藝妓"] },
+      { id: "F6", section: "2", title: "Lesson 5 字彙與片語", keywords: ["L5 單字", "L5 片語", "L5 聽力策略"] },
+      { id: "F7", section: "2", title: "句型：be seen/heard + V-ing / to VR；no…without…", keywords: ["L5 句型 be seen/heard", "L5 no…without"] },
+      { id: "F8", section: "3", title: "故事金字塔：從「獨眼稱王」到逃離", keywords: ["L6 課文理解", "L6 背景與寫作鉤子"] },
+      { id: "F9", section: "3", title: "Lesson 6 語言：not until 強調句、either/neither 與片語", keywords: ["L6 單字", "L6 片語", "L6 句型 not until", "L6 either/neither", "L6 聽力策略"] }
+    ]
+  },
+  {
     lessonId: "CHI_H2_S2",
     href: "docs/TeachingMaterials/lessons/CHI_H2_S2.html",
     title: "高二國文第五～八課・圖解教材",

@@ -1,0 +1,96 @@
+{
+  "materialId": "tm_92",
+  "knowledgePoints": [
+    {
+      "name": "三角不等式",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "三角形面積與行列式",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "二階行列式",
+      "source": "both",
+      "refCount": 7
+    },
+    {
+      "name": "係數積與平行",
+      "source": "question",
+      "refCount": 8
+    },
+    {
+      "name": "克拉瑪公式",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "內積的定義",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "內積的性質",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "分點公式與重心",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "向量的加減法",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "向量的坐標表示",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "向量的意義與表示",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "坐標內積與夾角",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "垂直的判定",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "方程組與線性組合",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "柯西不等式",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "正射影",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "法向量與直線夾角",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "線性組合",
+      "source": "both",
+      "refCount": 3
+    }
+  ],
+  "generatedAt": "2026-11-01T07:35:05.047Z"
+}

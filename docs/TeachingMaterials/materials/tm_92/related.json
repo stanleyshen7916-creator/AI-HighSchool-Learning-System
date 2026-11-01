@@ -1,0 +1,13 @@
+{
+  "materialId": "tm_92",
+  "related": [
+    {
+      "materialId": "tm_7",
+      "reason": "同一本課本的第1章 三角函數（內積、面積公式會用到 cos、sin）"
+    },
+    {
+      "materialId": "tm_80",
+      "reason": "同科目段考題型補充題庫（第1章）"
+    }
+  ]
+}
