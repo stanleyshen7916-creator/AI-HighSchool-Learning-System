@@ -4,43 +4,43 @@
     {
       "name": "今之鹿港",
       "source": "both",
-      "refCount": 8
+      "refCount": 14
     },
     {
       "name": "今昔對比",
       "source": "question",
-      "refCount": 4
+      "refCount": 8
     },
     {
       "name": "作者洪繻",
       "source": "question",
-      "refCount": 2
+      "refCount": 5
     },
     {
       "name": "修辭",
       "source": "question",
-      "refCount": 1
+      "refCount": 2
     },
     {
       "name": "昔之鹿港",
       "source": "both",
-      "refCount": 3
+      "refCount": 4
     },
     {
       "name": "鹽田與水患",
       "source": "question",
-      "refCount": 1
+      "refCount": 2
     },
     {
       "name": "鹿港字詞",
       "source": "question",
-      "refCount": 5
+      "refCount": 6
     },
     {
       "name": "鹿港題解",
       "source": "question",
-      "refCount": 2
+      "refCount": 3
     }
   ],
-  "generatedAt": "2026-11-01T08:40:08.963Z"
+  "generatedAt": "2026-11-01T09:04:12.417Z"
 }

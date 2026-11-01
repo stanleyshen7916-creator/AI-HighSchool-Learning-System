@@ -13,8 +13,8 @@ generator after any Repository change and this file regenerates with it.
 ## Package Status
 - Manifest status：complete
 - Lifecycle Stage：IMPORTED
-- Validation：140 PASS / 0 FAIL
+- Validation：245 PASS / 0 FAIL
 
 ## Content Summary
 - 核心概念：4 項
-- 題目數：26 題
+- 題目數：47 題

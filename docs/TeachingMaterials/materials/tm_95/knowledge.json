@@ -4,37 +4,37 @@
     {
       "name": "作者賴和",
       "source": "question",
-      "refCount": 3
+      "refCount": 4
     },
     {
       "name": "寫作手法",
       "source": "question",
-      "refCount": 3
+      "refCount": 5
     },
     {
       "name": "得參的遭遇",
       "source": "question",
-      "refCount": 6
+      "refCount": 11
     },
     {
       "name": "稱仔字詞",
       "source": "question",
-      "refCount": 1
+      "refCount": 3
     },
     {
       "name": "稱仔的情節",
       "source": "question",
-      "refCount": 4
+      "refCount": 10
     },
     {
       "name": "稱仔題解",
       "source": "question",
-      "refCount": 2
+      "refCount": 5
     },
     {
       "name": "結局與後記",
       "source": "question",
-      "refCount": 2
+      "refCount": 4
     },
     {
       "name": "語言特色",
@@ -47,5 +47,5 @@
       "refCount": 2
     }
   ],
-  "generatedAt": "2026-11-01T08:40:08.876Z"
+  "generatedAt": "2026-11-01T09:04:12.416Z"
 }
