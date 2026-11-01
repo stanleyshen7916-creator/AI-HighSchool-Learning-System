@@ -77,7 +77,7 @@ console.log("\n[1] AHS.ExamPeriod 分類");
   const { window } = loadPage("quiz.html");
   const E = window.AHS.ExamPeriod;
   const m = (id) => (E.ofMaterialId(id) || {}).label || null;
-  ["tm_84", "tm_85", "tm_86", "tm_92", "tm_93", "tm_94", "tm_95", "tm_96", "tm_97"].forEach((id) =>
+  ["tm_84", "tm_85", "tm_86", "tm_92", "tm_98", "tm_99", "tm_100", "tm_94", "tm_95", "tm_96", "tm_97"].forEach((id) =>
     check(id + " 是第二次月考", m(id) === "第二次月考"));
   ["tm_7", "tm_12", "tm_17", "tm_15", "tm_16", "tm_62", "tm_83"].forEach((id) =>
     check(id + " 是第一次月考", m(id) === "第一次月考"));

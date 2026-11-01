@@ -1,0 +1,46 @@
+{
+  "materialId": "tm_98",
+  "knowledgePoints": [
+    {
+      "name": "L4 would rather",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L4 句型 be thought to",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L4 單字",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "L4 片語",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L4 聽力策略",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L4 背景與祭壇",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L4 課文理解",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "L4 閱讀策略",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-11-01T12:54:11.536Z"
+}

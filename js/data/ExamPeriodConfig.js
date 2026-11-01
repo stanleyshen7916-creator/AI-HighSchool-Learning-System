@@ -19,7 +19,7 @@ AHS.ExamPeriodConfig = {
         { id: "m2", label: "第二次月考", from: "2026-10-29" }
       ],
       materials: {
-        tm_84: "m2", tm_85: "m2", tm_86: "m2", tm_92: "m2", tm_93: "m2",
+        tm_84: "m2", tm_85: "m2", tm_86: "m2", tm_92: "m2", tm_98: "m2", tm_99: "m2", tm_100: "m2",
         tm_94: "m2", tm_95: "m2", tm_96: "m2", tm_97: "m2"
       }
     }

@@ -1,0 +1,41 @@
+{
+  "materialId": "tm_100",
+  "knowledgePoints": [
+    {
+      "name": "L6 either/neither",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L6 句型 not until",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "L6 單字",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "L6 片語",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "L6 聽力策略",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "L6 背景與寫作鉤子",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "L6 課文理解",
+      "source": "question",
+      "refCount": 8
+    }
+  ],
+  "generatedAt": "2026-11-01T12:54:11.443Z"
+}

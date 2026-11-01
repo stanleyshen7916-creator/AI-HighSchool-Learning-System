@@ -118,7 +118,9 @@ console.log("\n[4] 教材包未被修改");
     /* 2026-11-01 Project Owner 同意（「補上國文第八課的資料」）：依補拍的篇章頁導讀補 2 題、重點整理加一條。 */
     "docs/TeachingMaterials/materials/tm_97/summary.json",
     /* 2026-11-01 Project Owner 同意（「地科資料來源由課文改成講義」）：tm_84 的來源由「課本」更正為「講義」；題目、答案與詳解內容不變。 */
-    "docs/TeachingMaterials/materials/tm_84/metadata.json", "docs/TeachingMaterials/materials/tm_84/questionbank.json", "docs/TeachingMaterials/materials/tm_84/material.md", "docs/TeachingMaterials/materials/tm_84/related.json", "docs/TeachingMaterials/materials/tm_84/report.md", "docs/TeachingMaterials/materials/tm_84/source/README.md"];
+    "docs/TeachingMaterials/materials/tm_84/metadata.json", "docs/TeachingMaterials/materials/tm_84/questionbank.json", "docs/TeachingMaterials/materials/tm_84/material.md", "docs/TeachingMaterials/materials/tm_84/related.json", "docs/TeachingMaterials/materials/tm_84/report.md", "docs/TeachingMaterials/materials/tm_84/source/README.md",
+    /* 2026-11-01 Project Owner 同意（「英文4-6課的內容也一課一課，分拆開來」）：tm_93 依課別拆成 tm_98～tm_100，原 tm_93 標記 archived。 */
+    "docs/TeachingMaterials/materials/tm_93/manifest.json"];
   try {
     clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString()
       .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]) || APPROVED_EDITS.indexOf(f) !== -1);
