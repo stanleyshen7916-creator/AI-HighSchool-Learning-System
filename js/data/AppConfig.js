@@ -78,7 +78,8 @@ AHS.AppConfig = {
     knowledgeOptions: ["全部知識點"],
     difficultyOptions: ["全部難易度", "簡單", "中等", "困難"],
     statusOptions: ["全部狀態", "待複習", "複習中", "已精熟", "已封存"],
-    perPage: 6
+    /* 2026-11-01 使用者需求：錯題列表一頁 20 筆。 */
+    perPage: 20
   },
 
   /* 2026-09-30：「AI Tutor」改為「學習助教」——不使用任何 AI API，只根據
