@@ -116,7 +116,9 @@ console.log("\n[4] 教材包未被修改");
     /* 2026-11-01 Project Owner 同意（「各課的題目因拆分後，變少了，題目內容需補強」）：tm_94～tm_97 依課本補題（第五～七課各補到約 40 題，第八課補到 10 題）；原有題目不變。 */
     "docs/TeachingMaterials/materials/tm_94/questionbank.json", "docs/TeachingMaterials/materials/tm_94/material.md", "docs/TeachingMaterials/materials/tm_94/knowledge.json", "docs/TeachingMaterials/materials/tm_94/report.md", "docs/TeachingMaterials/materials/tm_95/questionbank.json", "docs/TeachingMaterials/materials/tm_95/material.md", "docs/TeachingMaterials/materials/tm_95/knowledge.json", "docs/TeachingMaterials/materials/tm_95/report.md", "docs/TeachingMaterials/materials/tm_96/questionbank.json", "docs/TeachingMaterials/materials/tm_96/material.md", "docs/TeachingMaterials/materials/tm_96/knowledge.json", "docs/TeachingMaterials/materials/tm_96/report.md", "docs/TeachingMaterials/materials/tm_97/questionbank.json", "docs/TeachingMaterials/materials/tm_97/material.md", "docs/TeachingMaterials/materials/tm_97/knowledge.json", "docs/TeachingMaterials/materials/tm_97/report.md",
     /* 2026-11-01 Project Owner 同意（「補上國文第八課的資料」）：依補拍的篇章頁導讀補 2 題、重點整理加一條。 */
-    "docs/TeachingMaterials/materials/tm_97/summary.json"];
+    "docs/TeachingMaterials/materials/tm_97/summary.json",
+    /* 2026-11-01 Project Owner 同意（「地科資料來源由課文改成講義」）：tm_84 的來源由「課本」更正為「講義」；題目、答案與詳解內容不變。 */
+    "docs/TeachingMaterials/materials/tm_84/metadata.json", "docs/TeachingMaterials/materials/tm_84/questionbank.json", "docs/TeachingMaterials/materials/tm_84/material.md", "docs/TeachingMaterials/materials/tm_84/related.json", "docs/TeachingMaterials/materials/tm_84/report.md", "docs/TeachingMaterials/materials/tm_84/source/README.md"];
   try {
     clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString()
       .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]) || APPROVED_EDITS.indexOf(f) !== -1);
