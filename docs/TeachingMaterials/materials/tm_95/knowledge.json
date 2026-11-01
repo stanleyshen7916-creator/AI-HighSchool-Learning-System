@@ -1,0 +1,51 @@
+{
+  "materialId": "tm_95",
+  "knowledgePoints": [
+    {
+      "name": "作者賴和",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "寫作手法",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "得參的遭遇",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "稱仔字詞",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "稱仔的情節",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "稱仔題解",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "結局與後記",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "語言特色",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "象徵與雙關",
+      "source": "question",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-11-01T08:40:08.876Z"
+}

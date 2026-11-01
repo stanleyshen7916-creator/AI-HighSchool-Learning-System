@@ -1,0 +1,51 @@
+{
+  "materialId": "tm_94",
+  "knowledgePoints": [
+    {
+      "name": "人物",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "圍鄭的原因",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "左傳",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "晉文公退兵",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "燭之武字詞",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "燭之武的推辭與鄭伯",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "燭之武的說服策略",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "結構與人物",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "題解與出處",
+      "source": "question",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-11-01T08:40:08.734Z"
+}

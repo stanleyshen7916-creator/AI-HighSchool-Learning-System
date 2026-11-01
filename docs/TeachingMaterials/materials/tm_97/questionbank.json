@@ -1,0 +1,126 @@
+{
+  "materialId": "tm_97",
+  "questions": [
+    {
+      "questionId": "tm_97_q1",
+      "materialId": "tm_97",
+      "questionNumber": "1",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "〈祖靈遺忘的孩子〉題目中的「祖靈遺忘的孩子」指的是？",
+      "options": [
+        "離家在外、遠離祖靈護衛的部落子女",
+        "被父母遺棄的孤兒",
+        "忘記祖先名字的人",
+        "祖先的神靈"
+      ],
+      "answer": "離家在外、遠離祖靈護衛的部落子女",
+      "explanation": "（題目為 AI 依課文命題，答案依課本內容）課本 p.126 題解：祖靈，即祖先的神靈，是原住民族重要的精神信仰；「祖靈遺忘的孩子」意指離家在外、遠離祖靈護衛的部落子女。",
+      "page": 126,
+      "section": "第八課 祖靈遺忘的孩子（題解、作者）",
+      "version": "1",
+      "createdDate": "2026-10-30T00:00:00Z",
+      "knowledgePoint": "第八課題解",
+      "difficulty": "易",
+      "reference": "AI 自編（依長榮高中高二國文課本 第八課 祖靈遺忘的孩子（題解、作者） p.126 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_97_q2",
+      "materialId": "tm_97",
+      "questionNumber": "2",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "〈祖靈遺忘的孩子〉透過母親哪兩種身分認同的曲折轉變，表達原住民族的處境？",
+      "options": [
+        "「部落頭目」與「眷村村長」",
+        "「排灣族女兒」與「外省人妻子」",
+        "「泰雅族女兒」與「日本人妻子」",
+        "「漢人女兒」與「原住民妻子」"
+      ],
+      "answer": "「排灣族女兒」與「外省人妻子」",
+      "explanation": "（題目為 AI 依課文命題，答案依課本內容）課本 p.126 題解：全文透過母親在「排灣族女兒」與「外省人妻子」身分認同上的曲折轉變，表達原住民族由於時代變遷與生存困境，被迫離鄉、遭受歧視的辛酸；並藉由母親回歸部落的決定，呈現原住民族對土地及原生文化的深厚依戀。",
+      "page": 126,
+      "section": "第八課 祖靈遺忘的孩子（題解、作者）",
+      "version": "1",
+      "createdDate": "2026-10-30T00:00:00Z",
+      "knowledgePoint": "第八課題解",
+      "difficulty": "中",
+      "reference": "AI 自編（依長榮高中高二國文課本 第八課 祖靈遺忘的孩子（題解、作者） p.126 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_97_q3",
+      "materialId": "tm_97",
+      "questionNumber": "3",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "【多選題】關於作者利格拉樂・阿𡠄，下列敘述哪些正確？（應選 3 項）",
+      "options": [
+        "(A) 是臺灣新文學之父",
+        "(B) 作品以男性觀點描寫部落狩獵",
+        "(C) 父親為安徽省籍退役榮民，母親為排灣族原住民",
+        "(D) 幼年生長於眷村，十八歲前以外省第二代的身分自居",
+        "(E) 父親過世、母親回歸部落後，轉而認同自己原住民的身分"
+      ],
+      "answer": "(C)(D)(E)",
+      "explanation": "（題目為 AI 依課文命題，答案依課本內容）課本 p.127：利格拉樂・阿𡠄，漢名高振蕙，屏東縣人；父親為安徽省籍退役榮民，母親為排灣族原住民；幼年生長於眷村，因母親是原住民而備受歧視，十八歲前以外省第二代的身分自居；父親過世後母親回歸原生部落，她轉而認同自己原住民的身分，致力推展原住民族文化。作品主要從女性觀點書寫原住民族女性的生命故事。",
+      "page": 127,
+      "section": "第八課 祖靈遺忘的孩子（題解、作者）",
+      "version": "1",
+      "createdDate": "2026-10-30T00:00:00Z",
+      "knowledgePoint": "第八課作者",
+      "difficulty": "中",
+      "reference": "AI 自編（依長榮高中高二國文課本 第八課 祖靈遺忘的孩子（題解、作者） p.127 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_97_q4",
+      "materialId": "tm_97",
+      "questionNumber": "4",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "利格拉樂・阿𡠄曾與哪一位作家共同創辦獵人文化雜誌？",
+      "options": [
+        "賴和",
+        "洪繻",
+        "達悟族作家夏曼・藍波安",
+        "泰雅族作家瓦歷斯・諾幹"
+      ],
+      "answer": "泰雅族作家瓦歷斯・諾幹",
+      "explanation": "（題目為 AI 依課文命題，答案依課本內容）課本 p.127：後結識泰雅族作家瓦歷斯・諾幹，開始接觸現代文藝思潮；曾與瓦歷斯・諾幹共同創辦獵人文化雜誌，並成立臺灣原住民人文研究中心，為原住民族發聲。",
+      "page": 127,
+      "section": "第八課 祖靈遺忘的孩子（題解、作者）",
+      "version": "1",
+      "createdDate": "2026-10-30T00:00:00Z",
+      "knowledgePoint": "第八課作者",
+      "difficulty": "中",
+      "reference": "AI 自編（依長榮高中高二國文課本 第八課 祖靈遺忘的孩子（題解、作者） p.127 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_97_q5",
+      "materialId": "tm_97",
+      "questionNumber": "5",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "課本說利格拉樂・阿𡠄作品的特色是？",
+      "options": [
+        "從女性觀點書寫原住民族女性的生命故事，文字平實淺白、情感真摯深刻",
+        "以文言文書寫，辭藻華麗",
+        "以科幻小說為主",
+        "專寫都市白領生活"
+      ],
+      "answer": "從女性觀點書寫原住民族女性的生命故事，文字平實淺白、情感真摯深刻",
+      "explanation": "（題目為 AI 依課文命題，答案依課本內容）課本 p.127：她的作品主要從女性觀點書寫原住民族女性的生命故事，文字平實淺白，情感真摯深刻，在原住民族作家中獨樹一幟；著有散文集誰來穿我織的美麗衣裳、穆莉淡 Mulidan 部落手札，以及報導文學紅嘴巴的 VuVu 等。",
+      "page": 127,
+      "section": "第八課 祖靈遺忘的孩子（題解、作者）",
+      "version": "1",
+      "createdDate": "2026-10-30T00:00:00Z",
+      "knowledgePoint": "第八課作者",
+      "difficulty": "易",
+      "reference": "AI 自編（依長榮高中高二國文課本 第八課 祖靈遺忘的孩子（題解、作者） p.127 的內容命題，非課本原題）"
+    }
+  ]
+}
