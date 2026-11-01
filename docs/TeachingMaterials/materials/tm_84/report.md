@@ -6,7 +6,7 @@ generator after any Repository change and this file regenerates with it.
 ## Metadata
 - 科目：地球科學
 - 年級：高二
-- 章節：單元3 地質（主題12 固體地球的結構、主題13 板塊運動、主題14 臺灣的板塊構造） / 課本（第二次月考範圍）
+- 章節：單元3 地質（主題12 固體地球的結構、主題13 板塊運動、主題14 臺灣的板塊構造） / 講義（第二次月考範圍）
 - 教材類型：TEXTBOOK
 - 版本：1
 
