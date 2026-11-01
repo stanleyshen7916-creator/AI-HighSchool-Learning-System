@@ -74,3 +74,4 @@ Final Score：N/A
 - MaterialCenterRegression：長榮高二上的教材數由 28 筆更新為 30 筆
 - `npm run verify`：PASS
 - `npm test`：全部 0 FAIL（含 VisualLessonRegression 250 PASS）
+- Playwright：87 passed（含「圖解教材品質檢查：MAT_H2_Ch3_Vector」「圖解教材品質檢查：ENG_H2_S2」）
