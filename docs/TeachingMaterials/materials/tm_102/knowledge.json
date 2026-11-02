@@ -1,0 +1,96 @@
+{
+  "materialId": "tm_102",
+  "knowledgePoints": [
+    {
+      "name": "力的分解",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "力的分類",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "力的合成",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "單一物體受力",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "多物體系統",
+      "source": "both",
+      "refCount": 7
+    },
+    {
+      "name": "實驗2 牛頓第二運動定律",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "平衡力",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "張力",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "慣性",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "慣性坐標系",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "正向力",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "牛頓第一運動定律",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "牛頓第三運動定律",
+      "source": "both",
+      "refCount": 8
+    },
+    {
+      "name": "牛頓第二運動定律",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "終端速度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "虎克定律",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "視重與實重",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "阿特午機",
+      "source": "both",
+      "refCount": 2
+    }
+  ],
+  "generatedAt": "2026-11-02T13:50:28.103Z"
+}

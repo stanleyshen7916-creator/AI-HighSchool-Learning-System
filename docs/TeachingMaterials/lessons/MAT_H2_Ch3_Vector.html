@@ -13,7 +13,7 @@
 <div class="wrap" id="ahs-vl-root" data-ahs-module="VisualLesson" data-ahs-subject="MAT" data-ahs-unit="MAT-H2-Ch3">
   <header class="top">
     <div class="eyebrow">數學 ・ 第3章 平面向量 ・ 高二上</div>
-    <h1>向量是會走路的箭頭<small>加法、內積、面積、方程組，全都畫得出來</small></h1>
+    <h1>向量是會走路的箭頭<small>把向量想成「走路的指令」：往右幾步、往上幾步</small></h1>
     <div class="legend">
       <span class="tag src">依上傳教材</span>
       <span class="tag add">老師補充</span>
@@ -28,16 +28,16 @@
   <section id="s1">
     <h2><span class="no">1</span>3-1 平面向量的運算</h2>
     <div class="plan">
-      <div><b>本節目標</b>會用坐標表示向量、做加減與係數積，判斷平行，並用線性組合與分點公式求點坐標。</div>
-      <div><b>先備知識</b>坐標平面、相似形、中點公式。</div>
+      <div><b>本節目標</b>會把向量寫成坐標、會加減和乘倍數、會判斷平行、會用分點公式找點。</div>
+      <div><b>先備知識</b>坐標平面、畢氏定理、中點公式。</div>
       <div><b>建議節數</b>約 6 節課。</div>
     </div>
 
     <!-- F1 -->
     <article class="card" id="F1" data-ahs-formula="MAT-H2-Ch3-1-F1" data-ahs-source="p.136～140">
-      <div class="card-h"><span class="code">1 · F1</span><h3>向量 ＝ 大小 ＋ 方向：用坐標寫下來</h3><span class="pg">p.136～140</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>向量只在乎<b>大小與方向</b>，不在乎位置：把箭頭平移，它還是同一個向量。放到坐標上，從 A 走到 B 的向量就是<b>終點減始點</b>：AB→ = (b₁−a₁, b₂−a₂)，長度用畢氏定理。始點與終點重合是零向量，大小 0、不談方向。</p></div>
-      <div class="formula">AB→ = (b₁ − a₁, b₂ − a₂)　｜　|(a, b)| = √(a² + b²)　｜　AB→ = OB→ − OA→　｜　a→ = b→ ⇔ 兩分量都相等</div>
+      <div class="card-h"><span class="code">1 · F1</span><h3>向量＝走路的指令：往右幾步、往上幾步</h3><span class="pg">p.136～140</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>把向量想成一張<b>走路的指令</b>，例如「往右 3 步、往下 4 步」，寫成 (3, −4)。<br>① 從 A 走到 B：<b>B 的坐標 − A 的坐標</b>（終點減起點）。<br>② 走多遠（長度）：右走的步數、上走的步數是直角三角形的兩邊，用<b>畢氏定理</b>算斜邊。<br>③ 箭頭搬到別的地方，指令沒變，就還是同一個向量。</p></div>
+      <div class="formula">AB→ = (B 的 x − A 的 x, B 的 y − A 的 y)　｜　長度 |(a, b)| = √(a² + b²)</div>
       <div class="viz" id="w-vec">
         <div class="cv"><canvas aria-label="坐標平面上 A 到 B 的向量，顯示 x 分量、y 分量與長度"></canvas></div>
         <div class="ctl">
@@ -47,8 +47,8 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>虛線直角三角形的兩股就是 x 分量、y 分量；斜邊就是向量的長度。移動 B，看分量跟著「終點減始點」變化。</div>
-        <div class="trap"><b>常見錯誤</b>把始點減終點（算成 BA→）；或以為位置不同的箭頭就是不同向量。</div>
+        <div class="space"><b>空間感</b>藍色虛線＝左右走幾步，橘色虛線＝上下走幾步，紅色箭頭＝直接走過去（長度）。拉動 B 看看數字怎麼變。</div>
+        <div class="trap"><b>常見錯誤</b>減反了（用 A − B）；長度把步數直接相加（3 + 4 = 7 是錯的，要用畢氏定理算出 5）。</div>
       </div>
       <div class="qc" data-q="F1">
         <p class="q"><b>小試身手</b>A(−2, 5)、B(1, 1)，|AB→| = ？</p>
@@ -70,9 +70,9 @@
 
     <!-- F2 -->
     <article class="card" id="F2" data-ahs-formula="MAT-H2-Ch3-1-F2" data-ahs-source="p.140～151">
-      <div class="card-h"><span class="code">1 · F2</span><h3>加法、減法與係數積：平行四邊形與伸縮</h3><span class="pg">p.140～151</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>a→ + b→：把 b→ 接在 a→ 的尾巴（三角形法），或兩向量同起點畫平行四邊形取對角線。a→ − b→ 是由 b→ 的終點指向 a→ 的終點。r a→ 是伸縮：r > 0 同向、r < 0 反向、長度變 |r| 倍。兩非零向量平行 ⇔ 一個是另一個的倍數 ⇔ <b>a₁b₂ = a₂b₁</b>。</p></div>
-      <div class="formula">a→ ± b→ = (a₁ ± b₁, a₂ ± b₂)　｜　r a→ = (r a₁, r a₂)　｜　a→ // b→ ⇔ b→ = r a→ ⇔ a₁b₂ = a₂b₁</div>
+      <div class="card-h"><span class="code">1 · F2</span><h3>加、減、乘倍數：接著走、倒著接、走幾倍</h3><span class="pg">p.140～151</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>① <b>加法＝接著走</b>：先照 a→ 走，再照 b→ 走，從起點到終點就是 a→ + b→。計算時 x 加 x、y 加 y。<br>② <b>減法</b>：x 減 x、y 減 y；畫圖時是「從 b→ 的尖端指到 a→ 的尖端」。<br>③ <b>乘倍數</b>：2a→ 就是照 a→ 走兩次；乘負數就<b>掉頭</b>走。<br>④ <b>平行</b>＝一個是另一個的幾倍。檢查方法：<b>交叉相乘相等</b>（a₁b₂ = a₂b₁）。</p></div>
+      <div class="formula">(a₁, a₂) ± (b₁, b₂) = (a₁ ± b₁, a₂ ± b₂)　｜　r(a₁, a₂) = (r a₁, r a₂)　｜　平行 ⇔ a₁b₂ = a₂b₁</div>
       <div class="viz" id="w-add">
         <div class="cv"><canvas aria-label="兩向量的平行四邊形、和向量、差向量與係數積"></canvas></div>
         <div class="ctl">
@@ -82,8 +82,8 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>顯示「和」時紅色對角線是 a→ + b→；「差」時紅色箭頭從 b→ 的尖端指到 a→ 的尖端；「係數積」時拉 r，看箭頭伸長、縮短、翻轉。</div>
-        <div class="trap"><b>常見錯誤</b>a→ − b→ 的方向畫反（應是「b 指向 a」）；r < 0 時長度寫成 r|a→|（應為 −r|a→|，是正數）。</div>
+        <div class="space"><b>空間感</b>選「和」：紅箭頭＝藍、橘兩段接著走的結果。選「差」：紅箭頭從橘尖端指到藍尖端。選「係數積」：拉 r，箭頭變長、變短或掉頭。</div>
+        <div class="trap"><b>常見錯誤</b>a→ − b→ 的箭頭方向畫反（要從 b→ 指向 a→）；乘負數時忘了箭頭要掉頭。</div>
       </div>
       <div class="qc" data-q="F2">
         <p class="q"><b>小試身手</b>a→ = (−2, 1)、b→ = (3, −2)、c→ = (4, −3)，(a→ + t b→) // c→，t = ？</p>
@@ -95,7 +95,7 @@
         </div>
         <p class="fb" aria-live="polite"></p>
         <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
-          <div class="viz" id="s-F2"><div class="cv"><canvas aria-label="逐步圖解：寫出分量再用平行條件"></canvas></div>
+          <div class="viz" id="s-F2"><div class="cv"><canvas aria-label="逐步圖解：先走 a，再走 2 個 b，剛好走到 c"></canvas></div>
             <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
             <p class="out" data-out></p></div>
         </details>
@@ -105,20 +105,20 @@
 
     <!-- F3 -->
     <article class="card" id="F3" data-ahs-formula="MAT-H2-Ch3-1-F3" data-ahs-source="p.151～159">
-      <div class="card-h"><span class="code">1 · F3</span><h3>線性組合與分點公式：用兩支箭頭鋪滿平面</h3><span class="pg">p.151～159</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>兩支<b>不平行</b>的非零向量 OA→、OB→ 像兩把尺，平面上任一點 P 都能<b>唯一</b>寫成 OP→ = x OA→ + y OB→。P 在線段 AB 上、AP:PB = m:n 時，係數要<b>交叉</b>：OP→ = n/(m+n) OA→ + m/(m+n) OB→——離 A 近，A 的係數就大。重心是三點平均。</p></div>
-      <div class="formula">OP→ = x OA→ + y OB→（唯一）　｜　AP:PB = m:n ⇒ OP→ = n/(m+n)·OA→ + m/(m+n)·OB→　｜　重心 G = (A + B + C)/3，AG→ = ⅓AB→ + ⅓AC→</div>
+      <div class="card-h"><span class="code">1 · F3</span><h3>分點公式：P 靠近誰，誰的份量就大</h3><span class="pg">p.151～159</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>P 在線段 AB 上，把它分成 AP:PB = m:n。<br>① 想成<b>拔河</b>：P 離 B 比較近，代表 B 拉得比較用力，所以 B 前面的數字比較大。<br>② 因此數字要<b>交叉</b>：P = n/(m+n)·A + m/(m+n)·B。<br>③ 例：AP:PB = 2:1 → P = ⅓A + ⅔B。中點是 ½A + ½B；三角形重心是三個頂點的平均。<br>④ 課本也提到：兩支不平行的箭頭 OA→、OB→ 可以組合出平面上的任何一點：OP→ = x OA→ + y OB→。</p></div>
+      <div class="formula">AP:PB = m:n ⇒ P = n/(m+n)·A + m/(m+n)·B（數字交叉）　｜　中點 = (A + B)/2　｜　重心 = (A + B + C)/3</div>
       <div class="viz" id="w-lin">
-        <div class="cv"><canvas aria-label="以 OA、OB 為兩把尺的斜坐標格，P 由 x、y 決定"></canvas></div>
+        <div class="cv"><canvas aria-label="線段 AB 上的點 P，依 AP:PB 的比例移動，並顯示 A、B 各自的份量"></canvas></div>
         <div class="ctl">
-          <label class="sl"><span>x</span><input type="range" id="w-lin-x" data-k="x" min="-1" max="2" step="0.25"><output data-v="x"></output></label>
-          <label class="sl"><span>y</span><input type="range" id="w-lin-y" data-k="y" min="-1" max="2" step="0.25"><output data-v="y"></output></label>
+          <label class="sl"><span>AP 的份數 m</span><input type="range" id="w-lin-m" data-k="m" min="1" max="4" step="1"><output data-v="m"></output></label>
+          <label class="sl"><span>PB 的份數 n</span><input type="range" id="w-lin-n" data-k="n" min="1" max="4" step="1"><output data-v="n"></output></label>
         </div>
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>斜格子由 OA→（藍）與 OB→（橘）的整數倍組成。x、y 都在 0～1 之間時，P 落在平行四邊形 OACB 裡（課本例 10）；x + y = 1 時，P 剛好在直線 AB 上。</div>
-        <div class="trap"><b>常見錯誤</b>分點係數沒有交叉：AP:PB = 2:1 卻寫成 ⅔OA→ + ⅓OB→（應為 ⅓OA→ + ⅔OB→）。</div>
+        <div class="space"><b>空間感</b>拉 m、n，看 P 在線段上滑動。下面兩條色塊是 A、B 的份量：P 越靠近 B，B 的色塊就越長——這就是「交叉」。</div>
+        <div class="trap"><b>常見錯誤</b>數字沒有交叉：AP:PB = 2:1 卻寫成 ⅔A + ⅓B，算出來的點會跑到靠近 A 的地方。</div>
       </div>
       <div class="qc" data-q="F3">
         <p class="q"><b>小試身手</b>A(−4, 1)、B(2, 3)，P 在線段 AB 上且 AP:PB = 2:1，P = ？</p>
@@ -130,7 +130,7 @@
         </div>
         <p class="fb" aria-live="polite"></p>
         <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
-          <div class="viz" id="s-F3"><div class="cv"><canvas aria-label="逐步圖解：交叉係數"></canvas></div>
+          <div class="viz" id="s-F3"><div class="cv"><canvas aria-label="逐步圖解：P 靠近 B，B 的份量是 ⅔"></canvas></div>
             <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
             <p class="out" data-out></p></div>
         </details>
@@ -142,16 +142,16 @@
   <section id="s2">
     <h2><span class="no">2</span>3-2 平面向量的內積</h2>
     <div class="plan">
-      <div><b>本節目標</b>會用兩種方法算內積、由內積求夾角與判斷垂直，並求正射影、投影點與兩直線夾角。</div>
-      <div><b>先備知識</b>餘弦定理、三角函數。</div>
+      <div><b>本節目標</b>會算內積、用內積判斷垂直、會求正射影（影子）。</div>
+      <div><b>先備知識</b>cos 的值（cos 60° = ½、cos 90° = 0、cos 120° = −½）。</div>
       <div><b>建議節數</b>約 5 節課。</div>
     </div>
 
     <!-- F4 -->
     <article class="card" id="F4" data-ahs-formula="MAT-H2-Ch3-2-F4" data-ahs-source="p.160～165">
-      <div class="card-h"><span class="code">2 · F4</span><h3>內積：一個數，帶著夾角的正負號</h3><span class="pg">p.160～165</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>內積 a→·b→ = |a→||b→| cos θ，結果是<b>實數</b>。θ 是兩向量<b>放在同一起點</b>時的夾角（0°～180°）。坐標算法更快：a₁b₁ + a₂b₂。夾角是銳角時內積為正、直角為 0、鈍角為負，所以 <b>a→ ⊥ b→ ⇔ a→·b→ = 0</b>。</p></div>
-      <div class="formula">a→·b→ = |a→||b→| cos θ = a₁b₁ + a₂b₂　｜　cos θ = a→·b→ / (|a→||b→|)　｜　a→ ⊥ b→ ⇔ a→·b→ = 0</div>
+      <div class="card-h"><span class="code">2 · F4</span><h3>內積：看兩支箭頭「同不同方向」</h3><span class="pg">p.160～165</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>內積是把兩個向量算成<b>一個數字</b>。<br>① 最快的算法：<b>x 乘 x，加上 y 乘 y</b>。例：(1, 2)·(3, 4) = 3 + 8 = 11。<br>② 另一種算法：長度 × 長度 × cos(夾角)。<br>③ 看正負號就知道方向：大致同方向 → <b>正</b>；<b>垂直 → 0</b>；大致反方向 → <b>負</b>。<br>④ 量夾角前，兩支箭頭要先搬到<b>同一個起點</b>。</p></div>
+      <div class="formula">a→·b→ = a₁b₁ + a₂b₂ = |a→||b→| cos θ　｜　垂直 ⇔ 內積 = 0　｜　cos θ = 內積 ÷ (兩個長度相乘)</div>
       <div class="viz" id="w-dot">
         <div class="cv"><canvas aria-label="旋轉 b 向量，觀察夾角與內積的正負"></canvas></div>
         <div class="ctl">
@@ -161,8 +161,8 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>右邊的長條是 cos θ：θ 越過 90° 長條就翻到負的那一邊；θ = 90° 時內積剛好是 0。</div>
-        <div class="trap"><b>常見錯誤</b>正三角形 ABC 中 AB→ 與 BC→ 的夾角是 120°，不是 60°——要把兩支箭頭平移到同一起點再量。</div>
+        <div class="space"><b>空間感</b>轉動 b→：夾角小於 90° 是綠色「正」，剛好 90° 是「0」，超過 90° 變紅色「負」。</div>
+        <div class="trap"><b>常見錯誤</b>正三角形 ABC 中，AB→ 和 BC→ 是「頭接尾」；搬到同一個起點後夾角是 120°，不是 60°。</div>
       </div>
       <div class="qc" data-q="F4">
         <p class="q"><b>小試身手</b>正三角形 ABC 邊長 2，AB→·BC→ = ？</p>
@@ -184,9 +184,9 @@
 
     <!-- F5 -->
     <article class="card" id="F5" data-ahs-formula="MAT-H2-Ch3-2-F5" data-ahs-source="p.166～173">
-      <div class="card-h"><span class="code">2 · F5</span><h3>正射影：a→ 在 b→ 上的影子</h3><span class="pg">p.166～173</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>從 a→ 的尖端向 b→ 所在直線作垂線，垂足決定的向量就是 a→ 在 b→ 上的<b>正射影</b> = (a→·b→/|b→|²) b→。銳角時影子與 b→ 同向、直角時為零向量、鈍角時反向。內積性質（a→·a→ = |a→|²、分配律）讓 |2a→ + 3b→| 這類題目可以展開計算。直線 ax + by + c = 0 的法向量是 (a, b)，兩直線夾角由法向量的夾角求，一個 θ、另一個 180° − θ。</p></div>
-      <div class="formula">正射影 = (a→·b→ / |b→|²) b→　｜　|a→ + b→|² = |a→|² + 2a→·b→ + |b→|²　｜　ax + by + c = 0 的法向量 (a, b)</div>
+      <div class="card-h"><span class="code">2 · F5</span><h3>正射影：a→ 照在 b→ 上的影子</h3><span class="pg">p.166～173</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>想像光線垂直照向 b→ 那條線，a→ 落在線上的<b>影子</b>就是正射影。<br>① 公式：影子 = (a→·b→ ÷ |b→|²) × b→。<br>② 先算括號裡的數字：正的 → 影子和 b→ 同方向；負的 → 反方向；0 → 兩個垂直，沒有影子。<br>③ 記法：<b>投影到誰，就除以誰的長度平方</b>。<br>④ 補充：|a→ + b→|² 可以像 (a + b)² 一樣展開；直線 ax + by + c = 0 的法向量（和直線垂直的箭頭）是 (a, b)。</p></div>
+      <div class="formula">影子 = (a→·b→ ÷ |b→|²) b→　｜　|a→ + b→|² = |a→|² + 2a→·b→ + |b→|²　｜　ax + by + c = 0 的法向量是 (a, b)</div>
       <div class="viz" id="w-proj">
         <div class="cv"><canvas aria-label="a 向量在 b 向量上的正射影與垂線"></canvas></div>
         <div class="ctl">
@@ -195,8 +195,8 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>紅色是影子：a→ 往左轉超過 90° 後，影子跑到 b→ 的反方向。虛線就是 a→ − 影子，永遠和 b→ 垂直。</div>
-        <div class="trap"><b>常見錯誤</b>分母寫成 |a→|²；要投影到誰，就除以誰的長度平方。</div>
+        <div class="space"><b>空間感</b>紅色箭頭就是影子，灰色虛線是「光線」，永遠和 b→ 垂直。把 a→ 轉超過 90°，影子就跑到 b→ 的反方向。</div>
+        <div class="trap"><b>常見錯誤</b>分母用錯：投影到 b→ 上，要除以 |b→|²，不是 |a→|²。</div>
       </div>
       <div class="qc" data-q="F5">
         <p class="q"><b>小試身手</b>a→ = (−3, 1)、b→ = (2, −4)，a→ 在 b→ 上的正射影 = ？</p>
@@ -208,7 +208,7 @@
         </div>
         <p class="fb" aria-live="polite"></p>
         <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
-          <div class="viz" id="s-F5"><div class="cv"><canvas aria-label="逐步圖解：內積、長度平方、係數"></canvas></div>
+          <div class="viz" id="s-F5"><div class="cv"><canvas aria-label="逐步圖解：a=(−3,1) 照在 b=(2,−4) 上的影子"></canvas></div>
             <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
             <p class="out" data-out></p></div>
         </details>
@@ -220,16 +220,16 @@
   <section id="s3">
     <h2><span class="no">3</span>3-3 平面向量的應用</h2>
     <div class="plan">
-      <div><b>本節目標</b>會用柯西不等式求條件極值、用行列式算面積並判斷平行，並用克拉瑪公式解二元一次方程組。</div>
+      <div><b>本節目標</b>會用柯西不等式求最大最小值、用行列式算面積、用克拉瑪公式解聯立方程式。</div>
       <div><b>先備知識</b>3-1、3-2。</div>
       <div><b>建議節數</b>約 6 節課。</div>
     </div>
 
     <!-- F6 -->
     <article class="card" id="F6" data-ahs-formula="MAT-H2-Ch3-3-F6" data-ahs-source="p.176～181">
-      <div class="card-h"><span class="code">3 · F6</span><h3>柯西與三角不等式：|cos θ| ≤ 1 的威力</h3><span class="pg">p.176～181</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>因為 |cos θ| ≤ 1，所以 |a→·b→| ≤ |a→||b→|，寫成坐標就是<b>柯西不等式</b> (a₁² + a₂²)(b₁² + b₂²) ≥ (a₁b₁ + a₂b₂)²，平行時取等號。例：2x + 3y = 13 時 x² + y² ≥ 13，等號在 (2, 3)——幾何上就是原點到直線距離的平方。<b>三角不等式</b> |a→| + |b→| ≥ |a→ + b→|，同向時取等號。</p></div>
-      <div class="formula">(a₁² + a₂²)(b₁² + b₂²) ≥ (a₁b₁ + a₂b₂)²，等號 a₁/b₁ = a₂/b₂　｜　|a→| + |b→| ≥ |a→ + b→|，等號：同向或有零向量</div>
+      <div class="card-h"><span class="code">3 · F6</span><h3>柯西不等式：求「最大、最小」的小工具</h3><span class="pg">p.176～181</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>① 原理：cos 最大只有 1，所以「內積 ≤ 長度 × 長度」。<br>② 寫成式子就是<b>柯西不等式</b>：(a₁² + a₂²)(b₁² + b₂²) ≥ (a₁b₁ + a₂b₂)²。<br>③ 用法三步驟：把題目湊成「<b>平方和 × 平方和 ≥ (乘積和)²</b>」→ 代入數字 → 開根號。<br>④ 兩個向量<b>平行</b>時剛好相等，最大（最小）值就在那裡出現。<br>⑤ 三角不等式：兩邊加起來 ≥ 第三邊，|a→| + |b→| ≥ |a→ + b→|。</p></div>
+      <div class="formula">(a₁² + a₂²)(b₁² + b₂²) ≥ (a₁b₁ + a₂b₂)²，平行時相等　｜　|a→| + |b→| ≥ |a→ + b→|</div>
       <div class="viz" id="w-cauchy">
         <div class="cv"><canvas aria-label="以原點為圓心的圓逐漸放大，第一次碰到直線 2x+3y=13 時半徑平方最小"></canvas></div>
         <div class="ctl">
@@ -239,8 +239,8 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>x² + y² = r² 是圓。圓還沒碰到直線時，直線上沒有點的 x² + y² 這麼小；第一次相切的點 (2, 3) 就是最小值發生處，r² = 13。</div>
-        <div class="trap"><b>常見錯誤</b>只寫出不等式就答最小值，卻沒有檢查等號能否成立（要找到 x/2 = y/3 的點）。</div>
+        <div class="space"><b>空間感</b>例：2x + 3y = 13 時，x² + y² 最小是多少？把圓慢慢放大，第一次碰到直線的點是 (2, 3)，這時 r² = 13，就是最小值。</div>
+        <div class="trap"><b>常見錯誤</b>只寫出不等式就當答案，沒有確認等號真的做得到（要找得到平行的那一點）。</div>
       </div>
       <div class="qc" data-q="F6">
         <p class="q"><b>小試身手</b>x² + y² = 10，x − 3y 的最大值？</p>
@@ -252,7 +252,7 @@
         </div>
         <p class="fb" aria-live="polite"></p>
         <details class="sol"><summary>看圖解（先自己想想再打開）</summary>
-          <div class="viz" id="s-F6"><div class="cv"><canvas aria-label="逐步圖解：配出柯西不等式"></canvas></div>
+          <div class="viz" id="s-F6"><div class="cv"><canvas aria-label="逐步圖解：湊出柯西不等式，最大值發生在 (1, −3)"></canvas></div>
             <div class="ctl"><button class="play" type="button" data-step="-1">◀ 上一步</button><button class="play" type="button" data-step="1">下一步 ▶</button><span class="stepno" data-stepno></span></div>
             <p class="out" data-out></p></div>
         </details>
@@ -262,9 +262,9 @@
 
     <!-- F7 -->
     <article class="card" id="F7" data-ahs-formula="MAT-H2-Ch3-3-F7" data-ahs-source="p.182～188">
-      <div class="card-h"><span class="code">3 · F7</span><h3>面積與二階行列式：|a₁b₂ − a₂b₁|</h3><span class="pg">p.182～188</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>a→、b→ 張成的三角形面積 = ½|a→||b→| sin θ = ½√(|a→|²|b→|² − (a→·b→)²)，坐標化後只剩 <b>½|a₁b₂ − a₂b₁|</b>，這個 a₁b₂ − a₂b₁ 就是二階行列式。平行四邊形面積就是 |行列式|；行列式 = 0 代表面積 0，也就是兩向量平行。性質：行列互換不變、對調變號、成比例為 0、某行乘 r 倍值乘 r、一行的倍數加到另一行不變。</p></div>
-      <div class="formula">|a b; c d| = ad − bc　｜　三角形 = ½|a₁b₂ − a₂b₁|，平行四邊形 = |a₁b₂ − a₂b₁|　｜　a→ // b→ ⇔ 行列式 = 0</div>
+      <div class="card-h"><span class="code">3 · F7</span><h3>行列式算面積：交叉相乘再相減</h3><span class="pg">p.182～188</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>① 二階行列式 |a b; c d| = <b>ad − bc</b>（左上×右下，減掉右上×左下）。<br>② 兩個向量 (a₁, a₂)、(b₁, b₂) 圍成的<b>平行四邊形面積</b> = |a₁b₂ − a₂b₁|；<b>三角形是它的一半</b>。<br>③ 算出負數沒關係，面積取<b>絕對值</b>。<br>④ 行列式 = 0 → 面積 0 → 兩個向量被壓成一條線，也就是<b>平行</b>。<br>⑤ 常考性質：兩行對調會變號；兩行成比例，值是 0。</p></div>
+      <div class="formula">|a b; c d| = ad − bc　｜　平行四邊形 = |a₁b₂ − a₂b₁|，三角形 = ½|a₁b₂ − a₂b₁|　｜　行列式 = 0 ⇔ 平行</div>
       <div class="viz" id="w-det">
         <div class="cv"><canvas aria-label="兩向量張成的平行四邊形，面積等於行列式的絕對值"></canvas></div>
         <div class="ctl">
@@ -273,8 +273,8 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>把 b→ 往下拉，平行四邊形變扁；當 b→ 與 a→ 同一條線時面積歸零、行列式 = 0。再往下拉，行列式變負（方向翻過來），但面積仍取絕對值。</div>
-        <div class="trap"><b>常見錯誤</b>行列式可能是負數，面積一定要加絕對值；平行四邊形面積不要再乘 ½。</div>
+        <div class="space"><b>空間感</b>拉 b→ 的 y 分量，平行四邊形會變胖、變扁。壓成一直線時面積 0，行列式也是 0；再往下拉行列式變負數，面積照樣取絕對值。</div>
+        <div class="trap"><b>常見錯誤</b>忘了取絕對值；三角形忘了乘 ½（平行四邊形才不用乘）。</div>
       </div>
       <div class="qc" data-q="F7">
         <p class="q"><b>小試身手</b>A(3, 2)、B(5, 1)、C(4, −3)，△ABC 面積 = ？</p>
@@ -296,9 +296,9 @@
 
     <!-- F8 -->
     <article class="card" id="F8" data-ahs-formula="MAT-H2-Ch3-3-F8" data-ahs-source="p.189～198">
-      <div class="card-h"><span class="code">3 · F8</span><h3>方程組與克拉瑪公式：兩直線的三種關係</h3><span class="pg">p.189～198</span><span class="tag src">依上傳教材</span></div>
-      <div class="say"><span class="who">老師說</span><p>方程組 {a₁x + b₁y = c₁, a₂x + b₂y = c₂} 其實是在問：c→ 能不能寫成 x a→ + y b→？用<b>克拉瑪公式</b>：Δ = |a₁ b₁; a₂ b₂|，Δx 把 x 的係數換成常數、Δy 把 y 的係數換成常數。Δ ≠ 0：唯一解（兩直線交一點）；Δ = Δx = Δy = 0：無限多組（重合）；Δ = 0 但 Δx、Δy 不全為 0：無解（平行）。</p></div>
-      <div class="formula">Δ ≠ 0 ⇒ x = Δx/Δ、y = Δy/Δ　｜　Δ = Δx = Δy = 0 ⇒ 無限多組　｜　Δ = 0，Δx 或 Δy ≠ 0 ⇒ 無解</div>
+      <div class="card-h"><span class="code">3 · F8</span><h3>克拉瑪公式：用行列式解聯立方程式</h3><span class="pg">p.189～198</span><span class="tag src">依上傳教材</span></div>
+      <div class="say"><span class="who">老師說</span><p>① 先算三個行列式：<b>Δ</b>（只放 x、y 的係數）、<b>Δx</b>（把 x 那一行換成等號右邊的數）、<b>Δy</b>（把 y 那一行換成等號右邊的數）。<br>② Δ ≠ 0：x = Δx ÷ Δ、y = Δy ÷ Δ，只有<b>一組解</b>（兩條線交在一點）。<br>③ Δ = 0 時，再看 Δx、Δy：都是 0 → <b>無限多組解</b>（兩條線疊在一起）；有一個不是 0 → <b>無解</b>（兩條線平行）。</p></div>
+      <div class="formula">Δ = |a₁ b₁; a₂ b₂|、Δx = |c₁ b₁; c₂ b₂|、Δy = |a₁ c₁; a₂ c₂|　｜　Δ ≠ 0 ⇒ x = Δx/Δ、y = Δy/Δ</div>
       <div class="viz" id="w-cramer">
         <div class="cv"><canvas aria-label="課本例 9 方程組隨 k 變化，兩直線相交、平行或重合"></canvas></div>
         <div class="ctl">
@@ -307,7 +307,7 @@
         <p class="out" data-out></p>
       </div>
       <div class="notes">
-        <div class="space"><b>空間感</b>這是課本例 9：(k+1)x + 4y = 4 與 x + (k−2)y = 1，Δ = (k+2)(k−3)。拉到 k = −2 兩線平行（無解），k = 3 兩線重合（無限多組），其他 k 都交於一點 (4/(k+2), 1/(k+2))。</div>
+        <div class="space"><b>空間感</b>這是課本例 9 的兩條直線。拉 k：平常兩線交在一點（一組解）；k = −2 兩線平行（無解）；k = 3 兩線疊在一起（無限多組解）。</div>
         <div class="trap"><b>常見錯誤</b>看到 Δ = 0 就直接寫「無解」，忘了還要看 Δx、Δy。</div>
       </div>
       <div class="qc" data-q="F8">
@@ -355,14 +355,14 @@ function vecDraw(g,c,C,bx,by){ var G=plane(g,c,C,[-5,6,-5,6]), fs=c.narrow?11:13
   L(g,G.X(ax),G.Y(ay),G.X(bx),G.Y(ay),C.blue,1.5,[5,4]); L(g,G.X(bx),G.Y(ay),G.X(bx),G.Y(by),ORANGE,1.5,[5,4]);
   V(g,G,ax,ay,bx,by,C.red,3); dot(g,G.X(ax),G.Y(ay),5,C.ink); dot(g,G.X(bx),G.Y(by),5,C.ink);
   T(g,'A(−2, 5)',G.X(ax)-6,G.Y(ay)-14,C.ink,fs,'right','700'); T(g,'B('+fr(bx)+', '+fr(by)+')',G.X(bx)+8,G.Y(by)+14,C.ink,fs,'left','700');
-  T(g,'x 分量 '+fr(bx-ax),G.X((ax+bx)/2),G.Y(ay)-14,C.blue,fs,'center','700'); T(g,'y 分量 '+fr(by-ay),G.X(bx)+8,G.Y((ay+by)/2),ORANGE,fs,'left','700'); }
+  T(g,(bx-ax>=0?'往右 ':'往左 ')+fr(Math.abs(bx-ax))+' 步',G.X((ax+bx)/2),G.Y(ay)-14,C.blue,fs,'center','700'); T(g,(by-ay>=0?'往上 ':'往下 ')+fr(Math.abs(by-ay))+' 步',G.X(bx)+8,G.Y((ay+by)/2),ORANGE,fs,'left','700'); }
 widget('w-vec',{state:{bx:1,by:1},rw:0.62,rn:1.0,
   draw:function(g,c,s){ vecDraw(g,c,c.C,s.bx,s.by); },
-  out:function(s){ var dx=s.bx+2, dy=s.by-5; return 'AB→ = (<b>'+fr(dx)+'</b>, <b>'+fr(dy)+'</b>)，|AB→| = √('+(dx*dx)+' + '+(dy*dy)+') = <b>'+fr(Math.sqrt(dx*dx+dy*dy))+'</b>'; }
+  out:function(s){ var dx=s.bx+2, dy=s.by-5; return 'B − A：AB→ = (<b>'+fr(dx)+'</b>, <b>'+fr(dy)+'</b>)；長度 = √('+(dx*dx)+' + '+(dy*dy)+') = <b>'+fr(Math.sqrt(dx*dx+dy*dy))+'</b>'; }
 });
 widget('s-F1',{state:{},steps:2,rw:0.62,rn:1.0,
   draw:function(g,c,s){ vecDraw(g,c,c.C,1,1); },
-  out:steps(['終點減始點：AB→ = (1 − (−2), 1 − 5) = (3, −4)。','長度 = √(3² + (−4)²) = √25 = <b>5</b> → 答案。'])
+  out:steps(['第 1 步：B − A = (1 − (−2), 1 − 5) = (3, −4)，也就是往右 3 步、往下 4 步。','第 2 步：長度 = √(3² + 4²) = √25 = <b>5</b> → 答案。'])
 });
 
 /* F2 加減法與係數積 */
@@ -373,43 +373,48 @@ function addDraw(g,c,C,m,r){ var G=plane(g,c,C,[-6,7,-5,6]), fs=c.narrow?11:13, 
   else { V(g,G,b[0],b[1],a[0],a[1],C.red,3.5); T(g,'a→ − b→ = (2, −2)',G.X(2.2)+10,G.Y(2),C.red,fs+1,'left','700'); T(g,'由 b→ 的尖端指向 a→ 的尖端',G.X(-5.6),G.Y(5.4),C.red,fs,'left','700'); } }
 widget('w-add',{state:{m:0,r:1.5},rw:0.62,rn:1.0,fmt:{m:function(v){ return ['和 a→+b→','差 a→−b→','係數積 r a→'][v]; },r:function(v){ return fr(v); }},
   draw:function(g,c,s){ addDraw(g,c,c.C,s.m,s.r); },
-  out:function(s){ return ['平行四邊形的對角線：a→ + b→ = (3+1, 1+3) = <b>(4, 4)</b>','a→ − b→ = (3−1, 1−3) = <b>(2, −2)</b>','r a→ = ('+fr(3*s.r)+', '+fr(s.r)+')；與 a→ 平行（a₁b₂ = a₂b₁ 成立）'][s.m]; }
+  out:function(s){ return ['接著走：a→ + b→ = (3 + 1, 1 + 3) = <b>(4, 4)</b>','x 減 x、y 減 y：a→ − b→ = (3 − 1, 1 − 3) = <b>(2, −2)</b>',fr(s.r)+' a→ = ('+fr(3*s.r)+', '+fr(s.r)+')'+(s.r<0?'，掉頭走':s.r>0?'，方向不變':'，變成零向量')][s.m]; }
 });
+function parDraw(g,c,C,st){ var G=plane(g,c,C,[-4,6,-5,3]), fs=c.narrow?11:13;
+  V(g,G,0,0,4,-3,alpha(C.ink,0.35),6); T(g,'c→ = (4, −3)',G.X(4)+6,G.Y(-3)+14,C.muted,fs,'left','700');
+  V(g,G,0,0,-2,1,C.blue,3); T(g,'a→',G.X(-2)-6,G.Y(1)-10,C.blue,fs+1,'right','700');
+  V(g,G,-2,1,1,-1,ORANGE,3);
+  if(!st){ T(g,'+ 1 個 b→',G.X(1)+8,G.Y(-1),ORANGE,fs,'left','700'); return; }
+  V(g,G,1,-1,4,-3,ORANGE,3); T(g,'+ 2 個 b→',G.X(2.5)+10,G.Y(-2)-8,ORANGE,fs,'left','700'); dot(g,G.X(4),G.Y(-3),6,C.red); }
 widget('s-F2',{state:{},steps:2,rw:0.62,rn:1.0,
-  draw:function(g,c,s){ addDraw(g,c,c.C,2,s.step?2:1); },
-  out:steps(['a→ + t b→ = (−2 + 3t, 1 − 2t)。','與 c→ = (4, −3) 平行：(−2 + 3t)(−3) = (1 − 2t)·4 ⇒ 6 − 9t = 4 − 8t ⇒ <b>t = 2</b> → 答案。'])
+  draw:function(g,c,s){ parDraw(g,c,c.C,s.step); },
+  out:steps(['第 1 步：a→ + t b→ = (−2 + 3t, 1 − 2t)。要和 c→ = (4, −3) 平行 → 交叉相乘相等。','第 2 步：(−2 + 3t)×(−3) = (1 − 2t)×4 → 6 − 9t = 4 − 8t → <b>t = 2</b>。圖上：先走 a→，再走 2 個 b→，剛好走到 c→ 的尖端。'])
 });
 
-/* F3 線性組合 */
-function linDraw(g,c,C,x,y,show){ var G=frame(full(c),-3.5,7,-2.5,6.5,22,true), fs=c.narrow?11:13, A=[3,1], B=[1,2];
-  for(var i=-3;i<=4;i++){ L(g,G.X(i*A[0]-3*B[0]),G.Y(i*A[1]-3*B[1]),G.X(i*A[0]+4*B[0]),G.Y(i*A[1]+4*B[1]),alpha(C.ink,0.08),1); L(g,G.X(-3*A[0]+i*B[0]),G.Y(-3*A[1]+i*B[1]),G.X(4*A[0]+i*B[0]),G.Y(4*A[1]+i*B[1]),alpha(C.ink,0.08),1); }
-  poly(g,G,[[0,0],A,[A[0]+B[0],A[1]+B[1]],B],alpha(C.teal,0.18),C.teal);
-  V(g,G,0,0,A[0],A[1],C.blue,3); V(g,G,0,0,B[0],B[1],ORANGE,3);
-  T(g,'A',G.X(A[0])+6,G.Y(A[1])+10,C.blue,fs,'left','700'); T(g,'B',G.X(B[0])-8,G.Y(B[1])-8,ORANGE,fs,'right','700'); 
-  if(show){ L(g,G.X(-4),G.Y(1+0.25*7),G.X(7),G.Y(1-0.25*4),alpha(C.muted,0.6),1.5,[4,4]); }
-  var px=x*A[0]+y*B[0], py=x*A[1]+y*B[1];
-  L(g,G.X(0),G.Y(0),G.X(x*A[0]),G.Y(x*A[1]),C.blue,4); L(g,G.X(x*A[0]),G.Y(x*A[1]),G.X(px),G.Y(py),ORANGE,4); dot(g,G.X(px),G.Y(py),7,C.red); T(g,'P',G.X(px)+10,G.Y(py)-10,C.red,fs+1,'left','700'); }
-widget('w-lin',{state:{x:0.5,y:0.75},rw:0.62,rn:1.0,
-  draw:function(g,c,s){ linDraw(g,c,c.C,s.x,s.y,false); },
-  out:function(s){ var px=s.x*3+s.y, py=s.x+2*s.y, inside=s.x>=0&&s.x<=1&&s.y>=0&&s.y<=1; return 'OP→ = '+fr(s.x)+' OA→ + '+fr(s.y)+' OB→ = ('+fr(px)+', '+fr(py)+')'+(inside?'：在平行四邊形 OACB 內（含邊界）':'')+(Math.abs(s.x+s.y-1)<1e-9?'；x + y = 1，P 在直線 AB 上':''); }
+/* F3 分點公式：P 在線段 AB 上，AP:PB = m:n */
+function divDraw(g,c,C,m,n){ var G=frame(full(c),-5.5,3.5,-1.6,4.4,22,true), fs=c.narrow?11:13, A=[-4,1], B=[2,3], wa=n/(m+n), wb=m/(m+n), P=[wa*A[0]+wb*B[0],wa*A[1]+wb*B[1]];
+  L(g,G.X(A[0]),G.Y(A[1]),G.X(B[0]),G.Y(B[1]),alpha(C.ink,0.5),3);
+  L(g,G.X(A[0]),G.Y(A[1]),G.X(P[0]),G.Y(P[1]),C.blue,5); L(g,G.X(P[0]),G.Y(P[1]),G.X(B[0]),G.Y(B[1]),ORANGE,5);
+  dot(g,G.X(A[0]),G.Y(A[1]),6,C.blue); dot(g,G.X(B[0]),G.Y(B[1]),6,ORANGE); dot(g,G.X(P[0]),G.Y(P[1]),7,C.red);
+  T(g,'A(−4, 1)',G.X(A[0]),G.Y(A[1])+18,C.blue,fs,'center','700'); T(g,'B(2, 3)',G.X(B[0]),G.Y(B[1])-16,ORANGE,fs,'center','700'); T(g,'P',G.X(P[0]),G.Y(P[1])-16,C.red,fs+2,'center','700');
+  T(g,'AP:PB = '+m+':'+n,G.X(-5.3),G.Y(4),C.ink,fs+1,'left','700');
+  var x0=G.X(-5.3), wTot=G.X(0.5)-x0, bh=12;
+  box(g,x0,G.Y(-0.4)-bh/2,wTot*wa,bh,alpha(C.blue,0.7),null); T(g,'A 的份量 '+frac(n,m+n),x0+wTot*wa+8,G.Y(-0.4),C.blue,fs,'left','700');
+  box(g,x0,G.Y(-1.1)-bh/2,wTot*wb,bh,alpha(ORANGE,0.8),null); T(g,'B 的份量 '+frac(m,m+n),x0+wTot*wb+8,G.Y(-1.1),ORANGE,fs,'left','700'); }
+function frac(a,b){ var d=gcd(a,b)||1; a/=d; b/=d; return (a<0?'−':'')+(b===1?String(Math.abs(a)):Math.abs(a)+'/'+b); }
+widget('w-lin',{state:{m:1,n:1},rw:0.62,rn:1.0,fmt:{m:function(v){ return String(v); },n:function(v){ return String(v); }},
+  draw:function(g,c,s){ divDraw(g,c,c.C,s.m,s.n); },
+  out:function(s){ var t=s.m+s.n; return 'P = '+frac(s.n,t)+' A + '+frac(s.m,t)+' B = ('+frac(-4*s.n+2*s.m,t)+', '+frac(s.n+3*s.m,t)+')'+(s.m===s.n?'：比例一樣，P 就是中點':s.m>s.n?'：P 比較靠近 B，B 的份量比較大':'：P 比較靠近 A，A 的份量比較大'); }
 });
 widget('s-F3',{state:{},steps:2,rw:0.62,rn:1.0,
-  draw:function(g,c,s){ linDraw(g,c,c.C,s.step?1/3:0.5,s.step?2/3:0.5,s.step); },
-  out:steps(['AP:PB = 2:1，P 離 B 比較近，所以 B 的係數比較大：P = ⅓A + ⅔B（係數交叉）。','P = ⅓(−4, 1) + ⅔(2, 3) = (0, 7/3) → 答案。'])
+  draw:function(g,c,s){ divDraw(g,c,c.C,2,1); },
+  out:steps(['第 1 步：AP:PB = 2:1，P 比較靠近 B，所以 B 的份量大：P = ⅓A + ⅔B（數字交叉）。','第 2 步：P = ⅓(−4, 1) + ⅔(2, 3) = (−4/3 + 4/3, 1/3 + 2) = <b>(0, 7/3)</b> → 答案。'])
 });
 
 /* F4 內積 */
-function dotDraw(g,c,C,t){ var P=panels(c,0.62), fs=c.narrow?11:13, G=frame(P[0],-3.6,3.6,-1,3.8,16,true), r=t*PI/180, a=3, b=2.6;
+function dotDraw(g,c,C,t){ var G=frame(full(c),-3.6,3.6,-1.4,3.8,18,true), fs=c.narrow?11:13, r=t*PI/180, a=3, b=2.6, col=t<90?GREEN:t===90?C.ink:C.red;
   V(g,G,0,0,a,0,C.blue,3); V(g,G,0,0,b*Math.cos(r),b*Math.sin(r),ORANGE,3);
-  g.save(); g.strokeStyle=C.red; g.lineWidth=2; g.beginPath(); g.arc(G.X(0),G.Y(0),28,-r,0); g.stroke(); g.restore();
-  T(g,'θ = '+t+'°',G.X(0)+34,G.Y(0)-18,C.red,fs,'left','700'); T(g,'|a→| = 3',G.X(a),G.Y(0)+16,C.blue,fs,'right','700'); T(g,'|b→| = 2.6',G.X(b*Math.cos(r)),G.Y(b*Math.sin(r))-14,ORANGE,fs,'center','700');
-  var H=frame(P[1],-1.2,1.2,-1.2,1.4,14,false), cs=Math.cos(r); L(g,H.X(-1),H.Y(0),H.X(1),H.Y(0),C.ink,1.5);
-  box(g,H.X(Math.min(0,cs)),H.Y(0.3),Math.abs(cs)*H.sx,0.3*H.sy,alpha(cs>=0?GREEN:C.red,0.6),null);
-  T(g,'cos θ = '+fr(cs),H.X(0),H.Y(0.8),C.ink,fs,'center','700'); T(g,'a→·b→ = '+fr(3*2.6*cs),H.X(0),H.Y(-0.5),cs>1e-9?GREEN:cs<-1e-9?C.red:C.ink,fs+1,'center','700');
-  T(g,t<90?'銳角：內積 > 0':t===90?'直角：內積 = 0（垂直）':'鈍角：內積 < 0',H.X(0),H.Y(-0.9),C.muted,fs,'center','700'); }
+  g.save(); g.strokeStyle=col; g.lineWidth=2; g.beginPath(); g.arc(G.X(0),G.Y(0),28,-r,0); g.stroke(); g.restore();
+  T(g,'夾角 '+t+'°',G.X(0)+34,G.Y(0)-18,col,fs,'left','700'); T(g,'a→',G.X(a),G.Y(0)+16,C.blue,fs+1,'right','700'); T(g,'b→',G.X(b*Math.cos(r))+(t>90?-10:10),G.Y(b*Math.sin(r))-12,ORANGE,fs+1,'center','700');
+  T(g,t<90?'大致同方向 → 內積是正的':t===90?'垂直 → 內積是 0':'大致反方向 → 內積是負的',G.X(0),G.Y(-0.9),col,fs+2,'center','700'); }
 widget('w-dot',{state:{t:60},rw:0.6,rn:1.0,fmt:{t:function(v){ return v+'°'; }},
   draw:function(g,c,s){ dotDraw(g,c,c.C,s.t); },
-  out:function(s){ return 'a→·b→ = |a→||b→| cos θ = 3 × 2.6 × cos '+s.t+'° = <b>'+fr(7.8*Math.cos(s.t*PI/180))+'</b>'; }
+  out:function(s){ return '內積 = 長度 3 × 長度 2.6 × cos '+s.t+'° = <b>'+fr(7.8*Math.cos(s.t*PI/180))+'</b>'; }
 });
 function triDraw(g,c,C,st){ var G=frame(full(c),-1,4.6,-0.6,2.6,20,true), fs=c.narrow?11:13, A=[0,0], B=[2,0], Cc=[1,Math.sqrt(3)];
   poly(g,G,[A,B,Cc],alpha(C.teal,0.12),C.teal); V(g,G,0,0,2,0,C.blue,3); V(g,G,2,0,1,Math.sqrt(3),ORANGE,3);
@@ -417,22 +422,22 @@ function triDraw(g,c,C,st){ var G=frame(full(c),-1,4.6,-0.6,2.6,20,true), fs=c.n
   if(st){ V(g,G,2,0,4,0,C.blue,2,[5,4]); g.save(); g.strokeStyle=C.red; g.lineWidth=2; g.beginPath(); g.arc(G.X(2),G.Y(0),26,-2*PI/3,0); g.stroke(); g.restore(); T(g,'120°',G.X(2)+20,G.Y(0)-30,C.red,fs+1,'left','700'); } }
 widget('s-F4',{state:{},steps:2,rw:0.6,rn:1.0,
   draw:function(g,c,s){ triDraw(g,c,c.C,s.step); },
-  out:steps(['AB→ 與 BC→ 首尾相接，不是同一起點；把 AB→ 平移到 B，延長線與 BC→ 的夾角是 180° − 60° = 120°。','AB→·BC→ = 2 × 2 × cos 120° = <b>−2</b> → 答案。'])
+  out:steps(['第 1 步：AB→ 和 BC→ 是頭接尾。把 AB→ 搬到 B 點出發（虛線），它和 BC→ 的夾角是 180° − 60° = 120°。','第 2 步：內積 = 2 × 2 × cos 120° = 4 × (−½) = <b>−2</b> → 答案。'])
 });
 
 /* F5 正射影 */
-function projDraw(g,c,C,t){ var G=frame(full(c),-4,4.6,-1.4,3.6,20,true), fs=c.narrow?11:13, r=t*PI/180, a=[3*Math.cos(r),3*Math.sin(r)], b=[3.5,0.8], bb=b[0]*b[0]+b[1]*b[1], k=(a[0]*b[0]+a[1]*b[1])/bb, p=[k*b[0],k*b[1]];
-  L(g,G.X(-4*b[0]/3.6),G.Y(-4*b[1]/3.6),G.X(4.5*b[0]/3.6),G.Y(4.5*b[1]/3.6),alpha(C.ink,0.25),1.5);
+function projDraw(g,c,C,a,b,bd,lab){ var G=frame(full(c),bd[0],bd[1],bd[2],bd[3],20,true), fs=c.narrow?11:13, bl=Math.hypot(b[0],b[1]), k=(a[0]*b[0]+a[1]*b[1])/(bl*bl), p=[k*b[0],k*b[1]], u=[b[0]/bl,b[1]/bl], span=Math.max(bd[1]-bd[0],bd[3]-bd[2]);
+  L(g,G.X(-span*u[0]),G.Y(-span*u[1]),G.X(span*u[0]),G.Y(span*u[1]),alpha(C.ink,0.25),1.5);
   V(g,G,0,0,b[0],b[1],ORANGE,3); V(g,G,0,0,a[0],a[1],C.blue,3); L(g,G.X(a[0]),G.Y(a[1]),G.X(p[0]),G.Y(p[1]),C.muted,1.5,[5,4]);
-  V(g,G,0,0,p[0],p[1],C.red,5); T(g,'a→',G.X(a[0])+6,G.Y(a[1])-10,C.blue,fs+1,'left','700'); T(g,'b→',G.X(b[0])+6,G.Y(b[1])+12,ORANGE,fs+1,'left','700');
-  T(g,'正射影 = ('+fr(k)+') b→',G.X(-3.9),G.Y(3.3),C.red,fs+1,'left','700'); }
+  V(g,G,0,0,p[0],p[1],C.red,5); T(g,'a→',G.X(a[0])+(a[0]<0?-8:8),G.Y(a[1])-10,C.blue,fs+1,a[0]<0?'right':'left','700'); T(g,'b→',G.X(b[0])+8,G.Y(b[1])+12,ORANGE,fs+1,'left','700');
+  T(g,lab||('影子 = '+fr(k)+' 倍的 b→'),G.X(bd[0])+6,G.Y(bd[3])+12,C.red,fs+1,'left','700'); }
 widget('w-proj',{state:{t:50},rw:0.6,rn:1.0,fmt:{t:function(v){ return v+'°'; }},
-  draw:function(g,c,s){ projDraw(g,c,c.C,s.t); },
-  out:function(s){ var r=s.t*PI/180, d=3*Math.cos(r)*3.5+3*Math.sin(r)*0.8; return 'a→·b→ = '+fr(d)+'，'+(d>1e-6?'影子與 b→ 同向':d<-1e-6?'影子與 b→ 反向':'a→ ⊥ b→，影子是零向量'); }
+  draw:function(g,c,s){ var r=s.t*PI/180; projDraw(g,c,c.C,[3*Math.cos(r),3*Math.sin(r)],[3.5,0.8],[-4,4.6,-1.4,3.6]); },
+  out:function(s){ var r=s.t*PI/180, d=3*Math.cos(r)*3.5+3*Math.sin(r)*0.8; return '內積 = '+fr(d)+'：'+(d>1e-6?'正的 → 影子和 b→ 同方向':d<-1e-6?'負的 → 影子和 b→ 反方向':'0 → 兩個垂直，沒有影子'); }
 });
 widget('s-F5',{state:{},steps:3,rw:0.6,rn:1.0,
-  draw:function(g,c,s){ projDraw(g,c,c.C,[60,100,150][s.step]); },
-  out:steps(['a→·b→ = (−3)(2) + (1)(−4) = −10。','|b→|² = 2² + (−4)² = 20，係數 = −10/20 = −½（負的：影子與 b→ 反向）。','正射影 = −½(2, −4) = <b>(−1, 2)</b> → 答案。'])
+  draw:function(g,c,s){ projDraw(g,c,c.C,[-3,1],[2,-4],[-4,3.5,-4.6,2.6],s.step<2?' ':'影子 = (−1, 2)'); },
+  out:steps(['第 1 步 內積：a→·b→ = (−3)(2) + (1)(−4) = −10。','第 2 步 除以 |b→|²：|b→|² = 2² + 4² = 20，−10 ÷ 20 = −½（負的 → 影子和 b→ 反方向）。','第 3 步：影子 = −½ × (2, −4) = <b>(−1, 2)</b> → 答案。'])
 });
 
 /* F6 柯西 */
@@ -443,11 +448,11 @@ function cauDraw(g,c,C,r,st){ var G=frame(full(c),-1.5,7.5,-1.5,5.2,20,true), fs
   if(hit){ dot(g,G.X(2),G.Y(3),7,C.red); T(g,'(2, 3)',G.X(2)+10,G.Y(3)-12,C.red,fs+1,'left','700'); L(g,G.X(0),G.Y(0),G.X(2),G.Y(3),C.red,1.5,[5,4]); } }
 widget('w-cauchy',{state:{r:2.5},rw:0.6,rn:1.0,fmt:{r:function(v){ return fr(v); }},
   draw:function(g,c,s){ cauDraw(g,c,c.C,s.r,false); },
-  out:function(s){ var R=Math.sqrt(13); return 'x² + y² = r² = '+fr(s.r*s.r)+'：'+(s.r<R-0.04?'圓還碰不到直線（直線上沒有這麼小的 x² + y²）':Math.abs(s.r-R)<0.04?'<b>相切於 (2, 3)，最小值 x² + y² = 13</b>':'圓與直線交於兩點'); }
+  out:function(s){ var R=Math.sqrt(13); return 'r² = '+fr(s.r*s.r)+'：'+(s.r<R-0.04?'圓還碰不到直線，繼續放大':Math.abs(s.r-R)<0.04?'<b>剛好碰到 (2, 3)，最小值 x² + y² = 13</b>':'圓已經穿過直線（放太大了）'); }
 });
 widget('s-F6',{state:{},steps:2,rw:0.6,rn:1.0,
   draw:function(g,c,s){ cauDraw(g,c,c.C,Math.sqrt(10),false); },
-  out:steps(['把 x − 3y 看成 (x, y)·(1, −3)：(x² + y²)(1² + (−3)²) ≥ (x − 3y)² ⇒ 10 × 10 ≥ (x − 3y)²。','所以 −10 ≤ x − 3y ≤ 10；等號在 (x, y) // (1, −3)，即 (1, −3) → 最大值 <b>10</b>。'])
+  out:steps(['第 1 步 湊式子：x − 3y 是 (x, y) 和 (1, −3) 的乘積和，所以 (x² + y²)(1² + 3²) ≥ (x − 3y)²，也就是 10 × 10 ≥ (x − 3y)²。','第 2 步 開根號：−10 ≤ x − 3y ≤ 10，最大值 <b>10</b>（(x, y) = (1, −3) 時做得到：1 + 9 = 10）。'])
 });
 
 /* F7 行列式面積 */
@@ -455,30 +460,30 @@ function detDraw(g,c,C,k){ var G=plane(g,c,C,[-1,7,-4.2,6]), fs=c.narrow?11:13, 
   poly(g,G,[[0,0],a,[a[0]+b[0],a[1]+b[1]],b],alpha(d>=0?C.teal:C.red,0.2),d>=0?C.teal:C.red);
   V(g,G,0,0,a[0],a[1],C.blue,3); V(g,G,0,0,b[0],b[1],ORANGE,3);
   T(g,'a→ = (4, 2)',G.X(a[0])+6,G.Y(a[1])+12,C.blue,fs,'left','700'); T(g,'b→ = (1, '+fr(k)+')',G.X(b[0])-6,G.Y(b[1])+(k>=0?-12:14),ORANGE,fs,'right','700');
-  T(g,'行列式 = 4·'+fr(k)+' − 2·1 = '+fr(d),G.X(-0.8),G.Y(-3.3),C.ink,fs+1,'left','700'); T(g,'面積 = '+fr(Math.abs(d))+(d===0?'（平行！）':''),G.X(-0.8),G.Y(-3.8),d===0?C.red:C.teal,fs+1,'left','700'); }
+  T(g,'行列式 = 4×'+fr(k)+' − 2×1 = '+fr(d),G.X(-0.8),G.Y(-3.3),C.ink,fs+1,'left','700'); T(g,'面積 = '+fr(Math.abs(d))+(d===0?'（平行！）':''),G.X(-0.8),G.Y(-3.8),d===0?C.red:C.teal,fs+1,'left','700'); }
 widget('w-det',{state:{k:3},rw:0.6,rn:1.0,fmt:{k:function(v){ return fr(v); }},
   draw:function(g,c,s){ detDraw(g,c,c.C,s.k); },
-  out:function(s){ var d=4*s.k-2; return '|4 2; 1 '+fr(s.k)+'| = '+fr(d)+' ⇒ 平行四邊形面積 <b>'+fr(Math.abs(d))+'</b>、三角形面積 '+fr(Math.abs(d)/2)+(d===0?'；行列式 0 ⇔ a→ // b→':''); }
+  out:function(s){ var d=4*s.k-2; return '平行四邊形面積 = |'+fr(d)+'| = <b>'+fr(Math.abs(d))+'</b>，三角形是一半 = '+fr(Math.abs(d)/2)+(d===0?'；面積 0 → 兩個向量平行':''); }
 });
 widget('s-F7',{state:{},steps:2,rw:0.6,rn:1.0,
   draw:function(g,c,s){ var G=plane(g,c,c.C,[-1,7,-4,6]), C=c.C; poly(g,G,[[0,0],[2,-1],[1,-5]],alpha(C.teal,0.2),C.teal); V(g,G,0,0,2,-1,C.blue,3); V(g,G,0,0,1,-5,ORANGE,3); T(g,'AB→ = (2, −1)',G.X(2)+6,G.Y(-1),C.blue,13,'left','700'); T(g,'AC→ = (1, −5)',G.X(1)+8,G.Y(-5),ORANGE,13,'left','700'); },
-  out:steps(['以 A 為起點：AB→ = (2, −1)、AC→ = (1, −5)。','行列式 = 2·(−5) − (−1)·1 = −9，面積 = ½|−9| = <b>9/2</b> → 答案。'])
+  out:steps(['第 1 步：從 A 出發畫兩支箭頭：AB→ = (5 − 3, 1 − 2) = (2, −1)，AC→ = (4 − 3, −3 − 2) = (1, −5)。','第 2 步：交叉相乘再相減 2×(−5) − (−1)×1 = −9；三角形面積 = ½ × |−9| = <b>9/2</b> → 答案。'])
 });
 
 /* F8 克拉瑪 */
 function crDraw(g,c,C,k){ var G=plane(g,c,C,[-5,5,-4,4]), fs=c.narrow?11:13, D=(k+2)*(k-3);
   function line(a,b,cc,col){ if(Math.abs(b)>1e-9) plot(g,G,function(x){ return (cc-a*x)/b; },-5,5,col,2.5); else L(g,G.X(cc/a),G.Y(-4),G.X(cc/a),G.Y(4),col,2.5); }
   line(k+1,4,4,C.blue); line(1,k-2,1,ORANGE);
-  var msg; if(Math.abs(D)>1e-9){ var x=4/(k+2), y=1/(k+2); if(Math.abs(x)<5&&Math.abs(y)<4) dot(g,G.X(x),G.Y(y),7,C.red); msg='Δ = '+fr(D)+' ≠ 0：交於一點 ('+fr(x)+', '+fr(y)+')'; }
-  else if(k===-2) msg='Δ = 0、Δx = −20 ≠ 0：平行，無解'; else msg='Δ = Δx = Δy = 0：重合，無限多組解';
+  var msg; if(Math.abs(D)>1e-9){ var x=4/(k+2), y=1/(k+2); if(Math.abs(x)<5&&Math.abs(y)<4) dot(g,G.X(x),G.Y(y),7,C.red); msg='Δ ≠ 0：交在一點 → 一組解'; }
+  else if(k===-2) msg='Δ = 0、Δx ≠ 0：平行 → 無解'; else msg='Δ = Δx = Δy = 0：疊在一起 → 無限多組解';
   T(g,'(k+1)x + 4y = 4',G.X(-4.8),G.Y(3.6),C.blue,fs,'left','700'); T(g,'x + (k−2)y = 1',G.X(-4.8),G.Y(3.0),ORANGE,fs,'left','700'); T(g,msg,G.X(-4.8),G.Y(-3.6),C.red,fs+1,'left','700'); }
 widget('w-cramer',{state:{k:1},rw:0.6,rn:1.0,fmt:{k:function(v){ return fr(v); }},
   draw:function(g,c,s){ crDraw(g,c,c.C,s.k); },
-  out:function(s){ var k=s.k, D=(k+2)*(k-3); return 'Δ = (k+2)(k−3) = '+fr(D)+'，Δx = 4(k−3) = '+fr(4*(k-3))+'，Δy = k−3 = '+fr(k-3); }
+  out:function(s){ var k=s.k, D=(k+2)*(k-3); return 'Δ = '+fr(D)+'，Δx = '+fr(4*(k-3))+'，Δy = '+fr(k-3)+(Math.abs(D)>1e-9?'；x = Δx ÷ Δ = '+fr(4/(k+2))+'，y = Δy ÷ Δ = '+fr(1/(k+2)):''); }
 });
 widget('s-F8',{state:{},steps:2,rw:0.6,rn:1.0,
   draw:function(g,c,s){ var G=plane(g,c,c.C,[-5,5,-4,4]), C=c.C; plot(g,G,function(x){ return (31-30*x)/29; },-5,5,C.blue,2.5); plot(g,G,function(x){ return (29-28*x)/27; },-5,5,ORANGE,2); if(s.step) { dot(g,G.X(2),G.Y(-1),7,C.red); T(g,'(2, −1)',G.X(2)+10,G.Y(-1)+14,C.red,13,'left','700'); } },
-  out:steps(['Δ = 30·27 − 29·28 = 810 − 812 = −2；Δx = 31·27 − 29·29 = −4；Δy = 30·29 − 31·28 = 2。','x = Δx/Δ = 2、y = Δy/Δ = −1 → <b>(2, −1)</b>（兩條幾乎平行的直線，交點在這裡）。'])
+  out:steps(['第 1 步 算三個行列式：Δ = 30×27 − 29×28 = 810 − 812 = −2；Δx = 31×27 − 29×29 = 837 − 841 = −4；Δy = 30×29 − 31×28 = 870 − 868 = 2。','第 2 步 相除：x = −4 ÷ (−2) = 2，y = 2 ÷ (−2) = −1 → <b>(2, −1)</b>。'])
 });
 })();
 </script>
