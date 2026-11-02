@@ -202,5 +202,24 @@ console.log("\n[5] 知識弱點：重新作答");
   check("Console errors = 0（知識弱點）", wb.consoleErrors.length === 0);
 }
 
+/* 2026-11-02 英文 L4～L6 單字克漏字（tm_103～tm_105）：填充題整套進入測驗，
+   輸入英文單字／片語自動批改（大小寫、前後空格不影響；拼錯算錯）。 */
+console.log("\n[英文單字克漏字] tm_103～tm_105");
+{
+  const counts = { tm_103: 56, tm_104: 43, tm_105: 55 };
+  Object.keys(counts).forEach((mid) => {
+    const set = AHS.QuestionRuntime.getSet("teaching_material_" + idMap[mid]);
+    check(mid + "：" + counts[mid] + " 題全部進入測驗，且都是輸入作答", set.length === counts[mid] && set.every((q) => QK.kindOf(q) === "self"));
+  });
+  const set = AHS.QuestionRuntime.getSet("teaching_material_" + idMap.tm_103);
+  const longWord = set.find((q) => q.answerText === "transformation");
+  check("長單字（transformation，超過 12 字母）也能自動批改", !!longWord &&
+    QK.keyForInput(longWord, ["Transformation "]) === QK.SELF_CORRECT && QK.keyForInput(longWord, ["transfromation"]) !== QK.SELF_CORRECT);
+  const phrase = set.find((q) => q.answerText === "in honor of");
+  check("片語（in honor of）輸入正確即答對", !!phrase && QK.keyForInput(phrase, ["in honor of"]) === QK.SELF_CORRECT);
+  const card = AHS.QuestionCard.create(longWord, null, () => {});
+  check("克漏字題卡：一個輸入框，題目顯示首字母提示", card.querySelectorAll(".qcard-self__input").length === 1 && /t(\u00a0_){13}/.test(card.textContent));
+}
+
 console.log("\nQuestionKindRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);

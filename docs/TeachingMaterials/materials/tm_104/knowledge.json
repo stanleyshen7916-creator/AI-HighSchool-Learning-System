@@ -1,0 +1,21 @@
+{
+  "materialId": "tm_104",
+  "knowledgePoints": [
+    {
+      "name": "L5 單字",
+      "source": "both",
+      "refCount": 32
+    },
+    {
+      "name": "L5 單字（認識字）",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "L5 片語",
+      "source": "question",
+      "refCount": 5
+    }
+  ],
+  "generatedAt": "2026-11-02T14:13:18.511Z"
+}

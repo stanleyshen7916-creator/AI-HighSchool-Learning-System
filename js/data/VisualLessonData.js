@@ -552,7 +552,7 @@ AHS.VisualLessonData = [
     title: "高二英文 Lessons 4–6・圖解教材",
     subject: "英文",
     /* 2026-11-01：原 tm_93 依課別拆分為 tm_98（Lesson 4）、tm_99（Lesson 5）、tm_100（Lesson 6）。 */
-    materialIds: ["tm_98", "tm_99", "tm_100"],
+    materialIds: ["tm_98", "tm_99", "tm_100", "tm_103", "tm_104", "tm_105"],
     source: "長榮版英文 Lesson 4 Day of the Dead、Lesson 5 Kyoto: The Heart of Japan、Lesson 6 The Country of the Blind，p.78～151",
     sections: [
       { id: "1", title: "Lesson 4 Day of the Dead" },
