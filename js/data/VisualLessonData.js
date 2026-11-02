@@ -488,14 +488,14 @@ AHS.VisualLessonData = [
       { id: "3", title: "3-3 平面向量的應用" }
     ],
     cards: [
-      { id: "F1", section: "1", title: "向量 ＝ 大小 ＋ 方向：用坐標寫下來", keywords: ["向量的意義與表示", "向量的坐標表示"] },
-      { id: "F2", section: "1", title: "加法、減法與係數積：平行四邊形與伸縮", keywords: ["向量的加減法", "係數積與平行"] },
-      { id: "F3", section: "1", title: "線性組合與分點公式：用兩支箭頭鋪滿平面", keywords: ["線性組合", "分點公式與重心"] },
-      { id: "F4", section: "2", title: "內積：一個數，帶著夾角的正負號", keywords: ["內積的定義", "坐標內積與夾角", "垂直的判定"] },
-      { id: "F5", section: "2", title: "正射影：a→ 在 b→ 上的影子", keywords: ["內積的性質", "正射影", "法向量與直線夾角"] },
-      { id: "F6", section: "3", title: "柯西與三角不等式：|cos θ| ≤ 1 的威力", keywords: ["柯西不等式", "三角不等式"] },
-      { id: "F7", section: "3", title: "面積與二階行列式：|a₁b₂ − a₂b₁|", keywords: ["三角形面積與行列式", "二階行列式"] },
-      { id: "F8", section: "3", title: "方程組與克拉瑪公式：兩直線的三種關係", keywords: ["方程組與線性組合", "克拉瑪公式"] }
+      { id: "F1", section: "1", title: "向量＝走路的指令：往右幾步、往上幾步", keywords: ["向量的意義與表示", "向量的坐標表示"] },
+      { id: "F2", section: "1", title: "加、減、乘倍數：接著走、倒著接、走幾倍", keywords: ["向量的加減法", "係數積與平行"] },
+      { id: "F3", section: "1", title: "分點公式：P 靠近誰，誰的份量就大", keywords: ["線性組合", "分點公式與重心"] },
+      { id: "F4", section: "2", title: "內積：看兩支箭頭「同不同方向」", keywords: ["內積的定義", "坐標內積與夾角", "垂直的判定"] },
+      { id: "F5", section: "2", title: "正射影：a→ 照在 b→ 上的影子", keywords: ["內積的性質", "正射影", "法向量與直線夾角"] },
+      { id: "F6", section: "3", title: "柯西不等式：求「最大、最小」的小工具", keywords: ["柯西不等式", "三角不等式"] },
+      { id: "F7", section: "3", title: "行列式算面積：交叉相乘再相減", keywords: ["三角形面積與行列式", "二階行列式"] },
+      { id: "F8", section: "3", title: "克拉瑪公式：用行列式解聯立方程式", keywords: ["方程組與線性組合", "克拉瑪公式"] }
     ]
   },
   {

@@ -282,6 +282,44 @@ AHS.WrongBook = (function () {
     return { el: headerEl, favBtn: favBtn };
   }
 
+  /* 2026-11-02 錯題的章節標籤（使用者需求：「知識弱點的題目需標示章節內容」），
+     例如「第3章：平面向量 · 3-2 平面向量的內積」。章節取自教材的 chapter
+     （括號裡的細目省略），小節取自題目自己的 section（只收 3-1、第2節、
+     主題12、Lesson 4 這類真正的章節名稱，「選擇題」「練習題」等不算）。
+     錯題紀錄本身沒有章節時（例如模擬月考），從 js/data/TeachingMaterialData.js
+     依題目編號找回；都找不到就回傳 ""，不顯示。 */
+  var SECTION_RE = /^(\d+-\d|第.{1,4}[章節課]|主題\s*\d|單元\s*\d|Lesson)/i;
+
+  function materialEntryOf(item) {
+    var all = Array.isArray(window.AHS.TeachingMaterialData) ? window.AHS.TeachingMaterialData : [];
+    var m = /^(tm_\d+)_q/.exec(String(item.questionId || ""));
+    var id = m ? m[1] : item.materialId;
+    for (var i = 0; i < all.length; i += 1) {
+      if (all[i] && all[i].materialId === id) { return all[i]; }
+    }
+    return null;
+  }
+
+  function shortChapter(chapter) {
+    return String(chapter || "").split(/[（(]/)[0].replace(/[：:，,\s]+$/, "").trim();
+  }
+
+  var chapterCache = {};
+  function chapterLabel(item) {
+    var key = (item.questionId || "") + "|" + (item.materialId || "") + "|" + (item.chapter || "") + "|" + (item.question || "");
+    if (!Object.prototype.hasOwnProperty.call(chapterCache, key)) { chapterCache[key] = computeChapterLabel(item); }
+    return chapterCache[key];
+  }
+
+  function computeChapterLabel(item) {
+    var entry = materialEntryOf(item);
+    var chapter = shortChapter((entry && entry.material && entry.material.chapter) || item.chapter);
+    var q = findMaterialQuestion(item);
+    var section = String((q && q.section) || "").trim();
+    if (!SECTION_RE.test(section) || chapter.indexOf(section) !== -1) { section = ""; }
+    return [chapter, section].filter(function (v) { return v; }).join(" · ");
+  }
+
   /* 2026-11-01 錯題列的月考範圍前綴，例如「第二次月考｜知識點」 */
   function periodPrefix(item) {
     var pe = AHS.ExamPeriod ? AHS.ExamPeriod.ofWrongItem(item) : null;
@@ -615,6 +653,7 @@ AHS.WrongBook = (function () {
           el("span", { class: "wb-row__index", text: "第 " + (index + 1) + " 題" }),
           el("span", { class: "wb-row__question", text: item.question })
         ]),
+        chapterLabel(item) ? el("p", { class: "wb-row__chapter", text: "章節：" + chapterLabel(item) }) : null,
         el("p", { class: "wb-row__meta", text: periodPrefix(item) + (item.knowledgePoint || "") }),
         el("div", { class: "wb-row__stats" }, [
           el("span", { class: "wb-row__col wb-row__col--diff" }, [diffTag(deriveDifficulty(item))]),
@@ -950,7 +989,7 @@ AHS.WrongBook = (function () {
       el("div", { class: "wb-detail__tags" }, [
         chip(item.subject),
         el("span", { class: "wb-detail__material", text: item.title }),
-        el("span", { class: "wb-detail__chapter", text: item.chapter }),
+        el("span", { class: "wb-detail__chapter", text: chapterLabel(item) || item.chapter }),
         diffTag(deriveDifficulty(item)),
         el("span", { class: "wb-detail__status" }, [statusTag(getMasteryStatus(item.correctStreak))])
       ]),
@@ -1363,7 +1402,7 @@ AHS.WrongBook = (function () {
     }
 
     function searchable(item) {
-      return [item.title, item.chapter, item.knowledgePoint]
+      return [item.title, item.chapter, chapterLabel(item), item.knowledgePoint]
         .filter(function (v) { return v; }).join(" ").toLowerCase();
     }
 
