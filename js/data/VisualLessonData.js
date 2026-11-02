@@ -96,6 +96,54 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "PHY_H2_Ch3_PlaneMotion",
+    href: "docs/TeachingMaterials/lessons/PHY_H2_Ch3_PlaneMotion.html",
+    title: "高二物理第3章 平面運動・圖解教材",
+    subject: "物理",
+    materialIds: ["tm_101"],
+    source: "長榮版物理第3章 平面運動（3-1 平面向量、3-2 平面運動的描述、3-3 水平拋射、3-4 斜向拋射），p.82～111",
+    sections: [
+      { id: "3-1", title: "3-1 平面向量" },
+      { id: "3-2", title: "3-2 平面運動的描述" },
+      { id: "3-3", title: "3-3 水平拋射" },
+      { id: "3-4", title: "3-4 斜向拋射" }
+    ],
+    cards: [
+      { id: "F1", section: "3-1", title: "向量相加：x 加 x、y 加 y", keywords: ["向量的加減法", "向量的坐標表示", "向量相加", "合向量"] },
+      { id: "F2", section: "3-2", title: "位移走直線，路徑長沿著走", keywords: ["平面運動的位移與速度", "位移", "路徑長", "平均速率", "平均速度"] },
+      { id: "F3", section: "3-2", title: "平均加速度：速度要用箭頭相減", keywords: ["平均加速度", "速度變化量", "Δv"] },
+      { id: "F4", section: "3-2", title: "切向加速度管快慢，法向加速度管轉彎", keywords: ["切向加速度與法向加速度", "切向加速度", "法向加速度"] },
+      { id: "F5", section: "3-3", title: "水平拋射＝橫著等速＋直著自由落體", keywords: ["運動的獨立性", "水平拋射", "落地時間", "水平射程"] },
+      { id: "F6", section: "3-3", title: "水平拋射的速度方向：橫的不變，直的越來越快", keywords: ["水平拋射的速度方向", "速度方向", "落地速度"] },
+      { id: "F7", section: "3-4", title: "斜拋三公式：時間、最高、最遠", keywords: ["斜拋公式", "斜拋的應用", "軌跡方程式", "最大高度", "飛行時間"] },
+      { id: "F8", section: "3-4", title: "仰角 45° 最遠；互餘的兩個角一樣遠", keywords: ["斜拋的重要性質", "仰角互餘", "45°", "對稱性"] }
+    ]
+  },
+  {
+    lessonId: "PHY_H2_Ch4_Newton",
+    href: "docs/TeachingMaterials/lessons/PHY_H2_Ch4_Newton.html",
+    title: "高二物理第4章 牛頓運動定律・圖解教材",
+    subject: "物理",
+    materialIds: ["tm_102"],
+    source: "長榮版物理第4章 牛頓運動定律（4-1 力的測量與性質、4-2 慣性與牛頓第一運動定律、4-3 牛頓第二運動定律、4-4 牛頓第三運動定律），p.114～165",
+    sections: [
+      { id: "4-1", title: "4-1 力的測量與性質" },
+      { id: "4-2", title: "4-2 慣性與牛頓第一運動定律" },
+      { id: "4-3", title: "4-3 牛頓第二運動定律" },
+      { id: "4-4", title: "4-4 牛頓第三運動定律" }
+    ],
+    cards: [
+      { id: "F1", section: "4-1", title: "力的合成與分解：把斜的力拆成橫的和直的", keywords: ["力的合成", "力的分解", "力的分類", "合力", "超距力"] },
+      { id: "F2", section: "4-1", title: "正向力不一定等於 mg；輕繩張力處處相同", keywords: ["正向力", "張力"] },
+      { id: "F3", section: "4-1", title: "虎克定律：彈簧被拉多少，回彈就多少", keywords: ["虎克定律", "彈簧", "彈性常數", "比例限度"] },
+      { id: "F4", section: "4-2", title: "慣性：東西都「懶得改變」", keywords: ["慣性", "牛頓第一運動定律", "慣性坐標系", "慣性定律"] },
+      { id: "F5", section: "4-3", title: "F = ma：合力越大越快，質量越大越慢", keywords: ["牛頓第二運動定律", "單一物體受力", "實驗2 牛頓第二運動定律", "終端速度"] },
+      { id: "F6", section: "4-3", title: "連結體：先看整串，再拆一個", keywords: ["多物體系統", "阿特午機", "連結體", "滑輪"] },
+      { id: "F7", section: "4-3", title: "電梯裡的體重計：看加速度方向", keywords: ["視重與實重", "視重", "失重", "電梯"] },
+      { id: "F8", section: "4-4", title: "你推牆，牆也推你：作用力與反作用力", keywords: ["牛頓第三運動定律", "平衡力", "作用力與反作用力"] }
+    ]
+  },
+  {
     lessonId: "CHE_H2_Ch1_Stoichiometry",
     href: "docs/TeachingMaterials/lessons/CHE_H2_Ch1_Stoichiometry.html",
     title: "第1章 化學計量與反應熱・圖解教材",

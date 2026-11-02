@@ -1,0 +1,66 @@
+{
+  "materialId": "tm_101",
+  "knowledgePoints": [
+    {
+      "name": "切向加速度與法向加速度",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "向量的加減法",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "向量的坐標表示",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "平均加速度",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "平面運動的位移與速度",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "斜拋公式",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "斜拋的應用",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "斜拋的重要性質",
+      "source": "question",
+      "refCount": 7
+    },
+    {
+      "name": "水平拋射",
+      "source": "both",
+      "refCount": 7
+    },
+    {
+      "name": "水平拋射的速度方向",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "軌跡方程式",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "運動的獨立性",
+      "source": "both",
+      "refCount": 4
+    }
+  ],
+  "generatedAt": "2026-11-02T13:50:27.953Z"
+}
