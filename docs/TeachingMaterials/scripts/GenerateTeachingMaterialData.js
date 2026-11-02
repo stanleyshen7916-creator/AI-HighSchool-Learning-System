@@ -68,7 +68,8 @@ function listMaterialIds() {
     .filter(function (entry) { return entry.isDirectory(); })
     .map(function (entry) { return entry.name; })
     .filter(function (name) { return /^tm_\d+$/.test(name); })
-    .sort();
+    /* Numeric order (tm_9 < tm_10 < tm_100): a plain string sort put tm_101 before tm_80. */
+    .sort(function (a, b) { return Number(a.slice(3)) - Number(b.slice(3)); });
 }
 
 function buildEntry(materialId) {

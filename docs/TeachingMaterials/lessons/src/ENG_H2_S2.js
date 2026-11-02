@@ -1,5 +1,5 @@
 /* lessons/src/ENG_H2_S2.js — 高二英文：長榮版 Lesson 4 Day of the Dead、Lesson 5 Kyoto: The Heart of Japan、
-   Lesson 6 The Country of the Blind（課本 p.78～151，tm_93）.
+   Lesson 6 The Country of the Blind（課本 p.78～151，tm_98～tm_100，原 tm_93 依課別拆分）.
    課文受著作權保護，不整段引用，只用重點改寫、關鍵片語與自編例句說明。圖為示意。 */
 "use strict";
 module.exports = {
