@@ -1,0 +1,21 @@
+{
+  "materialId": "tm_105",
+  "knowledgePoints": [
+    {
+      "name": "L6 單字",
+      "source": "both",
+      "refCount": 34
+    },
+    {
+      "name": "L6 單字（認識字）",
+      "source": "question",
+      "refCount": 13
+    },
+    {
+      "name": "L6 片語",
+      "source": "question",
+      "refCount": 8
+    }
+  ],
+  "generatedAt": "2026-11-02T14:13:18.574Z"
+}

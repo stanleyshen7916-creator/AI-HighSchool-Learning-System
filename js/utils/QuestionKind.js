@@ -175,14 +175,18 @@ AHS.QuestionKind = (function () {
   }
 
   /* 能不能自動批改：問答題不行；每一格要有選項代號、或不超過 2 個數字、
-     或是 12 字以內的短答。 */
+     或是 12 字以內的短答。2026-11-02 英文單字克漏字：一個英文單字或片語
+     （只含字母、空格、連字號、撇號，30 字以內，例如 transformation、
+     for the sake of）也可以自動批改，大小寫與空格不影響。 */
+  var ENGLISH_WORDS = /^[A-Za-z][A-Za-z' -]{0,29}$/;
   function gradable(q) {
     if (!q || q.type === "essay") { return false; }
     var ps = parts(q.answer);
     return ps.length > 0 && ps.length <= 6 && ps.every(function (p) {
       if (LETTER.test(norm(p))) { return true; }
       var n = numbers(p).length;
-      return n ? n <= 2 : plain(p).length > 0 && plain(p).length <= 12;
+      if (n) { return n <= 2; }
+      return (plain(p).length > 0 && plain(p).length <= 12) || ENGLISH_WORDS.test(String(p).trim());
     });
   }
 

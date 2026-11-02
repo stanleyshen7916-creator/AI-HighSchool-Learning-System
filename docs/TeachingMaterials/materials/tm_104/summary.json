@@ -1,0 +1,66 @@
+{
+  "materialId": "tm_104",
+  "coreConcepts": [
+    "L5 單字克漏字：每題一個空格，空格給首字母與字母數（例如 j_____），題末附詞性與中文，請拼出完整的字或片語。",
+    "L5 範圍：Words for Production 32 題（含衍生字）、Idioms and Phrases 5 題、Words for Recognition 6 題。",
+    "作答方式：輸入英文後按「確定答案」自動批改，大小寫與空格不影響；答錯的字會進入知識弱點，可反覆練習。"
+  ],
+  "definitions": [],
+  "keywords": [
+    "blossom",
+    "rustle",
+    "landscape",
+    "splendor",
+    "splendid",
+    "previously",
+    "previous",
+    "capital",
+    "boast",
+    "historic",
+    "historical",
+    "historian",
+    "entrance",
+    "magnificent",
+    "breathtaking",
+    "leisurely",
+    "leisure",
+    "stunning",
+    "stun",
+    "delicate",
+    "delicacy",
+    "distinctive",
+    "distinction",
+    "distinct",
+    "elegant",
+    "elegance",
+    "appearance",
+    "appear",
+    "literature",
+    "literary",
+    "deliberate",
+    "destination",
+    "turn",
+    "feast",
+    "face to face",
+    "stand out",
+    "fall in love",
+    "Kyoto",
+    "kimono",
+    "cherry",
+    "maple",
+    "shrine",
+    "Golden Pavilion"
+  ],
+  "keyPoints": [
+    "先看中文與詞性，再用首字母想出單字",
+    "同一字根的衍生字一起記（名詞、形容詞、副詞）"
+  ],
+  "pitfalls": [
+    "拼字少一個字母或字尾寫錯（-tion／-sion、-ful 只有一個 l）",
+    "片語的介系詞寫錯"
+  ],
+  "reviewSuggestions": [
+    "答錯的字到知識弱點重做，直到連續答對",
+    "把衍生字整組寫一次：動詞 → 名詞 → 形容詞"
+  ]
+}

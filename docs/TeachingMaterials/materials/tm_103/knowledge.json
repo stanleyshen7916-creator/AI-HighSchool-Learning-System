@@ -1,0 +1,21 @@
+{
+  "materialId": "tm_103",
+  "knowledgePoints": [
+    {
+      "name": "L4 單字",
+      "source": "both",
+      "refCount": 38
+    },
+    {
+      "name": "L4 單字（認識字）",
+      "source": "question",
+      "refCount": 13
+    },
+    {
+      "name": "L4 片語",
+      "source": "question",
+      "refCount": 5
+    }
+  ],
+  "generatedAt": "2026-11-02T14:13:18.444Z"
+}

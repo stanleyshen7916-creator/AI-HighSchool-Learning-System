@@ -127,9 +127,12 @@ AHS.QuestionCard = (function () {
       var saveBtn = el("button", { type: "button", class: "qcard-self__save", text: "確定答案" });
       saveBtn.addEventListener("click", save);
       selfBlock = el("div", { class: "qcard-self" }, [
-        el("p", { class: "qcard-self__hint", text: want.length > 1
-          ? "依序在每一格輸入答案（數字可用分數、√、π，例如 2/3、3√2），全部答對才算答對。"
-          : "輸入答案（數字可用分數、√、π，例如 2/3、3√2），按「確定答案」。" }),
+        /* 2026-11-02 英文單字克漏字：答案是英文單字／片語時，提示改成拼字說明 */
+        el("p", { class: "qcard-self__hint", text: want.every(function (w) { return /^[A-Za-z][A-Za-z' -]*$/.test(w); })
+          ? "拼出完整的英文單字或片語（大小寫不拘），按「確定答案」。"
+          : want.length > 1
+            ? "依序在每一格輸入答案（數字可用分數、√、π，例如 2/3、3√2），全部答對才算答對。"
+            : "輸入答案（數字可用分數、√、π，例如 2/3、3√2），按「確定答案」。" }),
         el("ol", { class: "qcard-self__fields" }, inputs.map(function (inp, i) {
           return el("li", {}, [want.length > 1 ? el("span", { class: "qcard-self__no", text: "(" + (i + 1) + ")" }) : null, inp]);
         })),
