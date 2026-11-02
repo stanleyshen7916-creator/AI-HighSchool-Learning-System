@@ -73,7 +73,8 @@ check("部分對應的題目寫出另需的觀念", past.filter((q) => q.mapping
 const byParent = {};
 past.forEach((q) => { byParent[q.materialId] = (byParent[q.materialId] || 0) + 1; });
 check("併入 tm_1／tm_8／tm_9／tm_13／tm_15／tm_16／tm_29",
-  JSON.stringify(byParent) === JSON.stringify({ tm_1: 2, tm_13: 2, tm_15: 2, tm_16: 1, tm_29: 6, tm_8: 2, tm_9: 2 }));
+  JSON.stringify(Object.keys(byParent).sort().map((k) => [k, byParent[k]])) ===
+  JSON.stringify([["tm_1", 2], ["tm_13", 2], ["tm_15", 2], ["tm_16", 1], ["tm_29", 6], ["tm_8", 2], ["tm_9", 2]]));
 const tm21 = JSON.parse(fs.readFileSync(path.join(REPO, "docs/TeachingMaterials/materials/tm_21/manifest.json"), "utf8"));
 check("tm_21（tm_4 的歷屆試題）已封存，題目檔案保留",
   tm21.archived === true && fs.existsSync(path.join(REPO, "docs/TeachingMaterials/materials/tm_21/questionbank.json")));

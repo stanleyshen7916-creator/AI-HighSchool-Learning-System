@@ -111,7 +111,8 @@ function listMaterialIds() {
     .filter(function (e) { return e.isDirectory(); })
     .map(function (e) { return e.name; })
     .filter(function (name) { return /^tm_\d+$/.test(name); })
-    .sort();
+    /* Numeric order (tm_9 < tm_10 < tm_100): a plain string sort put tm_101 before tm_80. */
+    .sort(function (a, b) { return Number(a.slice(3)) - Number(b.slice(3)); });
 }
 
 function listStages() {
