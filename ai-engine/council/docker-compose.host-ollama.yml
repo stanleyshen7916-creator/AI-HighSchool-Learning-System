@@ -1,0 +1,19 @@
+# 沒有 NVIDIA、但主機（Windows）上的 Ollama 能用內建顯示卡時套用：引擎改連主機的 Ollama，
+# 不啟動容器版 Ollama（2026-11-03，新筆電 Intel Arc B390）。
+# 實測 qwen2.5:7b-instruct-q4_K_M、1357 tokens 的 prompt：主機 Vulkan iGPU prompt 528 tok/s、
+# 生成 21 tok/s；容器版 Ollama 走 CPU 只有 26 tok/s、3.4 tok/s。
+#
+# 主機需要：
+#   - 使用者環境變數 OLLAMA_IGPU_ENABLE=1（Ollama 預設不使用內建顯示卡），設定後重開 Ollama
+#   - 已有 qwen2.5:7b-instruct-q4_K_M（ollama pull，或從 COUNCIL_DATA_DIR\ollama_data\models 複製）
+# 「啟動教材上傳引擎.bat」在沒有 NVIDIA 且主機 Ollama 有回應時自動加上本檔；手動啟動時：
+#   docker compose -f docker-compose.yml -f docker-compose.host-ollama.yml up -d --build
+services:
+  council-engine:
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:${COUNCIL_HOST_OLLAMA_PORT:-11435}
+    depends_on: !reset []
+
+  ollama:
+    # 放進不會啟用的 profile，等於不啟動容器版 Ollama
+    profiles: ["container-ollama"]

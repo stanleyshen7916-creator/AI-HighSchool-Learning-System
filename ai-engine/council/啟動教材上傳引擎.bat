@@ -7,7 +7,7 @@ REM ============================================================
 REM 教材上傳引擎啟動器（原 AI Study Council，2026-09-29 併入學習平台）
 REM   1. 等待 Docker Engine 就緒
 REM   2. 若舊的 AI-Study-Council Runtime 正在執行，先停止（stop，不刪除任何資料）
-REM   3. 啟動 ai-engine\council\docker-compose.yml
+REM   3. 啟動 ai-engine\council\docker-compose.yml（依顯示卡加上 nvidia 或 host-ollama 設定檔）
 REM   4. 開啟 http://localhost:3000/upload.html
 REM
 REM 執行期資料：未設定 COUNCIL_DATA_DIR 時，若舊的 AI-Study-Council 資料夾存在，
@@ -16,6 +16,30 @@ REM ============================================================
 
 set "ENGINE=%~dp0"
 set "COMPOSE=%ENGINE%docker-compose.yml"
+REM 2026-11-03：依顯示卡選擇 Ollama
+REM   有 NVIDIA → 容器版 Ollama 使用 GPU（docker-compose.nvidia.yml）
+REM   沒有 NVIDIA、主機 Ollama 有回應（例如 Intel Arc 筆電）→ 改連主機 Ollama（docker-compose.host-ollama.yml）
+REM   都沒有 → 容器版 Ollama 走 CPU（很慢）
+set "COMPOSE_FILES=-f "%COMPOSE%""
+set "OLLAMA_MODE=容器版 Ollama（CPU）"
+set "HAS_NVIDIA=0"
+where nvidia-smi >nul 2>&1
+if not errorlevel 1 (
+    nvidia-smi >nul 2>&1
+    if not errorlevel 1 set "HAS_NVIDIA=1"
+)
+if "!HAS_NVIDIA!"=="1" (
+    set "COMPOSE_FILES=!COMPOSE_FILES! -f "%ENGINE%docker-compose.nvidia.yml""
+    set "OLLAMA_MODE=容器版 Ollama（NVIDIA GPU）"
+) else (
+    set "COUNCIL_HOST_OLLAMA_PORT=11434"
+    if defined OLLAMA_HOST for /f "tokens=2 delims=:" %%P in ("%OLLAMA_HOST:http://=%") do set "COUNCIL_HOST_OLLAMA_PORT=%%P"
+    powershell -NoProfile -Command "try { Invoke-WebRequest -Uri 'http://127.0.0.1:!COUNCIL_HOST_OLLAMA_PORT!/api/version' -UseBasicParsing -TimeoutSec 3 | Out-Null; exit 0 } catch { exit 1 }" >nul 2>&1
+    if not errorlevel 1 (
+        set "COMPOSE_FILES=!COMPOSE_FILES! -f "%ENGINE%docker-compose.host-ollama.yml""
+        set "OLLAMA_MODE=主機 Ollama（127.0.0.1:!COUNCIL_HOST_OLLAMA_PORT!）"
+    )
+)
 set "OLD_COUNCIL=%ENGINE%..\..\..\AI-Study-Council"
 set "HEALTH=http://localhost:3000/api/health"
 set "URL=http://localhost:3000/upload.html"
@@ -30,6 +54,7 @@ if defined COUNCIL_DATA_DIR (
 ) else (
     echo 執行期資料目錄：%ENGINE%data
 )
+echo Ollama：!OLLAMA_MODE!
 echo.
 
 echo [1/4] 等待 Docker Engine 啟動...
@@ -56,7 +81,7 @@ if exist "%OLD_COUNCIL%\docker-compose.agent.yml" (
 echo.
 
 echo [3/4] 啟動教材上傳引擎...
-docker compose -f "%COMPOSE%" up -d --build
+docker compose !COMPOSE_FILES! up -d --build
 if errorlevel 1 (
     echo [ERROR] Docker Compose 啟動失敗，請保留本視窗畫面的錯誤內容。
     pause
@@ -87,7 +112,7 @@ echo.
 echo [4/4] 開啟教材上傳頁（請以 Admin 登入）...
 start "" "%URL%"
 echo.
-docker compose -f "%COMPOSE%" ps
+docker compose !COMPOSE_FILES! ps
 echo.
 echo 本視窗可關閉；引擎會繼續由 Docker 執行。
 pause
