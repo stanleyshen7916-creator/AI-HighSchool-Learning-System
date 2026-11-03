@@ -1,0 +1,12 @@
+# 有 NVIDIA 顯示卡的電腦才套用：讓 Ollama 使用 GPU（2026-11-03 從 docker-compose.yml 拆出）。
+# 「啟動教材上傳引擎.bat」偵測到 nvidia-smi 時自動加上；手動啟動時：
+#   docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d --build
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

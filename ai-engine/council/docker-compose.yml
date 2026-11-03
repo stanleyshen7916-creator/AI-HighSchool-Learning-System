@@ -53,13 +53,9 @@ services:
       # 32768）。Flash attention＋8-bit KV cache 讓長 context 佔用的顯示記憶體減半。
       - OLLAMA_FLASH_ATTENTION=1
       - OLLAMA_KV_CACHE_TYPE=q8_0
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # 2026-11-03：NVIDIA GPU 改由 docker-compose.nvidia.yml 加上（啟動器偵測到 nvidia-smi
+    # 才套用）。新筆電是 Intel Arc，沒有 NVIDIA，保留 GPU 時容器根本起不來；那台改用
+    # docker-compose.host-ollama.yml 連主機 Ollama（內建顯示卡）。兩個都不套用時走 CPU。
 
   mineru-parser:
     restart: unless-stopped   # 2026-10-06：Docker 啟動時自動啟動（手動 stop 的不會自動起來）
