@@ -17,9 +17,14 @@
       "refCount": 2
     },
     {
+      "name": "動滑輪",
+      "source": "both",
+      "refCount": 4
+    },
+    {
       "name": "單一物體受力",
       "source": "question",
-      "refCount": 3
+      "refCount": 5
     },
     {
       "name": "多物體系統",
@@ -49,17 +54,22 @@
     {
       "name": "慣性坐標系",
       "source": "both",
-      "refCount": 1
+      "refCount": 2
+    },
+    {
+      "name": "摩擦力",
+      "source": "both",
+      "refCount": 6
     },
     {
       "name": "正向力",
       "source": "both",
-      "refCount": 1
+      "refCount": 2
     },
     {
       "name": "牛頓第一運動定律",
       "source": "both",
-      "refCount": 5
+      "refCount": 6
     },
     {
       "name": "牛頓第三運動定律",
@@ -87,10 +97,20 @@
       "refCount": 4
     },
     {
+      "name": "質量的測定",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "質量與重量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
       "name": "阿特午機",
       "source": "both",
       "refCount": 2
     }
   ],
-  "generatedAt": "2026-11-02T13:50:28.103Z"
+  "generatedAt": "2026-11-04T13:29:49.481Z"
 }
