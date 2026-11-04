@@ -577,6 +577,30 @@
       "knowledgePoint": "雙重受精",
       "difficulty": "難",
       "reference": "AI 自編（依長榮高中高二生物課本 4-1 植物的生殖 p.130 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_107_q25",
+      "materialId": "tm_107",
+      "questionNumber": "25",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "某種花同時具有雄蕊和雌蕊，但沒有花瓣（缺少花冠）。這種花屬於？",
+      "options": [
+        "兩性花，也是不完全花",
+        "單性花，也是完全花",
+        "兩性花，也是完全花",
+        "單性花，也是不完全花"
+      ],
+      "answer": "兩性花，也是不完全花",
+      "explanation": "（題目為 AI 依課本內容命題，答案依課本內容）課本 p.129：兩種分類標準要分開判斷：完全花／不完全花看花萼、花冠、雄蕊、雌蕊四部分是否齊全（缺花冠 → 不完全花）；兩性花／單性花看同一朵花是否同時有雄蕊與雌蕊（都有 → 兩性花）。",
+      "page": 129,
+      "section": "4-1 植物的生殖",
+      "version": "1",
+      "createdDate": "2026-11-04T00:00:00Z",
+      "knowledgePoint": "花的構造",
+      "difficulty": "中",
+      "reference": "AI 自編（依長榮高中高二生物課本 4-1 植物的生殖 p.129 的內容命題，非課本原題）"
     }
   ]
 }

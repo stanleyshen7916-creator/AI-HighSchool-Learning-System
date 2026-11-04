@@ -956,7 +956,7 @@
         "0.3"
       ],
       "answer": "0.3",
-      "explanation": "（題目為 AI 依課本內容命題，答案依課本內容）課本 p.104：Rf = 色素移動距離 ÷ 展開液移動距離 = 3.6 ÷ 12 = 0.3。同一化合物在相同條件下 Rf 值固定，可用來初步鑑定。",
+      "explanation": "（題目為 AI 依課本內容命題，答案依課本內容）課本 p.104：Rf = 色素移動距離 ÷ 展開液移動距離 = 3.6 ÷ 12 = 0.3。兩個距離都從點樣的原點量起，分母是展開液前緣，不是濾紙全長。同一化合物只有在相同展開液與條件下 Rf 值才固定，可用來初步鑑定；改變展開液比例，Rf 值可能改變（延伸探究）。",
       "page": 104,
       "section": "3-2 光合作用",
       "version": "1",
@@ -1229,6 +1229,55 @@
       "knowledgePoint": "有機養分的運輸",
       "difficulty": "難",
       "reference": "AI 自編（依長榮高中高二生物課本 3-3 有機養分的運輸 p.100 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_106_q52",
+      "materialId": "tm_106",
+      "questionNumber": "52",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "【多選題】依課本素養題「光呼吸」的閱讀文，下列有關 RuBisCO 與光呼吸的敘述，哪些正確？（應選 3 項）",
+      "options": [
+        "(A) RuBisCO 對 CO₂ 的結合力比對 O₂ 強",
+        "(B) RuBisCO 也能催化五碳醣與 O₂ 結合，使三碳醣產量下降",
+        "(C) 光呼吸可產生 ATP",
+        "(D) C₃ 植物（如水稻）氣孔關閉時，葉內 O₂ 升高，光呼吸變旺盛",
+        "(E) C₄ 植物的光呼吸比 C₃ 植物旺盛"
+      ],
+      "answer": "(A)(B)(D)",
+      "explanation": "（題目為 AI 依課本內容命題，答案依課本內容）課本 p.121：RuBisCO 有固碳與氧化酶兩種活性：與 O₂ 結合只產生一分子三碳醣與一分子二碳化合物，最後釋出 CO₂，沒有 ATP 產生，使固碳效率下降。RuBisCO 對 CO₂ 的結合力雖較強，但 O₂ 濃度高得多；氣孔關閉時 CO₂ 下降、O₂ 升高，光呼吸更旺盛。C₄ 植物幾乎沒有光呼吸。",
+      "page": 121,
+      "section": "3-2 光合作用",
+      "version": "1",
+      "createdDate": "2026-11-04T00:00:00Z",
+      "knowledgePoint": "光呼吸與C4植物",
+      "difficulty": "難",
+      "reference": "AI 自編（依長榮高中高二生物課本 3-2 光合作用 p.121 的內容命題，非課本原題）"
+    },
+    {
+      "questionId": "tm_106_q53",
+      "materialId": "tm_106",
+      "questionNumber": "53",
+      "type": "single_choice",
+      "questionSource": "AI_GENERATED",
+      "origin": "AI",
+      "question": "在光照下分別給水稻（C₃ 植物）與玉米（C₄ 植物）葉片含 ¹⁴C 的 CO₂，一段時間後，含 ¹⁴C 的澱粉主要在哪裡合成？",
+      "options": [
+        "水稻在葉肉細胞，玉米在維管束鞘細胞",
+        "兩者都在葉肉細胞",
+        "兩者都在維管束鞘細胞",
+        "水稻在維管束鞘細胞，玉米在葉肉細胞"
+      ],
+      "answer": "水稻在葉肉細胞，玉米在維管束鞘細胞",
+      "explanation": "（題目為 AI 依課本內容命題，答案依課本內容）課本 p.121：C₃ 植物在葉肉細胞的葉綠體進行卡爾文循環。C₄ 植物的葉肉細胞先以 PEP 羧化酶把 CO₂ 固定成四碳有機酸，再運到維管束鞘細胞釋出高濃度 CO₂，由 RuBisCO 送入卡爾文循環，所以澱粉在維管束鞘細胞合成。",
+      "page": 121,
+      "section": "3-2 光合作用",
+      "version": "1",
+      "createdDate": "2026-11-04T00:00:00Z",
+      "knowledgePoint": "光呼吸與C4植物",
+      "difficulty": "難",
+      "reference": "AI 自編（依長榮高中高二生物課本 3-2 光合作用 p.121 的內容命題，非課本原題）"
     }
   ]
 }

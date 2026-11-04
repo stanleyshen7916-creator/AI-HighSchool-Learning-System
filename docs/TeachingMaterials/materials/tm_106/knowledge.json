@@ -22,6 +22,11 @@
       "refCount": 3
     },
     {
+      "name": "光呼吸與C4植物",
+      "source": "question",
+      "refCount": 2
+    },
+    {
       "name": "固碳反應",
       "source": "both",
       "refCount": 2
@@ -82,5 +87,5 @@
       "refCount": 4
     }
   ],
-  "generatedAt": "2026-11-04T14:03:38.475Z"
+  "generatedAt": "2026-11-04T15:57:33.223Z"
 }
