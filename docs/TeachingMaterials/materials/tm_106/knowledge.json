@@ -1,0 +1,91 @@
+{
+  "materialId": "tm_106",
+  "knowledgePoints": [
+    {
+      "name": "光反應",
+      "source": "both",
+      "refCount": 8
+    },
+    {
+      "name": "光合作用的發現",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "光合色素",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "光合色素層析",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "光呼吸與C4植物",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "固碳反應",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "壓力流假說",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "希爾反應",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "影響光合作用的因素",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "必需元素",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "有機養分的運輸",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "木質部運輸",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "根部吸收",
+      "source": "question",
+      "refCount": 5
+    },
+    {
+      "name": "根部橫向運輸",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "氣孔開閉",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "泌溢現象",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "蒸散作用",
+      "source": "both",
+      "refCount": 4
+    }
+  ],
+  "generatedAt": "2026-11-04T15:57:33.223Z"
+}

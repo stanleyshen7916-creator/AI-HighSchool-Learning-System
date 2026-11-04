@@ -304,6 +304,32 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "BIO_H2_Ch3_4",
+    href: "docs/TeachingMaterials/lessons/BIO_H2_Ch3_4.html",
+    title: "高二生物第3章～4-1・圖解教材",
+    subject: "生物",
+    materialIds: ["tm_106", "tm_107"],
+    source: "長榮版生物第3章 植物體的物質吸收、合成與運輸（p.76～121）＋第4章 4-1 植物的生殖（p.122～134）",
+    sections: [
+      { id: "3-1", title: "3-1 水和礦物質的吸收與運輸" },
+      { id: "3-2", title: "3-2 光合作用" },
+      { id: "3-3", title: "3-3 有機養分的運輸" },
+      { id: "4-1", title: "4-1 植物的生殖" }
+    ],
+    cards: [
+      { id: "F1", section: "3-1", title: "根吸水：靠「裡面比外面濃」", keywords: ["必需元素", "根部吸收", "主動運輸", "施肥", "根瘤菌", "菌根"] },
+      { id: "F2", section: "3-1", title: "兩條路進中柱，卡氏帶是「驗票口」", keywords: ["根部橫向運輸", "共質體", "質外體", "卡氏帶"] },
+      { id: "F3", section: "3-1", title: "水往上走：蒸散在上面「拉」最用力", keywords: ["木質部運輸", "蒸散作用", "泌溢現象", "根壓", "毛細現象", "內聚力"] },
+      { id: "F4", section: "3-1", title: "氣孔開關：保衛細胞「吸飽水」就打開", keywords: ["氣孔開閉", "保衛細胞", "離層酸", "ABA"] },
+      { id: "F5", section: "3-2", title: "葉子是綠色，因為「綠光沒被吃掉」", keywords: ["光合色素", "光合色素層析", "吸收光譜", "作用光譜", "光合作用的發現"] },
+      { id: "F6", section: "3-2", title: "光反應「充電」，固碳反應「做糖」", keywords: ["光反應", "固碳反應", "影響光合作用的因素", "希爾反應", "卡爾文循環", "光呼吸與C4植物", "光呼吸"] },
+      { id: "F7", section: "3-3", title: "壓力流：糖從「供給部」流向「匯集部」", keywords: ["有機養分的運輸", "壓力流假說", "供給部", "匯集部", "篩管"] },
+      { id: "F8", section: "4-1", title: "無性生殖：剪一段就能長成一棵", keywords: ["無性生殖", "組織培養", "營養繁殖", "扦插", "嫁接"] },
+      { id: "F9", section: "4-1", title: "雙重受精：一個做寶寶，一個做便當", keywords: ["雙重受精", "世代交替", "花的構造", "胚囊", "花粉管"] },
+      { id: "F10", section: "4-1", title: "子房變果實、胚珠變種子", keywords: ["種子與果實", "種子", "果實", "胚乳"] }
+    ]
+  },
+  {
     lessonId: "CIV_H2_Ch1_2_Economics",
     href: "docs/TeachingMaterials/lessons/CIV_H2_Ch1_2_Economics.html",
     title: "社會資源的分配・需求與供給・圖解教材",

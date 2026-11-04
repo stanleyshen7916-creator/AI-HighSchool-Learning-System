@@ -1,0 +1,36 @@
+{
+  "materialId": "tm_107",
+  "knowledgePoints": [
+    {
+      "name": "世代交替",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "無性生殖",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "種子與果實",
+      "source": "both",
+      "refCount": 6
+    },
+    {
+      "name": "組織培養",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "花的構造",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "雙重受精",
+      "source": "both",
+      "refCount": 5
+    }
+  ],
+  "generatedAt": "2026-11-04T15:57:33.225Z"
+}
