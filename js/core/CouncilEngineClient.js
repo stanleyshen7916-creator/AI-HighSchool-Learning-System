@@ -4,8 +4,9 @@
    (ai-engine/council, the former AI-Study-Council server running in
    Docker on the Admin's own computer). Like js/core/SupabaseClient.js,
    this is an authorized fetch() exception (scripts/verify/
-   VerifyForbiddenPatterns.js AUTHORIZED_EXCEPTIONS): only
-   js/components/CouncilUpload.js uses it, and only on upload.html.
+   VerifyForbiddenPatterns.js AUTHORIZED_EXCEPTIONS): used by
+   js/components/CouncilUpload.js on upload.html, and (2026-11-06) by the
+   Admin-only「產生重點整理」button on wrongbook.html — only when clicked.
 
    Engine URL: same origin when the page itself is served by the engine
    (http://localhost:3000/upload.html — the recommended way, no cross-
@@ -116,6 +117,9 @@ AHS.CouncilEngineClient = (function () {
     supplementAuthorPrompt: function (payload) { return request("POST", "/api/platform/supplements/author-prompt", payload); },
     supplementSolverPrompt: function (payload) { return request("POST", "/api/platform/supplements/solver-prompt", payload); },
     supplementCheck: function (payload) { return request("POST", "/api/platform/supplements/check", payload); },
-    createSupplementDraft: function (payload) { return request("POST", "/api/platform/supplements/drafts", payload); }
+    createSupplementDraft: function (payload) { return request("POST", "/api/platform/supplements/drafts", payload); },
+    /* 2026-11-06: 知識弱點頁「產生重點整理」（實際由主機的 tools/wrongbook-notes.ps1 執行） */
+    wrongBookNotesRun: function () { return request("POST", "/api/platform/wrongbook-notes/run", {}); },
+    wrongBookNotesStatus: function () { return request("GET", "/api/platform/wrongbook-notes/status"); }
   };
 })();

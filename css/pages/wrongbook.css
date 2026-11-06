@@ -551,3 +551,11 @@
 /* 2026-10-08: 計算／填充題重新作答（看答案後自評） */
 .wb-detail__review .is-hidden { display: none; }
 .wb-variant-result .wb-note__steps { margin: 8px 0 0; padding-left: 0; }
+
+/* 2026-11-06 產生重點整理（Admin） */
+.wb-notes-run { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; flex-basis: 100%; }
+.wb-notes-run__msg { margin: 0; font-size: 13px; color: var(--text-muted); }
+.wb-notes-run__msg:empty { display: none; }
+.wb-notes-run__link { font-size: 13px; font-weight: 700; color: var(--brand); }
+.wb-notes-run__link[hidden] { display: none; }
+.wb-notes-run__btn[disabled] { opacity: 0.6; cursor: progress; }
