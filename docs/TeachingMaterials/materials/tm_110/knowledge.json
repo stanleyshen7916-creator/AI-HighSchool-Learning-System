@@ -1,0 +1,131 @@
+{
+  "materialId": "tm_110",
+  "knowledgePoints": [
+    {
+      "name": "不公平競爭",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "交易成本",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "例外許可",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "價格上限",
+      "source": "both",
+      "refCount": 13
+    },
+    {
+      "name": "價格下限",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "內部化",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "公平交易法",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "單一廠商漲價",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "外部成本",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "外部效果",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "外部效益",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "寇斯",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "建立制度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "政府對策",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "效率與公平",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "最低工資",
+      "source": "both",
+      "refCount": 9
+    },
+    {
+      "name": "汙染者付費",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "直接管制",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "碳權",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "社會成本",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "結合",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "聯合漲價",
+      "source": "both",
+      "refCount": 5
+    },
+    {
+      "name": "聯合行為",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "課稅或補貼",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "財產權",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-11-06T04:58:15.626Z"
+}

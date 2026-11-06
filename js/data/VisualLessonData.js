@@ -357,6 +357,37 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "CIV_H2_Ch3_4_Market",
+    href: "docs/TeachingMaterials/lessons/CIV_H2_Ch3_4_Market.html",
+    title: "市場機能・政府管制與外部效果・圖解教材",
+    subject: "公民與社會",
+    materialIds: ["tm_109", "tm_110"],
+    source: "長榮版公民與社會 第3章 市場機能（p.56～81）、第4章 政府管制與外部效果（p.82～109）",
+    sections: [
+      { id: "3-1", title: "3-1 市場價格的決定" },
+      { id: "3-2", title: "3-2 供需變動的影響" },
+      { id: "3-3", title: "3-3 市場機能與經濟效率" },
+      { id: "4-1", title: "4-1 價格管制與經濟效率" },
+      { id: "4-2", title: "4-2 政府對聯合漲價的規範" },
+      { id: "4-3", title: "4-3 外部效果的因應" }
+    ],
+    cards: [
+      { id: "F1", section: "3-1", title: "均衡：價格自己找到買賣雙方都同意的點", keywords: ["市場均衡", "超額需求", "超額供給", "市場機能"] },
+      { id: "F2", section: "3-1", title: "看不見的手 vs 看得見的手", keywords: ["看不見的手", "看得見的手", "海耶克"] },
+      { id: "F3", section: "3-2", title: "一條線移動：先問誰動了", keywords: ["需求增加", "需求減少", "供給增加", "供給減少", "供需變動"] },
+      { id: "F4", section: "3-2", title: "兩條線一起動：同向定數量，反向定價格", keywords: ["供需同時變動"] },
+      { id: "F5", section: "3-3", title: "剩餘：交易讓買賣雙方賺到多少", keywords: ["消費者剩餘", "生產者剩餘", "社會福利", "無謂損失"] },
+      { id: "F6", section: "3-3", title: "有效率：願付 ≥ 成本才值得生產", keywords: ["經濟效率", "效率與公平", "黃牛"] },
+      { id: "F7", section: "4-1", title: "價格上限：想幫買方，卻讓東西變少", keywords: ["價格上限"] },
+      { id: "F8", section: "4-1", title: "價格下限：最低工資的兩面", keywords: ["價格下限", "最低工資"] },
+      { id: "F9", section: "4-2", title: "一家漲沒用，一起漲才有事", keywords: ["單一廠商漲價", "聯合漲價", "卡特爾"] },
+      { id: "F10", section: "4-2", title: "聯合行為的判斷：同時漲價不等於聯合", keywords: ["聯合行為", "例外許可", "公平交易法", "結合", "不公平競爭"] },
+      { id: "F11", section: "4-3", title: "外部效果：第三人被影響了", keywords: ["外部效果", "外部效益", "外部成本", "社會成本", "內部化"] },
+      { id: "F12", section: "4-3", title: "寇斯：把權利說清楚，雙方可以自己談", keywords: ["寇斯", "財產權", "交易成本"] },
+      { id: "F13", section: "4-3", title: "政府的五種工具", keywords: ["政府對策", "建立制度", "汙染者付費", "直接管制", "課稅或補貼", "碳權"] }
+    ]
+  },
+  {
     lessonId: "GEO_H2_Ch4_Europe",
     href: "docs/TeachingMaterials/lessons/GEO_H2_Ch4_Europe.html",
     title: "第4章 歐洲文明的發展與擴散・圖解教材",
