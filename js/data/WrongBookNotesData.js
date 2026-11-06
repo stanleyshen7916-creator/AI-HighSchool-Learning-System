@@ -14,6 +14,9 @@
      whyWrong   { 選項代號: 為什麼這個選項錯 }——依學生實際選的選項顯示
      steps      逐步詳解
      traps      易錯提醒
+     steps 的每一行寫成「動作｜結果」，畫面會把動作加粗、一行一步。
+     variants   類題（同觀念、不同數字，給「立即重做」用，避免背答案）：
+                [{ question, options:[{key,text}], correctAnswer, steps }]
      references 延伸閱讀 [{ title, source, url, kind }]，kind：講義／影片／互動
      注意：平台會打亂選項的顯示順序（AHS.OptionOrder），所以 whyWrong 的
      key 用題目「原始」選項代號，筆記內文不要寫 (A)(B) 這類選項字母，
@@ -35,13 +38,12 @@ AHS.WrongBookNotesData = {
       D: "x＝2π/3 代入：sin(2π/3)＋√3 cos(2π/3)＝√3/2 − √3/2＝0，不是最大值。"
     },
     steps: [
-      "找 a、b：a＝1（sin x 的係數），b＝√3（cos x 的係數）。",
-      "求 r：r＝√(1²＋(√3)²)＝√4＝2。",
-      "提出 r：y＝2( ½ sin x ＋ (√3/2) cos x )。",
-      "找 α：cos α＝½、sin α＝√3/2，α＝π/3，所以 y＝2( sin x cos π/3 ＋ cos x sin π/3 )＝2 sin(x＋π/3)。",
-      "求最大值：sin 的最大值是 1，所以 y 最大值＝2。",
-      "求 x：x＋π/3＝π/2 → x＝π/6（落在 0≤x<2π 內，唯一一個）。",
-      "驗算：x＝π/6 時 y＝1/2＋3/2＝2 ✓。答案：最大值 2，x＝π/6。"
+      "找係數｜a＝1，b＝√3",
+      "算 r｜r＝√(1²＋(√3)²)＝√4＝2",
+      "疊合｜cos α＝½、sin α＝√3/2 → α＝π/3，所以 y＝2 sin(x＋π/3)",
+      "取最大｜sin(x＋π/3)＝1 → 最大值＝2",
+      "求 x｜x＋π/3＝π/2 → x＝π/6",
+      "驗算｜x＝π/6：½＋3/2＝2 ✓"
     ],
     traps: [
       "最大值不是 |a|＋|b|，是 √(a²+b²)；√(a²+b²) ≤ |a|＋|b|，兩者只有在其中一項為 0 時相等。",
@@ -55,6 +57,56 @@ AHS.WrongBookNotesData = {
       { title: "18. 正餘弦函數的疊合進階", source: "均一教育平台", url: "https://www.junyiacademy.org/course-compare/math-high/math-11/j-m11a-a-ch1/v/-jQJQccdyV8", kind: "影片" },
       { title: "正餘弦函數的疊合之二", source: "GeoGebra", url: "https://mat.geogebra.org/material/show/id/ZMrktEQV", kind: "互動" }
     ],
-    basis: "【確認】r、α 與最大值皆可代入驗算；各選項錯因已逐一代值檢查。"
+    variants: [
+      {
+        question: "求 y = √3 sin x − cos x 的最大值，以及使函數達到最大值時的 x 值（0≤x<2π）。",
+        options: [
+          { key: "A", text: "最大值2，x=2π/3" },
+          { key: "B", text: "最大值√3+1，x=2π/3" },
+          { key: "C", text: "最大值2，x=π/6" },
+          { key: "D", text: "最大值2，x=π/3" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          "算 r｜r＝√(3＋1)＝2",
+          "疊合｜cos α＝√3/2、sin α＝−½ → α＝−π/6，y＝2 sin(x−π/6)",
+          "取最大｜最大值 2，x−π/6＝π/2 → x＝2π/3",
+          "驗算｜x＝2π/3：√3·(√3/2)−(−½)＝3/2＋½＝2 ✓"
+        ]
+      },
+      {
+        question: "求 y = sin x + cos x 的最小值，以及使函數達到最小值時的 x 值（0≤x<2π）。",
+        options: [
+          { key: "A", text: "最小值−√2，x=5π/4" },
+          { key: "B", text: "最小值−2，x=5π/4" },
+          { key: "C", text: "最小值−√2，x=3π/4" },
+          { key: "D", text: "最小值−√2，x=π/4" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          "算 r｜r＝√(1＋1)＝√2（不是 1＋1＝2）",
+          "疊合｜α＝π/4，y＝√2 sin(x＋π/4)",
+          "取最小｜sin(x＋π/4)＝−1 → 最小值 −√2",
+          "求 x｜x＋π/4＝3π/2 → x＝5π/4",
+          "驗算｜x＝5π/4：−√2/2−√2/2＝−√2 ✓"
+        ]
+      },
+      {
+        question: "函數 y = 3 sin x + 4 cos x 的最大值為何？",
+        options: [
+          { key: "A", text: "5" },
+          { key: "B", text: "7" },
+          { key: "C", text: "4" },
+          { key: "D", text: "1" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          "算 r｜r＝√(3²＋4²)＝5",
+          "取最大｜y＝5 sin(x＋α) → 最大值 5",
+          "陷阱｜3＋4＝7 是把兩項最大值直接相加，錯"
+        ]
+      }
+    ],
+    basis: "【確認】r、α 與最大值皆可代入驗算；各選項錯因與類題答案已逐一代值檢查。"
   }
 };

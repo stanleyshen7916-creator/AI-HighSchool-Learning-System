@@ -7,7 +7,7 @@
    - remove() 是軟刪除：list()/getById()/isEmpty() 看不到，雲端送出 deleted_at。
    - 從雲端撈回 deleted_at 有值的紀錄，畫面一樣看不到；月考回填不會把它補回來。
    - 刪除後又答錯（sync()），這一題重新回到知識弱點，deleted_at 清空。
-   - WrongBookNotesData 每筆筆記欄位齊全、連結是 https、內文不寫選項字母。
+   - WrongBookNotesData 每筆筆記欄位齊全、連結是 https、內文不寫選項字母；類題的答案在選項中。
 
    Run: node tests/regression/WrongBookDeleteRegression.js */
 "use strict";
@@ -92,6 +92,11 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
     check(id + "：basis 標示【確認】或【推論】", /【確認】|【推論】/.test(n.basis || ""));
     const body = [n.keyPoint].concat(n.steps, n.traps || [], n.formulas || [], Object.values(n.whyWrong || {})).join(" ");
     check(id + "：內文不寫 (A)~(E) 選項字母", !/[(（][A-E][)）]/.test(body));
+    (n.variants || []).forEach((v, i) => {
+      const keys = (v.options || []).map((o) => o.key);
+      check(id + " 類題" + (i + 1) + "：題目與原題不同、正確答案在選項中", v.question && v.question !== n.question && keys.indexOf(v.correctAnswer) !== -1 && keys.length >= 2);
+      check(id + " 類題" + (i + 1) + "：詳解不寫選項字母", !/[(（][A-E][)）]/.test((v.steps || []).join(" ")));
+    });
   });
 
   console.log("WrongBookDeleteRegression: " + pass + " PASS / " + fail + " FAIL");
