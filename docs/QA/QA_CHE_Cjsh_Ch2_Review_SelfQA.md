@@ -119,6 +119,6 @@ Cross Review：Claude 自行分析後，與 GPT 文件交叉比對（本文件�
 - Playwright e2e 未執行。
 - **操作失誤**：驗證時誤跑了 `tests/supabase/RepositorySmoke.js` 與 `CrossDeviceSmoke.js`（不在 `npm test` 內，會連線到真實 Supabase），各跑兩次。測試帳號註冊被 Supabase 拒絕（email 格式無效，第二次為 email rate limit），流程在註冊就停止。依測試輸出判斷沒有建立帳號或寫入資料，但未另外查資料庫確認。
 
-## 7. 待決定
+## 7. 月考歸類
 
-- tm_28 目前依上傳日期歸在第一次月考。第一次段考第 2 章只考到壓力與壓力計，若第二次月考範圍包含 2-2～2-4，建議把 tm_28 也改到第二次月考。
+- 2026-11-06 使用者確認：tm_28 也歸入第二次月考。整包一起移動，包含第一次段考已考過的 2-1；補充題庫 tm_76 的題目隨 tm_28 歸類。
