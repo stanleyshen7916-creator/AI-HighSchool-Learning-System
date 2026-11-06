@@ -1,0 +1,101 @@
+{
+  "materialId": "tm_109",
+  "knowledgePoints": [
+    {
+      "name": "供給增加",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "供給減少",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "供需同時變動",
+      "source": "both",
+      "refCount": 7
+    },
+    {
+      "name": "供需變動",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "市場均衡",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "市場機能",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "效率與公平",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "海耶克",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "消費者剩餘",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "無謂損失",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "生產者剩餘",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "看不見的手",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "看得見的手",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "社會福利",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "經濟效率",
+      "source": "question",
+      "refCount": 4
+    },
+    {
+      "name": "超額供給",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "超額需求",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "需求增加",
+      "source": "both",
+      "refCount": 3
+    },
+    {
+      "name": "需求減少",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-11-06T04:58:15.547Z"
+}
