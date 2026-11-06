@@ -173,7 +173,7 @@ AHS.VisualLessonData = [
     href: "docs/TeachingMaterials/lessons/CHE_H2_Ch2_Gases.html",
     title: "第2章 氣體・圖解教材",
     subject: "化學",
-    materialIds: ["tm_28", "tm_29", "tm_30", "tm_31", "tm_32", "tm_76"],
+    materialIds: ["tm_28", "tm_29", "tm_30", "tm_31", "tm_32", "tm_76", "tm_108"],
     source: "課本與講義 第2章（2-1 氣體的性質、2-2 氣體的基本定律、2-3 理想氣體、2-4 氣體的分壓）",
     sections: [
       { id: "2-1", title: "氣體的性質與壓力" },
