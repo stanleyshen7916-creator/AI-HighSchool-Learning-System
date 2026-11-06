@@ -1,0 +1,106 @@
+{
+  "materialId": "tm_108",
+  "knowledgePoints": [
+    {
+      "name": "亞佛加厥定律",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "分壓定律（混合）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "定容下壓力與溫度",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "平均分子量",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "平均分子量與分壓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "排水集氣法的壓力校正",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "查理定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "查理定律的應用",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體動力論",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體定律綜合",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "氣體定律（圖形）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "混合時發生反應",
+      "source": "question",
+      "refCount": 3
+    },
+    {
+      "name": "理想氣體方程式",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "理想氣體方程式求分子量",
+      "source": "question",
+      "refCount": 2
+    },
+    {
+      "name": "理想氣體方程式與反應計量",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體方程式（圖形）",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "理想氣體與真實氣體",
+      "source": "both",
+      "refCount": 2
+    },
+    {
+      "name": "莫耳分率與分壓",
+      "source": "question",
+      "refCount": 1
+    },
+    {
+      "name": "道耳頓分壓定律",
+      "source": "both",
+      "refCount": 1
+    },
+    {
+      "name": "飽和蒸氣壓",
+      "source": "both",
+      "refCount": 1
+    }
+  ],
+  "generatedAt": "2026-11-06T02:09:28.520Z"
+}
