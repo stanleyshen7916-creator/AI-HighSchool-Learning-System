@@ -436,6 +436,89 @@
 
 .wb-action--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
 
+/* 2026-11-06 知識弱點改版：重點整理卡 + 複習完成刪除 */
+.wb-detail__actions { flex-wrap: wrap; }
+.wb-detail__btn--danger { flex-basis: 100%; border: 1px solid var(--subj-history); background-color: var(--card); color: var(--subj-history); }
+.wb-detail__btn--danger:hover { background-color: var(--bg); }
+.wb-note[hidden] { display: none; }
+.wb-note {
+  margin-bottom: 16px; padding: 16px; border-radius: 14px;
+  border: 1px solid var(--brand-line); background-color: var(--brand-soft);
+}
+.wb-note__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 8px; }
+.wb-note__title { margin: 0; font-size: 16px; font-weight: 800; color: var(--brand); }
+.wb-note__basis { font-size: 12px; color: var(--text-muted); }
+.wb-note__key { margin: 0 0 12px; font-size: 15px; font-weight: 700; line-height: 1.7; color: var(--text); }
+.wb-note__section { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background-color: var(--card); }
+.wb-note__heading { margin: 0 0 6px; font-size: 13px; font-weight: 800; color: var(--text); }
+.wb-note__section--why { border-left: 4px solid var(--subj-history); }
+.wb-note__section--traps { border-left: 4px solid var(--warn); }
+.wb-note__text, .wb-note__section li { font-size: 14px; line-height: 1.8; color: var(--text); }
+.wb-note__text { margin: 0; }
+.wb-note__section ul, .wb-note__section ol { margin: 0; padding-left: 20px; }
+.wb-note__refs { list-style: none; padding-left: 0; }
+.wb-note__section .wb-note__refs { padding-left: 0; }
+.wb-note__ref { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; padding: 4px 0; }
+.wb-note__ref-kind {
+  flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--brand);
+  background-color: var(--brand-soft); padding: 2px 8px; border-radius: 6px;
+}
+.wb-note__ref-link { color: var(--brand); font-weight: 600; word-break: break-word; }
+.wb-note__ref-source { font-size: 12px; color: var(--text-muted); }
+.wb-note__steps { list-style: none; counter-reset: step; }
+.wb-note__section .wb-note__steps { padding-left: 0; }
+.wb-note__step { counter-increment: step; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 6px 0; border-top: 1px dashed var(--line); }
+.wb-note__step:first-child { border-top: 0; }
+.wb-note__step::before {
+  content: counter(step); flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800;
+  color: #ffffff; background-color: var(--brand);
+}
+.wb-note__step-do { flex: 0 0 auto; min-width: 4em; font-weight: 800; color: var(--brand); }
+.wb-note__step-result { flex: 1 1 12em; color: var(--text); }
+.wb-variant { margin-bottom: 14px; }
+.wb-variant__label {
+  display: inline-block; margin: 0 0 8px; padding: 3px 10px; border-radius: 6px;
+  font-size: 12px; font-weight: 800; color: var(--brand); background-color: var(--brand-soft);
+}
+.wb-variant-result { margin-bottom: 14px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background-color: var(--card); }
+.wb-variant-result.is-correct { border-left: 4px solid var(--ok); }
+.wb-variant-result.is-wrong { border-left: 4px solid var(--subj-history); }
+.wb-variant-result__verdict { margin: 0 0 6px; font-size: 15px; font-weight: 800; }
+.wb-variant-result.is-correct .wb-variant-result__verdict { color: var(--ok); }
+.wb-variant-result.is-wrong .wb-variant-result__verdict { color: var(--subj-history); }
+.wb-variant-result__q, .wb-variant-result__ans { margin: 0 0 6px; font-size: 14px; line-height: 1.7; color: var(--text); }
+.wb-variant-result .wb-detail__actions { margin-top: 10px; }
+.wb-note__step--eq { flex-direction: column; align-items: stretch; gap: 6px; padding: 10px 0 10px 32px; position: relative; }
+.wb-note__step--eq::before { position: absolute; left: 0; top: 10px; }
+.wb-note__step-body { min-width: 0; overflow-x: auto; }
+.wb-note__step--eq > * { min-width: 0; max-width: 100%; }
+.wb-note__step-note { overflow-wrap: anywhere; }
+.mt-ok { font-family: system-ui, sans-serif; color: var(--ok); font-weight: 800; }
+.wb-note__step-note { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: var(--text-muted); }
+/* MathText：方程式排版（js/utils/MathText.js） */
+.mt { font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif; font-size: 16px; white-space: nowrap; }
+.wb-note__step-note .mt, .wb-note__formulas .mt { white-space: normal; font-size: 15px; }
+.mt-frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.9em; line-height: 1.15; }
+.mt-frac__num { padding: 0 3px 1px; border-bottom: 1px solid currentColor; }
+.mt-frac__den { padding: 1px 3px 0; }
+.mt-sqrt { display: inline-flex; align-items: flex-start; }
+.mt-sqrt__sign { padding-right: 1px; }
+.mt-sqrt__body { border-top: 1px solid currentColor; padding: 0 2px; }
+.mt-script { font-size: 0.7em; }
+.mt-eq { display: grid; grid-template-columns: auto auto 1fr; align-items: center; column-gap: 8px; row-gap: 8px; width: max-content; max-width: 100%; }
+.mt-eq__lhs { justify-self: end; }
+.mt-eq__op { justify-self: center; font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; color: var(--brand); }
+.mt-eq__rhs { justify-self: start; }
+@media (max-width: 720px) {
+  .wb-note__step--eq { padding-left: 28px; }
+  .mt { font-size: 14px; }
+  .mt-eq { column-gap: 4px; }
+  .mt-eq__op { font-size: 14px; }
+  .mt-eq__rhs .mt { white-space: normal; }
+}
+[hidden].wb-detail__question, [hidden].wb-detail__figure, [hidden].qref, [hidden].wb-variant-result { display: none; }
+
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 720px) {
   .wb-header__actions { width: 100%; }
@@ -467,3 +550,4 @@
 
 /* 2026-10-08: 計算／填充題重新作答（看答案後自評） */
 .wb-detail__review .is-hidden { display: none; }
+.wb-variant-result .wb-note__steps { margin: 8px 0 0; padding-left: 0; }

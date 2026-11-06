@@ -815,7 +815,112 @@ AHS.WrongBook = (function () {
     ]);
   }
 
-  function renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange) {
+  /* 2026-11-06 知識弱點改版「重點整理」: 有整理筆記（AHS.WrongBookNotesData，
+     以 local question id 對應）的錯題，在題目詳解最上方顯示重點整理卡：
+     一句話重點 → 你選的選項錯在哪 → 公式 → 逐步詳解 → 易錯提醒 → 延伸閱讀
+     （網路資源，另開分頁）。沒有筆記就回傳 null，畫面維持原樣。 */
+  function noteOf(item) {
+    var notes = window.AHS && AHS.WrongBookNotesData;
+    return (notes && item.questionId && notes[item.questionId]) || null;
+  }
+
+  /* 逐步詳解（2026-11-06 使用者回饋：用方程式呈現，把算式一行一行列出來）:
+     步驟是 { title, lines, note } 時，lines 交給 AHS.MathText.equations()
+     排成關係符號對齊的算式；舊格式「動作｜結果」字串照舊一行顯示。 */
+  function mathInline(src) {
+    return (AHS.MathText ? AHS.MathText.inline(src) : el("span", { text: src }));
+  }
+  function stepList(steps) {
+    return el("ol", { class: "wb-note__steps" }, steps.map(function (t) {
+      if (t && typeof t === "object") {
+        return el("li", { class: "wb-note__step wb-note__step--eq" }, [
+          el("strong", { class: "wb-note__step-do", text: t.title || "" }),
+          el("div", { class: "wb-note__step-body" }, [
+            AHS.MathText ? AHS.MathText.equations(t.lines || []) : el("p", { text: (t.lines || []).join("\n") })
+          ]),
+          t.note ? el("p", { class: "wb-note__step-note" }, [mathInline(t.note)]) : null
+        ]);
+      }
+      var parts = String(t).split("｜");
+      return el("li", { class: "wb-note__step" }, parts.length > 1 ? [
+        el("strong", { class: "wb-note__step-do", text: parts[0] }),
+        el("span", { class: "wb-note__step-result", text: parts.slice(1).join("｜") })
+      ] : [el("span", { class: "wb-note__step-result", text: t })]);
+    }));
+  }
+
+  /* 2026-11-06（使用者回饋：立即重做應該做題型相似的題目，不是同一題再做一
+     次，避免背答案）: 有類題（note.variants）時，「立即重做」／全部重新練習
+     改出類題；依這題已作答次數輪替，每次盡量不同。類題的對錯計入原題的複習
+     進度，但不改寫原題的「你的答案」。沒有類題的錯題維持原題重做。 */
+  function variantFor(item) {
+    var note = noteOf(item);
+    var list = note && note.variants;
+    if (!list || !list.length) { return null; }
+    var i = ((item.errorCount || 0) + (item.correctCount || 0)) % list.length;
+    var v = list[i];
+    return {
+      id: item.id, questionId: item.questionId + "__v" + (i + 1), subject: item.subject,
+      question: v.question, options: v.options, correctAnswer: v.correctAnswer,
+      steps: v.steps || [], isVariant: true
+    };
+  }
+
+  /* 類題作答後的結果卡（顯示在題目詳解最上方）。 */
+  function variantResultBlock(practice, onAgain) {
+    var v = practice.variant;
+    var again = el("button", { type: "button", class: "wb-detail__btn wb-detail__btn--ghost" }, [
+      el("span", { html: AHS.Icons.refresh() }), el("span", { text: "再做一題類題" })
+    ]);
+    again.addEventListener("click", onAgain);
+    return el("div", { class: "wb-variant-result " + (practice.wasCorrect ? "is-correct" : "is-wrong") }, [
+      el("p", { class: "wb-variant-result__verdict", text: practice.wasCorrect ? "類題答對了！" : "類題答錯了，再看一次重點整理。" }),
+      el("p", { class: "wb-variant-result__q", text: "類題：" + v.question }),
+      el("p", { class: "wb-variant-result__ans", text: "你的答案 " + answerLabel(v, practice.selectedKey) + "｜正確答案 " + answerLabel(v, v.correctAnswer) +
+        "（" + ((v.options.filter(function (o) { return o.key === v.correctAnswer; })[0] || {}).text || "") + "）" }),
+      v.steps.length ? stepList(v.steps) : null,
+      el("div", { class: "wb-detail__actions" }, [again])
+    ]);
+  }
+
+  function noteBlock(item) {
+    var note = noteOf(item);
+    if (!note) { return null; }
+    function section(title, mod, children) {
+      return el("section", { class: "wb-note__section wb-note__section--" + mod }, [
+        el("h3", { class: "wb-note__heading", text: title })
+      ].concat(children));
+    }
+    function list(tag, items, cls) {
+      return el(tag, { class: cls }, (items || []).map(function (t) { return el("li", { text: t }); }));
+    }
+    var picked = String(item.yourAnswer || "").replace(/[()（）\s]/g, "");
+    var whyText = note.whyWrong && (note.whyWrong[picked] ||
+      (picked.length > 1 ? picked.split("").map(function (k) { return note.whyWrong[k]; }).filter(Boolean).join("　") : ""));
+    var refs = (note.references || []).map(function (r) {
+      return el("li", { class: "wb-note__ref" }, [
+        el("span", { class: "wb-note__ref-kind", text: r.kind || "資料" }),
+        el("a", { class: "wb-note__ref-link", href: r.url, target: "_blank", rel: "noopener noreferrer", text: r.title }),
+        el("span", { class: "wb-note__ref-source", text: r.source || "" })
+      ]);
+    });
+    return el("div", { class: "wb-note", "aria-label": "重點整理" }, [
+      el("div", { class: "wb-note__head" }, [
+        el("h2", { class: "wb-note__title", text: "重點整理" }),
+        note.basis ? el("span", { class: "wb-note__basis", text: note.basis }) : null
+      ]),
+      el("p", { class: "wb-note__key", text: note.keyPoint }),
+      whyText ? section("你選 " + answerLabel(item, item.yourAnswer) + "，錯在哪", "why", [el("p", { class: "wb-note__text", text: whyText })]) : null,
+      note.formulas && note.formulas.length ? section("要記的公式", "formula", [
+        el("ul", { class: "wb-note__formulas" }, note.formulas.map(function (f) { return el("li", {}, [mathInline(f)]); }))
+      ]) : null,
+      note.steps && note.steps.length ? section("逐步詳解", "steps", [stepList(note.steps)]) : null,
+      note.traps && note.traps.length ? section("易錯提醒", "traps", [list("ul", note.traps, "wb-note__traps")]) : null,
+      refs.length ? section("延伸閱讀（網路資源）", "refs", [el("ul", { class: "wb-note__refs" }, refs)]) : null
+    ]);
+  }
+
+  function renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange, onDelete, practice) {
     var subj = AHS.Subjects[item.subject];
     var isCorrectNow = item.yourAnswer === item.correctAnswer;
 
@@ -871,11 +976,11 @@ AHS.WrongBook = (function () {
        nothing to click. */
     var reviewBtn = el("button", {
       type: "button", class: "wb-detail__btn wb-detail__btn--primary",
-      disabled: itemOptions.length ? null : "disabled",
-      title: itemOptions.length ? null : "此題無選項資料，暫不支援立即重做"
+      disabled: itemOptions.length || variantFor(item) ? null : "disabled",
+      title: itemOptions.length || variantFor(item) ? (variantFor(item) ? "出一題同觀念的類題" : null) : "此題無選項資料，暫不支援立即重做"
     }, [
       el("span", { html: AHS.Icons.refresh() }),
-      el("span", { text: "立即重做" })
+      el("span", { text: variantFor(item) ? "做一題類題" : "立即重做" })
     ]);
     /* Sprint AI-122 AI-122-01: 立即重做 must be a real, honest reset — the
        previous attempt's own 你的答案／正確答案／詳解 (still showing the
@@ -888,15 +993,31 @@ AHS.WrongBook = (function () {
        onReviewSubmit()'s selectItem() re-render supplies this attempt's
        own real new answer/explanation — is the real, minimal fix. */
     function startReview() {
-      var interaction = buildReviewInteraction(item, function (wasCorrect, selectedKey) {
-        if (onReviewSubmit) { onReviewSubmit(item.id, wasCorrect, selectedKey); }
+      var variant = variantFor(item);
+      var interaction = buildReviewInteraction(variant || item, function (wasCorrect, selectedKey) {
+        if (onReviewSubmit) { onReviewSubmit(item.id, wasCorrect, selectedKey, variant); }
       });
+      if (variant) {
+        interaction = el("div", { class: "wb-variant" }, [
+          el("p", { class: "wb-variant__label", text: "類題練習（同觀念、不同數字，不是原題）" }),
+          el("p", { class: "wb-detail__question", text: "題目：" + variant.question }),
+          interaction
+        ]);
+        ["wb-detail__question", "wb-detail__figure", "qref", "wb-variant-result"].forEach(function (cls) {
+          var n = body.querySelector(":scope > ." + cls);
+          if (n) { n.setAttribute("hidden", "hidden"); }
+        });
+      }
       var optionsEl = body.querySelector(".wb-detail__options");
       if (optionsEl) { optionsEl.parentNode.replaceChild(interaction, optionsEl); }
+      else { body.insertBefore(interaction, body.querySelector(".wb-detail__answers")); }
       var answersEl = body.querySelector(".wb-detail__answers");
       if (answersEl) { answersEl.setAttribute("hidden", "hidden"); }
       var explainEl = body.querySelector(".wb-detail__explain");
       if (explainEl) { explainEl.setAttribute("hidden", "hidden"); }
+      /* 2026-11-06: 重點整理也含答案，重做時一併隱藏，交卷後的重新渲染會帶回來。 */
+      var noteEl = body.querySelector(".wb-note");
+      if (noteEl) { noteEl.setAttribute("hidden", "hidden"); }
       reviewBtn.setAttribute("disabled", "disabled");
     }
     reviewBtn.addEventListener("click", startReview);
@@ -978,7 +1099,25 @@ AHS.WrongBook = (function () {
       else { explainText.removeAttribute("hidden"); }
     });
 
-    var body = el("div", { class: "wb-detail__body" }, [
+    /* 2026-11-06: 複習完成 → 刪除這一題的重點（軟刪除，見
+       WrongBookRuntime.remove()）。之後再答錯會自動回到知識弱點。 */
+    var deleteBtn = onDelete ? el("button", {
+      type: "button", class: "wb-detail__btn wb-detail__btn--danger"
+    }, [
+      el("span", { html: AHS.Icons.check ? AHS.Icons.check() : "" }),
+      el("span", { text: "複習完成，刪除" })
+    ]) : null;
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", function () {
+        if (!window.confirm("確定複習完成、要從知識弱點刪除這一題嗎？\n之後若再答錯，這一題會自動回到知識弱點。")) { return; }
+        onDelete(item.id);
+      });
+    }
+
+    var note = noteBlock(item);
+    if (note) { explainToggle.querySelector(".wb-detail__explain-toggle-label").textContent = "原始詳解"; }
+
+    var body = el("div", { class: "wb-detail__body" + (note ? " has-note" : "") }, [
       el("div", { class: "wb-detail__head" }, [
         el("h2", { class: "wb-detail__title", text: "題目詳解" }),
         kpTagBtn
@@ -1018,11 +1157,15 @@ AHS.WrongBook = (function () {
         el("span", { class: "wb-detail__kp-label", text: "知識點" }),
         el("span", { class: "wb-detail__kp-chip", text: item.knowledgePoint })
       ]),
+      note,
       el("div", { class: "wb-detail__explain" }, [explainToggle, explainText]),
-      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink].filter(Boolean))
+      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink, deleteBtn].filter(Boolean))
     ]);
+    if (practice && practice.variant) {
+      body.insertBefore(variantResultBlock(practice, startReview), body.querySelector(".wb-detail__stats"));
+    }
 
-    if (autoStartReview && itemOptions.length) { startReview(); }
+    if (autoStartReview && (itemOptions.length || variantFor(item))) { startReview(); }
     return { el: body, favBtn: favBtn };
   }
 
@@ -1093,11 +1236,11 @@ AHS.WrongBook = (function () {
       });
     }
 
-    function selectItem(item, row, autoStartReview) {
+    function selectItem(item, row, autoStartReview, practice) {
       if (currentRow) { currentRow.classList.remove("is-active"); }
       if (row) { row.classList.add("is-active"); currentRow = row; }
       currentDetailItemId = item.id;
-      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange);
+      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange, deleteItem, practice);
       currentDetailFavBtn = detail.favBtn;
       showDetailBody(detail.el);
     }
@@ -1138,9 +1281,12 @@ AHS.WrongBook = (function () {
        AHS.StatisticsRuntime and 複習中心 read this same real field.
        Shared by both the single-question flow and the batch Review Mode
        (WB-008). */
-    function applyReviewResult(itemId, wasCorrect, selectedKey) {
+    /* isVariant: 作答的是類題（見 variantFor()）——對錯照樣計入，但原題的
+       「你的答案」維持學生當初的作答，不被類題的選項代號覆蓋。 */
+    function applyReviewResult(itemId, wasCorrect, selectedKey, isVariant) {
       var pair = getPairById(itemId);
       if (!pair) { return null; }
+      if (isVariant) { selectedKey = pair.item.yourAnswer; }
       if (!wasCorrect) {
         var touched = runtime.sync({
           subject: pair.item.subject, title: pair.item.title, chapter: pair.item.chapter,
@@ -1155,7 +1301,7 @@ AHS.WrongBook = (function () {
           var updated = touched[0];
           Object.keys(updated).forEach(function (k) { pair.item[k] = updated[k]; });
         }
-      } else {
+      } else if (!isVariant) {
         pair.item.yourAnswer = selectedKey;
       }
       if (typeof runtime.recordRetry === "function") {
@@ -1179,10 +1325,10 @@ AHS.WrongBook = (function () {
        重新練習 (and, via autoStartReview, the row's More Menu 開始複習,
        WB-007). Refreshes the Detail Panel in place — "Return Wrong Book"
        is automatic since we never navigated away. */
-    function onReviewSubmit(itemId, wasCorrect, selectedKey) {
-      var pair = applyReviewResult(itemId, wasCorrect, selectedKey);
+    function onReviewSubmit(itemId, wasCorrect, selectedKey, variant) {
+      var pair = applyReviewResult(itemId, wasCorrect, selectedKey, !!variant);
       if (pair) {
-        selectItem(pair.item, pair.row);
+        selectItem(pair.item, pair.row, false, variant ? { variant: variant, wasCorrect: wasCorrect, selectedKey: selectedKey } : null);
         applyView();
       }
     }
@@ -1243,10 +1389,11 @@ AHS.WrongBook = (function () {
 
       function renderStep() {
         var item = queue[index];
-        var interaction = buildReviewInteraction(item, function (wasCorrect, selectedKey) {
+        var variant = variantFor(item);
+        var interaction = buildReviewInteraction(variant || item, function (wasCorrect, selectedKey) {
           var wasMasteredBefore = getMasteryStatus(item.correctStreak) === "已精熟";
-          applyReviewResult(item.id, wasCorrect, selectedKey);
-          syncV1OnReviewResult(item, wasCorrect, selectedKey);
+          applyReviewResult(item.id, wasCorrect, selectedKey, !!variant);
+          syncV1OnReviewResult(item, wasCorrect, variant ? item.yourAnswer : selectedKey);
           if (wasCorrect) { results.correct += 1; } else { results.wrong += 1; }
           if (!wasMasteredBefore && getMasteryStatus(item.correctStreak) === "已精熟") { results.newlyMastered += 1; }
           index += 1;
@@ -1255,11 +1402,12 @@ AHS.WrongBook = (function () {
         showDetailBody(el("div", { class: "wb-detail__body wb-review-session" }, [
           el("p", { class: "wb-review-session__progress", text: "複習進度：" + (index + 1) + " / " + queue.length }),
           el("h2", { class: "wb-detail__title", text: item.title }),
-          el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
-          (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),
+          variant ? el("p", { class: "wb-variant__label", text: "類題練習（同觀念、不同數字，不是原題）" }) : null,
+          el("p", { class: "wb-detail__question", text: "題目：" + (variant ? variant.question : item.question) }),
+          (!variant && window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),
           /* Sprint AI-147/AI-148: resolveFigureSvg() also covers records
              created before figureSvg existed — see its own header above. */
-          resolveFigureSvg(item) ? el("div", { class: "wb-detail__figure", html: resolveFigureSvg(item) }) : null,
+          !variant && resolveFigureSvg(item) ? el("div", { class: "wb-detail__figure", html: resolveFigureSvg(item) }) : null,
           interaction
         ]));
       }
@@ -1341,6 +1489,20 @@ AHS.WrongBook = (function () {
           statusSlot.appendChild(statusTag(getMasteryStatus(pair.item.correctStreak)));
         }
       }
+      applyView();
+    }
+
+    /* 2026-11-06: 複習完成刪除 — Runtime 軟刪除後，把這一列從清單拿掉、
+       關閉詳解視窗、更新統計。 */
+    function deleteItem(id) {
+      if (!runtime.remove || !runtime.remove(id)) { return; }
+      var pair = getPairById(id);
+      if (pair) {
+        pairs.splice(pairs.indexOf(pair), 1);
+        if (pair.row.parentNode) { pair.row.parentNode.removeChild(pair.row); }
+      }
+      if (currentModal) { currentModal.close(); }
+      if (summary && summary.refresh) { summary.refresh(runtime.list()); }
       applyView();
     }
 
