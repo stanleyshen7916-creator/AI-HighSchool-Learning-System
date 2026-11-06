@@ -436,6 +436,36 @@
 
 .wb-action--ghost.is-on { border-color: var(--brand-line); background-color: var(--brand-soft); color: var(--brand); }
 
+/* 2026-11-06 知識弱點改版：重點整理卡 + 複習完成刪除 */
+.wb-detail__actions { flex-wrap: wrap; }
+.wb-detail__btn--danger { flex-basis: 100%; border: 1px solid var(--subj-history); background-color: var(--card); color: var(--subj-history); }
+.wb-detail__btn--danger:hover { background-color: var(--bg); }
+.wb-note[hidden] { display: none; }
+.wb-note {
+  margin-bottom: 16px; padding: 16px; border-radius: 14px;
+  border: 1px solid var(--brand-line); background-color: var(--brand-soft);
+}
+.wb-note__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 8px; }
+.wb-note__title { margin: 0; font-size: 16px; font-weight: 800; color: var(--brand); }
+.wb-note__basis { font-size: 12px; color: var(--text-muted); }
+.wb-note__key { margin: 0 0 12px; font-size: 15px; font-weight: 700; line-height: 1.7; color: var(--text); }
+.wb-note__section { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background-color: var(--card); }
+.wb-note__heading { margin: 0 0 6px; font-size: 13px; font-weight: 800; color: var(--text); }
+.wb-note__section--why { border-left: 4px solid var(--subj-history); }
+.wb-note__section--traps { border-left: 4px solid var(--warn); }
+.wb-note__text, .wb-note__section li { font-size: 14px; line-height: 1.8; color: var(--text); }
+.wb-note__text { margin: 0; }
+.wb-note__section ul, .wb-note__section ol { margin: 0; padding-left: 20px; }
+.wb-note__refs { list-style: none; padding-left: 0; }
+.wb-note__section .wb-note__refs { padding-left: 0; }
+.wb-note__ref { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; padding: 4px 0; }
+.wb-note__ref-kind {
+  flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--brand);
+  background-color: var(--brand-soft); padding: 2px 8px; border-radius: 6px;
+}
+.wb-note__ref-link { color: var(--brand); font-weight: 600; word-break: break-word; }
+.wb-note__ref-source { font-size: 12px; color: var(--text-muted); }
+
 /* ---- RWD ------------------------------------------------------------- */
 @media (max-width: 720px) {
   .wb-header__actions { width: 100%; }

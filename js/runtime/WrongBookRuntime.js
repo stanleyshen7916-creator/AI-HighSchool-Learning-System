@@ -187,7 +187,12 @@ AHS.WrongBookRuntime = (function () {
         correct_count: record.correctCount || 0,
         mastered_at: record.masteredAt || null,
         bookmarked: !!record.bookmarked,
-        archived: !!record.archived
+        archived: !!record.archived,
+        /* 2026-11-06 重點整理改版：「複習完成，刪除」是軟刪除——雲端保留這
+           一列（deleted_at 有值），所以月考回填（backfillFromMonthExams）
+           看得到這一題、不會又把它補回來；之後真的又答錯，sync() 會清掉
+           deletedAt 讓它重新出現。 */
+        deleted_at: record.deletedAt || null
       };
       /* Sprint AI-150（使用者需求：知識弱點的內容必須依照學年加以分開，
          目前於高二年級卻看到高一的知識弱點——根因追查到底：wrong_book
@@ -360,6 +365,7 @@ AHS.WrongBookRuntime = (function () {
         local.masteredAt = toLocalDate(row.mastered_at);
         local.bookmarked = row.bookmarked;
         local.archived = row.archived;
+        local.deletedAt = row.deleted_at || null;
         local.firstError = toLocalDate(local.firstError || row.first_error_at);
         local.lastError = toLocalDate(row.last_error_at);
         /* 2026-09-29: correct_count now round-trips (see pushRecord()).
@@ -452,17 +458,21 @@ AHS.WrongBookRuntime = (function () {
     return copy;
   }
 
+  /* 2026-11-06: 已刪除（複習完成）的重點不出現在任何畫面或統計裡，
+     紀錄本身仍保留在 store（見 remove()）。 */
+  function visible(item) { return !item.deletedAt; }
+
   function list() {
-    return store.items.map(withWeaknessState);
+    return store.items.filter(visible).map(withWeaknessState);
   }
 
   function isEmpty() {
-    return store.items.length === 0;
+    return store.items.filter(visible).length === 0;
   }
 
   function getById(id) {
     for (var i = 0; i < store.items.length; i++) {
-      if (store.items[i].id === id) { return withWeaknessState(store.items[i]); }
+      if (store.items[i].id === id && visible(store.items[i])) { return withWeaknessState(store.items[i]); }
     }
     return null;
   }
@@ -505,6 +515,8 @@ AHS.WrongBookRuntime = (function () {
            record itself was never deleted either way — History (every
            past errorCount/lastError) is untouched. */
         existing.archived = false;
+        /* 2026-11-06: 刪除後又答錯 → 重新回到知識弱點。 */
+        existing.deletedAt = null;
         touched.push(existing);
       } else {
         store.seq += 1;
@@ -644,6 +656,21 @@ AHS.WrongBookRuntime = (function () {
     return null;
   }
 
+  /* remove(id) — 2026-11-06（使用者需求：複習完成後可以刪除知識弱點中的
+     重點）。軟刪除：設定 deletedAt 並同步到雲端 wrong_book.deleted_at，
+     list()/getById()/統計從此不再看到它。回傳是否真的刪除。 */
+  function remove(id) {
+    for (var i = 0; i < store.items.length; i++) {
+      if (store.items[i].id === id && visible(store.items[i])) {
+        store.items[i].deletedAt = new Date().toISOString();
+        persist();
+        pushRecord(store.items[i]);
+        return true;
+      }
+    }
+    return false;
+  }
+
   function toggleBookmark(id) {
     for (var i = 0; i < store.items.length; i++) {
       if (store.items[i].id === id) {
@@ -734,6 +761,7 @@ AHS.WrongBookRuntime = (function () {
     toggleBookmark: toggleBookmark,
     archive: archive,
     unarchive: unarchive,
+    remove: remove,
     weaknessState: weaknessState,
     reset: reset,
     importRecords: importRecords,

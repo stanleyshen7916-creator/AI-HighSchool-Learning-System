@@ -815,7 +815,51 @@ AHS.WrongBook = (function () {
     ]);
   }
 
-  function renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange) {
+  /* 2026-11-06 知識弱點改版「重點整理」: 有整理筆記（AHS.WrongBookNotesData，
+     以 local question id 對應）的錯題，在題目詳解最上方顯示重點整理卡：
+     一句話重點 → 你選的選項錯在哪 → 公式 → 逐步詳解 → 易錯提醒 → 延伸閱讀
+     （網路資源，另開分頁）。沒有筆記就回傳 null，畫面維持原樣。 */
+  function noteOf(item) {
+    var notes = window.AHS && AHS.WrongBookNotesData;
+    return (notes && item.questionId && notes[item.questionId]) || null;
+  }
+
+  function noteBlock(item) {
+    var note = noteOf(item);
+    if (!note) { return null; }
+    function section(title, mod, children) {
+      return el("section", { class: "wb-note__section wb-note__section--" + mod }, [
+        el("h3", { class: "wb-note__heading", text: title })
+      ].concat(children));
+    }
+    function list(tag, items, cls) {
+      return el(tag, { class: cls }, (items || []).map(function (t) { return el("li", { text: t }); }));
+    }
+    var picked = String(item.yourAnswer || "").replace(/[()（）\s]/g, "");
+    var whyText = note.whyWrong && (note.whyWrong[picked] ||
+      (picked.length > 1 ? picked.split("").map(function (k) { return note.whyWrong[k]; }).filter(Boolean).join("　") : ""));
+    var refs = (note.references || []).map(function (r) {
+      return el("li", { class: "wb-note__ref" }, [
+        el("span", { class: "wb-note__ref-kind", text: r.kind || "資料" }),
+        el("a", { class: "wb-note__ref-link", href: r.url, target: "_blank", rel: "noopener noreferrer", text: r.title }),
+        el("span", { class: "wb-note__ref-source", text: r.source || "" })
+      ]);
+    });
+    return el("div", { class: "wb-note", "aria-label": "重點整理" }, [
+      el("div", { class: "wb-note__head" }, [
+        el("h2", { class: "wb-note__title", text: "重點整理" }),
+        note.basis ? el("span", { class: "wb-note__basis", text: note.basis }) : null
+      ]),
+      el("p", { class: "wb-note__key", text: note.keyPoint }),
+      whyText ? section("你選 " + answerLabel(item, item.yourAnswer) + "，錯在哪", "why", [el("p", { class: "wb-note__text", text: whyText })]) : null,
+      note.formulas && note.formulas.length ? section("要記的公式", "formula", [list("ul", note.formulas, "wb-note__formulas")]) : null,
+      note.steps && note.steps.length ? section("逐步詳解", "steps", [list("ol", note.steps, "wb-note__steps")]) : null,
+      note.traps && note.traps.length ? section("易錯提醒", "traps", [list("ul", note.traps, "wb-note__traps")]) : null,
+      refs.length ? section("延伸閱讀（網路資源）", "refs", [el("ul", { class: "wb-note__refs" }, refs)]) : null
+    ]);
+  }
+
+  function renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange, onDelete) {
     var subj = AHS.Subjects[item.subject];
     var isCorrectNow = item.yourAnswer === item.correctAnswer;
 
@@ -897,6 +941,9 @@ AHS.WrongBook = (function () {
       if (answersEl) { answersEl.setAttribute("hidden", "hidden"); }
       var explainEl = body.querySelector(".wb-detail__explain");
       if (explainEl) { explainEl.setAttribute("hidden", "hidden"); }
+      /* 2026-11-06: 重點整理也含答案，重做時一併隱藏，交卷後的重新渲染會帶回來。 */
+      var noteEl = body.querySelector(".wb-note");
+      if (noteEl) { noteEl.setAttribute("hidden", "hidden"); }
       reviewBtn.setAttribute("disabled", "disabled");
     }
     reviewBtn.addEventListener("click", startReview);
@@ -978,7 +1025,25 @@ AHS.WrongBook = (function () {
       else { explainText.removeAttribute("hidden"); }
     });
 
-    var body = el("div", { class: "wb-detail__body" }, [
+    /* 2026-11-06: 複習完成 → 刪除這一題的重點（軟刪除，見
+       WrongBookRuntime.remove()）。之後再答錯會自動回到知識弱點。 */
+    var deleteBtn = onDelete ? el("button", {
+      type: "button", class: "wb-detail__btn wb-detail__btn--danger"
+    }, [
+      el("span", { html: AHS.Icons.check ? AHS.Icons.check() : "" }),
+      el("span", { text: "複習完成，刪除" })
+    ]) : null;
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", function () {
+        if (!window.confirm("確定複習完成、要從知識弱點刪除這一題嗎？\n之後若再答錯，這一題會自動回到知識弱點。")) { return; }
+        onDelete(item.id);
+      });
+    }
+
+    var note = noteBlock(item);
+    if (note) { explainToggle.querySelector(".wb-detail__explain-toggle-label").textContent = "原始詳解"; }
+
+    var body = el("div", { class: "wb-detail__body" + (note ? " has-note" : "") }, [
       el("div", { class: "wb-detail__head" }, [
         el("h2", { class: "wb-detail__title", text: "題目詳解" }),
         kpTagBtn
@@ -1018,8 +1083,9 @@ AHS.WrongBook = (function () {
         el("span", { class: "wb-detail__kp-label", text: "知識點" }),
         el("span", { class: "wb-detail__kp-chip", text: item.knowledgePoint })
       ]),
+      note,
       el("div", { class: "wb-detail__explain" }, [explainToggle, explainText]),
-      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink].filter(Boolean))
+      el("div", { class: "wb-detail__actions" }, [reviewBtn, favBtn, askTutorLink, deleteBtn].filter(Boolean))
     ]);
 
     if (autoStartReview && itemOptions.length) { startReview(); }
@@ -1097,7 +1163,7 @@ AHS.WrongBook = (function () {
       if (currentRow) { currentRow.classList.remove("is-active"); }
       if (row) { row.classList.add("is-active"); currentRow = row; }
       currentDetailItemId = item.id;
-      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange);
+      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange, deleteItem);
       currentDetailFavBtn = detail.favBtn;
       showDetailBody(detail.el);
     }
@@ -1341,6 +1407,20 @@ AHS.WrongBook = (function () {
           statusSlot.appendChild(statusTag(getMasteryStatus(pair.item.correctStreak)));
         }
       }
+      applyView();
+    }
+
+    /* 2026-11-06: 複習完成刪除 — Runtime 軟刪除後，把這一列從清單拿掉、
+       關閉詳解視窗、更新統計。 */
+    function deleteItem(id) {
+      if (!runtime.remove || !runtime.remove(id)) { return; }
+      var pair = getPairById(id);
+      if (pair) {
+        pairs.splice(pairs.indexOf(pair), 1);
+        if (pair.row.parentNode) { pair.row.parentNode.removeChild(pair.row); }
+      }
+      if (currentModal) { currentModal.close(); }
+      if (summary && summary.refresh) { summary.refresh(runtime.list()); }
       applyView();
     }
 
