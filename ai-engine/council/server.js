@@ -17,6 +17,7 @@ const {
 
 const { createPackageBuilder } = require('./platform/PackageBuilder');
 const { createGitPublishQueue } = require('./platform/GitPublishQueue');
+const { createWrongBookNotesJob } = require('./platform/WrongBookNotesJob');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
 const goldSet = require('./services/goldSet');
@@ -49,6 +50,7 @@ fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 const packageBuilder = createPackageBuilder({ platformRoot: PLATFORM_ROOT, dataDir: DATA_DIR });
 const gitPublishQueue = createGitPublishQueue({ dataDir: DATA_DIR, platformRoot: PLATFORM_ROOT });
+const wrongBookNotesJob = createWrongBookNotesJob({ dataDir: DATA_DIR });
 
 // 瀏覽器來源檢查：引擎沒有登入機制、只綁在本機，但使用者的瀏覽器開著其他網站時，
 // 那些網站仍可對 localhost 發出「簡單請求」（例如 multipart 表單 POST）。凡是帶 Origin
@@ -1090,6 +1092,20 @@ app.post('/api/platform/drafts/:materialId/publish', (req, res) => {
     result.gitQueueError = error.message;
   }
   return res.status(200).json(result);
+});
+
+// 2026-11-06：知識弱點頁「產生重點整理」按鈕。實際產生由主機上的
+// tools/wrongbook-notes.ps1（Claude Code）執行，引擎只排請求、回報進度。
+app.post('/api/platform/wrongbook-notes/run', (req, res) => {
+  try {
+    return res.status(200).json(wrongBookNotesJob.requestRun());
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/platform/wrongbook-notes/status', (req, res) => {
+  return res.status(200).json(wrongBookNotesJob.status());
 });
 
 app.get('/api/platform/git-jobs/:jobId', (req, res) => {

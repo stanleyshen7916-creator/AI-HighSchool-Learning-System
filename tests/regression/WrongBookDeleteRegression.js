@@ -103,6 +103,20 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
     });
   });
 
+  /* 2026-11-06 自動產生：待整理清單（scripts/maintenance/WrongBookNotesPending.js） */
+  const P = require(path.join(REPO, "scripts/maintenance/WrongBookNotesPending.js"));
+  check("待整理清單：讀得到既有筆記編號", P.existingNoteIds(path.join(REPO, "js/data/WrongBookNotesData.js")).indexOf("tm_7_q18") !== -1);
+  const pend = P.pendingFrom([
+    { local_question_id: "tm_7_q18", error_count: 9, subjects: { code: "math" } },
+    { local_question_id: "q_a", error_count: 1, question_text: "A", subjects: { code: "physics" } },
+    { local_question_id: "q_a", error_count: 4, question_text: "A", subjects: { code: "physics" } },
+    { local_question_id: "q_b", error_count: 2, question_text: "B", subjects: { code: "chemistry" } },
+    { local_question_id: null, error_count: 5 }
+  ], ["tm_7_q18"], 1);
+  check("待整理清單：略過已有筆記、無編號、重複題；錯最多的優先；依上限截斷",
+    pend.total === 2 && pend.items.length === 1 && pend.items[0].questionId === "q_a" && pend.items[0].errorCount === 4 && pend.items[0].subject === "physics");
+  check("待整理清單：sb_secret_ 金鑰只放 apikey 標頭", !P.authHeaders("sb_secret_x").Authorization && P.authHeaders("eyJx").Authorization === "Bearer eyJx");
+
   console.log("WrongBookDeleteRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail ? 1 : 0);
 })();
