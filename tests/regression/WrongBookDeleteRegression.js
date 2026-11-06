@@ -53,6 +53,8 @@ AHS.RepositoryFactory = {
 function flush() { return new Promise((r) => setTimeout(r, 0)).then(() => Promise.all(pushes)).then(() => { pushes = []; }); }
 
 const RT = AHS.WrongBookRuntime;
+function stepText(steps) { return (steps || []).map((t) => (t && typeof t === "object") ? [t.title].concat(t.lines || [], t.note || []).join(" ") : String(t)).join(" "); }
+function bracesBalanced(str) { let d = 0; for (const c of str) { if (c === "{") d++; if (c === "}") d--; if (d < 0) return false; } return d === 0; }
 const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最大值", options: [], yourAnswer: "C", correctAnswer: "A", explanation: "", knowledgePoint: "疊合" };
 
 (async function () {
@@ -90,12 +92,14 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
     check(id + "：有 keyPoint、steps、references", !!n.keyPoint && Array.isArray(n.steps) && n.steps.length > 0 && Array.isArray(n.references) && n.references.length > 0);
     check(id + "：連結都是 https", n.references.every((r) => /^https:\/\//.test(r.url) && r.title));
     check(id + "：basis 標示【確認】或【推論】", /【確認】|【推論】/.test(n.basis || ""));
-    const body = [n.keyPoint].concat(n.steps, n.traps || [], n.formulas || [], Object.values(n.whyWrong || {})).join(" ");
+    const body = [n.keyPoint, stepText(n.steps)].concat(n.traps || [], n.formulas || [], Object.values(n.whyWrong || {})).join(" ");
+    check(id + "：算式標記的大括號成對", bracesBalanced(body + stepText([].concat.apply([], (n.variants || []).map((v) => v.steps || [])))));
+    check(id + "：方程式步驟都有標題與算式", n.steps.every((t) => typeof t === "string" || (t.title && Array.isArray(t.lines) && t.lines.length)));
     check(id + "：內文不寫 (A)~(E) 選項字母", !/[(（][A-E][)）]/.test(body));
     (n.variants || []).forEach((v, i) => {
       const keys = (v.options || []).map((o) => o.key);
       check(id + " 類題" + (i + 1) + "：題目與原題不同、正確答案在選項中", v.question && v.question !== n.question && keys.indexOf(v.correctAnswer) !== -1 && keys.length >= 2);
-      check(id + " 類題" + (i + 1) + "：詳解不寫選項字母", !/[(（][A-E][)）]/.test((v.steps || []).join(" ")));
+      check(id + " 類題" + (i + 1) + "：詳解不寫選項字母", !/[(（][A-E][)）]/.test(stepText(v.steps)));
     });
   });
 

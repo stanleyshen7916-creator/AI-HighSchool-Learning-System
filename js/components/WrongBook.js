@@ -824,9 +824,23 @@ AHS.WrongBook = (function () {
     return (notes && item.questionId && notes[item.questionId]) || null;
   }
 
-  /* 逐步詳解：每行「動作｜結果」，動作加粗，一行一步。 */
+  /* 逐步詳解（2026-11-06 使用者回饋：用方程式呈現，把算式一行一行列出來）:
+     步驟是 { title, lines, note } 時，lines 交給 AHS.MathText.equations()
+     排成關係符號對齊的算式；舊格式「動作｜結果」字串照舊一行顯示。 */
+  function mathInline(src) {
+    return (AHS.MathText ? AHS.MathText.inline(src) : el("span", { text: src }));
+  }
   function stepList(steps) {
     return el("ol", { class: "wb-note__steps" }, steps.map(function (t) {
+      if (t && typeof t === "object") {
+        return el("li", { class: "wb-note__step wb-note__step--eq" }, [
+          el("strong", { class: "wb-note__step-do", text: t.title || "" }),
+          el("div", { class: "wb-note__step-body" }, [
+            AHS.MathText ? AHS.MathText.equations(t.lines || []) : el("p", { text: (t.lines || []).join("\n") })
+          ]),
+          t.note ? el("p", { class: "wb-note__step-note" }, [mathInline(t.note)]) : null
+        ]);
+      }
       var parts = String(t).split("｜");
       return el("li", { class: "wb-note__step" }, parts.length > 1 ? [
         el("strong", { class: "wb-note__step-do", text: parts[0] }),
@@ -897,7 +911,9 @@ AHS.WrongBook = (function () {
       ]),
       el("p", { class: "wb-note__key", text: note.keyPoint }),
       whyText ? section("你選 " + answerLabel(item, item.yourAnswer) + "，錯在哪", "why", [el("p", { class: "wb-note__text", text: whyText })]) : null,
-      note.formulas && note.formulas.length ? section("要記的公式", "formula", [list("ul", note.formulas, "wb-note__formulas")]) : null,
+      note.formulas && note.formulas.length ? section("要記的公式", "formula", [
+        el("ul", { class: "wb-note__formulas" }, note.formulas.map(function (f) { return el("li", {}, [mathInline(f)]); }))
+      ]) : null,
       note.steps && note.steps.length ? section("逐步詳解", "steps", [stepList(note.steps)]) : null,
       note.traps && note.traps.length ? section("易錯提醒", "traps", [list("ul", note.traps, "wb-note__traps")]) : null,
       refs.length ? section("延伸閱讀（網路資源）", "refs", [el("ul", { class: "wb-note__refs" }, refs)]) : null

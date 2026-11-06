@@ -489,6 +489,34 @@
 .wb-variant-result.is-wrong .wb-variant-result__verdict { color: var(--subj-history); }
 .wb-variant-result__q, .wb-variant-result__ans { margin: 0 0 6px; font-size: 14px; line-height: 1.7; color: var(--text); }
 .wb-variant-result .wb-detail__actions { margin-top: 10px; }
+.wb-note__step--eq { flex-direction: column; align-items: stretch; gap: 6px; padding: 10px 0 10px 32px; position: relative; }
+.wb-note__step--eq::before { position: absolute; left: 0; top: 10px; }
+.wb-note__step-body { min-width: 0; overflow-x: auto; }
+.wb-note__step--eq > * { min-width: 0; max-width: 100%; }
+.wb-note__step-note { overflow-wrap: anywhere; }
+.mt-ok { font-family: system-ui, sans-serif; color: var(--ok); font-weight: 800; }
+.wb-note__step-note { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: var(--text-muted); }
+/* MathText：方程式排版（js/utils/MathText.js） */
+.mt { font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif; font-size: 16px; white-space: nowrap; }
+.wb-note__step-note .mt, .wb-note__formulas .mt { white-space: normal; font-size: 15px; }
+.mt-frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.9em; line-height: 1.15; }
+.mt-frac__num { padding: 0 3px 1px; border-bottom: 1px solid currentColor; }
+.mt-frac__den { padding: 1px 3px 0; }
+.mt-sqrt { display: inline-flex; align-items: flex-start; }
+.mt-sqrt__sign { padding-right: 1px; }
+.mt-sqrt__body { border-top: 1px solid currentColor; padding: 0 2px; }
+.mt-script { font-size: 0.7em; }
+.mt-eq { display: grid; grid-template-columns: auto auto 1fr; align-items: center; column-gap: 8px; row-gap: 8px; width: max-content; max-width: 100%; }
+.mt-eq__lhs { justify-self: end; }
+.mt-eq__op { justify-self: center; font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; color: var(--brand); }
+.mt-eq__rhs { justify-self: start; }
+@media (max-width: 720px) {
+  .wb-note__step--eq { padding-left: 28px; }
+  .mt { font-size: 14px; }
+  .mt-eq { column-gap: 4px; }
+  .mt-eq__op { font-size: 14px; }
+  .mt-eq__rhs .mt { white-space: normal; }
+}
 [hidden].wb-detail__question, [hidden].wb-detail__figure, [hidden].qref, [hidden].wb-variant-result { display: none; }
 
 /* ---- RWD ------------------------------------------------------------- */
@@ -522,3 +550,4 @@
 
 /* 2026-10-08: 計算／填充題重新作答（看答案後自評） */
 .wb-detail__review .is-hidden { display: none; }
+.wb-variant-result .wb-note__steps { margin: 8px 0 0; padding-left: 0; }

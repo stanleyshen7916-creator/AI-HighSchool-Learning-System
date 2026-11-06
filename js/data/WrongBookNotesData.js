@@ -14,9 +14,12 @@
      whyWrong   { 選項代號: 為什麼這個選項錯 }——依學生實際選的選項顯示
      steps      逐步詳解
      traps      易錯提醒
-     steps 的每一行寫成「動作｜結果」，畫面會把動作加粗、一行一步。
+     steps      [{ title, lines, note }]：lines 是一行一個算式，以 "= "／"⇒ "
+                開頭表示接續上一行（畫面會把關係符號對齊）；算式與 note 用
+                AHS.MathText 標記：frac{分子}{分母}、sqrt{…}、^{上標}。
+                （舊格式「動作｜結果」字串仍可顯示）
      variants   類題（同觀念、不同數字，給「立即重做」用，避免背答案）：
-                [{ question, options:[{key,text}], correctAnswer, steps }]
+                [{ question, options:[{key,text}], correctAnswer, steps（同上格式） }]
      references 延伸閱讀 [{ title, source, url, kind }]，kind：講義／影片／互動
      注意：平台會打亂選項的顯示順序（AHS.OptionOrder），所以 whyWrong 的
      key 用題目「原始」選項代號，筆記內文不要寫 (A)(B) 這類選項字母，
@@ -28,9 +31,9 @@ AHS.WrongBookNotesData = {
   "tm_7_q18": {
     keyPoint: "a sin x + b cos x 不能把兩項的最大值直接相加——兩項不會在同一個 x 同時最大；必須先疊合成 r sin(x+α)，最大值是 r＝√(a²+b²)。",
     formulas: [
-      "a sin x + b cos x ＝ r sin(x+α)，r＝√(a²+b²)",
-      "cos α＝a/r，sin α＝b/r（用 a、b 的正負決定 α 的象限）",
-      "最大值 r（x+α＝π/2＋2kπ），最小值 −r（x+α＝3π/2＋2kπ）"
+      "a sin x + b cos x = r sin(x + α)，r = sqrt{a^{2} + b^{2}}",
+      "cos α = frac{a}{r}，sin α = frac{b}{r}（用 a、b 的正負決定 α 的象限）",
+      "最大值 r：x + α = frac{π}{2} + 2kπ；最小值 −r：x + α = frac{3π}{2} + 2kπ"
     ],
     whyWrong: {
       C: "把 sin x 的最大值 1 和 √3 cos x 的最大值 √3 直接相加得 √3+1。但 sin x＝1 時 x＝π/2，此時 cos x＝0，兩項不可能同時最大；代 x＝π/6 驗算：sin(π/6)＋√3 cos(π/6)＝1/2＋3/2＝2，不是 √3+1。",
@@ -38,12 +41,34 @@ AHS.WrongBookNotesData = {
       D: "x＝2π/3 代入：sin(2π/3)＋√3 cos(2π/3)＝√3/2 − √3/2＝0，不是最大值。"
     },
     steps: [
-      "找係數｜a＝1，b＝√3",
-      "算 r｜r＝√(1²＋(√3)²)＝√4＝2",
-      "疊合｜cos α＝½、sin α＝√3/2 → α＝π/3，所以 y＝2 sin(x＋π/3)",
-      "取最大｜sin(x＋π/3)＝1 → 最大值＝2",
-      "求 x｜x＋π/3＝π/2 → x＝π/6",
-      "驗算｜x＝π/6：½＋3/2＝2 ✓"
+      { title: "找出 a、b，算 r", lines: [
+        "a = 1，b = sqrt{3}",
+        "r = sqrt{a^{2} + b^{2}}",
+        "= sqrt{1^{2} + (sqrt{3})^{2}}",
+        "= sqrt{4} = 2"
+      ] },
+      { title: "提出 r，疊合成一個 sin", lines: [
+        "y = sin x + sqrt{3} cos x",
+        "= 2 ( frac{1}{2} sin x + frac{sqrt{3}}{2} cos x )",
+        "= 2 ( sin x cos frac{π}{3} + cos x sin frac{π}{3} )",
+        "= 2 sin ( x + frac{π}{3} )"
+      ], note: "cos frac{π}{3} = frac{1}{2}、sin frac{π}{3} = frac{sqrt{3}}{2}，所以 α = frac{π}{3}；最後一步用和角公式 sin(A + B) = sin A cos B + cos A sin B" },
+      { title: "用 sin 的範圍求最大值", lines: [
+        "−1 ≤ sin ( x + frac{π}{3} ) ≤ 1",
+        "⇒ −2 ≤ y ≤ 2",
+        "⇒ 最大值 = 2"
+      ] },
+      { title: "求取到最大值的 x", lines: [
+        "x + frac{π}{3} = frac{π}{2}",
+        "x = frac{π}{2} − frac{π}{3}",
+        "= frac{π}{6}"
+      ], note: "0 ≤ x < 2π 內只有這一個解" },
+      { title: "代回原式驗算", lines: [
+        "y = sin frac{π}{6} + sqrt{3} cos frac{π}{6}",
+        "= frac{1}{2} + sqrt{3} · frac{sqrt{3}}{2}",
+        "= frac{1}{2} + frac{3}{2}",
+        "= 2 ✓"
+      ] }
     ],
     traps: [
       "最大值不是 |a|＋|b|，是 √(a²+b²)；√(a²+b²) ≤ |a|＋|b|，兩者只有在其中一項為 0 時相等。",
@@ -68,10 +93,14 @@ AHS.WrongBookNotesData = {
         ],
         correctAnswer: "A",
         steps: [
-          "算 r｜r＝√(3＋1)＝2",
-          "疊合｜cos α＝√3/2、sin α＝−½ → α＝−π/6，y＝2 sin(x−π/6)",
-          "取最大｜最大值 2，x−π/6＝π/2 → x＝2π/3",
-          "驗算｜x＝2π/3：√3·(√3/2)−(−½)＝3/2＋½＝2 ✓"
+          { title: "算 r", lines: ["r = sqrt{(sqrt{3})^{2} + (−1)^{2}}", "= sqrt{4} = 2"] },
+          { title: "疊合", lines: [
+            "y = 2 ( frac{sqrt{3}}{2} sin x − frac{1}{2} cos x )",
+            "= 2 ( sin x cos frac{π}{6} − cos x sin frac{π}{6} )",
+            "= 2 sin ( x − frac{π}{6} )"
+          ], note: "b 是負的，所以 α = −frac{π}{6}；用差角公式 sin(A − B)" },
+          { title: "最大值與 x", lines: ["x − frac{π}{6} = frac{π}{2}", "x = frac{2π}{3}", "⇒ 最大值 = 2"] },
+          { title: "驗算", lines: ["y = sqrt{3} · frac{sqrt{3}}{2} − (−frac{1}{2})", "= frac{3}{2} + frac{1}{2} = 2 ✓"] }
         ]
       },
       {
@@ -84,11 +113,13 @@ AHS.WrongBookNotesData = {
         ],
         correctAnswer: "A",
         steps: [
-          "算 r｜r＝√(1＋1)＝√2（不是 1＋1＝2）",
-          "疊合｜α＝π/4，y＝√2 sin(x＋π/4)",
-          "取最小｜sin(x＋π/4)＝−1 → 最小值 −√2",
-          "求 x｜x＋π/4＝3π/2 → x＝5π/4",
-          "驗算｜x＝5π/4：−√2/2−√2/2＝−√2 ✓"
+          { title: "算 r", lines: ["r = sqrt{1^{2} + 1^{2}}", "= sqrt{2}"], note: "不是 1 + 1 = 2" },
+          { title: "疊合", lines: [
+            "y = sqrt{2} ( frac{sqrt{2}}{2} sin x + frac{sqrt{2}}{2} cos x )",
+            "= sqrt{2} sin ( x + frac{π}{4} )"
+          ] },
+          { title: "最小值與 x", lines: ["x + frac{π}{4} = frac{3π}{2}", "x = frac{5π}{4}", "⇒ 最小值 = −sqrt{2}"] },
+          { title: "驗算", lines: ["y = −frac{sqrt{2}}{2} − frac{sqrt{2}}{2}", "= −sqrt{2} ✓"] }
         ]
       },
       {
@@ -101,9 +132,8 @@ AHS.WrongBookNotesData = {
         ],
         correctAnswer: "A",
         steps: [
-          "算 r｜r＝√(3²＋4²)＝5",
-          "取最大｜y＝5 sin(x＋α) → 最大值 5",
-          "陷阱｜3＋4＝7 是把兩項最大值直接相加，錯"
+          { title: "算 r", lines: ["r = sqrt{3^{2} + 4^{2}}", "= sqrt{25} = 5"] },
+          { title: "最大值", lines: ["y = 5 sin ( x + α )", "⇒ 最大值 = 5"], note: "3 + 4 = 7 是把兩項最大值直接相加，錯" }
         ]
       }
     ],
