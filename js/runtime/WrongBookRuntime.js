@@ -671,6 +671,55 @@ AHS.WrongBookRuntime = (function () {
     return false;
   }
 
+  /* 2026-11-08（使用者需求：Admin 檢視學生錯題）: 讀出指定學生的錯題，做成
+     一個「唯讀」的 runtime（list/getById/isEmpty 等介面與本 Runtime 相同），
+     不碰本機 store、不寫回雲端。需要 supabase/migrations/20261108000001 的
+     Admin 唯讀 RLS。 */
+  function listStudents() {
+    if (!AHS.SyncBridge || !AHS.SyncBridge.isConfigured()) { return Promise.resolve([]); }
+    return AHS.RepositoryFactory.create().read("student_profiles", "role=eq.STUDENT&deleted_at=is.null&select=id,display_name,mock_student_key&order=display_name")
+      .then(function (r) { return (r && Array.isArray(r.data)) ? r.data : []; }, function () { return []; });
+  }
+
+  function readOnlyView(studentProfileId, semesterCode) {
+    var query = "student_profile_id=eq." + encodeURIComponent(studentProfileId) + "&deleted_at=is.null";
+    if (semesterCode) { query += "&semester_code=eq." + encodeURIComponent(semesterCode); }
+    return AHS.RepositoryFactory.create().read("wrong_book", query).then(function (result) {
+      if (result.error || !Array.isArray(result.data)) { throw new Error((result.error && result.error.message) || "讀取失敗"); }
+      var lookups = [];
+      var items = result.data.map(function (row, i) {
+        var item = {
+          id: "view_" + (i + 1), supabaseId: row.id,
+          questionId: row.local_question_id || row.question_id || "", materialId: row.material_id || "",
+          subject: "", options: Array.isArray(row.options) ? row.options : [],
+          knowledgePoint: row.knowledge_point, question: row.question_text,
+          yourAnswer: row.your_answer, correctAnswer: row.correct_answer, explanation: row.explanation,
+          errorCount: row.error_count, correctStreak: row.correct_streak,
+          correctCount: Math.max(row.correct_count || 0, row.correct_streak || 0),
+          masteredAt: toLocalDate(row.mastered_at), bookmarked: row.bookmarked, archived: row.archived,
+          firstError: toLocalDate(row.first_error_at), lastError: toLocalDate(row.last_error_at)
+        };
+        if (row.subject_id && AHS.SyncBridge && typeof AHS.SyncBridge.subjectCodeFor === "function") {
+          lookups.push(AHS.SyncBridge.subjectCodeFor(row.subject_id).then(function (code) { if (code) { item.subject = code; } }));
+        }
+        return item;
+      });
+      return Promise.all(lookups).then(function () {
+        items.forEach(function (item) { canonicalize(item); });
+        function find(id) { return items.filter(function (it) { return it.id === id; })[0] || null; }
+        function none() { return false; }
+        return {
+          readOnly: true,
+          list: function () { return items.map(withWeaknessState); },
+          isEmpty: function () { return items.length === 0; },
+          getById: function (id) { var it = find(id); return it ? withWeaknessState(it) : null; },
+          sync: function () { return []; }, recordRetry: none, toggleBookmark: none,
+          archive: none, unarchive: none, remove: none
+        };
+      });
+    });
+  }
+
   function toggleBookmark(id) {
     for (var i = 0; i < store.items.length; i++) {
       if (store.items[i].id === id) {
@@ -766,6 +815,8 @@ AHS.WrongBookRuntime = (function () {
     reset: reset,
     importRecords: importRecords,
     pullFromRepository: pullFromRepository,
+    listStudents: listStudents,
+    readOnlyView: readOnlyView,
     subjectKeyOf: subjectKeyOf,
     canonicalize: canonicalize
   };

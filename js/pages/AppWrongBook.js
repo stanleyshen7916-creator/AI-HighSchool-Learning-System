@@ -148,7 +148,59 @@ window.AHS = window.AHS || {};
 
     var stats = buildSessionStatsCard();
     if (stats) { shell.main.appendChild(stats); }
-    shell.main.appendChild(AHS.WrongBook.create());
+    var view = AHS.WrongBook.create();
+    var picker = studentPicker(function (rt, label) {
+      /* 檢視學生時，上方「錯題即時統計」是 Admin 自己的，先隱藏避免誤會 */
+      if (stats) { if (rt) { stats.setAttribute("hidden", "hidden"); } else { stats.removeAttribute("hidden"); } }
+      var next = AHS.WrongBook.create(null, rt ? { runtime: rt, viewingLabel: label } : null);
+      view.parentNode.replaceChild(next, view);
+      view = next;
+    });
+    if (picker) { shell.main.appendChild(picker); }
+    shell.main.appendChild(view);
+  }
+
+  /* 2026-11-08（使用者需求：加入 Admin 檢視學生錯題的功能）: Admin 才有。選一個
+     學生 → 以唯讀方式顯示他的錯題與重點整理（AHS.WrongBookRuntime.readOnlyView，
+     需要 supabase/migrations/20261108000001 的 Admin 唯讀權限）。 */
+  function isAdmin() {
+    var ws = AHS.WorkspaceRuntime && typeof AHS.WorkspaceRuntime.getCurrent === "function" ? AHS.WorkspaceRuntime.getCurrent() : null;
+    var student = ws && typeof AHS.WorkspaceRuntime.findStudent === "function" ? AHS.WorkspaceRuntime.findStudent(ws.studentId) : null;
+    return !!(student && student.role === "ADMIN");
+  }
+
+  function studentPicker(onChange) {
+    var rt = AHS.WrongBookRuntime;
+    if (!isAdmin() || !rt || typeof rt.listStudents !== "function") { return null; }
+    var el = AHS.UI.el;
+    var select = el("select", { class: "wb-viewas__select", "aria-label": "檢視哪一位的錯題" }, [
+      el("option", { value: "", text: "我自己（Admin）" })
+    ]);
+    var msg = el("span", { class: "wb-viewas__msg", role: "status", "aria-live": "polite" });
+    var box = el("div", { class: "wb-viewas", hidden: "hidden" }, [
+      el("label", { class: "wb-viewas__label", text: "檢視錯題：" }), select, msg
+    ]);
+    rt.listStudents().then(function (list) {
+      if (!list.length) { return; }
+      list.forEach(function (st) { select.appendChild(el("option", { value: st.id, text: st.display_name || st.mock_student_key || st.id })); });
+      box.removeAttribute("hidden");
+    });
+    select.addEventListener("change", function () {
+      var id = select.value;
+      if (!id) { msg.textContent = ""; onChange(null); return; }
+      var label = select.options[select.selectedIndex].text;
+      var ws = AHS.WorkspaceRuntime && AHS.WorkspaceRuntime.getCurrent ? AHS.WorkspaceRuntime.getCurrent() : null;
+      var sem = ws && ws.semesterIds && ws.semesterIds.length === 1 ? ws.semesterIds[0] : "";
+      select.setAttribute("disabled", "disabled");
+      msg.textContent = "讀取中…";
+      rt.readOnlyView(id, sem).then(function (view) {
+        msg.textContent = "";
+        onChange(view, label);
+      }, function (err) {
+        msg.textContent = "讀取失敗：" + (err && err.message || err);
+      }).then(function () { select.removeAttribute("disabled"); });
+    });
+    return box;
   }
 
   function coreReady() {
