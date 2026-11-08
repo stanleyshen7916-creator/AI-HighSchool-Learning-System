@@ -12,7 +12,8 @@
 #   2. node scripts/maintenance/WrongBookNotesPending.js -> questions still in the
 #      wrong book that have no note yet (needs SUPABASE_SERVICE_ROLE_KEY, read from the
 #      environment or from %USERPROFILE%\.ahs\supabase-service-role.key);
-#   3. the writer AI (default Gemini CLI, set AHS_NOTES_WRITER=gemini|claude|codex) writes the notes
+#   3. the writer AI (default Antigravity CLI 'agy' - Google stopped serving personal accounts in
+#      Gemini CLI on 2026-06-18; set AHS_NOTES_WRITER=agy|gemini|claude|codex) writes the notes
 #      with tools/wrongbook-notes-prompt.md -> edits js/data/WrongBookNotesData.js only;
 #      if the writer is missing, fails, hangs or breaks the format, Claude Code writes the batch instead;
 #   3b. notes the writer could not confirm (basis not marked [confirmed]) are rewritten by Claude Code;
@@ -51,7 +52,7 @@ $Publisher = Join-Path $RepoRoot 'ai-engine\council\tools\git-publisher.ps1'
 $AllowedTools = 'Read,Edit,Glob,Grep,WebSearch,WebFetch'
 $ReviewFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\review.json'
 $BeforeIdsFile = Join-Path $WorkDir 'ids-before.json'
-$PreferredWriter = if ($env:AHS_NOTES_WRITER) { $env:AHS_NOTES_WRITER.Trim().ToLower() } else { 'gemini' }
+$PreferredWriter = if ($env:AHS_NOTES_WRITER) { $env:AHS_NOTES_WRITER.Trim().ToLower() } else { 'agy' }
 Write-Host "wrongbook-notes: repo=$RepoRoot data=$DataDir"
 Write-Host 'Keep this window open (it may stay minimized).'
 
@@ -114,8 +115,10 @@ function Invoke-Agent([string]$agent, [string]$prompt) {
       # even if settings.json has no auth type saved yet
       $cmd = "set GOOGLE_GENAI_USE_GCA=true&& gemini -p `"$prompt`" --approval-mode auto_edit --output-format text$model"; $hours = 1.5
     }
+    # Antigravity CLI (Google AI Pro login): print mode, edits approved, nothing else
+    'agy' { $cmd = "agy -p `"$prompt`" --mode accept-edits --output-format text"; $hours = 1.5 }
     'codex' { $cmd = "codex exec --full-auto `"$prompt`""; $hours = 1.5 }
-    default { return @{ code = 1; tail = "unknown writer '$agent' (use gemini, claude or codex)" } }
+    default { return @{ code = 1; tail = "unknown writer '$agent' (use agy, gemini, claude or codex)" } }
   }
   $cmdLine = "/d /s /c `"$cmd > `"$outFile`" 2>&1`""
   $proc = Start-Process -FilePath $env:ComSpec -ArgumentList $cmdLine -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru
