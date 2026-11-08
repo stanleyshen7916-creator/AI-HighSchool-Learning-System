@@ -777,11 +777,14 @@ AHS.WrongBook = (function () {
        menu item above (line ~543, same onSelect but WITHOUT this third
        arg) is untouched: a user who deliberately picks a menu item
        labelled "查看詳情" still gets the literal answer-revealed view. */
-    row.addEventListener("click", function () { onSelect(item, row, true); });
+    /* 2026-11-08（使用者需求：點開錯題直接看錯題說明，不要先重做一次）: 取代
+       2026-09-08 的「點列先進入立即重做」。重點整理改版後，類題練習有自己的
+       「做一題類題」按鈕，點列改為直接打開題目詳解＋重點整理。 */
+    row.addEventListener("click", function () { onSelect(item, row, false); });
     row.addEventListener("keydown", function (ev) {
       /* Keyboard activation must match the click above (立即重做, answer
          hidden) — it used to open 查看詳情 and reveal the answer. */
-      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onSelect(item, row, true); }
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onSelect(item, row, false); }
     });
     return row;
   }
@@ -1364,7 +1367,7 @@ AHS.WrongBook = (function () {
       if (currentRow) { currentRow.classList.remove("is-active"); }
       if (row) { row.classList.add("is-active"); currentRow = row; }
       currentDetailItemId = item.id;
-      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange, deleteItem, practice);
+      var detail = renderDetail(item, status, toggleFavorite, onReviewSubmit, autoStartReview, onReviewCenterChange, runtime.readOnly ? null : deleteItem, practice);
       currentDetailFavBtn = detail.favBtn;
       showDetailBody(detail.el);
     }
@@ -1925,9 +1928,11 @@ AHS.WrongBook = (function () {
      filter option labels only; wrong-question records always come from
      AHS.WrongBookRuntime, per PMO ruling — Runtime is Source of Truth,
      no Mock fallback for records, no seed injection). */
-  function create(model) {
+  function create(model, opts) {
     var data = model || AHS.AppConfig.wrongBook;
-    var runtime = AHS.WrongBookRuntime;
+    /* 2026-11-08: Admin 檢視學生錯題時傳入唯讀 runtime（WrongBookRuntime.readOnlyView） */
+    var runtime = (opts && opts.runtime) || AHS.WrongBookRuntime;
+    var readOnly = !!(runtime && runtime.readOnly);
     var runtimeItems = runtime ? runtime.list() : [];
     var isEmpty = runtime ? runtime.isEmpty() : runtimeItems.length === 0;
 
@@ -1955,6 +1960,9 @@ AHS.WrongBook = (function () {
         }
       }, reviewCenterPanelCtrl.refresh);
 
+    var viewingBanner = readOnly ? el("p", { class: "wb-viewing", role: "note",
+      text: "正在檢視「" + ((opts && opts.viewingLabel) || "學生") + "」的錯題（唯讀）：可以查看題目詳解與重點整理，作答與收藏不會記錄，也不能刪除。" }) : null;
+
     var header = headerBlock(data, status, {
       notesRunner: notesRunner(),
       // WB-008/WS-004: Header 重新練習 — reviews the CURRENT filtered
@@ -1981,10 +1989,11 @@ AHS.WrongBook = (function () {
     headerFavBtn = header.favBtn;
 
     return el("div", { class: "wb-page" }, [
+      viewingBanner,
       header.el,
       reviewCenterPanelCtrl.el,
       body.el
-    ]);
+    ].filter(Boolean));
   }
 
   /* Sprint AI-114 AI-901/902: buildReviewInteraction is a pure function

@@ -276,13 +276,11 @@ console.log("\n[7] AI-129 bugfix — 清除篩選真的能重置篩選下拉選�
     subjectSelect.selectedIndex === 0);
 }
 
-/* ---- 8. 立即重做（startReview）流程仍與 Modal／詳解收合機制相容 --------
-   2026-09-08（PO 回報）：點擊列表中的題目列（.wb-row）現在會直接進入
-   立即重做狀態（autoStartReview=true），不再先顯示查看詳情（答案已揭曉）
-   ——見 questionRow() 內 row 的 click handler。這裡驗證的正是這個新預設
-   行為本身，而非再手動點一次「立即重做」按鈕（該按鈕此時已因自動觸發而
-   disabled，這是預期行為，非退化）。 */
-console.log("\n[8] 點擊題目列直接進入立即重做狀態（PO 回報：不應一開始就顯示答案），且仍與 Modal／詳解收合機制相容");
+/* ---- 8. 點擊題目列直接打開題目詳解；「立即重做」仍與 Modal／詳解收合機制相容 --
+   2026-11-08（使用者需求：點開錯題直接看錯題說明，不要先重做一次）取代
+   2026-09-08 的「點列先進入立即重做」：點列只打開詳解（答案與重點整理直接
+   顯示）；按「立即重做／做一題類題」才進入作答，作答期間答案與詳解隱藏。 */
+console.log("\n[8] 點擊題目列直接打開題目詳解；按立即重做才進入作答，且作答期間不洩題");
 {
   const { window: qWin } = loadPage("quiz.html");
   seedWrongItem(qWin);
@@ -292,20 +290,22 @@ console.log("\n[8] 點擊題目列直接進入立即重做狀態（PO 回報：�
   window.document.body.appendChild(window.AHS.WrongBook.create());
   window.document.querySelector(".wb-row").click();
 
-  const interaction = window.document.querySelector(".wb-detail__review");
-  check("點擊題目列後（有真實選項資料時）真實直接進入重新作答互動介面，不必再手動點「立即重做」", !!interaction);
+  check("點擊題目列後直接顯示題目詳解，不自動進入重新作答", !window.document.querySelector(".wb-detail__review"));
+  const answersOpen = window.document.querySelector(".wb-detail__answers");
+  check("點擊題目列後「你的答案／正確答案」區塊直接顯示", !!answersOpen && !answersOpen.hasAttribute("hidden"));
+
   const reviewBtn = window.document.querySelector(".wb-detail__btn--primary");
-  check("立即重做按鈕因已自動觸發而真實 disabled（防止重複觸發，非壞掉）", !!reviewBtn && reviewBtn.disabled === true);
+  check("立即重做按鈕可以按", !!reviewBtn && reviewBtn.disabled === false);
+  reviewBtn.click();
+  check("按下立即重做後真實進入重新作答互動介面", !!window.document.querySelector(".wb-detail__review"));
   check("Modal 本身仍維持開啟（同一個 overlay，未被關閉重建）", !!window.document.querySelector(".wb-modal__overlay"));
   const answersWrap = window.document.querySelector(".wb-detail__answers");
-  check("一開始就不顯示「你的答案／正確答案」區塊（真正做到先作答、不先洩題）",
+  check("作答期間不顯示「你的答案／正確答案」區塊（不先洩題）",
     !answersWrap || answersWrap.hasAttribute("hidden"));
   const explainWrap = window.document.querySelector(".wb-detail__explain");
-  check("重做期間詳解區塊整個隱藏（不會透過收合機制偷看到答案）",
+  check("作答期間詳解區塊整個隱藏（不會透過收合機制偷看到答案）",
     !explainWrap || explainWrap.hasAttribute("hidden"));
 
-  /* 提交答案後，答案／詳解區塊才誠實地重新出現（onReviewSubmit ->
-     selectItem() 重新渲染，這次不再帶 autoStartReview，回到一般查看態）。 */
   const firstOption = window.document.querySelector(".wb-detail__option");
   firstOption.click();
   const submitBtn = window.document.querySelector(".wb-detail__btn--primary");

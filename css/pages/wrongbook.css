@@ -255,7 +255,7 @@
   padding: 20px;
 }
 .wb-modal__panel {
-  width: 100%; max-width: 720px; max-height: 90vh;
+  width: 100%; max-width: 980px; max-height: 94vh;
   display: flex; flex-direction: column;
   position: relative;
 }
@@ -570,3 +570,30 @@
 .wb-variant__hints ul { margin: 8px 0 0; padding-left: 20px; }
 .wb-variant__hints li { font-size: 14px; line-height: 1.8; color: var(--text); }
 .wb-variant__no-hint { margin: 0 0 12px; font-size: 13px; color: var(--text-muted); }
+
+/* 2026-11-08 版面加大、方便閱讀；判斷式（國文等）的長句可換行，不再出現橫向捲軸 */
+.wb-detail__question { font-size: 18px; }
+.wb-detail__option-text { font-size: 16px; }
+.wb-note__key { font-size: 17px; }
+.wb-note__heading { font-size: 15px; }
+.wb-note__text, .wb-note__section li { font-size: 16px; line-height: 1.9; }
+.wb-note__step-note { font-size: 14px; }
+.mt { font-size: 17px; }
+.wb-note__step-body { overflow-x: visible; }
+.mt-eq { width: 100%; grid-template-columns: auto auto minmax(0, 1fr); }
+.mt-eq__lhs { max-width: 24em; }
+.mt-eq .mt { white-space: normal; overflow-wrap: anywhere; }
+.wb-variant-result__q, .wb-variant-result__ans { font-size: 15px; }
+@media (max-width: 720px) {
+  .mt { font-size: 15px; }
+  .wb-note__text, .wb-note__section li { font-size: 15px; }
+  .mt-eq__lhs { max-width: 12em; }
+}
+
+/* 2026-11-08 Admin 檢視學生錯題 */
+.wb-viewas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 16px; padding: 12px 16px; border-radius: 14px; background-color: var(--card); border: 1px solid var(--line); }
+.wb-viewas[hidden] { display: none; }
+.wb-viewas__label { font-size: 14px; font-weight: 800; color: var(--text); }
+.wb-viewas__select { min-height: 36px; padding: 4px 10px; border-radius: 10px; border: 1px solid var(--line); background-color: var(--card); color: var(--text); font-size: 14px; }
+.wb-viewas__msg { font-size: 13px; color: var(--text-muted); }
+.wb-viewing { margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--brand-line); background-color: var(--brand-soft); color: var(--brand); font-size: 14px; font-weight: 700; line-height: 1.7; }
