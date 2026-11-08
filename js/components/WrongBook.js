@@ -356,7 +356,14 @@ AHS.WrongBook = (function () {
       btn.setAttribute("disabled", "disabled");
       msg.textContent = "連線本機引擎…";
       client.wrongBookNotesRun().then(function (res) {
-        if (res.error) { msg.textContent = res.error.message; btn.removeAttribute("disabled"); return; }
+        if (res.error) {
+          /* 2026-11-08: 404 = 本機引擎還是舊版（沒有這個功能的程式碼）。 */
+          msg.textContent = res.error.status === 404
+            ? "本機引擎是舊版，還沒有這個功能。請關閉後重新執行「啟動教材上傳引擎.bat」（會自動更新並重新啟動引擎）。"
+            : res.error.message;
+          btn.removeAttribute("disabled");
+          return;
+        }
         if (res.data && res.data.accepted === false) { msg.textContent = "已在執行中"; }
         if (show(res.data)) { timer = setTimeout(poll, 3000); }
       });
