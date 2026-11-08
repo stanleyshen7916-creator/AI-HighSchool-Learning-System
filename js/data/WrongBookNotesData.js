@@ -4680,5 +4680,455 @@ AHS.WrongBookNotesData = {
       }
     ],
     basis: "【確認】依向量定義逐項判斷，正確為零向量、長度方向相同即相等、不計較位置三項，與 correctAnswer 一致；並以坐標驗算，類題皆已代值檢查。"
+  },
+
+  "tm_92_q5": {
+    keyPoint: "平行四邊形 ABCD 的頂點要「依序」繞一圈：對邊向量相等 AD→ = BC→，所以 D = A + BC→；也可用「對角頂點坐標和相等」A + C = B + D。",
+    formulas: [
+      "平行四邊形 ABCD ⇔ AD→ = BC→（也 ⇔ AB→ = DC→）",
+      "D = A + BC→ = A + C − B",
+      "對角線互相平分：A + C = B + D（對角頂點坐標和相等）"
+    ],
+    whyWrong: {
+      A: "(−2, 7) = B + C − A，這是把 AB、AC 當成相鄰兩邊、A 與第四點相對的平行四邊形 ABDC，頂點順序不是 ABCD。驗算：AD→ = (−5, 9)，BC→ = (3, 1)，不相等。",
+      B: "代入檢查：AD→ = (0 − 3, 1 − (−2)) = (−3, 3)，不等於 BC→ = (3, 1)，不是平行四邊形。",
+      C: "x 坐標對了，y 坐標算錯：AD→ = (3, 3) ≠ BC→ = (3, 1)。BC→ 的 y 分量是 3 − 2 = 1，不是 3。"
+    },
+    steps: [
+      { title: "依頂點順序寫出相等向量", lines: [
+        "ABCD 依序為平行四邊形",
+        "⇒ AD→ = BC→"
+      ], note: "對邊平行且等長，方向相同：A→D 與 B→C 同向" },
+      { title: "算 BC→（終點減始點）", lines: [
+        "BC→ = (2 − (−1), 3 − 2)",
+        "= (3, 1)"
+      ] },
+      { title: "由 A 出發走 BC→ 得 D", lines: [
+        "D = A + BC→",
+        "= (3 + 3, −2 + 1)",
+        "= (6, −1)"
+      ] },
+      { title: "驗算", lines: [
+        "AB→ = (−1 − 3, 2 − (−2)) = (−4, 4)",
+        "DC→ = (2 − 6, 3 − (−1)) = (−4, 4)",
+        "⇒ AB→ = DC→ ✓",
+        "A + C = (5, 1)，B + D = (5, 1) ✓"
+      ], note: "兩組對邊都相等、對角線中點重合，確定是平行四邊形 ABCD" }
+    ],
+    traps: [
+      "ABCD 要照字母順序繞，A 的對角是 C、B 的對角是 D。",
+      "三點定平行四邊形有三種第四點：A + C − B、B + C − A、A + B − C，題目的頂點順序決定是哪一個。",
+      "AD→ = BC→，不是 AD→ = CB→；方向要對。",
+      "算完用 A + C = B + D 檢查，幾秒就能抓錯。"
+    ],
+    references: [
+      { title: "3.1 平面向量的表示法（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/3.1%20%E5%B9%B3%E9%9D%A2%E5%90%91%E9%87%8F%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%B3%95(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" },
+      { title: "高中數學 習作 3-1 平面向量的表示法（向量的坐標表示）", source: "南崁高中", url: "https://www.nksh.tyc.edu.tw/ischool/wr/file/1/13295/fb9e3798642f041522a7a6be18feee76.pdf", kind: "講義" },
+      { title: "平面向量（加減法、坐標運算）", source: "GeoGebra", url: "https://www.geogebra.org/m/vydnd3sw", kind: "互動" }
+    ],
+    variants: [
+      {
+        question: "A(1, 2)、B(4, 3)、C(6, 7)，若四邊形 ABCD 為平行四邊形，則 D 的坐標為？",
+        options: [
+          { key: "A", text: "(3, 6)" },
+          { key: "B", text: "(9, 8)" },
+          { key: "C", text: "(−1, −2)" },
+          { key: "D", text: "(3, 5)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "AD→ = BC→", lines: ["BC→ = (6 − 4, 7 − 3) = (2, 4)", "D = A + BC→", "= (1 + 2, 2 + 4) = (3, 6)"] },
+          { title: "驗算", lines: ["A + C = (7, 9)", "B + D = (4 + 3, 3 + 6) = (7, 9) ✓"], note: "(9, 8) = B + C − A，是頂點順序 ABDC 的答案" }
+        ]
+      },
+      {
+        question: "A(−2, 1)、B(3, −1)、D(0, 4)，若四邊形 ABCD 為平行四邊形，則 C 的坐標為？",
+        options: [
+          { key: "A", text: "(5, 2)" },
+          { key: "B", text: "(−5, 6)" },
+          { key: "C", text: "(1, −4)" },
+          { key: "D", text: "(5, −2)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "對角頂點坐標和相等", lines: ["A + C = B + D", "C = B + D − A", "= (3 + 0 + 2, −1 + 4 − 1)", "= (5, 2)"] },
+          { title: "驗算", lines: ["AB→ = (5, −2)", "DC→ = (5 − 0, 2 − 4) = (5, −2) ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行由 AD→ = BC→ 算得 D(6, −1)，與 correctAnswer 一致，並以 AB→ = DC→ 及 A + C = B + D 驗算；各錯誤選項已代入檢查，類題皆已驗算。"
+  },
+
+  "tm_92_q21": {
+    keyPoint: "分點公式係數要「交叉」：AP : PB = m : n 時，QA→ 前面放 n、QB→ 前面放 m，兩係數和為 1；P 靠近哪一點，那一點的係數就比較大。",
+    formulas: [
+      "AP : PB = m : n ⇒ AP→ = frac{m}{m + n} AB→",
+      "QP→ = frac{n}{m + n} QA→ + frac{m}{m + n} QB→",
+      "坐標版：P = frac{n A + m B}{m + n}",
+      "中點（m = n）：QP→ = frac{1}{2} QA→ + frac{1}{2} QB→"
+    ],
+    whyWrong: {
+      A: "係數放反了：m 配給 QA→ 得到的是 AP : PB = n : m 的點。例如 AP : PB = 2 : 1，P 靠近 B，QB→ 的係數應該較大（frac{2}{3}），不是 QA→。",
+      B: "QA→ + QB→ 的係數和是 2，不是 1，終點不會落在線段 AB 上（是以 QA、QB 為邊的平行四邊形對角頂點）。",
+      C: "少除以 m + n：係數和 m + n 一般不等於 1，終點不在直線 AB 上。"
+    },
+    steps: [
+      { title: "先把 AP→ 用 AB→ 表示", lines: [
+        "AP : PB = m : n",
+        "⇒ AP = frac{m}{m + n} AB",
+        "⇒ AP→ = frac{m}{m + n} AB→"
+      ] },
+      { title: "以 Q 為起點拆開", lines: [
+        "QP→ = QA→ + AP→",
+        "= QA→ + frac{m}{m + n} ( QB→ − QA→ )",
+        "= ( 1 − frac{m}{m + n} ) QA→ + frac{m}{m + n} QB→",
+        "= frac{n}{m + n} QA→ + frac{m}{m + n} QB→"
+      ], note: "AB→ = QB→ − QA→（終點減始點）" },
+      { title: "與選項比對", lines: [
+        "QA→ 的係數 frac{n}{m + n}、QB→ 的係數 frac{m}{m + n} ⇒ 係數交叉的那一式",
+        "係數和 frac{n}{m + n} + frac{m}{m + n} = 1 ✓"
+      ] },
+      { title: "用坐標驗算", lines: [
+        "取 Q(0, 0)、A(0, 0)、B(3, 0)，m : n = 2 : 1 ⇒ P(2, 0)",
+        "frac{1}{3} (0, 0) + frac{2}{3} (3, 0) = (2, 0) ✓",
+        "若係數不交叉：frac{2}{3} (0, 0) + frac{1}{3} (3, 0) = (1, 0) ≠ P"
+      ] }
+    ],
+    traps: [
+      "係數交叉：比例中靠 A 的數 m 配給 QB→，靠 B 的數 n 配給 QA→。",
+      "直覺檢查：P 離 B 較近，QB→ 係數就該較大。",
+      "P 在直線 AB 上 ⇔ 兩係數和為 1；和不是 1 一定錯。",
+      "外分點時其中一個係數會是負的，別直接套內分點公式。"
+    ],
+    references: [
+      { title: "分點公式（P 在 AB 上且 AP:BP = m:n）", source: "臺灣大學 物理系 數學筆記", url: "https://web.phys.ntu.edu.tw/ap/math7_9.pdf", kind: "講義" },
+      { title: "平面向量的運算 課程資料（係數積、線性組合與分點公式）", source: "彰化縣 公開授課資料", url: "https://www.openclass.chc.edu.tw/years/111/plans/51280/reviews/課程資料.pdf", kind: "講義" },
+      { title: "高中數學 習作（向量的分解：AB→ = AP→ + PB→）", source: "南崁高中", url: "https://www.nksh.tyc.edu.tw/ischool/wr/file/1/12649/81675bd722fcfdd4a5b3d86968911ea4.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "P 在線段 AB 上且 AP : PB = 3 : 1，對任一點 Q，QP→ = ？",
+        options: [
+          { key: "A", text: "¼ QA→ + ¾ QB→" },
+          { key: "B", text: "¾ QA→ + ¼ QB→" },
+          { key: "C", text: "3 QA→ + QB→" },
+          { key: "D", text: "⅓ QA→ + ⅔ QB→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "係數交叉", lines: ["m = 3，n = 1，m + n = 4", "QP→ = frac{1}{4} QA→ + frac{3}{4} QB→"] },
+          { title: "驗算", lines: ["取 Q = A = (0, 0)、B(4, 0) ⇒ P(3, 0)", "frac{1}{4} (0, 0) + frac{3}{4} (4, 0) = (3, 0) ✓"] }
+        ]
+      },
+      {
+        question: "A(1, 5)、B(7, −1)，P 在線段 AB 上且 AP : PB = 1 : 2，則 P 的坐標為？",
+        options: [
+          { key: "A", text: "(3, 3)" },
+          { key: "B", text: "(5, 1)" },
+          { key: "C", text: "(4, 2)" },
+          { key: "D", text: "(8, 4)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "分點公式", lines: ["P = frac{2}{3} A + frac{1}{3} B", "= ( frac{2}{3} + frac{7}{3}, frac{10}{3} − frac{1}{3} )", "= (3, 3)"], note: "(5, 1) 是係數放反，(4, 2) 是中點" },
+          { title: "驗算", lines: ["AP→ = (2, −2)，PB→ = (4, −4)", "⇒ PB→ = 2 AP→ ⇒ AP : PB = 1 : 2 ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行由 QP→ = QA→ + frac{m}{m+n}AB→ 推得係數交叉的分點公式，與 correctAnswer 一致，並以坐標代值檢查；類題皆已驗算。"
+  },
+
+  "tm_92_q9": {
+    keyPoint: "PQ→ = Q − P，所以 Q = P + PQ→：先把 a→ − b→ 的分量算出來，再「加上起點 P 的坐標」才是 Q。",
+    formulas: [
+      "(x_{1}, y_{1}) − (x_{2}, y_{2}) = (x_{1} − x_{2}, y_{1} − y_{2})",
+      "PQ→ = Q − P ⇒ Q = P + PQ→"
+    ],
+    whyWrong: {
+      B: "(3, 4) 是 a→ + b→，不是 a→ − b→；而且算出的只是向量 PQ→，還沒加上起點 P，不是 Q 的坐標。",
+      A: "x 分量對了，但 y 分量 3 − 1 = 2，不是 4；而且 (7, 2) 只是 PQ→，還要加上 P 才是 Q。",
+      C: "(−3, −4) = −(a→ + b→)，加減與方向都錯了；也沒有加上 P。"
+    },
+    steps: [
+      { title: "算 a→ − b→（分量對應相減）", lines: [
+        "a→ − b→ = (5 − (−2), 3 − 1)",
+        "= (7, 2)"
+      ], note: "減負數變加：5 − (−2) = 7" },
+      { title: "由 P 出發求 Q", lines: [
+        "PQ→ = Q − P = (7, 2)",
+        "⇒ Q = P + (7, 2)",
+        "= (4 + 7, −2 + 2)",
+        "= (11, 0)"
+      ] },
+      { title: "驗算", lines: [
+        "PQ→ = (11 − 4, 0 − (−2)) = (7, 2)",
+        "a→ − b→ = (7, 2) ✓"
+      ] }
+    ],
+    traps: [
+      "算出的是向量 PQ→，答案問的是點 Q，要再加上起點 P。",
+      "減去負數要變號：5 − (−2) = 7，不是 3。",
+      "選項裡常放 a→ + b→ 的結果當陷阱，看清楚題目是加還是減。"
+    ],
+    references: [
+      { title: "3.1 平面向量的表示法（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/3.1%20%E5%B9%B3%E9%9D%A2%E5%90%91%E9%87%8F%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%B3%95(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" },
+      { title: "高中數學 習作 3-1 平面向量的表示法（AB→ = 終點減始點）", source: "南崁高中", url: "https://www.nksh.tyc.edu.tw/ischool/wr/file/1/13295/fb9e3798642f041522a7a6be18feee76.pdf", kind: "講義" },
+      { title: "平面向量（加減法、坐標運算）", source: "GeoGebra", url: "https://www.geogebra.org/m/vydnd3sw", kind: "互動" }
+    ],
+    variants: [
+      {
+        question: "a→ = (2, −1)、b→ = (−3, 4)，P(1, 3)。若 PQ→ = a→ + b→，則 Q 的坐標為？",
+        options: [
+          { key: "A", text: "(0, 6)" },
+          { key: "B", text: "(−1, 3)" },
+          { key: "C", text: "(6, −2)" },
+          { key: "D", text: "(2, 0)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "算 a→ + b→", lines: ["a→ + b→ = (2 + (−3), −1 + 4)", "= (−1, 3)"] },
+          { title: "加上起點 P", lines: ["Q = P + (−1, 3)", "= (1 − 1, 3 + 3) = (0, 6)"] },
+          { title: "驗算", lines: ["PQ→ = (0 − 1, 6 − 3) = (−1, 3) ✓"], note: "(−1, 3) 是忘了加 P；(6, −2) 是誤用 a→ − b→" }
+        ]
+      },
+      {
+        question: "a→ = (1, 4)、b→ = (3, −2)，P(−2, 5)。若 PQ→ = 2a→ − b→，則 Q 的坐標為？",
+        options: [
+          { key: "A", text: "(−3, 15)" },
+          { key: "B", text: "(−1, 10)" },
+          { key: "C", text: "(3, 9)" },
+          { key: "D", text: "(−1, −5)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "算 2a→ − b→", lines: ["2a→ = (2, 8)", "2a→ − b→ = (2 − 3, 8 − (−2))", "= (−1, 10)"] },
+          { title: "加上起點 P", lines: ["Q = (−2 + (−1), 5 + 10)", "= (−3, 15)"] },
+          { title: "驗算", lines: ["PQ→ = (−3 − (−2), 15 − 5) = (−1, 10) ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行計算 a→ − b→ = (7, 2)、Q = (11, 0)，與 correctAnswer 一致，並以 Q − P 代回驗算；各錯誤選項來源已逐一核對，類題皆已驗算。"
+  },
+
+  "tm_92_q4": {
+    keyPoint: "AB→ 是「終點 B 減始點 A」的坐標差，不是兩點坐標相加；長度用 sqrt{x^{2} + y^{2}}，不是分量絕對值相加。",
+    formulas: [
+      "A(x_{1}, y_{1})、B(x_{2}, y_{2}) ⇒ AB→ = (x_{2} − x_{1}, y_{2} − y_{1})",
+      "|(x, y)| = sqrt{x^{2} + y^{2}}",
+      "BA→ = −AB→，|BA→| = |AB→|"
+    ],
+    whyWrong: {
+      B: "(−1, 6) = A + B，把兩點坐標相加了；向量要用終點減始點，長度 sqrt{37} 也跟著錯。",
+      A: "向量 (3, −4) 正確，但長度把 |3| + |4| 相加得 7；應該用畢氏定理 sqrt{3^{2} + 4^{2}} = 5。",
+      D: "(−3, 4) 是始點減終點，得到 BA→，方向相反。"
+    },
+    steps: [
+      { title: "終點減始點", lines: [
+        "AB→ = (1 − (−2), 1 − 5)",
+        "= (3, −4)"
+      ] },
+      { title: "算長度", lines: [
+        "|AB→| = sqrt{3^{2} + (−4)^{2}}",
+        "= sqrt{9 + 16}",
+        "= sqrt{25} = 5"
+      ] },
+      { title: "驗算", lines: [
+        "A + AB→ = (−2 + 3, 5 − 4) = (1, 1) = B ✓",
+        "兩點距離 sqrt{(1 + 2)^{2} + (1 − 5)^{2}} = 5 ✓"
+      ] }
+    ],
+    traps: [
+      "向量坐標是相減（終點 − 始點），不是相加。",
+      "順序反了會得到 BA→，分量全部變號。",
+      "長度是平方和開根號，不是分量絕對值相加。",
+      "減負數要變號：1 − (−2) = 3。"
+    ],
+    references: [
+      { title: "高中數學 習作 3-1 平面向量的表示法（坐標表示與長度）", source: "南崁高中", url: "https://www.nksh.tyc.edu.tw/ischool/wr/file/1/13295/fb9e3798642f041522a7a6be18feee76.pdf", kind: "講義" },
+      { title: "3.1 平面向量的表示法（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/3.1%20%E5%B9%B3%E9%9D%A2%E5%90%91%E9%87%8F%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%B3%95(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" },
+      { title: "平面向量 教案（用距離公式計算向量長）", source: "彰化縣 公開授課資料", url: "https://www.openclass.chc.edu.tw/years/110/plans/36031/reviews/課程資料.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "已知 A(4, −1)、B(−2, 7)，則 AB→ 與 |AB→| 分別為？",
+        options: [
+          { key: "A", text: "(−6, 8)；10" },
+          { key: "B", text: "(2, 6)；√40" },
+          { key: "C", text: "(6, −8)；10" },
+          { key: "D", text: "(−6, 8)；14" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "終點減始點", lines: ["AB→ = (−2 − 4, 7 − (−1))", "= (−6, 8)"] },
+          { title: "長度", lines: ["|AB→| = sqrt{36 + 64}", "= sqrt{100} = 10"] },
+          { title: "驗算", lines: ["A + AB→ = (4 − 6, −1 + 8) = (−2, 7) = B ✓"], note: "(2, 6) 是兩點相加；14 是 6 + 8" }
+        ]
+      },
+      {
+        question: "P(1, 3)，PQ→ = (5, −12)，則 Q 的坐標與 |PQ→| 分別為？",
+        options: [
+          { key: "A", text: "(6, −9)；13" },
+          { key: "B", text: "(−4, 15)；13" },
+          { key: "C", text: "(6, −9)；17" },
+          { key: "D", text: "(5, −12)；13" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "Q = P + PQ→", lines: ["Q = (1 + 5, 3 − 12)", "= (6, −9)"] },
+          { title: "長度", lines: ["|PQ→| = sqrt{5^{2} + (−12)^{2}}", "= sqrt{169} = 13"] },
+          { title: "驗算", lines: ["Q − P = (6 − 1, −9 − 3) = (5, −12) ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行計算 AB→ = (3, −4)、|AB→| = 5，與 correctAnswer 一致，並以 A + AB→ = B 驗算；各錯誤選項成因已核對，類題皆已驗算。"
+  },
+
+  "tm_92_q14": {
+    keyPoint: "兩坐標向量 (x_{1}, y_{1})、(x_{2}, y_{2}) 平行 ⇔ x_{1}y_{2} − x_{2}y_{1} = 0：先把 a→ + t b→ 寫成分量，再交叉相乘列方程式解 t。",
+    formulas: [
+      "u→ // v→（皆非零）⇔ u→ = k v→",
+      "(x_{1}, y_{1}) // (x_{2}, y_{2}) ⇔ x_{1} y_{2} − x_{2} y_{1} = 0",
+      "a→ + t b→ = (a_{1} + t b_{1}, a_{2} + t b_{2})"
+    ],
+    whyWrong: {
+      C: "代回檢查：t = frac{1}{2} 時 a→ + t b→ = (−frac{1}{2}, 0)，與 (4, −3) 交叉相乘 (−frac{1}{2})(−3) − 0 · 4 = frac{3}{2} ≠ 0，不平行。可能是交叉相乘時配錯分量或移項算錯。",
+      B: "t = −2 時 a→ + t b→ = (−8, 5)，(−8)(−3) − 5 · 4 = 4 ≠ 0，不平行。",
+      D: "t = 3 時 a→ + t b→ = (7, −5)，7 · (−3) − (−5) · 4 = −1 ≠ 0，不平行。"
+    },
+    steps: [
+      { title: "寫出 a→ + t b→ 的分量", lines: [
+        "a→ + t b→ = (−2, 1) + t (3, −2)",
+        "= (−2 + 3t, 1 − 2t)"
+      ] },
+      { title: "平行條件：交叉相乘相等", lines: [
+        "(−2 + 3t)(−3) − (1 − 2t)(4) = 0",
+        "⇒ 6 − 9t − 4 + 8t = 0",
+        "⇒ 2 − t = 0",
+        "⇒ t = 2"
+      ], note: "x_{1} y_{2} − x_{2} y_{1} = 0，其中 (x_{2}, y_{2}) = c→ = (4, −3)" },
+      { title: "代回驗算", lines: [
+        "a→ + 2 b→ = (−2 + 6, 1 − 4)",
+        "= (4, −3) = c→ ✓",
+        "⇒ 兩向量相等，當然平行"
+      ] }
+    ],
+    traps: [
+      "交叉相乘要「x 配 y」：x_{1} y_{2} 與 x_{2} y_{1}，不要 x 配 x。",
+      "分量裡的負號要一起乘：(1 − 2t) · 4 = 4 − 8t。",
+      "解出 t 後代回，看兩向量是否成倍數，馬上能確認。",
+      "平行只要成倍數，倍數可以是負的（方向相反也算平行）。"
+    ],
+    references: [
+      { title: "高中數學（3）A 習作 3-3 面積與二階行列式（兩向量平行的判定）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenjt99/ScrClass/1091/%E9%AB%98%E4%BA%8C%E7%BF%92%E4%BD%9C3A/ch3/3-3%20%E9%9D%A2%E7%A9%8D%E8%88%87%E4%BA%8C%E9%9A%8E%E8%A1%8C%E5%88%97%E5%BC%8F.pdf", kind: "講義" },
+      { title: "3.3 面積與二階行列式（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/ch%203.3%20%E9%9D%A2%E7%A9%8D%E8%88%87%E4%BA%8C%E9%9A%8E%E8%A1%8C%E5%88%97%E5%BC%8F(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" },
+      { title: "平面向量的運算 課程資料（判定兩向量是否平行）", source: "彰化縣 公開授課資料", url: "https://www.openclass.chc.edu.tw/years/111/plans/51280/reviews/課程資料.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "a→ = (1, 2)、b→ = (2, −1)、c→ = (3, 1)，若 (a→ + t b→) // c→，則 t = ？",
+        options: [
+          { key: "A", text: "1" },
+          { key: "B", text: "−1" },
+          { key: "C", text: "5" },
+          { key: "D", text: "1/5" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "分量", lines: ["a→ + t b→ = (1 + 2t, 2 − t)"] },
+          { title: "交叉相乘", lines: ["(1 + 2t) · 1 − (2 − t) · 3 = 0", "⇒ 1 + 2t − 6 + 3t = 0", "⇒ 5t = 5", "⇒ t = 1"] },
+          { title: "驗算", lines: ["a→ + b→ = (3, 1) = c→ ✓"] }
+        ]
+      },
+      {
+        question: "u→ = (k, 2)、v→ = (8, k)，若 u→ // v→，則 k 的所有可能值為？",
+        options: [
+          { key: "A", text: "4 或 −4" },
+          { key: "B", text: "只有 4" },
+          { key: "C", text: "16" },
+          { key: "D", text: "2 或 −2" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "交叉相乘", lines: ["k · k − 8 · 2 = 0", "⇒ k^{2} = 16", "⇒ k = 4 或 k = −4"] },
+          { title: "驗算", lines: ["k = 4：(4, 2)、(8, 4) = 2 (4, 2) ✓", "k = −4：(−4, 2)、(8, −4) = −2 (−4, 2) ✓"], note: "方向相反也是平行，k = −4 不能漏" }
+        ]
+      }
+    ],
+    basis: "【確認】自行由 (−2+3t)(−3) − (1−2t)·4 = 0 解得 t = 2，與 correctAnswer 一致，代回得 a→ + 2b→ = c→；其他選項皆代入確認不平行，類題皆已驗算。"
+  },
+
+  "tm_92_q24": {
+    keyPoint: "重心 G 在中線 AD 上且 AG : GD = 2 : 1，所以 AG→ = frac{2}{3} AD→；而中線 AD→ = frac{1}{2}(AB→ + AC→)，兩步相乘得 frac{1}{3}AB→ + frac{1}{3}AC→。",
+    formulas: [
+      "D 為 BC 中點：AD→ = frac{1}{2} AB→ + frac{1}{2} AC→",
+      "重心：AG : GD = 2 : 1 ⇒ AG→ = frac{2}{3} AD→",
+      "⇒ AG→ = frac{1}{3} AB→ + frac{1}{3} AC→",
+      "任一點 O：OG→ = frac{1}{3} ( OA→ + OB→ + OC→ )"
+    ],
+    whyWrong: {
+      A: "只乘了 frac{2}{3}，忘了中線 AD→ 本身是 frac{1}{2}(AB→ + AC→)；frac{2}{3} · frac{1}{2} = frac{1}{3}，不是 frac{2}{3}。",
+      B: "AB→ + AC→ = 2AD→，是以 AB、AC 為邊的平行四邊形對角線，終點已跑到三角形外。",
+      D: "frac{1}{2}AB→ + frac{1}{2}AC→ = AD→，是中線到 BC 中點 D，不是重心 G。"
+    },
+    steps: [
+      { title: "中線向量（D 為 BC 中點）", lines: [
+        "AD→ = frac{1}{2} AB→ + frac{1}{2} AC→"
+      ], note: "分點公式 m : n = 1 : 1" },
+      { title: "重心把中線分成 2 : 1", lines: [
+        "AG : GD = 2 : 1",
+        "⇒ AG→ = frac{2}{3} AD→"
+      ] },
+      { title: "代入", lines: [
+        "AG→ = frac{2}{3} ( frac{1}{2} AB→ + frac{1}{2} AC→ )",
+        "= frac{1}{3} AB→ + frac{1}{3} AC→"
+      ] },
+      { title: "用坐標驗算", lines: [
+        "A(0, 0)、B(6, 0)、C(0, 3) ⇒ G = ( frac{0 + 6 + 0}{3}, frac{0 + 0 + 3}{3} ) = (2, 1)",
+        "frac{1}{3} (6, 0) + frac{1}{3} (0, 3) = (2, 1) ✓",
+        "frac{2}{3} (6, 0) + frac{2}{3} (0, 3) = (4, 2) ≠ G"
+      ] }
+    ],
+    traps: [
+      "AG→ = frac{2}{3}AD→ 之後還要把 AD→ 換成 frac{1}{2}(AB→ + AC→)，別停在一半。",
+      "frac{1}{2}AB→ + frac{1}{2}AC→ 是中點 D，不是重心。",
+      "AB→ + AC→ 是平行四邊形對角線，長度是中線的兩倍。",
+      "重心 = 三頂點坐標平均，可以隨手取坐標驗算。"
+    ],
+    references: [
+      { title: "分點公式（P 在 AB 上且 AP:BP = m:n）", source: "臺灣大學 物理系 數學筆記", url: "https://web.phys.ntu.edu.tw/ap/math7_9.pdf", kind: "講義" },
+      { title: "換個觀點看三角形的四心", source: "中央研究院 數學傳播", url: "https://www.math.sinica.edu.tw/media/pdf/d302/30203.pdf", kind: "文章" },
+      { title: "平面向量的運算 課程資料（係數積、線性組合與分點公式）", source: "彰化縣 公開授課資料", url: "https://www.openclass.chc.edu.tw/years/111/plans/51280/reviews/課程資料.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "G 為 △ABC 的重心，O 為平面上任一點，則 OG→ = ？",
+        options: [
+          { key: "A", text: "⅓ (OA→ + OB→ + OC→)" },
+          { key: "B", text: "½ (OA→ + OB→ + OC→)" },
+          { key: "C", text: "OA→ + OB→ + OC→" },
+          { key: "D", text: "⅔ (OA→ + OB→ + OC→)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "由 AG→ 推廣", lines: ["OG→ = OA→ + AG→", "= OA→ + frac{1}{3} ( OB→ − OA→ ) + frac{1}{3} ( OC→ − OA→ )", "= frac{1}{3} ( OA→ + OB→ + OC→ )"] },
+          { title: "驗算", lines: ["A(0, 0)、B(6, 0)、C(0, 3)、O(1, 1) ⇒ G(2, 1)", "OA→ + OB→ + OC→ = (−1, −1) + (5, −1) + (−1, 2) = (3, 0)", "frac{1}{3} (3, 0) = (1, 0) = G − O ✓"] }
+        ]
+      },
+      {
+        question: "△ABC 中，D 在 BC 上且 BD : DC = 1 : 2，則 AD→ 以 AB→、AC→ 表示為？",
+        options: [
+          { key: "A", text: "⅔ AB→ + ⅓ AC→" },
+          { key: "B", text: "⅓ AB→ + ⅔ AC→" },
+          { key: "C", text: "½ AB→ + ½ AC→" },
+          { key: "D", text: "AB→ + 2 AC→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "分點公式（係數交叉）", lines: ["BD : DC = 1 : 2", "⇒ AD→ = frac{2}{3} AB→ + frac{1}{3} AC→"], note: "D 靠近 B，AB→ 的係數較大" },
+          { title: "驗算", lines: ["A(0, 0)、B(3, 0)、C(0, 3)", "D = B + frac{1}{3} BC→ = (3, 0) + (−1, 1) = (2, 1)", "frac{2}{3} (3, 0) + frac{1}{3} (0, 3) = (2, 1) ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行由 AG→ = frac{2}{3}AD→、AD→ = frac{1}{2}(AB→ + AC→) 推得 frac{1}{3}AB→ + frac{1}{3}AC→，與 correctAnswer 一致，並以坐標驗算各選項；類題皆已驗算。"
   }
 };
