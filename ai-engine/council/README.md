@@ -77,7 +77,7 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 
 新錯題的重點整理與類題（`js/data/WrongBookNotesData.js`）由本機 AI 撰寫，自動開 PR 上線：
 
-- **撰寫**：Antigravity CLI（`agy -p --mode accept-edits`，Google AI Pro 帳號）。Google 自 2026-06-18 起不再讓個人帳號（含 AI Pro）使用 Gemini CLI，登入會出現 `IneligibleTierError`。可用環境變數 `AHS_NOTES_WRITER=agy|gemini|claude|codex` 切換（gemini 需付費 API 金鑰 `GEMINI_API_KEY`），`AHS_NOTES_GEMINI_MODEL` 指定 Gemini 模型。
+- **撰寫**：Claude Code，預設 Sonnet 模型（`AHS_NOTES_CLAUDE_MODEL` 可改，例如 `opus`）。Gemini CLI 自 2026-06-18 起不再支援個人帳號（含 AI Pro）；仍可用 `AHS_NOTES_WRITER=agy|gemini|codex` 改由其他 AI 撰寫，此時 Claude 負責把關與備援。
 - **把關**：撰寫 AI 沒標【確認】的題目（重算答案與標準答案不一致或沒把握）交給 Claude Code 獨立重寫。
 - **備援**：撰寫 AI 沒安裝、額度用完、逾時或格式檢查失敗時，整批改由 Claude Code 撰寫。
 

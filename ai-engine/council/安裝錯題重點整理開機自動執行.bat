@@ -5,7 +5,7 @@ title 安裝錯題重點整理開機自動執行
 
 REM ============================================================
 REM 只需執行一次：
-REM   1. 確認 agy（Antigravity CLI，主要撰寫）、claude（把關／備援）、git、gh、node 都已安裝
+REM   1. 確認 claude（撰寫）、git、gh、node 都已安裝
 REM   2. 儲存 Supabase service_role 金鑰到 %USERPROFILE%\.ahs\supabase-service-role.key
 REM      （只存在這台電腦，不會上傳；之後要換金鑰，重新執行本檔即可）
 REM   3. 在「啟動」資料夾建立捷徑：每次開機登入後自動執行「啟動錯題重點整理.bat」
@@ -25,27 +25,13 @@ if defined MISSING (
     exit /b 1
 )
 echo [OK] git、gh、node 都已安裝。
-set "HAS_AI="
-where agy >nul 2>&1
-if errorlevel 1 (
-    echo [WARNING] 找不到 Antigravity CLI（主要撰寫工具，取代已停止個人帳號的 Gemini CLI）。
-    echo   安裝：在 PowerShell 執行 irm https://antigravity.google/cli/install.ps1 ^| iex
-) else (
-    set "HAS_AI=1"
-    echo [OK] Antigravity CLI 已安裝。第一次使用請在平台資料夾執行一次 agy，用 Google AI Pro 帳號登入。
-)
 where claude >nul 2>&1
 if errorlevel 1 (
-    echo [WARNING] 找不到 Claude Code（把關／備援）。安裝：npm install -g @anthropic-ai/claude-code，再執行 claude 一次完成登入
-) else (
-    set "HAS_AI=1"
-    echo [OK] Claude Code 已安裝。
-)
-if not defined HAS_AI (
-    echo [ERROR] Antigravity CLI 與 Claude Code 至少要安裝一個。
+    echo [ERROR] 找不到 Claude Code。安裝：npm install -g @anthropic-ai/claude-code，再執行 claude 一次完成登入
     pause
     exit /b 1
 )
+echo [OK] Claude Code 已安裝。
 echo.
 
 echo [2/3] Supabase service_role 金鑰
