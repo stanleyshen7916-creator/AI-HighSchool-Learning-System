@@ -21,16 +21,27 @@ describe('WrongBookNotesJob（知識弱點「產生重點整理」按鈕）', ()
     expect(r.accepted).toBe(true);
     expect(fs.existsSync(path.join(job.dir, 'run.request'))).toBe(true);
     fs.writeFileSync(path.join(job.dir, 'status.json'), '﻿{"state":"done","added":3,"pr":"https://github.com/x/y/pull/1"}', 'utf8');
-    fs.writeFileSync(path.join(job.dir, 'worker.heartbeat'), 'now', 'utf8');
+    fs.writeFileSync(path.join(job.dir, 'worker.heartbeat'), new Date().toISOString(), 'utf8');
     expect(job.status()).toMatchObject({ state: 'done', added: 3, workerAlive: true, queued: true });
   });
 
   test('執行中（主機程式活著）時不重複排入', () => {
     fs.mkdirSync(job.dir, { recursive: true });
     fs.writeFileSync(path.join(job.dir, 'status.json'), '{"state":"running","step":"writing"}', 'utf8');
-    fs.writeFileSync(path.join(job.dir, 'worker.heartbeat'), 'now', 'utf8');
+    fs.writeFileSync(path.join(job.dir, 'worker.heartbeat'), new Date().toISOString(), 'utf8');
     const r = job.requestRun();
     expect(r).toMatchObject({ accepted: false, reason: 'running' });
     expect(fs.existsSync(path.join(job.dir, 'run.request'))).toBe(false);
+  });
+
+  test('heartbeat 以檔案內容的時間判斷（檔案修改時間不可靠時）', () => {
+    fs.mkdirSync(job.dir, { recursive: true });
+    const hb = path.join(job.dir, 'worker.heartbeat');
+    fs.writeFileSync(hb, new Date().toISOString(), 'utf8');
+    const old = new Date(Date.now() - 3600 * 1000);
+    fs.utimesSync(hb, old, old);
+    expect(job.workerAlive()).toBe(true);
+    fs.writeFileSync(hb, new Date(Date.now() - 5 * 60 * 1000).toISOString(), 'utf8');
+    expect(job.workerAlive()).toBe(false);
   });
 });
