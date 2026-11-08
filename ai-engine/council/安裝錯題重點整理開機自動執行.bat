@@ -5,7 +5,7 @@ title 安裝錯題重點整理開機自動執行
 
 REM ============================================================
 REM 只需執行一次：
-REM   1. 確認 claude、git、gh、node 都已安裝
+REM   1. 確認 gemini（主要撰寫）、claude（把關／備援）、git、gh、node 都已安裝
 REM   2. 儲存 Supabase service_role 金鑰到 %USERPROFILE%\.ahs\supabase-service-role.key
 REM      （只存在這台電腦，不會上傳；之後要換金鑰，重新執行本檔即可）
 REM   3. 在「啟動」資料夾建立捷徑：每次開機登入後自動執行「啟動錯題重點整理.bat」
@@ -14,18 +14,37 @@ REM ============================================================
 set "ENGINE=%~dp0"
 echo [1/3] 檢查必要程式...
 set "MISSING="
-for %%T in (claude git gh node) do (
+for %%T in (git gh node) do (
     where %%T >nul 2>&1
     if errorlevel 1 set "MISSING=!MISSING! %%T"
 )
 if defined MISSING (
     echo [ERROR] 找不到：!MISSING!
-    echo   claude：npm install -g @anthropic-ai/claude-code，再執行 claude 一次完成登入
     echo   gh：安裝 GitHub CLI 後執行 gh auth login
     pause
     exit /b 1
 )
-echo [OK] claude、git、gh、node 都已安裝。
+echo [OK] git、gh、node 都已安裝。
+set "HAS_AI="
+where gemini >nul 2>&1
+if errorlevel 1 (
+    echo [WARNING] 找不到 Gemini CLI（主要撰寫工具）。安裝：npm install -g @google/gemini-cli
+) else (
+    set "HAS_AI=1"
+    echo [OK] Gemini CLI 已安裝。第一次使用請在平台資料夾執行一次 gemini，用 Google AI Pro 帳號登入，並選擇信任這個資料夾。
+)
+where claude >nul 2>&1
+if errorlevel 1 (
+    echo [WARNING] 找不到 Claude Code（把關／備援）。安裝：npm install -g @anthropic-ai/claude-code，再執行 claude 一次完成登入
+) else (
+    set "HAS_AI=1"
+    echo [OK] Claude Code 已安裝。
+)
+if not defined HAS_AI (
+    echo [ERROR] Gemini CLI 與 Claude Code 至少要安裝一個。
+    pause
+    exit /b 1
+)
 echo.
 
 echo [2/3] Supabase service_role 金鑰
