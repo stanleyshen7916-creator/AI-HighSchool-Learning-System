@@ -110,7 +110,9 @@ function Invoke-Agent([string]$agent, [string]$prompt) {
     # auto_edit: edits are approved, shell commands are not (the prompt forbids them anyway)
     'gemini' {
       $model = if ($env:AHS_NOTES_GEMINI_MODEL) { " -m $($env:AHS_NOTES_GEMINI_MODEL)" } else { '' }
-      $cmd = "gemini -p `"$prompt`" --approval-mode auto_edit --output-format text$model"; $hours = 1.5
+      # GOOGLE_GENAI_USE_GCA: always use the "Sign in with Google" login (the Google AI Pro quota),
+      # even if settings.json has no auth type saved yet
+      $cmd = "set GOOGLE_GENAI_USE_GCA=true&& gemini -p `"$prompt`" --approval-mode auto_edit --output-format text$model"; $hours = 1.5
     }
     'codex' { $cmd = "codex exec --full-auto `"$prompt`""; $hours = 1.5 }
     default { return @{ code = 1; tail = "unknown writer '$agent' (use gemini, claude or codex)" } }
