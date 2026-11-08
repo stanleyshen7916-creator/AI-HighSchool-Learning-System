@@ -115,6 +115,9 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
   ], ["tm_7_q18"], 1);
   check("待整理清單：略過已有筆記、無編號、重複題；錯最多的優先；依上限截斷",
     pend.total === 2 && pend.items.length === 1 && pend.items[0].questionId === "q_a" && pend.items[0].errorCount === 4 && pend.items[0].subject === "physics");
+  const rv = P.reviewItems({ items: [{ questionId: "a" }, { questionId: "b" }, { questionId: "c" }, { questionId: "old" }] }, ["old"],
+    { a: { basis: "【確認】ok" }, b: { basis: "【推論】答案不同" }, old: { basis: "【推論】x" } });
+  check("Claude 把關：只挑本次新寫、未標【確認】的題目", rv.length === 1 && rv[0].questionId === "b");
   check("待整理清單：sb_secret_ 金鑰只放 apikey 標頭", !P.authHeaders("sb_secret_x").Authorization && P.authHeaders("eyJx").Authorization === "Bearer eyJx");
 
   console.log("WrongBookDeleteRegression: " + pass + " PASS / " + fail + " FAIL");

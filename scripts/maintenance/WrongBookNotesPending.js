@@ -32,10 +32,24 @@ function authHeaders(serviceKey) {
   return h;
 }
 
-function existingNoteIds(file) {
+function loadNotes(file) {
   const sandbox = { window: {} };
   vm.runInNewContext(fs.readFileSync(file, "utf8").replace(/^window\.AHS = window\.AHS \|\| \{\};/m, "window.AHS = {}; var AHS = window.AHS;"), sandbox);
-  return Object.keys((sandbox.window.AHS && sandbox.window.AHS.WrongBookNotesData) || {});
+  return (sandbox.window.AHS && sandbox.window.AHS.WrongBookNotesData) || {};
+}
+
+function existingNoteIds(file) {
+  return Object.keys(loadNotes(file));
+}
+
+/* 2026-11-08 Gemini 撰寫、Claude 把關：Gemini 這次新寫的筆記裡，basis 標【推論】
+   （重算答案與標準答案不一致、或無法確認）的題目，交給 Claude 重寫。 */
+function reviewItems(pending, beforeIds, notes) {
+  const before = new Set(beforeIds);
+  return (pending.items || []).filter((it) => {
+    const n = notes[it.questionId];
+    return n && !before.has(it.questionId) && !/^\s*【確認】/.test(n.basis || "");
+  });
 }
 
 function pendingFrom(rows, haveIds, max) {
@@ -69,7 +83,26 @@ async function fetchRows(url, serviceKey, fetchImpl) {
   return res.json();
 }
 
+function arg(argv, name) {
+  const at = argv.indexOf(name);
+  return at !== -1 ? argv[at + 1] : undefined;
+}
+
 async function main(argv) {
+  const notesFile = path.join(REPO, "js", "data", "WrongBookNotesData.js");
+  /* --ids-out <file>：把目前已有筆記的題號寫成 JSON 陣列（撰寫前快照） */
+  if (arg(argv, "--ids-out")) {
+    fs.writeFileSync(path.resolve(arg(argv, "--ids-out")), JSON.stringify(existingNoteIds(notesFile)), "utf8");
+    return 0;
+  }
+  /* --review --before <ids.json> --pending <pending.json> --out <review.json>：需要 Claude 重寫的題目 */
+  if (argv.indexOf("--review") !== -1) {
+    const read = (f) => JSON.parse(fs.readFileSync(path.resolve(f), "utf8").replace(/^\uFEFF/, ""));
+    const items = reviewItems(read(arg(argv, "--pending")), read(arg(argv, "--before")), loadNotes(notesFile));
+    fs.writeFileSync(path.resolve(arg(argv, "--out")), JSON.stringify({ generatedAt: new Date().toISOString(), total: items.length, items }, null, 2), "utf8");
+    console.log(String(items.length));
+    return 0;
+  }
   const outAt = argv.indexOf("--out");
   const maxAt = argv.indexOf("--max");
   if (outAt === -1 || !argv[outAt + 1]) {
@@ -92,4 +125,4 @@ if (require.main === module) {
   main(process.argv.slice(2)).then((code) => { process.exitCode = code; }, (err) => { console.error(String(err && err.message || err)); process.exitCode = 1; });
 }
 
-module.exports = { pendingFrom, existingNoteIds, authHeaders };
+module.exports = { pendingFrom, existingNoteIds, loadNotes, reviewItems, authHeaders };

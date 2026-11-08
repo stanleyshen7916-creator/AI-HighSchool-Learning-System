@@ -12,7 +12,10 @@
 #   2. node scripts/maintenance/WrongBookNotesPending.js -> questions still in the
 #      wrong book that have no note yet (needs SUPABASE_SERVICE_ROLE_KEY, read from the
 #      environment or from %USERPROFILE%\.ahs\supabase-service-role.key);
-#   3. claude -p with tools/wrongbook-notes-prompt.md -> edits js/data/WrongBookNotesData.js only;
+#   3. the writer AI (default Gemini CLI, set AHS_NOTES_WRITER=gemini|claude|codex) writes the notes
+#      with tools/wrongbook-notes-prompt.md -> edits js/data/WrongBookNotesData.js only;
+#      if the writer is missing, fails, hangs or breaks the format, Claude Code writes the batch instead;
+#   3b. notes the writer could not confirm (basis not marked [confirmed]) are rewritten by Claude Code;
 #   4. refuses to publish if any other tracked file changed, or the regression test fails;
 #   5. queues the file for git-publisher.ps1 (branch -> PR -> checks -> squash merge).
 # Progress goes to <DataDir>\wrongbook_notes\status.json, which the page shows.
@@ -45,7 +48,10 @@ $NotesFile = 'js/data/WrongBookNotesData.js'
 $PendingFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\pending.json'
 $PromptFile = Join-Path $RepoRoot 'ai-engine\council\tools\wrongbook-notes-prompt.md'
 $Publisher = Join-Path $RepoRoot 'ai-engine\council\tools\git-publisher.ps1'
-$AllowedTools = 'Read,Edit,Glob,Grep,WebSearch,WebFetch,Bash(node tests/regression/WrongBookDeleteRegression.js)'
+$AllowedTools = 'Read,Edit,Glob,Grep,WebSearch,WebFetch'
+$ReviewFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\review.json'
+$BeforeIdsFile = Join-Path $WorkDir 'ids-before.json'
+$PreferredWriter = if ($env:AHS_NOTES_WRITER) { $env:AHS_NOTES_WRITER.Trim().ToLower() } else { 'gemini' }
 Write-Host "wrongbook-notes: repo=$RepoRoot data=$DataDir"
 Write-Host 'Keep this window open (it may stay minimized).'
 
@@ -95,14 +101,64 @@ function Pending-Publish {
   }).Count -gt 0
 }
 
+# Runs one AI CLI headless in the repo, as a separate process, writing the heartbeat while it
+# works (each question takes minutes). Returns @{ code; tail }.
+function Invoke-Agent([string]$agent, [string]$prompt) {
+  $outFile = Join-Path $WorkDir "$agent-output.txt"
+  switch ($agent) {
+    'claude' { $cmd = "claude -p `"$prompt`" --allowedTools `"$AllowedTools`" --permission-mode acceptEdits --output-format text"; $hours = 3 }
+    # auto_edit: edits are approved, shell commands are not (the prompt forbids them anyway)
+    'gemini' {
+      $model = if ($env:AHS_NOTES_GEMINI_MODEL) { " -m $($env:AHS_NOTES_GEMINI_MODEL)" } else { '' }
+      $cmd = "gemini -p `"$prompt`" --approval-mode auto_edit --output-format text$model"; $hours = 1.5
+    }
+    'codex' { $cmd = "codex exec --full-auto `"$prompt`""; $hours = 1.5 }
+    default { return @{ code = 1; tail = "unknown writer '$agent' (use gemini, claude or codex)" } }
+  }
+  $cmdLine = "/d /s /c `"$cmd > `"$outFile`" 2>&1`""
+  $proc = Start-Process -FilePath $env:ComSpec -ArgumentList $cmdLine -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru
+  $null = $proc.Handle  # keeps ExitCode readable after the process ends
+  $limit = (Get-Date).AddHours($hours)
+  $timedOut = $false
+  while (-not $proc.HasExited) {
+    if ((Get-Date) -gt $limit) { & taskkill /PID $proc.Id /T /F | Out-Null; $timedOut = $true; break }
+    Beat
+    Start-Sleep -Seconds 5
+  }
+  $proc.WaitForExit()
+  Beat
+  $out = ''
+  if (Test-Path $outFile) { $out = [System.IO.File]::ReadAllText($outFile, $utf8) }
+  $tail = (($out.Trim() -split "`n") | Select-Object -Last 15) -join "`n"
+  if ($timedOut) { return @{ code = 124; tail = "$agent did not finish within $hours hours" } }
+  return @{ code = $proc.ExitCode; tail = $tail }
+}
+
+# '' when the notes file is the only change and the format test passes; otherwise the reason.
+function Check-Notes {
+  Save-Status @{ step = 'checking' }
+  $extra = @(Changed-Paths | Where-Object { $_ -ne $NotesFile })
+  if ($extra.Count -gt 0) {
+    Invoke-Git (@('checkout', '--') + $extra) | Out-Null
+    return ('changed other files: ' + ($extra -join ', '))
+  }
+  $t = Invoke-Node @('tests/regression/WrongBookDeleteRegression.js')
+  if ($t.code -ne 0) { return ('format test failed: ' + ((($t.out -split "`n") | Where-Object { $_ -match 'FAIL' } | Select-Object -First 8) -join ' / ')) }
+  return ''
+}
+
 function Run-Once([string]$reason) {
   $script:status = @{ state = 'running'; step = 'update'; reason = $reason; startedAt = (Get-Date).ToString('o') }
   Save-Status @{}
   $fail = { param($code, $detail) Save-Status @{ state = 'error'; error = $code; message = $detail; finishedAt = (Get-Date).ToString('o') } }
 
-  foreach ($tool in @('git', 'gh', 'node', 'claude')) {
+  foreach ($tool in @('git', 'gh', 'node')) {
     if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) { return (& $fail "no_$tool" "$tool is not installed or not on PATH") }
   }
+  $hasClaude = [bool](Get-Command claude -ErrorAction SilentlyContinue)
+  $writer = $PreferredWriter
+  if (-not (Get-Command $writer -ErrorAction SilentlyContinue)) { $writer = 'claude' }
+  if ($writer -eq 'claude' -and -not $hasClaude) { return (& $fail 'no_claude' "neither $PreferredWriter nor claude is installed or on PATH") }
   $key = Get-ServiceKey
   if (-not $key) { return (& $fail 'no_key' 'SUPABASE_SERVICE_ROLE_KEY not set and %USERPROFILE%\.ahs\supabase-service-role.key missing') }
   if (Pending-Publish) { return (& $fail 'busy' 'the previous batch is still being published') }
@@ -130,36 +186,59 @@ function Run-Once([string]$reason) {
     return (Save-Status @{ state = 'done'; step = 'done'; added = 0; total = 0; message = 'no new wrong-book questions'; finishedAt = (Get-Date).ToString('o') })
   }
 
-  Save-Status @{ step = 'writing'; total = $pending.total; batch = $count }
+  Save-Status @{ step = 'writing'; total = $pending.total; batch = $count; writer = $writer }
   $before = Note-Count
-  $prompt = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md. The pending list is ai-engine/council/data/wrongbook_notes/pending.json ($count items)."
-  Push-Location $RepoRoot
-  try {
-    $out = & claude -p $prompt --allowedTools $AllowedTools --permission-mode acceptEdits --output-format text 2>&1 | ForEach-Object { "$_" } | Out-String
-    $claudeCode = $LASTEXITCODE
-  } finally { Pop-Location }
-  Beat
-  $tail = (($out.Trim() -split "`n") | Select-Object -Last 20) -join "`n"
-  if ($claudeCode -ne 0) { Invoke-Git @('checkout', '--', $NotesFile) | Out-Null; return (& $fail 'claude_failed' $tail) }
+  Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--ids-out', $BeforeIdsFile) | Out-Null
+  $relPending = 'ai-engine/council/data/wrongbook_notes/pending.json'
+  $prompt = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md. The pending list is $relPending ($count items)."
 
-  Save-Status @{ step = 'checking'; claudeOutput = $tail }
-  $extra = @(Changed-Paths | Where-Object { $_ -ne $NotesFile })
-  if ($extra.Count -gt 0) {
+  $r = Invoke-Agent $writer $prompt
+  $check = if ($r.code -eq 0) { Check-Notes } else { "$writer failed: $($r.tail)" }
+  if (-not $check -and $writer -ne 'claude' -and (Note-Count) -le $before) { $check = "$writer wrote no notes: $($r.tail)" }
+  $writerNote = ''
+  if ($check) {
     Invoke-Git @('checkout', '--', $NotesFile) | Out-Null
-    return (& $fail 'extra_changes' ('Claude changed other files; nothing published: ' + ($extra -join ', ')))
+    if ($writer -eq 'claude' -or -not $hasClaude) { return (& $fail 'claude_failed' $check) }
+    # the writer could not do it (quota, not signed in, hang, bad format): Claude writes this batch
+    $writerNote = "$writer failed, Claude wrote this batch: $check"
+    Save-Status @{ writer = 'claude'; writerError = $check }
+    $r = Invoke-Agent 'claude' $prompt
+    $check = if ($r.code -eq 0) { Check-Notes } else { "claude failed: $($r.tail)" }
+    if ($check) { Invoke-Git @('checkout', '--', $NotesFile) | Out-Null; return (& $fail 'claude_failed' $check) }
+    $writer = 'claude'
   }
-  $t = Invoke-Node @('tests/regression/WrongBookDeleteRegression.js')
-  if ($t.code -ne 0) {
-    Invoke-Git @('checkout', '--', $NotesFile) | Out-Null
-    return (& $fail 'test_failed' ((($t.out -split "`n") | Where-Object { $_ -match 'FAIL' } | Select-Object -First 10) -join "`n"))
+
+  # notes the writer could not confirm go to Claude for an independent rewrite
+  $reviewed = 0
+  if ($writer -ne 'claude' -and $hasClaude) {
+    $n = Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--review', '--before', $BeforeIdsFile, '--pending', $PendingFile, '--out', $ReviewFile)
+    $toReview = 0
+    if ($n.code -eq 0) { $toReview = [int](($n.out -split "`n") | Select-Object -Last 1) }
+    if ($toReview -gt 0) {
+      Save-Status @{ step = 'reviewing'; review = $toReview }
+      $snapshot = [System.IO.File]::ReadAllText((Join-Path $RepoRoot $NotesFile), $utf8)
+      $relReview = 'ai-engine/council/data/wrongbook_notes/review.json'
+      $rp = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md, in review mode (see the review-mode section). The list to review is $relReview ($toReview items)."
+      $r = Invoke-Agent 'claude' $rp
+      $check = if ($r.code -eq 0) { Check-Notes } else { "claude failed: $($r.tail)" }
+      if ($check) {
+        # keep the writer's notes (still marked as unconfirmed) rather than losing the batch
+        [System.IO.File]::WriteAllText((Join-Path $RepoRoot $NotesFile), $snapshot, $utf8)
+        $writerNote = "$writerNote Claude review failed, unconfirmed notes kept: $check".Trim()
+      } else {
+        $reviewed = $toReview
+      }
+    }
   }
+
   $added = (Note-Count) - $before
-  if ($added -le 0) { return (Save-Status @{ state = 'done'; step = 'done'; added = 0; message = 'Claude added no notes'; finishedAt = (Get-Date).ToString('o') }) }
+  if ($added -le 0) { return (Save-Status @{ state = 'done'; step = 'done'; added = 0; message = "$writer added no notes"; finishedAt = (Get-Date).ToString('o') }) }
+  Save-Status @{ reviewed = $reviewed; writerNote = $writerNote }
 
   Save-Status @{ step = 'publishing'; added = $added }
   $id = "$([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_wrongbook-notes"
   $date = Get-Date -Format 'MM/dd'
-  $msg = "$date wrongbook notes | auto-generated key notes for $added question(s)`n`nGenerated on this computer by ai-engine/council/tools/wrongbook-notes.ps1 (Claude Code CLI).`n"
+  $msg = "$date wrongbook notes | auto-generated key notes for $added question(s)`n`nGenerated on this computer by ai-engine/council/tools/wrongbook-notes.ps1. Writer: $writer; reviewed by Claude: $reviewed.`n"
   [System.IO.File]::WriteAllText((Join-Path $QueueDir "$id.message.txt"), $msg, $utf8)
   $req = @{ materialId = 'wrongbook-notes'; paths = @($NotesFile); createdAt = (Get-Date).ToString('o') }
   [System.IO.File]::WriteAllText((Join-Path $QueueDir "$id.request.json"), ($req | ConvertTo-Json -Compress), $utf8)
