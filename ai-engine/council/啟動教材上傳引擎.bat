@@ -32,7 +32,7 @@ if "!HAS_NVIDIA!"=="1" (
     set "COMPOSE_FILES=!COMPOSE_FILES! -f "%ENGINE%docker-compose.nvidia.yml""
     set "OLLAMA_MODE=容器版 Ollama（NVIDIA GPU）"
 ) else (
-    set "COUNCIL_HOST_OLLAMA_PORT=11434"
+    set "COUNCIL_HOST_OLLAMA_PORT=11435"
     if defined OLLAMA_HOST for /f "tokens=2 delims=:" %%P in ("%OLLAMA_HOST:http://=%") do set "COUNCIL_HOST_OLLAMA_PORT=%%P"
     powershell -NoProfile -Command "try { Invoke-WebRequest -Uri 'http://127.0.0.1:!COUNCIL_HOST_OLLAMA_PORT!/api/version' -UseBasicParsing -TimeoutSec 3 | Out-Null; exit 0 } catch { exit 1 }" >nul 2>&1
     if not errorlevel 1 (
