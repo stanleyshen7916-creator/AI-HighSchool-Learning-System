@@ -12,8 +12,8 @@
 #   2. node scripts/maintenance/WrongBookNotesPending.js -> questions still in the
 #      wrong book that have no note yet (needs SUPABASE_SERVICE_ROLE_KEY, read from the
 #      environment or from %USERPROFILE%\.ahs\supabase-service-role.key);
-#   3. the writer AI (default Antigravity CLI 'agy' - Google stopped serving personal accounts in
-#      Gemini CLI on 2026-06-18; set AHS_NOTES_WRITER=agy|gemini|claude|codex) writes the notes
+#   3. the writer AI (default Claude Code with the Sonnet model - set AHS_NOTES_CLAUDE_MODEL to change it;
+#      AHS_NOTES_WRITER=agy|gemini|codex switches writer, Claude then reviews and backs it up) writes the notes
 #      with tools/wrongbook-notes-prompt.md -> edits js/data/WrongBookNotesData.js only;
 #      if the writer is missing, fails, hangs or breaks the format, Claude Code writes the batch instead;
 #   3b. notes the writer could not confirm (basis not marked [confirmed]) are rewritten by Claude Code;
@@ -52,7 +52,7 @@ $Publisher = Join-Path $RepoRoot 'ai-engine\council\tools\git-publisher.ps1'
 $AllowedTools = 'Read,Edit,Glob,Grep,WebSearch,WebFetch'
 $ReviewFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\review.json'
 $BeforeIdsFile = Join-Path $WorkDir 'ids-before.json'
-$PreferredWriter = if ($env:AHS_NOTES_WRITER) { $env:AHS_NOTES_WRITER.Trim().ToLower() } else { 'agy' }
+$PreferredWriter = if ($env:AHS_NOTES_WRITER) { $env:AHS_NOTES_WRITER.Trim().ToLower() } else { 'claude' }
 Write-Host "wrongbook-notes: repo=$RepoRoot data=$DataDir"
 Write-Host 'Keep this window open (it may stay minimized).'
 
@@ -107,7 +107,11 @@ function Pending-Publish {
 function Invoke-Agent([string]$agent, [string]$prompt) {
   $outFile = Join-Path $WorkDir "$agent-output.txt"
   switch ($agent) {
-    'claude' { $cmd = "claude -p `"$prompt`" --allowedTools `"$AllowedTools`" --permission-mode acceptEdits --output-format text"; $hours = 3 }
+    # Sonnet by default: plenty for high-school solutions and uses far less of the plan's usage than Opus
+    'claude' {
+      $cm = if ($env:AHS_NOTES_CLAUDE_MODEL) { $env:AHS_NOTES_CLAUDE_MODEL } else { 'sonnet' }
+      $cmd = "claude -p `"$prompt`" --model $cm --allowedTools `"$AllowedTools`" --permission-mode acceptEdits --output-format text"; $hours = 3
+    }
     # auto_edit: edits are approved, shell commands are not (the prompt forbids them anyway)
     'gemini' {
       $model = if ($env:AHS_NOTES_GEMINI_MODEL) { " -m $($env:AHS_NOTES_GEMINI_MODEL)" } else { '' }

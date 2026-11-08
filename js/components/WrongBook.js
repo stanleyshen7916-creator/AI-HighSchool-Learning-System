@@ -293,13 +293,13 @@ AHS.WrongBook = (function () {
     publishing: "上線中（開 PR、自動測試，約 5～10 分鐘）"
   };
   var NOTES_ERRORS = {
-    no_claude: "找不到 Antigravity CLI 或 Claude Code，請先安裝並登入",
+    no_claude: "找不到 Claude Code，請先安裝並登入",
     no_git: "找不到 git", no_gh: "找不到 GitHub CLI（gh）", no_node: "找不到 node",
     no_key: "尚未設定 Supabase 金鑰，請執行「安裝錯題重點整理開機自動執行.bat」",
     busy: "上一批重點整理還在上線中，請稍後再按",
     not_main: "平台資料夾目前不在 main 分支", dirty: "平台資料夾有尚未提交的變更",
     update_failed: "無法更新到 GitHub 最新版", pending_failed: "讀取錯題失敗",
-    claude_failed: "AI 撰寫失敗（Antigravity 與 Claude 都沒有完成）", extra_changes: "AI 改到其他檔案，已停止上線",
+    claude_failed: "AI 撰寫失敗", extra_changes: "AI 改到其他檔案，已停止上線",
     test_failed: "重點整理格式檢查沒通過，已停止上線", publish_failed: "上線（PR）失敗",
     worker_error: "執行程式發生錯誤"
   };
