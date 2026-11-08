@@ -1,4 +1,4 @@
-# 知識弱點「重點整理」產生指令（給本機 Gemini CLI／Claude Code，headless 執行）
+# 知識弱點「重點整理」產生指令（給本機 Antigravity CLI／Claude Code，headless 執行）
 
 由 `ai-engine/council/tools/wrongbook-notes.ps1` 呼叫。你在學習平台 repo 的根目錄執行，
 待補錯題清單的檔案路徑寫在呼叫你的那句指令裡（`items` 陣列）。
@@ -34,9 +34,9 @@
 1. **答案以 `correctAnswer` 為準，但要自己重新解一次。** 若你算出的答案不同，`basis` 標【推論】
    並寫明疑點，不要自行改答案。
 2. 計算題與類題答案都要驗算（代回原式、檢查每個選項），把驗算步驟寫進 `steps` 的最後一步。
-3. 延伸閱讀必須用網頁搜尋工具找（Gemini：google_web_search；Claude：WebSearch，可再用 WebFetch
+3. 延伸閱讀必須用網頁搜尋工具找（Antigravity／Gemini：內建搜尋，不要開瀏覽器子代理；Claude：WebSearch，可再用 WebFetch
    確認內容），只能放搜尋結果裡真的出現、標題與摘要和本題觀念相符的網址；優先台灣的高中講義、
-   均一教育平台、教育部／學校網站。找不到就少放，不要編造網址。Gemini 不要使用 web_fetch。
+   均一教育平台、教育部／學校網站。找不到就少放，不要編造網址。Antigravity／Gemini 不要使用 web_fetch 或 /browser。
 4. 平台會打亂選項顯示順序，所以筆記內文**不可寫 (A)(B) 這類選項字母**，改寫選項內容；
    `whyWrong` 的 key 與類題的 `correctAnswer` 用原始代號。
 5. 繁體中文，句子短、一行一個重點。不要引用網路資料原文超過 15 字。

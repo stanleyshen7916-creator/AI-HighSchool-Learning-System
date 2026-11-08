@@ -77,9 +77,9 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 
 新錯題的重點整理與類題（`js/data/WrongBookNotesData.js`）由本機 AI 撰寫，自動開 PR 上線：
 
-- **撰寫**：Gemini CLI（Google AI Pro 帳號，`gemini -p --approval-mode auto_edit`）。可用環境變數 `AHS_NOTES_WRITER=gemini|claude|codex` 切換，`AHS_NOTES_GEMINI_MODEL` 指定模型。
-- **把關**：Gemini 沒標【確認】的題目（重算答案與標準答案不一致或沒把握）交給 Claude Code 獨立重寫。
-- **備援**：Gemini 沒安裝、額度用完、逾時或格式檢查失敗時，整批改由 Claude Code 撰寫。
+- **撰寫**：Antigravity CLI（`agy -p --mode accept-edits`，Google AI Pro 帳號）。Google 自 2026-06-18 起不再讓個人帳號（含 AI Pro）使用 Gemini CLI，登入會出現 `IneligibleTierError`。可用環境變數 `AHS_NOTES_WRITER=agy|gemini|claude|codex` 切換（gemini 需付費 API 金鑰 `GEMINI_API_KEY`），`AHS_NOTES_GEMINI_MODEL` 指定 Gemini 模型。
+- **把關**：撰寫 AI 沒標【確認】的題目（重算答案與標準答案不一致或沒把握）交給 Claude Code 獨立重寫。
+- **備援**：撰寫 AI 沒安裝、額度用完、逾時或格式檢查失敗時，整批改由 Claude Code 撰寫。
 
 - **安裝一次**：雙擊 `安裝錯題重點整理開機自動執行.bat`。它會檢查 `claude`、`git`、`gh`、`node`，請你貼上 Supabase secret（service_role）金鑰（存到 `%USERPROFILE%\.ahs\supabase-service-role.key`，只在這台電腦），並在「啟動」資料夾建立捷徑。
 - **開機時**：登入約 1 分鐘後自動跑一次（`tools/wrongbook-notes.ps1`），之後在背景等待。
