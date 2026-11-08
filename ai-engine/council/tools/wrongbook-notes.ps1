@@ -133,11 +133,26 @@ function Run-Once([string]$reason) {
   Save-Status @{ step = 'writing'; total = $pending.total; batch = $count }
   $before = Note-Count
   $prompt = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md. The pending list is ai-engine/council/data/wrongbook_notes/pending.json ($count items)."
-  Push-Location $RepoRoot
-  try {
-    $out = & claude -p $prompt --allowedTools $AllowedTools --permission-mode acceptEdits --output-format text 2>&1 | ForEach-Object { "$_" } | Out-String
-    $claudeCode = $LASTEXITCODE
-  } finally { Pop-Location }
+  # Claude takes minutes per question. Run it as a separate process and keep writing the
+  # heartbeat meanwhile, otherwise the page reports "worker not running" during the run.
+  $outFile = Join-Path $WorkDir 'claude-output.txt'
+  $cmdLine = "/d /s /c `"claude -p `"$prompt`" --allowedTools `"$AllowedTools`" --permission-mode acceptEdits --output-format text > `"$outFile`" 2>&1`""
+  $proc = Start-Process -FilePath $env:ComSpec -ArgumentList $cmdLine -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru
+  $null = $proc.Handle  # keeps ExitCode readable after the process ends
+  $limit = (Get-Date).AddHours(3)
+  while (-not $proc.HasExited) {
+    if ((Get-Date) -gt $limit) {
+      & taskkill /PID $proc.Id /T /F | Out-Null
+      Invoke-Git @('checkout', '--', $NotesFile) | Out-Null
+      return (& $fail 'claude_failed' 'Claude Code did not finish within 3 hours')
+    }
+    Beat
+    Start-Sleep -Seconds 5
+  }
+  $proc.WaitForExit()
+  $claudeCode = $proc.ExitCode
+  $out = ''
+  if (Test-Path $outFile) { $out = [System.IO.File]::ReadAllText($outFile, $utf8) }
   Beat
   $tail = (($out.Trim() -split "`n") | Select-Object -Last 20) -join "`n"
   if ($claudeCode -ne 0) { Invoke-Git @('checkout', '--', $NotesFile) | Out-Null; return (& $fail 'claude_failed' $tail) }
