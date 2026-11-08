@@ -288,28 +288,34 @@ AHS.WrongBook = (function () {
      本身由引擎提供（http://localhost:3000）時顯示；只在按下後才連線引擎。 */
   var NOTES_STEPS = {
     boot: "開機後稍候啟動", update: "更新程式", pending: "讀取待整理的錯題",
-    writing: "Claude 撰寫重點整理與類題中（每題約 2～4 分鐘）", checking: "檢查格式",
+    writing: "撰寫重點整理與類題中（每題約 2～4 分鐘）", checking: "檢查格式",
+    reviewing: "Claude 複核無法確認答案的題目中",
     publishing: "上線中（開 PR、自動測試，約 5～10 分鐘）"
   };
   var NOTES_ERRORS = {
-    no_claude: "找不到 Claude Code（claude 指令），請先安裝並登入",
+    no_claude: "找不到 Gemini CLI 或 Claude Code，請先安裝並登入",
     no_git: "找不到 git", no_gh: "找不到 GitHub CLI（gh）", no_node: "找不到 node",
     no_key: "尚未設定 Supabase 金鑰，請執行「安裝錯題重點整理開機自動執行.bat」",
     busy: "上一批重點整理還在上線中，請稍後再按",
     not_main: "平台資料夾目前不在 main 分支", dirty: "平台資料夾有尚未提交的變更",
     update_failed: "無法更新到 GitHub 最新版", pending_failed: "讀取錯題失敗",
-    claude_failed: "Claude Code 執行失敗", extra_changes: "Claude 改到其他檔案，已停止上線",
+    claude_failed: "AI 撰寫失敗（Gemini 與 Claude 都沒有完成）", extra_changes: "AI 改到其他檔案，已停止上線",
     test_failed: "重點整理格式檢查沒通過，已停止上線", publish_failed: "上線（PR）失敗",
     worker_error: "執行程式發生錯誤"
   };
   function notesStatusText(st) {
     if (!st) { return ""; }
     if (st.queued && st.state !== "running") { return "已排入，等待本機程式開始…"; }
-    if (st.state === "running") { return "執行中：" + (NOTES_STEPS[st.step] || st.step || "") + (st.batch ? "（本批 " + st.batch + " 題）" : ""); }
+    var who = { gemini: "Gemini", claude: "Claude", codex: "Codex" }[st.writer] || "";
+    if (st.state === "running") {
+      return "執行中：" + (st.step === "writing" && who ? who + " " : "") + (NOTES_STEPS[st.step] || st.step || "") +
+        (st.step === "reviewing" && st.review ? "（" + st.review + " 題）" : (st.batch ? "（本批 " + st.batch + " 題）" : ""));
+    }
     if (st.state === "waiting") { return NOTES_STEPS.boot; }
     if (st.state === "error") { return "失敗：" + (NOTES_ERRORS[st.error] || st.error || "") + (st.message ? "（" + st.message + "）" : ""); }
     if (st.state === "done") {
-      return st.added ? "完成：新增 " + st.added + " 題重點整理，已上線，重新整理頁面即可看到" : "沒有需要整理的新錯題";
+      return st.added ? "完成：" + (who ? who + " " : "") + "新增 " + st.added + " 題重點整理" +
+        (st.reviewed ? "（其中 " + st.reviewed + " 題由 Claude 複核）" : "") + "，已上線，重新整理頁面即可看到" : "沒有需要整理的新錯題";
     }
     return "";
   }
