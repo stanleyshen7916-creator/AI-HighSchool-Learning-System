@@ -96,6 +96,13 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
     check(id + "：算式標記的大括號成對", bracesBalanced(body + stepText([].concat.apply([], (n.variants || []).map((v) => v.steps || [])))));
     check(id + "：方程式步驟都有標題與算式", n.steps.every((t) => typeof t === "string" || (t.title && Array.isArray(t.lines) && t.lines.length)));
     check(id + "：內文不寫 (A)~(E) 選項字母", !/[(（][A-E][)）]/.test(body));
+    if (n.errorType) {
+      check(id + "：errorType 只用觀念／計算／審題／記憶", Object.values(n.errorType).every((t) => ["觀念", "計算", "審題", "記憶"].indexOf(t) !== -1));
+    }
+    const hintCounts = (n.variants || []).map((v) => (v.hints || []).length);
+    if (hintCounts.some((c) => c > 0)) {
+      check(id + "：類題提示逐題遞減（漸進撤除）", hintCounts.every((c, i) => i === 0 || c <= hintCounts[i - 1]));
+    }
     (n.variants || []).forEach((v, i) => {
       const keys = (v.options || []).map((o) => o.key);
       check(id + " 類題" + (i + 1) + "：題目與原題不同、正確答案在選項中", v.question && v.question !== n.question && keys.indexOf(v.correctAnswer) !== -1 && keys.length >= 2);
@@ -119,6 +126,22 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
     { a: { basis: "【確認】ok" }, b: { basis: "【推論】答案不同" }, old: { basis: "【推論】x" } });
   check("Claude 把關：只挑本次新寫、未標【確認】的題目", rv.length === 1 && rv[0].questionId === "b");
   check("待整理清單：sb_secret_ 金鑰只放 apikey 標頭", !P.authHeaders("sb_secret_x").Authorization && P.authHeaders("eyJx").Authorization === "Bearer eyJx");
+
+  /* 2026-11-08 省 token：AI 只寫小 JSON，由 WrongBookNotesMerge.js 併入 */
+  const fs = require("fs");
+  const os = require("os");
+  const M = require(path.join(REPO, "scripts/maintenance/WrongBookNotesMerge.js"));
+  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "wbn-")), "Notes.js");
+  fs.writeFileSync(tmp, "/* header */\nwindow.AHS = window.AHS || {};\n\n" + M.MARKER + "{\n  \"a\": {\"keyPoint\": \"old\"}\n};\n", "utf8");
+  const r1 = M.merge(tmp, { a: { keyPoint: "new" }, b: { keyPoint: "B" } });
+  const merged = P.loadNotes(tmp);
+  check("合併：新增與取代計數正確", r1.added === 1 && r1.replaced === 1);
+  check("合併：同 id 取代、新 id 加入、保留檔頭", merged.a.keyPoint === "new" && merged.b.keyPoint === "B" && fs.readFileSync(tmp, "utf8").indexOf("/* header */") === 0);
+  let threw = false;
+  try { M.merge(tmp, [1, 2]); } catch (_) { threw = true; }
+  check("合併：拒絕非物件輸入", threw);
+  const ex = JSON.parse(fs.readFileSync(path.join(REPO, "ai-engine/council/tools/wrongbook-notes-example.json"), "utf8"));
+  check("格式範例：與正式資料的 tm_7_q18 一致", JSON.stringify(ex.tm_7_q18) === JSON.stringify(notes.tm_7_q18));
 
   console.log("WrongBookDeleteRegression: " + pass + " PASS / " + fail + " FAIL");
   process.exit(fail ? 1 : 0);
