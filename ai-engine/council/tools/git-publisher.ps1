@@ -141,10 +141,13 @@ function Publish-Request($req, [string]$id) {
     if ($r.code -eq 0) { break }
     # Someone (or another publish) may have merged it already, or main moved on and the
     # ruleset wants the branch up to date: bring it up to date and wait for the checks again.
-    $state = (Invoke-Gh @('pr', 'view', $prUrl, '--json', 'state,mergeStateStatus', '-q', '.state + " " + .mergeStateStatus')).out.Trim()
-    $log.Add("pr state: $state")
-    if ($state -like 'MERGED*') { break }
-    if ($state -like '* BEHIND') {
+    # (no jq expression with quotes: Windows PowerShell 5.1 strips them from native arguments)
+    $view = Invoke-Gh @('pr', 'view', $prUrl, '--json', 'state,mergeStateStatus')
+    $log.Add("pr state: $($view.out)")
+    $pr = $null
+    try { $pr = $view.out | ConvertFrom-Json } catch { }
+    if ($pr -and $pr.state -eq 'MERGED') { break }
+    if ($pr -and $pr.mergeStateStatus -eq 'BEHIND') {
       $u = Invoke-Gh @('pr', 'update-branch', $prUrl); $log.Add("gh pr update-branch: $($u.out)")
       $deadline = (Get-Date).AddMinutes(30)
     }
