@@ -957,8 +957,21 @@ AHS.WrongBook = (function () {
     return {
       id: item.id, questionId: item.questionId + "__v" + (i + 1), subject: item.subject,
       question: v.question, options: v.options, correctAnswer: v.correctAnswer,
-      steps: v.steps || [], isVariant: true
+      steps: v.steps || [], hints: v.hints || [], isVariant: true,
+      fading: list.some(function (x) { return x.hints && x.hints.length; })
     };
+  }
+
+  /* 2026-11-08 漸進撤除鷹架：類題作答前可展開的提示（第 1 題骨架、第 2 題第一步、
+     第 3 題沒有）。預設收合，想先自己算的學生不會被提示干擾。 */
+  function hintBlock(variant) {
+    if (!variant || !variant.hints || !variant.hints.length) {
+      return variant && variant.fading ? el("p", { class: "wb-variant__no-hint", text: "這題沒有提示，試著自己完整算一次。" }) : null;
+    }
+    return el("details", { class: "wb-variant__hints" }, [
+      el("summary", { text: "需要提示嗎？（" + variant.hints.length + " 行）" }),
+      el("ul", {}, variant.hints.map(function (h) { return el("li", {}, [mathInline(h)]); }))
+    ]);
   }
 
   /* 類題作答後的結果卡（顯示在題目詳解最上方）。 */
@@ -976,6 +989,18 @@ AHS.WrongBook = (function () {
       v.steps.length ? stepList(v.steps) : null,
       el("div", { class: "wb-detail__actions" }, [again])
     ]);
+  }
+
+  /* 2026-11-08 錯誤類型：觀念／計算／審題／記憶。多選題取第一個有標示的選項。 */
+  var ERROR_TYPES = { "觀念": 1, "計算": 1, "審題": 1, "記憶": 1 };
+  function errorTypeOf(note, picked) {
+    var map = note && note.errorType;
+    if (!map) { return ""; }
+    var keys = picked.length > 1 ? picked.split("") : [picked];
+    for (var i = 0; i < keys.length; i++) {
+      if (ERROR_TYPES[map[keys[i]]]) { return map[keys[i]]; }
+    }
+    return "";
   }
 
   function noteBlock(item) {
@@ -1005,7 +1030,10 @@ AHS.WrongBook = (function () {
         note.basis ? el("span", { class: "wb-note__basis", text: note.basis }) : null
       ]),
       el("p", { class: "wb-note__key", text: note.keyPoint }),
-      whyText ? section("你選 " + answerLabel(item, item.yourAnswer) + "，錯在哪", "why", [el("p", { class: "wb-note__text", text: whyText })]) : null,
+      whyText ? section("你選 " + answerLabel(item, item.yourAnswer) + "，錯在哪", "why", [
+        errorTypeOf(note, picked) ? el("span", { class: "wb-note__errtype", text: errorTypeOf(note, picked) + "錯誤" }) : null,
+        el("p", { class: "wb-note__text", text: whyText })
+      ]) : null,
       note.formulas && note.formulas.length ? section("要記的公式", "formula", [
         el("ul", { class: "wb-note__formulas" }, note.formulas.map(function (f) { return el("li", {}, [mathInline(f)]); }))
       ]) : null,
@@ -1096,6 +1124,7 @@ AHS.WrongBook = (function () {
         interaction = el("div", { class: "wb-variant" }, [
           el("p", { class: "wb-variant__label", text: "類題練習（同觀念、不同數字，不是原題）" }),
           el("p", { class: "wb-detail__question", text: "題目：" + variant.question }),
+          hintBlock(variant),
           interaction
         ]);
         ["wb-detail__question", "wb-detail__figure", "qref", "wb-variant-result"].forEach(function (cls) {
@@ -1499,6 +1528,7 @@ AHS.WrongBook = (function () {
           el("h2", { class: "wb-detail__title", text: item.title }),
           variant ? el("p", { class: "wb-variant__label", text: "類題練習（同觀念、不同數字，不是原題）" }) : null,
           el("p", { class: "wb-detail__question", text: "題目：" + (variant ? variant.question : item.question) }),
+          hintBlock(variant),
           (!variant && window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),
           /* Sprint AI-147/AI-148: resolveFigureSvg() also covers records
              created before figureSvg existed — see its own header above. */

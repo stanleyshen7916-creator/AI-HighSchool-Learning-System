@@ -78,6 +78,8 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 新錯題的重點整理與類題（`js/data/WrongBookNotesData.js`）由本機 AI 撰寫，自動開 PR 上線：
 
 - **撰寫**：Claude Code，預設 Sonnet 模型（`AHS_NOTES_CLAUDE_MODEL` 可改，例如 `opus`）。Gemini CLI 自 2026-06-18 起不再支援個人帳號（含 AI Pro）；仍可用 `AHS_NOTES_WRITER=agy|gemini|codex` 改由其他 AI 撰寫，此時 Claude 負責把關與備援。
+- **省 token**：AI 只把新筆記寫進 `ai-engine/council/data/wrongbook_notes/new-notes.json`（格式範例：`tools/wrongbook-notes-example.json`），不讀整個 `WrongBookNotesData.js`；由 `scripts/maintenance/WrongBookNotesMerge.js` 併入（一題一行）。
+- **教學設計**：每個錯誤選項標示錯誤類型（觀念／計算／審題／記憶）；3 題類題的作答前提示逐題遞減（骨架 → 第一步 → 無）。
 - **把關**：撰寫 AI 沒標【確認】的題目（重算答案與標準答案不一致或沒把握）交給 Claude Code 獨立重寫。
 - **備援**：撰寫 AI 沒安裝、額度用完、逾時或格式檢查失敗時，整批改由 Claude Code 撰寫。
 

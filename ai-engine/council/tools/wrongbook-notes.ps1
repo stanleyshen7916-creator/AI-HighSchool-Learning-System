@@ -49,7 +49,7 @@ $NotesFile = 'js/data/WrongBookNotesData.js'
 $PendingFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\pending.json'
 $PromptFile = Join-Path $RepoRoot 'ai-engine\council\tools\wrongbook-notes-prompt.md'
 $Publisher = Join-Path $RepoRoot 'ai-engine\council\tools\git-publisher.ps1'
-$AllowedTools = 'Read,Edit,Glob,Grep,WebSearch,WebFetch'
+$AllowedTools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch'
 $ReviewFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\review.json'
 $BeforeIdsFile = Join-Path $WorkDir 'ids-before.json'
 $PreferredWriter = if ($env:AHS_NOTES_WRITER) { $env:AHS_NOTES_WRITER.Trim().ToLower() } else { 'claude' }
@@ -156,6 +156,23 @@ function Check-Notes {
   return ''
 }
 
+# The AI writes only a small JSON file (new-notes.json); reading/editing the whole notes file
+# (hundreds of KB) cost most of the tokens. WrongBookNotesMerge.js then merges it in.
+$StagingRel = 'ai-engine/council/data/wrongbook_notes/new-notes.json'
+function Write-Notes([string]$agent, [string]$listRel, [int]$n, [switch]$Review) {
+  $staging = Join-Path $RepoRoot ($StagingRel -replace '/', '\')
+  [System.IO.File]::WriteAllText($staging, '{}', $utf8)
+  $mode = if ($Review) { ', in review mode (see the review-mode section)' } else { '' }
+  $prompt = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md$mode. The list is $listRel ($n items). Write the notes to the output file $StagingRel."
+  $r = Invoke-Agent $agent $prompt
+  if ($r.code -ne 0) { return "$agent failed: $($r.tail)" }
+  $m = Invoke-Node @('scripts/maintenance/WrongBookNotesMerge.js', '--in', $StagingRel)
+  if ($m.code -ne 0) { return "merge failed: $($m.out)" }
+  $script:status.lastMerge = $m.out
+  if ($m.out -match 'merged 0 added, 0 replaced') { return "$agent wrote no notes: $($r.tail)" }
+  return (Check-Notes)
+}
+
 function Run-Once([string]$reason) {
   $script:status = @{ state = 'running'; step = 'update'; reason = $reason; startedAt = (Get-Date).ToString('o') }
   Save-Status @{}
@@ -199,11 +216,8 @@ function Run-Once([string]$reason) {
   $before = Note-Count
   Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--ids-out', $BeforeIdsFile) | Out-Null
   $relPending = 'ai-engine/council/data/wrongbook_notes/pending.json'
-  $prompt = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md. The pending list is $relPending ($count items)."
 
-  $r = Invoke-Agent $writer $prompt
-  $check = if ($r.code -eq 0) { Check-Notes } else { "$writer failed: $($r.tail)" }
-  if (-not $check -and $writer -ne 'claude' -and (Note-Count) -le $before) { $check = "$writer wrote no notes: $($r.tail)" }
+  $check = Write-Notes $writer $relPending $count
   $writerNote = ''
   if ($check) {
     Invoke-Git @('checkout', '--', $NotesFile) | Out-Null
@@ -211,8 +225,7 @@ function Run-Once([string]$reason) {
     # the writer could not do it (quota, not signed in, hang, bad format): Claude writes this batch
     $writerNote = "$writer failed, Claude wrote this batch: $check"
     Save-Status @{ writer = 'claude'; writerError = $check }
-    $r = Invoke-Agent 'claude' $prompt
-    $check = if ($r.code -eq 0) { Check-Notes } else { "claude failed: $($r.tail)" }
+    $check = Write-Notes 'claude' $relPending $count
     if ($check) { Invoke-Git @('checkout', '--', $NotesFile) | Out-Null; return (& $fail 'claude_failed' $check) }
     $writer = 'claude'
   }
@@ -226,10 +239,7 @@ function Run-Once([string]$reason) {
     if ($toReview -gt 0) {
       Save-Status @{ step = 'reviewing'; review = $toReview }
       $snapshot = [System.IO.File]::ReadAllText((Join-Path $RepoRoot $NotesFile), $utf8)
-      $relReview = 'ai-engine/council/data/wrongbook_notes/review.json'
-      $rp = "Follow every instruction in ai-engine/council/tools/wrongbook-notes-prompt.md, in review mode (see the review-mode section). The list to review is $relReview ($toReview items)."
-      $r = Invoke-Agent 'claude' $rp
-      $check = if ($r.code -eq 0) { Check-Notes } else { "claude failed: $($r.tail)" }
+      $check = Write-Notes 'claude' 'ai-engine/council/data/wrongbook_notes/review.json' $toReview -Review
       if ($check) {
         # keep the writer's notes (still marked as unconfirmed) rather than losing the batch
         [System.IO.File]::WriteAllText((Join-Path $RepoRoot $NotesFile), $snapshot, $utf8)
