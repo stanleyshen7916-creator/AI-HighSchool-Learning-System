@@ -3467,5 +3467,1218 @@ AHS.WrongBookNotesData = {
       }
     ],
     basis: "【確認】價格上升使需求量減、供給量增，交易量取較小的供給量而增加，與 correctAnswer 一致並以課本數字驗算；類題已代值檢查。"
+  },
+
+  "tm_92_q8": {
+    keyPoint: "任選一點 O，向量 AB→ 一律等於「終點的位置向量減始點的位置向量」：AB→ = OB→ − OA→。",
+    formulas: [
+      "加法（首尾相接）：AB→ = AO→ + OB→",
+      "反向量：AO→ = −OA→",
+      "⇒ AB→ = OB→ − OA→（終點減始點）",
+      "坐標版：A(x_{1}, y_{1})、B(x_{2}, y_{2}) ⇒ AB→ = (x_{2} − x_{1}, y_{2} − y_{1})"
+    ],
+    whyWrong: {
+      B: "AO→ − OB→ = −OA→ − OB→，等於 −(OA→ + OB→)，不是 AB→。正確是 AO→「加」OB→：首尾相接 A→O→B 才走到 B。",
+      A: "OA→ + OB→ 不是首尾相接（兩個都從 O 出發），加起來是以 O 為起點的對角線方向，與 AB→ 無關。",
+      D: "OA→ − OB→ 是「始點減終點」，得到的是 BA→ = −AB→，方向剛好相反。"
+    },
+    steps: [
+      { title: "用首尾相接拆開 AB→", lines: [
+        "從 A 先走到 O，再從 O 走到 B",
+        "AB→ = AO→ + OB→"
+      ] },
+      { title: "把 AO→ 換成以 O 為起點", lines: [
+        "AO→ = −OA→",
+        "⇒ AB→ = −OA→ + OB→",
+        "= OB→ − OA→"
+      ], note: "口訣：終點減始點" },
+      { title: "逐一檢查其他選項", lines: [
+        "OA→ + OB→：兩向量都從 O 出發，不是首尾相接 ⇒ 錯",
+        "AO→ − OB→ = −OA→ − OB→ ⇒ 錯",
+        "OA→ − OB→ = BA→ = −AB→ ⇒ 方向相反，錯"
+      ] },
+      { title: "用坐標驗算", lines: [
+        "取 O(0, 0)、A(1, 2)、B(4, 6)",
+        "AB→ = (4 − 1, 6 − 2) = (3, 4)",
+        "OB→ − OA→ = (4, 6) − (1, 2) = (3, 4) ✓",
+        "AO→ − OB→ = (−1, −2) − (4, 6) = (−5, −8) ≠ (3, 4)"
+      ] }
+    ],
+    traps: [
+      "減法是「終點減始點」，不是始點減終點。",
+      "加法要首尾相接（前一個的終點是下一個的始點）才能合併。",
+      "AO→ 與 OA→ 互為反向量，換寫時要加負號。",
+      "不確定時隨便取三個點的坐標代進去驗算。"
+    ],
+    references: [
+      { title: "向量減法 學習單", source: "臺灣師範大學 數學系", url: "https://www.math.ntnu.edu.tw/workshop/animated_math/media/向量減法_學習單.pdf", kind: "講義" },
+      { title: "3.1 平面向量的表示法（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/3.1%20%E5%B9%B3%E9%9D%A2%E5%90%91%E9%87%8F%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%B3%95(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "對任一向量 PQ→ 與任一點 O，下列何者正確？",
+        options: [
+          { key: "A", text: "PQ→ = OQ→ − OP→" },
+          { key: "B", text: "PQ→ = OP→ − OQ→" },
+          { key: "C", text: "PQ→ = OP→ + OQ→" },
+          { key: "D", text: "PQ→ = PO→ − OQ→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "首尾相接", lines: ["PQ→ = PO→ + OQ→", "= −OP→ + OQ→", "= OQ→ − OP→"] },
+          { title: "驗算", lines: ["取 P(1, 1)、Q(3, 5)、O(0, 0)", "PQ→ = (2, 4)", "OQ→ − OP→ = (3, 5) − (1, 1) = (2, 4) ✓"] }
+        ]
+      },
+      {
+        question: "坐標平面上 A(1, 2)、B(4, −2)，則 AB→ = ？",
+        options: [
+          { key: "A", text: "(3, −4)" },
+          { key: "B", text: "(−3, 4)" },
+          { key: "C", text: "(5, 0)" },
+          { key: "D", text: "(3, 4)" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "終點減始點", lines: ["AB→ = (4 − 1, −2 − 2)", "= (3, −4)"] },
+          { title: "驗算", lines: ["A + AB→ = (1 + 3, 2 − 4) = (4, −2) = B ✓"], note: "(−3, 4) 是始點減終點，得到 BA→" }
+        ]
+      },
+      {
+        question: "對任意三點 A、B、C，AB→ + BC→ − AC→ = ？",
+        options: [
+          { key: "A", text: "零向量" },
+          { key: "B", text: "2AC→" },
+          { key: "C", text: "2AB→" },
+          { key: "D", text: "CA→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "首尾相接", lines: ["AB→ + BC→ = AC→", "⇒ AC→ − AC→ = 0→"] },
+          { title: "驗算", lines: ["取 A(0, 0)、B(1, 0)、C(1, 1)", "(1, 0) + (0, 1) − (1, 1) = (0, 0) ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行由首尾相接推得 AB→ = OB→ − OA→，與 correctAnswer 一致，並以坐標代值檢查各選項；類題皆已代坐標驗算。"
+  },
+
+  "tm_92_q12": {
+    keyPoint: "坐標向量做係數積與加減時，係數分別乘進每個分量、分量對應相加減；最後長度用 sqrt{x^{2} + y^{2}}。",
+    formulas: [
+      "k(x, y) = (kx, ky)",
+      "(x_{1}, y_{1}) ± (x_{2}, y_{2}) = (x_{1} ± x_{2}, y_{1} ± y_{2})",
+      "|(x, y)| = sqrt{x^{2} + y^{2}}"
+    ],
+    whyWrong: {
+      A: "11 不是 (12, 5) 的長度；通常是某個分量的係數或正負號算錯，或沒有用「平方相加再開根號」。逐項重算得 (12, 5)，長度 sqrt{169} = 13。",
+      B: "√41 對應的向量長度平方是 41（例如 (4, 5)），代表分量算錯；正確向量是 (12, 5)，長度平方是 169。",
+      D: "5 只是 y 分量，忘了 x 分量 12 也要平方相加。"
+    },
+    steps: [
+      { title: "係數乘進每個分量", lines: [
+        "4a→ = 4(−1, 2) = (−4, 8)",
+        "3b→ = 3(2, 1) = (6, 3)",
+        "−2c→ = −2(−5, 3) = (10, −6)"
+      ], note: "−2 × (−5) = +10，負負得正" },
+      { title: "分量對應相加", lines: [
+        "4a→ + 3b→ − 2c→ = (−4 + 6 + 10, 8 + 3 − 6)",
+        "= (12, 5)"
+      ] },
+      { title: "求長度", lines: [
+        "|(12, 5)| = sqrt{12^{2} + 5^{2}}",
+        "= sqrt{144 + 25}",
+        "= sqrt{169} = 13"
+      ] },
+      { title: "驗算", lines: [
+        "x 分量：−4 + 6 + 10 = 12 ✓",
+        "y 分量：8 + 3 − 6 = 5 ✓",
+        "5、12、13 是畢氏三元數 ⇒ 13 ✓"
+      ] }
+    ],
+    traps: [
+      "減去一個向量 = 加上它的反向量，每個分量都要變號。",
+      "係數要乘進「每一個」分量，不能只乘第一個。",
+      "長度不是 x + y，要平方相加再開根號。"
+    ],
+    references: [
+      { title: "3.1 平面向量的表示法（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/3.1%20%E5%B9%B3%E9%9D%A2%E5%90%91%E9%87%8F%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%B3%95(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" },
+      { title: "第 3 章 平面向量 3-1 平面向量的表示法（習作）", source: "南崁高中", url: "https://www.nksh.tyc.edu.tw/ischool/wr/file/1/12649/81675bd722fcfdd4a5b3d86968911ea4.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "a→ = (2, −1)、b→ = (1, 3)，則 |2a→ + b→| = ？",
+        options: [
+          { key: "A", text: "√26" },
+          { key: "B", text: "6" },
+          { key: "C", text: "√10" },
+          { key: "D", text: "5" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "計算向量", lines: ["2a→ = (4, −2)", "2a→ + b→ = (4 + 1, −2 + 3)", "= (5, 1)"] },
+          { title: "求長度並驗算", lines: ["sqrt{5^{2} + 1^{2}} = sqrt{26}", "⇒ 26 不是完全平方，答案保留 sqrt{26} ✓"] }
+        ]
+      },
+      {
+        question: "a→ = (3, 1)、b→ = (−1, 2)、c→ = (1, −4)，則 |a→ + 2b→ − c→| = ？",
+        options: [
+          { key: "A", text: "9" },
+          { key: "B", text: "√65" },
+          { key: "C", text: "7" },
+          { key: "D", text: "√82" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "計算向量", lines: [
+            "2b→ = (−2, 4)",
+            "−c→ = (−1, 4)",
+            "a→ + 2b→ − c→ = (3 − 2 − 1, 1 + 4 + 4)",
+            "= (0, 9)"
+          ] },
+          { title: "求長度並驗算", lines: ["sqrt{0^{2} + 9^{2}} = 9", "⇒ x 分量 3 − 2 − 1 = 0 ✓"] }
+        ]
+      },
+      {
+        question: "a→ = (1, 2)、b→ = (3, −1)，則 |3a→ − 2b→| = ？",
+        options: [
+          { key: "A", text: "√73" },
+          { key: "B", text: "√13" },
+          { key: "C", text: "11" },
+          { key: "D", text: "5" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "計算向量", lines: ["3a→ = (3, 6)", "2b→ = (6, −2)", "3a→ − 2b→ = (3 − 6, 6 − (−2))", "= (−3, 8)"] },
+          { title: "求長度並驗算", lines: ["sqrt{(−3)^{2} + 8^{2}} = sqrt{9 + 64}", "= sqrt{73} ✓"], note: "6 − (−2) = 8，減負數要變加" }
+        ]
+      }
+    ],
+    basis: "【確認】自行計算得 (12, 5)、長度 13，與 correctAnswer 一致；類題每個分量與長度均已重算驗證。"
+  },
+
+  "tm_85_q35": {
+    keyPoint: "帖木兒（1336～1405）以「伊斯蘭之劍」自居，1370 年起建立帖木兒帝國，疆域涵蓋中亞、伊朗及部分印度與高加索。",
+    formulas: [
+      "帖木兒帝國：1370～1507，建立者帖木兒，自稱「伊斯蘭之劍」",
+      "控制察合臺汗國及部分伊兒汗國的舊地",
+      "鄂圖曼帝國巔峰：十六世紀蘇萊曼一世",
+      "蒙兀兒帝國：十六世紀阿克巴（宗教寬容）",
+      "奧米雅王朝：661 年穆阿威雅建立"
+    ],
+    whyWrong: {
+      B: "蘇萊曼一世是十六世紀鄂圖曼帝國的蘇丹，國勢在他任內達到巔峰，被稱為「蘇萊曼大帝」，不是十四世紀建國者。",
+      C: "阿克拜（阿克巴）是十六世紀蒙兀兒帝國的皇帝，以宗教寬容聞名，與十四世紀無關。",
+      D: "穆阿威雅在 661 年建立奧米雅王朝，時代是七世紀。"
+    },
+    steps: [
+      { title: "抓題幹關鍵", lines: [
+        "題幹關鍵：十四世紀建立帝國、自稱「伊斯蘭之劍」",
+        "⇒ 指帖木兒"
+      ] },
+      { title: "用時代排除其他人物", lines: [
+        "穆阿威雅：七世紀 ⇒ 太早",
+        "蘇萊曼一世：十六世紀鄂圖曼 ⇒ 太晚",
+        "阿克巴：十六世紀蒙兀兒 ⇒ 太晚"
+      ] },
+      { title: "對照課本確認", lines: [
+        "課本：帖木兒帝國 1370～1507",
+        "⇒ 建立者帖木兒以「伊斯蘭之劍」自居 ✓"
+      ], note: "1370 年其實屬十四世紀後半；題幹「中葉」是概略說法，不影響答案" }
+    ],
+    traps: [
+      "看到「伊斯蘭」「帝國」就選名氣最大的蘇萊曼——先看世紀。",
+      "帖木兒是突厥化蒙古人，以成吉思汗後裔的名義爭取正當性。",
+      "帖木兒 1405 年死於遠征明朝途中，帝國隨後分裂。"
+    ],
+    references: [
+      { title: "After the decline of the Mongols in Central Asia and Persia（帖木兒帝國與後繼伊斯蘭帝國）", source: "Macmillan《Understanding World Societies》", url: "https://digfir-published.macmillanusa.com/mckayworldunderstanding2e/mckayworldunderstanding2e_ch17_21.html", kind: "文章" },
+      { title: "The portrait of Amir Timur in Tamerlane: Sword of Islam, Conqueror of the World", source: "索菲亞大學期刊", url: "https://periodicals.uni-sofia.bg/index.php/philology/en/article/view/3769", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "十四世紀後期崛起於中亞、控制察合臺汗國舊地、並自稱「伊斯蘭之劍」的帝國是？",
+        options: [
+          { key: "A", text: "帖木兒帝國" },
+          { key: "B", text: "鄂圖曼帝國" },
+          { key: "C", text: "薩法維帝國" },
+          { key: "D", text: "阿拔斯王朝" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "中亞＋察合臺舊地＋伊斯蘭之劍 ⇒ 帖木兒帝國",
+            "鄂圖曼起於小亞細亞 ⇒ 錯",
+            "薩法維 1501 年才建立 ⇒ 錯",
+            "阿拔斯 750 年建立 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "下列人物與所屬政權的配對，何者正確？",
+        options: [
+          { key: "A", text: "蘇萊曼一世—鄂圖曼帝國" },
+          { key: "B", text: "帖木兒—蒙兀兒帝國" },
+          { key: "C", text: "阿克巴—薩法維帝國" },
+          { key: "D", text: "穆阿威雅—阿拔斯王朝" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "逐項判斷", lines: [
+            "蘇萊曼一世是鄂圖曼蘇丹 ⇒ 正確",
+            "帖木兒建帖木兒帝國（蒙兀兒是其後裔巴布爾所建）⇒ 錯",
+            "阿克巴屬蒙兀兒 ⇒ 錯",
+            "穆阿威雅建奧米雅王朝 ⇒ 錯"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依課本 p.88 與外部資料（帖木兒 1336～1405，自稱「伊斯蘭之劍」）重新判斷，答案與 correctAnswer 一致；題幹「十四世紀中葉」與 1370 年建國略有出入，但不影響唯一正解。"
+  },
+
+  "tm_85_q12": {
+    keyPoint: "正統哈里發時期（632～661）的擴張成果：擊潰波斯薩珊帝國、從拜占庭手中奪下埃及；拜占庭本身要到 1453 年才被鄂圖曼滅亡。",
+    formulas: [
+      "642 年前後：滅薩珊波斯主力、占領埃及（結束埃及約七世紀的羅馬統治）",
+      "732 年：奧米雅王朝進攻西歐，被法蘭克王國擋下（都爾戰役）",
+      "1453 年：鄂圖曼攻下君士坦丁堡，拜占庭滅亡"
+    ],
+    whyWrong: {
+      A: "君士坦丁堡要到 1453 年才被鄂圖曼土耳其人攻下，七世紀的阿拉伯軍隊雖曾圍攻，但沒有成功，拜占庭仍存續了八百年。",
+      C: "進攻西歐是八世紀奧米雅王朝的事，而且 732 年被法蘭克王國擊退，是失敗不是勝利。",
+      D: "七世紀的擴張範圍是西亞、北非；伊斯蘭勢力從未在這時征服印度全境。"
+    },
+    steps: [
+      { title: "抓題幹關鍵", lines: [
+        "題幹關鍵：七世紀中葉 ⇒ 正統哈里發時期",
+        "⇒ 主要對手是薩珊波斯與拜占庭"
+      ] },
+      { title: "找出正確成果", lines: [
+        "薩珊與拜占庭長年交戰，國力耗損",
+        "⇒ 阿拉伯軍擊潰薩珊、從拜占庭手中奪下埃及",
+        "⇒ 「滅波斯薩珊、占領埃及」正確"
+      ] },
+      { title: "用年代排除其他選項", lines: [
+        "攻下君士坦丁堡：1453 年鄂圖曼 ⇒ 時代不符",
+        "打敗法蘭克：732 年反被法蘭克擊退 ⇒ 結果相反",
+        "征服印度全境：從未發生 ⇒ 錯"
+      ] }
+    ],
+    traps: [
+      "拜占庭只丟了埃及、敘利亞等領土，首都君士坦丁堡沒被攻下。",
+      "732 年是伊斯蘭向西歐擴張「受阻」，別記成勝利。",
+      "薩珊在 642 年主力被擊潰，651 年末代君主被殺，王朝告終。"
+    ],
+    references: [
+      { title: "穆罕默德後繼者－哈里發時代", source: "教育部 教育大市集", url: "https://market.cloud.edu.tw/resources/web/1658484", kind: "文章" },
+      { title: "Islam's Spread Beyond Arabia", source: "Macmillan《Understanding World Societies》", url: "https://digfir-published.macmillanusa.com/mckayworldunderstanding2e/mckayworldunderstanding2e_ch9_8.html", kind: "文章" },
+      { title: "Islam Expands Throughout the Middle East", source: "EBSCO Research Starters", url: "https://www.ebsco.com/research-starters/history/islam-expands-throughout-middle-east", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "八世紀上半，伊斯蘭勢力越過庇里牛斯山進攻西歐，結果為何？",
+        options: [
+          { key: "A", text: "被法蘭克王國擊退，向西歐的擴張受阻" },
+          { key: "B", text: "攻下巴黎，統治法蘭克王國" },
+          { key: "C", text: "攻下君士坦丁堡，滅亡拜占庭" },
+          { key: "D", text: "與法蘭克王國結盟對抗拜占庭" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "732 年都爾戰役 ⇒ 法蘭克王國擊退穆斯林軍隊",
+            "⇒ 伊斯蘭向西歐擴張受阻 ✓",
+            "君士坦丁堡 1453 年才陷落 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "七世紀阿拉伯人能迅速擊敗波斯薩珊帝國，最主要的背景是？",
+        options: [
+          { key: "A", text: "薩珊與拜占庭長期交戰，國力耗損" },
+          { key: "B", text: "薩珊已先被蒙古人滅亡" },
+          { key: "C", text: "薩珊主動改信伊斯蘭教" },
+          { key: "D", text: "鄂圖曼帝國出兵協助阿拉伯人" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "602～628 年薩珊與拜占庭大戰 ⇒ 雙方都疲弱",
+            "⇒ 阿拉伯軍乘虛而入 ✓",
+            "蒙古、鄂圖曼都是數百年後才出現 ⇒ 時代錯"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依課本 p.77 與外部資料（641～642 年占領埃及、642 年後薩珊瓦解；君士坦丁堡 1453 年陷落）重新判斷，與 correctAnswer 一致。"
+  },
+
+  "tm_85_q9": {
+    keyPoint: "五功是「唸、禮、齋、課、朝」：唸＝信仰表白，禮＝每日朝麥加禮拜，齋＝齋戒月日出到日落禁食，課＝捐獻財富濟貧（天課），朝＝一生至少到麥加朝覲一次。",
+    formulas: [
+      "唸：公開表白「萬物非主，唯有真主；穆罕默德是真主的使者」",
+      "禮：每日五次面向麥加禮拜",
+      "齋：齋戒月期間，日出到日落禁食",
+      "課：依財產比例捐獻，救濟貧困（天課）",
+      "朝：有能力者一生至少到麥加天房朝覲一次"
+    ],
+    whyWrong: {
+      A: "「每日朝麥加禱告」是禮，不是課；課是捐獻財富濟貧。",
+      E: "漏選：齋戒月期間日出到日落禁食，正是「齋」，這句正確。",
+      C: "「捐獻財富作為救濟」是課；唸是公開表白信仰。",
+      D: "每日禱告才是禮，而且朝覲地點是麥加，不是耶路撒冷。"
+    },
+    steps: [
+      { title: "先背好五功對照", lines: [
+        "唸 ⇒ 信仰表白",
+        "禮 ⇒ 每日禮拜",
+        "齋 ⇒ 齋戒月禁食",
+        "課 ⇒ 捐獻濟貧",
+        "朝 ⇒ 到麥加朝覲"
+      ] },
+      { title: "逐項判斷", lines: [
+        "課配每日禱告 ⇒ 錯（那是禮）",
+        "朝配一生至少到麥加天房一次 ⇒ 正確",
+        "唸配捐獻財富 ⇒ 錯（那是課）",
+        "禮配到耶路撒冷朝聖 ⇒ 錯（內容與地點都不對）",
+        "齋配齋戒月日出到日落禁食 ⇒ 正確"
+      ] },
+      { title: "核對應選數量", lines: [
+        "正確共 2 項：朝、齋",
+        "⇒ 與題目「應選 2 項」相符 ✓"
+      ] }
+    ],
+    traps: [
+      "「禮」和「課」最容易對調：禮是禮拜，課是課稅般的捐獻。",
+      "朝覲聖地是麥加天房，不是耶路撒冷。",
+      "齋戒是日出到日落禁食，日落後可以進食，不是整月不吃。",
+      "多選題選完要核對應選數量，少一項就是漏選。"
+    ],
+    references: [
+      { title: "五功（漢典 詞條）", source: "漢典", url: "https://www.zdic.net/hant/五功", kind: "文章" },
+      { title: "【一頁阿拉伯】關於伊斯蘭教的 5 個問題", source: "換日線 Crossing", url: "https://crossing.cw.com.tw/article/11088", kind: "文章" },
+      { title: "RE: Five Pillars of Islam", source: "Bridgewater Primary School", url: "https://www.bridgewater.newcastle.sch.uk/wp-content/uploads/2024/01/RE-Five-Pillars-of-Islam.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "穆斯林每年依財產比例捐出一部分救濟貧困，屬於五功中的哪一項？",
+        options: [
+          { key: "A", text: "課" },
+          { key: "B", text: "禮" },
+          { key: "C", text: "唸" },
+          { key: "D", text: "朝" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "題幹關鍵：捐出財產、救濟貧困",
+            "⇒ 天課 ⇒ 課 ✓",
+            "禮是禮拜、唸是信仰表白、朝是朝覲 ⇒ 都不符"
+          ] }
+        ]
+      },
+      {
+        question: "下列有關伊斯蘭教五功的敘述，何者正確？",
+        options: [
+          { key: "A", text: "禮：每日五次面向麥加禮拜" },
+          { key: "B", text: "齋：每年齋戒月整個月不分晝夜禁食" },
+          { key: "C", text: "朝：每年都必須到耶路撒冷朝聖" },
+          { key: "D", text: "唸：每日捐獻財物給清真寺" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "逐項判斷", lines: [
+            "禮＝每日面向麥加禮拜 ⇒ 正確",
+            "齋只在日出到日落禁食 ⇒ 錯",
+            "朝是一生至少一次、地點麥加 ⇒ 錯",
+            "唸是信仰表白，捐獻是課 ⇒ 錯"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依五功定義（唸、禮、齋、課、朝）逐項判斷，正確為朝與齋兩項，與 correctAnswer 一致；外部資料亦確認各功內容。"
+  },
+
+  "tm_92_q17": {
+    keyPoint: "正六邊形的中心 O 使 ABOF 成為菱形，所以 AO→ = a→ + b→；而 AD→ 是對角線、長度是 AO 的兩倍，AD→ = 2a→ + 2b→。",
+    formulas: [
+      "平行四邊形法則：AO→ = AB→ + AF→ = a→ + b→（ABOF 為菱形）",
+      "AD→ = 2AO→",
+      "正六邊形：BC→ = AO→、FE→ = AO→（對邊平行且等長）"
+    ],
+    whyWrong: {
+      A: "a→ + b→ 只走到中心 O（AO→），AD→ 要再走一倍，是 2(a→ + b→)。",
+      B: "a→ + 2b→ 是 AE→，不是 AD→。",
+      C: "2a→ + b→ 是 AC→，不是 AD→。"
+    },
+    steps: [
+      { title: "先找中心 O", lines: [
+        "正六邊形由 6 個正三角形組成",
+        "⇒ AB = BO = OF = FA，且 ABOF 是菱形",
+        "⇒ AO→ = AB→ + AF→ = a→ + b→"
+      ] },
+      { title: "延伸到 D", lines: [
+        "A、O、D 共線，且 AO = OD",
+        "AD→ = 2AO→",
+        "= 2a→ + 2b→"
+      ] },
+      { title: "用坐標驗算", lines: [
+        "設中心為原點、邊長 1：A(1, 0)、B(frac{1}{2}, frac{sqrt{3}}{2})、F(frac{1}{2}, −frac{sqrt{3}}{2})、D(−1, 0)",
+        "a→ = (−frac{1}{2}, frac{sqrt{3}}{2})，b→ = (−frac{1}{2}, −frac{sqrt{3}}{2})",
+        "2a→ + 2b→ = (−2, 0)",
+        "AD→ = D − A = (−2, 0) ✓"
+      ] }
+    ],
+    traps: [
+      "a→ + b→ 只到中心，不是到對角頂點。",
+      "記住三條：AC→ = 2a→ + b→、AD→ = 2a→ + 2b→、AE→ = a→ + 2b→。",
+      "沒把握時設中心為原點，用坐標直接算。"
+    ],
+    references: [
+      { title: "[Exercise] Addition of vectors on a regular hexagon", source: "GeoGebra", url: "https://mat.geogebra.org/m/hkmqd7cu", kind: "互動" },
+      { title: "第 3 章 平面向量 3-1 平面向量的表示法（習作）", source: "南崁高中", url: "https://www.nksh.tyc.edu.tw/ischool/wr/file/1/12649/81675bd722fcfdd4a5b3d86968911ea4.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "正六邊形 ABCDEF 中，AB→ = a→、AF→ = b→，則 AC→ = ？",
+        options: [
+          { key: "A", text: "2a→ + b→" },
+          { key: "B", text: "a→ + 2b→" },
+          { key: "C", text: "a→ + b→" },
+          { key: "D", text: "2a→ + 2b→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "拆解", lines: ["AC→ = AB→ + BC→", "BC→ = AO→ = a→ + b→", "⇒ AC→ = a→ + (a→ + b→) = 2a→ + b→"] },
+          { title: "坐標驗算", lines: ["C(−frac{1}{2}, frac{sqrt{3}}{2})", "AC→ = (−frac{3}{2}, frac{sqrt{3}}{2})", "2a→ + b→ = (−1 − frac{1}{2}, sqrt{3} − frac{sqrt{3}}{2}) = (−frac{3}{2}, frac{sqrt{3}}{2}) ✓"] }
+        ]
+      },
+      {
+        question: "正六邊形 ABCDEF 中，AB→ = a→、AF→ = b→，則 BE→ = ？",
+        options: [
+          { key: "A", text: "2b→" },
+          { key: "B", text: "2a→" },
+          { key: "C", text: "a→ + b→" },
+          { key: "D", text: "b→ − a→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "拆解", lines: ["BE→ = BO→ + OE→", "BO→ = AF→ = b→，OE→ = AF→ = b→", "⇒ BE→ = 2b→"], note: "BE 平行 AF，且長度是邊長兩倍" },
+          { title: "坐標驗算", lines: ["E(−frac{1}{2}, −frac{sqrt{3}}{2})", "BE→ = E − B = (−1, −sqrt{3})", "2b→ = (−1, −sqrt{3}) ✓"] }
+        ]
+      },
+      {
+        question: "正六邊形 ABCDEF 中，AB→ = a→、AF→ = b→，則 AE→ = ？",
+        options: [
+          { key: "A", text: "a→ + 2b→" },
+          { key: "B", text: "2a→ + b→" },
+          { key: "C", text: "2b→" },
+          { key: "D", text: "a→ + b→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "拆解", lines: ["AE→ = AF→ + FE→", "FE→ = AO→ = a→ + b→", "⇒ AE→ = b→ + a→ + b→ = a→ + 2b→"] },
+          { title: "坐標驗算", lines: ["AE→ = E − A = (−frac{3}{2}, −frac{sqrt{3}}{2})", "a→ + 2b→ = (−frac{3}{2}, frac{sqrt{3}}{2} − sqrt{3}) = (−frac{3}{2}, −frac{sqrt{3}}{2}) ✓"] }
+        ]
+      }
+    ],
+    basis: "【確認】自行以菱形 ABOF 推得 AD→ = 2a→ + 2b→，並設坐標驗算，與 correctAnswer 一致；三個類題皆已用坐標驗算。"
+  },
+
+  "tm_85_q17": {
+    keyPoint: "十世紀伊斯蘭世界「一分為三」：西亞的阿拔斯王朝、北非什葉派的法提馬王朝、西班牙的奧米雅王朝（後奧米雅），三方各有哈里發。",
+    formulas: [
+      "阿拔斯王朝：750 年推翻奧米雅，定都巴格達（西亞）",
+      "奧米雅遺族：逃到西班牙重建政權（首都哥多華）",
+      "法提馬王朝：909～1171，什葉派，起於北非，後定都開羅",
+      "十三世紀：蒙古西征後的欽察、察合臺、伊兒汗國",
+      "十六、十七世紀：鄂圖曼、薩法維、蒙兀兒三大帝國"
+    ],
+    whyWrong: {
+      C: "欽察、察合臺、伊兒汗國是十三世紀蒙古西征後建立的汗國，時代晚了三百年，而且是蒙古政權，不是伊斯蘭政權分裂。",
+      B: "鄂圖曼、薩法維、蒙兀兒是十六、十七世紀的伊斯蘭三大帝國，時代太晚。",
+      D: "正統哈里發、奧米雅、阿拔斯是先後接續的三個時期，不是同時並立的三個政權。"
+    },
+    steps: [
+      { title: "抓題幹關鍵", lines: [
+        "題幹關鍵：十世紀、「一分為三」",
+        "⇒ 要找同一時間並立的三個伊斯蘭政權"
+      ] },
+      { title: "還原分裂過程", lines: [
+        "750 年 阿拔斯推翻奧米雅 ⇒ 奧米雅遺族逃到西班牙重建",
+        "909 年 什葉派在北非建法提馬王朝",
+        "⇒ 阿拔斯（西亞）＋法提馬（北非）＋奧米雅（西班牙）"
+      ] },
+      { title: "用時代排除", lines: [
+        "三個汗國：十三世紀 ⇒ 錯",
+        "三大帝國：十六世紀 ⇒ 錯",
+        "正統哈里發→奧米雅→阿拔斯：先後接續，不是並立 ⇒ 錯"
+      ] }
+    ],
+    traps: [
+      "「一分為三」要的是同時並立，不是先後相接。",
+      "法提馬是什葉派政權，另兩個屬遜尼派。",
+      "三個「三分」別混：十世紀三哈里發、十三世紀蒙古汗國、十六世紀三大帝國。"
+    ],
+    references: [
+      { title: "Fatimid dynasty（summary）", source: "Britannica", url: "https://www.Britannica.Com/summary/Fatimid-dynasty", kind: "文章" },
+      { title: "8.11: The Fatimid Caliphate", source: "LibreTexts（World History to 1500）", url: "https://human.libretexts.org/Sandboxes/liana_at_hawaii.edu/HIST_151%3A_World_History_to_1500_(Horovitz)/08%3A_Islam_to_the_Mamluks/8.11%3A_The_Fatimid_Caliphate", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "十世紀時，在北非建立政權、並與巴格達的阿拔斯王朝對立的什葉派王朝是？",
+        options: [
+          { key: "A", text: "法提馬王朝" },
+          { key: "B", text: "奧米雅王朝" },
+          { key: "C", text: "薩法維帝國" },
+          { key: "D", text: "伊兒汗國" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "十世紀＋北非＋什葉派 ⇒ 法提馬王朝 ✓",
+            "奧米雅在西班牙、屬遜尼派 ⇒ 錯",
+            "薩法維是十六世紀伊朗 ⇒ 錯",
+            "伊兒汗國是十三世紀蒙古政權 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "阿拔斯王朝建立後，奧米雅王室遺族逃往何處重建政權？",
+        options: [
+          { key: "A", text: "西班牙" },
+          { key: "B", text: "埃及" },
+          { key: "C", text: "印度" },
+          { key: "D", text: "中亞" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "750 年阿拔斯推翻奧米雅",
+            "⇒ 遺族逃到伊比利半島，以哥多華為中心重建 ✓",
+            "埃及後來屬法提馬 ⇒ 錯"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依課本 p.78～79 與 Britannica 等資料（法提馬 909 年建立、奧米雅遺族在西班牙重建）重新判斷，與 correctAnswer 一致。"
+  },
+
+  "tm_85_q7": {
+    keyPoint: "「伊斯蘭」本意是「服從神命」（順從真主），「穆斯林」就是「服從者」；「哈里發」才是「繼承者」。",
+    formulas: [
+      "伊斯蘭（Islam）＝服從神命、順從真主",
+      "穆斯林（Muslim）＝服從者",
+      "哈里發（Caliph）＝繼承者（穆罕默德的繼承人）",
+      "吉哈德（jihad）常被譯為「聖戰」，本義是「奮鬥」"
+    ],
+    whyWrong: {
+      C: "「聖戰」是吉哈德的常見譯法，不是「伊斯蘭」一詞的本意；把伊斯蘭直接等同聖戰是常見的誤解。",
+      A: "伊斯蘭與阿拉伯文「和平（salam）」同字根，但本意是服從神命，不是「和平與繁榮」。",
+      D: "「繼承者」是哈里發的意思，指穆罕默德死後的政教領袖。"
+    },
+    steps: [
+      { title: "回想課本定義", lines: [
+        "課本註：伊斯蘭本意 ⇒ 服從神命",
+        "⇒ 穆斯林 ⇒ 服從者"
+      ] },
+      { title: "排除其他選項", lines: [
+        "聖戰 ⇒ 吉哈德的譯法，不是伊斯蘭的字義",
+        "繼承者 ⇒ 哈里發的字義",
+        "和平與繁榮 ⇒ 只是同字根聯想，不是本意"
+      ] },
+      { title: "結論", lines: ["⇒ 伊斯蘭的本意是「服從神命」✓"] }
+    ],
+    traps: [
+      "伊斯蘭（服從）、穆斯林（服從者）、哈里發（繼承者）三個詞成組記。",
+      "伊斯蘭與「和平」同字根，但考題問本意時答「服從」。",
+      "不要把媒體常見的「聖戰」印象當成字義。"
+    ],
+    references: [
+      { title: "何謂伊斯蘭教？", source: "教育部 教育大市集", url: "https://market.cloud.edu.tw/resources/web/1658481", kind: "文章" },
+      { title: "【一頁阿拉伯】關於伊斯蘭教的 5 個問題", source: "換日線 Crossing", url: "https://crossing.cw.com.tw/article/11088", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "穆罕默德死後，穆斯林公社推舉的政教領袖稱為「哈里發」，這個詞的意思是？",
+        options: [
+          { key: "A", text: "繼承者" },
+          { key: "B", text: "服從者" },
+          { key: "C", text: "先知" },
+          { key: "D", text: "服從神命" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "哈里發 ⇒ 穆罕默德的繼承者 ✓",
+            "服從者 ⇒ 穆斯林",
+            "服從神命 ⇒ 伊斯蘭"
+          ] }
+        ]
+      },
+      {
+        question: "「穆斯林」一詞的意思是？",
+        options: [
+          { key: "A", text: "服從者" },
+          { key: "B", text: "繼承者" },
+          { key: "C", text: "聖戰士" },
+          { key: "D", text: "朝聖者" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "伊斯蘭＝服從神命",
+            "⇒ 穆斯林＝服從（神命）的人 ⇒ 服從者 ✓"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】與課本 p.76 註一致（伊斯蘭本意為服從神命），並經教育大市集「何謂伊斯蘭教？」說明確認。"
+  },
+
+  "tm_85_q46": {
+    keyPoint: "蒙兀兒帝國強盛時，歐洲人在印度只能侷限沿海；十八世紀初蒙兀兒開始衰頹（1707 年奧朗則布死後地方割據），列強才趁機向內陸擴張。",
+    formulas: [
+      "因果：蒙兀兒強盛 ⇒ 歐洲人只在沿海設商館",
+      "1707 年奧朗則布去世 ⇒ 繼承紛爭、地方自立 ⇒ 帝國衰頹",
+      "⇒ 英、法東印度公司介入地方政治，勢力深入內陸"
+    ],
+    whyWrong: {
+      C: "鄂圖曼帝國從未占領印度；鄂圖曼的勢力範圍在小亞細亞、巴爾幹、西亞與北非。",
+      B: "印度一直是香料、棉布等商品產地，歐洲人來印度正是為了這些貿易。",
+      D: "十八世紀歐洲列強的海外貿易是擴大而不是放棄，否則也不會在印度擴張。"
+    },
+    steps: [
+      { title: "抓題幹關鍵", lines: [
+        "題幹關鍵：十八世紀之後，列強由沿海轉向擴張",
+        "⇒ 要找「印度內部」力量變弱的原因"
+      ] },
+      { title: "建立因果", lines: [
+        "蒙兀兒強盛 ⇒ 列強無力深入",
+        "十八世紀初蒙兀兒衰頹 ⇒ 地方勢力割據",
+        "⇒ 列強趁機擴張 ✓"
+      ] },
+      { title: "排除其他選項", lines: [
+        "鄂圖曼占領印度 ⇒ 史實不存在",
+        "印度不產香料 ⇒ 與事實相反",
+        "列強放棄海外貿易 ⇒ 與「擴張」矛盾"
+      ] }
+    ],
+    traps: [
+      "題目問「轉變的原因」，要找改變的那一方——是蒙兀兒變弱，不是歐洲變了。",
+      "鄂圖曼、薩法維、蒙兀兒三大帝國各有地盤，不要混用。",
+      "蒙兀兒名義上延續到 1857 年，但十八世紀起實權已衰。"
+    ],
+    references: [
+      { title: "Mughal authority and the East India Company", source: "Oak National Academy", url: "https://thenational.academy/teachers/programmes/history-secondary-ks3/units/the-east-india-company-when-did-mughal-authority-collapse/lessons/mughal-authority-and-the-east-india-company", kind: "講義" },
+      { title: "What was the role of the British East India Company in the Mughal decline?", source: "TutorChase", url: "https://www.tutorchase.com/answers/ib/history/what-was-the-role-of-the-british-east-india-company-in-the-mughal-decline", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "十七世紀時，英國、荷蘭等國在印度的活動多半只限於沿海商館。最主要的原因是？",
+        options: [
+          { key: "A", text: "蒙兀兒帝國國力仍強，列強無力深入內陸" },
+          { key: "B", text: "印度內陸沒有任何商品可以貿易" },
+          { key: "C", text: "歐洲各國禁止商人進入內陸" },
+          { key: "D", text: "印度已被薩法維帝國統治" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "十七世紀蒙兀兒仍強盛",
+            "⇒ 列強只能在沿海經商 ✓",
+            "薩法維在伊朗，沒有統治印度 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "下列哪一事件最直接導致蒙兀兒帝國在十八世紀陷入衰頹？",
+        options: [
+          { key: "A", text: "奧朗則布去世後的繼承紛爭與地方割據" },
+          { key: "B", text: "鄂圖曼帝國攻占德里" },
+          { key: "C", text: "阿克巴推行宗教寬容" },
+          { key: "D", text: "泰姬瑪哈陵的興建" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "1707 年奧朗則布去世 ⇒ 繼承紛爭、地方自立 ⇒ 衰頹 ✓",
+            "阿克巴的寬容政策是帝國強盛的原因之一 ⇒ 錯",
+            "鄂圖曼沒有攻占德里 ⇒ 錯"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】與課本 p.92 敘述一致，並經外部資料確認十八世紀初蒙兀兒衰頹後東印度公司勢力擴張。"
+  },
+
+  "tm_85_q45": {
+    keyPoint: "蒙兀兒藝術融合印度、伊斯蘭與波斯文化——泰姬瑪哈陵用印度的大理石建材、伊斯蘭的尖拱與圓頂高塔、波斯風格的庭園。",
+    formulas: [
+      "印度元素：紅砂岩、白色大理石建材與鑲嵌工藝",
+      "伊斯蘭元素：尖拱、高塔（宣禮塔）、球根狀圓頂",
+      "波斯元素：四分式庭園、蜂巢式拱頂",
+      "泰姬瑪哈陵：沙賈汗為愛妻所建"
+    ],
+    whyWrong: {
+      C: "拜占庭、法蘭克、日耳曼都是歐洲的政權或民族，與印度的蒙兀兒帝國沒有直接文化關係。",
+      B: "中國、希臘、羅馬文化不是蒙兀兒建築的來源；希臘、羅馬風格要到殖民時期才傳入印度。",
+      D: "埃及與俄羅斯都和蒙兀兒建築無關；蒙兀兒雖有蒙古血統，但建築是融合印度、伊斯蘭與波斯。"
+    },
+    steps: [
+      { title: "從位置與政權推理", lines: [
+        "泰姬瑪哈陵在印度 ⇒ 有印度本地元素",
+        "蒙兀兒統治者是穆斯林 ⇒ 有伊斯蘭元素",
+        "宮廷文化深受波斯影響 ⇒ 有波斯元素"
+      ] },
+      { title: "對應建築特徵", lines: [
+        "大理石建材 ⇒ 印度",
+        "尖拱、高塔、球根狀圓頂 ⇒ 伊斯蘭",
+        "庭園配置 ⇒ 波斯",
+        "⇒ 印度、伊斯蘭與波斯文化 ✓"
+      ] },
+      { title: "排除其他選項", lines: [
+        "拜占庭、法蘭克、日耳曼 ⇒ 歐洲，地理不符",
+        "中國、希臘、羅馬；埃及、蒙古、俄羅斯 ⇒ 與蒙兀兒建築無關"
+      ] }
+    ],
+    traps: [
+      "蒙兀兒的「蒙」是蒙古血統，但文化上偏向波斯與伊斯蘭。",
+      "看到建築題，先問：在哪裡（印度）？統治者信什麼（伊斯蘭）？宮廷語言文化（波斯）？",
+      "蒙兀兒宮廷使用波斯語，波斯文化影響很深。"
+    ],
+    references: [
+      { title: "Taj Mahal: History", source: "Nova Scotia 學校網站（學生作品集）", url: "https://schools.ednet.ns.ca/avrsb/070/psyme/HAGO/HAGODesign11/web/jinaportfolio/Taj%20Mahal_JinaBurke/history.html", kind: "文章" },
+      { title: "Three Contemporary Islamic Empires", source: "Rocklin High School AP World History", url: "https://rhs.rocklinusd.org/subsites/AP-World-History/documents/1450-1750/Three Contemporary Islamic Empires.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "蒙兀兒宮廷所使用的語言與文學，主要受到哪一個文化影響？",
+        options: [
+          { key: "A", text: "波斯文化" },
+          { key: "B", text: "希臘文化" },
+          { key: "C", text: "中國文化" },
+          { key: "D", text: "法蘭克文化" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "蒙兀兒宮廷使用波斯語，文學藝術多仿波斯",
+            "⇒ 波斯文化 ✓",
+            "希臘、中國、法蘭克 ⇒ 與蒙兀兒宮廷無直接關係"
+          ] }
+        ]
+      },
+      {
+        question: "下列哪一項建築特徵，最能代表泰姬瑪哈陵中的伊斯蘭元素？",
+        options: [
+          { key: "A", text: "尖拱、高塔與球根狀圓頂" },
+          { key: "B", text: "希臘式石柱與三角山牆" },
+          { key: "C", text: "中國式飛簷與琉璃瓦" },
+          { key: "D", text: "哥德式尖塔與彩繪玻璃" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "伊斯蘭建築特色：尖拱、宣禮塔、圓頂 ⇒ 正確",
+            "希臘石柱、中國飛簷、哥德式彩繪玻璃 ⇒ 都不是伊斯蘭元素"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】與課本 p.92 敘述一致（蒙兀兒藝術融合印度、伊斯蘭與波斯文化），外部資料亦說明泰姬瑪哈陵承襲波斯與伊斯蘭建築傳統。"
+  },
+
+  "tm_85_q38": {
+    keyPoint: "鄂圖曼帝國的三個重點：蘇萊曼一世時達到巔峰、政教合一（蘇丹兼宗教領袖）、宗教寬容（容許異教徒保有信仰與自治）；它壟斷歐亞貿易反而逼西歐找新航路。",
+    formulas: [
+      "巔峰：十六世紀蘇萊曼一世（蘇萊曼大帝）",
+      "政教合一：蘇丹兼任政治與宗教領袖",
+      "宗教寬容：不強迫異教徒改信，各宗教社群自治",
+      "1683 年圍攻維也納失敗 ⇒ 擴張告一段落",
+      "壟斷東西貿易 ⇒ 西歐積極尋找新航路"
+    ],
+    whyWrong: {
+      D: "漏選：鄂圖曼宗教政策寬和，容許異教徒保有信仰與自治，這句正確。",
+      A: "因果顛倒：鄂圖曼壟斷歐亞貿易，反而迫使西歐國家積極尋找替代航道。",
+      E: "1683 年攻打維也納是失敗，被奧地利與波蘭聯軍擊退，從未征服西歐。"
+    },
+    steps: [
+      { title: "逐項判斷", lines: [
+        "壟斷貿易 ⇒ 西歐「不必」找航道？ ⇒ 錯，反而被迫找新航路",
+        "蘇萊曼一世時國勢巔峰 ⇒ 正確",
+        "蘇丹兼政治與宗教領袖 ⇒ 正確",
+        "不強迫異教徒改信 ⇒ 正確",
+        "1683 年攻下維也納、征服西歐 ⇒ 錯，圍攻失敗"
+      ] },
+      { title: "核對應選數量", lines: [
+        "正確共 3 項：巔峰、政教合一、宗教寬容",
+        "⇒ 與「應選 3 項」相符 ✓"
+      ] }
+    ],
+    traps: [
+      "「宗教寬容」容易被當成陷阱而不敢選——鄂圖曼對異教徒確實相對寬容。",
+      "壟斷貿易的結果是「逼」西歐去找新航路，不是讓他們不用找。",
+      "1683 年維也納之役是鄂圖曼由盛轉衰的轉捩點。",
+      "應選 3 項卻只選 2 項，代表一定有漏選，要再檢查。"
+    ],
+    references: [
+      { title: "How did religious tolerance manifest in the Ottoman Empire?", source: "TutorChase", url: "https://www.tutorchase.com/answers/ib/history/how-did-religious-tolerance-manifest-in-the-ottoman-empire", kind: "文章" },
+      { title: "Three Contemporary Islamic Empires", source: "Rocklin High School AP World History", url: "https://rhs.rocklinusd.org/subsites/AP-World-History/documents/1450-1750/Three Contemporary Islamic Empires.pdf", kind: "講義" },
+      { title: "奧斯曼帝國蘇萊曼盛世簡析", source: "中國社會科學院 期刊", url: "https://xyfz.ajcass.com/UploadFile/Issue/k44mb0hy.pdf", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "十五世紀後，西歐國家積極尋找通往東方的新航路，與哪一項因素最有關？",
+        options: [
+          { key: "A", text: "鄂圖曼帝國控制東西貿易路線" },
+          { key: "B", text: "蒙兀兒帝國禁止香料出口" },
+          { key: "C", text: "拜占庭帝國征服西歐" },
+          { key: "D", text: "法提馬王朝封鎖大西洋" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "鄂圖曼壟斷歐亞貿易 ⇒ 香料等商品價格高",
+            "⇒ 西歐想繞過鄂圖曼 ⇒ 尋找新航路 ✓",
+            "法提馬 1171 年已滅亡；拜占庭沒有征服西歐 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "下列有關鄂圖曼帝國的敘述，何者正確？",
+        options: [
+          { key: "A", text: "允許基督徒與猶太人保有信仰，並享有一定自治" },
+          { key: "B", text: "以什葉派為國教，與薩法維結盟" },
+          { key: "C", text: "1683 年攻下維也納，統治奧地利" },
+          { key: "D", text: "蘇丹只掌政治，宗教事務由教宗管理" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "逐項判斷", lines: [
+            "宗教寬容、異教徒自治 ⇒ 正確",
+            "鄂圖曼屬遜尼派，與什葉派薩法維敵對 ⇒ 錯",
+            "1683 年圍攻維也納失敗 ⇒ 錯",
+            "蘇丹政教合一，教宗是天主教領袖 ⇒ 錯"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依課本 p.88～90 逐項判斷，正確為巔峰、政教合一、宗教寬容三項，與 correctAnswer 一致；外部資料亦確認鄂圖曼的相對宗教寬容。"
+  },
+
+  "tm_85_q47": {
+    keyPoint: "史料排序先看各則資料的年代與鄂圖曼當時的國力：十五世紀鄂圖曼強盛（歐洲恐懼）→ 十七世紀末歐洲聯軍反攻得勝（有信心）→ 1908 年鄂圖曼衰弱（輕視）。",
+    formulas: [
+      "十五世紀：鄂圖曼滅拜占庭（1453），海陸強盛 ⇒ 歐洲恐懼",
+      "1683 年：圍攻維也納失敗；1686 年聯軍攻下布達 ⇒ 歐洲轉為有信心",
+      "1908 年：保加利亞獨立、奧匈併吞波士尼亞 ⇒ 鄂圖曼無力回應，歐洲輕視",
+      "排序技巧：先定年代，再對照國力強弱"
+    ],
+    whyWrong: {
+      C: "把布達之役的評論排在最早不對：「完全勝利只是時間問題」是歐洲已經反攻得勝後的語氣，出現在十七世紀末，晚於十五世紀威尼斯人的恐懼；而且心態不是「始終恐懼」，最後是輕視。",
+      B: "順序整個顛倒，心態變化也跟著弄反；鄂圖曼是由盛轉衰，歐洲人是由怕變成看不起。",
+      D: "1908 年的漫畫是三則中最晚的，不可能排在中間；第一則明顯是恐懼，不是「始終輕視」。"
+    },
+    steps: [
+      { title: "替每則資料定年代", lines: [
+        "甲：威尼斯指揮官怕基督教世界被毀 ⇒ 十五世紀編年史",
+        "乙：聯軍攻下布達、勝利只是時間問題 ⇒ 十七世紀末",
+        "丙：法國漫畫，鄂圖曼束手無策 ⇒ 1908 年"
+      ] },
+      { title: "排序", lines: [
+        "十五世紀 < 十七世紀末 < 1908 年",
+        "⇒ 甲 → 乙 → 丙"
+      ] },
+      { title: "推論心態", lines: [
+        "甲：擔心被毀滅 ⇒ 恐懼",
+        "乙：勝利只是時間問題 ⇒ 有信心",
+        "丙：束手無策的漫畫 ⇒ 輕視",
+        "⇒ 由恐懼轉為輕視 ✓"
+      ] }
+    ],
+    traps: [
+      "不要只看語氣排序，先找每則資料的年代線索。",
+      "「始終」類選項通常錯：三則資料語氣明顯不同。",
+      "1683 年維也納之役是轉捩點，之後歐洲由守轉攻。"
+    ],
+    references: [
+      { title: "Great Turkish War（1683～1699）", source: "Wikipedia", url: "https://wikipedia.com/wiki/Great_Vienna_War", kind: "文章" },
+      { title: "Ottoman–Habsburg wars", source: "Wikipedia", url: "https://en.wikipedia.com/wiki/Austro-Ottoman_war", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "十九世紀歐洲人常稱鄂圖曼帝國為「歐洲病夫」。這個稱呼反映當時歐洲人對鄂圖曼的心態為何？",
+        options: [
+          { key: "A", text: "認為鄂圖曼衰弱，可以任意瓜分" },
+          { key: "B", text: "害怕鄂圖曼大軍攻入西歐" },
+          { key: "C", text: "崇拜鄂圖曼的軍事制度" },
+          { key: "D", text: "希望與鄂圖曼結盟對抗蒙古" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "十九世紀鄂圖曼衰弱、領土接連喪失",
+            "⇒ 「病夫」是輕視的稱呼 ✓",
+            "害怕被攻入是十五、十六世紀的心態 ⇒ 時代不符"
+          ] }
+        ]
+      },
+      {
+        question: "下列三件事依時間先後排列，何者正確？甲、鄂圖曼攻下君士坦丁堡；乙、保加利亞宣布脫離鄂圖曼獨立；丙、鄂圖曼圍攻維也納失敗",
+        options: [
+          { key: "A", text: "甲→丙→乙" },
+          { key: "B", text: "丙→甲→乙" },
+          { key: "C", text: "甲→乙→丙" },
+          { key: "D", text: "乙→丙→甲" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "定年代", lines: [
+            "甲：1453 年",
+            "丙：1683 年",
+            "乙：1908 年",
+            "⇒ 1453 < 1683 < 1908 ⇒ 甲→丙→乙 ✓"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依課本 p.93 資料出處年代（十五世紀、十七世紀末、1908 年）重新排序並判斷語氣，與 correctAnswer 一致；外部資料確認 1683 年後鄂圖曼由攻轉守、1908 年保加利亞獨立與波士尼亞危機。"
+  },
+
+  "tm_85_q40": {
+    keyPoint: "薩法維帝國（1501～1736）以什葉派為國教，使伊朗由遜尼派為主轉為什葉派為主，是今日伊朗什葉派信仰的淵源。",
+    formulas: [
+      "薩法維帝國：1501 年伊斯瑪儀一世建立，奉什葉派（十二伊瑪目派）為國教",
+      "鄂圖曼帝國、蒙兀兒帝國：遜尼派",
+      "阿拔斯王朝：遜尼派哈里發政權",
+      "什葉派 vs 遜尼派：薩法維與鄂圖曼長期敵對"
+    ],
+    whyWrong: {
+      A: "鄂圖曼帝國是遜尼派，而且與什葉派的薩法維長期敵對；伊朗也不是鄂圖曼的核心統治區。",
+      C: "蒙兀兒帝國在印度，統治者屬遜尼派，與伊朗什葉派的淵源無關。",
+      D: "阿拔斯王朝是遜尼派的哈里發政權；伊朗在薩法維之前仍以遜尼派為主。"
+    },
+    steps: [
+      { title: "抓題幹關鍵", lines: [
+        "題幹關鍵：今日伊朗、什葉派的淵源",
+        "⇒ 找統治伊朗並奉什葉派為國教的政權"
+      ] },
+      { title: "判斷", lines: [
+        "薩法維統治今伊朗及周邊",
+        "⇒ 統治者為什葉派，奉什葉派為尊",
+        "⇒ 伊朗由遜尼派轉為什葉派 ✓"
+      ] },
+      { title: "排除其他選項", lines: [
+        "鄂圖曼：遜尼派 ⇒ 錯",
+        "蒙兀兒：在印度、遜尼派 ⇒ 錯",
+        "阿拔斯：遜尼派 ⇒ 錯"
+      ] }
+    ],
+    traps: [
+      "三大帝國中只有薩法維是什葉派，鄂圖曼與蒙兀兒都是遜尼派。",
+      "伊朗在薩法維以前並非以什葉派為主，是薩法維推動轉變。",
+      "十世紀的法提馬王朝也是什葉派，但在北非、埃及，與伊朗無關。"
+    ],
+    references: [
+      { title: "Three Contemporary Islamic Empires", source: "Rocklin High School AP World History", url: "https://rhs.rocklinusd.org/subsites/AP-World-History/documents/1450-1750/Three Contemporary Islamic Empires.pdf", kind: "講義" },
+      { title: "The Establishing of Shiism as State Religion in Iran Under the Safavids", source: "Estudios de Asia y África（El Colegio de México）", url: "https://estudiosdeasiayafrica.colmex.mx/index.php/eaa/en/article/view/1905", kind: "文章" }
+    ],
+    variants: [
+      {
+        question: "十六世紀鄂圖曼帝國與薩法維帝國長期敵對，除了領土爭奪，還有哪一項重要因素？",
+        options: [
+          { key: "A", text: "鄂圖曼屬遜尼派，薩法維屬什葉派" },
+          { key: "B", text: "鄂圖曼信基督教，薩法維信伊斯蘭教" },
+          { key: "C", text: "兩國都想爭奪印度的統治權" },
+          { key: "D", text: "薩法維支持拜占庭復國" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "兩國都是伊斯蘭政權 ⇒ 宗教差異在教派",
+            "鄂圖曼遜尼派 vs 薩法維什葉派 ⇒ 教派對立 ✓",
+            "拜占庭 1453 年已亡 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "十六、十七世紀的伊斯蘭三大帝國中，哪一個以什葉派為國教？",
+        options: [
+          { key: "A", text: "薩法維帝國" },
+          { key: "B", text: "鄂圖曼帝國" },
+          { key: "C", text: "蒙兀兒帝國" },
+          { key: "D", text: "三者都是" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "鄂圖曼、蒙兀兒 ⇒ 遜尼派",
+            "薩法維 ⇒ 什葉派 ✓"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】與課本 p.90 一致（薩法維奉什葉派為尊），外部資料亦確認 1501 年伊斯瑪儀一世宣布什葉派為官方信仰，三大帝國中只有薩法維屬什葉派。"
+  },
+
+  "tm_85_q33": {
+    keyPoint: "十字軍反而加速東西往來：古典文獻、商業經營技術、工藝技術都傳入歐洲；但東西往來沒有斷絕，穆斯林與基督徒的對立反而加深。",
+    formulas: [
+      "文化：阿拔斯與拜占庭保存、翻譯的希臘羅馬古典文獻傳回歐洲",
+      "商業：股份公司、信用制度、支票、貨幣匯兌傳入；義大利城市興起",
+      "工藝：水車、齒輪、造紙、造船等技術傳入",
+      "宗教關係：大量穆斯林遭殺害，雙方對立加深"
+    ],
+    whyWrong: {
+      E: "正好相反：十字軍期間大量穆斯林遭殺害，穆斯林與基督徒的對立更加深刻，並沒有消失。",
+      B: "漏選：阿拔斯與拜占庭翻譯保存的希臘、羅馬古典文獻經由交流重新傳入歐洲，這句正確。",
+      A: "十字軍反而加速東西方往來，交流更頻繁，沒有斷絕。"
+    },
+    steps: [
+      { title: "先抓整體方向", lines: [
+        "十字軍 ⇒ 大量人員往來東地中海",
+        "⇒ 東西交流「增加」",
+        "⇒ 宗教對立「加深」"
+      ] },
+      { title: "逐項判斷", lines: [
+        "往來斷絕 ⇒ 與交流增加矛盾，錯",
+        "古典文獻傳入 ⇒ 文化交流，正確",
+        "股份公司、信用制度等傳入 ⇒ 商業交流，正確",
+        "水車、造紙等技術傳入 ⇒ 工藝交流，正確",
+        "對立消失 ⇒ 與對立加深矛盾，錯"
+      ] },
+      { title: "核對應選數量", lines: [
+        "正確共 3 項：文獻、商業、工藝",
+        "⇒ 與「應選 3 項」相符 ✓"
+      ] }
+    ],
+    traps: [
+      "「交流增加」和「對立加深」可以同時成立，不要以為有交流就沒有對立。",
+      "看到「從此消失」「從此斷絕」這類絕對用語，要特別小心。",
+      "古典文獻傳回歐洲，是後來文藝復興的背景之一。"
+    ],
+    references: [
+      { title: "Consequences of the Crusades", source: "Macmillan《Understanding Western Society》", url: "https://digfir-published.macmillanusa.com/mckayunderstanding2e/mckayunderstanding2e_ch09_31.html", kind: "文章" },
+      { title: "How did the Crusades affect trade and commerce in the Mediterranean?", source: "TutorChase", url: "https://www.tutorchase.com/answers/a-level/history/how-did-the-crusades-affect-trade-and-commerce-in-the-mediterranean", kind: "文章" },
+      { title: "Cultural Exchange During the Crusades", source: "StudyPug", url: "https://www.studypug.com/us/us-sst-grade-7/us-sst-cultural-exchange-during-the-crusades", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "十字軍運動期間，地中海東西貿易大增，下列哪些城市最為受益？",
+        options: [
+          { key: "A", text: "威尼斯、熱那亞等義大利城市" },
+          { key: "B", text: "倫敦、巴黎等西北歐城市" },
+          { key: "C", text: "莫斯科、基輔等東歐城市" },
+          { key: "D", text: "德里、阿格拉等印度城市" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "十字軍走海路需船隻與補給 ⇒ 地中海港市受益",
+            "⇒ 威尼斯、熱那亞成為貿易中心 ✓",
+            "其他城市不在地中海貿易核心 ⇒ 錯"
+          ] }
+        ]
+      },
+      {
+        question: "十字軍運動對伊斯蘭世界與基督教世界關係的影響，下列何者正確？",
+        options: [
+          { key: "A", text: "大量穆斯林遭殺害，雙方對立加深" },
+          { key: "B", text: "雙方從此和平共處，不再衝突" },
+          { key: "C", text: "伊斯蘭世界全面改信基督教" },
+          { key: "D", text: "東西方從此斷絕往來" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "十字軍戰爭中大量穆斯林遭殺害 ⇒ 對立加深 ✓",
+            "和平共處、全面改信、斷絕往來 ⇒ 都與史實相反"
+          ] }
+        ]
+      }
+    ],
+    basis: "【確認】依課本 p.87 逐項判斷，正確為古典文獻、商業技術、工藝技術三項，與 correctAnswer 一致；外部資料亦確認十字軍促進東西貿易與文化交流。"
+  },
+
+  "tm_92_q2": {
+    keyPoint: "向量只看大小與方向、不看位置：長度相等且方向相同的有向線段就是同一個向量；零向量大小為 0、不考慮方向；向量的大小（長度）不會是負數。",
+    formulas: [
+      "相等向量：大小相等 且 方向相同（位置可以不同）",
+      "BA→ = −AB→（方向相反，大小相等）",
+      "|AB→| ≥ 0；|AB→| = 0 ⇔ AB→ 為零向量",
+      "零向量 0→：始點與終點重合，大小 0，不考慮方向"
+    ],
+    whyWrong: {
+      D: "漏選：兩有向線段長度相等且方向相同，表示的就是同一個向量（這正是向量「不計較位置」的意思），這句正確。",
+      B: "AB→ 與 BA→ 方向相反，BA→ = −AB→，大小雖然相等但不是相等向量。",
+      C: "向量的大小是有向線段的長度，一定 ≥ 0，不會是負數；負號表示的是方向相反。"
+    },
+    steps: [
+      { title: "逐項判斷", lines: [
+        "零向量：始點＝終點，大小 0，不考慮方向 ⇒ 正確",
+        "AB→ 與 BA→：方向相反 ⇒ BA→ = −AB→ ⇒ 錯",
+        "大小是長度 ⇒ |v→| ≥ 0 ⇒ 不能是負數，錯",
+        "長度相等且方向相同 ⇒ 同一個向量 ⇒ 正確",
+        "向量只看大小與方向、不看位置 ⇒ 正確"
+      ] },
+      { title: "核對應選數量", lines: [
+        "正確共 3 項：零向量、長度方向相同即相等、不計較位置",
+        "⇒ 與「應選 3 項」相符 ✓"
+      ] },
+      { title: "用坐標驗算", lines: [
+        "A(0, 0)、B(2, 1)、C(3, 3)、D(5, 4)",
+        "AB→ = (2, 1)，CD→ = (5 − 3, 4 − 3) = (2, 1)",
+        "⇒ 位置不同但 AB→ = CD→ ✓",
+        "BA→ = (−2, −1) ≠ AB→ ✓"
+      ] }
+    ],
+    traps: [
+      "「長度相等且方向相同即相等」與「不計較位置」是同一件事的兩種說法，兩句都要選。",
+      "大小相等不夠，方向也要相同才是相等向量。",
+      "−AB→ 的負號表示方向反過來，不是長度變負。",
+      "應選 3 項卻只選 2 項，代表一定有漏選。"
+    ],
+    references: [
+      { title: "平面向量的意義（素養導向教材 教師手冊）", source: "國家教育研究院", url: "https://www.naer.edu.tw/upload/1/16/doc/864/技高平面師.pdf", kind: "講義" },
+      { title: "3.1 平面向量的表示法（上課講義）", source: "陽明高中 數學科", url: "https://math.ymhs.tyc.edu.tw/chenyan/TeaPlan108/Contns/1091/%E9%AB%98%E4%BA%8C%E4%B8%8AH/ch3/3.1%20%E5%B9%B3%E9%9D%A2%E5%90%91%E9%87%8F%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%B3%95(%E4%B8%8A%E8%AA%B2).pdf", kind: "講義" },
+      { title: "Additional Mathematics 課程指引：向量（相等向量、零向量）", source: "香港教育局", url: "https://cd1.edb.hkedcity.net/cd/maths/tc/curr_syll/AMath_C/cU08.pdf", kind: "講義" }
+    ],
+    variants: [
+      {
+        question: "平行四邊形 ABCD 中，下列哪一個向量與 AB→ 相等？",
+        options: [
+          { key: "A", text: "DC→" },
+          { key: "B", text: "CD→" },
+          { key: "C", text: "BA→" },
+          { key: "D", text: "AD→" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "判斷", lines: [
+            "平行四邊形對邊平行且等長",
+            "AB 與 DC 同向（A→B 與 D→C）⇒ AB→ = DC→ ✓",
+            "CD→ 與 BA→ 方向相反 ⇒ 錯；AD→ 方向不同 ⇒ 錯"
+          ] },
+          { title: "坐標驗算", lines: [
+            "A(0, 0)、B(3, 0)、C(4, 2)、D(1, 2)",
+            "AB→ = (3, 0)，DC→ = (4 − 1, 2 − 2) = (3, 0) ✓"
+          ] }
+        ]
+      },
+      {
+        question: "若 AB→ = (3, −4)，則 BA→ 與 |BA→| 分別為何？",
+        options: [
+          { key: "A", text: "(−3, 4)，5" },
+          { key: "B", text: "(3, −4)，−5" },
+          { key: "C", text: "(−3, 4)，−5" },
+          { key: "D", text: "(3, 4)，5" }
+        ],
+        correctAnswer: "A",
+        steps: [
+          { title: "反向量", lines: ["BA→ = −AB→", "= (−3, 4)"] },
+          { title: "長度", lines: ["|BA→| = sqrt{(−3)^{2} + 4^{2}}", "= sqrt{25} = 5"], note: "長度不會是負數，方向相反只改變分量正負" }
+        ]
+      }
+    ],
+    basis: "【確認】依向量定義逐項判斷，正確為零向量、長度方向相同即相等、不計較位置三項，與 correctAnswer 一致；並以坐標驗算，類題皆已代值檢查。"
   }
 };
