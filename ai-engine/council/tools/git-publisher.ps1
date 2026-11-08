@@ -139,6 +139,15 @@ function Publish-Request($req, [string]$id) {
   while ($true) {
     $r = Invoke-Gh @('pr', 'merge', $prUrl, '--squash', '--delete-branch'); $log.Add("gh pr merge: $($r.out)")
     if ($r.code -eq 0) { break }
+    # Someone (or another publish) may have merged it already, or main moved on and the
+    # ruleset wants the branch up to date: bring it up to date and wait for the checks again.
+    $state = (Invoke-Gh @('pr', 'view', $prUrl, '--json', 'state,mergeStateStatus', '-q', '.state + " " + .mergeStateStatus')).out.Trim()
+    $log.Add("pr state: $state")
+    if ($state -like 'MERGED*') { break }
+    if ($state -like '* BEHIND') {
+      $u = Invoke-Gh @('pr', 'update-branch', $prUrl); $log.Add("gh pr update-branch: $($u.out)")
+      $deadline = (Get-Date).AddMinutes(30)
+    }
     if ((Get-Date) -gt $deadline) { return (& $fail 'gh pr merge kept failing for 30 minutes; the PR is left open' @{ commit = $commit; pr = $prUrl }) }
     Start-Sleep -Seconds 20
     [System.IO.File]::WriteAllText((Join-Path $QueueDir 'publisher.heartbeat'), (Get-Date).ToString('o'), $utf8)
