@@ -81,12 +81,31 @@ if exist "%OLD_COUNCIL%\docker-compose.agent.yml" (
 echo.
 
 echo [3/4] 啟動教材上傳引擎...
+REM 2026-11-08：引擎程式碼是掛載進容器的（不是打包在 image 裡），所以啟動前先把本機
+REM 平台資料夾更新到 GitHub 最新版，啟動後再重新啟動引擎容器，新功能才會生效。
+REM 只在 main 分支、沒有未提交變更時更新；更新失敗不影響啟動。
+set "REPO=%ENGINE%..\.."
+where git >nul 2>&1
+if not errorlevel 1 (
+    for /f "delims=" %%B in ('git -C "%REPO%" rev-parse --abbrev-ref HEAD 2^>nul') do set "CUR_BRANCH=%%B"
+    git -C "%REPO%" diff --quiet HEAD >nul 2>&1
+    if errorlevel 1 (
+        echo [WARNING] 平台資料夾有尚未提交的變更，略過自動更新。
+    ) else if /i "!CUR_BRANCH!"=="main" (
+        git -C "%REPO%" fetch -q origin main && git -C "%REPO%" merge -q --ff-only origin/main && echo [OK] 平台程式已更新到最新版。
+        if errorlevel 1 echo [WARNING] 無法自動更新平台程式，沿用目前版本。
+    ) else (
+        echo [WARNING] 平台資料夾目前在 !CUR_BRANCH! 分支，略過自動更新。
+    )
+)
 docker compose !COMPOSE_FILES! up -d --build
 if errorlevel 1 (
     echo [ERROR] Docker Compose 啟動失敗，請保留本視窗畫面的錯誤內容。
     pause
     exit /b 1
 )
+REM 讓已在執行的引擎載入剛更新的程式碼
+docker compose !COMPOSE_FILES! restart council-engine >nul 2>&1
 set /a COUNT=0
 :WAIT_WEB
 powershell -NoProfile -ExecutionPolicy Bypass -Command "try { $r=Invoke-WebRequest -Uri '%HEALTH%' -UseBasicParsing -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
