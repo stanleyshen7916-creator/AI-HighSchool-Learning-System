@@ -1,0 +1,5 @@
+# GitHub Pages（Jekyll）部署設定
+# 教材包的 source/ 是課本原始照片與 PDF（約 630 MB），網站不會讀取，
+# 只留在 repo 裡備查；排除後部署檔案縮小，避免 deploy 上傳逾時。
+exclude:
+  - docs/TeachingMaterials/materials/*/source
