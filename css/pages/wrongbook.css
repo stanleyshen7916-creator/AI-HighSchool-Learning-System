@@ -143,6 +143,19 @@
 .wb-list__no-match-text { margin: 0; font-size: 14px; color: var(--text-muted); }
 
 .wb-list__rows { display: flex; flex-direction: column; }
+.wb-list__group {
+  display: flex; align-items: center; gap: 8px;
+  margin: 14px 0 2px; padding: 8px 10px;
+  border-bottom: 2px solid var(--wb-group-color, var(--line));
+  font-size: 15px; font-weight: 700; color: var(--text);
+}
+.wb-list__group:first-child { margin-top: 0; }
+.wb-list__group-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background-color: var(--wb-group-color, var(--text-muted));
+  flex: 0 0 auto;
+}
+.wb-list__group-count { font-size: 13px; font-weight: 500; color: var(--text-muted); }
 
 .wb-row {
   display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;

@@ -1707,8 +1707,36 @@ AHS.WrongBook = (function () {
 
     var currentPage = 1;
 
+    /* 2026-11-09（使用者需求：錯題內容必須依照科目分類）: 列表先依科目
+       分組（順序同 AHS.Subjects），組內再套用使用者選的排序；每組前面加
+       一個科目標題與該科目符合條件的題數。分頁照常切，跨頁的同一科目在
+       新的一頁開頭會再出現一次標題。沒有科目的紀錄放最後，標為「未分類」。 */
+    var SUBJECT_ORDER = Object.keys(AHS.Subjects || {});
+    function subjectRank(key) {
+      var i = SUBJECT_ORDER.indexOf(key);
+      return i === -1 ? SUBJECT_ORDER.length : i;
+    }
+    function groupBySubject(sorted) {
+      return sorted.map(function (p, i) { return { p: p, i: i }; })
+        .sort(function (a, b) { return (subjectRank(a.p.item.subject) - subjectRank(b.p.item.subject)) || (a.i - b.i); })
+        .map(function (x) { return x.p; });
+    }
+    var groupHeads = [];
+    function groupHead(subjectKey, count) {
+      var subj = (AHS.Subjects || {})[subjectKey] || { name: "未分類", hex: "#6b7280" };
+      return el("div", {
+        class: "wb-list__group", role: "heading", "aria-level": "3",
+        "data-subject": subjectKey || "",
+        style: "--wb-group-color:" + subj.hex
+      }, [
+        el("span", { class: "wb-list__group-dot", "aria-hidden": "true" }),
+        el("span", { class: "wb-list__group-name", text: subj.name }),
+        el("span", { class: "wb-list__group-count", text: count + " 題" })
+      ]);
+    }
+
     function applyView() {
-      var ordered = pairs.slice().sort(SORT_COMPARATORS[sortKey] || SORT_COMPARATORS["最新錯誤"]);
+      var ordered = groupBySubject(pairs.slice().sort(SORT_COMPARATORS[sortKey] || SORT_COMPARATORS["最新錯誤"]));
       var matching = ordered.filter(function (p) {
         var subjectMatch = subjectFilterId === "all" || p.item.subject === subjectFilterId;
         var knowledgeMatch = knowledgeFilter === "all" || p.item.knowledgePoint === knowledgeFilter;
@@ -1744,6 +1772,25 @@ AHS.WrongBook = (function () {
       ordered.forEach(function (p) { rowsWrap.insertBefore(p.row, noMatch); });
       ordered.forEach(function (p) {
         p.row.style.display = pageIds.indexOf(p.item.id) !== -1 ? "" : "none";
+      });
+
+      groupHeads.forEach(function (h) { if (h.parentNode) { h.parentNode.removeChild(h); } });
+      groupHeads = [];
+      var countBySubject = {};
+      matching.forEach(function (p) {
+        var k = p.item.subject || "";
+        countBySubject[k] = (countBySubject[k] || 0) + 1;
+      });
+      var lastSubject = null;
+      ordered.forEach(function (p) {
+        if (pageIds.indexOf(p.item.id) === -1) { return; }
+        var k = p.item.subject || "";
+        if (k !== lastSubject) {
+          var head = groupHead(k, countBySubject[k] || 0);
+          rowsWrap.insertBefore(head, p.row);
+          groupHeads.push(head);
+          lastSubject = k;
+        }
       });
 
       if (matching.length === 0) { noMatch.removeAttribute("hidden"); }
