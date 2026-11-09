@@ -64,9 +64,55 @@ AHS.WrongBookRuntime = (function () {
     return subject;
   }
 
+  /* 2026-11-09（使用者需求：錯題內容必須依照科目分類）: 從雲端撈回的紀錄
+     只帶 subject_id，subjectCodeFor() 查不到（沒有 subject_id、subjects 表
+     讀取失敗、或 Admin 唯讀檢視）時科目停在 ""，列表只顯示「科目」佔位字，
+     科目篩選也比對不到。題目本身屬於哪一份教材是確定的資料：用題號前綴
+     （tm_12_q3 → tm_12）或 materialId 找到教材，取它的科目。找不到就回傳
+     ""，不猜。 */
+  function subjectFromSource(item) {
+    if (!item) { return ""; }
+    var qid = String(item.questionId || "").split("__v")[0];
+    var m = /^(tm_\d+)_q/.exec(qid);
+    var materialId = m ? m[1] : item.materialId;
+    var data = AHS.TeachingMaterialData;
+    if (materialId && Array.isArray(data)) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i] && data[i].materialId === materialId && data[i].material && data[i].material.subject) {
+          var key = subjectKeyOf(data[i].material.subject);
+          if (AHS.Subjects && AHS.Subjects[key]) { return key; }
+        }
+      }
+    }
+    var repo = AHS.MaterialRepository;
+    if (repo && typeof repo.list === "function") {
+      var found = "";
+      repo.list().forEach(function (r) {
+        if (found || !r) { return; }
+        var meta = r.metadata || {};
+        var own = r.id && (r.id === item.materialId);
+        if (!own && qid) {
+          ((r.questionBank || {}).singleChoice || []).forEach(function (q) { if (q && q.id === qid) { own = true; } });
+        }
+        if (own) { found = subjectKeyOf(meta.subject || meta.subjectLabel || ""); }
+      });
+      if (found && AHS.Subjects && AHS.Subjects[found]) { return found; }
+    }
+    return "";
+  }
+
   function normalizeSubjects() {
     var changed = false;
     store.items.forEach(function (item) {
+      if (!item.subject || !(AHS.Subjects && AHS.Subjects[subjectKeyOf(item.subject)])) {
+        var derived = subjectFromSource(item);
+        if (derived) {
+          item.subject = derived;
+          if (!item.supabaseId) { item.pendingPush = true; }
+          changed = true;
+          return;
+        }
+      }
       var key = subjectKeyOf(item.subject);
       if (key !== item.subject) {
         item.subject = key;
@@ -377,6 +423,7 @@ AHS.WrongBookRuntime = (function () {
         pulled += 1;
       });
       return Promise.all(subjectLookups).then(function () {
+        normalizeSubjects();
         /* 2026-10-10：答案統一成代號（見 canonicalize()）；雲端版本是舊格式的，
            改好後回寫雲端。包含載入時就已在本機改好、但還沒回寫的紀錄。 */
         var fixed = canonicalizeAll().concat(canonicalizedOnLoad.filter(function (item) { return item.supabaseId; }));
@@ -463,6 +510,7 @@ AHS.WrongBookRuntime = (function () {
   function visible(item) { return !item.deletedAt; }
 
   function list() {
+    normalizeSubjects();
     return store.items.filter(visible).map(withWeaknessState);
   }
 
@@ -705,7 +753,10 @@ AHS.WrongBookRuntime = (function () {
         return item;
       });
       return Promise.all(lookups).then(function () {
-        items.forEach(function (item) { canonicalize(item); });
+        items.forEach(function (item) {
+          if (!item.subject) { item.subject = subjectFromSource(item); }
+          canonicalize(item);
+        });
         function find(id) { return items.filter(function (it) { return it.id === id; })[0] || null; }
         function none() { return false; }
         return {
@@ -818,6 +869,7 @@ AHS.WrongBookRuntime = (function () {
     listStudents: listStudents,
     readOnlyView: readOnlyView,
     subjectKeyOf: subjectKeyOf,
+    subjectFromSource: subjectFromSource,
     canonicalize: canonicalize
   };
 })();
