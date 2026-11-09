@@ -144,6 +144,30 @@ AHS.WrongBook = (function () {
     return found ? found.label : key;
   }
 
+  /* answerBadges(item, key, isCorrectSide, isCorrectNow) — 2026-11-09（使用者回報：
+     多選題「你的答案／正確答案」只有一個 30px 的方塊，(C)(D) 擠在一起被截掉）。
+     多選題每個選項一個徽章：「正確答案」全部綠色；「你的答案」選對的綠色、
+     選錯的紅色。單選與填充題維持一個徽章（寬度隨文字）。 */
+  function answerBadges(item, key, isCorrectSide, isCorrectNow) {
+    var wrap = el("span", { class: "wb-detail__answer-badges" });
+    var badge = function (text, ok) {
+      return el("span", { class: "wb-detail__answer-badge " + (ok ? "is-correct" : "is-wrong"), text: text });
+    };
+    if (kindOfItem(item) === "multi") {
+      var keys = AHS.QuestionKind.multiKeys(key);
+      if (!keys.length) { wrap.appendChild(badge("未作答", false)); return wrap; }
+      keys.map(function (k) {
+        var hit = displayOptions(item).filter(function (o) { return o.key === k; })[0];
+        return { key: k, label: hit ? hit.label : k };
+      }).sort(function (a, b) { return a.label < b.label ? -1 : a.label > b.label ? 1 : 0; }).forEach(function (o) {
+        wrap.appendChild(badge(o.label, isCorrectSide || isCorrectKey(item, o.key)));
+      });
+      return wrap;
+    }
+    wrap.appendChild(badge(isCorrectSide ? correctLabel(item) : answerLabel(item, key), isCorrectNow));
+    return wrap;
+  }
+
   /* WS-001: Mastered Rule — three consecutive correct reviews -> 已精熟.
      Sprint AI-111 AI-610: now backed by WrongBookRuntime's own real,
      persisted `correctStreak` field (see that file's recordRetry(),
@@ -1270,14 +1294,11 @@ AHS.WrongBook = (function () {
       el("div", { class: "wb-detail__answers" }, [
         el("div", { class: "wb-detail__answer" }, [
           el("span", { class: "wb-detail__answer-label", text: "你的答案" }),
-          el("span", {
-            class: "wb-detail__answer-badge " + (isCorrectNow ? "is-correct" : "is-wrong"),
-            text: answerLabel(item, item.yourAnswer)
-          })
+          answerBadges(item, item.yourAnswer, false, isCorrectNow)
         ]),
         el("div", { class: "wb-detail__answer" }, [
           el("span", { class: "wb-detail__answer-label", text: "正確答案" }),
-          el("span", { class: "wb-detail__answer-badge is-correct", text: correctLabel(item) })
+          answerBadges(item, item.correctAnswer, true, true)
         ])
       ]),
       el("div", { class: "wb-detail__kp" }, [
