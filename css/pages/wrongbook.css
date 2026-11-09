@@ -610,3 +610,28 @@
 .wb-viewas__select { min-height: 36px; padding: 4px 10px; border-radius: 10px; border: 1px solid var(--line); background-color: var(--card); color: var(--text); font-size: 14px; }
 .wb-viewas__msg { font-size: 13px; color: var(--text-muted); }
 .wb-viewing { margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--brand-line); background-color: var(--brand-soft); color: var(--brand); font-size: 14px; font-weight: 700; line-height: 1.7; }
+
+/* 2026-11-09（使用者回報）：
+   1. 題目詳解改為滿版、字體放大。
+   2. 多選題的答案每個選項一個徽章（原本固定 30px 方塊，(C)(D) 擠在一起被截掉）；
+      填充題的文字答案徽章寬度隨內容。 */
+.wb-modal__overlay { padding: 12px; }
+.wb-modal__panel { max-width: none; width: 100%; height: 100%; max-height: none; }
+.wb-modal__body { padding: 28px 40px; }
+.wb-detail__title { font-size: 20px; }
+.wb-detail__question { font-size: 20px; }
+.wb-detail__option-text { font-size: 18px; }
+.wb-detail__answer-label { font-size: 14px; }
+.wb-detail__answer-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 100%; }
+.wb-detail__answer-badge {
+  width: auto; min-width: 36px; height: auto; min-height: 36px;
+  padding: 4px 10px; font-size: 16px; text-align: center;
+  white-space: normal; overflow-wrap: anywhere;
+}
+@media (max-width: 720px) {
+  .wb-modal__overlay { padding: 0; }
+  .wb-modal__panel { border-radius: 0; }
+  .wb-modal__body { padding: 20px 16px; }
+  .wb-detail__question { font-size: 18px; }
+  .wb-detail__option-text { font-size: 16px; }
+}
