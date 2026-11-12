@@ -86,5 +86,5 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 - **安裝一次**：雙擊 `安裝錯題重點整理開機自動執行.bat`。它會檢查 `claude`、`git`、`gh`、`node`，請你貼上 Supabase secret（service_role）金鑰（存到 `%USERPROFILE%\.ahs\supabase-service-role.key`，只在這台電腦），並在「啟動」資料夾建立捷徑。
 - **開機時**：登入約 1 分鐘後自動跑一次（`tools/wrongbook-notes.ps1`），之後在背景等待。
 - **手動**：Admin 登入知識弱點頁，按「產生重點整理」（需要本機引擎在執行）。頁面會顯示進度與 PR 連結。
-- 每次最多處理 15 題（錯最多的優先）；Claude 只能改 `js/data/WrongBookNotesData.js`，改到其他檔案或格式檢查失敗就不上線。
+- 一次執行會把所有待整理的錯題寫完（每批 15 題、錯最多的優先，一次上限 300 題），最後合成一個 PR 上線；中途某一批失敗時，前面寫好的批次仍會上線，剩下的再按一次即可。Claude 只能改 `js/data/WrongBookNotesData.js`，改到其他檔案或格式檢查失敗就不上線。
 - 撰寫規則：`tools/wrongbook-notes-prompt.md`；待整理清單：`scripts/maintenance/WrongBookNotesPending.js`。

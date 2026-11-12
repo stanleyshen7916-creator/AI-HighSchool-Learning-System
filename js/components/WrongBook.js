@@ -312,7 +312,7 @@ AHS.WrongBook = (function () {
      本身由引擎提供（http://localhost:3000）時顯示；只在按下後才連線引擎。 */
   var NOTES_STEPS = {
     boot: "開機後稍候啟動", update: "更新程式", pending: "讀取待整理的錯題",
-    writing: "撰寫重點整理與類題中（每題約 2～4 分鐘）", checking: "檢查格式",
+    writing: "撰寫重點整理與類題中", checking: "檢查格式",
     reviewing: "Claude 複核無法確認答案的題目中",
     publishing: "上線中（開 PR、自動測試，約 5～10 分鐘）"
   };
@@ -332,14 +332,20 @@ AHS.WrongBook = (function () {
     if (st.queued && st.state !== "running") { return "已排入，等待本機程式開始…"; }
     var who = { agy: "Antigravity", gemini: "Gemini", claude: "Claude", codex: "Codex" }[st.writer] || "";
     if (st.state === "running") {
-      return "執行中：" + (st.step === "writing" && who ? who + " " : "") + (NOTES_STEPS[st.step] || st.step || "") +
-        (st.step === "reviewing" && st.review ? "（" + st.review + " 題）" : (st.batch ? "（本批 " + st.batch + " 題）" : ""));
+      /* 2026-11-12: 一次按鈕跑完全部批次——撰寫時顯示「已完成 30／74 題」。 */
+      var progress = st.batch ? "（本批 " + st.batch + " 題）" : "";
+      if (st.step === "reviewing" && st.review) { progress = "（" + st.review + " 題）"; }
+      else if ((st.step === "writing" || st.step === "checking") && st.total && typeof st.written === "number") {
+        progress = "（已完成 " + st.written + "／" + st.total + " 題，每批 " + st.batch + " 題）";
+      } else if (st.step === "publishing" && st.added) { progress = "（共 " + st.added + " 題）"; }
+      return "執行中：" + (st.step === "writing" && who ? who + " " : "") + (NOTES_STEPS[st.step] || st.step || "") + progress;
     }
     if (st.state === "waiting") { return NOTES_STEPS.boot; }
     if (st.state === "error") { return "失敗：" + (NOTES_ERRORS[st.error] || st.error || "") + (st.message ? "（" + st.message + "）" : ""); }
     if (st.state === "done") {
       return st.added ? "完成：" + (who ? who + " " : "") + "新增 " + st.added + " 題重點整理" +
-        (st.reviewed ? "（其中 " + st.reviewed + " 題由 Claude 複核）" : "") + "，已上線，重新整理頁面即可看到" : "沒有需要整理的新錯題";
+        (st.reviewed ? "（其中 " + st.reviewed + " 題由 Claude 複核）" : "") + "，已上線，重新整理頁面即可看到" +
+        (st.remaining ? "；還有 " + st.remaining + " 題沒寫完，可以再按一次" : "") : "沒有需要整理的新錯題";
     }
     return "";
   }

@@ -9,8 +9,9 @@
 #     (POST /api/platform/wrongbook-notes/run) writes <DataDir>\wrongbook_notes\run.request.
 # One run:
 #   1. fast-forward local main to origin/main;
-#   2. node scripts/maintenance/WrongBookNotesPending.js -> questions still in the
-#      wrong book that have no note yet (needs SUPABASE_SERVICE_ROLE_KEY, read from the
+#   2. node scripts/maintenance/WrongBookNotesPending.js -> every question still in the
+#      wrong book that has no note yet, then written batch by batch (MaxPerRun each) until
+#      none is left - steps 3/3b repeat per batch, steps 4-5 publish them all in one PR (needs SUPABASE_SERVICE_ROLE_KEY, read from the
 #      environment or from %USERPROFILE%\.ahs\supabase-service-role.key);
 #   3. the writer AI (default Claude Code with the Sonnet model - set AHS_NOTES_CLAUDE_MODEL to change it;
 #      AHS_NOTES_WRITER=agy|gemini|codex switches writer, Claude then reviews and backs it up) writes the notes
@@ -25,7 +26,8 @@ param(
   [Parameter(Mandatory = $true)][string]$RepoRoot,
   [Parameter(Mandatory = $true)][string]$DataDir,
   [int]$BootDelaySeconds = 60,
-  [int]$MaxPerRun = 15,
+  [int]$MaxPerRun = 15,   # questions per batch (one AI call)
+  [int]$MaxTotal = 300,   # questions per run (all batches together)
   [switch]$NoInitialRun
 )
 
@@ -47,6 +49,7 @@ $StatusFile = Join-Path $WorkDir 'status.json'
 $Heartbeat = Join-Path $WorkDir 'worker.heartbeat'
 $NotesFile = 'js/data/WrongBookNotesData.js'
 $PendingFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\pending.json'
+$AllFile = Join-Path $RepoRoot 'ai-engine\council\data\wrongbook_notes\pending-all.json'
 $PromptFile = Join-Path $RepoRoot 'ai-engine\council\tools\wrongbook-notes-prompt.md'
 $Publisher = Join-Path $RepoRoot 'ai-engine\council\tools\git-publisher.ps1'
 $AllowedTools = 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch'
@@ -86,9 +89,11 @@ function Note-Count {
   return [int]($r.out -split "`n" | Select-Object -Last 1)
 }
 function Changed-Paths {
-  # tracked files that differ from HEAD (staged or not); untracked files are ignored
-  $r = Invoke-Git @('diff', '--name-only', 'HEAD')
-  return @($r.out -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+  # tracked files that differ from HEAD (staged or not); untracked files are ignored.
+  # stdout only: git's warnings (e.g. "LF will be replaced by CRLF") go to stderr and
+  # must not be read as file names - that made every run fail with "changed other files".
+  $out = & git -C $RepoRoot diff --name-only HEAD 2>$null
+  return @($out | ForEach-Object { "$_".Trim() } | Where-Object { $_ })
 }
 function Publisher-Alive {
   $hb = Join-Path $QueueDir 'publisher.heartbeat'
@@ -173,6 +178,49 @@ function Write-Notes([string]$agent, [string]$listRel, [int]$n, [switch]$Review)
   return (Check-Notes)
 }
 
+# Writes one batch: the writer AI, Claude as backup when the writer fails, then Claude's review
+# of the notes the writer could not confirm. Returns @{ error; writer; reviewed; note };
+# on error the caller restores the notes file.
+function Write-Batch([string]$writer, [bool]$hasClaude, [string]$listRel, [int]$n) {
+  $res = @{ error = ''; writer = $writer; reviewed = 0; note = '' }
+  $notesPath = Join-Path $RepoRoot $NotesFile
+  $start = [System.IO.File]::ReadAllText($notesPath, $utf8)
+  Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--ids-out', $BeforeIdsFile) | Out-Null
+
+  $check = Write-Notes $writer $listRel $n
+  if ($check) {
+    [System.IO.File]::WriteAllText($notesPath, $start, $utf8)
+    if ($writer -eq 'claude' -or -not $hasClaude) { $res.error = $check; return $res }
+    # the writer could not do it (quota, not signed in, hang, bad format): Claude writes this batch
+    # and the rest of the run
+    $res.note = "$writer failed, Claude took over: $check"
+    Save-Status @{ writer = 'claude'; writerError = $check }
+    $check = Write-Notes 'claude' $listRel $n
+    if ($check) { $res.error = $check; return $res }
+    $res.writer = 'claude'
+  }
+
+  # notes the writer could not confirm go to Claude for an independent rewrite
+  if ($res.writer -ne 'claude' -and $hasClaude) {
+    $r = Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--review', '--before', $BeforeIdsFile, '--pending', $PendingFile, '--out', $ReviewFile)
+    $toReview = 0
+    if ($r.code -eq 0) { $toReview = [int](($r.out -split "`n") | Select-Object -Last 1) }
+    if ($toReview -gt 0) {
+      Save-Status @{ step = 'reviewing'; review = $toReview }
+      $snapshot = [System.IO.File]::ReadAllText($notesPath, $utf8)
+      $check = Write-Notes 'claude' 'ai-engine/council/data/wrongbook_notes/review.json' $toReview -Review
+      if ($check) {
+        # keep the writer's notes (still marked as unconfirmed) rather than losing the batch
+        [System.IO.File]::WriteAllText($notesPath, $snapshot, $utf8)
+        $res.note = "$($res.note) Claude review failed, unconfirmed notes kept: $check".Trim()
+      } else {
+        $res.reviewed = $toReview
+      }
+    }
+  }
+  return $res
+}
+
 function Run-Once([string]$reason) {
   $script:status = @{ state = 'running'; step = 'update'; reason = $reason; startedAt = (Get-Date).ToString('o') }
   Save-Status @{}
@@ -201,58 +249,47 @@ function Run-Once([string]$reason) {
   $r = Invoke-Git @('merge', '--ff-only', 'origin/main')
   if ($r.code -ne 0) { return (& $fail 'update_failed' $r.out) }
 
+  # the whole to-do list is read from Supabase once; the batches are then cut from that file
   Save-Status @{ step = 'pending' }
   $env:SUPABASE_SERVICE_ROLE_KEY = $key
-  $r = Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--out', $PendingFile, '--max', "$MaxPerRun")
+  $r = Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--out', $AllFile, '--max', "$MaxTotal")
   Remove-Item Env:\SUPABASE_SERVICE_ROLE_KEY -ErrorAction SilentlyContinue
   if ($r.code -ne 0) { return (& $fail 'pending_failed' $r.out) }
-  $pending = [System.IO.File]::ReadAllText($PendingFile, $utf8) | ConvertFrom-Json
-  $count = @($pending.items).Count
+  $all = [System.IO.File]::ReadAllText($AllFile, $utf8) | ConvertFrom-Json
+  $count = @($all.items).Count
   if ($count -eq 0) {
     return (Save-Status @{ state = 'done'; step = 'done'; added = 0; total = 0; message = 'no new wrong-book questions'; finishedAt = (Get-Date).ToString('o') })
   }
 
-  Save-Status @{ step = 'writing'; total = $pending.total; batch = $count; writer = $writer }
+  # one run writes every batch (MaxPerRun questions each) and publishes them all in one PR.
+  # A batch that fails is undone and ends the run; the batches before it are still published.
   $before = Note-Count
-  Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--ids-out', $BeforeIdsFile) | Out-Null
   $relPending = 'ai-engine/council/data/wrongbook_notes/pending.json'
-
-  $check = Write-Notes $writer $relPending $count
+  $notesPath = Join-Path $RepoRoot $NotesFile
   $writerNote = ''
-  if ($check) {
-    Invoke-Git @('checkout', '--', $NotesFile) | Out-Null
-    if ($writer -eq 'claude' -or -not $hasClaude) { return (& $fail 'claude_failed' $check) }
-    # the writer could not do it (quota, not signed in, hang, bad format): Claude writes this batch
-    $writerNote = "$writer failed, Claude wrote this batch: $check"
-    Save-Status @{ writer = 'claude'; writerError = $check }
-    $check = Write-Notes 'claude' $relPending $count
-    if ($check) { Invoke-Git @('checkout', '--', $NotesFile) | Out-Null; return (& $fail 'claude_failed' $check) }
-    $writer = 'claude'
-  }
-
-  # notes the writer could not confirm go to Claude for an independent rewrite
   $reviewed = 0
-  if ($writer -ne 'claude' -and $hasClaude) {
-    $n = Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--review', '--before', $BeforeIdsFile, '--pending', $PendingFile, '--out', $ReviewFile)
-    $toReview = 0
-    if ($n.code -eq 0) { $toReview = [int](($n.out -split "`n") | Select-Object -Last 1) }
-    if ($toReview -gt 0) {
-      Save-Status @{ step = 'reviewing'; review = $toReview }
-      $snapshot = [System.IO.File]::ReadAllText((Join-Path $RepoRoot $NotesFile), $utf8)
-      $check = Write-Notes 'claude' 'ai-engine/council/data/wrongbook_notes/review.json' $toReview -Review
-      if ($check) {
-        # keep the writer's notes (still marked as unconfirmed) rather than losing the batch
-        [System.IO.File]::WriteAllText((Join-Path $RepoRoot $NotesFile), $snapshot, $utf8)
-        $writerNote = "$writerNote Claude review failed, unconfirmed notes kept: $check".Trim()
-      } else {
-        $reviewed = $toReview
-      }
+  $added = 0
+  for ($offset = 0; $offset -lt $count; $offset += $MaxPerRun) {
+    $n = [Math]::Min($MaxPerRun, $count - $offset)
+    Save-Status @{ step = 'writing'; total = $all.total; batch = $n; written = $added; writer = $writer }
+    $r = Invoke-Node @('scripts/maintenance/WrongBookNotesPending.js', '--slice', '--from', $AllFile, '--offset', "$offset", '--max', "$MaxPerRun", '--out', $PendingFile)
+    $snapshot = [System.IO.File]::ReadAllText($notesPath, $utf8)
+    $b = if ($r.code -ne 0) { @{ error = "could not cut the batch: $($r.out)" } } else { Write-Batch $writer $hasClaude $relPending $n }
+    if ($b.error) {
+      [System.IO.File]::WriteAllText($notesPath, $snapshot, $utf8)
+      if ($added -le 0) { return (& $fail 'claude_failed' $b.error) }
+      $writerNote = "$writerNote stopped after $added note(s): $($b.error)".Trim()
+      break
     }
+    $writer = $b.writer
+    $reviewed += $b.reviewed
+    if ($b.note) { $writerNote = "$writerNote $($b.note)".Trim() }
+    $added = (Note-Count) - $before
   }
 
-  $added = (Note-Count) - $before
   if ($added -le 0) { return (Save-Status @{ state = 'done'; step = 'done'; added = 0; message = "$writer added no notes"; finishedAt = (Get-Date).ToString('o') }) }
-  Save-Status @{ reviewed = $reviewed; writerNote = $writerNote }
+  # remaining: questions still without a note (skipped by the AI, a failed batch, or over MaxTotal)
+  Save-Status @{ reviewed = $reviewed; writerNote = $writerNote; remaining = [Math]::Max(0, [int]$all.total - $added) }
 
   Save-Status @{ step = 'publishing'; added = $added }
   $id = "$([DateTimeOffset]::Now.ToUnixTimeMilliseconds())_wrongbook-notes"

@@ -76,6 +76,10 @@ function pendingFrom(rows, haveIds, max) {
   return { total: all.length, items: all.slice(0, max) };
 }
 
+function sliceItems(pending, offset, max) {
+  return { total: pending.total, items: (pending.items || []).slice(offset, offset + max) };
+}
+
 async function fetchRows(url, serviceKey, fetchImpl) {
   const q = "/rest/v1/wrong_book?deleted_at=is.null&select=local_question_id,knowledge_point,question_text,options,your_answer,correct_answer,explanation,error_count,subjects(code)";
   const res = await fetchImpl(url + q, { headers: authHeaders(serviceKey) });
@@ -105,6 +109,15 @@ async function main(argv) {
   }
   const outAt = argv.indexOf("--out");
   const maxAt = argv.indexOf("--max");
+  /* --slice --from <all.json> --offset N --max M --out <batch.json>：從已讀好的完整清單切出一批
+     （一次按鈕跑完全部：只連線 Supabase 一次，之後每批只切檔，不需要金鑰）。 */
+  if (argv.indexOf("--slice") !== -1) {
+    const all = JSON.parse(fs.readFileSync(path.resolve(arg(argv, "--from")), "utf8").replace(/^﻿/, ""));
+    const batch = sliceItems(all, parseInt(arg(argv, "--offset"), 10) || 0, Math.max(1, parseInt(arg(argv, "--max"), 10) || 15));
+    fs.writeFileSync(path.resolve(arg(argv, "--out")), JSON.stringify(Object.assign({ generatedAt: new Date().toISOString() }, batch), null, 2), "utf8");
+    console.log(String(batch.items.length));
+    return 0;
+  }
   if (outAt === -1 || !argv[outAt + 1]) {
     console.error("Usage: SUPABASE_SERVICE_ROLE_KEY=... node scripts/maintenance/WrongBookNotesPending.js --out <file> [--max 15]");
     return 2;
@@ -125,4 +138,4 @@ if (require.main === module) {
   main(process.argv.slice(2)).then((code) => { process.exitCode = code; }, (err) => { console.error(String(err && err.message || err)); process.exitCode = 1; });
 }
 
-module.exports = { pendingFrom, existingNoteIds, loadNotes, reviewItems, authHeaders };
+module.exports = { pendingFrom, sliceItems, existingNoteIds, loadNotes, reviewItems, authHeaders };
