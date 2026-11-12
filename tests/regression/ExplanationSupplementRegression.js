@@ -45,9 +45,10 @@ console.log("\n[1] 資料");
   const r = gen.generate({ check: true });
   check("產生的資料與來源一致（無過期檔案）", r.stale.length === 0);
   const ids = Object.keys(DATA);
-  check("共 60 題（tm_7 23 題 + tm_1 14 題 + tm_11 23 題）", ids.length === 60 &&
+  check("原有 60 題（tm_7 23 題 + tm_1 14 題 + tm_11 23 題）＋高二地科補強 96 題", ids.length === 156 &&
     ids.filter((id) => /^tm_7_/.test(id)).length === 23 && ids.filter((id) => /^tm_1_/.test(id)).length === 14 &&
-    ids.filter((id) => /^tm_11_/.test(id)).length === 23);
+    ids.filter((id) => /^tm_11_/.test(id)).length === 23 &&
+    ids.filter((id) => /^tm_(60|68|69|70)_/.test(id)).length === 96);
   const bank = {};
   AHS.TeachingMaterialData.forEach((e) => e.questions.forEach((q) => { bank[q.id] = q; }));
   check("每題都對應到教材包中的真實題目", ids.every((id) => bank[id] && bank[id].question === DATA[id].question));
