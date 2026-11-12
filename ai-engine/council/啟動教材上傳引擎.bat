@@ -127,8 +127,6 @@ REM 由主機上的 git-publisher.ps1 處理推送請求（只會提交該教材
 if defined COUNCIL_DATA_DIR (set "QUEUE=%COUNCIL_DATA_DIR%\git_queue") else (set "QUEUE=%ENGINE%data\git_queue")
 echo 啟動發布推送程式（最小化視窗，發布教材時請勿關閉）...
 start "教材發布推送 - 請勿關閉" /min powershell -NoProfile -ExecutionPolicy Bypass -File "%ENGINE%tools\git-publisher.ps1" -RepoRoot "%ENGINE%..\.." -QueueDir "!QUEUE!"
-REM 2026-11-06：知識弱點頁「產生重點整理」按鈕由本機的錯題重點整理程式處理（已在執行就不會重複開）。
-call "%ENGINE%啟動錯題重點整理.bat" /noinitial
 echo.
 echo [4/4] 開啟教材上傳頁（請以 Admin 登入）...
 start "" "%URL%"

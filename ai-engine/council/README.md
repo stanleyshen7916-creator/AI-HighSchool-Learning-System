@@ -75,6 +75,8 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 
 ## 知識弱點「重點整理」自動產生（2026-11-06）
 
+> **2026-11-12 起停用（不再花 AI 用量）**：知識弱點頁改成直接把錯題本身的詳解整理成「詳解」卡（作答分析、逐點說明、課本出處），頁面上的「產生重點整理」按鈕已移除，`啟動教材上傳引擎.bat` 也不再自動啟動這支程式。已經產生的重點整理照常顯示。下面的工具仍在，只有手動執行 `啟動錯題重點整理.bat`（或開機捷徑還在）時才會執行並使用 AI。
+
 新錯題的重點整理與類題（`js/data/WrongBookNotesData.js`）由本機 AI 撰寫，自動開 PR 上線：
 
 - **撰寫**：Claude Code，預設 Sonnet 模型（`AHS_NOTES_CLAUDE_MODEL` 可改，例如 `opus`）。Gemini CLI 自 2026-06-18 起不再支援個人帳號（含 AI Pro）；仍可用 `AHS_NOTES_WRITER=agy|gemini|codex` 改由其他 AI 撰寫，此時 Claude 負責把關與備援。
@@ -85,6 +87,5 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 
 - **安裝一次**：雙擊 `安裝錯題重點整理開機自動執行.bat`。它會檢查 `claude`、`git`、`gh`、`node`，請你貼上 Supabase secret（service_role）金鑰（存到 `%USERPROFILE%\.ahs\supabase-service-role.key`，只在這台電腦），並在「啟動」資料夾建立捷徑。
 - **開機時**：登入約 1 分鐘後自動跑一次（`tools/wrongbook-notes.ps1`），之後在背景等待。
-- **手動**：Admin 登入知識弱點頁，按「產生重點整理」（需要本機引擎在執行）。頁面會顯示進度與 PR 連結。
 - 一次執行會把所有待整理的錯題寫完（每批 15 題、錯最多的優先，一次上限 300 題），最後合成一個 PR 上線；中途某一批失敗時，前面寫好的批次仍會上線，剩下的再按一次即可。Claude 只能改 `js/data/WrongBookNotesData.js`，改到其他檔案或格式檢查失敗就不上線。
 - 撰寫規則：`tools/wrongbook-notes-prompt.md`；待整理清單：`scripts/maintenance/WrongBookNotesPending.js`。
