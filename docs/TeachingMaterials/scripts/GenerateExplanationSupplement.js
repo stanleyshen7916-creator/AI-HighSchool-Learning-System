@@ -30,8 +30,25 @@ const OUTPUT_FILE = path.join(REPO_ROOT, "js", "data", "ExplanationSupplementDat
 const SOURCES = [
   { materialId: "tm_7", module: "MathTm7.js" },
   { materialId: "tm_1", module: "MathTm1.js" },
-  { materialId: "tm_11", module: "PhysicsTm11.js" }
+  { materialId: "tm_11", module: "PhysicsTm11.js" },
+  /* 2026-11-12 高二詳解補強：一個模組可涵蓋多個教材包，依 questionId 前綴（tm_N_）分組 */
+  { multi: true, module: "EarthScienceG11.js" }
 ];
+
+function expandSources() {
+  const out = [];
+  SOURCES.forEach((src) => {
+    if (!src.multi) { out.push(src); return; }
+    const groups = {};
+    require(path.join(EXPLANATIONS_DIR, "build", src.module)).forEach((entry) => {
+      const m = /^(tm_\d+)_/.exec(entry.questionId || "");
+      const id = m ? m[1] : "unknown";
+      (groups[id] = groups[id] || []).push(entry);
+    });
+    Object.keys(groups).forEach((id) => out.push({ materialId: id, module: src.module, items: groups[id] }));
+  });
+  return out;
+}
 
 const UNSAFE_SVG = [/<script/i, /\son[a-z]+\s*=/i, /javascript:/i, /<foreignObject/i, /(?:xlink:)?href\s*=/i, /<iframe/i, /<image/i];
 
@@ -60,12 +77,12 @@ function build() {
   const byMaterial = {};
   const all = {};
   const errors = [];
-  SOURCES.forEach((src) => {
+  expandSources().forEach((src) => {
     const bankFile = path.join(MATERIALS_DIR, src.materialId, "questionbank.json");
     const bank = {};
     JSON.parse(fs.readFileSync(bankFile, "utf8")).questions.forEach((q) => { bank[q.questionId] = q; });
-    const items = require(path.join(EXPLANATIONS_DIR, "build", src.module));
-    byMaterial[src.materialId] = items.map((entry) => {
+    const items = src.items || require(path.join(EXPLANATIONS_DIR, "build", src.module));
+    byMaterial[src.materialId] = (byMaterial[src.materialId] || []).concat(items.map((entry) => {
       validateEntry(entry, bank).forEach((e) => errors.push(src.materialId + " / " + entry.questionId + "：" + e));
       if (all[entry.questionId]) { errors.push(entry.questionId + "：重複"); }
       const out = {
@@ -80,7 +97,7 @@ function build() {
       };
       all[entry.questionId] = out;
       return out;
-    });
+    }));
   });
   return { byMaterial, all, errors };
 }
