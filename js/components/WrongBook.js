@@ -300,105 +300,10 @@ AHS.WrongBook = (function () {
           el("p", { class: "wb-banner__tip", text: data.bannerTip })
         ])
       ]),
-      el("div", { class: "wb-header__actions" }, [reviewBtn, favBtn, exportBtn, handlers.notesRunner || null].filter(Boolean))
+      el("div", { class: "wb-header__actions" }, [reviewBtn, favBtn, exportBtn])
     ]);
 
     return { el: headerEl, favBtn: favBtn };
-  }
-
-  /* 2026-11-06（使用者需求：增加一個按鈕，可由我手動執行）: 「產生重點整理」—
-     請本機的教材上傳引擎排一次工作，由主機上的 tools/wrongbook-notes.ps1 用
-     Claude Code 為新錯題寫重點整理與類題，再自動開 PR 上線。只給 Admin，或頁面
-     本身由引擎提供（http://localhost:3000）時顯示；只在按下後才連線引擎。 */
-  var NOTES_STEPS = {
-    boot: "開機後稍候啟動", update: "更新程式", pending: "讀取待整理的錯題",
-    writing: "撰寫重點整理與類題中（每題約 2～4 分鐘）", checking: "檢查格式",
-    reviewing: "Claude 複核無法確認答案的題目中",
-    publishing: "上線中（開 PR、自動測試，約 5～10 分鐘）"
-  };
-  var NOTES_ERRORS = {
-    no_claude: "找不到 Claude Code，請先安裝並登入",
-    no_git: "找不到 git", no_gh: "找不到 GitHub CLI（gh）", no_node: "找不到 node",
-    no_key: "尚未設定 Supabase 金鑰，請執行「安裝錯題重點整理開機自動執行.bat」",
-    busy: "上一批重點整理還在上線中，請稍後再按",
-    not_main: "平台資料夾目前不在 main 分支", dirty: "平台資料夾有尚未提交的變更",
-    update_failed: "無法更新到 GitHub 最新版", pending_failed: "讀取錯題失敗",
-    claude_failed: "AI 撰寫失敗", extra_changes: "AI 改到其他檔案，已停止上線",
-    test_failed: "重點整理格式檢查沒通過，已停止上線", publish_failed: "上線（PR）失敗",
-    worker_error: "執行程式發生錯誤"
-  };
-  function notesStatusText(st) {
-    if (!st) { return ""; }
-    if (st.queued && st.state !== "running") { return "已排入，等待本機程式開始…"; }
-    var who = { agy: "Antigravity", gemini: "Gemini", claude: "Claude", codex: "Codex" }[st.writer] || "";
-    if (st.state === "running") {
-      return "執行中：" + (st.step === "writing" && who ? who + " " : "") + (NOTES_STEPS[st.step] || st.step || "") +
-        (st.step === "reviewing" && st.review ? "（" + st.review + " 題）" : (st.batch ? "（本批 " + st.batch + " 題）" : ""));
-    }
-    if (st.state === "waiting") { return NOTES_STEPS.boot; }
-    if (st.state === "error") { return "失敗：" + (NOTES_ERRORS[st.error] || st.error || "") + (st.message ? "（" + st.message + "）" : ""); }
-    if (st.state === "done") {
-      return st.added ? "完成：" + (who ? who + " " : "") + "新增 " + st.added + " 題重點整理" +
-        (st.reviewed ? "（其中 " + st.reviewed + " 題由 Claude 複核）" : "") + "，已上線，重新整理頁面即可看到" : "沒有需要整理的新錯題";
-    }
-    return "";
-  }
-
-  function canRunNotes() {
-    var client = AHS.CouncilEngineClient;
-    if (!client || typeof client.wrongBookNotesRun !== "function") { return false; }
-    if (client.servedByEngine && client.servedByEngine()) { return true; }
-    var ws = AHS.WorkspaceRuntime;
-    var current = ws && typeof ws.getCurrent === "function" ? ws.getCurrent() : null;
-    var student = current && typeof ws.findStudent === "function" ? ws.findStudent(current.studentId) : null;
-    return !!(student && student.role === "ADMIN");
-  }
-
-  function notesRunner() {
-    if (!canRunNotes()) { return null; }
-    var client = AHS.CouncilEngineClient;
-    var btn = el("button", { type: "button", class: "wb-action wb-action--ghost wb-notes-run__btn" }, [
-      el("span", { html: AHS.Icons.refresh() }),
-      el("span", { text: "產生重點整理" })
-    ]);
-    var msg = el("p", { class: "wb-notes-run__msg", role: "status", "aria-live": "polite" });
-    var link = el("a", { class: "wb-notes-run__link", target: "_blank", rel: "noopener noreferrer", hidden: "hidden", text: "查看 PR" });
-    var timer = null;
-    function show(st) {
-      msg.textContent = notesStatusText(st);
-      if (st && st.pr) { link.href = st.pr; link.removeAttribute("hidden"); } else { link.setAttribute("hidden", "hidden"); }
-      var active = st && (st.state === "running" || st.state === "waiting" || st.queued);
-      if (st && !st.workerAlive && (st.queued || st.state === "running")) {
-        msg.textContent = "已排入，但本機的錯題重點整理程式沒有在執行：請執行「啟動錯題重點整理.bat」";
-        active = false;
-      }
-      if (active) { btn.setAttribute("disabled", "disabled"); } else { btn.removeAttribute("disabled"); }
-      return active;
-    }
-    function poll() {
-      client.wrongBookNotesStatus().then(function (res) {
-        if (res.error) { msg.textContent = res.error.message; btn.removeAttribute("disabled"); return; }
-        if (show(res.data)) { timer = setTimeout(poll, 5000); }
-      });
-    }
-    btn.addEventListener("click", function () {
-      if (timer) { clearTimeout(timer); timer = null; }
-      btn.setAttribute("disabled", "disabled");
-      msg.textContent = "連線本機引擎…";
-      client.wrongBookNotesRun().then(function (res) {
-        if (res.error) {
-          /* 2026-11-08: 404 = 本機引擎還是舊版（沒有這個功能的程式碼）。 */
-          msg.textContent = res.error.status === 404
-            ? "本機引擎是舊版，還沒有這個功能。請關閉後重新執行「啟動教材上傳引擎.bat」（會自動更新並重新啟動引擎）。"
-            : res.error.message;
-          btn.removeAttribute("disabled");
-          return;
-        }
-        if (res.data && res.data.accepted === false) { msg.textContent = "已在執行中"; }
-        if (show(res.data)) { timer = setTimeout(poll, 3000); }
-      });
-    });
-    return el("div", { class: "wb-notes-run" }, [btn, msg, link]);
   }
 
   /* 2026-11-02 錯題的章節標籤（使用者需求：「知識弱點的題目需標示章節內容」），
@@ -1030,14 +935,87 @@ AHS.WrongBook = (function () {
     return "";
   }
 
+  function noteSection(title, mod, children) {
+    return el("section", { class: "wb-note__section wb-note__section--" + mod }, [
+      el("h3", { class: "wb-note__heading", text: title })
+    ].concat(children));
+  }
+
+  /* 2026-11-12（使用者需求：不再用 AI 產生重點整理，直接用錯題本身的詳解，並呈現得
+     更詳盡）: 沒有重點整理筆記、也沒有詳解補強（AHS.ExplanationSupplement）的錯題，
+     把這一題自己的資料整理成一張「詳解」卡：作答分析（選了什麼、正確是什麼；多選題
+     列出選對／多選／漏選）→ 詳解逐點列出 → 課本出處與命題說明。內容全部取自這一題
+     的選項與 explanation，不呼叫 AI、不新增任何文字；原文仍可在下方「原始詳解」看到。 */
+  function splitExplanation(text) {
+    var src = String(text || "").trim();
+    var out = { remark: "", source: "", points: [] };
+    var m = src.match(/^[（(]([^（）()]*命題[^（）()]*)[）)]\s*/);
+    if (m) { out.remark = m[1]; src = src.slice(m[0].length); }
+    m = src.match(/^(課本\s*p\.[^：:。]{0,40})[：:]\s*/);
+    if (m) { out.source = m[1].trim(); src = src.slice(m[0].length); }
+    /* 一句一點：在括號外的句號、分號、換行處分開（括號裡的補充說明不拆）。 */
+    var depth = 0, buf = "";
+    function flush() { if (buf.trim()) { out.points.push(buf.trim()); } buf = ""; }
+    src.split("").forEach(function (c) {
+      if (depth === 0 && (c === "。" || c === "；" || c === "\n")) { flush(); return; }
+      if (c === "（" || c === "(") { depth++; }
+      if (c === "）" || c === ")") { depth = Math.max(0, depth - 1); }
+      buf += c;
+    });
+    flush();
+    return out;
+  }
+
+  function answerAnalysis(item) {
+    var opts = displayOptions(item);
+    var kind = kindOfItem(item);
+    if (!opts.length || kind === "self") { return []; }
+    function names(test) {
+      return opts.filter(test).map(function (o) { return o.label + "「" + o.text + "」"; }).join("、");
+    }
+    function line(title, text) { return text ? title + text : null; }
+    var correct = function (o) { return isCorrectKey(item, o.key); };
+    var picked = function (o) { return isPickedKey(item, o.key); };
+    if (!item.yourAnswer) { return ["這一題當時沒有作答", line("正確答案：", names(correct))].filter(Boolean); }
+    if (kind === "multi") {
+      return [
+        line("選對了：", names(function (o) { return correct(o) && picked(o); })),
+        line("多選了：", names(function (o) { return picked(o) && !correct(o); })),
+        line("漏選了：", names(function (o) { return correct(o) && !picked(o); }))
+      ].filter(Boolean);
+    }
+    return [
+      line("你選了：", names(function (o) { return picked(o) && !correct(o); })),
+      line("正確答案：", names(correct))
+    ].filter(Boolean);
+  }
+
+  function explainBlock(item) {
+    if (window.AHS && AHS.ExplanationSupplement && AHS.ExplanationSupplement.find(item)) { return null; }
+    var analysis = answerAnalysis(item);
+    var parts = splitExplanation(item.explanation);
+    if (!analysis.length && !parts.points.length) { return null; }
+    return el("div", { class: "wb-note wb-note--explain", "aria-label": "詳解" }, [
+      el("div", { class: "wb-note__head" }, [
+        el("h2", { class: "wb-note__title", text: "詳解" }),
+        parts.source ? el("span", { class: "wb-note__basis", text: "出處：" + parts.source }) : null
+      ]),
+      analysis.length ? noteSection("作答分析", "why", [
+        el("ul", { class: "wb-note__traps" }, analysis.map(function (t) { return el("li", { text: t }); }))
+      ]) : null,
+      parts.points.length ? noteSection("重點說明", "steps", [
+        el("ol", { class: "wb-note__steps" }, parts.points.map(function (t) {
+          return el("li", { class: "wb-note__step" }, [el("span", { class: "wb-note__step-result", text: t })]);
+        }))
+      ]) : null,
+      parts.remark ? el("p", { class: "wb-note__step-note", text: parts.remark }) : null
+    ]);
+  }
+
   function noteBlock(item) {
     var note = noteOf(item);
     if (!note) { return null; }
-    function section(title, mod, children) {
-      return el("section", { class: "wb-note__section wb-note__section--" + mod }, [
-        el("h3", { class: "wb-note__heading", text: title })
-      ].concat(children));
-    }
+    var section = noteSection;
     function list(tag, items, cls) {
       return el(tag, { class: cls }, (items || []).map(function (t) { return el("li", { text: t }); }));
     }
@@ -1265,7 +1243,7 @@ AHS.WrongBook = (function () {
       });
     }
 
-    var note = noteBlock(item);
+    var note = noteBlock(item) || explainBlock(item);
     if (note) { explainToggle.querySelector(".wb-detail__explain-toggle-label").textContent = "原始詳解"; }
 
     var body = el("div", { class: "wb-detail__body" + (note ? " has-note" : "") }, [
@@ -2032,7 +2010,6 @@ AHS.WrongBook = (function () {
       text: "正在檢視「" + ((opts && opts.viewingLabel) || "學生") + "」的錯題（唯讀）：可以查看題目詳解與重點整理，作答與收藏不會記錄，也不能刪除。" }) : null;
 
     var header = headerBlock(data, status, {
-      notesRunner: notesRunner(),
       // WB-008/WS-004: Header 重新練習 — reviews the CURRENT filtered
       // Question List (not a single question), then shows a Review Result
       // screen before returning to the normal Wrong Book view.

@@ -53,8 +53,6 @@ AHS.RepositoryFactory = {
 function flush() { return new Promise((r) => setTimeout(r, 0)).then(() => Promise.all(pushes)).then(() => { pushes = []; }); }
 
 const RT = AHS.WrongBookRuntime;
-function stepText(steps) { return (steps || []).map((t) => (t && typeof t === "object") ? [t.title].concat(t.lines || [], t.note || []).join(" ") : String(t)).join(" "); }
-function bracesBalanced(str) { let d = 0; for (const c of str) { if (c === "{") d++; if (c === "}") d--; if (d < 0) return false; } return d === 0; }
 const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最大值", options: [], yourAnswer: "C", correctAnswer: "A", explanation: "", knowledgePoint: "疊合" };
 
 (async function () {
@@ -87,28 +85,17 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
   const notes = AHS.WrongBookNotesData || {};
   const ids = Object.keys(notes);
   check("WrongBookNotesData 至少一筆", ids.length >= 1);
+  /* 2026-11-12：格式規則搬到 scripts/maintenance/WrongBookNotesMerge.js 的 validateNote()，
+     合併新筆記時逐筆檢查用的是同一份。 */
+  const M = require(path.join(REPO, "scripts/maintenance/WrongBookNotesMerge.js"));
   ids.forEach((id) => {
-    const n = notes[id];
-    check(id + "：有 keyPoint、steps、references", !!n.keyPoint && Array.isArray(n.steps) && n.steps.length > 0 && Array.isArray(n.references) && n.references.length > 0);
-    check(id + "：連結都是 https", n.references.every((r) => /^https:\/\//.test(r.url) && r.title));
-    check(id + "：basis 標示【確認】或【推論】", /【確認】|【推論】/.test(n.basis || ""));
-    const body = [n.keyPoint, stepText(n.steps)].concat(n.traps || [], n.formulas || [], Object.values(n.whyWrong || {})).join(" ");
-    check(id + "：算式標記的大括號成對", bracesBalanced(body + stepText([].concat.apply([], (n.variants || []).map((v) => v.steps || [])))));
-    check(id + "：方程式步驟都有標題與算式", n.steps.every((t) => typeof t === "string" || (t.title && Array.isArray(t.lines) && t.lines.length)));
-    check(id + "：內文不寫 (A)~(E) 選項字母", !/[(（][A-E][)）]/.test(body));
-    if (n.errorType) {
-      check(id + "：errorType 只用觀念／計算／審題／記憶", Object.values(n.errorType).every((t) => ["觀念", "計算", "審題", "記憶"].indexOf(t) !== -1));
-    }
-    const hintCounts = (n.variants || []).map((v) => (v.hints || []).length);
-    if (hintCounts.some((c) => c > 0)) {
-      check(id + "：類題提示逐題遞減（漸進撤除）", hintCounts.every((c, i) => i === 0 || c <= hintCounts[i - 1]));
-    }
-    (n.variants || []).forEach((v, i) => {
-      const keys = (v.options || []).map((o) => o.key);
-      check(id + " 類題" + (i + 1) + "：題目與原題不同、正確答案在選項中", v.question && v.question !== n.question && keys.indexOf(v.correctAnswer) !== -1 && keys.length >= 2);
-      check(id + " 類題" + (i + 1) + "：詳解不寫選項字母", !/[(（][A-E][)）]/.test(stepText(v.steps)));
-    });
+    const bad = M.validateNote(notes[id]);
+    check(id + "：重點整理格式正確" + (bad.length ? "（" + bad.join("；") + "）" : ""), bad.length === 0);
   });
+  const okNote = { keyPoint: "k", steps: ["s"], references: [], basis: "【確認】ok" };
+  check("格式規則：延伸閱讀可以是空的（找不到就不編造）", M.validateNote(okNote).length === 0);
+  check("格式規則：多選的類題不合格（頁面的類題只能單選）", M.validateNote(Object.assign({}, okNote, { variants: [
+    { question: "q", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }], correctAnswer: "AB", steps: ["s"] }] })).length === 1);
 
   /* 2026-11-06 自動產生：待整理清單（scripts/maintenance/WrongBookNotesPending.js） */
   const P = require(path.join(REPO, "scripts/maintenance/WrongBookNotesPending.js"));
@@ -130,13 +117,20 @@ const wrong = { questionId: "tm_7_q18", text: "求 y = sin x + √3 cos x 的最
   /* 2026-11-08 省 token：AI 只寫小 JSON，由 WrongBookNotesMerge.js 併入 */
   const fs = require("fs");
   const os = require("os");
-  const M = require(path.join(REPO, "scripts/maintenance/WrongBookNotesMerge.js"));
   const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "wbn-")), "Notes.js");
   fs.writeFileSync(tmp, "/* header */\nwindow.AHS = window.AHS || {};\n\n" + M.MARKER + "{\n  \"a\": {\"keyPoint\": \"old\"}\n};\n", "utf8");
-  const r1 = M.merge(tmp, { a: { keyPoint: "new" }, b: { keyPoint: "B" } });
+  const r1 = M.merge(tmp, { a: Object.assign({}, okNote, { keyPoint: "new" }), b: Object.assign({}, okNote, { keyPoint: "B" }), bad: { keyPoint: "沒有詳解" } });
   const merged = P.loadNotes(tmp);
-  check("合併：新增與取代計數正確", r1.added === 1 && r1.replaced === 1);
+  check("合併：新增與取代計數正確；不合格的那一筆略過，其他照常併入", r1.added === 1 && r1.replaced === 1 && r1.skipped.length === 1 && r1.skipped[0].id === "bad" && !merged.bad);
   check("合併：同 id 取代、新 id 加入、保留檔頭", merged.a.keyPoint === "new" && merged.b.keyPoint === "B" && fs.readFileSync(tmp, "utf8").indexOf("/* header */") === 0);
+  /* 2026-11-12 一次跑完全部批次＋沿用原本的換行 */
+  const cut = P.sliceItems({ total: 5, items: [{ questionId: "a" }, { questionId: "b" }, { questionId: "c" }] }, 2, 2);
+  check("待整理清單：切出一批（最後一批不足也可以）", cut.total === 5 && cut.items.length === 1 && cut.items[0].questionId === "c");
+  const crlf = path.join(path.dirname(tmp), "Crlf.js");
+  fs.writeFileSync(crlf, "/* header */\r\nwindow.AHS = window.AHS || {};\r\n\r\n" + M.MARKER + "{\r\n  \"a\": {\"keyPoint\": \"old\"}\r\n};\r\n", "utf8");
+  M.merge(crlf, { b: Object.assign({}, okNote, { keyPoint: "B" }) });
+  const crlfOut = fs.readFileSync(crlf, "utf8");
+  check("合併：CRLF 檔案維持 CRLF、LF 檔案維持 LF", P.loadNotes(crlf).b.keyPoint === "B" && !/[^\r]\n/.test(crlfOut) && crlfOut.indexOf("\r\n") !== -1 && fs.readFileSync(tmp, "utf8").indexOf("\r") === -1);
   let threw = false;
   try { M.merge(tmp, [1, 2]); } catch (_) { threw = true; }
   check("合併：拒絕非物件輸入", threw);

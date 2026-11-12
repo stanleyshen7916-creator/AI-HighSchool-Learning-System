@@ -77,12 +77,12 @@ function dumpSession(window) {
    AutoGrader loaded (wrongbook.html does not), so a real wrong answer has
    to be created there first, exactly like KnowledgeEngineRegression.js's
    own gradeQuestions() helper. */
-function seedWrongItem(window) {
+function seedWrongItem(window, explanation) {
   const AHS = window.AHS;
   const examId = "wb_redesign_test";
   AHS.QuestionRuntime.importQuestions(examId, [
     { id: "wq1", index: 1, text: "測試題目", options: [{ key: "A", text: "a" }, { key: "B", text: "b" }],
-      correctAnswer: "A", knowledgePoint: "測試知識點", explanation: "這是詳解內容" }
+      correctAnswer: "A", knowledgePoint: "測試知識點", explanation: explanation || "這是詳解內容" }
   ]);
   const session = AHS.ExamRuntime.startFromExam(examId, { subject: "math", title: "測試教材" });
   AHS.AnswerRuntime.saveAnswer(session.examId, "wq1", "B");
@@ -194,6 +194,32 @@ console.log("\n[4] Detail Modal — 統計區塊真實反映次數；詳解預�
   check("再次點擊收合回去（hidden 恢復）", explainText.hasAttribute("hidden"));
   check("再次點擊 aria-expanded 恢復 false", explainToggle.getAttribute("aria-expanded") === "false");
 
+  /* 2026-11-12 沒有重點整理的錯題：直接把這一題自己的詳解整理成「詳解」卡（不用 AI） */
+  const card = window.document.querySelector(".wb-note--explain");
+  const cardText = card ? card.textContent : "";
+  check("詳解卡：不用點開就看得到", !!card && !card.hasAttribute("hidden"));
+  check("詳解卡：作答分析寫出選了什麼、正確是什麼", /你選了：.*「b」/.test(cardText) && /正確答案：.*「a」/.test(cardText));
+  check("詳解卡：重點說明取自這一題的詳解", cardText.indexOf("這是詳解內容") !== -1);
+  check("詳解卡：原文收在「原始詳解」", explainToggle.textContent.indexOf("原始詳解") !== -1);
+  check("頁面不再有「產生重點整理」按鈕", window.document.body.textContent.indexOf("產生重點整理") === -1);
+
+  check("Console errors = 0", consoleErrors.length === 0);
+}
+
+/* ---- 4b. 詳解卡：課本出處、命題說明、逐點拆開（括號內不拆） -------------- */
+console.log("\n[4b] 詳解卡 — 出處／命題說明／逐點");
+{
+  const { window: qWin } = loadPage("quiz.html");
+  seedWrongItem(qWin, "（題目為 AI 依課文命題，答案依課本內容）課本 p.85：甲 = 9；乙 = 3。（補充：丙。丁）");
+  const { window, consoleErrors } = loadPage("wrongbook.html", { seedSession: dumpSession(qWin) });
+  window.document.body.appendChild(window.AHS.WrongBook.create());
+  window.document.querySelector(".wb-row").click();
+  const card = window.document.querySelector(".wb-note--explain");
+  const points = Array.from(card.querySelectorAll(".wb-note__step")).map((n) => n.textContent);
+  check("出處另外標示", card.querySelector(".wb-note__basis").textContent === "出處：課本 p.85");
+  check("詳解依句號、分號逐點列出，括號內的補充不拆開",
+    points.length === 3 && points[0] === "甲 = 9" && points[1] === "乙 = 3" && points[2] === "（補充：丙。丁）");
+  check("命題說明放在最後", card.querySelector(".wb-note__step-note").textContent === "題目為 AI 依課文命題，答案依課本內容");
   check("Console errors = 0", consoleErrors.length === 0);
 }
 
