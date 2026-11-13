@@ -32,7 +32,14 @@ const SOURCES = [
   { materialId: "tm_1", module: "MathTm1.js" },
   { materialId: "tm_11", module: "PhysicsTm11.js" },
   /* 2026-11-12 高二詳解補強：一個模組可涵蓋多個教材包，依 questionId 前綴（tm_N_）分組 */
-  { multi: true, module: "EarthScienceG11.js" }
+  { multi: true, module: "EarthScienceG11.js" },
+  { multi: true, module: "MathG11.js" },
+  { multi: true, module: "ChemistryG11.js" },
+  { multi: true, module: "CivicsHistoryPhysicsG11.js" },
+  { multi: true, module: "BiologyG11.js" },
+  { multi: true, module: "EnglishG11.js" },
+  { multi: true, module: "ChineseG11a.js" },
+  { multi: true, module: "ChineseG11b.js" }
 ];
 
 function expandSources() {

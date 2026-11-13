@@ -1,0 +1,561 @@
+{
+  "materialId": "tm_57",
+  "entries": [
+    {
+      "questionId": "tm_57_q1",
+      "materialId": "tm_57",
+      "question": "將 225° 化為弧度，下列何者正確？",
+      "concept": "度化弧度：乘以 π/180°。",
+      "steps": [
+        "225° × π/180° = 225π/180。",
+        "約分（同除以 45）：5π/4。"
+      ],
+      "pitfalls": [
+        "乘反成 180°/π。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q2",
+      "materialId": "tm_57",
+      "question": "將 7π/6 弳化為度，下列何者正確？",
+      "concept": "弧度化度：乘以 180°/π。",
+      "steps": [
+        "7π/6 × 180°/π，π 消掉。",
+        "180° ÷ 6 × 7 = 30° × 7 = 210°。"
+      ],
+      "pitfalls": [
+        "乘反成 π/180°。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q3",
+      "materialId": "tm_57",
+      "question": "下列哪一個角與 −π/3 為同界角？",
+      "concept": "同界角：相差 2π 的整數倍，終邊相同。",
+      "steps": [
+        "−π/3 + 2π = −π/3 + 6π/3 = 5π/3。",
+        "5π/3 在選項中，即為答案。"
+      ],
+      "pitfalls": [
+        "誤選 π/3：那是與 −π/3 對稱於 x 軸的角，不是同界角。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q4",
+      "materialId": "tm_57",
+      "question": "3 弳的角，其終邊落在第幾象限？",
+      "concept": "把弧度換成度，再看落在哪個區間。",
+      "steps": [
+        "1 弳 ≈ 57.3°，3 弳 ≈ 171.9°。",
+        "90° < 171.9° < 180°，終邊在第二象限。",
+        "也可直接比：π/2 ≈ 1.57 < 3 < π ≈ 3.14。"
+      ],
+      "pitfalls": [
+        "把 3 弳當成 3°。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q5",
+      "materialId": "tm_57",
+      "question": "5 弳的角，其終邊落在第幾象限？",
+      "concept": "把弧度與 π 的倍數比較，判斷象限。",
+      "steps": [
+        "3π/2 ≈ 4.71，2π ≈ 6.28。",
+        "4.71 < 5 < 6.28，終邊在第四象限（5 弳 ≈ 286.5°）。"
+      ],
+      "pitfalls": [
+        "只記得 π ≈ 3.14，沒有算 3π/2 的值而誤判為第三象限。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q6",
+      "materialId": "tm_57",
+      "question": "半徑為 6 的扇形，圓心角為 2π/3，其弧長為何？",
+      "concept": "扇形弧長 s = rθ（θ 必須用弧度）。",
+      "steps": [
+        "r = 6，θ = 2π/3。",
+        "s = 6 × 2π/3 = 4π。"
+      ],
+      "pitfalls": [
+        "θ 用度數 120 代入。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q7",
+      "materialId": "tm_57",
+      "question": "半徑為 6 的扇形，圓心角為 2π/3，其面積為何？",
+      "concept": "扇形面積 A = ½r²θ（θ 用弧度）。",
+      "steps": [
+        "r² = 36，θ = 2π/3。",
+        "A = ½ × 36 × 2π/3 = 18 × 2π/3 = 12π。"
+      ],
+      "pitfalls": [
+        "忘了 ½，算成 24π；或把 r 當 r²。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q8",
+      "materialId": "tm_57",
+      "question": "某扇形的弧長為 10、半徑為 4，則其面積為何？",
+      "concept": "已知弧長時，扇形面積 A = ½rs（可由 ½r²θ 與 s = rθ 推得）。",
+      "steps": [
+        "r = 4，s = 10。",
+        "A = ½ × 4 × 10 = 20。"
+      ],
+      "pitfalls": [
+        "誤用 rs = 40，忘了 ½。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q15",
+      "materialId": "tm_57",
+      "question": "tan(−π/4) 的值為何？",
+      "concept": "正切是奇函數：tan(−θ) = −tanθ。",
+      "steps": [
+        "tan(−π/4) = −tan(π/4)。",
+        "tan(π/4) = tan45° = 1，所以答案是 −1。"
+      ],
+      "pitfalls": [
+        "忽略負號，答 1。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q16",
+      "materialId": "tm_57",
+      "question": "若 cosθ = 4/5 且 θ 在第四象限，則 tanθ 的值為何？",
+      "concept": "已知一個三角函數值與象限，先用畢氏關係求另一個，再定正負號。",
+      "steps": [
+        "sin²θ = 1 − cos²θ = 1 − 16/25 = 9/25，sinθ = ±3/5。",
+        "第四象限 sinθ < 0，取 sinθ = −3/5。",
+        "tanθ = sinθ／cosθ = (−3/5)／(4/5) = −3/4。"
+      ],
+      "pitfalls": [
+        "忘了第四象限正弦為負，答 3/4。",
+        "tan 寫成 cos／sin，答 −4/3。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q19",
+      "materialId": "tm_57",
+      "question": "函數 y = 3sin(2x) 的週期為何？",
+      "concept": "y = a sin(bx) 的週期 = 2π／|b|。",
+      "steps": [
+        "b = 2。",
+        "週期 = 2π ÷ 2 = π。"
+      ],
+      "pitfalls": [
+        "把振幅 3 也算進週期。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q20",
+      "materialId": "tm_57",
+      "question": "函數 y = −2cos(x/3) + 1 的振幅為何？",
+      "concept": "y = a cos(bx) + d 的振幅 = |a|，與 b、d 無關。",
+      "steps": [
+        "a = −2。",
+        "振幅 = |−2| = 2，振幅一定是正數。"
+      ],
+      "pitfalls": [
+        "直接寫 −2；或把上下平移的 +1 算進來。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q21",
+      "materialId": "tm_57",
+      "question": "函數 y = −2cos(x/3) + 1 的週期為何？",
+      "concept": "y = a cos(bx) + d 的週期 = 2π／|b|。",
+      "steps": [
+        "b = 1/3。",
+        "週期 = 2π ÷ (1/3) = 6π。"
+      ],
+      "pitfalls": [
+        "誤算成 2π × 1/3 = 2π/3。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q22",
+      "materialId": "tm_57",
+      "question": "函數 y = 4sinx − 1 的最大值與最小值分別為何？",
+      "concept": "先找 sinx 的範圍，再一步步做乘法與加法。",
+      "steps": [
+        "−1 ≤ sinx ≤ 1。",
+        "乘以 4：−4 ≤ 4sinx ≤ 4。",
+        "減 1：−5 ≤ 4sinx − 1 ≤ 3，最大值 3、最小值 −5。"
+      ],
+      "pitfalls": [
+        "忘了減 1，答 4、−4。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q23",
+      "materialId": "tm_57",
+      "question": "函數 y = tan(2x) 的週期為何？",
+      "concept": "正切函數的基本週期是 π（不是 2π）。",
+      "steps": [
+        "y = tan(bx) 的週期 = π／|b|。",
+        "b = 2，週期 = π/2。"
+      ],
+      "pitfalls": [
+        "套用正弦的 2π，算成 π。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q24",
+      "materialId": "tm_57",
+      "question": "將 y = sinx 的圖形向右平移 π/3 單位，可得下列哪一個函數的圖形？",
+      "concept": "左右平移：向右移 h，就把 x 換成 (x − h)。",
+      "steps": [
+        "向右移 π/3：x 換成 x − π/3。",
+        "得 y = sin(x − π/3)。"
+      ],
+      "pitfalls": [
+        "以為向右是「加」，選 sin(x + π/3)。",
+        "把平移加在函數外面，那是上下平移。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q25",
+      "materialId": "tm_57",
+      "question": "將 y = cosx 的圖形水平伸縮為原來的 2 倍（x 方向拉長），可得下列哪一個函數的圖形？",
+      "concept": "水平伸縮 k 倍：x 換成 x/k。",
+      "steps": [
+        "拉長為 2 倍：x 換成 x/2。",
+        "得 y = cos(x/2)，週期由 2π 變成 4π，確實拉長。"
+      ],
+      "pitfalls": [
+        "誤選 cos2x：那會使週期變 π，圖形被壓縮。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q26",
+      "materialId": "tm_57",
+      "question": "函數 y = sin(x + π/2) 的圖形與下列哪一個函數的圖形相同？",
+      "concept": "sin(x + π/2) = cosx（餘角／平移關係）。",
+      "steps": [
+        "和角公式：sin(x + π/2) = sinx·cos(π/2) + cosx·sin(π/2)。",
+        "cos(π/2) = 0、sin(π/2) = 1，所以結果 = cosx。",
+        "圖形上：sinx 向左平移 π/2 就是 cosx。"
+      ],
+      "pitfalls": [
+        "記成 −cosx。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q27",
+      "materialId": "tm_57",
+      "question": "下列哪一個函數的圖形對稱於 y 軸？",
+      "concept": "圖形對稱於 y 軸 ⇔ 偶函數：f(−x) = f(x)。",
+      "steps": [
+        "cos(−x) = cosx，是偶函數。",
+        "sin(−x) = −sinx、tan(−x) = −tanx 是奇函數，對稱於原點。",
+        "sinx + 1：f(−x) = −sinx + 1 ≠ f(x)，也不是偶函數。"
+      ],
+      "pitfalls": [
+        "把對稱於原點和對稱於 y 軸混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q30",
+      "materialId": "tm_57",
+      "question": "方程式 cosx = √3/2 在 0 ≤ x < 2π 範圍內的解有幾個？",
+      "concept": "在一個週期內，cosx 等於某個正值，會有兩個解（第一、第四象限）。",
+      "steps": [
+        "cos(π/6) = √3/2，參考角 π/6。",
+        "餘弦為正：第一象限 x = π/6，第四象限 x = 2π − π/6 = 11π/6。",
+        "共 2 個解。"
+      ],
+      "pitfalls": [
+        "只找到 π/6，漏掉第四象限的解。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q31",
+      "materialId": "tm_57",
+      "question": "在 0 ≤ x ≤ 2π 中，不等式 sinx > 0 的解為何？",
+      "concept": "sinx 為正的區域在第一、第二象限。",
+      "steps": [
+        "sinx = 0 的點：x = 0、π、2π。",
+        "在 0 到 π 之間 sinx > 0，π 到 2π 之間 sinx < 0。",
+        "解為 0 < x < π（不等號嚴格，不含端點）。"
+      ],
+      "pitfalls": [
+        "只答第一象限 0 < x < π/2。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q34",
+      "materialId": "tm_57",
+      "question": "某地一天的氣溫（°C）可用 T = 5sin(πt/12 − π/2) + 20 描述（t 為時，0 ≤ t ≤ 24），一天中最高氣溫出現在幾點？",
+      "concept": "sin 函數在角度等於 π/2 時取最大值 1。",
+      "steps": [
+        "令 πt/12 − π/2 = π/2。",
+        "πt/12 = π，t = 12。",
+        "此時 T = 5 × 1 + 20 = 25 °C，為最高溫，出現在 12 點。"
+      ],
+      "pitfalls": [
+        "令 πt/12 = π/2，忘了減掉相位 π/2，得 t = 6。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q35",
+      "materialId": "tm_57",
+      "question": "某地一天的氣溫（°C）可用 T = 5sin(πt/12 − π/2) + 20 描述（t 為時，0 ≤ t ≤ 24），這一天的最低氣溫為多少 °C？",
+      "concept": "T = 5sin(…) + 20 的範圍由 sin 的範圍決定。",
+      "steps": [
+        "sin(…) 的最小值是 −1。",
+        "T 最小 = 5 × (−1) + 20 = 15 °C。",
+        "在 0 ≤ t ≤ 24 內確實取得到（t = 0 或 24 時）。"
+      ],
+      "pitfalls": [
+        "誤選 10，把振幅乘 2 才減。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q40",
+      "materialId": "tm_57",
+      "question": "sin20°cos40° + cos20°sin40° 的值為何？",
+      "concept": "sinAcosB + cosAsinB = sin(A + B)。",
+      "steps": [
+        "A = 20°、B = 40°。",
+        "原式 = sin60° = √3/2。"
+      ],
+      "pitfalls": [
+        "誤用 sin(A − B) = sin(−20°)。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q41",
+      "materialId": "tm_57",
+      "question": "cos80°cos20° + sin80°sin20° 的值為何？",
+      "concept": "cosAcosB + sinAsinB = cos(A − B)（中間是「加」，結果是「減」）。",
+      "steps": [
+        "A = 80°、B = 20°。",
+        "原式 = cos60° = 1/2。"
+      ],
+      "pitfalls": [
+        "看到加號就寫成 cos(A + B) = cos100°。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q42",
+      "materialId": "tm_57",
+      "question": "(tan25° + tan20°)/(1 − tan25°tan20°) 的值為何？",
+      "concept": "(tanA + tanB)／(1 − tanA tanB) = tan(A + B)。",
+      "steps": [
+        "A = 25°、B = 20°。",
+        "原式 = tan45° = 1。"
+      ],
+      "pitfalls": [
+        "分母符號記錯，誤用 tan(A − B)。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q48",
+      "materialId": "tm_57",
+      "question": "若 sinθ = 4/5 且 θ 為銳角，則 cos2θ 的值為何？",
+      "concept": "已知 sinθ，用 cos2θ = 1 − 2sin²θ 最快。",
+      "steps": [
+        "sin²θ = 16/25。",
+        "cos2θ = 1 − 2 × 16/25 = 1 − 32/25 = −7/25。",
+        "合理性：θ 為銳角且 sinθ = 0.8，θ > 45°，2θ > 90°，cos2θ 應為負。"
+      ],
+      "pitfalls": [
+        "算成 1 − 16/25 = 9/25，忘了乘 2；或答 7/25 漏掉負號。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q49",
+      "materialId": "tm_57",
+      "question": "若 tanθ = 3，則 tan2θ 的值為何？",
+      "concept": "tan2θ = 2tanθ／(1 − tan²θ)。",
+      "steps": [
+        "代入 tanθ = 3：分子 2 × 3 = 6。",
+        "分母 1 − 9 = −8。",
+        "tan2θ = 6／(−8) = −3/4。"
+      ],
+      "pitfalls": [
+        "分母寫成 1 + tan²θ，得 3/5。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q50",
+      "materialId": "tm_57",
+      "question": "cos²15° − sin²15° 的值為何？",
+      "concept": "cos²θ − sin²θ = cos2θ。",
+      "steps": [
+        "θ = 15°，原式 = cos30°。",
+        "cos30° = √3/2。"
+      ],
+      "pitfalls": [
+        "誤以為 cos²θ − sin²θ = 1（那是加號：cos²θ + sin²θ = 1）。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q51",
+      "materialId": "tm_57",
+      "question": "2sin22.5°cos22.5° 的值為何？",
+      "concept": "2sinθcosθ = sin2θ。",
+      "steps": [
+        "θ = 22.5°，原式 = sin45°。",
+        "sin45° = √2/2。"
+      ],
+      "pitfalls": [
+        "忘了 2θ，代成 sin22.5°。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q59",
+      "materialId": "tm_57",
+      "question": "3sinx + 4cosx 的最大值為何？",
+      "concept": "a sinx + b cosx 可合成為 r sin(x + φ)，r = √(a² + b²)。",
+      "steps": [
+        "r = √(3² + 4²) = √25 = 5。",
+        "sin 的最大值為 1，所以最大值為 5。"
+      ],
+      "pitfalls": [
+        "直接相加 3 + 4 = 7：sinx 與 cosx 不會同時等於 1。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q60",
+      "materialId": "tm_57",
+      "question": "5sinx − 12cosx 的最小值為何？",
+      "concept": "a sinx + b cosx 的範圍是 −r 到 r，r = √(a² + b²)。",
+      "steps": [
+        "r = √(5² + 12²) = √169 = 13。",
+        "最小值為 −13。"
+      ],
+      "pitfalls": [
+        "直接用 −5 − 12 = −17。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q61",
+      "materialId": "tm_57",
+      "question": "函數 y = sinx − cosx 的週期為何？",
+      "concept": "先合成成單一正弦函數，再看週期。",
+      "steps": [
+        "sinx − cosx = √2 sin(x − π/4)。",
+        "x 的係數仍是 1，週期 = 2π／1 = 2π。",
+        "合成只改變振幅和相位，不改變週期。"
+      ],
+      "pitfalls": [
+        "以為兩個函數相減，週期會減半。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q62",
+      "materialId": "tm_57",
+      "question": "函數 y = √3 sinx − cosx 的振幅為何？",
+      "concept": "a sinx + b cosx 的振幅 = √(a² + b²)。",
+      "steps": [
+        "a = √3、b = −1。",
+        "振幅 = √(3 + 1) = 2（實際可寫成 2sin(x − π/6)）。"
+      ],
+      "pitfalls": [
+        "把 √3 和 1 直接相加或只取其中一個係數。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q70",
+      "materialId": "tm_57",
+      "question": "函數 y = (sinx + cosx)² 的最大值為何？",
+      "concept": "展開平方後利用 sin²x + cos²x = 1 與二倍角公式。",
+      "steps": [
+        "(sinx + cosx)² = sin²x + 2sinxcosx + cos²x。",
+        "= 1 + sin2x。",
+        "sin2x 最大為 1，所以最大值 = 2。"
+      ],
+      "pitfalls": [
+        "誤以為 sinx + cosx 最大是 2、平方後是 4：sinx + cosx 最大只有 √2。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_57_q72",
+      "materialId": "tm_57",
+      "question": "函數 y = sin(x + π/3) + sin(x − π/3) 化簡後為何？",
+      "concept": "用和差角公式展開，cos 項會互相抵消。",
+      "steps": [
+        "sin(x + π/3) = sinx cos(π/3) + cosx sin(π/3)。",
+        "sin(x − π/3) = sinx cos(π/3) − cosx sin(π/3)。",
+        "相加：2sinx cos(π/3) = 2sinx × ½ = sinx。"
+      ],
+      "pitfalls": [
+        "cos(π/3) 代成 √3/2，誤得 √3 sinx。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}

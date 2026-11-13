@@ -1,0 +1,411 @@
+{
+  "materialId": "tm_61",
+  "entries": [
+    {
+      "questionId": "tm_61_q4",
+      "materialId": "tm_61",
+      "question": "Which phrase has the OPPOSITE meaning of \"go for\"?",
+      "concept": "go for ＝ 支持、選擇；反義為 go against ＝ 反對、違背。",
+      "steps": [
+        "go for an idea：支持一個點子。",
+        "go against：與之相反、違背。"
+      ],
+      "pitfalls": [
+        "選 turn down：那是 accept 的反義。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q5",
+      "materialId": "tm_61",
+      "question": "Which phrase has the OPPOSITE meaning of \"accept\"?",
+      "concept": "accept ＝ 接受；反義為 turn down ＝ 拒絕。",
+      "steps": [
+        "turn down an offer：拒絕提議。",
+        "選項中其他片語：disagree with 不同意、go against 違背。"
+      ],
+      "pitfalls": [
+        "選 disagree with：那是 agree with 的反義。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q6",
+      "materialId": "tm_61",
+      "question": "Which phrase has the OPPOSITE meaning of \"agree with\"?",
+      "concept": "agree with ＝ 同意；反義為 disagree with ＝ 不同意。",
+      "steps": [
+        "agree with sb：同意某人。",
+        "加上字首 dis- 表示相反：disagree with。"
+      ],
+      "pitfalls": [
+        "選 go against：語意接近但不是直接反義。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q10",
+      "materialId": "tm_61",
+      "question": "Combine the sentences: \"It is wrong to make fun of people's appearance. Most students in my class find this wrong.\"",
+      "concept": "find + it（虛受詞）+ adj. + to VR：認為做某事是……的。",
+      "steps": [
+        "真正的受詞 to make fun of people's appearance 太長，移到後面，用 it 先佔位。",
+        "it 不能省略，後面要用 to VR。",
+        "正解：Most students in my class find it wrong to make fun of people's appearance."
+      ],
+      "pitfalls": [
+        "省略 it，或後面改用 V-ing、加 is。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q30",
+      "materialId": "tm_61",
+      "question": "The boss asked all her ______ to work overtime in order to finish the project on time.",
+      "concept": "依句意選詞性：老闆要「員工」加班。",
+      "steps": [
+        "employee 員工（受僱者）；employer 雇主。",
+        "all her ______ 需要複數名詞：employees。"
+      ],
+      "pitfalls": [
+        "和 employers（雇主）混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q31",
+      "materialId": "tm_61",
+      "question": "It's not easy these days to find ______ without a university or college degree.",
+      "concept": "find employment ＝ 找工作；employment 是不可數名詞。",
+      "steps": [
+        "find 後面需要名詞當受詞。",
+        "employment（工作、就業）符合句意。"
+      ],
+      "pitfalls": [
+        "選 employee：找到「一個員工」不合句意，且可數名詞前需冠詞。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q32",
+      "materialId": "tm_61",
+      "question": "Josh is an expert in ______ planning and helps large companies prepare for major projects.",
+      "concept": "修飾名詞要用形容詞：corporate ＝ 公司的。",
+      "steps": [
+        "空格修飾名詞 planning。",
+        "corporate (adj.)；corporation (n.) 公司；cooperate (v.) 合作。"
+      ],
+      "pitfalls": [
+        "選 corporation：名詞不能直接修飾另一個名詞（此處）。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q33",
+      "materialId": "tm_61",
+      "question": "Our flight leaves from ______ 1, so make sure you don't get off the bus at the wrong building.",
+      "concept": "terminal (n.) ＝ 航廈、總站；(adj.) ＝ 末期的。",
+      "steps": [
+        "flight leaves from Terminal 1：班機從第一航廈出發。",
+        "後句 the wrong building 也提示是建築物。"
+      ],
+      "pitfalls": [
+        "只記得 terminal「末期的」的意思。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q35",
+      "materialId": "tm_61",
+      "question": "When Kurt fell ______, he had to see a doctor and take a whole week off from his job.",
+      "concept": "fall ill ＝ 生病；fall 在此是連綴動詞，後接形容詞。",
+      "steps": [
+        "ill (adj.) 生病的；illness (n.) 疾病。",
+        "連綴動詞（fall、become、get）後接形容詞：fall ill。"
+      ],
+      "pitfalls": [
+        "選名詞 illness。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q37",
+      "materialId": "tm_61",
+      "question": "A big dog with large white teeth appeared and both cats ran away in ______.",
+      "concept": "介系詞後接名詞：in fright ＝ 驚嚇地。",
+      "steps": [
+        "fright (n.) 驚嚇。",
+        "frighten (v.)、frightened / frightening (adj.) 都不能直接放在 in 後面。"
+      ],
+      "pitfalls": [
+        "選 frightened。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q39",
+      "materialId": "tm_61",
+      "question": "During the cold winter months, the family usually turns on a heater or two for a bit of ______.",
+      "concept": "a bit of + 名詞；warmth ＝ 溫暖（不可數名詞）。",
+      "steps": [
+        "空格需要名詞。",
+        "warm (adj.)、warmly (adv.) 都不是名詞。"
+      ],
+      "pitfalls": [
+        "選 warm。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q40",
+      "materialId": "tm_61",
+      "question": "After our secretary had contacted the post office via email, a clerk there sent a ______ reply within two hours.",
+      "concept": "prompt (adj.) ＝ 迅速的、立即的。",
+      "steps": [
+        "兩小時內就回覆，是「迅速的」回覆：a prompt reply。",
+        "frail 虛弱的、drowsy 想睡的、terminal 末期的。"
+      ],
+      "pitfalls": [
+        "不熟 prompt 當形容詞的用法。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q41",
+      "materialId": "tm_61",
+      "question": "We can deal with everybody's personal opinion later; for now, let's just ______ our discussion to the facts.",
+      "concept": "confine A to B ＝ 把 A 限制在 B 的範圍內。",
+      "steps": [
+        "先只討論事實：confine our discussion to the facts。",
+        "confide 吐露（秘密）、confirm 確認、contact 聯絡。"
+      ],
+      "pitfalls": [
+        "和形近字 confide、confirm 混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q42",
+      "materialId": "tm_61",
+      "question": "Princess Mira's diamond earrings ______ under the light of the setting sun.",
+      "concept": "sparkle (vi.) ＝ 閃耀、閃閃發光。",
+      "steps": [
+        "鑽石耳環在夕陽下閃閃發亮：sparkled。",
+        "stretch 伸展、hesitate 猶豫、confide 吐露，都不合句意。"
+      ],
+      "pitfalls": [
+        "只看時態而沒看句意。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q43",
+      "materialId": "tm_61",
+      "question": "Mrs. Wang ______ the elastic band over two corners of the lunchbox and handed it to me.",
+      "concept": "stretch (vt.) ＝ 拉長、撐開。",
+      "steps": [
+        "把橡皮筋拉開，套在便當盒的兩個角上：stretched。",
+        "sparkle 閃耀、frighten 驚嚇、confine 限制，都不合句意。"
+      ],
+      "pitfalls": [
+        "誤選 confined（限制）。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q45",
+      "materialId": "tm_61",
+      "question": "Most of the class called out the answer to the teacher's question without ______.",
+      "concept": "without + 名詞：without hesitation ＝ 毫不猶豫地。",
+      "steps": [
+        "介系詞後接名詞或 V-ing。",
+        "hesitation (n.)；hesitate (v.)、hesitant (adj.) 不能直接接在 without 後。"
+      ],
+      "pitfalls": [
+        "選 hesitated。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q47",
+      "materialId": "tm_61",
+      "question": "Which word best replaces \"frail\" in \"the frail voice called\"?",
+      "concept": "frail ＝ very weak or very sick，可用 weak 替換。",
+      "steps": [
+        "the frail voice：虛弱的聲音。",
+        "loud 大聲、angry 生氣、cheerful 開朗，語意都不符。"
+      ],
+      "pitfalls": [
+        "只憑上下文猜成 cheerful。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q49",
+      "materialId": "tm_61",
+      "question": "The old man's family tried to ______ him ______ by bringing his grandchildren to visit him in the hospital.",
+      "concept": "cheer sb up ＝ 使某人振作、高興起來。",
+      "steps": [
+        "家人帶孫子去醫院探望，是為了讓老人開心：cheer him up。",
+        "受詞是代名詞時，要放在動詞與副詞中間：cheer him up。"
+      ],
+      "pitfalls": [
+        "和 turn down（拒絕）混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q51",
+      "materialId": "tm_61",
+      "question": "I ______ leave the house when it started to rain heavily.",
+      "concept": "be about to + VR ＝ 正要、即將做某事（常與 when 搭配：正要……時，突然……）。",
+      "steps": [
+        "正要出門時，開始下大雨：I was about to leave... when...",
+        "be used to + V-ing 是「習慣於」。"
+      ],
+      "pitfalls": [
+        "選 was used to，誤解句意。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q52",
+      "materialId": "tm_61",
+      "question": "Don't be too hard on yourself. ______, you're only a beginner.",
+      "concept": "after all ＝ 畢竟（用來補充理由）。",
+      "steps": [
+        "別太苛責自己，畢竟你只是初學者。",
+        "above all 最重要的是；all in all 總而言之。"
+      ],
+      "pitfalls": [
+        "和 all in all 混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q53",
+      "materialId": "tm_61",
+      "question": "Volunteering at the animal shelter every weekend really ______ in the lives of the dogs there.",
+      "concept": "make a difference (in) ＝ 帶來改變、有影響。",
+      "steps": [
+        "每週末去收容所當志工，讓那裡狗狗的生活有所改變。",
+        "主詞是動名詞片語（單數），動詞用 makes。"
+      ],
+      "pitfalls": [
+        "選 cheers up：後面接 in the lives 不通。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q54",
+      "materialId": "tm_61",
+      "question": "Which sentence uses \"pass away\" correctly?",
+      "concept": "pass away ＝ 過世，不及物，後面不接受詞。",
+      "steps": [
+        "The famous singer passed away at the age of 90.：正確。",
+        "pass the salt 才是「遞鹽」，不能加 away。"
+      ],
+      "pitfalls": [
+        "把 pass away 當成「傳遞」或「通過」。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q56",
+      "materialId": "tm_61",
+      "question": "Teachers find it unacceptable ______ students to cheat on tests.",
+      "concept": "It is + adj. + for sb + to VR：某人做某事是……的。",
+      "steps": [
+        "find it unacceptable for students to cheat：認為學生作弊是無法接受的。",
+        "要指出「誰」的行為，用 for + sb。"
+      ],
+      "pitfalls": [
+        "選 of：It is kind of you... 這類句型的形容詞是在描述人的特質。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q57",
+      "materialId": "tm_61",
+      "question": "Olivia considers ______ bad manners to be late for a date.",
+      "concept": "consider + it（虛受詞）+ N + to VR。",
+      "steps": [
+        "真正的受詞 to be late for a date 移到後面，用 it 佔位。",
+        "Olivia considers it bad manners to be late for a date."
+      ],
+      "pitfalls": [
+        "選 that 或 what。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q63",
+      "materialId": "tm_61",
+      "question": "【多選題】According to the story, which of the following are true?",
+      "concept": "多選閱讀題：每個選項都要回文章確認。",
+      "steps": [
+        "(A)(B)(D)(E) 都與故事內容相符。",
+        "(C) 錯：敘事者一開始拒絕擁抱，後來看到 Billy 眼中的期盼才破例，不是一見面就擁抱。"
+      ],
+      "pitfalls": [
+        "只記得「有擁抱」，忽略發生的時間點。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q64",
+      "materialId": "tm_61",
+      "question": "【多選題】Which expressions show AGREEMENT (not partial agreement) according to the Listening Strategy?",
+      "concept": "區分「完全同意」、「部分同意」、「不同意」的說法。",
+      "steps": [
+        "(A) I agree with you.、(B) That's exactly what I think.、(C) I couldn't agree with you more.：完全同意。",
+        "(D) That may be true, but...：部分同意。(E) I don't think so.：不同意。"
+      ],
+      "pitfalls": [
+        "誤以為 I couldn't agree more 是否定。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_61_q65",
+      "materialId": "tm_61",
+      "question": "【多選題】Which words are NOUNS as they are used in the lesson?",
+      "concept": "從字尾判斷詞性：-ter、-th 常為名詞。",
+      "steps": [
+        "(A) laughter 笑聲、(B) warmth 溫暖、(D) germ 病菌：名詞。",
+        "(C) drowsy 昏昏欲睡的、(E) frail 虛弱的：形容詞。"
+      ],
+      "pitfalls": [
+        "把 germ 誤為形容詞。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}

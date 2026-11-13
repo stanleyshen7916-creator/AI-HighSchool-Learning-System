@@ -1,0 +1,110 @@
+{
+  "materialId": "tm_79",
+  "entries": [
+    {
+      "questionId": "tm_79_q1",
+      "materialId": "tm_79",
+      "question": "There are two boys in the photo. One is my brother, and ______ is his best friend.",
+      "concept": "兩者之中：one ..., the other ...。",
+      "steps": [
+        "照片中有兩個男孩，一個是哥哥，另一個是他最好的朋友。",
+        "只剩下一個，用 the other。"
+      ],
+      "pitfalls": [
+        "選 another：another 用於三者以上，還有其他未提及的。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_79_q4",
+      "materialId": "tm_79",
+      "question": "Tom didn't realize how much his parents loved him ______ he read the letter.",
+      "concept": "not ... until ... ＝ 直到……才……。",
+      "steps": [
+        "直到讀了信，才明白父母多愛他。",
+        "Tom didn't realize ... until he read the letter."
+      ],
+      "pitfalls": [
+        "選 since 或 unless，句意不通。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_79_q5",
+      "materialId": "tm_79",
+      "question": "The students in Class A are more active than ______ in Class B.",
+      "concept": "those 代替前面已提過的複數名詞，避免重複。",
+      "steps": [
+        "比較的對象是 the students in Class A 與 the students in Class B。",
+        "複數名詞用 those 代替：those in Class B。"
+      ],
+      "pitfalls": [
+        "選 that：that 代替單數或不可數名詞。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_79_q6",
+      "materialId": "tm_79",
+      "question": "The surprising news made everyone in the room ______.",
+      "concept": "make + 受詞 + 形容詞；人感到某種情緒用 -ed 形容詞。",
+      "steps": [
+        "everyone 感到興奮：excited。",
+        "exciting 是「令人興奮的」，用來形容事物。"
+      ],
+      "pitfalls": [
+        "選 exciting。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_79_q8",
+      "materialId": "tm_79",
+      "question": "______ that the bridge was safe, the driver kept going.",
+      "concept": "分詞構句：主詞相同時，主動用 V-ing，被動用 V-ed。",
+      "steps": [
+        "主要子句的主詞是 the driver。",
+        "司機「主動相信」橋是安全的，用 Believing。"
+      ],
+      "pitfalls": [
+        "選 Believed，誤以為是被動。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_79_q9",
+      "materialId": "tm_79",
+      "question": "You should keep ______ even if you fail several times.",
+      "concept": "keep + V-ing ＝ 持續做某事。",
+      "steps": [
+        "keep 後面接 V-ing。",
+        "即使失敗幾次，也應該繼續嘗試：keep trying。"
+      ],
+      "pitfalls": [
+        "選 to try：keep 後不接不定詞。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_79_q10",
+      "materialId": "tm_79",
+      "question": "Prometheus helped humans by ______ fire from the gods.",
+      "concept": "介系詞後接動名詞：by + V-ing ＝ 藉由……。",
+      "steps": [
+        "by 是介系詞，後面要接名詞或 V-ing。",
+        "by stealing fire from the gods：藉由從眾神那裡偷火。"
+      ],
+      "pitfalls": [
+        "選過去式 stole，忽略 by 是介系詞。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}

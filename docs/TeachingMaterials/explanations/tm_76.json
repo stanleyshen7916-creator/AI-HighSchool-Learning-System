@@ -1,0 +1,38 @@
+{
+  "materialId": "tm_76",
+  "entries": [
+    {
+      "questionId": "tm_76_q9",
+      "materialId": "tm_76",
+      "question": "【多選題】下列壓力單位的換算，哪些正確？（應選 3 項）",
+      "concept": "壓力單位換算要記清楚：torr 對應 mmHg，Pa 對應 N/m²。",
+      "steps": [
+        "(A) 1 atm = 76 cmHg = 760 mmHg：正確。",
+        "(B) 1 atm ≈ 101.3 kPa：正確。",
+        "(D) 1 bar = 10⁵ Pa：正確。",
+        "(C) 錯：1 torr = 1 mmHg。(E) 錯：1 Pa = 1 N/m²。"
+      ],
+      "pitfalls": [
+        "把 torr 和 cmHg 對應、或把 m² 記成 cm²。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_76_q10",
+      "materialId": "tm_76",
+      "question": "下列何者不是氣體的通性？",
+      "concept": "氣體分子間距離很大，所以易壓縮、會充滿容器。",
+      "steps": [
+        "氣體分子間距離約為分子直徑的 10 倍以上，大部分是空隙。",
+        "因此容易被壓縮，「不易壓縮」是液體、固體的特性。",
+        "其他三項：不停運動、充滿容器、撞擊器壁產生壓力，都是氣體通性。"
+      ],
+      "pitfalls": [
+        "把液體的特性混入氣體。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}

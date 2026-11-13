@@ -1,0 +1,95 @@
+{
+  "materialId": "tm_72",
+  "entries": [
+    {
+      "questionId": "tm_72_q37",
+      "materialId": "tm_72",
+      "question": "Could you turn the ______ down, please?",
+      "concept": "turn the volume up/down ＝ 調高／調低音量。",
+      "steps": [
+        "volume ＝ 音量。",
+        "vision 視力、tide 潮汐、union 聯盟。"
+      ],
+      "pitfalls": [
+        "不熟 volume 的「音量」意思（也有「冊、體積」之意）。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_72_q41",
+      "materialId": "tm_72",
+      "question": "諺語 “A leopard cannot change its spots.” 的意思是什麼？",
+      "concept": "A leopard cannot change its spots. ＝ 本性難移。",
+      "steps": [
+        "豹無法改變身上的斑點。",
+        "比喻一個人的本性很難改變。"
+      ],
+      "pitfalls": [
+        "只從字面「豹」聯想到威脅。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_72_q44",
+      "materialId": "tm_72",
+      "question": "Only the poor will benefit ______ this law.",
+      "concept": "benefit (v.) from / by ＝ 從……得益。",
+      "steps": [
+        "窮人將從這項法律中受益：benefit from this law。",
+        "benefit 當名詞時常見 for the benefit of。"
+      ],
+      "pitfalls": [
+        "選 to：be beneficial to 才用 to。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_72_q47",
+      "materialId": "tm_72",
+      "question": "My father didn’t approve ______ me studying abroad.",
+      "concept": "approve of ＝ 同意、贊成；後面接名詞或動名詞。",
+      "steps": [
+        "approve 表示「贊成」時，固定搭配介系詞 of。",
+        "父親不贊成我出國讀書：didn't approve of me studying abroad。"
+      ],
+      "pitfalls": [
+        "選 to 或 for。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_72_q57",
+      "materialId": "tm_72",
+      "question": "下列何者是 urban（都市的）的反義字？",
+      "concept": "urban ＝ 都市的；反義為 rural ＝ 鄉村的。",
+      "steps": [
+        "urban area 都市地區；rural area 鄉村地區。",
+        "remote 偏遠的，不是直接的反義字。"
+      ],
+      "pitfalls": [
+        "選 remote。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_72_q59",
+      "materialId": "tm_72",
+      "question": "“Necessity is the mother of invention.” 的意思是什麼？",
+      "concept": "Necessity is the mother of invention. ＝ 需要為發明之母。",
+      "steps": [
+        "用擬人法，把「需要」比喻成「發明的母親」。",
+        "意思是有了需要，才會促成發明。"
+      ],
+      "pitfalls": [
+        "從字面理解成真正的「母親」。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}
