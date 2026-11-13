@@ -1,0 +1,155 @@
+{
+  "materialId": "tm_51",
+  "entries": [
+    {
+      "questionId": "tm_51_q9",
+      "materialId": "tm_51",
+      "question": "Why did Ronald initially refuse Billy's request?",
+      "concept": "細節題：回文章找 Ronald 拒絕的理由。",
+      "steps": [
+        "依第 4 段，工作規則禁止與病童有肢體接觸。",
+        "所以他一開始拒絕，答 It was against the rules.。"
+      ],
+      "pitfalls": [
+        "憑常識猜「他累了」，而非依據文章。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q13",
+      "materialId": "tm_51",
+      "question": "What did Billy tell his mother?",
+      "concept": "細節題：找 Billy 對媽媽說的話（第 6 段）。",
+      "steps": [
+        "Billy 說擁抱過 Ronald，錯過聖誕老人也沒關係。",
+        "這句話是故事的情感高潮，答 He did not mind missing Santa...。"
+      ],
+      "pitfalls": [
+        "選 He wanted to become Ronald：文章沒有這個說法。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q14",
+      "materialId": "tm_51",
+      "question": "Which word means “僱用”?",
+      "concept": "employ (v.) ＝ 僱用；使用。",
+      "steps": [
+        "employ → employee（員工）、employer（雇主）、employment（工作）。",
+        "suffer 受苦、confine 限制、refuse 拒絕。"
+      ],
+      "pitfalls": [
+        "和 refuse 的形狀混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q16",
+      "materialId": "tm_51",
+      "question": "Which word best means “虛弱的”?",
+      "concept": "frail (adj.) ＝ 虛弱的、脆弱的。",
+      "steps": [
+        "常用來形容老人或病人身體虛弱。",
+        "prompt 立即的、corporate 公司的、tremendous 巨大的。"
+      ],
+      "pitfalls": [
+        "和 tremendous 搞混。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q17",
+      "materialId": "tm_51",
+      "question": "“feel drowsy” means ______.",
+      "concept": "drowsy (adj.) ＝ 昏昏欲睡的。",
+      "steps": [
+        "feel drowsy ＝ feel sleepy。",
+        "常見於藥物警語：This medicine may make you drowsy."
+      ],
+      "pitfalls": [
+        "和 dizzy（頭暈的）混淆。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q31",
+      "materialId": "tm_51",
+      "question": "The village has ______ shops or restaurants, so the residents have to drive to town for almost everything.",
+      "concept": "few（幾乎沒有，否定）vs. a few（有一些，肯定）；都接可數名詞。",
+      "steps": [
+        "後句說居民幾乎什麼都要開車進城買，表示村裡商店「幾乎沒有」。",
+        "用帶否定意味的 few。"
+      ],
+      "pitfalls": [
+        "選 a few：那表示「還有一些」，與句意不符。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q32",
+      "materialId": "tm_51",
+      "question": "When I was a child, we ______ my grandparents every weekend.",
+      "concept": "would + VR 可表示「過去常常做」的習慣。",
+      "steps": [
+        "When I was a child... every weekend：過去的習慣。",
+        "would 是助動詞，後面接原形動詞 visit。"
+      ],
+      "pitfalls": [
+        "would 後面接 V-ing，選 would visiting。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q35",
+      "materialId": "tm_51",
+      "question": "The Lins recycle plastic bottles every week because doing so ______ protect the environment.",
+      "concept": "動名詞片語當主詞，視為單數。",
+      "steps": [
+        "主詞是 doing so（這麼做），單數。",
+        "現在式第三人稱單數動詞加 s：helps。"
+      ],
+      "pitfalls": [
+        "看到前面的 The Lins（複數）就用 help。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q42",
+      "materialId": "tm_51",
+      "question": "Amy's boss didn't give her clear instructions, so she didn't know ______ she could delete the files.",
+      "concept": "whether ＝ 是否，可引導名詞子句當受詞。",
+      "steps": [
+        "didn't know ______ she could delete the files：不知道「是否」能刪除。",
+        "選 whether（也可用 if）。"
+      ],
+      "pitfalls": [
+        "選 that：that 子句不表「是否」。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_51_q43",
+      "materialId": "tm_51",
+      "question": "After the scandal was revealed, the politician had no choice ______ admit what he had done.",
+      "concept": "have no choice but to VR ＝ 別無選擇，只能……。",
+      "steps": [
+        "but 在此表「除了」，後面接 to VR。",
+        "句意：醜聞曝光後，政客只能承認所做的事。"
+      ],
+      "pitfalls": [
+        "選 except：慣用語固定用 but to。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}

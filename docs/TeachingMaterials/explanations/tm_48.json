@@ -1,0 +1,36 @@
+{
+  "materialId": "tm_48",
+  "entries": [
+    {
+      "questionId": "tm_48_q41",
+      "materialId": "tm_48",
+      "question": "I can't imagine ______ in a world without modern technology and the internet.",
+      "concept": "imagine 後面接 V-ing（動名詞），不接 to VR。",
+      "steps": [
+        "imagine + V-ing：想像做某事。",
+        "所以填 living：I can't imagine living in a world without...",
+        "同類動詞：enjoy、avoid、mind、consider、finish 等也接 V-ing。"
+      ],
+      "pitfalls": [
+        "受中文「想像去生活」影響，選 to live。"
+      ],
+      "note": "",
+      "figures": []
+    },
+    {
+      "questionId": "tm_48_q53",
+      "materialId": "tm_48",
+      "question": "The word \"habitat\" in \"sea creatures' habitats\" refers to ______.",
+      "concept": "habitat ＝ 動物或植物自然生長、生活的地方（棲息地）。",
+      "steps": [
+        "sea creatures' habitats：海洋生物的棲息地。",
+        "對應選項 the natural home of an animal。"
+      ],
+      "pitfalls": [
+        "看到 sea creatures 聯想到食物，選 the food an animal eats。"
+      ],
+      "note": "",
+      "figures": []
+    }
+  ]
+}
