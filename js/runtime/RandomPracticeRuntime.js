@@ -60,6 +60,7 @@ AHS.RandomPracticeRuntime = (function () {
     var count = Math.max(0, Math.floor(opts.count || 0));
     var tiers = { weak: [], unseen: [], rest: [] };
     var seen = {};
+    var all = [];
     (opts.pools || []).forEach(function (pool) {
       var undrawn = null;
       if (Array.isArray(pool.undrawnIds)) {
@@ -72,10 +73,12 @@ AHS.RandomPracticeRuntime = (function () {
         seen[q.id] = true;
         var tier = weakIds[q.id] ? "weak" : (!undrawn || undrawn[q.id] ? "unseen" : "rest");
         var src = pool.source || {};
-        groups[tier].push(copy(q, {
+        var c = copy(q, {
           _examId: pool.examId, _tier: tier,
           sourceTitle: src.title || "", sourceChapter: src.chapter || ""
-        }));
+        });
+        all.push(c);
+        groups[tier].push(c);
       });
       ["weak", "unseen", "rest"].forEach(function (t) { tiers[t].push(shuffle(groups[t], random)); });
     });
@@ -84,6 +87,11 @@ AHS.RandomPracticeRuntime = (function () {
     var rest = interleave(tiers.rest, random);
     var weakFirst = Math.min(weak.length, Math.floor(count * WEAK_SHARE));
     var ordered = weak.slice(0, weakFirst).concat(unseen, weak.slice(weakFirst), rest);
+    /* 2026-11-15 題組：選中題組的任一題就整組帶入、連續排列，只以整組打亂。 */
+    if (window.AHS && AHS.QuestionGroups) {
+      var QG = AHS.QuestionGroups;
+      return QG.shuffle(QG.regroup(ordered.slice(0, count), all), random);
+    }
     return shuffle(ordered.slice(0, count), random);
   }
 

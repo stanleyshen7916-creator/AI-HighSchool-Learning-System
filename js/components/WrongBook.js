@@ -75,6 +75,23 @@ AHS.WrongBook = (function () {
      no dependency — see those two pages' own script tags) via
      findMaterialQuestion() above. Returns "" (never fabricated) when no
      match exists — most questions genuinely have no figure at all. */
+  /* 2026-11-15 題組：承上題等題組題，重做或看詳解時先列出同組前面的情境題，
+     否則無法作答。內容取自 js/data/TeachingMaterialData.js（不修改紀錄）。 */
+  function groupContextBlock(item) {
+    if (!window.AHS || !AHS.QuestionGroups) { return null; }
+    var match = findMaterialQuestion(item);
+    var ctx = AHS.QuestionGroups.contextFor(match ? match.id : item.questionId);
+    if (!ctx.length) { return null; }
+    return el("div", { class: "wb-detail__group-context" }, [
+      el("p", { class: "wb-detail__group-context-label", text: "題組情境（前面的題目）" })
+    ].concat(ctx.map(function (q) {
+      return el("div", { class: "wb-detail__group-context-item" }, [
+        el("p", { class: "wb-detail__group-context-text", text: q.question }),
+        q.figureSvg ? el("div", { class: "wb-detail__figure", html: q.figureSvg }) : null
+      ]);
+    })));
+  }
+
   function resolveFigureSvg(item) {
     if (item.figureSvg) { return item.figureSvg; }
     var match = findMaterialQuestion(item);
@@ -1262,6 +1279,7 @@ AHS.WrongBook = (function () {
         el("span", { class: "wb-detail__status" }, [statusTag(getMasteryStatus(item.correctStreak))])
       ]),
       statsBlock,
+      groupContextBlock(item),
       el("p", { class: "wb-detail__question", text: "題目：" + item.question }),
       (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),
       /* Sprint AI-147/AI-148（使用者需求：題目附圖，含舊紀錄補圖）:
@@ -1529,6 +1547,7 @@ AHS.WrongBook = (function () {
           el("p", { class: "wb-review-session__progress", text: "複習進度：" + (index + 1) + " / " + queue.length }),
           el("h2", { class: "wb-detail__title", text: item.title }),
           variant ? el("p", { class: "wb-variant__label", text: "類題練習（同觀念、不同數字，不是原題）" }) : null,
+          variant ? null : groupContextBlock(item),
           el("p", { class: "wb-detail__question", text: "題目：" + (variant ? variant.question : item.question) }),
           hintBlock(variant),
           (!variant && window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(item) : null),

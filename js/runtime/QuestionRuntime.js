@@ -91,6 +91,11 @@ AHS.QuestionRuntime = (function () {
   function shuffleOrder(examId) {
     if (!hasExam(examId)) { return []; }
     var arr = store[examId];
+    /* 2026-11-15 題組：整組一起打亂、組內順序不變（見 js/utils/QuestionGroups.js）。 */
+    if (window.AHS && AHS.QuestionGroups) {
+      store[examId] = AHS.QuestionGroups.shuffle(arr);
+      return clone(store[examId]);
+    }
     for (var i = arr.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       var tmp = arr[i];

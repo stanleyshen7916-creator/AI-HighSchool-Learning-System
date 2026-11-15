@@ -98,6 +98,11 @@ AHS.QuestionBankRuntime = (function () {
      not padded). */
   function drawRandom(examId, n) {
     var bank = getBank(examId);
+    /* 2026-11-15 題組：整組一起抽、連續排列（可略超過 n，不拆組）。 */
+    if (window.AHS && AHS.QuestionGroups) {
+      var grouped = AHS.QuestionGroups.shuffle(bank);
+      return typeof n === "number" ? AHS.QuestionGroups.take(grouped, n) : grouped;
+    }
     for (var i = bank.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       var tmp = bank[i]; bank[i] = bank[j]; bank[j] = tmp;
@@ -106,6 +111,10 @@ AHS.QuestionBankRuntime = (function () {
   }
 
   function shuffledIds(bank) {
+    /* 2026-11-15 題組：抽題袋內同組題目相鄰且依原順序。 */
+    if (window.AHS && AHS.QuestionGroups) {
+      return AHS.QuestionGroups.shuffle(bank).map(function (q) { return q.id; });
+    }
     var ids = bank.map(function (q) { return q.id; });
     for (var i = ids.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -160,6 +169,18 @@ AHS.QuestionBankRuntime = (function () {
       drawnThisCall[id] = true;
       var q = findById(bank, id);
       if (q) { drawn.push(clone(q)); }
+    }
+    /* 2026-11-15 題組：抽到一半的題組，從袋中補齊同組其餘題目，不拆組。 */
+    if (window.AHS && AHS.QuestionGroups && drawn.length) {
+      var full = AHS.QuestionGroups.regroup(drawn, bank);
+      if (full.length > drawn.length) {
+        var had = {};
+        drawn.forEach(function (d) { had[d.id] = true; });
+        var added = {};
+        full.forEach(function (f) { if (!had[f.id]) { added[f.id] = true; } });
+        cycle.remaining = cycle.remaining.filter(function (rid) { return !added[rid]; });
+        drawn = full.map(function (f) { return had[f.id] ? f : clone(f); });
+      }
     }
     persist();
     return drawn;
