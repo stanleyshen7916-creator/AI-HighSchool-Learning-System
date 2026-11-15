@@ -106,7 +106,15 @@ AHS.AiTutor = (function () {
     function scrollBottom() { thread.scrollTop = thread.scrollHeight; }
     function push(node) { thread.appendChild(node); scrollBottom(); return node; }
 
-    (data.messages || []).forEach(function (m) { push(bubble(m)); });
+    /* Sprint AI-154 hotfix: data.messages (js/pages/AppTutor.js's seed
+       messages, e.g. the new AHS.TutorEngine.greetForQuestion() greeting)
+       used to render via bubble(m) with no onMenuPick at all, so a seed
+       message carrying `actions` (like that greeting's 解題步驟詳解/概念
+       解釋 buttons) rendered real-looking buttons that silently did
+       nothing on click — every OTHER bubble() call in this file already
+       passes sendMessage as onMenuPick. sendMessage is a hoisted function
+       declaration, safe to reference here regardless of definition order. */
+    (data.messages || []).forEach(function (m) { push(bubble(m, sendMessage)); });
     push(bubble({
       role: "assistant",
       text: subjects.length
@@ -344,16 +352,37 @@ AHS.AiTutor = (function () {
     var quizCount = el("select", { class: "tutor-select", "aria-label": "題數" }, [5, 10].map(function (n) {
       return el("option", { value: String(n), text: n + " 題" });
     }));
+    /* Sprint AI-154（使用者需求：「出題考我」也必須有課文與章節選擇，不是
+       只能選科目）: real materials only, from AHS.StudyAssistant.sources()
+       — the same real corpus 查觀念／topics 已經在用，never a second,
+       invented list. 全部章節 (value="") keeps today's既有行為（整個科目或
+       全部科目出題）不變，章節/課文選項依目前選的科目連動篩選。 */
+    var quizMaterial = el("select", { class: "tutor-select", "aria-label": "章節／課文" });
+    function refreshQuizMaterials() {
+      quizMaterial.innerHTML = "";
+      quizMaterial.appendChild(el("option", { value: "", text: "全部章節" }));
+      (SA ? SA.sources() : [])
+        .filter(function (s) { return !quizSubject.value || s.subject === quizSubject.value; })
+        .forEach(function (s) {
+          quizMaterial.appendChild(el("option", { value: s.sourceId, text: (s.chapter ? s.chapter + "｜" : "") + s.title }));
+        });
+    }
+    quizSubject.addEventListener("change", refreshQuizMaterials);
+    refreshQuizMaterials();
     var weakBox = el("input", { type: "checkbox", class: "tutor-check__box", checked: "checked" });
     var startBtn = el("button", { type: "button", class: "tutor-start", text: "開始出題" });
     startBtn.addEventListener("click", function () {
-      push(bubble({ role: "user", text: "出題考我" + (quizSubject.value ? "（" + AHS.Subjects[quizSubject.value].name + "）" : "") }));
-      runQuiz({ subject: quizSubject.value || undefined, count: Number(quizCount.value), weakFirst: weakBox.checked });
+      var labelParts = [];
+      if (quizSubject.value) { labelParts.push(AHS.Subjects[quizSubject.value].name); }
+      if (quizMaterial.value) { labelParts.push(quizMaterial.options[quizMaterial.selectedIndex].text); }
+      push(bubble({ role: "user", text: "出題考我" + (labelParts.length ? "（" + labelParts.join("・") + "）" : "") }));
+      runQuiz({ subject: quizSubject.value || undefined, sourceId: quizMaterial.value || undefined, count: Number(quizCount.value), weakFirst: weakBox.checked });
     });
     var quizCard = el("section", { class: "card tutor-quiz-card", "aria-label": "出題考我" }, [
       el("h2", { class: "card__title", text: "出題考我" }),
       el("p", { class: "tutor-card-hint", text: "從這學期教材的題庫出單選題，答錯的題目會自動加入知識弱點。" }),
       el("div", { class: "tutor-quiz-card__row" }, [quizSubject, quizCount]),
+      el("div", { class: "tutor-quiz-card__row" }, [quizMaterial]),
       el("label", { class: "tutor-check" }, [weakBox, el("span", { text: "優先出我的知識弱點" })]),
       startBtn
     ]);

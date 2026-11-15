@@ -237,8 +237,32 @@ window.AHS = window.AHS || {};
      first render almost always happens before a real network pull
      resolves). guardedInit()/init() is idempotent (AHS.UI.mount() clears
      and rebuilds #app every call), so simply calling it again is enough —
-     no Runtime Public API change, no UI file needs a Promise. */
+     no Runtime Public API change, no UI file needs a Promise.
+
+     Sprint AI-154（使用者回報：知識弱點開啟速度很慢）: this unconditional
+     second full re-render — AHS.UI.mount() tears down and rebuilds #app
+     from scratch, including a fresh DOM row for every single Wrong Book
+     record — is the real root cause. The student sees the page draw once,
+     then visibly redraw again moments later once the background pull
+     resolves, which reads as slow/janky even though the first render
+     itself was fast; worse, re-rendering mid-interaction would also
+     silently discard whatever the student was doing (an open Detail
+     Modal, an in-progress 立即重做 attempt, a Review Session). Same fix
+     already shipped for js/pages/AppTutor.js on 2026-09-30 for the
+     identical reason — reused here verbatim rather than inventing a
+     second mechanism: once the student has interacted with the page at
+     all (click/keydown), a later pull no longer re-renders (it usually
+     resolves within the first second anyway, well before most students
+     interact). */
+  var interacted = false;
+  if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+    ["click", "keydown"].forEach(function (type) {
+      document.addEventListener(type, function () { interacted = true; }, true);
+    });
+  }
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-    window.addEventListener("ahs:repository-pulled", guardedInit);
+    window.addEventListener("ahs:repository-pulled", function () {
+      if (!interacted) { guardedInit(); }
+    });
   }
 })();

@@ -76,12 +76,36 @@ const PAGES = [
   { key: "tutor", label: "Tutor" }
 ];
 
+/* FIXED_VIEWPORT_HEIGHT (Sprint AI-154): fullPage: true derives its
+   capture height from the live page's own scrollHeight, which this exact
+   file's own header already documents as cross-Chromium-build sensitive
+   (sub-pixel font-hinting/line-height rounding accumulates over a tall
+   page). 知識弱點's「問學習助教」開場訊息 + 出題考我新增的「章節／課文」
+   選單 both made tutor.html consistently reproduce a real 2px fullPage
+   height mismatch between this environment's pre-installed Chromium and
+   GitHub Actions' freshly-installed one (confirmed: identical PNG bytes
+   before/after merging in unrelated upstream content changes, and
+   reproduced identically across two independent CI runs — not a flake,
+   not a content difference). Only this page gets a fixed, test-chosen
+   viewport height captured WITHOUT fullPage — the image's own dimensions
+   are then simply whatever this test asked for, never derived from a
+   browser build's own scrollHeight rounding, so two different Chromium
+   builds capture the exact same WxH deterministically; the existing
+   generous maxDiffPixelRatio/threshold below still catches any real
+   pixel-level visual regression inside that frame. 1400px is comfortably
+   taller than tutor.html's current real content (~1080px) so the real
+   page content is never cropped. */
+const FIXED_VIEWPORT_HEIGHT = { tutor: 1400 };
+
 for (const p of PAGES) {
   test("Snapshot：" + p.label, async ({ page }) => {
     if (p.key === "home") { await freezeRandomQuote(page); }
+    const fixedHeight = FIXED_VIEWPORT_HEIGHT[p.key];
+    if (fixedHeight) { await page.setViewportSize({ width: 1280, height: fixedHeight }); }
     await page.goto(fileUrl(p.key));
     await stabilize(page);
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, p.key + ".png"), fullPage: true });
+    const fullPage = !fixedHeight;
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, p.key + ".png"), fullPage: fullPage });
     /* Home's .hero-card genuinely varies every load by design — a real,
        random motivational quote (js/utils/Quote.js's own Math.random()
        pick) plus today's real date, not a bug to fix. Masked out of the
@@ -89,7 +113,7 @@ for (const p of PAGES) {
        assumed) so the rest of the page can still be regression-checked. */
     const mask = p.key === "home" ? [page.locator(".hero-card")] : [];
     await expect(page).toHaveScreenshot(p.key + ".png", {
-      fullPage: true,
+      fullPage: fullPage,
       animations: "disabled",
       maxDiffPixelRatio: 0.02,
       threshold: 0.3,
