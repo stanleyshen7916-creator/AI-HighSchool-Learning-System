@@ -44,14 +44,33 @@ window.AHS = window.AHS || {};
     return built ? { role: "assistant", time: "剛剛", text: built.message } : null;
   }
 
+  /* Sprint AI-154（使用者回報：從知識弱點點擊「問 AI 巧巧老師」後，內容
+     沒有學習助教的資訊連貫）: the real ?questionId= this page already
+     resolves for AiTutor.js's own "針對這一題" rail card (tutorPageContext
+     below) and for sendMessage() grounding, now ALSO seeds the first
+     message the student sees in the chat thread itself — so the
+     continuity doesn't depend on the student noticing a side-panel card
+     first. Returns null (nothing appended) whenever there is no real
+     question to reference. */
+  function buildQuestionContextMessage() {
+    if (!AHS.TutorEngine || typeof AHS.TutorEngine.greetForQuestion !== "function" || !AHS.PlatformContext) { return null; }
+    var questionId = AHS.PlatformContext.resolve().questionId;
+    if (!questionId) { return null; }
+    var greeting = AHS.TutorEngine.greetForQuestion({ questionId: questionId });
+    return greeting ? { role: "assistant", time: "剛剛", text: greeting.message, actions: greeting.actions } : null;
+  }
+
   function buildModel() {
     var base = AHS.AppConfig.aiTutorPage;
     if (!base) { return undefined; }
-    var realMsg = buildRealTutorMessage();
-    if (!realMsg) { return base; }
+    /* 問題的開場訊息比通用的 learningContext() 建議更直接相關（學生是帶著
+       一題具體問題過來的），所以放在最後——後面的訊息是學生不用捲動就能
+       看到的那一則。兩者互不取代，純粹疊加在既有歡迎詞之後。 */
+    var extraMessages = [buildRealTutorMessage(), buildQuestionContextMessage()].filter(Boolean);
+    if (!extraMessages.length) { return base; }
     var model = {};
     Object.keys(base).forEach(function (k) { model[k] = base[k]; });
-    model.messages = (base.messages || []).concat([realMsg]);
+    model.messages = (base.messages || []).concat(extraMessages);
     return model;
   }
 

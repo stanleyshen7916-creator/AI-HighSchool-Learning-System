@@ -136,5 +136,22 @@ AHS.TutorEngine = (function () {
     return offTopicMenu(question);
   }
 
-  return { reply: reply, resolveQuestion: resolveQuestion };
+  /* greetForQuestion(pageContext) — Sprint AI-154（使用者回報：從知識弱點
+     點擊「問 AI 巧巧老師」後，開場訊息沒有承接使用者是從哪一題過來、能問
+     什麼，連貫性不足）: js/components/AiTutor.js 已經會在右欄顯示「針對
+     這一題」卡片（questionId 解析成功時），但對話串本身的第一則訊息仍是
+     與該題無關的通用歡迎詞——這裡補上同一個真實問題的開場訊息，讓學生一
+     進來就先在對話裡看到「我看到你是從這一題過來的」，不必先注意到側欄
+     卡片才知道能問什麼。重用同一個 resolveQuestion() 把關，null 等同「沒
+     有真實題目可承接」，不產生任何揑造內容。 */
+  function greetForQuestion(pageContext) {
+    var question = resolveQuestion(pageContext);
+    if (!question) { return null; }
+    return {
+      message: "我看到你是從這一題過來的：\n「" + question.question + "」\n針對這一題，我可以直接提供：",
+      actions: [{ label: STEPS_LABEL }, { label: CONCEPT_LABEL }]
+    };
+  }
+
+  return { reply: reply, resolveQuestion: resolveQuestion, greetForQuestion: greetForQuestion };
 })();

@@ -297,10 +297,18 @@ AHS.StudyAssistant = (function () {
     });
   }
 
-  /* pickQuiz(opts) — opts.subject, opts.count (default 5), opts.weakFirst,
-     opts.random (injectable for tests). Returns { questions, fromWeak }:
-     with weakFirst, questions the student got wrong (and others on the
-     same knowledge points) come first; the rest is filled randomly. */
+  /* pickQuiz(opts) — opts.subject, opts.sourceId, opts.count (default 5),
+     opts.weakFirst, opts.random (injectable for tests). Returns
+     { questions, fromWeak }: with weakFirst, questions the student got
+     wrong (and others on the same knowledge points) come first; the rest
+     is filled randomly.
+     Sprint AI-154（使用者需求：「出題考我」必須也能選課文與章節，不是只
+     能選科目）: opts.sourceId narrows the pool to one real material (its
+     own real sources().sourceId — the same id every question in that
+     material already carries via sources()'s own s.sourceId tagging
+     above), additive alongside the existing opts.subject filter — picking
+     a specific 章節／課文 still requires a subject to have been narrowed
+     first in the UI, but the Runtime itself accepts either independently. */
   function pickQuiz(opts) {
     opts = opts || {};
     var random = opts.random || Math.random;
@@ -308,6 +316,7 @@ AHS.StudyAssistant = (function () {
     var pool = [];
     sources().forEach(function (s) {
       if (opts.subject && s.subject !== opts.subject) { return; }
+      if (opts.sourceId && s.sourceId !== opts.sourceId) { return; }
       pool = pool.concat(s.questions);
     });
     if (opts.knowledgePoint) {
