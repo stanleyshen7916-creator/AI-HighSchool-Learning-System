@@ -897,10 +897,43 @@ AHS.WrongBook = (function () {
      次，避免背答案）: 有類題（note.variants）時，「立即重做」／全部重新練習
      改出類題；依這題已作答次數輪替，每次盡量不同。類題的對錯計入原題的複習
      進度，但不改寫原題的「你的答案」。沒有類題的錯題維持原題重做。 */
+  /* 2026-11-15（使用者回饋：沒有類題的錯題「立即重做」仍是同一題）: 沒有
+     note.variants 時，改從題庫挑「同一份教材、同一知識點、同題型」的另一題當
+     類似題（依作答次數輪替）。排除題組題（拆開無法作答）、需看圖的題目與原題。
+     都找不到才維持原題重做。 */
+  var FIGURE_RE = /如圖|下圖|附圖|上圖|右圖|左圖|圖中|圖示|見圖/;
+  function bankVariantFor(item) {
+    var data = window.AHS && AHS.TeachingMaterialData;
+    if (!Array.isArray(data)) { return null; }
+    var src = findMaterialQuestion(item);
+    var kp = (src && src.knowledgePoint) || item.knowledgePoint;
+    var materialId = (src && src.materialId) || "";
+    if (!src || !kp || !materialId) { return null; }
+    var pkg = data.filter(function (e) { return e && e.materialId === materialId; })[0];
+    if (!pkg || !Array.isArray(pkg.questions)) { return null; }
+    var pool = pkg.questions.filter(function (q) {
+      return q.id !== src.id && q.knowledgePoint === kp && q.type === src.type &&
+        Array.isArray(q.options) && q.options.length >= 2 && q.answer &&
+        q.options.indexOf(q.answer) !== -1 && !q.groupId && !q.figureSvg &&
+        !FIGURE_RE.test(q.question || "");
+    });
+    if (!pool.length) { return null; }
+    var i = ((item.errorCount || 0) + (item.correctCount || 0)) % pool.length;
+    var q = pool[i];
+    var keys = ["A", "B", "C", "D", "E", "F", "G"];
+    var options = q.options.map(function (t, k) { return { key: keys[k], text: String(t) }; });
+    return {
+      id: item.id, questionId: q.id, subject: item.subject,
+      question: q.question, options: options, correctAnswer: keys[q.options.indexOf(q.answer)],
+      steps: q.explanation ? [String(q.explanation)] : [], hints: [], isVariant: true,
+      fromBank: true, fading: false
+    };
+  }
+
   function variantFor(item) {
     var note = noteOf(item);
     var list = note && note.variants;
-    if (!list || !list.length) { return null; }
+    if (!list || !list.length) { return bankVariantFor(item); }
     var i = ((item.errorCount || 0) + (item.correctCount || 0)) % list.length;
     var v = list[i];
     return {
@@ -1144,7 +1177,7 @@ AHS.WrongBook = (function () {
       });
       if (variant) {
         interaction = el("div", { class: "wb-variant" }, [
-          el("p", { class: "wb-variant__label", text: "類題練習（同觀念、不同數字，不是原題）" }),
+          el("p", { class: "wb-variant__label", text: variant.fromBank ? "類似題練習（題庫中同觀念的另一題，不是原題）" : "類題練習（同觀念、不同數字，不是原題）" }),
           el("p", { class: "wb-detail__question", text: "題目：" + variant.question }),
           hintBlock(variant),
           interaction
