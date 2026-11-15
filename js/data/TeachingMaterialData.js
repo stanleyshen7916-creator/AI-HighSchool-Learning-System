@@ -597,6 +597,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "三角形面積公式的應用",
         "difficulty": "中等",
         "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「三角形面積公式的應用」出題；答案經程式數值驗算（source/verify-tm1.js）",
+        "groupId": "tm_18_g1",
         "supplementId": "tm_18"
       },
       {
@@ -621,6 +622,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "餘弦定理的應用（平行四邊形對角線）",
         "difficulty": "難",
         "reference": "AI 自編（非課本原題），依 tm_1 段考命題範圍「餘弦定理的應用（平行四邊形對角線）」出題；答案經程式數值驗算（source/verify-tm1.js）",
+        "groupId": "tm_18_g1",
         "supplementId": "tm_18"
       },
       {
@@ -1358,7 +1360,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "支序分類學的證據",
         "difficulty": "難",
-        "figureSvg": "<svg viewBox=\"0 0 460 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"40\" y1=\"230\" x2=\"90\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"60\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"150\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"230\" y2=\"90\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"200\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"290\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"420\" y2=\"60\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"380\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"440\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<circle cx=\"90\" cy=\"150\" r=\"3\" fill=\"#333\"/><circle cx=\"230\" cy=\"90\" r=\"3\" fill=\"#333\"/><circle cx=\"420\" cy=\"60\" r=\"3\" fill=\"#333\"/>\n<text x=\"60\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">真菌界</text>\n<text x=\"150\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">植物界</text>\n<text x=\"200\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">原口動物</text>\n<text x=\"290\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">後口動物</text>\n<text x=\"380\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">爬行動物</text>\n<text x=\"440\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">哺乳動物</text>\n<text x=\"15\" y=\"248\" font-size=\"12\" font-weight=\"700\">共同祖先</text>\n<text x=\"230\" y=\"115\" font-size=\"10\" fill=\"#999\">動物界</text>\n<text x=\"330\" y=\"80\" font-size=\"10\" fill=\"#999\">脊椎動物</text>\n</svg>"
+        "figureSvg": "<svg viewBox=\"0 0 460 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<line x1=\"40\" y1=\"230\" x2=\"90\" y2=\"150\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"60\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"150\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"230\" y2=\"90\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"200\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"230\" y1=\"90\" x2=\"290\" y2=\"40\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"90\" y1=\"150\" x2=\"420\" y2=\"60\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"380\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<line x1=\"420\" y1=\"60\" x2=\"440\" y2=\"20\" stroke=\"#333\" stroke-width=\"2\"/>\n<circle cx=\"90\" cy=\"150\" r=\"3\" fill=\"#333\"/><circle cx=\"230\" cy=\"90\" r=\"3\" fill=\"#333\"/><circle cx=\"420\" cy=\"60\" r=\"3\" fill=\"#333\"/>\n<text x=\"60\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">真菌界</text>\n<text x=\"150\" y=\"30\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">植物界</text>\n<text x=\"200\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">原口動物</text>\n<text x=\"290\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#7c5cff\">後口動物</text>\n<text x=\"380\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">爬行動物</text>\n<text x=\"440\" y=\"10\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#22b573\">哺乳動物</text>\n<text x=\"15\" y=\"248\" font-size=\"12\" font-weight=\"700\">共同祖先</text>\n<text x=\"230\" y=\"115\" font-size=\"10\" fill=\"#999\">動物界</text>\n<text x=\"330\" y=\"80\" font-size=\"10\" fill=\"#999\">脊椎動物</text>\n</svg>",
+        "groupId": "tm_2_g1"
       },
       {
         "id": "tm_2_q25",
@@ -1383,7 +1386,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.9,
         "needsReview": false,
         "knowledgePoint": "單系群、並系群判斷",
-        "difficulty": "難"
+        "difficulty": "難",
+        "groupId": "tm_2_g1"
       },
       {
         "id": "tm_2_q26",
@@ -1407,7 +1411,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.93,
         "needsReview": false,
         "knowledgePoint": "病毒核酸水解產物（非洲豬瘟）",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_2_g2"
       },
       {
         "id": "tm_2_q27",
@@ -1431,7 +1436,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.85,
         "needsReview": true,
         "knowledgePoint": "非洲豬瘟病毒的宿主特性",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_2_g2"
       },
       {
         "id": "tm_2_q28",
@@ -2775,7 +2781,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.7,
         "needsReview": true,
-        "knowledgePoint": "法定繼承人身分（題組一）"
+        "knowledgePoint": "法定繼承人身分（題組一）",
+        "groupId": "tm_3_g1"
       },
       {
         "id": "tm_3_q46",
@@ -2793,7 +2800,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "特留分計算（題組一）"
+        "knowledgePoint": "特留分計算（題組一）",
+        "groupId": "tm_3_g1"
       },
       {
         "id": "tm_3_q47",
@@ -2839,7 +2847,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "改善性別勞動參與率差異之政策（題組三）"
+        "knowledgePoint": "改善性別勞動參與率差異之政策（題組三）",
+        "groupId": "tm_3_g2"
       },
       {
         "id": "tm_3_q49",
@@ -2862,7 +2871,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "剩餘財產分配請求權計算（題組三）"
+        "knowledgePoint": "剩餘財產分配請求權計算（題組三）",
+        "groupId": "tm_3_g2"
       },
       {
         "id": "tm_3_q50",
@@ -2885,7 +2895,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.75,
         "needsReview": true,
-        "knowledgePoint": "約定共同財產制之特有財產範圍（題組三）"
+        "knowledgePoint": "約定共同財產制之特有財產範圍（題組三）",
+        "groupId": "tm_3_g2"
       }
     ],
     "related": []
@@ -10565,7 +10576,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-02T00:00:00Z",
         "knowledgePoint": "第2節 絕對利益判斷",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_8_g1"
       },
       {
         "id": "tm_8_q9",
@@ -10587,7 +10599,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-02T00:00:00Z",
         "knowledgePoint": "第2節 機會成本計算",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_8_g1"
       },
       {
         "id": "tm_8_q10",
@@ -10609,7 +10622,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-02T00:00:00Z",
         "knowledgePoint": "第2節 比較利益法則應用",
-        "difficulty": "難"
+        "difficulty": "難",
+        "groupId": "tm_8_g1"
       },
       {
         "id": "tm_8_q11",
@@ -11973,7 +11987,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-02T00:00:00Z",
         "knowledgePoint": "第3節 生產上互補品方向判斷",
-        "difficulty": "難"
+        "difficulty": "難",
+        "groupId": "tm_9_g1"
       },
       {
         "id": "tm_9_q13",
@@ -11995,7 +12010,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-02T00:00:00Z",
         "knowledgePoint": "第3節 生產替代vs互補方向比較",
-        "difficulty": "難"
+        "difficulty": "難",
+        "groupId": "tm_9_g1"
       },
       {
         "id": "tm_9_q14",
@@ -13246,7 +13262,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "1-3 因次：動量",
-        "difficulty": "易"
+        "difficulty": "易",
+        "groupId": "tm_10_g1"
       },
       {
         "id": "tm_10_q8",
@@ -13268,7 +13285,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "1-3 因次：功",
-        "difficulty": "易"
+        "difficulty": "易",
+        "groupId": "tm_10_g1"
       },
       {
         "id": "tm_10_q9",
@@ -14417,6 +14435,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "易",
         "section": "習題 1-1",
         "reference": "長榮中學高二物理課本 第1章 測量與不確定度 習題 第2題（課本第25頁）",
+        "groupId": "tm_52_g1",
         "supplementId": "tm_52"
       },
       {
@@ -14439,6 +14458,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "中等",
         "section": "習題 1-2",
         "reference": "長榮中學高二物理課本 第1章 測量與不確定度 習題 第3題（課本第25頁）",
+        "groupId": "tm_52_g1",
         "supplementId": "tm_52"
       },
       {
@@ -14651,7 +14671,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "2-1 位移與路徑長",
-        "difficulty": "易"
+        "difficulty": "易",
+        "groupId": "tm_11_g1"
       },
       {
         "id": "tm_11_q2",
@@ -14673,7 +14694,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "2-1 平均速度與平均速率",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_11_g1"
       },
       {
         "id": "tm_11_q3",
@@ -14761,7 +14783,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "2-3 等加速位移公式",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_11_g2"
       },
       {
         "id": "tm_11_q7",
@@ -14783,7 +14806,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "2-3 等加速末速公式",
-        "difficulty": "易"
+        "difficulty": "易",
+        "groupId": "tm_11_g2"
       },
       {
         "id": "tm_11_q8",
@@ -14849,7 +14873,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "2-3 鉛直上拋上升時間",
-        "difficulty": "易"
+        "difficulty": "易",
+        "groupId": "tm_11_g3"
       },
       {
         "id": "tm_11_q11",
@@ -14871,7 +14896,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-09-03T00:00:00Z",
         "knowledgePoint": "2-3 鉛直上拋最高點高度",
-        "difficulty": "中等"
+        "difficulty": "中等",
+        "groupId": "tm_11_g3"
       },
       {
         "id": "tm_11_q12",
@@ -16446,7 +16472,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "限量試劑判斷",
         "difficulty": "中等",
-        "section": "1-1 化學反應式的平衡及應用（7-8題組）"
+        "section": "1-1 化學反應式的平衡及應用（7-8題組）",
+        "groupId": "tm_12_g1"
       },
       {
         "id": "tm_12_q7",
@@ -16472,7 +16499,8 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "產率計算",
         "difficulty": "中等",
-        "section": "1-1 化學反應式的平衡及應用（7-8題組）"
+        "section": "1-1 化學反應式的平衡及應用（7-8題組）",
+        "groupId": "tm_12_g1"
       },
       {
         "id": "tm_12_q8",
@@ -16619,7 +16647,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "反應熱位能圖",
         "difficulty": "中等",
         "section": "1-2.2 反應熱與影響反應熱的因素",
-        "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">H2(g)+1/2O2(g)</text>\n<line x1=\"40\" y1=\"140\" x2=\"220\" y2=\"140\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"145\" font-size=\"13\">H2O(g)</text>\n<line x1=\"40\" y1=\"220\" x2=\"220\" y2=\"220\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"225\" font-size=\"13\">H2O(l)</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"140\" stroke=\"#7c5cff\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"306\" y=\"94\" fill=\"#7c5cff\">242kJ</text>\n<line x1=\"330\" y1=\"140\" x2=\"330\" y2=\"220\" stroke=\"#22b573\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"336\" y=\"184\" fill=\"#22b573\">44kJ</text>\n<text x=\"10\" y=\"130\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 130)\">熱含量H →</text>\n</svg>"
+        "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">H2(g)+1/2O2(g)</text>\n<line x1=\"40\" y1=\"140\" x2=\"220\" y2=\"140\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"145\" font-size=\"13\">H2O(g)</text>\n<line x1=\"40\" y1=\"220\" x2=\"220\" y2=\"220\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"225\" font-size=\"13\">H2O(l)</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"140\" stroke=\"#7c5cff\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"306\" y=\"94\" fill=\"#7c5cff\">242kJ</text>\n<line x1=\"330\" y1=\"140\" x2=\"330\" y2=\"220\" stroke=\"#22b573\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"336\" y=\"184\" fill=\"#22b573\">44kJ</text>\n<text x=\"10\" y=\"130\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 130)\">熱含量H →</text>\n</svg>",
+        "groupId": "tm_12_g2"
       },
       {
         "id": "tm_12_q14",
@@ -16643,7 +16672,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "反應熱位能圖",
         "difficulty": "中等",
         "section": "1-2.2 反應熱與影響反應熱的因素",
-        "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">Z</text>\n<line x1=\"40\" y1=\"140\" x2=\"220\" y2=\"140\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"145\" font-size=\"13\">Y</text>\n<line x1=\"40\" y1=\"220\" x2=\"220\" y2=\"220\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"225\" font-size=\"13\">X</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"140\" stroke=\"#7c5cff\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"306\" y=\"94\" fill=\"#7c5cff\">37kJ</text>\n<line x1=\"330\" y1=\"140\" x2=\"330\" y2=\"220\" stroke=\"#22b573\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"336\" y=\"184\" fill=\"#22b573\">85kJ</text>\n<text x=\"10\" y=\"130\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 130)\">熱含量H →</text>\n</svg>"
+        "figureSvg": "<svg viewBox=\"0 0 380 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\">\n<line x1=\"40\" y1=\"40\" x2=\"220\" y2=\"40\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"45\" font-size=\"13\">Z</text>\n<line x1=\"40\" y1=\"140\" x2=\"220\" y2=\"140\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"145\" font-size=\"13\">Y</text>\n<line x1=\"40\" y1=\"220\" x2=\"220\" y2=\"220\" stroke=\"#333\" stroke-width=\"2.5\"/>\n<text x=\"230\" y=\"225\" font-size=\"13\">X</text>\n<line x1=\"300\" y1=\"40\" x2=\"300\" y2=\"140\" stroke=\"#7c5cff\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"306\" y=\"94\" fill=\"#7c5cff\">37kJ</text>\n<line x1=\"330\" y1=\"140\" x2=\"330\" y2=\"220\" stroke=\"#22b573\" stroke-width=\"1.5\" marker-end=\"url(#arrow)\"/>\n<text x=\"336\" y=\"184\" fill=\"#22b573\">85kJ</text>\n<text x=\"10\" y=\"130\" font-size=\"12\" fill=\"#666\" transform=\"rotate(-90 10 130)\">熱含量H →</text>\n</svg>",
+        "groupId": "tm_12_g2"
       },
       {
         "id": "tm_12_q15",
@@ -17003,7 +17033,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "莫耳燃燒熱計算",
         "difficulty": "中等",
-        "section": "1-1、1-2 單元練習（8-9題組）"
+        "section": "1-1、1-2 單元練習（8-9題組）",
+        "groupId": "tm_12_g3"
       },
       {
         "id": "tm_12_q29",
@@ -17028,7 +17059,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "莫耳生成熱與汽化熱組合計算",
         "difficulty": "中等",
-        "section": "1-1、1-2 單元練習（8-9題組）"
+        "section": "1-1、1-2 單元練習（8-9題組）",
+        "groupId": "tm_12_g3"
       },
       {
         "id": "tm_12_q30",
@@ -18263,7 +18295,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.6,
         "needsReview": true,
         "knowledgePoint": "色層分析法、比移值Rf",
-        "section": "色層分析法"
+        "section": "色層分析法",
+        "groupId": "tm_13_g1"
       },
       {
         "id": "tm_13_q2",
@@ -18282,7 +18315,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.6,
         "needsReview": true,
         "knowledgePoint": "色層分析法應用",
-        "section": "色層分析法"
+        "section": "色層分析法",
+        "groupId": "tm_13_g1"
       },
       {
         "id": "tm_13_q3",
@@ -22274,6 +22308,7 @@ AHS.TeachingMaterialData = [
         "section": "主題10 周年運動",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_55/figures/tm_55_q6.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
         "reference": "長榮中學高二地球科學講義 打鐵趁熱（課本第55頁）",
+        "groupId": "tm_55_g1",
         "supplementId": "tm_55"
       },
       {
@@ -22296,6 +22331,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "難",
         "section": "主題10 周年運動",
         "reference": "長榮中學高二地球科學講義 打鐵趁熱（課本第55頁）",
+        "groupId": "tm_55_g1",
         "supplementId": "tm_55"
       },
       {
@@ -25016,6 +25052,7 @@ AHS.TeachingMaterialData = [
         "section": "主題2 小試身手",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_68/figures/u1t2_5.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
         "reference": "長榮中學高二地科講義 主題2 小試身手 第5題（講義第10頁）",
+        "groupId": "tm_68_g1",
         "supplementId": "tm_68"
       },
       {
@@ -25045,6 +25082,7 @@ AHS.TeachingMaterialData = [
         "section": "主題2 小試身手",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_68/figures/u1t2_5.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
         "reference": "長榮中學高二地科講義 主題2 小試身手 第6題（講義第10頁）",
+        "groupId": "tm_68_g1",
         "supplementId": "tm_68"
       },
       {
@@ -26303,6 +26341,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "易",
         "section": "主題4 小試身手",
         "reference": "長榮中學高二地科講義 主題4 小試身手 第4-3題（講義第28頁）",
+        "groupId": "tm_69_g1",
         "supplementId": "tm_69"
       },
       {
@@ -26331,6 +26370,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "易",
         "section": "主題4 小試身手",
         "reference": "長榮中學高二地科講義 主題4 小試身手 第4-4題（講義第28頁）",
+        "groupId": "tm_69_g1",
         "supplementId": "tm_69"
       },
       {
@@ -29356,6 +29396,7 @@ AHS.TeachingMaterialData = [
         "section": "主題2 相對地質年代與絕對地質年代",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_82/figures/tm_82_q1.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_17 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_82_g1",
         "supplementId": "tm_82"
       },
       {
@@ -29382,6 +29423,7 @@ AHS.TeachingMaterialData = [
         "section": "主題2 相對地質年代與絕對地質年代",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_82/figures/tm_82_q1.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_17 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_82_g1",
         "supplementId": "tm_82"
       },
       {
@@ -29434,6 +29476,7 @@ AHS.TeachingMaterialData = [
         "section": "主題6 宇宙結構與宇宙膨脹",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_82/figures/tm_82_q4.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_17 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_82_g2",
         "supplementId": "tm_82"
       },
       {
@@ -29461,6 +29504,7 @@ AHS.TeachingMaterialData = [
         "section": "主題6 宇宙結構與宇宙膨脹",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_82/figures/tm_82_q4.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_17 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_82_g2",
         "supplementId": "tm_82"
       },
       {
@@ -30142,7 +30186,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "波以耳定律（J 型管）",
         "difficulty": "難",
         "section": "2-2.1 波以耳定律",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q24.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q24.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
+        "groupId": "tm_28_g1"
       },
       {
         "id": "tm_28_q25",
@@ -30162,7 +30207,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "波以耳定律（J 型管）",
         "difficulty": "難",
-        "section": "2-2.1 波以耳定律"
+        "section": "2-2.1 波以耳定律",
+        "groupId": "tm_28_g1"
       },
       {
         "id": "tm_28_q26",
@@ -30182,7 +30228,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "波以耳定律（汞柱封氣）",
         "difficulty": "中等",
-        "section": "2-2.1 波以耳定律"
+        "section": "2-2.1 波以耳定律",
+        "groupId": "tm_28_g2"
       },
       {
         "id": "tm_28_q27",
@@ -30202,7 +30249,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "波以耳定律（汞柱封氣）",
         "difficulty": "中等",
-        "section": "2-2.1 波以耳定律"
+        "section": "2-2.1 波以耳定律",
+        "groupId": "tm_28_g2"
       },
       {
         "id": "tm_28_q28",
@@ -32042,7 +32090,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "易",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g3"
       },
       {
         "id": "tm_28_q100",
@@ -32068,7 +32117,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "莫耳分率",
         "difficulty": "易",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g3"
       },
       {
         "id": "tm_28_q101",
@@ -32120,7 +32170,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "莫耳分率",
         "difficulty": "易",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g4"
       },
       {
         "id": "tm_28_q103",
@@ -32146,7 +32197,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "莫耳分率與分壓",
         "difficulty": "易",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g4"
       },
       {
         "id": "tm_28_q104",
@@ -32199,7 +32251,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "分壓定律（混合）",
         "difficulty": "易",
         "section": "2-4 單元練習",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q105.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_28/figures/tm_28_q105.jpg\" alt=\"附圖（取自原講義／課本）\" loading=\"lazy\">",
+        "groupId": "tm_28_g5"
       },
       {
         "id": "tm_28_q106",
@@ -32225,7 +32278,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "混合時發生反應",
         "difficulty": "中等",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g5"
       },
       {
         "id": "tm_28_q107",
@@ -32304,7 +32358,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "排水集氣法的壓力校正",
         "difficulty": "中等",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g6"
       },
       {
         "id": "tm_28_q110",
@@ -32330,7 +32385,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "排水集氣法的壓力校正",
         "difficulty": "中等",
-        "section": "2-4 單元練習"
+        "section": "2-4 單元練習",
+        "groupId": "tm_28_g6"
       },
       {
         "id": "tm_28_q111",
@@ -32811,7 +32867,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式與反應計量",
         "difficulty": "中等",
-        "section": "大考風向 歷屆試題"
+        "section": "大考風向 歷屆試題",
+        "groupId": "tm_28_g7"
       },
       {
         "id": "tm_28_q130",
@@ -32837,7 +32894,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "理想氣體方程式與反應計量",
         "difficulty": "難",
-        "section": "大考風向 歷屆試題"
+        "section": "大考風向 歷屆試題",
+        "groupId": "tm_28_g7"
       },
       {
         "id": "tm_28_q131",
@@ -32890,7 +32948,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "排水集氣法的壓力校正",
         "difficulty": "中等",
-        "section": "大考風向 歷屆試題"
+        "section": "大考風向 歷屆試題",
+        "groupId": "tm_28_g8"
       },
       {
         "id": "tm_28_q133",
@@ -32916,7 +32975,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "排水集氣法與反應計量",
         "difficulty": "難",
-        "section": "大考風向 歷屆試題"
+        "section": "大考風向 歷屆試題",
+        "groupId": "tm_28_g8"
       },
       {
         "id": "tm_28_q134",
@@ -34427,6 +34487,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "中等",
         "section": "習題 素養題",
         "reference": "竹圍高中高二化學課本 第2章 氣體 素養題3（課本第97頁）",
+        "groupId": "tm_30_g1",
         "supplementId": "tm_30"
       },
       {
@@ -34449,6 +34510,7 @@ AHS.TeachingMaterialData = [
         "difficulty": "中等",
         "section": "習題 素養題",
         "reference": "竹圍高中高二化學課本 第2章 氣體 素養題3（課本第97頁）",
+        "groupId": "tm_30_g1",
         "supplementId": "tm_30"
       },
       {
@@ -35053,6 +35115,7 @@ AHS.TeachingMaterialData = [
           "fit": "完全對應",
           "note": "扣除水的飽和蒸氣壓後以 PV ＝ nRT 求莫耳數，屬本章 2-4.2 氣壓的校正。"
         },
+        "groupId": "tm_32_g1",
         "supplementId": "tm_32"
       },
       {
@@ -35084,6 +35147,7 @@ AHS.TeachingMaterialData = [
           "fit": "部分對應",
           "note": "求氧氣莫耳數屬本章 2-4.2；由反應式係數比換算氯酸鉀質量與純度需第1章的化學計量。"
         },
+        "groupId": "tm_32_g1",
         "supplementId": "tm_32"
       },
       {
@@ -39859,7 +39923,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "巴斯德鵝頸瓶實驗",
         "difficulty": "易",
-        "section": "1-1 生源說與非生源說"
+        "section": "1-1 生源說與非生源說",
+        "groupId": "tm_54_g1"
       },
       {
         "id": "tm_54_q12",
@@ -39884,7 +39949,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "巴斯德鵝頸瓶實驗",
         "difficulty": "易",
-        "section": "1-1 生源說與非生源說"
+        "section": "1-1 生源說與非生源說",
+        "groupId": "tm_54_g1"
       },
       {
         "id": "tm_54_q13",
@@ -40559,7 +40625,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "原始地球環境",
         "difficulty": "易",
-        "section": "1-3 生命型式的演化"
+        "section": "1-3 生命型式的演化",
+        "groupId": "tm_54_g2"
       },
       {
         "id": "tm_54_q42",
@@ -40584,7 +40651,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "生命型式的演化",
         "difficulty": "易",
-        "section": "1-3 生命型式的演化"
+        "section": "1-3 生命型式的演化",
+        "groupId": "tm_54_g2"
       },
       {
         "id": "tm_54_q43",
@@ -40910,7 +40978,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "尤里與米勒的實驗",
         "difficulty": "易",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_54_g3"
       },
       {
         "id": "tm_54_q56",
@@ -40935,7 +41004,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "尤里與米勒的實驗",
         "difficulty": "易",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_54_g3"
       },
       {
         "id": "tm_54_q57",
@@ -40961,7 +41031,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "尤里與米勒的實驗",
         "difficulty": "易",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_54/figures/tm_54_q55.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_54_g3"
       },
       {
         "id": "tm_54_q58",
@@ -41778,7 +41849,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "維管束組織的細胞",
         "difficulty": "中等",
         "section": "2-1 課後演練",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q21.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q21.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g1"
       },
       {
         "id": "tm_56_q22",
@@ -41804,7 +41876,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "維管束組織的細胞",
         "difficulty": "中等",
         "section": "2-1 課後演練",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q21.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q21.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g1"
       },
       {
         "id": "tm_56_q23",
@@ -42055,7 +42128,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分生組織",
         "difficulty": "易",
-        "section": "2-1 課後演練"
+        "section": "2-1 課後演練",
+        "groupId": "tm_56_g2"
       },
       {
         "id": "tm_56_q33",
@@ -42080,7 +42154,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "分生組織",
         "difficulty": "易",
-        "section": "2-1 課後演練"
+        "section": "2-1 課後演練",
+        "groupId": "tm_56_g2"
       },
       {
         "id": "tm_56_q34",
@@ -42386,7 +42461,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
         "section": "2-2.1 根",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q46.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q46.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g3"
       },
       {
         "id": "tm_56_q47",
@@ -42412,7 +42488,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根的構造",
         "difficulty": "中等",
         "section": "2-2.1 根",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q46.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q46.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g3"
       },
       {
         "id": "tm_56_q48",
@@ -42742,7 +42819,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "單子葉植物莖",
         "difficulty": "中等",
         "section": "2-2.2 莖",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q61.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q61.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g4"
       },
       {
         "id": "tm_56_q62",
@@ -42767,7 +42845,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "纖維細胞",
         "difficulty": "易",
-        "section": "2-2.2 莖"
+        "section": "2-2.2 莖",
+        "groupId": "tm_56_g4"
       },
       {
         "id": "tm_56_q63",
@@ -43593,7 +43672,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
         "section": "探討活動 2-1 植物根莖構造的觀察",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g5"
       },
       {
         "id": "tm_56_q96",
@@ -43619,7 +43699,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
         "section": "探討活動 2-1 植物根莖構造的觀察",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g5"
       },
       {
         "id": "tm_56_q97",
@@ -43645,7 +43726,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
         "section": "探討活動 2-1 植物根莖構造的觀察",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g5"
       },
       {
         "id": "tm_56_q98",
@@ -43671,7 +43753,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
         "section": "探討活動 2-1 植物根莖構造的觀察",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g5"
       },
       {
         "id": "tm_56_q99",
@@ -43697,7 +43780,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根莖構造的比較",
         "difficulty": "中等",
         "section": "探討活動 2-1 植物根莖構造的觀察",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q95.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g5"
       },
       {
         "id": "tm_56_q100",
@@ -43870,7 +43954,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "植物形態與環境",
         "difficulty": "易",
-        "section": "探究實驗題"
+        "section": "探究實驗題",
+        "groupId": "tm_56_g6"
       },
       {
         "id": "tm_56_q107",
@@ -43895,7 +43980,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "植物形態與環境",
         "difficulty": "易",
-        "section": "探究實驗題"
+        "section": "探究實驗題",
+        "groupId": "tm_56_g6"
       },
       {
         "id": "tm_56_q108",
@@ -43920,7 +44006,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "陸地與水域環境",
         "difficulty": "易",
-        "section": "探究實驗題"
+        "section": "探究實驗題",
+        "groupId": "tm_56_g6"
       },
       {
         "id": "tm_56_q109",
@@ -43971,7 +44058,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "雙子葉植物莖",
         "difficulty": "中等",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q110.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q110.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g7"
       },
       {
         "id": "tm_56_q111",
@@ -43997,7 +44085,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "髓",
         "difficulty": "中等",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q110.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q110.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g7"
       },
       {
         "id": "tm_56_q112",
@@ -44299,7 +44388,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根尖的分區",
         "difficulty": "中等",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g8"
       },
       {
         "id": "tm_56_q124",
@@ -44325,7 +44415,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根尖的分區",
         "difficulty": "中等",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g8"
       },
       {
         "id": "tm_56_q125",
@@ -44351,7 +44442,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "根尖的分區",
         "difficulty": "中等",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q123.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g8"
       },
       {
         "id": "tm_56_q126",
@@ -44453,7 +44545,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "維管束組織的細胞",
         "difficulty": "中等",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q129.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q129.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g9"
       },
       {
         "id": "tm_56_q130",
@@ -44479,7 +44572,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "導管與管胞",
         "difficulty": "易",
         "section": "綜合評量",
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q129.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">"
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_56/figures/tm_56_q129.jpg\" alt=\"附圖（取自原講義）\" loading=\"lazy\">",
+        "groupId": "tm_56_g9"
       },
       {
         "id": "tm_56_q131",
@@ -45108,6 +45202,7 @@ AHS.TeachingMaterialData = [
         "section": "2-1 植物體的組成與體制",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q1.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g1",
         "supplementId": "tm_81"
       },
       {
@@ -45134,6 +45229,7 @@ AHS.TeachingMaterialData = [
         "section": "2-1 植物體的組成與體制",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q1.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g1",
         "supplementId": "tm_81"
       },
       {
@@ -45161,6 +45257,7 @@ AHS.TeachingMaterialData = [
         "section": "2-1 植物體的組成與體制",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q1.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g1",
         "supplementId": "tm_81"
       },
       {
@@ -45187,6 +45284,7 @@ AHS.TeachingMaterialData = [
         "section": "2-2 植物體的根莖葉",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q4.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g2",
         "supplementId": "tm_81"
       },
       {
@@ -45214,6 +45312,7 @@ AHS.TeachingMaterialData = [
         "section": "2-2 植物體的根莖葉",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q4.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g2",
         "supplementId": "tm_81"
       },
       {
@@ -45266,6 +45365,7 @@ AHS.TeachingMaterialData = [
         "section": "2-2 植物體的根莖葉",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q7.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g3",
         "supplementId": "tm_81"
       },
       {
@@ -45293,6 +45393,7 @@ AHS.TeachingMaterialData = [
         "section": "2-2 植物體的根莖葉",
         "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_81/figures/tm_81_q7.svg\" alt=\"附圖（示意圖，AI 繪製）\" loading=\"lazy\">",
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_56 的範圍命題；數值答案與附圖經 source/build-figure-supplements.py 驗算、繪製",
+        "groupId": "tm_81_g3",
         "supplementId": "tm_81"
       },
       {
@@ -58428,7 +58529,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "聚合型板塊邊界",
         "difficulty": "中",
         "section": "主題13 板塊運動",
-        "reference": "AI 自編（依講義單元3 地質 主題13 板塊運動 的重點命題，非講義原題）"
+        "reference": "AI 自編（依講義單元3 地質 主題13 板塊運動 的重點命題，非講義原題）",
+        "groupId": "tm_84_g1"
       },
       {
         "id": "tm_84_q19",
@@ -58453,7 +58555,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "聚合型板塊邊界",
         "difficulty": "中",
         "section": "主題13 板塊運動",
-        "reference": "AI 自編（依講義單元3 地質 主題13 板塊運動 的重點命題，非講義原題）"
+        "reference": "AI 自編（依講義單元3 地質 主題13 板塊運動 的重點命題，非講義原題）",
+        "groupId": "tm_84_g1"
       },
       {
         "id": "tm_84_q20",
@@ -58784,7 +58887,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "熱點與板塊移動",
         "difficulty": "易",
         "section": "主題13 板塊運動",
-        "reference": "長榮高二地球科學講義 單元3 地質：學科能力測驗 自然考科（地球科學）（大考中心，年度未標示）"
+        "reference": "長榮高二地球科學講義 單元3 地質：學科能力測驗 自然考科（地球科學）（大考中心，年度未標示）",
+        "groupId": "tm_84_g2"
       },
       {
         "id": "tm_84_q33",
@@ -58810,7 +58914,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "熱點與板塊移動",
         "difficulty": "易",
         "section": "主題13 板塊運動",
-        "reference": "長榮高二地球科學講義 單元3 地質：學科能力測驗 自然考科（地球科學）（大考中心，年度未標示）"
+        "reference": "長榮高二地球科學講義 單元3 地質：學科能力測驗 自然考科（地球科學）（大考中心，年度未標示）",
+        "groupId": "tm_84_g2"
       },
       {
         "id": "tm_84_q34",
@@ -58836,7 +58941,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "熱點與板塊移動",
         "difficulty": "中",
         "section": "主題13 板塊運動",
-        "reference": "長榮高二地球科學講義 單元3 地質：學科能力測驗 自然考科（地球科學）（大考中心，年度未標示）"
+        "reference": "長榮高二地球科學講義 單元3 地質：學科能力測驗 自然考科（地球科學）（大考中心，年度未標示）",
+        "groupId": "tm_84_g2"
       },
       {
         "id": "tm_84_q35",
@@ -77011,7 +77117,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "向量的加減法",
         "difficulty": "易",
         "section": "3-1 平面向量",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-1 平面向量 p.85 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-1 平面向量 p.85 的內容命題，非課本原題）",
+        "groupId": "tm_101_g1"
       },
       {
         "id": "tm_101_q2",
@@ -77035,7 +77142,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "向量的加減法",
         "difficulty": "易",
         "section": "3-1 平面向量",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-1 平面向量 p.85 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-1 平面向量 p.85 的內容命題，非課本原題）",
+        "groupId": "tm_101_g1"
       },
       {
         "id": "tm_101_q3",
@@ -77156,7 +77264,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "平面運動的位移與速度",
         "difficulty": "中",
         "section": "3-2 平面運動的描述",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.88 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.88 的內容命題，非課本原題）",
+        "groupId": "tm_101_g2"
       },
       {
         "id": "tm_101_q8",
@@ -77180,7 +77289,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "平面運動的位移與速度",
         "difficulty": "中",
         "section": "3-2 平面運動的描述",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.88 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.88 的內容命題，非課本原題）",
+        "groupId": "tm_101_g2"
       },
       {
         "id": "tm_101_q9",
@@ -77300,7 +77410,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "平面運動的位移與速度",
         "difficulty": "中",
         "section": "3-2 平面運動的描述",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.91 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.91 的內容命題，非課本原題）",
+        "groupId": "tm_101_g3"
       },
       {
         "id": "tm_101_q14",
@@ -77324,7 +77435,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "平面運動的位移與速度",
         "difficulty": "中",
         "section": "3-2 平面運動的描述",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.91 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-2 平面運動的描述 p.91 的內容命題，非課本原題）",
+        "groupId": "tm_101_g3"
       },
       {
         "id": "tm_101_q15",
@@ -77493,7 +77605,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "水平拋射",
         "difficulty": "中",
         "section": "3-3 水平拋射",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.93 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.93 的內容命題，非課本原題）",
+        "groupId": "tm_101_g4"
       },
       {
         "id": "tm_101_q22",
@@ -77517,7 +77630,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "水平拋射",
         "difficulty": "中",
         "section": "3-3 水平拋射",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.93 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.93 的內容命題，非課本原題）",
+        "groupId": "tm_101_g4"
       },
       {
         "id": "tm_101_q23",
@@ -77541,7 +77655,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "水平拋射的速度方向",
         "difficulty": "中",
         "section": "3-3 水平拋射",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.93 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.93 的內容命題，非課本原題）",
+        "groupId": "tm_101_g4"
       },
       {
         "id": "tm_101_q24",
@@ -77589,7 +77704,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "水平拋射的速度方向",
         "difficulty": "中",
         "section": "3-3 水平拋射",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.95 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.95 的內容命題，非課本原題）",
+        "groupId": "tm_101_g5"
       },
       {
         "id": "tm_101_q26",
@@ -77613,7 +77729,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "水平拋射",
         "difficulty": "難",
         "section": "3-3 水平拋射",
-        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.95 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 3-3 水平拋射 p.95 的內容命題，非課本原題）",
+        "groupId": "tm_101_g5"
       },
       {
         "id": "tm_101_q27",
@@ -78385,7 +78502,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "力的合成",
         "difficulty": "易",
         "section": "4-1 力的測量與性質",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.117 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.117 的內容命題，非課本原題）",
+        "groupId": "tm_102_g1"
       },
       {
         "id": "tm_102_q3",
@@ -78409,7 +78527,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "力的合成",
         "difficulty": "中",
         "section": "4-1 力的測量與性質",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.117 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.117 的內容命題，非課本原題）",
+        "groupId": "tm_102_g1"
       },
       {
         "id": "tm_102_q4",
@@ -79640,7 +79759,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "正向力",
         "difficulty": "中",
         "section": "4-1 力的測量與性質",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.121 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.121 的內容命題，非課本原題）",
+        "groupId": "tm_102_g2"
       },
       {
         "id": "tm_102_q55",
@@ -79664,7 +79784,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "摩擦力",
         "difficulty": "中",
         "section": "4-1 力的測量與性質",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.121 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.121 的內容命題，非課本原題）",
+        "groupId": "tm_102_g2"
       },
       {
         "id": "tm_102_q56",
@@ -79688,7 +79809,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "摩擦力",
         "difficulty": "難",
         "section": "4-1 力的測量與性質",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.121 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-1 力的測量與性質 p.121 的內容命題，非課本原題）",
+        "groupId": "tm_102_g2"
       },
       {
         "id": "tm_102_q57",
@@ -79931,7 +80053,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "動滑輪",
         "difficulty": "中",
         "section": "4-3 牛頓第二運動定律",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）",
+        "groupId": "tm_102_g3"
       },
       {
         "id": "tm_102_q67",
@@ -79955,7 +80078,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "動滑輪",
         "difficulty": "難",
         "section": "4-3 牛頓第二運動定律",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）",
+        "groupId": "tm_102_g3"
       },
       {
         "id": "tm_102_q68",
@@ -79979,7 +80103,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "動滑輪",
         "difficulty": "難",
         "section": "4-3 牛頓第二運動定律",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）",
+        "groupId": "tm_102_g3"
       },
       {
         "id": "tm_102_q69",
@@ -80003,7 +80128,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "動滑輪",
         "difficulty": "難",
         "section": "4-3 牛頓第二運動定律",
-        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）"
+        "reference": "AI 自編（依長榮高中高二物理課本 4-3 牛頓第二運動定律 p.142 的內容命題，非課本原題）",
+        "groupId": "tm_102_g3"
       }
     ],
     "related": [

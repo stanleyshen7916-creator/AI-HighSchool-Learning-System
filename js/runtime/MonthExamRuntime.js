@@ -257,6 +257,8 @@ AHS.MonthExamRuntime = (function () {
 
   /* 題組辨識：同一教材、同一段「a–b 題組」標記的題目為一組。 */
   function groupKeyOf(q) {
+    /* 2026-11-15：教材包題目的 groupId（承上題等題組）優先。 */
+    if (q.groupId) { return q.materialId + "|G" + q.groupId; }
     var text = String(q.question || "") + " " + String(q.reference || "");
     var m = /第\s*(\d+)\s*[–—~～-]\s*(\d+)\s*題\s*(?:為)?\s*題組/.exec(text);
     if (m) { return q.materialId + "|R" + m[1] + "-" + m[2] + "|" + String(q.reference || "").replace(/第\s*\d+\s*題/g, ""); }

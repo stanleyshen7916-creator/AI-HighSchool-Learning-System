@@ -29,6 +29,7 @@ const fs = require("fs");
 const path = require("path");
 const adapter = require("./TeachingMaterialAdapter.js");
 const lifecycle = require("./MaterialLifecycle.js");
+const questionGroups = require("./QuestionGroupDetector.js");
 
 const REPO_ROOT = path.join(__dirname, "..", "..", "..");
 const MATERIALS_DIR = path.join(__dirname, "..", "materials");
@@ -95,7 +96,8 @@ function buildEntry(materialId) {
     materialId: materialId,
     material: adapter.convertMaterial(pkg.metadata),
     summary: adapter.convertSummary(pkg.summary, pkg.metadata),
-    questions: adapter.convertQuestions(pkg.questionBank),
+    /* 2026-11-15 題組：自動判定承上題等題組，加上 groupId（不改教材包）。 */
+    questions: questionGroups.annotate(materialId, adapter.convertQuestions(pkg.questionBank)),
     related: adapter.convertRelated(pkg.related),
     /* Raw metadata (materialType/keywords/difficulty/source/version) —
        used only to build index.json below, never written into

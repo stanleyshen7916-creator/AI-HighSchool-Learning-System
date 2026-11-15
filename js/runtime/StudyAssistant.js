@@ -336,6 +336,8 @@ AHS.StudyAssistant = (function () {
     }
     var rest = shuffle(pool.filter(function (q) { return picked.indexOf(q) === -1; }), random);
     picked = picked.concat(rest.slice(0, count - picked.length));
+    /* 2026-11-15 題組：題組題不單獨出，整組帶入。 */
+    if (window.AHS && AHS.QuestionGroups) { picked = AHS.QuestionGroups.regroup(picked, pool); }
     /* Some question banks put the correct answer first every time (tm_16/
        tm_17: 22/22 are option A). Show the options in a shuffled order,
        but keep each option's ORIGINAL key — answer() and 知識弱點 always
