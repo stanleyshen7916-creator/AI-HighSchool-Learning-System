@@ -378,7 +378,9 @@ AHS.TeachingMaterialLoader = (function () {
         /* 2026-10-01 出處 (past exam / supplement questions); "" when none. */
         reference: q.reference || "",
         /* 2026-10-02 對應課程 (PAST_EXAM); null when none. */
-        mapping: q.mapping || null
+        mapping: q.mapping || null,
+        /* 2026-11-15 題組（承上題等）；"" when none. */
+        groupId: q.groupId || ""
       });
     });
     return compatible;
