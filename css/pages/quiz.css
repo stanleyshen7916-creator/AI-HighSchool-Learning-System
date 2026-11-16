@@ -241,6 +241,14 @@
 }
 .qcard-option.is-selected .qcard-option__key { border-color: var(--brand); background-color: var(--brand); color: #ffffff; }
 .qcard-option__text { font-size: 14px; color: var(--text); }
+/* 2026-11-16 短文式英文克漏字：整篇短文一張卡片，每個空格內嵌自己的下拉選單 */
+.qcard-cloze__passage { margin: 0; font-size: 16px; font-weight: 500; line-height: 2.4; white-space: pre-line; color: var(--text); }
+.qcard-cloze__select {
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--text);
+  max-width: 100%; margin: 0 4px; padding: 3px 8px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background-color: var(--card);
+}
+.qcard-cloze__select.is-answered { border-color: var(--brand); background-color: var(--brand-soft); }
 /* 2026-10-08 題型支援：多選提示、計算／填充題自評（js/ui/QuestionCard.js） */
 .qcard__hint { margin: 0; font-size: 13px; color: var(--text-muted); }
 .qcard-self { display: flex; flex-direction: column; gap: 12px; }

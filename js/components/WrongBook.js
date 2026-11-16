@@ -80,6 +80,8 @@ AHS.WrongBook = (function () {
   function groupContextBlock(item) {
     if (!window.AHS || !AHS.QuestionGroups) { return null; }
     var match = findMaterialQuestion(item);
+    /* 短文式克漏字：題幹已含整篇短文，不再列出同組其他題。 */
+    if (match && window.AHS.ClozeGroup && AHS.ClozeGroup.isCloze(match)) { return null; }
     var ctx = AHS.QuestionGroups.contextFor(match ? match.id : item.questionId);
     if (!ctx.length) { return null; }
     return el("div", { class: "wb-detail__group-context" }, [

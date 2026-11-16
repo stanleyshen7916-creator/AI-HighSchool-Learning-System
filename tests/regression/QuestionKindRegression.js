@@ -222,6 +222,53 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
   check("第一篇短文的第一格：正確選項是 mourn", correct === "mourn");
   const card = AHS.QuestionCard.create(first, null, () => {});
   check("克漏字題卡：4 個選項按鈕、沒有輸入框", card.querySelectorAll(".qcard-option").length === 4 && card.querySelectorAll(".qcard-self__input").length === 0);
+
+  /* 2026-11-16 整篇短文一張卡片：短文只出現一次，每個空格內嵌自己的下拉選單，
+     選擇時各自存成該格那一題的作答；上一題／下一題以整篇短文為單位。 */
+  const CG = AHS.ClozeGroup;
+  const unit = set.filter((q) => q.groupId && q.groupId === first.groupId);
+  check("第一篇短文 8 格同一個題組，題幹格式可解析", unit.length === 8 && unit.every((q) => CG.isCloze(q)) && CG.parse(first).title === "A Festival of Life" && CG.parse(unit[2]).number === 3);
+  const saved = {};
+  const cloze = AHS.QuestionCard.createCloze(unit, saved, (qid, key, pos) => { saved[qid] = key; });
+  const selects = cloze.querySelectorAll(".qcard-cloze__select");
+  check("克漏字卡片：8 個空格各一個下拉選單，每個 4 個選項（另有「請選擇」），沒有第二份短文",
+    selects.length === 8 && [...selects].every((x) => x.options.length === 5) && cloze.textContent.split("For most people").length === 2);
+  const target = unit[2];
+  const rightKey = target.correctAnswer;
+  selects[2].value = rightKey;
+  selects[2].dispatchEvent(new window.Event("change", { bubbles: true }));
+  check("選第 3 格：只存第 3 題的作答（key 為該題的正確選項）", Object.keys(saved).length === 1 && saved[target.id] === rightKey);
+  const reopened = AHS.QuestionCard.createCloze(unit, saved, () => {});
+  check("已答的空格還原選取，計數顯示 已作答 1 / 8 格", reopened.querySelectorAll(".qcard-cloze__select")[2].value === rightKey && reopened.textContent.indexOf("已作答 1 / 8 格") !== -1);
+  check("成績頁短句只含本題空格那一句", /^〈A Festival of Life〉第 3 格：Every autumn/.test(CG.snippet(target)) && CG.snippet(target).indexOf("For most people") === -1);
+
+  /* 測驗頁（buildExamView）：用真的測驗（整組打亂、組內順序不變）；整篇短文一張卡片，
+     選擇寫入 AnswerRuntime，上一題／下一題以整篇短文為單位。 */
+  const examId = "teaching_material_" + idMap.tm_103;
+  AHS.ExamRuntime.startFromExam(examId, { subject: "english", title: "英文 L4 單字克漏字" });
+  const shuffled = AHS.QuestionRuntime.getSet(examId);
+  const groupsInOrder = [];
+  shuffled.forEach((q, i) => { if (!groupsInOrder.length || groupsInOrder[groupsInOrder.length - 1].id !== q.groupId) { groupsInOrder.push({ id: q.groupId, start: i, end: i }); } else { groupsInOrder[groupsInOrder.length - 1].end = i; } });
+  check("打亂後 7 篇短文各自連續、每篇 8 題", groupsInOrder.length === 7 && groupsInOrder.every((g) => g.end - g.start === 7));
+  const g0 = groupsInOrder[0], g1 = groupsInOrder[1];
+  AHS.ExamRuntime.goTo(examId, g0.start + 3);
+  let rerendered = 0;
+  const view = AHS.QuizParts.buildExamView(AHS.ExamRuntime.getById(examId), () => { rerendered++; }, () => {}, () => {});
+  check("測驗頁：站在短文中間時顯示整篇短文卡片（1 張卡片、8 個選單、沒有選項按鈕）",
+    view.querySelectorAll(".qcard-cloze").length === 1 && view.querySelectorAll(".qcard-cloze__select").length === 8 && view.querySelectorAll(".qcard-option").length === 0);
+  const pick = shuffled[g0.start + 4];
+  const pickSelect = view.querySelectorAll(".qcard-cloze__select")[AHS.ClozeGroup.parse(pick).number - 1];
+  pickSelect.value = pick.correctAnswer;
+  pickSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
+  check("測驗頁：選一格只寫入該格那一題的作答，並重繪一次", Object.keys(AHS.AnswerRuntime.getAnswers(examId)).length === 1 && AHS.AnswerRuntime.getAnswers(examId)[pick.id] === pick.correctAnswer && rerendered === 1);
+  const clickBtn = (root, re) => { const b = [...root.querySelectorAll("button")].find((x) => re.test(x.textContent)); b.dispatchEvent(new window.MouseEvent("click", { bubbles: true })); };
+  clickBtn(view, /下一題/);
+  check("測驗頁：下一題跳到下一篇短文的第一題", AHS.ExamRuntime.getById(examId).currentIndex === g1.start);
+  AHS.ExamRuntime.goTo(examId, g1.start + 2);
+  const view2 = AHS.QuizParts.buildExamView(AHS.ExamRuntime.getById(examId), () => {}, () => {}, () => {});
+  clickBtn(view2, /上一題/);
+  check("測驗頁：上一題跳回上一篇短文的最後一題", AHS.ExamRuntime.getById(examId).currentIndex === g0.end);
 }
 
-
+console.log("\nQuestionKindRegression: " + pass + " PASS / " + fail + " FAIL");
+process.exit(fail ? 1 : 0);

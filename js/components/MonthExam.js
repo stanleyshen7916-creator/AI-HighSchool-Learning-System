@@ -178,6 +178,14 @@ AHS.MonthExam = (function () {
         if (!q) { return null; }
         var sec = session.sections && it.section != null ? session.sections[it.section] : null;
         var head = el("p", { class: "mx-q__text", text: (idx + 1) + ". " + (it.multi ? multiHint(sec) : "") + q.question });
+        /* 2026-11-16 短文式克漏字：整篇短文只在該篇第一格印一次，每格只列「第 n 格」與選項。 */
+        if (window.AHS.ClozeGroup && AHS.ClozeGroup.isCloze(q)) {
+          var cz = AHS.ClozeGroup.parse(q);
+          var prevItem = idx > 0 ? RT().findQuestion(session.items[idx - 1].qid) : null;
+          var sameAsPrev = !!(prevItem && prevItem.groupId && prevItem.groupId === q.groupId);
+          head = el("p", { class: "mx-q__text", text: (sameAsPrev ? "" : "閱讀短文〈" + cz.title + "〉，回答下列各格。\n\n" + cz.passage.replace(/【|】/g, "") + "\n\n") +
+            (idx + 1) + ". 第 " + cz.number + " 格" });
+        }
         var fig = q.figureSvg ? el("div", { class: "mx-q__figure", html: q.figureSvg }) : null;
         if (it.fill) {
           var prev = RT().active() ? RT().active().answers[it.qid] : session.answers[it.qid];
@@ -280,7 +288,7 @@ AHS.MonthExam = (function () {
           var pts = row.points != null && r.sections ? el("p", { class: "mx-pts", text: "得分 " + row.earned + " / " + row.points }) : null;
           if (row.fill) {
             return el("li", { class: "mx-q " + (row.correct ? "is-correct" : "is-wrong"), value: String(i + 1) }, [
-              el("p", { class: "mx-q__text", text: (i + 1) + ". " + row.question }),
+              el("p", { class: "mx-q__text", text: (i + 1) + ". " + (window.AHS.ClozeGroup && AHS.ClozeGroup.isCloze({ question: row.question }) ? AHS.ClozeGroup.snippet({ question: row.question }) : row.question) }),
               (function () { var fq = RT().findQuestion(row.qid); return fq && fq.figureSvg ? el("div", { class: "mx-q__figure", html: fq.figureSvg }) : null; })(),
               pts,
               el("ul", { class: "mx-ans" }, [
@@ -291,7 +299,7 @@ AHS.MonthExam = (function () {
             ]);
           }
           return el("li", { class: "mx-q " + (row.correct ? "is-correct" : "is-wrong"), value: String(i + 1) }, [
-            el("p", { class: "mx-q__text", text: (i + 1) + ". " + row.question }),
+            el("p", { class: "mx-q__text", text: (i + 1) + ". " + (window.AHS.ClozeGroup && AHS.ClozeGroup.isCloze({ question: row.question }) ? AHS.ClozeGroup.snippet({ question: row.question }) : row.question) }),
             pts,
             (function () { var fq = RT().findQuestion(row.qid); return fq && fq.figureSvg ? el("div", { class: "mx-q__figure", html: fq.figureSvg }) : null; })(),
             el("ul", { class: "mx-ans" }, row.options.map(function (o, k) {
