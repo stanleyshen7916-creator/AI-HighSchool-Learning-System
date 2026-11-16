@@ -468,12 +468,22 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: '', claude: claudeDraft },
+        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: '' },
       });
 
     expect(res.status).toBe(400);
     expect(fs.existsSync(outputFile)).toBe(false);
     expect(fs.existsSync(distFile)).toBe(false);
+  });
+
+  test('2026-11-16：只送 ChatGPT＋Claude 雙方初稿（無 Gemini）可正常產出，來源不列 Gemini', async () => {
+    const res = await request(app)
+      .post('/api/assemble-council')
+      .send({ school, grade, subject, unit, category, sourceText, drafts: { chatgpt: chatgptDraft, claude: claudeDraft } });
+    expect(res.status).toBe(200);
+    const markdown = fs.readFileSync(outputFile, 'utf8');
+    expect(markdown).toContain('Sources: ChatGPT (Web) + Claude (Web)');
+    expect(markdown).not.toContain('Gemini (Web)');
   });
 
   test('缺少必填 metadata（科目）時回應 400', async () => {
