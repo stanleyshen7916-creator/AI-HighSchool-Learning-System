@@ -210,7 +210,7 @@
 .qcard__badge { font-size: 12px; font-weight: 700; border-radius: var(--radius-pill); padding: 3px 10px; }
 .qcard__index { font-size: 13px; font-weight: 700; color: var(--text-muted); }
 .qcard__type { font-size: 12px; color: var(--text-faint); margin-left: auto; }
-.qcard__text { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.6; }
+.qcard__text { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.6; white-space: pre-line; }
 /* HOTFIX-004 Issue 002: 難度／考點, shown only when the source question
    actually has them — reuses the same muted small-text treatment as
    .qcard__index, no new Design Token. */

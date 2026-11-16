@@ -1,14 +1,14 @@
 # QA｜英文 Lessons 4～6 單字克漏字（tm_103～tm_105）（長榮）Self-QA
 
 AI：Claude
-版本：Round 1
+版本：Round 2
 日期：2026-11-02
 科目：英文（長榮高中 高二上）
 單元：Lesson 4 Day of the Dead、Lesson 5 Kyoto: The Heart of Japan、Lesson 6 The Country of the Blind 的 Vocabulary & Phrases
 SOURCE：Level 1：課本照片（雲端「仔功課／高二第一次月考／1101／1101-1」HEIC：IMG_1331～1334 p.88～95、IMG_1343～1345 p.112～117、IMG_1355～1358 p.136～143）
 Self-QA：96 / 100
 Cross Review：N/A（全部由 Claude 直接執行）
-狀態：ROUND_1_PASS
+狀態：ROUND_2_PASS
 
 ## 1. 範圍與做法
 
@@ -54,3 +54,18 @@ Cross Review：N/A（全部由 Claude 直接執行）
 
 - p.94／p.117／p.142 的片語，空格只放片語的關鍵部分。例如 scare…to death 只填 scare，feast one's eyes on 只填 feast。片語其餘部分留在句子裡。
 - 句子為自編，難度約為課本例句程度。如果要改成課本原句，需要另外決定是否引用。
+
+## 5. Round 2（2026-11-16）：改為短文＋單選
+
+- **需求**：克漏字改成以一篇文章呈現，要測的單字留空白，文章程度以高二為主；每個空格改成單選題。
+- **做法**：154 題的單字與題號（`tm_103_q1`…）不變，錯題本與知識弱點的紀錄不會斷掉；題型由 `fill_blank` 改為 `single_choice`。
+  - 共 19 篇自編短文：L4 七篇（每篇 8 格）、L5 五篇（8～9 格）、L6 七篇（7～8 格），每篇約 100～130 字。
+  - 每格 4 個選項，答案位置輪替；干擾選項取自同一課的字表，詞性或字形與空格不符，或語意明顯不通；同義字（例如 mournful／sorrowful、splendid／magnificent／breathtaking、cemetery／graveyard）不放在同一格。
+  - 題幹含整篇短文，本題空格以【(n) ______】標示，其他空格為 (n) ______；題目下方的出處寫「第 1–N 題為題組」，月考出題時整篇一起抽。
+  - 詞性與中文移到解析：顯示原句、答案的詞性與中文，以及其他選項的意思。
+- **平台修改**：`quiz.css`、`wrongbook.css`、`qiaoqiao.css` 的題幹加 `white-space: pre-line`，短文才會分段顯示。`QuestionKind.js`、`QuestionCard.js` 的英文拼字輸入邏輯沒有刪，其他教材仍可使用。
+- **測試**：`QuestionKindRegression.js` 的克漏字區塊改驗 4 選 1、題幹含短文與唯一的本題空格、正確選項唯一、題卡有 4 個選項且沒有輸入框；`ExplanationSupplementRegression.js` 登記這三包的核准修改。
+- **已知限制**：
+  - 月考英文單選部分的題庫現在會包含這三包的克漏字題組（原本是填充題，不會進單選；依出題程式邏輯推得，未實際抽卷測過）。
+  - 干擾選項的語意是人工逐格檢查，未經老師或其他 AI 複核。
+  - `BuildVisualLesson --check` 對全部 25 個圖解教材都回報 STALE，不是這次修改造成的，疑為 Windows 換行字元差異。
