@@ -10,7 +10,7 @@ const META = {
   school: 'cjsh', semester: 'g2s1', subject: '數學', grade: '高二',
   chapter: '第一章 三角函數', unit: '1-1 弧度量', materialType: 'TEXTBOOK',
 };
-const FINAL = fs.readFileSync(path.join(__dirname, 'fixtures', 'sample_Final.md'), 'utf8')
+const FINAL = fs.readFileSync(path.join(__dirname, 'fixtures', 'sample_Final.md'), 'utf8').replace(/\r\n/g, '\n')
   .replace(/(\*\*Q1\.\*\*[^\n]*)/, '$1【圖：p12_01.jpg】')
   .replace(/(\*\*Q2\.\*\*[^\n]*)/, '$1【圖：missing.png】');
 
