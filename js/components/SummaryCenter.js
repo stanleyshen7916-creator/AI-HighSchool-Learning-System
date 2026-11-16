@@ -297,14 +297,18 @@ AHS.SummaryCenter = (function () {
      now 前往考前練習/前往知識弱點 only — 正式測驗 is reached from Quiz
      Center itself, matching AI-118-01's Learning Loop where Summary's
      only forward step is practice, not a second formal-exam entry
-     point). AI 自動出題 — still explicitly Disabled + Coming Soon,
-     unaffected by this Sprint (not named in AI-118-05's removal list).
+     point).
 
      Sprint AI-144（PO 回報：學習總結頁的這顆 CTA 實際上應該導向真正的
      平時練習，而非考前總複習的靜態題庫）：拿掉 href 的 mode=practice，
      讓 QuizCenter.js 的 resolveDirectExamId()／directExamId &&
      initialMode !== "practice" 分支接手，真正進入 drawCycle 平時練習
-     模式；label 同步改為「前往平時練習」。 */
+     模式；label 同步改為「前往平時練習」。
+
+     Sprint AI-155（PO 回報：「AI 自動出題」與「前往平時練習」行為完全重
+     複 —— 兩者都是從這份教材的真實題庫抽 20 題進行測驗，答錯自動進知識
+     弱點。保留兩顆按鈕只會造成混淆且「AI 自動出題」字面上暗示即時生成
+     〈架構上禁止〉，故移除「AI 自動出題」，只保留「前往平時練習」）。 */
   function summaryFooter(record) {
     var readBtn = el("button", { type: "button", class: "sum-footer__read" }, [
       el("span", { html: AHS.Icons.check() }),
@@ -339,20 +343,7 @@ AHS.SummaryCenter = (function () {
       el("span", { text: "前往知識弱點" })
     ]);
 
-    /* On-demand AI question GENERATION (as opposed to navigating to see
-       whatever already exists) is a distinct, not-yet-built capability
-       — per the existing roadmap (Sprint 6.7-2 AI Question Guide /
-       6.7-3 Question Generator + AI Parser). Honestly Coming Soon,
-       never a Mock Question. */
-    var aiGenerateEntry = el("button", {
-      type: "button", class: "sum-footer__ai is-disabled", disabled: "disabled",
-      "aria-label": "AI 自動出題（尚未支援，敬請期待）"
-    }, [
-      el("span", { text: "AI 自動出題" }),
-      el("span", { class: "ml-tab__soon", text: "Coming Soon" })
-    ]);
-
-    return el("div", { class: "sum-footer" }, [readBtn, practiceLink, wrongBookLink, aiGenerateEntry]);
+    return el("div", { class: "sum-footer" }, [readBtn, practiceLink, wrongBookLink]);
   }
 
   /* HOTFIX-004 Issue 001: ⑤ 複習建議 derivation, used only when
