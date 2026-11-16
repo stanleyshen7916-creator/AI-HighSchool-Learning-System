@@ -176,6 +176,7 @@
 }
 .mat-question__text {
   margin: 0;
+  white-space: pre-line;
   color: var(--text);
   font-size: 0.95rem;
   line-height: 1.5;

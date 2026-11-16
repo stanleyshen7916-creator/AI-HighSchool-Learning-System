@@ -125,7 +125,10 @@ console.log("\n[4] 教材包未被修改");
     /* 2026-11-01 Project Owner 同意（「英文4-6課的內容也一課一課，分拆開來」）：tm_93 依課別拆成 tm_98～tm_100，原 tm_93 標記 archived。 */
     "docs/TeachingMaterials/materials/tm_93/manifest.json",
     /* 2026-11-04 Project Owner 同意（「補上三份資料」）：依補拍的 p.120～121、p.132～133、p.142 照片為物理第4章 tm_102 補 18 題、重點整理補三條；原有題目不變。 */
-    "docs/TeachingMaterials/materials/tm_102/questionbank.json", "docs/TeachingMaterials/materials/tm_102/summary.json", "docs/TeachingMaterials/materials/tm_102/metadata.json", "docs/TeachingMaterials/materials/tm_102/manifest.json", "docs/TeachingMaterials/materials/tm_102/material.md", "docs/TeachingMaterials/materials/tm_102/knowledge.json", "docs/TeachingMaterials/materials/tm_102/report.md"];
+    "docs/TeachingMaterials/materials/tm_102/questionbank.json", "docs/TeachingMaterials/materials/tm_102/summary.json", "docs/TeachingMaterials/materials/tm_102/metadata.json", "docs/TeachingMaterials/materials/tm_102/manifest.json", "docs/TeachingMaterials/materials/tm_102/material.md", "docs/TeachingMaterials/materials/tm_102/knowledge.json", "docs/TeachingMaterials/materials/tm_102/report.md",
+    /* 2026-11-16 Project Owner 要求：英文 L4～L6 克漏字改成短文＋每格單選（原為首字母提示的單句拼字）；題號與單字不變。 */
+    ].concat(["tm_103", "tm_104", "tm_105"].reduce((acc, id) => acc.concat(
+      ["questionbank.json", "summary.json", "metadata.json", "manifest.json", "material.md", "report.md", "source/README.md"].map((f) => "docs/TeachingMaterials/materials/" + id + "/" + f)), []));
   try {
     clean = execSync("git diff --name-only --diff-filter=MD HEAD -- docs/TeachingMaterials/materials", { cwd: REPO }).toString()
       .split(/\r?\n/).filter(Boolean).every((f) => isSupplement(f.split("/")[3]) || APPROVED_EDITS.indexOf(f) !== -1);
