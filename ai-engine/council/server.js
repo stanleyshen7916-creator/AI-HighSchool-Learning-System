@@ -1052,6 +1052,11 @@ app.post('/api/platform/drafts', async (req, res) => {
         ...uploadSessionFiles(body.uploadSessionId),
       ],
       metadata: body.metadata || {},
+      // 2026-11-16 A7：題幹【圖：檔名】的來源——MinerU 切圖（mineru_outputs/<Final 前綴>/images）與本次上傳的原始檔。
+      figureDirs: [
+        path.join(MINERU_OUTPUTS_DIR, safeSlug(path.basename(finalPath).replace(/_Final\.md$/i, '')), 'images'),
+        ...(body.uploadSessionId ? [path.join(UPLOAD_SESSIONS_DIR, safeSlug(String(body.uploadSessionId)))] : []),
+      ],
     });
     return res.status(201).json(draft);
   } catch (error) {
