@@ -192,7 +192,46 @@ function createPackageBuilder({ platformRoot, dataDir }) {
         if (svg) record.figureSvg = svg;
       }
       return record;
+    }).concat(buildVariants(materialId, parsed, createdDate, figureDirs, missing));
+  }
+
+  /* 2026-11-17 B2 變式題：接在一般題之後，questionId 與題號沿用同一套連續編號（不用 V 開頭，
+     免得影響畫面上的題號顯示），以 variantOf 指向原題 questionId，知識點與原題一致。
+     找不到原題的變式題不寫入（解析階段已擋，這裡是保險）。 */
+  function buildVariants(materialId, parsed, createdDate, figureDirs, missing) {
+    const base = parsed.questions.length;
+    const parents = new Map(parsed.questions.map((q, i) => [q.number, { id: `${materialId}_q${i + 1}`, q }]));
+    const out = [];
+    (parsed.variants || []).forEach((v) => {
+      const parent = parents.get(v.parent);
+      if (!parent) return;
+      const n = base + out.length + 1;
+      const record = {
+        questionId: `${materialId}_q${n}`,
+        materialId,
+        questionNumber: String(n),
+        type: 'single_choice',
+        questionSource: 'AI_GENERATED',
+        origin: 'AI',
+        question: v.question,
+        options: v.options,
+        answer: v.answer,
+        explanation: v.explanation,
+        page: null,
+        section: parent.q.section || null,
+        version: '1',
+        createdDate,
+        variantOf: parent.id,
+      };
+      if (parent.q.section) record.knowledgePoint = parent.q.section;
+      if (v.difficulty) record.difficulty = v.difficulty;
+      if (v.figures && v.figures.length) {
+        const svg = attachFigures(packageDir(materialId), record.questionId, v.figures, figureDirs, missing || []);
+        if (svg) record.figureSvg = svg;
+      }
+      out.push(record);
     });
+    return out;
   }
 
   function preview(materialId) {
