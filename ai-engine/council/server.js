@@ -20,6 +20,7 @@ const { createGitPublishQueue } = require('./platform/GitPublishQueue');
 const { createWrongBookNotesJob } = require('./platform/WrongBookNotesJob');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
+const figureCards = require('./services/figureCards');
 const goldSet = require('./services/goldSet');
 const { computeStats } = require('./services/adjudicationStats');
 const { parseFrontmatter } = require('./platform/FinalParser');
@@ -698,6 +699,60 @@ app.get('/api/materials/:id/images/download', (req, res) => {
     archive.file(path.join(imagesDir, filename), { name: filename });
   });
   return archive.finalize();
+});
+
+// 2026-11-17 A13 圖卡：只把該教材的 MinerU 切圖送給本機視覺模型（OLLAMA_VISION_URL），
+// 結果存 mineru_outputs/<id>/figure_cards.json，供出題 Prompt 帶「圖卡文字」而非原圖。
+// GET 讀已存的圖卡；POST 產生（body.force=true 才重做已有的圖；單張失敗只標記該張）。
+function figureCardsFile(materialId) {
+  const imagesDir = assertInsideDir(MINERU_OUTPUTS_DIR, path.join(MINERU_OUTPUTS_DIR, materialId, 'images'));
+  return { imagesDir, cardsPath: path.join(MINERU_OUTPUTS_DIR, materialId, 'figure_cards.json') };
+}
+
+function readFigureCards(cardsPath) {
+  try {
+    return JSON.parse(fs.readFileSync(cardsPath, 'utf8'));
+  } catch {
+    return { cards: [] };
+  }
+}
+
+app.get('/api/materials/:id/figure-cards', (req, res) => {
+  const materialId = safeSlug(req.params.id);
+  let paths;
+  try {
+    paths = figureCardsFile(materialId);
+  } catch {
+    return res.status(400).json({ error: '不合法的教材識別碼' });
+  }
+  const saved = readFigureCards(paths.cardsPath);
+  return res.status(200).json({ materialId, count: saved.cards.length, cards: saved.cards });
+});
+
+app.post('/api/materials/:id/figure-cards', express.json(), async (req, res) => {
+  const materialId = safeSlug(req.params.id);
+  let paths;
+  try {
+    paths = figureCardsFile(materialId);
+  } catch {
+    return res.status(400).json({ error: '不合法的教材識別碼' });
+  }
+  const files = listImageFiles(paths.imagesDir);
+  if (files.length === 0) {
+    return res.status(404).json({ error: '此教材尚無解析後的切圖，無法產生圖卡' });
+  }
+  const force = !!(req.body && req.body.force);
+  const saved = readFigureCards(paths.cardsPath);
+  const done = new Map(saved.cards.filter((c) => c.description && !c.error).map((c) => [c.filename, c]));
+  const todo = force ? files : files.filter((f) => !done.has(f));
+  const fresh = await figureCards.buildFigureCards(paths.imagesDir, todo, { fetchImpl: figureCards.fetchImpl });
+  const byName = new Map(fresh.map((c) => [c.filename, c]));
+  const cards = files.map((f) => byName.get(f) || done.get(f));
+  fs.mkdirSync(path.dirname(paths.cardsPath), { recursive: true });
+  fs.writeFileSync(paths.cardsPath, JSON.stringify({ generatedAt: new Date().toISOString(), cards }, null, 2));
+  const failed = cards.filter((c) => c.error).length;
+  const unreadable = cards.filter((c) => c.unreadable).length;
+  return res.status(200).json({ materialId, count: cards.length, generated: todo.length, failed, unreadable, cards });
 });
 
 // 多檔案上傳：依原始檔名排序後逐一解析文字，再依序合併成單一教材本文。

@@ -89,3 +89,10 @@ COUNCIL_DATA_DIR=... PLATFORM_ROOT=... node server.js
 - **開機時**：登入約 1 分鐘後自動跑一次（`tools/wrongbook-notes.ps1`），之後在背景等待。
 - 一次執行會把所有待整理的錯題寫完（每批 15 題、錯最多的優先，一次上限 300 題），最後合成一個 PR 上線；中途某一批失敗時，前面寫好的批次仍會上線，剩下的再按一次即可。Claude 只能改 `js/data/WrongBookNotesData.js`，改到其他檔案或格式檢查失敗就不上線。
 - 撰寫規則：`tools/wrongbook-notes-prompt.md`；待整理清單：`scripts/maintenance/WrongBookNotesPending.js`。
+
+## 圖卡（A13，2026-11-17）
+
+`POST /api/materials/:id/figure-cards` 只把該教材的 MinerU 切圖（`mineru_outputs/<id>/images/`）逐張送給本機視覺模型，結果存 `mineru_outputs/<id>/figure_cards.json`；`GET` 讀回。已完成的圖不重做（`{"force":true}` 才重做）；單張失敗只標記該張。
+
+- 視覺模型網址：`OLLAMA_VISION_URL`（本機 GPU，例如 `http://host.docker.internal:11435`），未設定退回 `OLLAMA_URL`；模型 `OLLAMA_VISION_MODEL`，預設 `qwen2.5vl:7b`。
+- 參數：temperature 0.1、repeat_penalty 1.15、num_predict 800；Prompt 要求看不清寫「無法辨識」、不推測。
