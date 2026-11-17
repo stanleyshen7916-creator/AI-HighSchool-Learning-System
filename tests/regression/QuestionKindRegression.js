@@ -241,6 +241,12 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
   const reopened = AHS.QuestionCard.createCloze(unit, saved, () => {});
   check("已答的空格還原選取，計數顯示 已作答 1 / 8 格", reopened.querySelectorAll(".qcard-cloze__select")[2].value === rightKey && reopened.textContent.indexOf("已作答 1 / 8 格") !== -1);
   check("成績頁短句只含本題空格那一句", /^〈A Festival of Life〉第 3 格：Every autumn/.test(CG.snippet(target)) && CG.snippet(target).indexOf("For most people") === -1);
+  {
+    /* 一句裡有兩格時：只有本題那一格是 ______，另一格標成 (n) …。 */
+    const head = "【單字克漏字】閱讀短文〈T〉，選出第 2 格最適合的答案。（第 1–2 題為題組）\n\n";
+    const two = CG.snippet({ question: head + "Intro here. Many (1) ______ join, and each 【(2) ______】 is done. End." });
+    check("成績頁短句：同一句有兩格時分得出本題是哪一格", two === "〈T〉第 2 格：Many (1) … join, and each ______ is done.");
+  }
 
   /* 測驗頁（buildExamView）：用真的測驗（整組打亂、組內順序不變）；整篇短文一張卡片，
      選擇寫入 AnswerRuntime，上一題／下一題以整篇短文為單位。 */

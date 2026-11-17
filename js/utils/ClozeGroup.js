@@ -37,7 +37,8 @@ AHS.ClozeGroup = (function () {
     var p = parse(q);
     var sentences = p.passage.replace(/([.!?]["”]?)\s+/g, "$1\u0001").split("\u0001");
     var hit = sentences.filter(function (s) { return s.indexOf("【(" + p.number + ") ______】") !== -1; })[0] || "";
-    return "〈" + p.title + "〉第 " + p.number + " 格：" + hit.replace(/【|】/g, "").replace(/\((\d+)\) ______/g, "______");
+    /* 同一句有別的空格時，只有本題空格畫成 ______，其他空格寫成 (n) …，才分得出是哪一格。 */
+    return "〈" + p.title + "〉第 " + p.number + " 格：" + hit.replace(/【\(\d+\) ______】/, "______").replace(/\((\d+)\) ______/g, "($1) …");
   }
 
   return { isCloze: isCloze, parse: parse, split: split, snippet: snippet };
