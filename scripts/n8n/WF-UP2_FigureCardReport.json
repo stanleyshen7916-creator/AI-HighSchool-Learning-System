@@ -1,0 +1,227 @@
+{
+  "name": "WF-UP2 圖卡報告（結果→Notion）",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ahs-up2",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "up2-webhook",
+      "name": "收到教材識別碼",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "ahs-up2-figure-report"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:3000/api/materials/{{ encodeURIComponent($json.body.materialId) }}/figure-cards",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "up2-get",
+      "name": "引擎：讀圖卡結果",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// WF-UP2：把引擎的圖卡結果整理成「卡片摘要」與「圖卡報告」子頁內容\nconst r = $input.first().json;\nconst id = r.materialId || (($('收到教材識別碼').first().json.body || {}).materialId) || '?';\nconst cards = Array.isArray(r.cards) ? r.cards : [];\nconst failed = cards.filter(c => c.error).length;\nconst unreadable = cards.filter(c => c.unreadable).length;\nconst needsHuman = (failed + unreadable) > 0;\nconst t = $now.setZone('Asia/Taipei').toFormat('MM/dd HH:mm');\nconst summary = ('［WF-UP2 ' + t + '］教材 ' + id + '：圖卡 ' + cards.length + ' 張，失敗 ' + failed + '，無法辨識 ' + unreadable).slice(0, 1900);\nconst rt = s => [{ type: 'text', text: { content: String(s).slice(0, 1900) } }];\nconst blocks = [{ object: 'block', type: 'heading_2', heading_2: { rich_text: rt(summary) } }];\nfor (const c of cards.slice(0, 95)) {\n  const tag = c.error ? '【讀取失敗：' + c.error + '】' : (c.unreadable ? '【無法辨識】' : '');\n  blocks.push({ object: 'block', type: 'bulleted_list_item', bulleted_list_item: { rich_text: rt(c.filename + ' ' + tag + ' ｜ ' + (c.description || '')) } });\n}\nif (cards.length > 95) blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: rt('（共 ' + cards.length + ' 張，僅列前 95 張）') } });\nconst cardProps = { '最新摘要': { rich_text: rt(summary) }, '更新者': { select: { name: 'n8n' } } };\nif (needsHuman) cardProps['下一步執行者'] = { select: { name: 'Stanley' } };\nreturn [{ json: { materialId: id, count: cards.length, failed, unreadable, needsHuman, summary,\n  create: { parent: { page_id: '41b0029b-3a91-811b-aee6-f1fdfc59c1fa' }, properties: { title: { title: rt('圖卡報告｜' + id + '｜' + t) } }, children: blocks },\n  patch: { properties: cardProps } } }];"
+      },
+      "id": "up2-code",
+      "name": "組報告",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.create) }}",
+        "options": {
+          "timeout": 30000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        }
+      },
+      "id": "up2-create",
+      "name": "建立圖卡報告子頁",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        0
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "wBl0nr10jBaAeQHW",
+          "name": "Notion QA Intake"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://api.notion.com/v1/pages/4170029b-3a91-8166-ab85-d038cad32ad9",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('組報告').first().json.patch) }}",
+        "options": {
+          "timeout": 30000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        }
+      },
+      "id": "up2-patch",
+      "name": "更新 AHS-UP 卡片摘要",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        0
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "wBl0nr10jBaAeQHW",
+          "name": "Notion QA Intake"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "materialId",
+              "value": "={{ $('組報告').first().json.materialId }}",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "summary",
+              "value": "={{ $('組報告').first().json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "needsHuman",
+              "value": "={{ $('組報告').first().json.needsHuman }}",
+              "type": "boolean"
+            },
+            {
+              "id": "b4",
+              "name": "reportUrl",
+              "value": "={{ $('建立圖卡報告子頁').first().json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "up2-out",
+      "name": "回傳",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1300,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "收到教材識別碼": {
+      "main": [
+        [
+          {
+            "node": "引擎：讀圖卡結果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "引擎：讀圖卡結果": {
+      "main": [
+        [
+          {
+            "node": "組報告",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "組報告": {
+      "main": [
+        [
+          {
+            "node": "建立圖卡報告子頁",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "建立圖卡報告子頁": {
+      "main": [
+        [
+          {
+            "node": "更新 AHS-UP 卡片摘要",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新 AHS-UP 卡片摘要": {
+      "main": [
+        [
+          {
+            "node": "回傳",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
