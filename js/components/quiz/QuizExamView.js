@@ -53,7 +53,12 @@ AHS.QuizParts = AHS.QuizParts || {};
   }
 
   function buildExamView(session, rerender, onFinish, onFinishEarly) {
-    var questions = AHS.QuestionRuntime.getSet(session.examId);
+    /* 卡片標頭的題號要和題號列一致：題目打亂後 q.index 是原始題號，這裡改成作答順序（複本，不改原資料）。 */
+    var questions = AHS.QuestionRuntime.getSet(session.examId).map(function (q, i) {
+      var c = Object.assign({}, q);
+      c.index = i + 1;
+      return c;
+    });
     var currentQuestion = questions[session.currentIndex];
     var answers = AHS.AnswerRuntime.getAnswers(session.examId);
     var selected = answers[currentQuestion.id] != null ? answers[currentQuestion.id] : null;

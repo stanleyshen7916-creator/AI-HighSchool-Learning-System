@@ -266,6 +266,8 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
   check("測驗頁：題號列把整篇短文的 8 題都標成目前題，進度寫「第 a～b 題」",
     pills.filter((x) => x.classList.contains("is-current")).length === 8 && pills[g0.start].classList.contains("is-current") && pills[g0.end].classList.contains("is-current") &&
     view.querySelector(".qnav__progress-label").textContent === (g0.start + 1) + "～" + (g0.end + 1) + " / " + shuffled.length + " 題");
+  check("測驗頁：卡片標頭的題號與題號列一致（打亂後也是作答順序，不是原始題號）",
+    view.querySelector(".qcard__index").textContent === "第 " + (g0.start + 1) + "～" + (g0.end + 1) + " 題");
   const pick = shuffled[g0.start + 4];
   const pickSelect = view.querySelectorAll(".qcard-cloze__select")[AHS.ClozeGroup.parse(pick).number - 1];
   pickSelect.value = pick.correctAnswer;
