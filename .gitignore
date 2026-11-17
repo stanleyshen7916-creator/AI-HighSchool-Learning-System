@@ -27,3 +27,8 @@ js/data/SupabaseConfig.local.js
 
 # 2026-09-29: 教材上傳引擎的執行期資料（上傳原始檔、Final.md、MinerU 佇列、模型快取）
 ai-engine/council/data/
+
+# Autopilot (n8n 自動開發)：本機橋接 token 與執行紀錄，不提交
+scripts/autopilot/.token
+scripts/autopilot/runs/
+scripts/autopilot/LATEST_NOTIFICATION.txt
