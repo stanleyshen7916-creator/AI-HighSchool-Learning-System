@@ -159,6 +159,21 @@ function validateQuestionSourceRule(questionBank) {
       check(label + ": questionId unique within this material", !seenIds[q.questionId], "duplicate questionId " + q.questionId);
       seenIds[q.questionId] = true;
     }
+    /* 2026-11-17 B2 變式題：variantOf 必須指向同一份教材內、本身不是變式題的原題，題幹不得相同，
+       兩題都有知識點時必須相同，且只能有一個正解（answer 在 options 內）。 */
+    if (q.variantOf) {
+      const parent = questionBank.questions.find((p) => p.questionId === q.variantOf);
+      check(label + ": variantOf points to an existing question of this material", !!parent, "variantOf " + q.variantOf + " not found");
+      if (parent) {
+        check(label + ": variantOf parent is not itself a variant", !parent.variantOf, q.variantOf + " is a variant");
+        check(label + ": variant stem differs from its parent", String(q.question).trim() !== String(parent.question).trim(), "same stem as " + q.variantOf);
+        if (q.knowledgePoint && parent.knowledgePoint) {
+          check(label + ": variant knowledgePoint equals its parent's", q.knowledgePoint === parent.knowledgePoint,
+            q.knowledgePoint + " != " + parent.knowledgePoint);
+        }
+      }
+      check(label + ": variant answer is one of its options", Array.isArray(q.options) && q.options.indexOf(q.answer) !== -1, "answer not in options");
+    }
   });
 }
 

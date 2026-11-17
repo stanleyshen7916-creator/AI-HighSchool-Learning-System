@@ -173,7 +173,9 @@ function keywordTerms(sections) {
 // ---- 題目 -------------------------------------------------------------------
 
 const Q_STEM = /^\s*(?:\*\*\s*)?(?:Q|第)\s*(\d+)\s*(?:題)?\s*[.．、:：]?\s*(?:\*\*)?\s*(.*)$/;
-const OPTION_TOKEN = /[（(]\s*([A-E])\s*[)）]/;
+// 2026-11-17 B2：變式題以「V5.」開頭，代表 Q5 的變式題。
+const V_STEM = /^\s*(?:\*\*\s*)?V\s*(\d+)\s*[.．、:：]?\s*(?:\*\*)?\s*(.*)$/;
+const OPTION_TOKEN =/[（(]\s*([A-E])\s*[)）]/;
 const OPTION_LINE = /^\s*([A-E])\s*[.．、]\s*(.+)$/;
 // 題目區塊內直接寫出的答案／詳解（上傳頁的 Prompt 要求的格式）。
 const INLINE_ANSWER = /^\s*(?:\*\*)?\s*答案\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*[（(]?\s*([A-E])\s*[)）]?/;
@@ -217,7 +219,7 @@ function parseOptions(lines) {
 }
 
 // 題目區塊：從「Qn.」開始到下一個「Qn.」或下一個 ### 小節為止。
-function questionBlocks(body) {
+function questionBlocks(body, kind = 'Q') {
   const blocks = [];
   let subheading = null;
   let current = null;
@@ -228,8 +230,9 @@ function questionBlocks(body) {
       current = null;
       return;
     }
-    const q = Q_STEM.exec(line);
-    if (q && /^\s*(\*\*\s*)?(Q|第)\s*\d/.test(line)) {
+    const variantMode = kind === 'V';
+    const q = (variantMode ? V_STEM : Q_STEM).exec(line);
+    if (q && (variantMode ? /^\s*(\*\*\s*)?V\s*\d/ : /^\s*(\*\*\s*)?(Q|第)\s*\d/).test(line)) {
       current = {
         number: Number(q[1]), stemLines: q[2] ? [q[2]] : [], optionLines: [],
         inlineAnswer: null, explanationLines: null, section: subheading,
@@ -374,6 +377,44 @@ function parseQuestions(sections) {
   return { questions, warnings };
 }
 
+// 2026-11-17 B2 變式題：「變式題」章節內，每題以「V5.」開頭（Q5 的變式題），格式同一般題
+// （選項、「答案：」「詳解：」「難度：」），答案必須寫在題目下方。
+// 只收「對得上原題、有完整選項、答案在選項內、題幹與原題不同」的變式題，其餘列入 warnings。
+function parseVariants(sections, questions) {
+  const warnings = [];
+  const variants = [];
+  const byNumber = new Map(questions.map((q) => [q.number, q]));
+  const norm = (t) => String(t).replace(/[\s\p{P}\p{S}]/gu, '');
+  findSections(sections, ['變式題']).forEach((s) => questionBlocks(s.body, 'V').forEach((block) => {
+    const label = `V${block.number}`;
+    const parent = byNumber.get(block.number);
+    if (!parent) { warnings.push(`${label}：找不到對應的原題 Q${block.number}，未收錄`); return; }
+    const figures = [];
+    const stemRaw = block.stemLines.join(' ').replace(FIGURE_TOKEN, (m, name) => {
+      const file = String(name).trim().split(/[\\/]/).pop();
+      if (file && !figures.includes(file)) figures.push(file);
+      return ' ';
+    });
+    const stem = cleanText(stemRaw, MAX_STEM_LENGTH);
+    const options = parseOptions(block.optionLines);
+    if (!stem) { warnings.push(`${label}：找不到題幹，未收錄`); return; }
+    if (!options) { warnings.push(`${label}：找不到完整的 (A)(B)… 選項，未收錄`); return; }
+    const chosen = options.find((o) => o.key === block.inlineAnswer);
+    if (!chosen) { warnings.push(`${label}：找不到答案（需寫在題目下方）或答案不在選項中，未收錄`); return; }
+    if (norm(stem) === norm(parent.question)) { warnings.push(`${label}：題幹與原題 Q${parent.number} 相同，未收錄`); return; }
+    variants.push({
+      parent: parent.number,
+      question: stem,
+      options: options.map((o) => o.text),
+      answer: chosen.text,
+      explanation: block.explanationLines ? cleanText(block.explanationLines.join(' '), MAX_EXPLANATION_LENGTH) || null : null,
+      difficulty: block.difficulty || null,
+      figures,
+    });
+  }));
+  return { variants, warnings };
+}
+
 // ---- 入口 -------------------------------------------------------------------
 
 function parseFinal(markdown) {
@@ -381,6 +422,8 @@ function parseFinal(markdown) {
   const sections = splitSections(body);
   const titleMatch = /^#\s+(.+?)\s*$/m.exec(body);
   const { questions, warnings } = parseQuestions(sections);
+  const variantResult = parseVariants(sections, questions);
+  warnings.push(...variantResult.warnings);
 
   const summary = {
     coreConcepts: collectItems(sections, ['核心概念'], 20),
@@ -401,6 +444,7 @@ function parseFinal(markdown) {
     placeholderSections,
     summary,
     questions,
+    variants: variantResult.variants,
     qualityGate: frontmatter.quality_gate || null,
     finalScore: frontmatter.final_score || null,
     warnings,

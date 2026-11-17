@@ -913,6 +913,26 @@ AHS.WrongBook = (function () {
     if (!src || !kp || !materialId) { return null; }
     var pkg = data.filter(function (e) { return e && e.materialId === materialId; })[0];
     if (!pkg || !Array.isArray(pkg.questions)) { return null; }
+    /* 2026-11-17 B2 變式題: 教材包有專屬變式題（pkg.variants，variantOf＝原題 id）時優先使用，
+       這是上傳時 AI 針對這一題出的類題（同知識點、換情境／數值），比「同知識點的另一題」更貼近。
+       變式題不在 pkg.questions，一般練習／測驗／月考抽不到。 */
+    var own = (Array.isArray(pkg.variants) ? pkg.variants : []).filter(function (v) {
+      return v.variantOf === src.id && Array.isArray(v.options) && v.options.length >= 2 &&
+        v.answer && v.options.indexOf(v.answer) !== -1;
+    });
+    if (own.length) {
+      var oi = ((item.errorCount || 0) + (item.correctCount || 0)) % own.length;
+      var ov = own[oi];
+      var okeys = ["A", "B", "C", "D", "E", "F", "G"];
+      return {
+        id: item.id, questionId: ov.id, subject: item.subject,
+        question: ov.question,
+        options: ov.options.map(function (t, k) { return { key: okeys[k], text: String(t) }; }),
+        correctAnswer: okeys[ov.options.indexOf(ov.answer)],
+        steps: ov.explanation ? [String(ov.explanation)] : [], hints: [], isVariant: true,
+        fromBank: false, fading: false
+      };
+    }
     var pool = pkg.questions.filter(function (q) {
       return q.id !== src.id && q.knowledgePoint === kp && q.type === src.type &&
         Array.isArray(q.options) && q.options.length >= 2 && q.answer &&
