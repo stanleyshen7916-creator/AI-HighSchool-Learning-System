@@ -21,6 +21,7 @@ const { createWrongBookNotesJob } = require('./platform/WrongBookNotesJob');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
 const figureCards = require('./services/figureCards');
+const pdfTextQuality = require('./services/pdfTextQuality');
 const goldSet = require('./services/goldSet');
 const { computeStats } = require('./services/adjudicationStats');
 const { parseFrontmatter } = require('./platform/FinalParser');
@@ -236,7 +237,20 @@ async function extractTextFromFile(filePath, opts = {}) {
       const result = await parser.getText();
 
       if (countMeaningfulChars(result.text) >= PDF_MEANINGFUL_CHAR_THRESHOLD) {
-        return result.text;
+        // 2026-11-18 AHS-UP2 P1-0：有文字層不代表可信。掃描／拍照後的 PDF 常帶一層品質很差的 OCR 文字層
+        // （公式亂碼、無圖片），過去完全不跑 MinerU。這裡先判斷文字層品質，亂碼徵兆明顯就改走 MinerU
+        // （LaTeX＋切圖）；MinerU 失敗時退回「已把康熙部首轉成一般漢字」的文字層，而不是更差的 Tesseract。
+        const quality = pdfTextQuality.assessTextLayer((result.pages || []).map((page) => page.text));
+        if (!quality.useMinerU) {
+          return pdfTextQuality.normalizeRadicals(result.text);
+        }
+        console.warn(`PDF 文字層品質可疑，改走 MinerU：${quality.reasons.join('；')}`);
+        try {
+          return await runMinerU(filePath, ext, { images: opts.images });
+        } catch (error) {
+          console.warn(`MinerU 解析失敗，沿用 PDF 文字層（品質可疑，公式可能亂碼）：${error.message}`);
+          return pdfTextQuality.normalizeRadicals(result.text);
+        }
       }
 
       try {
