@@ -48,6 +48,10 @@
             "type": "string",
             "description": "選填。Sprint AI-112 AI-702: this question's own real knowledge point/concept, when the source material identifies one at question granularity (distinct from chapter-level metadata.chapter). Formalizes a field the data/materials/ track's own real material (CivicsG10Ch5to6Exam20260730.js) already carries per question — this schema previously had no equivalent, a real gap closed here, not invented."
           },
+          "variantOf": {
+            "type": "string", "pattern": "^tm_[0-9]+_q[0-9]+$",
+            "description": "選填。2026-11-17 B2 變式題：此題是同一份教材內某一題（questionId）的變式題（同知識點、換情境／數值／選項）。有此欄位的題目不進一般抽題（練習、測驗、月考），只供錯題本「立即重做」優先使用；ValidateMaterial.js 檢查被指的原題存在於同一份教材、題幹不同、知識點相同（兩題都有填時）。"
+          },
           "difficulty": {
             "type": "string",
             "description": "選填，此題本身的難度（區別於 metadata.json 的教材整體 difficulty）。同上，格式化既有真實用法，未新增資料。"

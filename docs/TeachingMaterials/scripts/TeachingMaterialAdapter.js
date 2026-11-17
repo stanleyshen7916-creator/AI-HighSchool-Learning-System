@@ -256,6 +256,8 @@ function convertQuestions(questionBank, materialRuntimeId) {
        track's own real material already has per question. */
     if (q.knowledgePoint) { converted.knowledgePoint = q.knowledgePoint; }
     if (q.difficulty) { converted.difficulty = q.difficulty; }
+    /* 2026-11-17 B2：變式題指向原題（questionId），原樣帶過。 */
+    if (q.variantOf) { converted.variantOf = q.variantOf; }
     /* 2026-09-07（PO 回報：歷史課本章節分類未呈現在練習題中）: same real
        passthrough gap difficulty had before AI-112 AI-702/706 closed it
        above — section (QuestionBank.schema.json's optional per-question
