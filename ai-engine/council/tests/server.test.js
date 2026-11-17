@@ -884,6 +884,19 @@ describe('runMinerU / isMineruWatcherAlive（MinerU 佇列輪詢邏輯，真實�
     expect(fs.existsSync(path.join(inputsDir, `${jobId}.pdf`))).toBe(true);
   });
 
+  test('2026-11-16 B1：完成時收集 ocr/images 的切圖給呼叫端', async () => {
+    touchHeartbeat();
+    const jobId = 'job-with-images';
+    const ocrDir = path.join(outputsDir, jobId, 'ocr');
+    fs.mkdirSync(path.join(ocrDir, 'images'), { recursive: true });
+    fs.writeFileSync(path.join(ocrDir, `${jobId}.md`), '![](images/abc.jpg)');
+    fs.writeFileSync(path.join(ocrDir, 'images', 'abc.jpg'), 'IMG');
+    fs.writeFileSync(path.join(outputsDir, jobId, '.done'), '');
+    const images = [];
+    await runMinerU(sourceFile, '.pdf', { inputsDir, outputsDir, jobId, pollTimeoutMs: 5000, images });
+    expect(images.map((p) => path.basename(p))).toEqual(['abc.jpg']);
+  });
+
   test('.done 標記在輪詢期間才出現（模擬 watch loop 正在處理）：輪詢到之後正確讀回結果', async () => {
     touchHeartbeat();
     const jobId = 'job-completes-later';

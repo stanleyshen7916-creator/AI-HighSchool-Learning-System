@@ -420,12 +420,13 @@ AHS.CouncilUpload = (function () {
     var sourceText = el("textarea", { class: "upl-textarea", rows: "10", placeholder: "上傳後會出現解析出的教材本文，可直接修正 OCR 錯字；也可以直接貼上 MinerU 解析好的 Markdown。" });
     var imagesSlot = el("div", { class: "upl-images" });
     function refreshImages() {
-      var id = sanitizeSegment(councilMeta().school) + "_" + [councilMeta().grade, councilMeta().subject, councilMeta().unit, councilMeta().category].map(sanitizeSegment).join("_");
+      /* 2026-11-16 B1：這次上傳由 MinerU 切出的圖存在上傳批次底下；沒有時沿用舊的教材識別碼位置。 */
+      var id = state.imagesId || sanitizeSegment(councilMeta().school) + "_" + [councilMeta().grade, councilMeta().subject, councilMeta().unit, councilMeta().category].map(sanitizeSegment).join("_");
       client.images(id).then(function (r) {
         AHS.UI.mount(imagesSlot, el("span"));
         if (r.error || !r.data || !r.data.count) { return; }
         AHS.UI.mount(imagesSlot, el("a", {
-          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip），可拖進 ChatGPT／Claude 對話框"
+          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip），可拖進 ChatGPT／Claude 對話框（出題引用圖時用【圖：檔名】）"
         }));
       });
     }
@@ -437,6 +438,7 @@ AHS.CouncilUpload = (function () {
         uploadBtn.disabled = false;
         if (r.error) { status(uploadStatus, r.error.message, "error"); return; }
         state.sessionId = r.data.sessionId;
+        state.imagesId = r.data.imageCount ? r.data.imagesId : null;
         /* 單一檔案的本文沒有檔案標記，原文辨識協助包以這個檔名代表整份本文 */
         state.uploadFilename = r.data.files && r.data.files.length === 1 ? r.data.files[0].filename : null;
         sourceText.value = r.data.text || "";
