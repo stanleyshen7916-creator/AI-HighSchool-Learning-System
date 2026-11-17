@@ -194,6 +194,11 @@ async function runMinerU(filePath, ext, options = {}) {
       throw new Error(`MinerU 解析失敗（詳見 ${jobOutputDir}/mineru.log）`);
     }
     if (fs.existsSync(donePath)) {
+      // 2026-11-16 B1：MinerU 切出的圖（ocr/images/*）交給呼叫端收集，否則只留在 job 目錄、平台用不到。
+      if (Array.isArray(options.images)) {
+        const imgDir = path.join(jobOutputDir, 'ocr', 'images');
+        listImageFiles(imgDir).forEach((name) => options.images.push(path.join(imgDir, name)));
+      }
       return fs.readFileSync(mdPath, 'utf8');
     }
     // eslint-disable-next-line no-await-in-loop
@@ -216,7 +221,7 @@ async function ocrPdfPagesWithTesseract(parser) {
   return pageTexts.join('\n\n');
 }
 
-async function extractTextFromFile(filePath) {
+async function extractTextFromFile(filePath, opts = {}) {
   const ext = path.extname(filePath).toLowerCase();
 
   if (ext === '.txt' || ext === '.md') {
@@ -234,7 +239,7 @@ async function extractTextFromFile(filePath) {
       }
 
       try {
-        return await runMinerU(filePath, ext);
+        return await runMinerU(filePath, ext, { images: opts.images });
       } catch (error) {
         console.warn(`MinerU 解析失敗，退回 Tesseract（辨識品質較低）：${error.message}`);
         return await ocrPdfPagesWithTesseract(parser);
@@ -246,7 +251,7 @@ async function extractTextFromFile(filePath) {
 
   if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
     try {
-      return await runMinerU(filePath, ext);
+      return await runMinerU(filePath, ext, { images: opts.images });
     } catch (error) {
       console.warn(`MinerU 解析失敗，退回 Tesseract（辨識品質較低）：${error.message}`);
       return ocrImage(filePath);
@@ -698,11 +703,11 @@ app.get('/api/materials/:id/images/download', (req, res) => {
 // 多檔案上傳：依原始檔名排序後逐一解析文字，再依序合併成單一教材本文。
 // .md/.txt 直接讀取內文；.pdf/圖片交由 extractTextFromFile 解析（PDF 文字擷取 / OCR），
 // 各檔案間以空行分隔，藉此在合併結果中保留頁面／檔案邊界。
-async function extractTextFromFiles(files) {
+async function extractTextFromFiles(files, opts = {}) {
   const sorted = [...files].sort((a, b) => a.originalname.localeCompare(b.originalname, 'zh-Hant'));
   const parts = [];
   for (const file of sorted) {
-    const text = await extractTextFromFile(file.path);
+    const text = await extractTextFromFile(file.path, opts);
     parts.push({ filename: file.originalname, text });
   }
   return parts;
@@ -741,15 +746,23 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
 
   try {
     files.forEach((file) => { file.originalname = decodeOriginalName(file.originalname); });
-    const parts = await extractTextFromFiles(files);
+    const minerImages = [];
+    const parts = await extractTextFromFiles(files, { images: minerImages });
     // 2026-10-14：多個檔案時每段前加上檔案標記，原文辨識協助包才能把可疑文字對回是哪張照片。
     const mergedText = parts.length > 1
       ? parts.map((part) => `${ocrHelp.fileMarker(part.filename)}\n${part.text}`).join('\n\n')
       : parts.map((part) => part.text).join('\n\n');
     const sessionId = keepOriginals(files);
+    // 2026-11-16 B1：MinerU 切圖保存到 mineru_outputs/<sessionId>/images/（檔名不變，與本文的 ![](images/檔名) 一致），
+    // 供「下載本教材圖片 zip」與建立草稿時【圖：檔名】的附圖來源。
+    const imagesDir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'images');
+    if (minerImages.length) fs.mkdirSync(imagesDir, { recursive: true });
+    minerImages.forEach((p) => fs.copyFileSync(p, path.join(imagesDir, path.basename(p))));
     return res.status(200).json({
       text: mergedText,
       sessionId,
+      imagesId: sessionId,
+      imageCount: minerImages.length,
       files: parts.map((part) => ({ filename: part.filename, length: part.text.length })),
     });
   } catch (error) {
@@ -1057,6 +1070,7 @@ app.post('/api/platform/drafts', async (req, res) => {
       // 2026-11-16 A7：題幹【圖：檔名】的來源——MinerU 切圖（mineru_outputs/<Final 前綴>/images）與本次上傳的原始檔。
       figureDirs: [
         path.join(MINERU_OUTPUTS_DIR, safeSlug(path.basename(finalPath).replace(/_Final\.md$/i, '')), 'images'),
+        ...(body.uploadSessionId ? [path.join(MINERU_OUTPUTS_DIR, safeSlug(String(body.uploadSessionId)), 'images')] : []),
         ...(body.uploadSessionId ? [path.join(UPLOAD_SESSIONS_DIR, safeSlug(String(body.uploadSessionId)))] : []),
       ],
     });
