@@ -14,6 +14,8 @@ AHS.QuestionNavigator = (function () {
        question ids answered so far), questionIds (array aligned with
        total, for answered lookup),
        onGoTo(index), onPrev(), onNext(), onFinish(),
+       currentRange: { start, end } (0-based，含；可省略) — 短文式克漏字一張卡片
+       涵蓋多題時，題號列把這一段都標成目前題，進度文字顯示「第 a～b 題 / 總題數」。
        onFinishEarly() (additive, optional — 完成測試: unlike onFinish,
        which only ever renders on the LAST question, this button is
        always visible so a student can submit early from any question;
@@ -26,13 +28,14 @@ AHS.QuestionNavigator = (function () {
     var currentIndex = opts.currentIndex || 0;
     var answeredIds = opts.answeredIds || [];
     var questionIds = opts.questionIds || [];
+    var range = opts.currentRange && opts.currentRange.end > opts.currentRange.start ? opts.currentRange : null;
     var isLast = currentIndex === total - 1;
 
     var grid = el("div", { class: "qnav__grid" });
     for (var i = 0; i < total; i++) {
       var qid = questionIds[i];
       var isAnswered = answeredIds.indexOf(qid) !== -1;
-      var isCurrent = i === currentIndex;
+      var isCurrent = range ? (i >= range.start && i <= range.end) : i === currentIndex;
       (function (index) {
         var btn = el("button", {
           type: "button",
@@ -86,7 +89,7 @@ AHS.QuestionNavigator = (function () {
     }
 
     return el("nav", { class: "card qnav", "aria-label": "題號導覽" }, [
-      el("div", { class: "qnav__progress-label", text: (currentIndex + 1) + " / " + total + " 題" }),
+      el("div", { class: "qnav__progress-label", text: (range ? (range.start + 1) + "～" + (range.end + 1) : (currentIndex + 1)) + " / " + total + " 題" }),
       grid,
       el("div", { class: "qnav__actions" }, actionChildren)
     ]);
