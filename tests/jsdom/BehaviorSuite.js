@@ -1536,12 +1536,19 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
     pw.window.document.body.appendChild(pw.window.AHS.WrongBook.create());
     const item = pw.window.AHS.WrongBookRuntime.getById(wrongId);
     pw.window.document.querySelector(".wb-row").click();
-    const redoBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("立即重做"));
+    /* 2026-11-17: 題庫裡有同觀念的另一題時，按鈕會變成「做一題類題」，畫面出的是那一題
+       （2026-11-15 起）。哪份教材排第一取決於載入順序，所以兩種都要能走完，不能只認「立即重做」。 */
+    const redoBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => /立即重做|做一題類題/.test(b.textContent));
     redoBtn.click();
     /* 2026-10-01: pick the correct option by its TEXT — AI-generated
        questions are displayed in a shuffled order (AHS.OptionOrder), so the
-       displayed letter is not the stored original key. */
-    const correctText = ((item.options || []).find(o => o.key === item.correctAnswer) || {}).text;
+       displayed letter is not the stored original key. 類題則用畫面上的題目文字回查題庫取正解。 */
+    let correctText = ((item.options || []).find(o => o.key === item.correctAnswer) || {}).text;
+    if (pw.window.document.querySelector(".wb-variant__label")) {
+      const shown = pw.window.document.querySelector(".wb-variant .wb-detail__question").textContent.replace(/^題目：/, "");
+      const bankQ = [].concat(...pw.window.AHS.TeachingMaterialData.map(e => e.questions || [])).find(q => q.question === shown);
+      correctText = bankQ && bankQ.answer;
+    }
     const correctOpt = [...pw.window.document.querySelectorAll(".wb-detail__option")].find(li => li.querySelector(".wb-detail__option-text").textContent === correctText);
     correctOpt.click();
     const submitBtn = [...pw.window.document.querySelectorAll(".wb-detail__btn")].find(b => b.textContent.includes("提交答案"));
