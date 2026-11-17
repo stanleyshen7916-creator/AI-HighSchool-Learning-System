@@ -206,6 +206,14 @@ AHS.QuestionCard = (function () {
       passage.appendChild(select);
     });
 
+    /* 出處寫的是教材原本的題號（第 49–56 題為題組）；打亂後卡片標頭是作答順序，
+       這裡把出處裡的題號範圍改成跟標頭一樣，才不會同一張卡片出現兩套題號。 */
+    var refNode = window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(first) : null;
+    if (refNode) {
+      Array.prototype.forEach.call(refNode.childNodes, function (n) {
+        if (n.nodeType === 3) { n.nodeValue = n.nodeValue.replace(/第 \d+[–-]\d+ 題為題組/, "第 " + first.index + "～" + last.index + " 題為題組"); }
+      });
+    }
     return el("section", { class: "card qcard qcard-cloze", "aria-label": "克漏字 第 " + first.index + "～" + last.index + " 題" }, [
       el("div", { class: "qcard__head" }, [
         el("span", {
@@ -219,7 +227,7 @@ AHS.QuestionCard = (function () {
       el("h2", { class: "qcard__text", text: "閱讀短文〈" + parsed.title + "〉，在每個空格選出最適合的答案。" }),
       el("p", { class: "qcard__hint qcard-cloze__count", text: "已作答 " + answered + " / " + unit.length + " 格" }),
       passage,
-      (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(first) : null)
+      refNode
     ]);
   }
 

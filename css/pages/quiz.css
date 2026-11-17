@@ -249,6 +249,14 @@
   border: 1px solid var(--line-strong); border-radius: 8px; background-color: var(--card);
 }
 .qcard-cloze__select.is-answered { border-color: var(--brand); background-color: var(--brand-soft); }
+/* 平時練習批改後：答對綠、答錯紅（色彩沿用 quiz-practice__result） */
+.qcard-cloze__select.is-correct { border-color: #15803d; color: #15803d; }
+.qcard-cloze__select.is-wrong { border-color: #b91c1c; color: #b91c1c; }
+.quiz-practice__cloze { display: flex; flex-direction: column; gap: 12px; }
+.quiz-practice__cloze-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.6; }
+.quiz-practice__cloze-list .is-correct strong { color: #15803d; }
+.quiz-practice__cloze-list .is-wrong strong { color: #b91c1c; }
+.quiz-practice__cloze-exp { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
 /* 2026-10-08 題型支援：多選提示、計算／填充題自評（js/ui/QuestionCard.js） */
 .qcard__hint { margin: 0; font-size: 13px; color: var(--text-muted); }
 .qcard-self { display: flex; flex-direction: column; gap: 12px; }
