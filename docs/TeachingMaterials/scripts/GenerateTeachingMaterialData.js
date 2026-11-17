@@ -97,7 +97,10 @@ function buildEntry(materialId) {
     material: adapter.convertMaterial(pkg.metadata),
     summary: adapter.convertSummary(pkg.summary, pkg.metadata),
     /* 2026-11-15 題組：自動判定承上題等題組，加上 groupId（不改教材包）。 */
-    questions: questionGroups.annotate(materialId, adapter.convertQuestions(pkg.questionBank)),
+    questions: questionGroups.annotate(materialId, adapter.convertQuestions(pkg.questionBank).filter(function (q) { return !q.variantOf; })),
+    /* 2026-11-17 B2 變式題：有 variantOf 的題不進 questions（一般抽題完全看不到），另放 variants，
+       只給錯題本「立即重做」使用。沒有變式題的教材不產生此欄位（輸出不變）。 */
+    variants: adapter.convertQuestions(pkg.questionBank).filter(function (q) { return !!q.variantOf; }),
     related: adapter.convertRelated(pkg.related),
     /* Raw metadata (materialType/keywords/difficulty/source/version) —
        used only to build index.json below, never written into
@@ -273,7 +276,9 @@ function generate(options) {
       if (meta.school) { material.school = meta.school; }
       if (meta.semester) { material.semester = meta.semester; }
     }
-    return { materialId: e.materialId, material: material, summary: e.summary, questions: e.questions, related: e.related };
+    var out = { materialId: e.materialId, material: material, summary: e.summary, questions: e.questions, related: e.related };
+    if (e.variants && e.variants.length) { out.variants = e.variants; }
+    return out;
   });
   var body = "window.AHS = window.AHS || {};\n" +
     "AHS.TeachingMaterialData = " + JSON.stringify(dataEntries, null, 2) + ";\n";
