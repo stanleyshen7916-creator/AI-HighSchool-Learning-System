@@ -1,0 +1,211 @@
+{
+  "id": "AutopilotRunner01",
+  "name": "Autopilot Runner（自動開發到決策關卡）",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "n01", "name": "Manual Start", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [0, 0]
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "autopilot-start", "options": {} },
+      "id": "n02", "name": "Webhook Start", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [0, 200],
+      "webhookId": "a1b2c3d4-0001-4000-8000-autopilot0001"
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:5679/queue/next",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "X-Autopilot-Token", "value": "__AUTOPILOT_TOKEN__" } ] },
+        "options": {}
+      },
+      "id": "n03", "name": "Next Task", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [260, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [ { "id": "c1", "leftValue": "={{ $json.task ? 'yes' : 'no' }}", "rightValue": "yes", "operator": { "type": "string", "operation": "equals" } } ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "n04", "name": "Has Task?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [500, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5679/notify",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "X-Autopilot-Token", "value": "__AUTOPILOT_TOKEN__" } ] },
+        "sendBody": true, "specifyBody": "json",
+        "jsonBody": "={{ { title: 'Autopilot：佇列全部完成', message: '所有任務已完成，請到各 autopilot/* 分支確認後合併。' } }}",
+        "options": {}
+      },
+      "id": "n05", "name": "Notify All Done", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [740, 0]
+    },
+    {
+      "parameters": {
+        "assignments": { "assignments": [
+          { "id": "a1", "name": "taskId", "value": "={{ $json.task.id }}", "type": "string" },
+          { "id": "a2", "name": "prompt", "value": "={{ $json.task.prompt }}", "type": "string" },
+          { "id": "a3", "name": "sessionId", "value": "", "type": "string" },
+          { "id": "a4", "name": "attempts", "value": 0, "type": "number" }
+        ] },
+        "options": {}
+      },
+      "id": "n06", "name": "Prepare Run", "type": "n8n-nodes-base.set", "typeVersion": 3.4, "position": [740, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5679/run",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "X-Autopilot-Token", "value": "__AUTOPILOT_TOKEN__" } ] },
+        "sendBody": true, "specifyBody": "json",
+        "jsonBody": "={{ { taskId: $json.taskId, prompt: $json.prompt, sessionId: $json.sessionId, attempts: $json.attempts, callbackUrl: $execution.resumeUrl } }}",
+        "options": {}
+      },
+      "id": "n07", "name": "Run Claude", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [980, 200]
+    },
+    {
+      "parameters": { "resume": "webhook", "httpMethod": "POST", "options": {} },
+      "id": "n08", "name": "Wait Result", "type": "n8n-nodes-base.wait", "typeVersion": 1.1, "position": [1220, 200],
+      "webhookId": "a1b2c3d4-0002-4000-8000-autopilot0002"
+    },
+    {
+      "parameters": {
+        "rules": { "values": [
+          { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [ { "id": "r1", "leftValue": "={{ $json.body.status }}", "rightValue": "done", "operator": { "type": "string", "operation": "equals" } } ], "combinator": "and" }, "renameOutput": true, "outputKey": "done" },
+          { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [ { "id": "r2", "leftValue": "={{ $json.body.status }}", "rightValue": "decision", "operator": { "type": "string", "operation": "equals" } } ], "combinator": "and" }, "renameOutput": true, "outputKey": "decision" },
+          { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [ { "id": "r3", "leftValue": "={{ $json.body.status }}", "rightValue": "quota", "operator": { "type": "string", "operation": "equals" } } ], "combinator": "and" }, "renameOutput": true, "outputKey": "quota" },
+          { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [ { "id": "r4", "leftValue": "={{ $json.body.status }}", "rightValue": "failed_checks", "operator": { "type": "string", "operation": "equals" } } ], "combinator": "and" }, "renameOutput": true, "outputKey": "failed_checks" }
+        ] },
+        "options": { "fallbackOutput": "extra", "renameFallbackOutput": "error" }
+      },
+      "id": "n09", "name": "Route Status", "type": "n8n-nodes-base.switch", "typeVersion": 3.2, "position": [1460, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://host.docker.internal:5679/queue/' + encodeURIComponent($json.body.taskId) + '/done' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "X-Autopilot-Token", "value": "__AUTOPILOT_TOKEN__" } ] },
+        "options": {}
+      },
+      "id": "n10", "name": "Mark Done", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [1740, -200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5679/notify",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "X-Autopilot-Token", "value": "__AUTOPILOT_TOKEN__" } ] },
+        "sendBody": true, "specifyBody": "json",
+        "jsonBody": "={{ { title: 'Autopilot：需要您決定', message: $('Wait Result').item.json.body.decision.question + '（建議：' + $('Wait Result').item.json.body.decision.recommended + '）', url: $execution.resumeFormUrl } }}",
+        "options": {}
+      },
+      "id": "n11", "name": "Notify Decision", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [1740, 0]
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "Autopilot 需要您決定",
+        "formDescription": "={{ $('Wait Result').item.json.body.decision.question + '\\n\\n' + ($('Wait Result').item.json.body.decision.options || []).map(o => o.id + '. ' + o.label + '｜優點：' + o.pros + '｜缺點：' + o.cons).join('\\n') + '\\n\\n建議：' + $('Wait Result').item.json.body.decision.recommended + '（' + ($('Wait Result').item.json.body.decision.reason || '') + '）' }}",
+        "formFields": { "values": [ { "fieldLabel": "您的選擇或指示", "fieldType": "textarea", "placeholder": "輸入選項代號（如 A），或自由補充指示", "requiredField": true } ] },
+        "options": {}
+      },
+      "id": "n12", "name": "Wait Decision", "type": "n8n-nodes-base.wait", "typeVersion": 1.1, "position": [1980, 0],
+      "webhookId": "a1b2c3d4-0003-4000-8000-autopilot0003"
+    },
+    {
+      "parameters": {
+        "assignments": { "assignments": [
+          { "id": "b1", "name": "taskId", "value": "={{ $('Wait Result').item.json.body.taskId }}", "type": "string" },
+          { "id": "b2", "name": "prompt", "value": "={{ '使用者的決定：' + $json['您的選擇或指示'] + '。請依此決定繼續完成原任務，其餘事項照自動駕駛規則自行處理，做到完成。' }}", "type": "string" },
+          { "id": "b3", "name": "sessionId", "value": "={{ $('Wait Result').item.json.body.sessionId }}", "type": "string" },
+          { "id": "b4", "name": "attempts", "value": 0, "type": "number" }
+        ] },
+        "options": {}
+      },
+      "id": "n13", "name": "Prepare After Decision", "type": "n8n-nodes-base.set", "typeVersion": 3.4, "position": [2220, 0]
+    },
+    {
+      "parameters": { "resume": "timeInterval", "amount": "={{ $json.body.waitMinutes }}", "unit": "minutes" },
+      "id": "n14", "name": "Wait Quota Reset", "type": "n8n-nodes-base.wait", "typeVersion": 1.1, "position": [1740, 200],
+      "webhookId": "a1b2c3d4-0004-4000-8000-autopilot0004"
+    },
+    {
+      "parameters": {
+        "assignments": { "assignments": [
+          { "id": "c1", "name": "taskId", "value": "={{ $('Wait Result').item.json.body.taskId }}", "type": "string" },
+          { "id": "c2", "name": "prompt", "value": "額度已恢復，請從中斷處繼續完成原任務。", "type": "string" },
+          { "id": "c3", "name": "sessionId", "value": "={{ $('Wait Result').item.json.body.sessionId }}", "type": "string" },
+          { "id": "c4", "name": "attempts", "value": "={{ $('Wait Result').item.json.body.attempts }}", "type": "number" }
+        ] },
+        "options": {}
+      },
+      "id": "n15", "name": "Prepare Retry", "type": "n8n-nodes-base.set", "typeVersion": 3.4, "position": [1980, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [ { "id": "d1", "leftValue": "={{ $json.body.attempts }}", "rightValue": 3, "operator": { "type": "number", "operation": "lt" } } ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "n16", "name": "Fix Attempts Left?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [1740, 400]
+    },
+    {
+      "parameters": {
+        "assignments": { "assignments": [
+          { "id": "e1", "name": "taskId", "value": "={{ $json.body.taskId }}", "type": "string" },
+          { "id": "e2", "name": "prompt", "value": "={{ '驗證未通過，請修正後重新執行 npm run verify 與 npm test，通過後 commit。失敗輸出：\\n' + $json.body.message }}", "type": "string" },
+          { "id": "e3", "name": "sessionId", "value": "={{ $json.body.sessionId }}", "type": "string" },
+          { "id": "e4", "name": "attempts", "value": "={{ $json.body.attempts + 1 }}", "type": "number" }
+        ] },
+        "options": {}
+      },
+      "id": "n17", "name": "Prepare Fix", "type": "n8n-nodes-base.set", "typeVersion": 3.4, "position": [1980, 360]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5679/notify",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "X-Autopilot-Token", "value": "__AUTOPILOT_TOKEN__" } ] },
+        "sendBody": true, "specifyBody": "json",
+        "jsonBody": "={{ { title: 'Autopilot：任務失敗需人工處理', message: ($('Wait Result').item.json.body.taskId || '') + '：' + ($('Wait Result').item.json.body.message || '').slice(0, 180) } }}",
+        "options": {}
+      },
+      "id": "n18", "name": "Notify Error", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [1740, 600]
+    }
+  ],
+  "connections": {
+    "Manual Start": { "main": [ [ { "node": "Next Task", "type": "main", "index": 0 } ] ] },
+    "Webhook Start": { "main": [ [ { "node": "Next Task", "type": "main", "index": 0 } ] ] },
+    "Next Task": { "main": [ [ { "node": "Has Task?", "type": "main", "index": 0 } ] ] },
+    "Has Task?": { "main": [ [ { "node": "Prepare Run", "type": "main", "index": 0 } ], [ { "node": "Notify All Done", "type": "main", "index": 0 } ] ] },
+    "Prepare Run": { "main": [ [ { "node": "Run Claude", "type": "main", "index": 0 } ] ] },
+    "Run Claude": { "main": [ [ { "node": "Wait Result", "type": "main", "index": 0 } ] ] },
+    "Wait Result": { "main": [ [ { "node": "Route Status", "type": "main", "index": 0 } ] ] },
+    "Route Status": { "main": [
+      [ { "node": "Mark Done", "type": "main", "index": 0 } ],
+      [ { "node": "Notify Decision", "type": "main", "index": 0 } ],
+      [ { "node": "Wait Quota Reset", "type": "main", "index": 0 } ],
+      [ { "node": "Fix Attempts Left?", "type": "main", "index": 0 } ],
+      [ { "node": "Notify Error", "type": "main", "index": 0 } ]
+    ] },
+    "Mark Done": { "main": [ [ { "node": "Next Task", "type": "main", "index": 0 } ] ] },
+    "Notify Decision": { "main": [ [ { "node": "Wait Decision", "type": "main", "index": 0 } ] ] },
+    "Wait Decision": { "main": [ [ { "node": "Prepare After Decision", "type": "main", "index": 0 } ] ] },
+    "Prepare After Decision": { "main": [ [ { "node": "Run Claude", "type": "main", "index": 0 } ] ] },
+    "Wait Quota Reset": { "main": [ [ { "node": "Prepare Retry", "type": "main", "index": 0 } ] ] },
+    "Prepare Retry": { "main": [ [ { "node": "Run Claude", "type": "main", "index": 0 } ] ] },
+    "Fix Attempts Left?": { "main": [ [ { "node": "Prepare Fix", "type": "main", "index": 0 } ], [ { "node": "Notify Error", "type": "main", "index": 0 } ] ] },
+    "Prepare Fix": { "main": [ [ { "node": "Run Claude", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
