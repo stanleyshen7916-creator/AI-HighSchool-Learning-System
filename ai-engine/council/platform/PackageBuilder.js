@@ -151,7 +151,24 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     return lines.join('\n');
   }
 
-  function buildQuestions(materialId, parsed, createdDate) {
+  // 2026-11-16 A7：題目的 figures（【圖：檔名】）從 figureDirs 找到同名圖檔，複製到教材包
+  // figures/<questionId>[_k].<ext>，寫成 figureSvg 的 <img>（沿用 2026-10-10 既有的附圖顯示）。
+  function attachFigures(dir, questionId, files, figureDirs, missing) {
+    const imgs = [];
+    files.forEach((file) => {
+      const found = (figureDirs || []).map((d) => path.join(d, file)).find((p) => fs.existsSync(p));
+      if (!found) { missing.push(`${questionId}：找不到附圖 ${file}`); return; }
+      const ext = (path.extname(file) || '.jpg').toLowerCase();
+      const name = `${questionId}${imgs.length ? `_${imgs.length + 1}` : ''}${ext}`;
+      fs.mkdirSync(path.join(dir, 'figures'), { recursive: true });
+      fs.copyFileSync(found, path.join(dir, 'figures', name));
+      const materialId = path.basename(dir);
+      imgs.push(`<img class="q-figure-img" src="docs/TeachingMaterials/materials/${materialId}/figures/${name}" alt="附圖" loading="lazy">`);
+    });
+    return imgs.join('');
+  }
+
+  function buildQuestions(materialId, parsed, createdDate, figureDirs, missing) {
     return parsed.questions.map((q, i) => {
       const record = {
         questionId: `${materialId}_q${i + 1}`,
@@ -170,6 +187,10 @@ function createPackageBuilder({ platformRoot, dataDir }) {
         createdDate,
       };
       if (q.section) record.knowledgePoint = q.section;
+      if (q.figures && q.figures.length) {
+        const svg = attachFigures(packageDir(materialId), record.questionId, q.figures, figureDirs, missing || []);
+        if (svg) record.figureSvg = svg;
+      }
       return record;
     });
   }
@@ -219,7 +240,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     return { school: meta.school, semester: meta.semester, subject: meta.subject, count, target: SUBJECT_QUESTION_TARGET };
   }
 
-  function createDraft({ finalFilename, finalMarkdown, extraSourceFiles, metadata }) {
+  function createDraft({ finalFilename, finalMarkdown, extraSourceFiles, metadata, figureDirs }) {
     const meta = validateMetadata(metadata || {});
     if (!String(finalMarkdown || '').trim()) throw new Error('Final.md 是空的');
     const parsed = parseFinal(finalMarkdown);
@@ -265,7 +286,8 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       status: 'draft',
     });
     writeJson(path.join(dir, 'summary.json'), { materialId, ...parsed.summary });
-    writeJson(path.join(dir, 'questionbank.json'), { materialId, questions: buildQuestions(materialId, parsed, now) });
+    const missingFigures = [];
+    writeJson(path.join(dir, 'questionbank.json'), { materialId, questions: buildQuestions(materialId, parsed, now, figureDirs, missingFigures) });
     writeJson(path.join(dir, 'related.json'), { materialId, related: [] });
     fs.writeFileSync(path.join(dir, 'material.md'), materialMarkdown(materialId, meta, parsed, sourceNames[0], sourceNames), 'utf8');
 
@@ -276,7 +298,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       finalFilename: sourceNames[0],
       qualityGate: parsed.qualityGate,
       finalScore: parsed.finalScore,
-      warnings: parsed.warnings,
+      warnings: parsed.warnings.concat(missingFigures),
       createdAt: now,
     };
     saveRegistry(reg);

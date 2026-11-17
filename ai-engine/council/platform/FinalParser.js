@@ -310,6 +310,8 @@ function parseExplanations(sections) {
   return out;
 }
 
+const FIGURE_TOKEN = /[【\[]\s*圖\s*[：:]\s*([^】\]\s]+)\s*[】\]]/g;
+
 function parseQuestions(sections) {
   const warnings = [];
   const practice = findSections(sections, ['練習題', '練習', '題目', '常考題型'], ['答案', '詳解', '解析']);
@@ -330,7 +332,15 @@ function parseQuestions(sections) {
       warnings.push(`${label}：題號重複，且答案沒有寫在題目下方，未收錄`);
       return;
     }
-    const stem = cleanText(block.stemLines.join(' '), MAX_STEM_LENGTH);
+    // 2026-11-16 A7：題幹的【圖：檔名】是附圖引用（檔名＝MinerU 切圖或上傳照片的檔名），
+    // 擷取到 figures 並從題幹移除；建立草稿時由 PackageBuilder 複製到教材包 figures/。
+    const figures = [];
+    const stemRaw = block.stemLines.join(' ').replace(FIGURE_TOKEN, (m, name) => {
+      const file = String(name).trim().split(/[\\/]/).pop();
+      if (file && !figures.includes(file)) figures.push(file);
+      return ' ';
+    });
+    const stem = cleanText(stemRaw, MAX_STEM_LENGTH);
     const options = parseOptions(block.optionLines);
     const letter = block.inlineAnswer || answers[block.number];
     const inlineExplanation = block.explanationLines ? cleanText(block.explanationLines.join(' '), MAX_EXPLANATION_LENGTH) : '';
@@ -356,6 +366,7 @@ function parseQuestions(sections) {
       difficulty: block.difficulty || null,
       reference: block.reference || null,
       mapping: block.mapping || null,
+      figures,
     });
   }));
 
