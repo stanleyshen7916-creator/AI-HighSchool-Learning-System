@@ -8,7 +8,7 @@ generator after any Repository change and this file regenerates with it.
 - 年級：高二
 - 章節：Lesson 4 Day of the Dead: A Joyous Celebration of Death / 單字克漏字練習（Words for Production、Idioms and Phrases、Words for Recognition，課本 p.88～94）
 - 教材類型：TEXTBOOK
-- 版本：1
+- 版本：2
 
 ## Package Status
 - Manifest status：complete

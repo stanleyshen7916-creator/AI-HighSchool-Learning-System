@@ -299,7 +299,7 @@
 .wb-detail__material { font-size: 12px; font-weight: 700; color: var(--text); }
 .wb-detail__chapter { font-size: 12px; color: var(--text-muted); }
 
-.wb-detail__question { margin: 0 0 14px; font-size: 17px; font-weight: 600; line-height: 1.8; }
+.wb-detail__question { margin: 0 0 14px; font-size: 17px; font-weight: 600; line-height: 1.8; white-space: pre-line; }
 /* 2026-11-15 題組情境（承上題等） */
 .wb-detail__group-context { margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--brand-soft); }
 .wb-detail__group-context-label { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
