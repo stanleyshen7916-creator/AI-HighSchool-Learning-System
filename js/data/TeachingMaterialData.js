@@ -80186,9 +80186,9 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_103_q6",
         "materialId": "tm_103",
-        "questionNumber": "6",
+        "questionNumber": "1",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 1 格最適合的答案。\n\nFor most people, a funeral is a time to 【(1) ______】 in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 1 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to 【(1) ______】 in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "transform",
           "mourn",
@@ -80205,14 +80205,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q5",
         "materialId": "tm_103",
-        "questionNumber": "5",
+        "questionNumber": "2",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 2 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the 【(2) ______】 of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 2 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the 【(2) ______】 of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "concept",
           "feast",
@@ -80229,14 +80230,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q1",
         "materialId": "tm_103",
-        "questionNumber": "1",
+        "questionNumber": "3",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 3 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a 【(3) ______】 festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 3 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a 【(3) ______】 festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "mournful",
           "inevitable",
@@ -80253,14 +80255,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q10",
         "materialId": "tm_103",
-        "questionNumber": "10",
+        "questionNumber": "4",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 4 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special 【(4) ______】 on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 4 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special 【(4) ______】 on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "skeleton",
           "resemblance",
@@ -80277,14 +80280,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q2",
         "materialId": "tm_103",
-        "questionNumber": "2",
+        "questionNumber": "5",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 5 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to 【(5) ______】 their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 5 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to 【(5) ______】 their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "mock",
           "accompany",
@@ -80301,14 +80305,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q4",
         "materialId": "tm_103",
-        "questionNumber": "4",
+        "questionNumber": "6",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 6 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more 【(6) ______】 than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 6 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more 【(6) ______】 than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "essential",
           "annual",
@@ -80325,14 +80330,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q12",
         "materialId": "tm_103",
-        "questionNumber": "12",
+        "questionNumber": "7",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 7 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly 【(7) ______】 with great pleasure, and for weeks they (8) ______ the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 7 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly 【(7) ______】 with great pleasure, and for weeks they (8) ______ the first day of the festival.",
         "options": [
           "recognition",
           "skeleton",
@@ -80349,14 +80355,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q14",
         "materialId": "tm_103",
-        "questionNumber": "14",
+        "questionNumber": "8",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 8 格最適合的答案。\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they 【(8) ______】 the first day of the festival.",
+        "question": "【單字克漏字】閱讀短文〈A Festival of Life〉，選出第 8 格最適合的答案。（第 1–8 題為題組）\n\nFor most people, a funeral is a time to (1) ______ in silence. In Mexico, however, the (2) ______ of death is quite different. Every autumn, families celebrate the Day of the Dead, a (3) ______ festival that is full of color and music, not of tears. It is a special (4) ______ on which the living remember the people they have lost. Children are happy to (5) ______ their parents to the cemetery, where relatives sit together and share stories. For the families, nothing is more (6) ______ than being together on this day. They look forward to the yearly (7) ______ with great pleasure, and for weeks they 【(8) ______】 the first day of the festival.",
         "options": [
           "escape",
           "mock",
@@ -80373,14 +80380,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Festival of Life〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g1"
       },
       {
         "id": "tm_103_q8",
         "materialId": "tm_103",
-        "questionNumber": "8",
+        "questionNumber": "9",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 1 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with 【(1) ______】. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 1 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with 【(1) ______】. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "sorrowful",
           "sorrow",
@@ -80397,14 +80405,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q9",
         "materialId": "tm_103",
-        "questionNumber": "9",
+        "questionNumber": "10",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 2 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a 【(2) ______】 look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 2 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a 【(2) ______】 look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "sorrowful",
           "joyous",
@@ -80421,14 +80430,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q3",
         "materialId": "tm_103",
-        "questionNumber": "3",
+        "questionNumber": "11",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 3 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him 【(3) ______】. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 3 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him 【(3) ______】. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "concept",
           "occasion",
@@ -80445,14 +80455,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q13",
         "materialId": "tm_103",
-        "questionNumber": "13",
+        "questionNumber": "12",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 4 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could 【(4) ______】 with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 4 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could 【(4) ______】 with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "escape",
           "mock",
@@ -80469,14 +80480,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q15",
         "materialId": "tm_103",
-        "questionNumber": "15",
+        "questionNumber": "13",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 5 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with 【(5) ______】. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 5 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with 【(5) ______】. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "resemblance",
           "anticipation",
@@ -80493,14 +80505,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q7",
         "materialId": "tm_103",
-        "questionNumber": "7",
+        "questionNumber": "14",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 6 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, 【(6) ______】 tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 6 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, 【(6) ______】 tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "mournful",
           "annual",
@@ -80517,14 +80530,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q16",
         "materialId": "tm_103",
-        "questionNumber": "16",
+        "questionNumber": "15",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 7 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the 【(7) ______】 of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 7 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the 【(7) ______】 of his daughter's family from the city filled him with warmth. In earlier years he had made only (8) ______ visits to the cemetery, but this time he stayed all night.",
         "options": [
           "skeleton",
           "cycle",
@@ -80541,14 +80555,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q11",
         "materialId": "tm_103",
-        "questionNumber": "11",
+        "questionNumber": "16",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 8 格最適合的答案。\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only 【(8) ______】 visits to the cemetery, but this time he stayed all night.",
+        "question": "【單字克漏字】閱讀短文〈The Mood of the Village〉，選出第 8 格最適合的答案。（第 9–16 題為題組）\n\nOld Mr. Reyes had lost his wife the year before, and his heart was still heavy with (1) ______. On the first night of the festival, he sat by the window with a (2) ______ look on his face. His neighbor, Maria, knocked on his door to keep him (3) ______. She told him that the dead would soon come back and that the family could (4) ______ with them for one night. Slowly, his face lit up with (5) ______. At sunset the band began to play a slow, (6) ______ tune, but the (7) ______ of his daughter's family from the city filled him with warmth. In earlier years he had made only 【(8) ______】 visits to the cemetery, but this time he stayed all night.",
         "options": [
           "deceased",
           "merry",
@@ -80565,14 +80580,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Mood of the Village〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Mood of the Village〉第 9–16 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g2"
       },
       {
         "id": "tm_103_q42",
         "materialId": "tm_103",
-        "questionNumber": "42",
+        "questionNumber": "17",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 1 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks 【(1) ______】. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 1 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks 【(1) ______】. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "in honor of",
           "in advance",
@@ -80589,14 +80605,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q52",
         "materialId": "tm_103",
-        "questionNumber": "52",
+        "questionNumber": "18",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 2 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large 【(2) ______】 in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 2 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large 【(2) ______】 in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "altar",
           "cemetery",
@@ -80613,14 +80630,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q17",
         "materialId": "tm_103",
-        "questionNumber": "17",
+        "questionNumber": "19",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 3 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they 【(3) ______】 it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 3 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they 【(3) ______】 it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "resemble",
           "mock",
@@ -80637,14 +80655,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q48",
         "materialId": "tm_103",
-        "questionNumber": "48",
+        "questionNumber": "20",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 4 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange 【(4) ______】 flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 4 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange 【(4) ______】 flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "altar",
           "feast",
@@ -80661,14 +80680,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q18",
         "materialId": "tm_103",
-        "questionNumber": "18",
+        "questionNumber": "21",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 5 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every 【(5) ______】 has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 5 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every 【(5) ______】 has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "dawn",
           "decoration",
@@ -80685,14 +80705,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q20",
         "materialId": "tm_103",
-        "questionNumber": "20",
+        "questionNumber": "22",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 6 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families 【(6) ______】 to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 6 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families 【(6) ______】 to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "prefer",
           "mock",
@@ -80709,14 +80730,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q19",
         "materialId": "tm_103",
-        "questionNumber": "19",
+        "questionNumber": "23",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 7 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own 【(7) ______】 and choose purple ones. On the last night, a big (8) ______ is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 7 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own 【(7) ______】 and choose purple ones. On the last night, a big (8) ______ is served.",
         "options": [
           "dawn",
           "skeleton",
@@ -80733,14 +80755,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q23",
         "materialId": "tm_103",
-        "questionNumber": "23",
+        "questionNumber": "24",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 8 格最適合的答案。\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big 【(8) ______】 is served.",
+        "question": "【單字克漏字】閱讀短文〈Preparing the Altar〉，選出第 8 格最適合的答案。（第 17–24 題為題組）\n\nLucia's family begins to prepare for the festival weeks (1) ______. First, they build a large (2) ______ in the living room. Then they (3) ______ it with candles, photos, and bright orange (4) ______ flowers. Every (5) ______ has its own meaning. Some families (6) ______ to use white candles, while others follow their own (7) ______ and choose purple ones. On the last night, a big 【(8) ______】 is served.",
         "options": [
           "dawn",
           "venue",
@@ -80757,14 +80780,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Preparing the Altar〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Preparing the Altar〉第 17–24 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g3"
       },
       {
         "id": "tm_103_q29",
         "materialId": "tm_103",
-        "questionNumber": "29",
+        "questionNumber": "25",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 1 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors 【(1) ______】 in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 1 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors 【(1) ______】 in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "mock",
           "participate",
@@ -80781,14 +80805,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q26",
         "materialId": "tm_103",
         "questionNumber": "26",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 2 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each 【(2) ______】. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 2 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each 【(2) ______】. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "transformation",
           "venue",
@@ -80805,14 +80830,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q25",
         "materialId": "tm_103",
-        "questionNumber": "25",
+        "questionNumber": "27",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 3 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can 【(3) ______】 into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 3 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can 【(3) ______】 into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "resemble",
           "mock",
@@ -80829,14 +80855,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q27",
         "materialId": "tm_103",
-        "questionNumber": "27",
+        "questionNumber": "28",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 4 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces 【(4) ______】 real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 4 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces 【(4) ______】 real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "accompany",
           "await",
@@ -80853,14 +80880,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q28",
         "materialId": "tm_103",
-        "questionNumber": "28",
+        "questionNumber": "29",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 5 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong 【(5) ______】 to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 5 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong 【(5) ______】 to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "resemble",
           "resemblance",
@@ -80877,14 +80905,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q30",
         "materialId": "tm_103",
         "questionNumber": "30",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 6 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's 【(6) ______】 is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 6 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's 【(6) ______】 is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "participation",
           "skeleton",
@@ -80901,14 +80930,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q31",
         "materialId": "tm_103",
         "questionNumber": "31",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 7 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might 【(7) ______】 death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 7 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might 【(7) ______】 death, but it does not; it shows respect. Even a close friend may fail to (8) ______ you under the paint.",
         "options": [
           "decorate",
           "reunite",
@@ -80925,14 +80955,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q32",
         "materialId": "tm_103",
         "questionNumber": "32",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 8 格最適合的答案。\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to 【(8) ______】 you under the paint.",
+        "question": "【單字克漏字】閱讀短文〈Faces of the Festival〉，選出第 8 格最適合的答案。（第 25–32 題為題組）\n\nOn the main street, painted faces turn the crowd into a parade of skulls. Many visitors (1) ______ in the parade, and the make-up artists work hard to complete each (2) ______. Within an hour, an ordinary tourist can (3) ______ into a skeleton. Painted in black and white, their faces (4) ______ real skulls. Some designs even have a strong (5) ______ to famous paintings. Everyone's (6) ______ is welcome. Some people worry that the make-up might (7) ______ death, but it does not; it shows respect. Even a close friend may fail to 【(8) ______】 you under the paint.",
         "options": [
           "participate",
           "reunite",
@@ -80949,14 +80980,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Faces of the Festival〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Faces of the Festival〉第 25–32 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g4"
       },
       {
         "id": "tm_103_q47",
         "materialId": "tm_103",
-        "questionNumber": "47",
+        "questionNumber": "33",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 1 格最適合的答案。\n\nThe 【(1) ______】 people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 1 格最適合的答案。（第 33–40 題為題組）\n\nThe 【(1) ______】 people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "altar",
           "Aztec",
@@ -80973,14 +81005,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q46",
         "materialId": "tm_103",
-        "questionNumber": "46",
+        "questionNumber": "34",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 2 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an 【(2) ______】, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 2 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an 【(2) ______】, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "afterlife",
           "arrival",
@@ -80997,14 +81030,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q35",
         "materialId": "tm_103",
         "questionNumber": "35",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 3 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural 【(3) ______】, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 3 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural 【(3) ______】, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "venue",
           "skeleton",
@@ -81021,14 +81055,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q34",
         "materialId": "tm_103",
-        "questionNumber": "34",
+        "questionNumber": "36",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 4 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is 【(4) ______】, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 4 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is 【(4) ______】, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "annual",
           "merry",
@@ -81045,14 +81080,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q38",
         "materialId": "tm_103",
-        "questionNumber": "38",
+        "questionNumber": "37",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 5 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can 【(5) ______】 it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 5 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can 【(5) ______】 it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "decorate",
           "escape",
@@ -81069,14 +81105,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q36",
         "materialId": "tm_103",
-        "questionNumber": "36",
+        "questionNumber": "38",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 6 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an 【(6) ______】 custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 6 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an 【(6) ______】 custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "annual",
           "inevitable",
@@ -81093,14 +81130,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q37",
         "materialId": "tm_103",
-        "questionNumber": "37",
+        "questionNumber": "39",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 7 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits 【(7) ______】 the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 7 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits 【(7) ______】 the families' invitation. In 2008, the festival won official (8) ______ from UNESCO.",
         "options": [
           "transform",
           "mock",
@@ -81117,14 +81155,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q33",
         "materialId": "tm_103",
-        "questionNumber": "33",
+        "questionNumber": "40",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 8 格最適合的答案。\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official 【(8) ______】 from UNESCO.",
+        "question": "【單字克漏字】閱讀短文〈Life After Death〉，選出第 8 格最適合的答案。（第 33–40 題為題組）\n\nThe (1) ______ people believed that death was not the end. They believed that every person had an (2) ______, and they saw death as part of a natural (3) ______, like day and night. Because death is (4) ______, they thought, no one can (5) ______ it, so there is no reason to fear it. Today, families keep this belief alive through an (6) ______ custom, and they say that the spirits (7) ______ the families' invitation. In 2008, the festival won official 【(8) ______】 from UNESCO.",
         "options": [
           "resemblance",
           "skeleton",
@@ -81141,14 +81180,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Life After Death〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Life After Death〉第 33–40 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g5"
       },
       {
         "id": "tm_103_q51",
         "materialId": "tm_103",
-        "questionNumber": "51",
+        "questionNumber": "41",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 1 格最適合的答案。\n\nAt night, the 【(1) ______】 glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 1 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the 【(1) ______】 glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "altar",
           "cemetery",
@@ -81165,14 +81205,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q50",
         "materialId": "tm_103",
-        "questionNumber": "50",
+        "questionNumber": "42",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 2 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each 【(2) ______】 and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 2 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each 【(2) ______】 and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "grave",
           "dawn",
@@ -81189,14 +81230,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q54",
         "materialId": "tm_103",
-        "questionNumber": "54",
+        "questionNumber": "43",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 3 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the 【(3) ______】 gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 3 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the 【(3) ______】 gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "altar",
           "venue",
@@ -81213,14 +81255,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q49",
         "materialId": "tm_103",
-        "questionNumber": "49",
+        "questionNumber": "44",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 4 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet 【(4) ______】 made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 4 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet 【(4) ______】 made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "receptionist",
           "dawn",
@@ -81237,14 +81280,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q56",
         "materialId": "tm_103",
-        "questionNumber": "56",
+        "questionNumber": "45",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 5 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper 【(5) ______】 dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 5 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper 【(5) ______】 dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "receptionist",
           "skeleton",
@@ -81261,14 +81305,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q53",
         "materialId": "tm_103",
-        "questionNumber": "53",
+        "questionNumber": "46",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 6 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is 【(6) ______】. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 6 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is 【(6) ______】. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "merry",
           "mournful",
@@ -81285,14 +81330,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q39",
         "materialId": "tm_103",
-        "questionNumber": "39",
+        "questionNumber": "47",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 7 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can 【(7) ______】 children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 7 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can 【(7) ______】 children half to death, but not tonight. Even so, a cold wind at midnight can make your hair (8) ______.",
         "options": [
           "mock",
           "await",
@@ -81309,14 +81355,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q40",
         "materialId": "tm_103",
-        "questionNumber": "40",
+        "questionNumber": "48",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 8 格最適合的答案。\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair 【(8) ______】.",
+        "question": "【單字克漏字】閱讀短文〈A Night in the Cemetery〉，選出第 8 格最適合的答案。（第 41–48 題為題組）\n\nAt night, the (1) ______ glows with thousands of candles. Visitors clean each (2) ______ and cover it with flowers, while outside the (3) ______ gate vendors sell a sweet (4) ______ made of sugar. In the parade, a giant paper (5) ______ dances above the crowd. People sing and dance, and the mood is (6) ______. Old stories about ghosts can (7) ______ children half to death, but not tonight. Even so, a cold wind at midnight can make your hair 【(8) ______】.",
         "options": [
           "die out",
           "in advance",
@@ -81333,14 +81380,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈A Night in the Cemetery〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Night in the Cemetery〉第 41–48 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g6"
       },
       {
         "id": "tm_103_q21",
         "materialId": "tm_103",
-        "questionNumber": "21",
+        "questionNumber": "49",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 1 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the 【(1) ______】 desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 1 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the 【(1) ______】 desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "cycle",
           "reception",
@@ -81357,14 +81405,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q22",
         "materialId": "tm_103",
-        "questionNumber": "22",
+        "questionNumber": "50",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 2 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly 【(2) ______】 explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 2 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly 【(2) ______】 explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "receptionist",
           "dawn",
@@ -81381,14 +81430,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q41",
         "materialId": "tm_103",
-        "questionNumber": "41",
+        "questionNumber": "51",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 3 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held 【(3) ______】 the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 3 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held 【(3) ______】 the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "in advance",
           "die out",
@@ -81405,14 +81455,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q44",
         "materialId": "tm_103",
-        "questionNumber": "44",
+        "questionNumber": "52",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 4 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the 【(4) ______】. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 4 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the 【(4) ______】. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "annual",
           "merry",
@@ -81429,14 +81480,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q45",
         "materialId": "tm_103",
-        "questionNumber": "45",
+        "questionNumber": "53",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 5 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the 【(5) ______】 people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 5 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the 【(5) ______】 people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "skeleton",
           "Mexican",
@@ -81453,14 +81505,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q43",
         "materialId": "tm_103",
-        "questionNumber": "43",
+        "questionNumber": "54",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 6 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never 【(6) ______】.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 6 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never 【(6) ______】.\" The main (7) ______ was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "die out",
           "in advance",
@@ -81477,14 +81530,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q55",
         "materialId": "tm_103",
         "questionNumber": "55",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 7 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main 【(7) ______】 was the town square, where Emma watched the dancing until (8) ______.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 7 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main 【(7) ______】 was the town square, where Emma watched the dancing until (8) ______.",
         "options": [
           "dawn",
           "cycle",
@@ -81501,14 +81555,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       },
       {
         "id": "tm_103_q24",
         "materialId": "tm_103",
-        "questionNumber": "24",
+        "questionNumber": "56",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 8 格最適合的答案。\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until 【(8) ______】.",
+        "question": "【單字克漏字】閱讀短文〈A Tourist's Story〉，選出第 8 格最適合的答案。（第 49–56 題為題組）\n\nEmma, a tourist from Canada, arrived at a small hotel in Oaxaca just before the festival. At the (1) ______ desk, a friendly (2) ______ explained that the celebration is held (3) ______ the (4) ______. \"This is a custom of the (5) ______ people,\" she said, \"and we hope it will never (6) ______.\" The main (7) ______ was the town square, where Emma watched the dancing until 【(8) ______】.",
         "options": [
           "cycle",
           "skeleton",
@@ -81525,7 +81580,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L4 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Tourist's Story〉第 1–8 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Tourist's Story〉第 49–56 題為題組（依長榮高中高二英文課本 L4 單字命題，非課本原文）",
+        "groupId": "tm_103_g7"
       }
     ],
     "related": [
@@ -81582,9 +81638,9 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_104_q32",
         "materialId": "tm_104",
-        "questionNumber": "32",
+        "questionNumber": "1",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 1 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their 【(1) ______】. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 1 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their 【(1) ______】. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "leisure",
           "destination",
@@ -81601,14 +81657,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q6",
         "materialId": "tm_104",
-        "questionNumber": "6",
+        "questionNumber": "2",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 2 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was 【(2) ______】 the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 2 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was 【(2) ______】 the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "previously",
           "previous",
@@ -81625,14 +81682,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q8",
         "materialId": "tm_104",
-        "questionNumber": "8",
+        "questionNumber": "3",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 3 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the 【(3) ______】 of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 3 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the 【(3) ______】 of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "entrance",
           "historian",
@@ -81649,14 +81707,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q9",
         "materialId": "tm_104",
-        "questionNumber": "9",
+        "questionNumber": "4",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 4 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still 【(4) ______】 hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 4 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still 【(4) ______】 hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "appear",
           "stun",
@@ -81673,14 +81732,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q7",
         "materialId": "tm_104",
-        "questionNumber": "7",
+        "questionNumber": "5",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 5 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my 【(5) ______】 trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 5 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my 【(5) ______】 trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "previously",
           "previous",
@@ -81697,14 +81757,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q12",
         "materialId": "tm_104",
-        "questionNumber": "12",
+        "questionNumber": "6",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 6 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local 【(6) ______】. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 6 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local 【(6) ______】. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "historian",
           "historic",
@@ -81721,14 +81782,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q13",
         "materialId": "tm_104",
-        "questionNumber": "13",
+        "questionNumber": "7",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 7 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the 【(7) ______】 of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 7 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the 【(7) ______】 of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "historian",
           "destination",
@@ -81745,14 +81807,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q11",
         "materialId": "tm_104",
-        "questionNumber": "11",
+        "questionNumber": "8",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 8 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us 【(8) ______】 documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 8 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us 【(8) ______】 documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
         "options": [
           "previously",
           "entrance",
@@ -81769,14 +81832,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q10",
         "materialId": "tm_104",
-        "questionNumber": "10",
+        "questionNumber": "9",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 9 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so 【(9) ______】: it was where the emperor once prayed.",
+        "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 9 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so 【(9) ______】: it was where the emperor once prayed.",
         "options": [
           "historian",
           "historic",
@@ -81793,14 +81857,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Arriving in Kyoto〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g1"
       },
       {
         "id": "tm_104_q40",
         "materialId": "tm_104",
-        "questionNumber": "40",
+        "questionNumber": "10",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 1 格最適合的答案。\n\nIn April, the 【(1) ______】 trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 1 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the 【(1) ______】 trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "cherry",
           "kimono",
@@ -81817,14 +81882,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q1",
         "materialId": "tm_104",
-        "questionNumber": "1",
+        "questionNumber": "11",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 2 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink 【(2) ______】. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 2 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink 【(2) ______】. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "rustle",
           "splendid",
@@ -81841,14 +81907,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q41",
         "materialId": "tm_104",
-        "questionNumber": "41",
+        "questionNumber": "12",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 3 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the 【(3) ______】 leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 3 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the 【(3) ______】 leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "kimono",
           "shrine",
@@ -81865,14 +81932,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q2",
         "materialId": "tm_104",
-        "questionNumber": "2",
+        "questionNumber": "13",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 4 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them 【(4) ______】 softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 4 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them 【(4) ______】 softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "stun",
           "rustle",
@@ -81889,14 +81957,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q3",
         "materialId": "tm_104",
-        "questionNumber": "3",
+        "questionNumber": "14",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 5 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The 【(5) ______】 looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 5 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The 【(5) ______】 looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "landscape",
           "leisure",
@@ -81913,14 +81982,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q4",
         "materialId": "tm_104",
-        "questionNumber": "4",
+        "questionNumber": "15",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 6 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its 【(6) ______】. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 6 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its 【(6) ______】. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "splendid",
           "magnificent",
@@ -81937,14 +82007,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q5",
         "materialId": "tm_104",
-        "questionNumber": "5",
+        "questionNumber": "16",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 7 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a 【(7) ______】 time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 7 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a 【(7) ______】 time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "splendor",
           "delicacy",
@@ -81961,14 +82032,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q14",
         "materialId": "tm_104",
-        "questionNumber": "14",
+        "questionNumber": "17",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 8 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a 【(8) ______】 gate painted bright red, and the view from there is (9) ______.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 8 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a 【(8) ______】 gate painted bright red, and the view from there is (9) ______.",
         "options": [
           "leisurely",
           "magnificent",
@@ -81985,14 +82057,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q15",
         "materialId": "tm_104",
-        "questionNumber": "15",
+        "questionNumber": "18",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 9 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is 【(9) ______】.",
+        "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 9 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is 【(9) ______】.",
         "options": [
           "breathtaking",
           "previously",
@@ -82009,14 +82082,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g2"
       },
       {
         "id": "tm_104_q16",
         "materialId": "tm_104",
-        "questionNumber": "16",
+        "questionNumber": "19",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 1 格最適合的答案。\n\nOn our second day we took a 【(1) ______】 walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 1 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a 【(1) ______】 walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "previously",
           "historian",
@@ -82033,14 +82107,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q17",
         "materialId": "tm_104",
-        "questionNumber": "17",
+        "questionNumber": "20",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 2 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our 【(2) ______】 hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 2 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our 【(2) ______】 hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "delicacy",
           "entrance",
@@ -82057,14 +82132,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q39",
         "materialId": "tm_104",
-        "questionNumber": "39",
+        "questionNumber": "21",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 3 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional 【(3) ______】, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 3 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional 【(3) ______】, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "shrine",
           "kimono",
@@ -82081,14 +82157,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q20",
         "materialId": "tm_104",
-        "questionNumber": "20",
+        "questionNumber": "22",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 4 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so 【(4) ______】 that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 4 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so 【(4) ______】 that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "delicate",
           "stun",
@@ -82105,14 +82182,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q21",
         "materialId": "tm_104",
-        "questionNumber": "21",
+        "questionNumber": "23",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 5 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local 【(5) ______】, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 5 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local 【(5) ______】, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "delicate",
           "stunning",
@@ -82129,14 +82207,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q43",
         "materialId": "tm_104",
-        "questionNumber": "43",
+        "questionNumber": "24",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 6 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the 【(6) ______】, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 6 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the 【(6) ______】, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "kimono",
           "delicacy",
@@ -82153,14 +82232,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q18",
         "materialId": "tm_104",
-        "questionNumber": "18",
+        "questionNumber": "25",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 7 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its 【(7) ______】 beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 7 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its 【(7) ______】 beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "stun",
           "stunning",
@@ -82177,14 +82257,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q19",
         "materialId": "tm_104",
-        "questionNumber": "19",
+        "questionNumber": "26",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 8 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to 【(8) ______】 visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 8 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to 【(8) ______】 visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
         "options": [
           "stun",
           "stunning",
@@ -82201,14 +82282,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q42",
         "materialId": "tm_104",
-        "questionNumber": "42",
+        "questionNumber": "27",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 9 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small 【(9) ______】 and made a wish.",
+        "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 9 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small 【(9) ______】 and made a wish.",
         "options": [
           "kimono",
           "delicacy",
@@ -82225,14 +82307,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g3"
       },
       {
         "id": "tm_104_q22",
         "materialId": "tm_104",
-        "questionNumber": "22",
+        "questionNumber": "28",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 1 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a 【(1) ______】 style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 1 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a 【(1) ______】 style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "distinction",
           "elegance",
@@ -82249,14 +82332,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q25",
         "materialId": "tm_104",
-        "questionNumber": "25",
+        "questionNumber": "29",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 2 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an 【(2) ______】 kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 2 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an 【(2) ______】 kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "elegance",
           "elegant",
@@ -82273,14 +82357,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q26",
         "materialId": "tm_104",
-        "questionNumber": "26",
+        "questionNumber": "30",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 3 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great 【(3) ______】. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 3 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great 【(3) ______】. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "elegance",
           "elegant",
@@ -82297,14 +82382,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q28",
         "materialId": "tm_104",
-        "questionNumber": "28",
+        "questionNumber": "31",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 4 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to 【(4) ______】 from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 4 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to 【(4) ______】 from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "appearance",
           "elegance",
@@ -82321,14 +82407,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q31",
         "materialId": "tm_104",
-        "questionNumber": "31",
+        "questionNumber": "32",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 5 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, 【(5) ______】 steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 5 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, 【(5) ______】 steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "distinction",
           "appearance",
@@ -82345,14 +82432,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q27",
         "materialId": "tm_104",
-        "questionNumber": "27",
+        "questionNumber": "33",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 6 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her 【(6) ______】, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 6 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her 【(6) ______】, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "appear",
           "appearance",
@@ -82369,14 +82457,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q24",
         "materialId": "tm_104",
-        "questionNumber": "24",
+        "questionNumber": "34",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 7 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a 【(7) ______】 smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 7 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a 【(7) ______】 smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
         "options": [
           "distinct",
           "distinction",
@@ -82393,14 +82482,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q23",
         "materialId": "tm_104",
-        "questionNumber": "23",
+        "questionNumber": "35",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 8 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear 【(8) ______】 between the host's seat and the guests' seats.",
+        "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 8 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear 【(8) ______】 between the host's seat and the guests' seats.",
         "options": [
           "distinct",
           "distinctive",
@@ -82417,14 +82507,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g4"
       },
       {
         "id": "tm_104_q38",
         "materialId": "tm_104",
-        "questionNumber": "38",
+        "questionNumber": "36",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 1 格最適合的答案。\n\nThe old capital of Japan, 【(1) ______】, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 1 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, 【(1) ______】, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "kimono",
           "maple",
@@ -82441,14 +82532,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q29",
         "materialId": "tm_104",
-        "questionNumber": "29",
+        "questionNumber": "37",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 2 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese 【(2) ______】 often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 2 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese 【(2) ______】 often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "literary",
           "literature",
@@ -82465,14 +82557,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q30",
         "materialId": "tm_104",
-        "questionNumber": "30",
+        "questionNumber": "38",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 3 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous 【(3) ______】 works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 3 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous 【(3) ______】 works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "literary",
           "entrance",
@@ -82489,14 +82582,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q33",
         "materialId": "tm_104",
-        "questionNumber": "33",
+        "questionNumber": "39",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 4 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can 【(4) ______】 a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 4 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can 【(4) ______】 a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "appear",
           "boast",
@@ -82513,14 +82607,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q34",
         "materialId": "tm_104",
-        "questionNumber": "34",
+        "questionNumber": "40",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 5 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can 【(5) ______】 your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 5 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can 【(5) ______】 your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "appear",
           "boast",
@@ -82537,14 +82632,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q35",
         "materialId": "tm_104",
-        "questionNumber": "35",
+        "questionNumber": "41",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 6 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing 【(6) ______】 with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 6 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing 【(6) ______】 with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "stand out",
           "face to face",
@@ -82561,14 +82657,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q36",
         "materialId": "tm_104",
-        "questionNumber": "36",
+        "questionNumber": "42",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 7 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates 【(7) ______】 against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 7 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates 【(7) ______】 against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
         "options": [
           "stand out",
           "die out",
@@ -82585,14 +82682,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       },
       {
         "id": "tm_104_q37",
         "materialId": "tm_104",
-        "questionNumber": "37",
+        "questionNumber": "43",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 8 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors 【(8) ______】 with the city and promise to return.",
+        "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 8 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors 【(8) ______】 with the city and promise to return.",
         "options": [
           "die out",
           "in advance",
@@ -82609,7 +82707,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）",
+        "groupId": "tm_104_g5"
       }
     ],
     "related": [
@@ -82666,9 +82765,9 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_105_q43",
         "materialId": "tm_105",
-        "questionNumber": "43",
+        "questionNumber": "1",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 1 格最適合的答案。\n\nNunez was a 【(1) ______】 from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 1 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a 【(1) ______】 from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "dilemma",
           "mountaineer",
@@ -82685,14 +82784,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q44",
         "materialId": "tm_105",
-        "questionNumber": "44",
+        "questionNumber": "2",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 2 格最適合的答案。\n\nNunez was a (1) ______ from 【(2) ______】. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 2 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from 【(2) ______】. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "Ecuador",
           "cliff",
@@ -82709,14 +82809,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q35",
         "materialId": "tm_105",
-        "questionNumber": "35",
+        "questionNumber": "3",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 3 格最適合的答案。\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to 【(3) ______】 with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 3 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to 【(3) ______】 with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "come upon",
           "care for",
@@ -82733,14 +82834,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q1",
         "materialId": "tm_105",
-        "questionNumber": "1",
+        "questionNumber": "4",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 4 格最適合的答案。\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy 【(4) ______】, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 4 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy 【(4) ______】, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "crop",
           "dilemma",
@@ -82757,14 +82859,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q45",
         "materialId": "tm_105",
-        "questionNumber": "45",
+        "questionNumber": "5",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 5 格最適合的答案。\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his 【(5) ______】. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 5 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his 【(5) ______】. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "dilemma",
           "footing",
@@ -82781,14 +82884,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q2",
         "materialId": "tm_105",
-        "questionNumber": "2",
+        "questionNumber": "6",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 6 格最適合的答案。\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to 【(6) ______】 down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 6 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to 【(6) ______】 down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "tumble",
           "twinkle",
@@ -82805,14 +82909,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q46",
         "materialId": "tm_105",
-        "questionNumber": "46",
+        "questionNumber": "7",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 7 格最適合的答案。\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a 【(7) ______】 and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 7 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a 【(7) ______】 and landed in deep snow far below. Hours later, he lay there, cold and (8) ______, but alive.",
         "options": [
           "crop",
           "dilemma",
@@ -82829,14 +82934,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q3",
         "materialId": "tm_105",
-        "questionNumber": "3",
+        "questionNumber": "8",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 8 格最適合的答案。\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and 【(8) ______】, but alive.",
+        "question": "【單字克漏字】閱讀短文〈The Fall〉，選出第 8 格最適合的答案。（第 1–8 題為題組）\n\nNunez was a (1) ______ from (2) ______. One morning, he decided to (3) ______ with a group of guides to climb a high mountain. The group had to cross a steep, icy (4) ______, and Nunez was afraid that he would lose his (5) ______. Suddenly he slipped and began to (6) ______ down the mountain. He fell over the edge of a (7) ______ and landed in deep snow far below. Hours later, he lay there, cold and 【(8) ______】, but alive.",
         "options": [
           "bruise",
           "adapt",
@@ -82853,14 +82959,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈The Fall〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g1"
       },
       {
         "id": "tm_105_q4",
         "materialId": "tm_105",
-        "questionNumber": "4",
+        "questionNumber": "9",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 1 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a 【(1) ______】 on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 1 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a 【(1) ______】 on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
         "options": [
           "bruised",
           "bruise",
@@ -82877,14 +82984,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q47",
         "materialId": "tm_105",
-        "questionNumber": "47",
+        "questionNumber": "10",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 2 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still 【(2) ______】, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 2 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still 【(2) ______】, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
         "options": [
           "dazed",
           "bruise",
@@ -82901,14 +83009,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q48",
         "materialId": "tm_105",
-        "questionNumber": "48",
+        "questionNumber": "11",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 3 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked 【(3) ______】 across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 3 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked 【(3) ______】 across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
         "options": [
           "bruise",
           "path",
@@ -82925,14 +83034,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q49",
         "materialId": "tm_105",
-        "questionNumber": "49",
+        "questionNumber": "12",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 4 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran 【(4) ______】 a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 4 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran 【(4) ______】 a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
         "options": [
           "unevenly",
           "dazed",
@@ -82949,14 +83059,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q36",
         "materialId": "tm_105",
-        "questionNumber": "36",
+        "questionNumber": "13",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 5 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to 【(5) ______】 a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 5 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to 【(5) ______】 a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
         "options": [
           "set off",
           "come upon",
@@ -82973,14 +83084,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q13",
         "materialId": "tm_105",
-        "questionNumber": "13",
+        "questionNumber": "14",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 6 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow 【(6) ______】. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 6 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow 【(6) ______】. It led down to a valley full of green fields, where villagers seemed to (7) ______ their (8) ______ with great skill.",
         "options": [
           "path",
           "crop",
@@ -82997,14 +83109,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q37",
         "materialId": "tm_105",
-        "questionNumber": "37",
+        "questionNumber": "15",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 7 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to 【(7) ______】 their (8) ______ with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 7 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to 【(7) ______】 their (8) ______ with great skill.",
         "options": [
           "set off",
           "worst of all",
@@ -83021,14 +83134,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q12",
         "materialId": "tm_105",
-        "questionNumber": "12",
+        "questionNumber": "16",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 8 格最適合的答案。\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their 【(8) ______】 with great skill.",
+        "question": "【單字克漏字】閱讀短文〈Waking Up〉，選出第 8 格最適合的答案。（第 9–16 題為題組）\n\nWhen he woke up, he felt a sharp pain from a (1) ______ on his arm. Still (2) ______, he stood up and walked (3) ______ across the snow, following a stream that ran (4) ______ a stone wall. Soon he was surprised to (5) ______ a narrow (6) ______. It led down to a valley full of green fields, where villagers seemed to (7) ______ their 【(8) ______】 with great skill.",
         "options": [
           "dilemma",
           "slope",
@@ -83045,14 +83159,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Waking Up〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Waking Up〉第 9–16 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g2"
       },
       {
         "id": "tm_105_q50",
         "materialId": "tm_105",
-        "questionNumber": "50",
+        "questionNumber": "17",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 1 格最適合的答案。\n\nThe villagers were all 【(1) ______】, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 1 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all 【(1) ______】, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "dazed",
           "sightless",
@@ -83069,14 +83184,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q16",
         "materialId": "tm_105",
-        "questionNumber": "16",
+        "questionNumber": "18",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 2 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an 【(2) ______】. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 2 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an 【(2) ______】. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "outsider",
           "opposition",
@@ -83093,14 +83209,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q27",
         "materialId": "tm_105",
-        "questionNumber": "27",
+        "questionNumber": "19",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 3 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was 【(3) ______】. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 3 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was 【(3) ______】. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "sightless",
           "intimate",
@@ -83117,14 +83234,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q7",
         "materialId": "tm_105",
-        "questionNumber": "7",
+        "questionNumber": "20",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 4 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley 【(4) ______】 and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 4 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley 【(4) ______】 and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "intimate",
           "intimacy",
@@ -83141,14 +83259,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q8",
         "materialId": "tm_105",
-        "questionNumber": "8",
+        "questionNumber": "21",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 5 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an 【(5) ______】 sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 5 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an 【(5) ______】 sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "intimacy",
           "intimate",
@@ -83165,14 +83284,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q9",
         "materialId": "tm_105",
-        "questionNumber": "9",
+        "questionNumber": "22",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 6 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their 【(6) ______】 with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 6 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their 【(6) ______】 with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "intimacy",
           "intimate",
@@ -83189,14 +83309,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q14",
         "materialId": "tm_105",
-        "questionNumber": "14",
+        "questionNumber": "23",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 7 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them 【(7) ______】 the paths even in the dark, with touch and hearing as their only (8) ______ system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 7 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them 【(7) ______】 the paths even in the dark, with touch and hearing as their only (8) ______ system.",
         "options": [
           "navigation",
           "oppose",
@@ -83213,14 +83334,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q15",
         "materialId": "tm_105",
-        "questionNumber": "15",
+        "questionNumber": "24",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 8 格最適合的答案。\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only 【(8) ______】 system.",
+        "question": "【單字克漏字】閱讀短文〈A Strange People〉，選出第 8 格最適合的答案。（第 17–24 題為題組）\n\nThe villagers were all (1) ______, and to them Nunez was an (2) ______. They thought that his talk about \"seeing\" was (3) ______. Having lived there all their lives, they knew every stone of the valley (4) ______ and had an (5) ______ sense of the land. Their (6) ______ with the place let them (7) ______ the paths even in the dark, with touch and hearing as their only 【(8) ______】 system.",
         "options": [
           "navigate",
           "intimacy",
@@ -83237,14 +83359,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Strange People〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Strange People〉第 17–24 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g3"
       },
       {
         "id": "tm_105_q10",
         "materialId": "tm_105",
-        "questionNumber": "10",
+        "questionNumber": "25",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 1 格最適合的答案。\n\nThe villagers worked 【(1) ______】 in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 1 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked 【(1) ______】 in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "skillful",
           "skillfully",
@@ -83261,14 +83384,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q11",
         "materialId": "tm_105",
-        "questionNumber": "11",
+        "questionNumber": "26",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 2 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a 【(2) ______】 farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 2 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a 【(2) ______】 farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "skillful",
           "skillfully",
@@ -83285,14 +83409,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q17",
         "materialId": "tm_105",
-        "questionNumber": "17",
+        "questionNumber": "27",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 3 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to 【(3) ______】 to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 3 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to 【(3) ______】 to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "adaptation",
           "smooth",
@@ -83309,14 +83434,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q18",
         "materialId": "tm_105",
-        "questionNumber": "18",
+        "questionNumber": "28",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 4 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their 【(4) ______】 to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 4 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their 【(4) ______】 to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "adapt",
           "skillful",
@@ -83333,14 +83459,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q19",
         "materialId": "tm_105",
-        "questionNumber": "19",
+        "questionNumber": "29",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 5 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would 【(5) ______】 tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 5 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would 【(5) ______】 tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "tumble",
           "cling",
@@ -83357,14 +83484,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q24",
         "materialId": "tm_105",
-        "questionNumber": "24",
+        "questionNumber": "30",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 6 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was 【(6) ______】, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 6 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was 【(6) ______】, and he admired the (7) ______ of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "smooth",
           "smoothness",
@@ -83381,14 +83509,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q23",
         "materialId": "tm_105",
-        "questionNumber": "23",
+        "questionNumber": "31",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 7 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the 【(7) ______】 of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 7 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the 【(7) ______】 of the walls. Still, he decided to (8) ______ his belief that sight was a great gift.",
         "options": [
           "smooth",
           "intimacy",
@@ -83405,14 +83534,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q38",
         "materialId": "tm_105",
-        "questionNumber": "38",
+        "questionNumber": "32",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 8 格最適合的答案。\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to 【(8) ______】 his belief that sight was a great gift.",
+        "question": "【單字克漏字】閱讀短文〈Skill and Adaptation〉，選出第 8 格最適合的答案。（第 25–32 題為題組）\n\nThe villagers worked (1) ______ in their fields. Even the youngest was a (2) ______ farmer. Nunez knew he had to (3) ______ to this strange life, and he was surprised by their (4) ______ to a world without light. A frightened child would (5) ______ tightly to her mother's hand. The stone floor of the house was (6) ______, and he admired the (7) ______ of the walls. Still, he decided to 【(8) ______】 his belief that sight was a great gift.",
         "options": [
           "lay eyes on",
           "worst of all",
@@ -83429,14 +83559,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Skill and Adaptation〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Skill and Adaptation〉第 25–32 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g4"
       },
       {
         "id": "tm_105_q5",
         "materialId": "tm_105",
-        "questionNumber": "5",
+        "questionNumber": "33",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 1 格最適合的答案。\n\nNunez believed he was 【(1) ______】 to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 1 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was 【(1) ______】 to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "superiority",
           "superior",
@@ -83453,14 +83584,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q6",
         "materialId": "tm_105",
-        "questionNumber": "6",
+        "questionNumber": "34",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 2 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his 【(2) ______】. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 2 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his 【(2) ______】. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "superiority",
           "dilemma",
@@ -83477,14 +83609,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q28",
         "materialId": "tm_105",
-        "questionNumber": "28",
+        "questionNumber": "35",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 3 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to 【(3) ______】 their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 3 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to 【(3) ______】 their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "confrontation",
           "opposition",
@@ -83501,14 +83634,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q29",
         "materialId": "tm_105",
-        "questionNumber": "29",
+        "questionNumber": "36",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 4 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter 【(4) ______】. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 4 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter 【(4) ______】. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "confront",
           "superior",
@@ -83525,14 +83659,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q26",
         "materialId": "tm_105",
-        "questionNumber": "26",
+        "questionNumber": "37",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 5 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would 【(5) ______】 anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 5 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would 【(5) ______】 anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "opposition",
           "oppose",
@@ -83549,14 +83684,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q25",
         "materialId": "tm_105",
-        "questionNumber": "25",
+        "questionNumber": "38",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 6 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong 【(6) ______】. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 6 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong 【(6) ______】. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "opposition",
           "oppose",
@@ -83573,14 +83709,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q30",
         "materialId": "tm_105",
-        "questionNumber": "30",
+        "questionNumber": "39",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 7 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a 【(7) ______】: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 7 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a 【(7) ______】: should he obey or leave? He was cold and hungry, and, (8) ______, the doctor wanted to remove his eyes.",
         "options": [
           "superiority",
           "opposition",
@@ -83597,14 +83734,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q40",
         "materialId": "tm_105",
         "questionNumber": "40",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 8 格最適合的答案。\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, 【(8) ______】, the doctor wanted to remove his eyes.",
+        "question": "【單字克漏字】閱讀短文〈Two Worlds〉，選出第 8 格最適合的答案。（第 33–40 題為題組）\n\nNunez believed he was (1) ______ to the villagers because he could see, and he was proud of his (2) ______. But no one believed him. When he tried to (3) ______ their disbelief, the talk turned into a bitter (4) ______. The elders would (5) ______ anyone who spoke of a world beyond the valley, and he faced strong (6) ______. He was in a (7) ______: should he obey or leave? He was cold and hungry, and, 【(8) ______】, the doctor wanted to remove his eyes.",
         "options": [
           "in return",
           "set off",
@@ -83621,14 +83759,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Two Worlds〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Two Worlds〉第 33–40 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g5"
       },
       {
         "id": "tm_105_q32",
         "materialId": "tm_105",
-        "questionNumber": "32",
+        "questionNumber": "41",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 1 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would 【(1) ______】 up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 1 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would 【(1) ______】 up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "flee",
           "gaze",
@@ -83645,14 +83784,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q20",
         "materialId": "tm_105",
-        "questionNumber": "20",
+        "questionNumber": "42",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 2 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that 【(2) ______】 over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 2 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that 【(2) ______】 over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "twinkle",
           "envision",
@@ -83669,14 +83809,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q22",
         "materialId": "tm_105",
-        "questionNumber": "22",
+        "questionNumber": "43",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 3 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great 【(3) ______】. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 3 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great 【(3) ______】. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "gaze",
           "flee",
@@ -83693,14 +83834,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q21",
         "materialId": "tm_105",
-        "questionNumber": "21",
+        "questionNumber": "44",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 4 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to 【(4) ______】 the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 4 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to 【(4) ______】 the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "twinkle",
           "gaze",
@@ -83717,14 +83859,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q33",
         "materialId": "tm_105",
-        "questionNumber": "33",
+        "questionNumber": "45",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 5 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could 【(5) ______】 no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 5 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could 【(5) ______】 no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "twinkle",
           "envision",
@@ -83741,14 +83884,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q34",
         "materialId": "tm_105",
-        "questionNumber": "34",
+        "questionNumber": "46",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 6 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to 【(6) ______】 before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 6 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to 【(6) ______】 before dawn, longing to (7) ______ the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "flee",
           "twinkle",
@@ -83765,14 +83909,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q39",
         "materialId": "tm_105",
-        "questionNumber": "39",
+        "questionNumber": "47",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 7 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to 【(7) ______】 the sunrise once more. He would give up everything (8) ______ his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 7 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to 【(7) ______】 the sunrise once more. He would give up everything (8) ______ his freedom.",
         "options": [
           "cling to",
           "set off",
@@ -83789,14 +83934,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q42",
         "materialId": "tm_105",
-        "questionNumber": "42",
+        "questionNumber": "48",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 8 格最適合的答案。\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything 【(8) ______】 his freedom.",
+        "question": "【單字克漏字】閱讀短文〈A Hard Choice〉，選出第 8 格最適合的答案。（第 41–48 題為題組）\n\nThe villagers wanted to remove Nunez's eyes. But at night, he would (1) ______ up at the stars that (2) ______ over the valley and feel great (3) ______. He began to (4) ______ the villagers, who had never known such beauty. He could (5) ______ no happy life without sight. So he decided to (6) ______ before dawn, longing to (7) ______ the sunrise once more. He would give up everything 【(8) ______】 his freedom.",
         "options": [
           "in return",
           "worst of all",
@@ -83813,14 +83959,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈A Hard Choice〉第 1–8 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈A Hard Choice〉第 41–48 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g6"
       },
       {
         "id": "tm_105_q31",
         "materialId": "tm_105",
-        "questionNumber": "31",
+        "questionNumber": "49",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 1 格最適合的答案。\n\nThe climb was hard; 【(1) ______】, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 1 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; 【(1) ______】, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
         "options": [
           "unevenly",
           "nevertheless",
@@ -83837,14 +83984,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字",
         "difficulty": "中",
         "section": "Words for Production",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       },
       {
         "id": "tm_105_q41",
         "materialId": "tm_105",
-        "questionNumber": "41",
+        "questionNumber": "50",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 2 格最適合的答案。\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food 【(2) ______】. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 2 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food 【(2) ______】. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
         "options": [
           "in return",
           "set off",
@@ -83861,14 +84009,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 片語",
         "difficulty": "中",
         "section": "Idioms and Phrases",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       },
       {
         "id": "tm_105_q53",
         "materialId": "tm_105",
-        "questionNumber": "53",
+        "questionNumber": "51",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 3 格最適合的答案。\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing 【(3) ______】, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 3 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing 【(3) ______】, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
         "options": [
           "crop",
           "cliff",
@@ -83885,14 +84034,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       },
       {
         "id": "tm_105_q51",
         "materialId": "tm_105",
-        "questionNumber": "51",
+        "questionNumber": "52",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 4 格最適合的答案。\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the 【(4) ______】 edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 4 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the 【(4) ______】 edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
         "options": [
           "sightless",
           "dazed",
@@ -83909,14 +84059,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       },
       {
         "id": "tm_105_q54",
         "materialId": "tm_105",
-        "questionNumber": "54",
+        "questionNumber": "53",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 5 格最適合的答案。\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to 【(5) ______】 about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 5 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to 【(5) ______】 about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to (7) ______ the whole valley.",
         "options": [
           "behold",
           "daydream",
@@ -83933,14 +84084,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       },
       {
         "id": "tm_105_q52",
         "materialId": "tm_105",
-        "questionNumber": "52",
+        "questionNumber": "54",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 6 格最適合的答案。\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a 【(6) ______】. At dawn, he reached the top and was able to (7) ______ the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 6 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a 【(6) ______】. At dawn, he reached the top and was able to (7) ______ the whole valley.",
         "options": [
           "delusion",
           "crop",
@@ -83957,14 +84109,15 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       },
       {
         "id": "tm_105_q55",
         "materialId": "tm_105",
         "questionNumber": "55",
         "type": "single_choice",
-        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 7 格最適合的答案。\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to 【(7) ______】 the whole valley.",
+        "question": "【單字克漏字】閱讀短文〈Under the Stars〉，選出第 7 格最適合的答案。（第 49–55 題為題組）\n\nThe climb was hard; (1) ______, Nunez kept going. He had told the villagers stories, and they had given him food (2) ______. By midnight, the moon, a glowing (3) ______, rose over the peaks and showed the (4) ______ edge of the ridge. He closed his eyes and began to (5) ______ about home, but he knew that his dream of an easy return was only a (6) ______. At dawn, he reached the top and was able to 【(7) ______】 the whole valley.",
         "options": [
           "daydream",
           "twinkle",
@@ -83981,7 +84134,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 單字（認識字）",
         "difficulty": "易",
         "section": "Words for Recognition",
-        "reference": "AI 自編短文〈Under the Stars〉第 1–7 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）"
+        "reference": "AI 自編短文〈Under the Stars〉第 49–55 題為題組（依長榮高中高二英文課本 L6 單字命題，非課本原文）",
+        "groupId": "tm_105_g7"
       }
     ],
     "related": [

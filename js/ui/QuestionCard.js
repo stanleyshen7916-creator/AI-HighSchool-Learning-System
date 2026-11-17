@@ -163,5 +163,65 @@ AHS.QuestionCard = (function () {
     ]);
   }
 
-  return { create: create };
+  /* createCloze(unit, answers, onSelect) — 2026-11-16 短文式克漏字：一篇短文的所有
+     空格（unit = 同一題組的題目，依作答順序）畫成一張卡片，短文只出現一次，每個空格
+     內嵌自己的下拉選單（各空格各自 4 選 1）。每一格仍是一題：選擇時呼叫
+     onSelect(questionId, key, blankPosition)，key 是該題原本的選項 key。
+     answers: { questionId: key }（目前已存的作答）。 */
+  function createCloze(unit, answers, onSelect) {
+    var CG = AHS.ClozeGroup;
+    var first = unit[0];
+    var last = unit[unit.length - 1];
+    var subj = AHS.Subjects[first.subject];
+    var byNumber = {};
+    unit.forEach(function (q) { byNumber[CG.parse(q).number] = q; });
+    var parsed = CG.parse(first);
+    var answered = unit.filter(function (q) { return answers && answers[q.id] != null; }).length;
+
+    var passage = el("p", { class: "qcard-cloze__passage" });
+    var position = 0;
+    CG.split(parsed.passage).forEach(function (part, i) {
+      if (i % 2 === 0) { passage.appendChild(document.createTextNode(part)); return; }
+      var q = byNumber[Number(part)];
+      if (!q) { passage.appendChild(document.createTextNode("(" + part + ") ______")); return; }
+      var displayed = AHS.OptionOrder ? AHS.OptionOrder.order(q) : q.options.map(function (o) {
+        return { key: o.key, text: o.text, label: o.key };
+      });
+      var saved = answers ? answers[q.id] : null;
+      var select = el("select", {
+        class: "qcard-cloze__select" + (saved != null ? " is-answered" : ""),
+        "aria-label": "第 " + part + " 格"
+      });
+      select.appendChild(el("option", { value: "", text: "(" + part + ") 請選擇" }));
+      displayed.forEach(function (opt) {
+        var o = el("option", { value: opt.key, text: opt.label + ". " + opt.text });
+        if (saved === opt.key) { o.setAttribute("selected", "selected"); }
+        select.appendChild(o);
+      });
+      var pos = position;
+      position += 1;
+      select.addEventListener("change", function () {
+        if (select.value && typeof onSelect === "function") { onSelect(q.id, select.value, pos); }
+      });
+      passage.appendChild(select);
+    });
+
+    return el("section", { class: "card qcard qcard-cloze", "aria-label": "克漏字 第 " + first.index + "～" + last.index + " 題" }, [
+      el("div", { class: "qcard__head" }, [
+        el("span", {
+          class: "qcard__badge",
+          style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a",
+          text: subj.name
+        }),
+        el("span", { class: "qcard__index", text: "第 " + first.index + "～" + last.index + " 題" }),
+        el("span", { class: "qcard__type", text: "克漏字（單選）" })
+      ]),
+      el("h2", { class: "qcard__text", text: "閱讀短文〈" + parsed.title + "〉，在每個空格選出最適合的答案。" }),
+      el("p", { class: "qcard__hint qcard-cloze__count", text: "已作答 " + answered + " / " + unit.length + " 格" }),
+      passage,
+      (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(first) : null)
+    ]);
+  }
+
+  return { create: create, createCloze: createCloze };
 })();

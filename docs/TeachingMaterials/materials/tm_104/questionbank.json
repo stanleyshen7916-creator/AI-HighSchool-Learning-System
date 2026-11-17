@@ -4,11 +4,11 @@
     {
       "questionId": "tm_104_q32",
       "materialId": "tm_104",
-      "questionNumber": "32",
+      "questionNumber": "1",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 1 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their 【(1) ______】. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 1 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their 【(1) ______】. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "leisure",
         "destination",
@@ -28,11 +28,11 @@
     {
       "questionId": "tm_104_q6",
       "materialId": "tm_104",
-      "questionNumber": "6",
+      "questionNumber": "2",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 2 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was 【(2) ______】 the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 2 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was 【(2) ______】 the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "previously",
         "previous",
@@ -52,11 +52,11 @@
     {
       "questionId": "tm_104_q8",
       "materialId": "tm_104",
-      "questionNumber": "8",
+      "questionNumber": "3",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 3 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the 【(3) ______】 of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 3 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the 【(3) ______】 of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "entrance",
         "historian",
@@ -76,11 +76,11 @@
     {
       "questionId": "tm_104_q9",
       "materialId": "tm_104",
-      "questionNumber": "9",
+      "questionNumber": "4",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 4 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still 【(4) ______】 hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 4 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still 【(4) ______】 hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "appear",
         "stun",
@@ -100,11 +100,11 @@
     {
       "questionId": "tm_104_q7",
       "materialId": "tm_104",
-      "questionNumber": "7",
+      "questionNumber": "5",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 5 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my 【(5) ______】 trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 5 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my 【(5) ______】 trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "previously",
         "previous",
@@ -124,11 +124,11 @@
     {
       "questionId": "tm_104_q12",
       "materialId": "tm_104",
-      "questionNumber": "12",
+      "questionNumber": "6",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 6 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local 【(6) ______】. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 6 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local 【(6) ______】. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "historian",
         "historic",
@@ -148,11 +148,11 @@
     {
       "questionId": "tm_104_q13",
       "materialId": "tm_104",
-      "questionNumber": "13",
+      "questionNumber": "7",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 7 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the 【(7) ______】 of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 7 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the 【(7) ______】 of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "historian",
         "destination",
@@ -172,11 +172,11 @@
     {
       "questionId": "tm_104_q11",
       "materialId": "tm_104",
-      "questionNumber": "11",
+      "questionNumber": "8",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 8 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us 【(8) ______】 documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 8 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us 【(8) ______】 documents about the city, and he told us why the temple was so (9) ______: it was where the emperor once prayed.",
       "options": [
         "previously",
         "entrance",
@@ -196,11 +196,11 @@
     {
       "questionId": "tm_104_q10",
       "materialId": "tm_104",
-      "questionNumber": "10",
+      "questionNumber": "9",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 9 格最適合的答案。\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so 【(9) ______】: it was where the emperor once prayed.",
+      "question": "【單字克漏字】閱讀短文〈Arriving in Kyoto〉，選出第 9 格最適合的答案。（第 1–9 題為題組）\n\nEvery spring, thousands of tourists choose Kyoto as their (1) ______. The city was (2) ______ the (3) ______ of Japan for more than a thousand years, and it can still (4) ______ hundreds of temples and shrines. Unlike on my (5) ______ trip, this time I booked a tour with a local (6) ______. At the (7) ______ of an old temple, he showed us (8) ______ documents about the city, and he told us why the temple was so 【(9) ______】: it was where the emperor once prayed.",
       "options": [
         "historian",
         "historic",
@@ -220,11 +220,11 @@
     {
       "questionId": "tm_104_q40",
       "materialId": "tm_104",
-      "questionNumber": "40",
+      "questionNumber": "10",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 1 格最適合的答案。\n\nIn April, the 【(1) ______】 trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 1 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the 【(1) ______】 trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "cherry",
         "kimono",
@@ -239,16 +239,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字（認識字）",
       "difficulty": "易",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q1",
       "materialId": "tm_104",
-      "questionNumber": "1",
+      "questionNumber": "11",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 2 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink 【(2) ______】. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 2 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink 【(2) ______】. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "rustle",
         "splendid",
@@ -263,16 +263,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q41",
       "materialId": "tm_104",
-      "questionNumber": "41",
+      "questionNumber": "12",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 3 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the 【(3) ______】 leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 3 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the 【(3) ______】 leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "kimono",
         "shrine",
@@ -287,16 +287,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字（認識字）",
       "difficulty": "易",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q2",
       "materialId": "tm_104",
-      "questionNumber": "2",
+      "questionNumber": "13",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 4 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them 【(4) ______】 softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 4 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them 【(4) ______】 softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "stun",
         "rustle",
@@ -311,16 +311,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q3",
       "materialId": "tm_104",
-      "questionNumber": "3",
+      "questionNumber": "14",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 5 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The 【(5) ______】 looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 5 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The 【(5) ______】 looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "landscape",
         "leisure",
@@ -335,16 +335,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q4",
       "materialId": "tm_104",
-      "questionNumber": "4",
+      "questionNumber": "15",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 6 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its 【(6) ______】. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 6 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its 【(6) ______】. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "splendid",
         "magnificent",
@@ -359,16 +359,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q5",
       "materialId": "tm_104",
-      "questionNumber": "5",
+      "questionNumber": "16",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 7 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a 【(7) ______】 time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 7 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a 【(7) ______】 time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "splendor",
         "delicacy",
@@ -383,16 +383,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q14",
       "materialId": "tm_104",
-      "questionNumber": "14",
+      "questionNumber": "17",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 8 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a 【(8) ______】 gate painted bright red, and the view from there is (9) ______.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 8 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a 【(8) ______】 gate painted bright red, and the view from there is (9) ______.",
       "options": [
         "leisurely",
         "magnificent",
@@ -407,16 +407,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q15",
       "materialId": "tm_104",
-      "questionNumber": "15",
+      "questionNumber": "18",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 9 格最適合的答案。\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is 【(9) ______】.",
+      "question": "【單字克漏字】閱讀短文〈Gardens in Spring〉，選出第 9 格最適合的答案。（第 10–18 題為題組）\n\nIn April, the (1) ______ trees along the river are covered with pink (2) ______. In autumn, the (3) ______ leaves turn bright red, and you can hear them (4) ______ softly in the wind. The (5) ______ looks like a painting, and every visitor is amazed by its (6) ______. We had a (7) ______ time walking along the river. At the top of the hill stands a (8) ______ gate painted bright red, and the view from there is 【(9) ______】.",
       "options": [
         "breathtaking",
         "previously",
@@ -431,16 +431,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Gardens in Spring〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Gardens in Spring〉第 10–18 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q16",
       "materialId": "tm_104",
-      "questionNumber": "16",
+      "questionNumber": "19",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 1 格最適合的答案。\n\nOn our second day we took a 【(1) ______】 walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 1 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a 【(1) ______】 walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "previously",
         "historian",
@@ -455,16 +455,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q17",
       "materialId": "tm_104",
-      "questionNumber": "17",
+      "questionNumber": "20",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 2 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our 【(2) ______】 hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 2 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our 【(2) ______】 hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "delicacy",
         "entrance",
@@ -479,16 +479,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q39",
       "materialId": "tm_104",
-      "questionNumber": "39",
+      "questionNumber": "21",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 3 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional 【(3) ______】, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 3 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional 【(3) ______】, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "shrine",
         "kimono",
@@ -503,16 +503,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字（認識字）",
       "difficulty": "易",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q20",
       "materialId": "tm_104",
-      "questionNumber": "20",
+      "questionNumber": "22",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 4 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so 【(4) ______】 that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 4 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so 【(4) ______】 that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "delicate",
         "stun",
@@ -527,16 +527,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q21",
       "materialId": "tm_104",
-      "questionNumber": "21",
+      "questionNumber": "23",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 5 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local 【(5) ______】, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 5 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local 【(5) ______】, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "delicate",
         "stunning",
@@ -551,16 +551,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q43",
       "materialId": "tm_104",
-      "questionNumber": "43",
+      "questionNumber": "24",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 6 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the 【(6) ______】, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 6 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the 【(6) ______】, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "kimono",
         "delicacy",
@@ -575,16 +575,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字（認識字）",
       "difficulty": "易",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q18",
       "materialId": "tm_104",
-      "questionNumber": "18",
+      "questionNumber": "25",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 7 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its 【(7) ______】 beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 7 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its 【(7) ______】 beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "stun",
         "stunning",
@@ -599,16 +599,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q19",
       "materialId": "tm_104",
-      "questionNumber": "19",
+      "questionNumber": "26",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 8 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to 【(8) ______】 visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 8 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to 【(8) ______】 visitors. Before leaving, we stopped at a small (9) ______ and made a wish.",
       "options": [
         "stun",
         "stunning",
@@ -623,16 +623,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q42",
       "materialId": "tm_104",
-      "questionNumber": "42",
+      "questionNumber": "27",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 9 格最適合的答案。\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small 【(9) ______】 and made a wish.",
+      "question": "【單字克漏字】閱讀短文〈A Leisurely Day〉，選出第 9 格最適合的答案。（第 19–27 題為題組）\n\nOn our second day we took a (1) ______ walk through the old town, spending our (2) ______ hours in tea houses. Many girls there wore a traditional (3) ______, and the tea cups were so (4) ______ that we were afraid to touch them. Kyoto is also famous for its local (5) ______, sweets made from rice. In the afternoon we visited the (6) ______, which is covered with gold leaf. Its (7) ______ beauty never fails to (8) ______ visitors. Before leaving, we stopped at a small 【(9) ______】 and made a wish.",
       "options": [
         "kimono",
         "delicacy",
@@ -647,16 +647,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字（認識字）",
       "difficulty": "易",
-      "reference": "AI 自編短文〈A Leisurely Day〉第 1–9 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈A Leisurely Day〉第 19–27 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q22",
       "materialId": "tm_104",
-      "questionNumber": "22",
+      "questionNumber": "28",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 1 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a 【(1) ______】 style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 1 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a 【(1) ______】 style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "distinction",
         "elegance",
@@ -671,16 +671,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q25",
       "materialId": "tm_104",
-      "questionNumber": "25",
+      "questionNumber": "29",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 2 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an 【(2) ______】 kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 2 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an 【(2) ______】 kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "elegance",
         "elegant",
@@ -695,16 +695,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q26",
       "materialId": "tm_104",
-      "questionNumber": "26",
+      "questionNumber": "30",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 3 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great 【(3) ______】. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 3 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great 【(3) ______】. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "elegance",
         "elegant",
@@ -719,16 +719,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q28",
       "materialId": "tm_104",
-      "questionNumber": "28",
+      "questionNumber": "31",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 4 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to 【(4) ______】 from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 4 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to 【(4) ______】 from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "appearance",
         "elegance",
@@ -743,16 +743,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q31",
       "materialId": "tm_104",
-      "questionNumber": "31",
+      "questionNumber": "32",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 5 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, 【(5) ______】 steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 5 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, 【(5) ______】 steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "distinction",
         "appearance",
@@ -767,16 +767,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q27",
       "materialId": "tm_104",
-      "questionNumber": "27",
+      "questionNumber": "33",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 6 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her 【(6) ______】, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 6 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her 【(6) ______】, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "appear",
         "appearance",
@@ -791,16 +791,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q24",
       "materialId": "tm_104",
-      "questionNumber": "24",
+      "questionNumber": "34",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 7 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a 【(7) ______】 smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 7 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a 【(7) ______】 smell of green tea in the room, and there was a clear (8) ______ between the host's seat and the guests' seats.",
       "options": [
         "distinct",
         "distinction",
@@ -815,16 +815,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q23",
       "materialId": "tm_104",
-      "questionNumber": "23",
+      "questionNumber": "35",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 8 格最適合的答案。\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear 【(8) ______】 between the host's seat and the guests' seats.",
+      "question": "【單字克漏字】閱讀短文〈The Tea Ceremony〉，選出第 8 格最適合的答案。（第 28–35 題為題組）\n\nAt a tea house, we watched a tea ceremony. It has a (1) ______ style that you cannot find anywhere else. The host wore an (2) ______ kimono, and she moved with great (3) ______. A woman seemed to (4) ______ from behind the screen with a tray, taking slow, (5) ______ steps. From her (6) ______, I guessed she was in training. I noticed a (7) ______ smell of green tea in the room, and there was a clear 【(8) ______】 between the host's seat and the guests' seats.",
       "options": [
         "distinct",
         "distinctive",
@@ -839,16 +839,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈The Tea Ceremony〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈The Tea Ceremony〉第 28–35 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q38",
       "materialId": "tm_104",
-      "questionNumber": "38",
+      "questionNumber": "36",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 1 格最適合的答案。\n\nThe old capital of Japan, 【(1) ______】, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 1 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, 【(1) ______】, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "kimono",
         "maple",
@@ -863,16 +863,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字（認識字）",
       "difficulty": "易",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q29",
       "materialId": "tm_104",
-      "questionNumber": "29",
+      "questionNumber": "37",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 2 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese 【(2) ______】 often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 2 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese 【(2) ______】 often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "literary",
         "literature",
@@ -887,16 +887,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q30",
       "materialId": "tm_104",
-      "questionNumber": "30",
+      "questionNumber": "38",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 3 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous 【(3) ______】 works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 3 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous 【(3) ______】 works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "literary",
         "entrance",
@@ -911,16 +911,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 單字",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q33",
       "materialId": "tm_104",
-      "questionNumber": "33",
+      "questionNumber": "39",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 4 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can 【(4) ______】 a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 4 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can 【(4) ______】 a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "appear",
         "boast",
@@ -935,16 +935,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 片語",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q34",
       "materialId": "tm_104",
-      "questionNumber": "34",
+      "questionNumber": "40",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 5 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can 【(5) ______】 your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 5 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can 【(5) ______】 your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "appear",
         "boast",
@@ -959,16 +959,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 片語",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q35",
       "materialId": "tm_104",
-      "questionNumber": "35",
+      "questionNumber": "41",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 6 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing 【(6) ______】 with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 6 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing 【(6) ______】 with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "stand out",
         "face to face",
@@ -983,16 +983,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 片語",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q36",
       "materialId": "tm_104",
-      "questionNumber": "36",
+      "questionNumber": "42",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 7 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates 【(7) ______】 against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 7 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates 【(7) ______】 against the green hills. It is no surprise that so many visitors (8) ______ with the city and promise to return.",
       "options": [
         "stand out",
         "die out",
@@ -1007,16 +1007,16 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 片語",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     },
     {
       "questionId": "tm_104_q37",
       "materialId": "tm_104",
-      "questionNumber": "37",
+      "questionNumber": "43",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 8 格最適合的答案。\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors 【(8) ______】 with the city and promise to return.",
+      "question": "【單字克漏字】閱讀短文〈Kyoto in Words〉，選出第 8 格最適合的答案。（第 36–43 題為題組）\n\nThe old capital of Japan, (1) ______, has inspired writers for centuries. Students of Japanese (2) ______ often walk its old streets, hoping to see the places described in famous (3) ______ works. A few days there can (4) ______ a tourist into a true fan of the city. Walking along the narrow lanes, you can (5) ______ your eyes on wooden houses and tea shops. At the end of one lane, you may find yourself standing (6) ______ with a thousand-year-old gate. Among the quiet buildings, the bright red gates (7) ______ against the green hills. It is no surprise that so many visitors 【(8) ______】 with the city and promise to return.",
       "options": [
         "die out",
         "in advance",
@@ -1031,7 +1031,7 @@
       "createdDate": "2026-11-02T00:00:00Z",
       "knowledgePoint": "L5 片語",
       "difficulty": "中",
-      "reference": "AI 自編短文〈Kyoto in Words〉第 1–8 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
+      "reference": "AI 自編短文〈Kyoto in Words〉第 36–43 題為題組（依長榮高中高二英文課本 L5 單字命題，非課本原文）"
     }
   ]
 }

@@ -40,25 +40,58 @@ AHS.QuizParts = AHS.QuizParts || {};
      straight through to QuestionNavigator so a "完成測試" button is
      always visible regardless of currentIndex; omitted entirely means
      no button renders (QuestionNavigator's own additive default). */
+  /* clozeBounds(questions, index) — 目前這題若屬於一篇短文式克漏字（同 groupId、連續、
+     2 題以上），回傳 { start, end }（含）；否則 null。 */
+  function clozeBounds(questions, index) {
+    var q = questions[index];
+    if (!q || !q.groupId || !AHS.ClozeGroup || !AHS.ClozeGroup.isCloze(q)) { return null; }
+    var start = index;
+    var end = index;
+    while (start > 0 && questions[start - 1].groupId === q.groupId) { start -= 1; }
+    while (end < questions.length - 1 && questions[end + 1].groupId === q.groupId) { end += 1; }
+    return end > start ? { start: start, end: end } : null;
+  }
+
   function buildExamView(session, rerender, onFinish, onFinishEarly) {
     var questions = AHS.QuestionRuntime.getSet(session.examId);
     var currentQuestion = questions[session.currentIndex];
     var answers = AHS.AnswerRuntime.getAnswers(session.examId);
     var selected = answers[currentQuestion.id] != null ? answers[currentQuestion.id] : null;
 
-    var card = AHS.QuestionCard.create(currentQuestion, selected, function (key) {
-      AHS.AnswerRuntime.saveAnswer(session.examId, currentQuestion.id, key);
-      rerender();
-    });
+    /* 2026-11-16 短文式克漏字：同一篇短文的題目（同 groupId、連續）畫成一張卡片，
+       短文只顯示一次，每個空格內嵌自己的選單；上一題／下一題以整篇短文為單位。 */
+    var bounds = clozeBounds(questions, session.currentIndex);
+    var card;
+    var navIndex = session.currentIndex;
+    var onPrev = function () { AHS.ExamRuntime.prev(session.examId); rerender(); };
+    var onNext = function () { AHS.ExamRuntime.next(session.examId); rerender(); };
+    if (bounds) {
+      navIndex = bounds.end === questions.length - 1 || bounds.start !== 0 ? bounds.end : bounds.start;
+      card = AHS.QuestionCard.createCloze(questions.slice(bounds.start, bounds.end + 1), answers, function (questionId, key, position) {
+        AHS.AnswerRuntime.saveAnswer(session.examId, questionId, key);
+        var y = window.pageYOffset;
+        rerender();
+        window.scrollTo(0, y);
+        var selects = document.querySelectorAll(".qcard-cloze__select");
+        if (selects[position]) { selects[position].focus(); }
+      });
+      onPrev = function () { if (bounds.start > 0) { AHS.ExamRuntime.goTo(session.examId, bounds.start - 1); rerender(); } };
+      onNext = function () { if (bounds.end < questions.length - 1) { AHS.ExamRuntime.goTo(session.examId, bounds.end + 1); rerender(); } };
+    } else {
+      card = AHS.QuestionCard.create(currentQuestion, selected, function (key) {
+        AHS.AnswerRuntime.saveAnswer(session.examId, currentQuestion.id, key);
+        rerender();
+      });
+    }
 
     var nav = AHS.QuestionNavigator.create({
       total: questions.length,
-      currentIndex: session.currentIndex,
+      currentIndex: navIndex,
       answeredIds: Object.keys(answers),
       questionIds: questions.map(function (q) { return q.id; }),
       onGoTo: function (index) { AHS.ExamRuntime.goTo(session.examId, index); rerender(); },
-      onPrev: function () { AHS.ExamRuntime.prev(session.examId); rerender(); },
-      onNext: function () { AHS.ExamRuntime.next(session.examId); rerender(); },
+      onPrev: onPrev,
+      onNext: onNext,
       onFinish: onFinish,
       onFinishEarly: onFinishEarly
     });
@@ -123,7 +156,8 @@ AHS.QuizParts = AHS.QuizParts || {};
             }),
             el("span", { class: "qreview__item-index", text: "第 " + q.index + " 題" })
           ]),
-          el("p", { class: "qreview__item-text", text: q.text }),
+          /* 短文式克漏字：成績頁只列含本題空格的那一句，不重複整篇短文。 */
+          el("p", { class: "qreview__item-text", text: AHS.ClozeGroup && AHS.ClozeGroup.isCloze(q) ? AHS.ClozeGroup.snippet(q) : q.text }),
           (window.AHS && AHS.QuestionReference ? AHS.QuestionReference.node(q) : null),
           /* Sprint AI-147（使用者需求：題目附圖）: real passthrough render
              only, same discipline as QuestionCard.js's own qcard__figure. */
