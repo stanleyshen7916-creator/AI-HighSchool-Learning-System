@@ -36,6 +36,21 @@ while true; do
     touch "${lock}"
     echo "[mineru-watch] processing ${base}"
 
+    # 2026-11-16 A12：照片依 EXIF 方向自動轉正後再辨識（手機照片常被存成橫向／上下顛倒）。
+    case "${f,,}" in
+      *.jpg|*.jpeg|*.png)
+        python - "${f}" <<'PY' >> "${job_dir}/mineru.log" 2>&1 || true
+import sys
+from PIL import Image, ImageOps
+p = sys.argv[1]
+im = Image.open(p)
+if im.getexif().get(0x0112, 1) != 1:
+    ImageOps.exif_transpose(im).save(p, quality=95)
+    print('[orient] exif_transpose applied')
+PY
+        ;;
+    esac
+
     if mineru -p "${f}" -o "${OUTPUT_DIR}" -b pipeline -m ocr -l ch > "${job_dir}/mineru.log" 2>&1; then
       touch "${done_marker}"
       echo "[mineru-watch] done ${base}"
