@@ -148,7 +148,8 @@ function run(ids, check) {
     const html = build(require(specPath));
     const out = path.join(LESSONS, id + ".html");
     const cur = fs.existsSync(out) ? fs.readFileSync(out, "utf8") : null;
-    if (cur !== html) { stale.push(id); if (!check) { fs.writeFileSync(out, html); } }
+    /* Windows 取出的檔案是 CRLF；只比內容，不比換行。 */
+    if (cur === null || cur.replace(/\r\n/g, "\n") !== html.replace(/\r\n/g, "\n")) { stale.push(id); if (!check) { fs.writeFileSync(out, html); } }
   });
   return stale;
 }
