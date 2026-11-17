@@ -262,6 +262,10 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
   const view = AHS.QuizParts.buildExamView(AHS.ExamRuntime.getById(examId), () => { rerendered++; }, () => {}, () => {});
   check("測驗頁：站在短文中間時顯示整篇短文卡片（1 張卡片、8 個選單、沒有選項按鈕）",
     view.querySelectorAll(".qcard-cloze").length === 1 && view.querySelectorAll(".qcard-cloze__select").length === 8 && view.querySelectorAll(".qcard-option").length === 0);
+  const pills = [...view.querySelectorAll(".qnav__num")];
+  check("測驗頁：題號列把整篇短文的 8 題都標成目前題，進度寫「第 a～b 題」",
+    pills.filter((x) => x.classList.contains("is-current")).length === 8 && pills[g0.start].classList.contains("is-current") && pills[g0.end].classList.contains("is-current") &&
+    view.querySelector(".qnav__progress-label").textContent === (g0.start + 1) + "～" + (g0.end + 1) + " / " + shuffled.length + " 題");
   const pick = shuffled[g0.start + 4];
   const pickSelect = view.querySelectorAll(".qcard-cloze__select")[AHS.ClozeGroup.parse(pick).number - 1];
   pickSelect.value = pick.correctAnswer;

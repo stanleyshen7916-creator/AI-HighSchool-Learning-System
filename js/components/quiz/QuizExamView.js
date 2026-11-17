@@ -87,6 +87,7 @@ AHS.QuizParts = AHS.QuizParts || {};
     var nav = AHS.QuestionNavigator.create({
       total: questions.length,
       currentIndex: navIndex,
+      currentRange: bounds,
       answeredIds: Object.keys(answers),
       questionIds: questions.map(function (q) { return q.id; }),
       onGoTo: function (index) { AHS.ExamRuntime.goTo(session.examId, index); rerender(); },
