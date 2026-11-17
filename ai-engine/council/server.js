@@ -346,7 +346,7 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     `category: ${safeCategory}`,
     `engine: ${safeEngine}`,
     `review_engine: ${REVIEW_ENGINE}`,
-    `ai_team: ${meta.team ?? 'GPT + Gemini + Claude'}`,
+    `ai_team: ${meta.team ?? 'GPT + Claude'}`,
     `review_mode: ${meta.reviewMode ?? 'Independent → Cross Review → Adjudication'}`,
     `council_pipeline: ${meta.pipeline ?? 'Council Pipeline: SIMULATED'}`,
     `generated_at: ${generatedAt}`,
@@ -363,7 +363,7 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     `教材類別：${safeCategory}`,
     `AI 引擎：${safeEngine}`,
     `審查引擎：${REVIEW_ENGINE}`,
-    `產出 AI 團隊：${meta.team ?? 'GPT + Gemini + Claude'}`,
+    `產出 AI 團隊：${meta.team ?? 'GPT + Claude'}`,
     `審查模式：${meta.reviewMode ?? 'Independent → Cross Review → Adjudication'}`,
     `審議管線：${meta.pipeline ?? 'Council Pipeline: SIMULATED'}`,
     '',
@@ -376,8 +376,8 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
   const phaseAudit = [
     '### 審查紀錄',
     '',
-    `Phase 1 獨立初稿自評：GPT ${phase1Scores.GPT ?? 'N/A'}/100；Gemini ${phase1Scores.Gemini ?? 'N/A'}/100；Claude ${phase1Scores.Claude ?? 'N/A'}/100`,
-    'Phase 2 交叉比對修訂：GPT-Revised；Gemini-Revised；Claude-Revised',
+    `Phase 1 獨立初稿自評：GPT ${phase1Scores.GPT ?? 'N/A'}/100；${phase1Scores.Gemini != null ? `Gemini ${phase1Scores.Gemini}/100；` : ''}Claude ${phase1Scores.Claude ?? 'N/A'}/100`,
+    'Phase 2 交叉比對修訂：GPT-Revised；Claude-Revised',
     `Phase 3 首席審議裁決：Quality Gate ${meta.qualityGate ?? 'PENDING_MANUAL_REVIEW'}`,
     '',
     `Self-QA：${meta.finalScore ?? 'N/A'} / 100`,
@@ -426,13 +426,14 @@ function validateAssembleCouncilPayload(body) {
   if (!school || !grade || !subject || !unit || !category) {
     return { error: 'school, grade, subject, unit, category 為必填欄位' };
   }
-  if (!chatgpt?.trim() || !gemini?.trim() || !claude?.trim()) {
-    return { error: '請提供 ChatGPT (Web)、Gemini (Web)、Claude (Web) 三方初稿內容' };
+  // 2026-11-16：初稿改為 ChatGPT＋Claude 雙方；Gemini 為選填（舊資料／舊前端仍可送三方）。
+  if (!chatgpt?.trim() || !claude?.trim()) {
+    return { error: '請提供 ChatGPT (Web)、Claude (Web) 雙方初稿內容' };
   }
 
   return {
     metadata: { school, grade, subject, unit, category },
-    drafts: { chatgpt, gemini, claude },
+    drafts: gemini?.trim() ? { chatgpt, gemini, claude } : { chatgpt, claude },
     sourceText: sourceText || '',
     sourceRef: sourceRef || null,
   };
@@ -762,7 +763,7 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
   }
 });
 
-// 2026-10-14 原文辨識協助包：找出 OCR 看不清楚的照片，只列出那些檔名給 ChatGPT／Gemini 網頁版轉錄。
+// 2026-10-14 原文辨識協助包：找出 OCR 看不清楚的照片，只列出那些檔名給 ChatGPT／Claude 網頁版轉錄（2026-11-16 Gemini→Claude）。
 // 單一檔案上傳的教材本文沒有檔案標記，此時以 filename 當作整份本文的檔名。
 function withFileMarker(sourceText, filename) {
   const text = String(sourceText || '');
@@ -782,9 +783,10 @@ app.post('/api/ocr-help/check', async (req, res) => {
   }
 });
 
-// 貼回 ChatGPT 與 Gemini 的轉錄，逐句三方比對後回傳更正後的教材本文與待選定的衝突。
+// 貼回 ChatGPT 與 Claude 的轉錄（Claude 的轉錄沿用 gemini 欄位，也接受 claude 欄位），逐句三方比對後回傳更正後的教材本文與待選定的衝突。
 app.post('/api/ocr-help/merge', (req, res) => {
-  const { sourceText, gpt, gemini, filename } = req.body || {};
+  const { sourceText, gpt, filename } = req.body || {};
+  const gemini = req.body?.claude || req.body?.gemini;
   if (!sourceText || (!gpt && !gemini)) return res.status(400).json({ error: '需要教材本文與至少一份轉錄' });
   const text = withFileMarker(sourceText, filename);
   const result = ocrHelp.mergeTranscriptions(text, gpt || '', gemini || '');

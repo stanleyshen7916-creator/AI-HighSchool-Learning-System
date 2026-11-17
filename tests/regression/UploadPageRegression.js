@@ -160,7 +160,7 @@ async function main() {
   check("教材類型不提供「考卷」（AI 出題不能標為原題考卷）", [...fieldByLabel(doc, "教材類型").options].every((o) => o.value !== "EXAM"));
 
   console.log("\n[3] 未填必要欄位時不送出");
-  click(buttonByText(doc, "執行三方交叉審議"));
+  click(buttonByText(doc, "執行雙方交叉審議"));
   await settle();
   check("未填章節：提示且不建立 job", doc.body.textContent.indexOf("請先在步驟 1 填寫章節") !== -1 && !log.some((c) => c.url.indexOf("/jobs") !== -1));
   click(buttonByText(doc, "建立教材包草稿"));
@@ -171,12 +171,11 @@ async function main() {
   fieldByLabel(doc, "科目").value = "數學";
   fieldByLabel(doc, "章節").value = "第一章";
   fieldByLabel(doc, "ChatGPT (Web)").value = "①核心概念\nA";
-  fieldByLabel(doc, "Gemini (Web)").value = "①核心概念\nB";
   fieldByLabel(doc, "Claude (Web)").value = "①核心概念\nC";
-  click(buttonByText(doc, "執行三方交叉審議"));
+  click(buttonByText(doc, "執行雙方交叉審議"));
   await settle();
   const job = log.find((c) => c.method === "POST" && /\/api\/assemble-council\/jobs$/.test(c.url));
-  check("送出審議 job，含三方初稿與 Council 用的學校名稱", !!job && job.body.school === "長榮中學" && job.body.drafts.claude === "①核心概念\nC" && job.body.unit === "第一章");
+  check("送出審議 job，含雙方初稿（無 Gemini）與 Council 用的學校名稱", !!job && job.body.school === "長榮中學" && job.body.drafts.claude === "①核心概念\nC" && !("gemini" in job.body.drafts) && !fieldByLabel(doc, "Gemini (Web)") && job.body.unit === "第一章");
   check("審議完成後顯示 Final 檔名與 Quality Gate", doc.body.textContent.indexOf(FINAL) !== -1 && doc.body.textContent.indexOf("PASS · 98") !== -1);
 
   click(buttonByText(doc, "建立教材包草稿"));
@@ -232,7 +231,7 @@ async function main() {
   console.log("\n[5b] 為既有教材加題");
   click(buttonByText(doc, "為既有教材加題"));
   await settle();
-  check("切換後只顯示加題的四個步驟＋引擎＋草稿預覽", visibleCards().length === 6 && !visibleCards().some((c) => c.textContent.indexOf("三方初稿") !== -1));
+  check("切換後只顯示加題的四個步驟＋引擎＋草稿預覽", visibleCards().length === 6 && !visibleCards().some((c) => c.textContent.indexOf("雙方初稿") !== -1));
   const parentSel = fieldByLabel(doc, "教材");
   check("教材清單來自引擎（含原題數）", !!parentSel && [...parentSel.options].some((o) => o.value === "tm_7" && o.textContent.indexOf("原有 23 題") !== -1));
   check("預設單一 Claude 模式：只有 Claude（新對話）作答欄", !!fieldByLabel(doc, "Claude（新對話） 作答結果") &&

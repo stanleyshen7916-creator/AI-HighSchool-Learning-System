@@ -6,7 +6,7 @@
      1 教材資訊        school/semester/subject from the platform's own data
      2 上傳原始檔      OCR via the engine (MinerU → Tesseract fallback);
                        originals are kept for the package's source/
-     3 三方初稿        paste ChatGPT/Gemini/Claude (Web) drafts
+     3 雙方初稿        paste ChatGPT/Claude (Web) drafts (Gemini removed 2026-11-16)
      4 交叉審議        engine job → Final.md (or pick an existing Final)
      5 建立教材包草稿  Final.md → docs/TeachingMaterials/materials/tm_N
                        (draft — students can't see it), preview, then
@@ -97,7 +97,7 @@ AHS.CouncilUpload = (function () {
   /* ---- 為既有教材加題（2026-10-01） --------------------------------------
      1 選教材與題數 → 複製出題 Prompt（貼到 Claude）
      2 貼回出題結果 → 擷取題目、複製「只有題目」的作答 Prompt
-     3 貼回獨立作答結果（新的 Claude 對話；三方模式另加 ChatGPT、Gemini）
+     3 貼回獨立作答結果（新的 Claude 對話；三方模式另加 ChatGPT）
      4 核對結果：一致 → 預設勾選；需人工確認 → 預設不勾；重複 → 不能勾
        → 建立補充題庫草稿（新的 tm_N，原教材不修改）→ 共用的預覽／發布。 */
   var OPTION_LETTERS = ["A", "B", "C", "D", "E"];
@@ -195,7 +195,7 @@ AHS.CouncilUpload = (function () {
       ]),
       el("div", { class: "upl-radios" }, [
         el("label", { class: "upl-radio" }, [modeSingle, el("span", { text: "Claude 出題＋另開新對話獨立作答核對（建議）" })]),
-        el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT、Gemini 各自作答" })]),
+        el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT 各自作答" })]),
         el("label", { class: "upl-radio" }, [modePast, el("span", { text: "歷屆試題：逐字貼上官方題目與官方答案，每題加上「出處：年度、考試、考科、題號」「對應課程：第X章 …」（至少對應到課）「對應程度：完全對應／部分對應」，可另加「對應節次：」「對應說明：」（不需獨立作答）" })])
       ]),
       subjectHint,
@@ -218,7 +218,7 @@ AHS.CouncilUpload = (function () {
             el("pre", { class: "upl-pre", text: r.data.prompt })
           ])
         ]));
-        var where = mode() === "tri" ? "請分別貼到「新的」Claude 對話、ChatGPT、Gemini，" : "請開一個「新的」Claude 對話貼上（不要用出題的同一個對話），";
+        var where = mode() === "tri" ? "請分別貼到「新的」Claude 對話、ChatGPT，" : "請開一個「新的」Claude 對話貼上（不要用出題的同一個對話），";
         copyText(r.data.prompt).then(function () {
           status(solverPromptStatus, "擷取到 " + r.data.count + " 題，作答 Prompt 已複製。" + where + "再把作答結果貼到下一步。", "ok");
         }, function () { status(solverPromptStatus, "擷取到 " + r.data.count + " 題；瀏覽器不允許複製，請展開下方預覽手動複製後，" + where + "再把作答結果貼到下一步。", "warn"); });
@@ -234,8 +234,7 @@ AHS.CouncilUpload = (function () {
     /* 3 貼上獨立作答結果 */
     var solverFields = [
       { id: "claude-fresh", name: "Claude（新對話）", tri: false },
-      { id: "chatgpt", name: "ChatGPT", tri: true },
-      { id: "gemini", name: "Gemini", tri: true }
+      { id: "chatgpt", name: "ChatGPT", tri: true }
     ].map(function (s) {
       s.input = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "例如：\nQ1：B\nQ2：D" });
       s.field = field(s.name + " 作答結果", s.input);
@@ -426,7 +425,7 @@ AHS.CouncilUpload = (function () {
         AHS.UI.mount(imagesSlot, el("span"));
         if (r.error || !r.data || !r.data.count) { return; }
         AHS.UI.mount(imagesSlot, el("a", {
-          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip），可拖進三方 AI 對話框"
+          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip），可拖進 ChatGPT／Claude 對話框"
         }));
       });
     }
@@ -490,12 +489,13 @@ AHS.CouncilUpload = (function () {
       ]).join("\n");
     }
     /* 2026-10-14 原文辨識協助包：本機 Qwen 找出 OCR 看不清楚的照片，只把那些檔名交給
-       ChatGPT／Gemini 網頁版逐字轉錄；貼回後逐句比對，兩方一致就自動更正，三方都不同才讓管理者選。 */
+       ChatGPT／Claude 網頁版逐字轉錄；貼回後逐句比對，兩方一致就自動更正，三方都不同才讓管理者選。
+       2026-11-16：Gemini 改由 Claude 轉錄；送引擎時沿用 gemini 欄位名（引擎相容），畫面一律顯示 Claude。 */
     var ocrStatus = el("p", { class: "upl-status" });
     var ocrPages = el("div");
     var ocrConflicts = el("div");
     var ocrGpt = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 ChatGPT 的轉錄（以「=== 檔名 ===」分段）" });
-    var ocrGemini = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 Gemini 的轉錄（以「=== 檔名 ===」分段）" });
+    var ocrGemini = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 Claude 的轉錄（以「=== 檔名 ===」分段）" });
     var ocrPrompt = null;
     var ocrCheckBtn = button("檢查 OCR 看不清楚的頁面", null, function () {
       if (!sourceText.value.trim()) { status(ocrStatus, "請先上傳或貼上教材本文。", "error"); return; }
@@ -512,7 +512,7 @@ AHS.CouncilUpload = (function () {
           status(ocrStatus, r.data.checked ? "沒有找到看不清楚的頁面，不需要轉錄。" : "本機 Qwen 無法完成檢查（" + (r.data.reason || "未知原因") + "），可稍後再試。", r.data.checked ? "ok" : "error");
           return;
         }
-        status(ocrStatus, "共 " + r.data.pages.length + " 頁需要轉錄。" + (ocrPrompt ? "按「複製轉錄 Prompt」，連同這些照片貼到 ChatGPT 與 Gemini 網頁版。" : "上傳時沒有檔名，請把整份照片交給 ChatGPT 與 Gemini 轉錄。"), "ok");
+        status(ocrStatus, "共 " + r.data.pages.length + " 頁需要轉錄。" + (ocrPrompt ? "按「複製轉錄 Prompt」，連同這些照片貼到 ChatGPT 與 Claude 網頁版。" : "上傳時沒有檔名，請把整份照片交給 ChatGPT 與 Claude 轉錄。"), "ok");
       });
     });
     var ocrCopyBtn = button("複製轉錄 Prompt", null, function () {
@@ -523,9 +523,9 @@ AHS.CouncilUpload = (function () {
     function showConflicts(conflicts) {
       AHS.UI.mount(ocrConflicts, el("div", {}, conflicts.map(function (c) {
         var row = el("div", { class: "upl-status" });
-        var choices = [["保留 OCR", c.local], ["用 ChatGPT", c.gpt], ["用 Gemini", c.gemini]].filter(function (x) { return x[1]; });
+        var choices = [["保留 OCR", c.local], ["用 ChatGPT", c.gpt], ["用 Claude", c.gemini]].filter(function (x) { return x[1]; });
         AHS.UI.mount(row, el("div", {}, [
-          el("p", { text: c.id + "（" + c.file + "）　OCR：" + c.local + (c.gpt ? "　／ChatGPT：" + c.gpt : "") + (c.gemini ? "　／Gemini：" + c.gemini : "") }),
+          el("p", { text: c.id + "（" + c.file + "）　OCR：" + c.local + (c.gpt ? "　／ChatGPT：" + c.gpt : "") + (c.gemini ? "　／Claude：" + c.gemini : "") }),
           el("div", { class: "upl-actions" }, choices.map(function (x) {
             return button(x[0], null, function () {
               if (x[1] !== c.local) sourceText.value = sourceText.value.replace(c.local, x[1]);
@@ -544,14 +544,14 @@ AHS.CouncilUpload = (function () {
         showConflicts(r.data.conflicts || []);
         status(ocrStatus, "自動更正 " + r.data.corrections.length + " 句、補回 " + r.data.additions.length + " 句" +
           (r.data.conflicts.length ? "；" + r.data.conflicts.length + " 句三方不一致，請在下面選定。" : "。") +
-          "已寫回教材本文；若這份教材已審議過，請重新執行三方交叉審議。", "ok");
+          "已寫回教材本文；若這份教材已審議過，請重新執行雙方交叉審議。", "ok");
       });
     });
     var ocrHelpBox = el("details", { class: "upl-images" }, [
       el("summary", { text: "原文辨識協助包（OCR 有錯字或整頁辨識不出來時使用）" }),
       el("div", { class: "upl-actions" }, [ocrCheckBtn, ocrCopyBtn]),
       ocrStatus, ocrPages,
-      field("ChatGPT 轉錄", ocrGpt), field("Gemini 轉錄", ocrGemini),
+      field("ChatGPT 轉錄", ocrGpt), field("Claude 轉錄", ocrGemini),
       el("div", { class: "upl-actions" }, [ocrMergeBtn]),
       ocrConflicts
     ]);
@@ -562,23 +562,22 @@ AHS.CouncilUpload = (function () {
       field("教材本文（SOURCE）", sourceText),
       ocrHelpBox,
       imagesSlot,
-      el("div", { class: "upl-actions" }, [button("複製三方 AI 專用 Prompt", null, function () {
+      el("div", { class: "upl-actions" }, [button("複製雙方 AI 專用 Prompt", null, function () {
         copyText(buildPrompt()).then(function () {
-          status(promptStatus, "已複製。請分別貼到 ChatGPT、Gemini、Claude 網頁版，再把三方輸出貼到下一步。", "ok");
+          status(promptStatus, "已複製。請分別貼到 ChatGPT、Claude 網頁版，再把兩方輸出貼到下一步。", "ok");
         }, function () { status(promptStatus, "瀏覽器不允許複製，請改用 Ctrl+C。", "error"); });
       })]),
       promptStatus
     ]);
 
-    /* ---- 3. 三方初稿 ---------------------------------------------------- */
+    /* ---- 3. 雙方初稿 ---------------------------------------------------- */
     var drafts = {
       chatgpt: el("textarea", { class: "upl-textarea", rows: "12" }),
-      gemini: el("textarea", { class: "upl-textarea", rows: "12" }),
       claude: el("textarea", { class: "upl-textarea", rows: "12" })
     };
-    var draftsCard = card("3　三方初稿", "把三個網頁版 AI 依 Prompt 產出的完整內容分別貼上。", [
+    var draftsCard = card("3　雙方初稿", "把 ChatGPT、Claude 網頁版依 Prompt 產出的完整內容分別貼上。", [
       el("div", { class: "upl-drafts" }, [
-        field("ChatGPT (Web)", drafts.chatgpt), field("Gemini (Web)", drafts.gemini), field("Claude (Web)", drafts.claude)
+        field("ChatGPT (Web)", drafts.chatgpt), field("Claude (Web)", drafts.claude)
       ])
     ]);
 
@@ -732,12 +731,12 @@ AHS.CouncilUpload = (function () {
         refreshCatalog();
       });
     }
-    var runBtn = button("執行三方交叉審議", "primary", function () {
+    var runBtn = button("執行雙方交叉審議", "primary", function () {
       if (state.polling) { return; }
       var m = councilMeta();
       if (!m.unit) { status(councilStatus, "請先在步驟 1 填寫章節。", "error"); return; }
-      if (!drafts.chatgpt.value.trim() || !drafts.gemini.value.trim() || !drafts.claude.value.trim()) {
-        status(councilStatus, "請先貼上三方初稿。", "error"); return;
+      if (!drafts.chatgpt.value.trim() || !drafts.claude.value.trim()) {
+        status(councilStatus, "請先貼上雙方初稿。", "error"); return;
       }
       runBtn.disabled = true;
       state.polling = true;
@@ -745,7 +744,7 @@ AHS.CouncilUpload = (function () {
       client.createJob({
         school: m.school, grade: m.grade, subject: m.subject, unit: m.unit, category: m.category,
         sourceText: sourceText.value,
-        drafts: { chatgpt: drafts.chatgpt.value, gemini: drafts.gemini.value, claude: drafts.claude.value }
+        drafts: { chatgpt: drafts.chatgpt.value, claude: drafts.claude.value }
       }).then(function (r) {
         if (r.error) { state.polling = false; runBtn.disabled = false; status(councilStatus, r.error.message, "error"); return; }
         poll(r.data.jobId);
@@ -760,7 +759,7 @@ AHS.CouncilUpload = (function () {
         });
       });
     }
-    var councilCard = card("4　交叉審議產出 Final.md", "由本地 Qwen 逐條對照教材本文裁決三方內容；未通過驗證的陳述不會進入 Final。", [
+    var councilCard = card("4　交叉審議產出 Final.md", "由本地 Qwen 逐條對照教材本文裁決雙方內容；未通過驗證的陳述不會進入 Final。", [
       el("div", { class: "upl-actions" }, [runBtn]),
       councilStatus,
       el("div", { class: "upl-or" }, [
@@ -1054,7 +1053,7 @@ AHS.CouncilUpload = (function () {
 
     var modes = [
       { id: "new", name: "上傳新教材", cards: [metaCard, uploadCard, draftsCard, councilCard, packageCard],
-        sub: "上傳課本或講義 → 三方 AI 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" },
+        sub: "上傳課本或講義 → ChatGPT＋Claude 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" },
       { id: "supplement", name: "為既有教材加題", cards: supplementCards.cards,
         sub: "為已上架的教材補出新的練習題：Claude 出題 → 另開新對話獨立作答核對 → 預覽確認後併入該課題庫。僅管理者可見。" },
       { id: "stats", name: "審議統計", cards: [statsCard],

@@ -78,13 +78,13 @@ AHS.CouncilEngineClient = (function () {
     health: function () { return request("GET", "/api/health"); },
     catalog: function () { return request("GET", "/api/catalog"); },
     finalContent: function (filename) { return request("GET", "/api/finals/" + enc(filename)); },
-    /* 2026-10-06 審議時保存的三方初稿 */
+    /* 2026-10-06 審議時保存的初稿（2026-11-16 起為 ChatGPT＋Claude 雙方） */
     finalDrafts: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/drafts"); },
     saveFinal: function (filename, content) { return request("PUT", "/api/finals/" + enc(filename), { content: content }); },
     /* 2026-10-12: 練習題 Claude 最終審查包 */
     practiceReview: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/practice-review"); },
     applyPracticeReview: function (filename, reply) { return request("POST", "/api/finals/" + enc(filename) + "/practice-review", { reply: reply }); },
-    /* 2026-10-14: 原文辨識協助包（OCR 看不清楚的照片交給 ChatGPT／Gemini 網頁版轉錄） */
+    /* 2026-10-14: 原文辨識協助包（OCR 看不清楚的照片交給 ChatGPT／Claude 網頁版轉錄） */
     ocrHelpCheck: function (sourceText, filename) { return request("POST", "/api/ocr-help/check", { sourceText: sourceText, filename: filename || null }); },
     ocrHelpMerge: function (payload) { return request("POST", "/api/ocr-help/merge", payload); },
     /* 2026-10-14: 送 Claude 最終審查的比例與標準答案集筆數 */
