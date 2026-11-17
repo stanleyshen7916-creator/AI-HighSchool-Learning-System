@@ -368,9 +368,7 @@ function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
     '【ChatGPT 初稿】',
     drafts.chatgpt || '',
     '',
-    '【Gemini 初稿】',
-    drafts.gemini || '',
-    '',
+    ...(drafts.gemini ? ['【Gemini 初稿】', drafts.gemini, ''] : []),
     '【Claude 初稿】',
     drafts.claude || '',
     '',
@@ -460,13 +458,11 @@ function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, dra
     '【CANONICAL SOURCE（唯一 Truth Anchor，逐字引用時必須與此完全一致）】',
     sourceText,
     '',
-    `【三方初稿中，屬於「${sectionKey}」的內容】`,
+    `【各方初稿中，屬於「${sectionKey}」的內容】`,
     'ChatGPT：',
     draftSnippets.chatgpt || '（這份初稿在這個小節沒有內容）',
     '',
-    'Gemini：',
-    draftSnippets.gemini || '（這份初稿在這個小節沒有內容）',
-    '',
+    ...(draftSnippets.gemini ? ['Gemini：', draftSnippets.gemini, ''] : []),
     'Claude：',
     draftSnippets.claude || '（這份初稿在這個小節沒有內容）',
     '',
@@ -1355,6 +1351,13 @@ function assembleClaimsIntoSections(claims) {
   return { sections, hardFail: leaked };
 }
 
+// 2026-11-16：初稿改為 ChatGPT＋Claude 雙方；只有實際提供 Gemini 初稿時才列入來源。
+function draftSourcesLabel(drafts = {}) {
+  return String(drafts.gemini || '').trim()
+    ? 'ChatGPT (Web) + Gemini (Web) + Claude (Web)'
+    : 'ChatGPT (Web) + Claude (Web)';
+}
+
 function buildFallbackSections(gpt, gemini, claude) {
   const merged = {};
 
@@ -1679,7 +1682,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
         mode === 'llm_semantic'
           ? 'Qwen Semantic Cross-Council Adjudication'
           : 'Human-in-the-Loop Tri-Web Council',
-      sources: 'ChatGPT (Web) + Gemini (Web) + Claude (Web)',
+      sources: draftSourcesLabel(drafts),
       adjudicator,
       finalScore,
       // Gate 2：finalScore（沿用舊欄位名，維持既有相容性）此後只代表 claim 驗證品質，
@@ -1771,7 +1774,7 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `unit: ${unit}`,
     `category: ${category}`,
     `Mode: ${meta.mode || council.mode || 'Human-in-the-Loop Tri-Web Council'}`,
-    `Sources: ${meta.sources || 'ChatGPT (Web) + Gemini (Web) + Claude (Web)'}`,
+    `Sources: ${meta.sources || 'ChatGPT (Web) + Claude (Web)'}`,
     `Adjudicator: ${meta.adjudicator || council.adjudicator || 'AI-Study-Council Core Engine'}`,
     `adjudication_mode: "${meta.adjudication_mode || council.mode || 'fallback_concat'}"`,
     `quality_gate: "${meta.qualityGate || 'PENDING_MANUAL_REVIEW'}"`,
@@ -1796,7 +1799,7 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `教材類別：${category}`,
     '',
     `Mode: ${meta.mode || council.mode || 'Human-in-the-Loop Tri-Web Council'}`,
-    `Sources: ${meta.sources || 'ChatGPT (Web) + Gemini (Web) + Claude (Web)'}`,
+    `Sources: ${meta.sources || 'ChatGPT (Web) + Claude (Web)'}`,
     `Adjudicator: ${meta.adjudicator || council.adjudicator || 'AI-Study-Council Core Engine'}`,
     '',
     body,
@@ -1804,7 +1807,7 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `## ⑭Cross Review`,
     '',
     `ChatGPT/Web 貢獻節數：${council.contributions?.gpt ?? 0}/13`,
-    `Gemini/Web 貢獻節數：${council.contributions?.gemini ?? 0}/13`,
+    ...(council.contributions?.gemini ? [`Gemini/Web 貢獻節數：${council.contributions.gemini}/13`] : []),
     `Claude/Web 貢獻節數：${council.contributions?.claude ?? 0}/13`,
     ...(council.mergeReport ? [
       '',
