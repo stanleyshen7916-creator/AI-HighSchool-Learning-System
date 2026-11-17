@@ -1,0 +1,54 @@
+{
+  "name": "WF-UP1 圖卡（切圖→本機視覺模型）",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "ahs-up1", "responseMode": "lastNode", "options": {} },
+      "id": "up1-webhook",
+      "name": "收到教材識別碼",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "ahs-up1-figure-cards"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:3000/api/materials/{{ encodeURIComponent($json.body.materialId) }}/figure-cards",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ force: !!$json.body.force }) }}",
+        "options": { "timeout": 1800000 }
+      },
+      "id": "up1-engine",
+      "name": "引擎：產生圖卡",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a1", "name": "materialId", "value": "={{ $json.materialId }}", "type": "string" },
+            { "id": "a2", "name": "count", "value": "={{ $json.count }}", "type": "number" },
+            { "id": "a3", "name": "failed", "value": "={{ $json.failed }}", "type": "number" },
+            { "id": "a4", "name": "unreadable", "value": "={{ $json.unreadable }}", "type": "number" },
+            { "id": "a5", "name": "needsHuman", "value": "={{ ($json.failed + $json.unreadable) > 0 }}", "type": "boolean" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "up1-summary",
+      "name": "整理結果（低信心／失敗數）",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "收到教材識別碼": { "main": [[{ "node": "引擎：產生圖卡", "type": "main", "index": 0 }]] },
+    "引擎：產生圖卡": { "main": [[{ "node": "整理結果（低信心／失敗數）", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
