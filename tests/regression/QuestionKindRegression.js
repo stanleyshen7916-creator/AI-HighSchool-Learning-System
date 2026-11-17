@@ -268,6 +268,8 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
     view.querySelector(".qnav__progress-label").textContent === (g0.start + 1) + "～" + (g0.end + 1) + " / " + shuffled.length + " 題");
   check("測驗頁：卡片標頭的題號與題號列一致（打亂後也是作答順序，不是原始題號）",
     view.querySelector(".qcard__index").textContent === "第 " + (g0.start + 1) + "～" + (g0.end + 1) + " 題");
+  check("測驗頁：出處的「第 a–b 題為題組」改成與標頭相同的作答順序題號",
+    view.querySelector(".qref").textContent.indexOf("第 " + (g0.start + 1) + "～" + (g0.end + 1) + " 題為題組") !== -1 && !/第 \d+[–-]\d+ 題為題組/.test(view.querySelector(".qref").textContent));
   const pick = shuffled[g0.start + 4];
   const pickSelect = view.querySelectorAll(".qcard-cloze__select")[AHS.ClozeGroup.parse(pick).number - 1];
   pickSelect.value = pick.correctAnswer;
@@ -280,6 +282,51 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
   const view2 = AHS.QuizParts.buildExamView(AHS.ExamRuntime.getById(examId), () => {}, () => {}, () => {});
   clickBtn(view2, /上一題/);
   check("測驗頁：上一題跳回上一篇短文的最後一題", AHS.ExamRuntime.getById(examId).currentIndex === g0.end);
+
+  /* 平時練習（考前總複習）：整篇短文一張卡片，全部選好才能確認，一次批改 8 格；
+     每格各自回報 onAnswered，答錯的各自寫入知識弱點。上一題／下一題以整篇短文為單位。 */
+  {
+    const questions = AHS.QuizParts.realExamQuestionsFor(idMap.tm_103);
+    const answered = {};
+    const status = {};
+    const doc = window.document;
+    const sessionView = AHS.QuizParts.buildPracticeSessionView({
+      kind: "real", questions, startIndex: 3, headerMeta: { subjectName: "英文", chapterLabel: "L4" },
+      statusFor: (k, id) => status[id] || null,
+      onAnswered: (id, ok) => { answered[id] = ok; status[id] = ok ? "correct" : "wrong"; }
+    }, { onExit() {}, onRetest() {} });
+    doc.body.appendChild(sessionView);
+    const grp = [];
+    questions.forEach((q, i) => { if (q.groupId === questions[3].groupId) { grp.push(i); } });
+    check("平時練習：站在短文中間時顯示整篇短文卡片（8 個選單、標題為「第 a～b / 總數 題」）",
+      sessionView.querySelectorAll(".qcard-cloze__select").length === 8 &&
+      sessionView.querySelector(".qpv__title").textContent.indexOf("第 " + (grp[0] + 1) + "～" + (grp[7] + 1) + " / " + questions.length + " 題") !== -1);
+    const confirmBtn = sessionView.querySelector(".quiz-practice__submit");
+    check("平時練習：還有空格沒選時，「確認」不能按", confirmBtn.disabled === true);
+    const selects = [...sessionView.querySelectorAll(".qcard-cloze__select")];
+    const byNum = {};
+    grp.forEach((i) => { byNum[AHS.ClozeGroup.parse(questions[i]).number] = questions[i]; });
+    selects.forEach((sel, k) => {
+      const q = byNum[Number(/[0-9]+/.exec(sel.getAttribute("aria-label"))[0])];
+      const wrongKey = q.options.map((o) => o.key).find((key) => key !== q.correctAnswer);
+      sel.value = k === 0 ? wrongKey : q.correctAnswer;
+      sel.dispatchEvent(new window.Event("change", { bubbles: true }));
+    });
+    check("平時練習：8 格都選好後「確認」才可按", confirmBtn.disabled === false);
+    confirmBtn.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+    check("平時練習：一次批改 8 格，每格各自回報（7 對 1 錯）", Object.keys(answered).length === 8 && Object.values(answered).filter(Boolean).length === 7);
+    check("平時練習：批改後選單鎖定並標示對錯，並顯示每格答案", selects.every((x) => x.disabled) && sessionView.querySelectorAll(".qcard-cloze__select.is-wrong").length === 1 &&
+      sessionView.querySelectorAll(".quiz-practice__cloze-list li").length === 8 && sessionView.querySelector(".quiz-practice__result").textContent.indexOf("答對 7 / 8 格") !== -1);
+    const wrongIds = Object.keys(answered).filter((id) => !answered[id]);
+    check("平時練習：答錯的那一格寫入知識弱點", wrongIds.length === 1 && AHS.WrongBookRuntime.list().some((w) => w.questionId === wrongIds[0]));
+    const nextBtn = sessionView.querySelector(".qpv__next");
+    nextBtn.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+    const nextGrp = questions[grp[7] + 1].groupId;
+    check("平時練習：下一題跳到下一篇短文", nextGrp !== questions[3].groupId && sessionView.querySelector(".qpv__title").textContent.indexOf("第 " + (grp[7] + 2) + "～") !== -1);
+    sessionView.querySelector(".qpv__prev").dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+    check("平時練習：上一題跳回上一篇短文", sessionView.querySelector(".qpv__title").textContent.indexOf("第 " + (grp[0] + 1) + "～") !== -1);
+    sessionView.remove();
+  }
 }
 
 console.log("\nQuestionKindRegression: " + pass + " PASS / " + fail + " FAIL");

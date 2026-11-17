@@ -215,7 +215,8 @@ AHS.QuizParts = AHS.QuizParts || {};
             class: "chip", style: "color:" + subj.hex + ";background-color:" + subj.hex + "1a"
           }, [el("span", { text: subj.name })]),
           difficultyBadge(resolveRealQuestionDifficulty(q)),
-          el("span", { class: "quiz-practice__row-q", text: q.text }),
+          /* 短文式克漏字：列表只列含本題空格的那一句，不重複整篇短文。 */
+          el("span", { class: "quiz-practice__row-q", text: AHS.ClozeGroup && AHS.ClozeGroup.isCloze(q) ? AHS.ClozeGroup.snippet(q) : q.text }),
           el("span", { class: "quiz-practice__row-meta", text: q.knowledgePoint || "" }),
           el("span", { class: "quiz-practice__row-arrow", html: AHS.Icons.chevronRight() })
         ].filter(function (n) { return n; }));
@@ -454,6 +455,80 @@ AHS.QuizParts = AHS.QuizParts || {};
       ].filter(Boolean));
   }
 
+  /* 2026-11-17 短文式克漏字（平時練習）：整篇短文一張卡片、每個空格各自一個選單，
+     全部選好後按「確認」一次批改。每一格仍是一題：各自寫入知識弱點與知識點熟練度，
+     回報 onAnswered(題目 id, 是否答對)，和一題一題作答時完全相同。 */
+  function syncRealAnswer(q, isCorrect, pickedKey) {
+    if (!isCorrect && AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.sync === "function") {
+      AHS.WrongBookRuntime.sync({
+        subject: q.subject, title: q.text, chapter: q.knowledgePoint || "",
+        wrong: [{
+          questionId: q.id, knowledgePoint: q.knowledgePoint,
+          text: q.text, options: q.options,
+          yourAnswer: pickedKey, correctAnswer: q.correctAnswer,
+          explanation: q.explanation, materialId: q.materialId
+        }]
+      });
+    }
+    if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
+      AHS.KnowledgeMasteryRuntime.recordAttempt(q.knowledgePoint, isCorrect, q.subject, q.materialId);
+    }
+  }
+
+  function renderRealClozeBody(unit, firstIndex, onAnswered) {
+    var CG = AHS.ClozeGroup;
+    var picks = {};
+    var submitted = false;
+    var numberOf = {};
+    var shown = unit.map(function (q, i) {
+      var c = Object.assign({}, q);
+      c.index = firstIndex + i + 1;
+      numberOf[q.id] = CG.parse(q).number;
+      return c;
+    });
+    var card = AHS.QuestionCard.createCloze(shown, {}, function (qid, key) {
+      if (submitted) { return; }
+      picks[qid] = key;
+      confirm.disabled = Object.keys(picks).length < unit.length;
+    });
+    var confirm = el("button", { type: "button", class: "quiz-practice__submit", text: "確認", disabled: "disabled" });
+    var resultBanner = el("p", { class: "quiz-practice__result", "aria-live": "polite", hidden: "hidden" });
+    var answerSlot = el("div", { class: "quiz-practice__answer", hidden: "hidden" });
+    confirm.addEventListener("click", function () {
+      if (submitted || Object.keys(picks).length < unit.length) { return; }
+      submitted = true;
+      confirm.setAttribute("disabled", "disabled");
+      var right = 0;
+      var byNumber = {};
+      unit.forEach(function (q) { byNumber[numberOf[q.id]] = q; });
+      [].forEach.call(card.querySelectorAll(".qcard-cloze__select"), function (sel) {
+        var q = byNumber[Number(/\d+/.exec(sel.getAttribute("aria-label"))[0])];
+        if (!q) { return; }
+        var ok = picks[q.id] === q.correctAnswer;
+        sel.disabled = true;
+        sel.classList.add(ok ? "is-correct" : "is-wrong");
+      });
+      var rows = unit.map(function (q) {
+        var ok = picks[q.id] === q.correctAnswer;
+        if (ok) { right += 1; }
+        syncRealAnswer(q, ok, picks[q.id]);
+        onAnswered(q.id, ok);
+        var describe = function (k) { return AHS.OptionOrder ? AHS.OptionOrder.describe(q, k) : k; };
+        return el("li", { class: ok ? "is-correct" : "is-wrong" }, [
+          el("strong", { text: "第 " + numberOf[q.id] + " 格　" + (ok ? "答對" : "答錯") + "　" }),
+          el("span", { text: ok ? "答案：" + describe(q.correctAnswer) : "你選 " + describe(picks[q.id]) + "，正確答案 " + describe(q.correctAnswer) }),
+          q.explanation ? el("p", { class: "quiz-practice__cloze-exp", text: q.explanation }) : null
+        ].filter(Boolean));
+      });
+      resultBanner.textContent = "答對 " + right + " / " + unit.length + " 格" + (right < unit.length ? "，答錯的已加入知識弱點。" : "。");
+      resultBanner.classList.add(right === unit.length ? "is-correct" : "is-wrong");
+      resultBanner.removeAttribute("hidden");
+      answerSlot.appendChild(el("ul", { class: "quiz-practice__cloze-list" }, rows));
+      answerSlot.removeAttribute("hidden");
+    });
+    return el("div", { class: "quiz-practice__cloze" }, [card, el("div", { class: "quiz-practice__options" }, [confirm]), resultBanner, answerSlot]);
+  }
+
   /* renderRealQuestionBody(q, onAnswered) — Sprint AI-122 AI-122-02/03's
      buildRealPracticeQuestionView, reworked by Sprint AI-123 AI-123-01/08
      the same way renderLegacyQuestionBody() above was: body-only (no
@@ -499,22 +574,7 @@ AHS.QuizParts = AHS.QuizParts || {};
       answerSlot.removeAttribute("hidden");
     }
 
-    function syncRealPracticeAnswer(isCorrect, pickedKey) {
-      if (!isCorrect && AHS.WrongBookRuntime && typeof AHS.WrongBookRuntime.sync === "function") {
-        AHS.WrongBookRuntime.sync({
-          subject: q.subject, title: q.text, chapter: q.knowledgePoint || "",
-          wrong: [{
-            questionId: q.id, knowledgePoint: q.knowledgePoint,
-            text: q.text, options: q.options,
-            yourAnswer: pickedKey, correctAnswer: q.correctAnswer,
-            explanation: q.explanation, materialId: q.materialId
-          }]
-        });
-      }
-      if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
-        AHS.KnowledgeMasteryRuntime.recordAttempt(q.knowledgePoint, isCorrect, q.subject, q.materialId);
-      }
-    }
+    function syncRealPracticeAnswer(isCorrect, pickedKey) { syncRealAnswer(q, isCorrect, pickedKey); }
 
     function finishSubmit(pickedKey) {
       if (submitted) { return; }
@@ -761,27 +821,44 @@ AHS.QuizParts = AHS.QuizParts || {};
     var nextBtn = el("button", { type: "button", class: "qpv__next", text: "下一題" });
     var footer = el("div", { class: "qpv__footer" }, [prevBtn, nextBtn]);
 
+    /* 短文式克漏字：同一篇短文（同 groupId、連續、2 題以上）畫成一張卡片，
+       上一題／下一題、題號都以整篇短文為單位。 */
+    function clozeBounds(i) {
+      var q = questions[i];
+      if (kind !== "real" || !q || !q.groupId || !AHS.ClozeGroup || !AHS.ClozeGroup.isCloze(q)) { return null; }
+      var start = i;
+      var end = i;
+      while (start > 0 && questions[start - 1].groupId === q.groupId) { start -= 1; }
+      while (end < total - 1 && questions[end + 1].groupId === q.groupId) { end += 1; }
+      return end > start ? { start: start, end: end } : null;
+    }
+    function unitStart(i) { var b = clozeBounds(i); return b ? b.start : i; }
+    function unitEnd(i) { var b = clozeBounds(i); return b ? b.end : i; }
+
     function updateHead() {
+      var b = clozeBounds(index);
       titleEl.textContent = [session.headerMeta.subjectName, session.headerMeta.chapterLabel, "考前總複習",
-        "第 " + (index + 1) + " / " + total + " 題"].filter(function (s) { return s; }).join("／");
-      prevBtn.disabled = index === 0;
-      nextBtn.textContent = index === total - 1 ? "完成測驗" : "下一題";
+        "第 " + (b ? (b.start + 1) + "～" + (b.end + 1) : (index + 1)) + " / " + total + " 題"].filter(function (s) { return s; }).join("／");
+      prevBtn.disabled = unitStart(index) === 0;
+      nextBtn.textContent = unitEnd(index) === total - 1 ? "完成測驗" : "下一題";
     }
 
     function renderQuestion() {
       updateHead();
       var q = questions[index];
       var onAnswered = function (id, isCorrect) { session.onAnswered(id, isCorrect); };
+      var b = clozeBounds(index);
+      if (b) { index = b.start; AHS.UI.mount(body, renderRealClozeBody(questions.slice(b.start, b.end + 1), b.start, onAnswered)); return; }
       AHS.UI.mount(body, kind === "real" ? renderRealQuestionBody(q, onAnswered) : renderLegacyQuestionBody(q, onAnswered));
     }
 
     prevBtn.addEventListener("click", function () {
-      if (index === 0) { return; }
-      index -= 1;
+      if (unitStart(index) === 0) { return; }
+      index = unitStart(unitStart(index) - 1);
       renderQuestion();
     });
     nextBtn.addEventListener("click", function () {
-      if (index < total - 1) { index += 1; renderQuestion(); return; }
+      if (unitEnd(index) < total - 1) { index = unitEnd(index) + 1; renderQuestion(); return; }
       finish();
     });
 
