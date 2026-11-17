@@ -202,23 +202,78 @@ console.log("\n[5] 知識弱點：重新作答");
   check("Console errors = 0（知識弱點）", wb.consoleErrors.length === 0);
 }
 
-/* 2026-11-02 英文 L4～L6 單字克漏字（tm_103～tm_105）：填充題整套進入測驗，
-   輸入英文單字／片語自動批改（大小寫、前後空格不影響；拼錯算錯）。 */
-console.log("\n[英文單字克漏字] tm_103～tm_105");
+/* 2026-11-16 英文 L4～L6 單字克漏字（tm_103～tm_105）改為「短文＋每格單選」：
+   一篇短文留 7～9 個編號空格，每個空格一題、4 個選項、可整篇當題組出題。 */
+console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
 {
   const counts = { tm_103: 56, tm_104: 43, tm_105: 55 };
   Object.keys(counts).forEach((mid) => {
     const set = AHS.QuestionRuntime.getSet("teaching_material_" + idMap[mid]);
-    check(mid + "：" + counts[mid] + " 題全部進入測驗，且都是輸入作答", set.length === counts[mid] && set.every((q) => QK.kindOf(q) === "self"));
+    check(mid + "：" + counts[mid] + " 題全部進入測驗，且都是 4 選 1 單選題",
+      set.length === counts[mid] && set.every((q) => QK.kindOf(q) === "choice" && q.options.length === 4));
+    check(mid + "：每題題幹含短文，且只有本題空格用【】標示",
+      set.every((q) => /【\(\d+\) ______】/.test(q.text) && (q.text.match(/【\(/g) || []).length === 1 && /\(\d+\) ______/.test(q.text)));
+    check(mid + "：每題恰有一個正確選項",
+      set.every((q) => q.options.filter((o) => o.key === q.correctAnswer).length === 1));
   });
   const set = AHS.QuestionRuntime.getSet("teaching_material_" + idMap.tm_103);
-  const longWord = set.find((q) => q.answerText === "transformation");
-  check("長單字（transformation，超過 12 字母）也能自動批改", !!longWord &&
-    QK.keyForInput(longWord, ["Transformation "]) === QK.SELF_CORRECT && QK.keyForInput(longWord, ["transfromation"]) !== QK.SELF_CORRECT);
-  const phrase = set.find((q) => q.answerText === "in honor of");
-  check("片語（in honor of）輸入正確即答對", !!phrase && QK.keyForInput(phrase, ["in honor of"]) === QK.SELF_CORRECT);
-  const card = AHS.QuestionCard.create(longWord, null, () => {});
-  check("克漏字題卡：一個輸入框，題目顯示首字母提示", card.querySelectorAll(".qcard-self__input").length === 1 && /t(\u00a0_){13}/.test(card.textContent));
+  const first = set.find((q) => /〈A Festival of Life〉/.test(q.text) && /【\(1\) ______】/.test(q.text));
+  const correct = first.options.find((o) => o.key === first.correctAnswer).text;
+  check("第一篇短文的第一格：正確選項是 mourn", correct === "mourn");
+  const card = AHS.QuestionCard.create(first, null, () => {});
+  check("克漏字題卡：4 個選項按鈕、沒有輸入框", card.querySelectorAll(".qcard-option").length === 4 && card.querySelectorAll(".qcard-self__input").length === 0);
+
+  /* 2026-11-16 整篇短文一張卡片：短文只出現一次，每個空格內嵌自己的下拉選單，
+     選擇時各自存成該格那一題的作答；上一題／下一題以整篇短文為單位。 */
+  const CG = AHS.ClozeGroup;
+  const unit = set.filter((q) => q.groupId && q.groupId === first.groupId);
+  check("第一篇短文 8 格同一個題組，題幹格式可解析", unit.length === 8 && unit.every((q) => CG.isCloze(q)) && CG.parse(first).title === "A Festival of Life" && CG.parse(unit[2]).number === 3);
+  const saved = {};
+  const cloze = AHS.QuestionCard.createCloze(unit, saved, (qid, key, pos) => { saved[qid] = key; });
+  const selects = cloze.querySelectorAll(".qcard-cloze__select");
+  check("克漏字卡片：8 個空格各一個下拉選單，每個 4 個選項（另有「請選擇」），沒有第二份短文",
+    selects.length === 8 && [...selects].every((x) => x.options.length === 5) && cloze.textContent.split("For most people").length === 2);
+  const target = unit[2];
+  const rightKey = target.correctAnswer;
+  selects[2].value = rightKey;
+  selects[2].dispatchEvent(new window.Event("change", { bubbles: true }));
+  check("選第 3 格：只存第 3 題的作答（key 為該題的正確選項）", Object.keys(saved).length === 1 && saved[target.id] === rightKey);
+  const reopened = AHS.QuestionCard.createCloze(unit, saved, () => {});
+  check("已答的空格還原選取，計數顯示 已作答 1 / 8 格", reopened.querySelectorAll(".qcard-cloze__select")[2].value === rightKey && reopened.textContent.indexOf("已作答 1 / 8 格") !== -1);
+  check("成績頁短句只含本題空格那一句", /^〈A Festival of Life〉第 3 格：Every autumn/.test(CG.snippet(target)) && CG.snippet(target).indexOf("For most people") === -1);
+  {
+    /* 一句裡有兩格時：只有本題那一格是 ______，另一格標成 (n) …。 */
+    const head = "【單字克漏字】閱讀短文〈T〉，選出第 2 格最適合的答案。（第 1–2 題為題組）\n\n";
+    const two = CG.snippet({ question: head + "Intro here. Many (1) ______ join, and each 【(2) ______】 is done. End." });
+    check("成績頁短句：同一句有兩格時分得出本題是哪一格", two === "〈T〉第 2 格：Many (1) … join, and each ______ is done.");
+  }
+
+  /* 測驗頁（buildExamView）：用真的測驗（整組打亂、組內順序不變）；整篇短文一張卡片，
+     選擇寫入 AnswerRuntime，上一題／下一題以整篇短文為單位。 */
+  const examId = "teaching_material_" + idMap.tm_103;
+  AHS.ExamRuntime.startFromExam(examId, { subject: "english", title: "英文 L4 單字克漏字" });
+  const shuffled = AHS.QuestionRuntime.getSet(examId);
+  const groupsInOrder = [];
+  shuffled.forEach((q, i) => { if (!groupsInOrder.length || groupsInOrder[groupsInOrder.length - 1].id !== q.groupId) { groupsInOrder.push({ id: q.groupId, start: i, end: i }); } else { groupsInOrder[groupsInOrder.length - 1].end = i; } });
+  check("打亂後 7 篇短文各自連續、每篇 8 題", groupsInOrder.length === 7 && groupsInOrder.every((g) => g.end - g.start === 7));
+  const g0 = groupsInOrder[0], g1 = groupsInOrder[1];
+  AHS.ExamRuntime.goTo(examId, g0.start + 3);
+  let rerendered = 0;
+  const view = AHS.QuizParts.buildExamView(AHS.ExamRuntime.getById(examId), () => { rerendered++; }, () => {}, () => {});
+  check("測驗頁：站在短文中間時顯示整篇短文卡片（1 張卡片、8 個選單、沒有選項按鈕）",
+    view.querySelectorAll(".qcard-cloze").length === 1 && view.querySelectorAll(".qcard-cloze__select").length === 8 && view.querySelectorAll(".qcard-option").length === 0);
+  const pick = shuffled[g0.start + 4];
+  const pickSelect = view.querySelectorAll(".qcard-cloze__select")[AHS.ClozeGroup.parse(pick).number - 1];
+  pickSelect.value = pick.correctAnswer;
+  pickSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
+  check("測驗頁：選一格只寫入該格那一題的作答，並重繪一次", Object.keys(AHS.AnswerRuntime.getAnswers(examId)).length === 1 && AHS.AnswerRuntime.getAnswers(examId)[pick.id] === pick.correctAnswer && rerendered === 1);
+  const clickBtn = (root, re) => { const b = [...root.querySelectorAll("button")].find((x) => re.test(x.textContent)); b.dispatchEvent(new window.MouseEvent("click", { bubbles: true })); };
+  clickBtn(view, /下一題/);
+  check("測驗頁：下一題跳到下一篇短文的第一題", AHS.ExamRuntime.getById(examId).currentIndex === g1.start);
+  AHS.ExamRuntime.goTo(examId, g1.start + 2);
+  const view2 = AHS.QuizParts.buildExamView(AHS.ExamRuntime.getById(examId), () => {}, () => {}, () => {});
+  clickBtn(view2, /上一題/);
+  check("測驗頁：上一題跳回上一篇短文的最後一題", AHS.ExamRuntime.getById(examId).currentIndex === g0.end);
 }
 
 console.log("\nQuestionKindRegression: " + pass + " PASS / " + fail + " FAIL");
