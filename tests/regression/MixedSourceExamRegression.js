@@ -54,7 +54,11 @@ function checkMerged(label, workspace, rowText, sourceRe) {
   click(rowFor(pg.doc, rowText).querySelector(".quiz-row__start"));
   const s1 = pg.window.AHS.ExamRuntime.getCurrent();
   const qs = s1 ? pg.window.AHS.QuestionRuntime.getSet(s1.examId) : [];
-  check(label + "：平時練習抽一組（__formal_），最多 20 題", !!s1 && /__formal_\d+$/.test(s1.examId) && qs.length > 0 && qs.length <= 20);
+  /* 題組不拆（QuestionGroups.take／QuestionBankRuntime.drawCycle 的 regroup）：抽滿 20 題後
+     會補齊最後一個題組，總數可略超過 20，最多多出（最大題組 5 題 − 1）。B10：原本寫死
+     <= 20，約 3% 機率抽到 21 題而偶發失敗。 */
+  const FORMAL_MAX = 20 + (5 - 1);
+  check(label + "：平時練習抽一組（__formal_），約 20 題（題組不拆，最多 " + FORMAL_MAX + " 題）", !!s1 && /__formal_\d+$/.test(s1.examId) && qs.length > 0 && qs.length <= FORMAL_MAX);
   check(label + "：不顯示「原始試卷／AI 練習」切換", pg.doc.querySelectorAll(".qexam__mode-btn").length === 0 && !!pg.doc.querySelector(".qcard"));
   const base = s1.examId.replace(/__formal_\d+$/, "");
   const sources = {};
