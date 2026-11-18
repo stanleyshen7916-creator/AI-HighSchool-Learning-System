@@ -11,6 +11,64 @@ set -uo pipefail
 INPUT_DIR=/data/inputs
 OUTPUT_DIR=/data/outputs
 
+# 2026-11-18 AHS-UP2 P1-0c-2：多頁 PDF 依頁數分段解析。24 頁一次解析的記憶體高峰太大（這台電腦當機過一次，
+# 主機可用記憶體本來就只剩 3 GB 左右）。每段 MINERU_CHUNK_PAGES 頁（預設 8），段與段之間依序執行、
+# 記憶體隨段釋放；解析完把各段的 md／圖片／content_list.json 合併成與單次解析相同的輸出結構。
+CHUNK_PAGES="${MINERU_CHUNK_PAGES:-8}"
+
+# $1=檔案 $2=輸出目錄 $3=起始頁（0 起算，可省略） $4=結束頁（含，可省略）
+mineru_once() {
+  # nice 降低優先權，解析期間電腦其餘工作仍能回應（P1-0c）。
+  nice -n 10 mineru -p "$1" -o "$2" -b pipeline -m ocr -l ch ${3:+-s "$3"} ${4:+-e "$4"}
+}
+
+# $1=檔案 $2=工作目錄 $3=stem；成功回傳 0
+run_mineru() {
+  local f="$1" job_dir="$2" stem="$3" log="$2/mineru.log" pages=0
+  case "${f,,}" in
+    *.pdf) pages="$(python -c "import sys, pypdfium2 as p; print(len(p.PdfDocument(sys.argv[1])))" "${f}" 2>>"${log}" || echo 0)" ;;
+  esac
+  if [ "${pages}" -le "${CHUNK_PAGES}" ]; then
+    mineru_once "${f}" "${OUTPUT_DIR}" > "${log}" 2>&1
+    return $?
+  fi
+  echo "[chunk] ${pages} pages, ${CHUNK_PAGES} pages per chunk" > "${log}"
+  local s=0 k=0 e
+  while [ "${s}" -lt "${pages}" ]; do
+    e=$(( s + CHUNK_PAGES - 1 ))
+    [ "${e}" -ge "${pages}" ] && e=$(( pages - 1 ))
+    echo "[chunk ${k}] pages ${s}-${e}" >> "${log}"
+    mineru_once "${f}" "${job_dir}/_chunk_${k}" "${s}" "${e}" >> "${log}" 2>&1 || return 1
+    s=$(( e + 1 ))
+    k=$(( k + 1 ))
+  done
+  python - "${job_dir}" "${stem}" "${k}" "${CHUNK_PAGES}" >> "${log}" 2>&1 <<'PY' || return 1
+import json, os, shutil, sys
+job, stem, k, chunk = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+out = os.path.join(job, 'ocr')
+os.makedirs(os.path.join(out, 'images'), exist_ok=True)
+md, content = [], []
+for i in range(k):
+    d = os.path.join(job, '_chunk_%d' % i, stem, 'ocr')
+    md.append(open(os.path.join(d, stem + '.md'), encoding='utf8').read().strip())
+    cj = os.path.join(d, stem + '_content_list.json')
+    if os.path.exists(cj):
+        for item in json.load(open(cj, encoding='utf8')):
+            if isinstance(item.get('page_idx'), int):
+                item['page_idx'] += i * chunk
+            content.append(item)
+    img = os.path.join(d, 'images')
+    if os.path.isdir(img):
+        for name in os.listdir(img):
+            shutil.copy2(os.path.join(img, name), os.path.join(out, 'images', name))
+open(os.path.join(out, stem + '.md'), 'w', encoding='utf8').write('\n\n'.join(md) + '\n')
+json.dump(content, open(os.path.join(out, stem + '_content_list.json'), 'w', encoding='utf8'), ensure_ascii=False)
+print('[merge] %d chunks, %d images' % (k, len(os.listdir(os.path.join(out, 'images')))))
+PY
+  rm -rf "${job_dir}"/_chunk_*
+  return 0
+}
+
 echo "[mineru-watch] watching ${INPUT_DIR}"
 
 while true; do
@@ -51,8 +109,7 @@ PY
         ;;
     esac
 
-    # 2026-11-18 AHS-UP2 P1-0c：nice 降低優先權，解析期間電腦其餘工作仍能回應。
-    if nice -n 10 mineru -p "${f}" -o "${OUTPUT_DIR}" -b pipeline -m ocr -l ch > "${job_dir}/mineru.log" 2>&1; then
+    if run_mineru "${f}" "${job_dir}" "${stem}"; then
       touch "${done_marker}"
       echo "[mineru-watch] done ${base}"
     else
