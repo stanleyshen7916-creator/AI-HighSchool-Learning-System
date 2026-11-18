@@ -793,7 +793,8 @@
       "createdDate": "2026-11-06T00:00:00Z",
       "knowledgePoint": "消費者剩餘",
       "difficulty": "易",
-      "reference": "AI 自編（依長榮高中高二公民與社會課本 p.74 的內容命題，非課本原題）"
+      "reference": "AI 自編（依長榮高中高二公民與社會課本 p.74 的內容命題，非課本原題）",
+      "figureSvg": "<svg viewBox=\"0 0 300 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><line x1=\"70\" y1=\"40\" x2=\"250\" y2=\"190\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"252\" y=\"188\" font-size=\"13\" fill=\"#2563eb\">D 需求線</text><line x1=\"70\" y1=\"190\" x2=\"250\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"252\" y=\"45\" font-size=\"13\" fill=\"#dc2626\">S 供給線</text><line x1=\"50\" y1=\"115\" x2=\"160\" y2=\"115\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><circle cx=\"160\" cy=\"115\" r=\"3\" fill=\"#333\"/><text x=\"8\" y=\"119\" font-size=\"12\">市場價格</text><text x=\"150\" y=\"216\" font-size=\"12\">Q*</text></svg>"
     },
     {
       "questionId": "tm_109_q34",
@@ -817,7 +818,8 @@
       "createdDate": "2026-11-06T00:00:00Z",
       "knowledgePoint": "生產者剩餘",
       "difficulty": "易",
-      "reference": "AI 自編（依長榮高中高二公民與社會課本 p.75 的內容命題，非課本原題）"
+      "reference": "AI 自編（依長榮高中高二公民與社會課本 p.75 的內容命題，非課本原題）",
+      "figureSvg": "<svg viewBox=\"0 0 300 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><line x1=\"70\" y1=\"40\" x2=\"250\" y2=\"190\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"252\" y=\"188\" font-size=\"13\" fill=\"#2563eb\">D 需求線</text><line x1=\"70\" y1=\"190\" x2=\"250\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"252\" y=\"45\" font-size=\"13\" fill=\"#dc2626\">S 供給線</text><line x1=\"50\" y1=\"115\" x2=\"160\" y2=\"115\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><circle cx=\"160\" cy=\"115\" r=\"3\" fill=\"#333\"/><text x=\"8\" y=\"119\" font-size=\"12\">市場價格</text><text x=\"150\" y=\"216\" font-size=\"12\">Q*</text></svg>"
     },
     {
       "questionId": "tm_109_q35",
