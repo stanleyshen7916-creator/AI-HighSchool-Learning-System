@@ -22,6 +22,7 @@ const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
 const figureCards = require('./services/figureCards');
 const pdfTextQuality = require('./services/pdfTextQuality');
+const mineruContentList = require('./services/mineruContentList');
 const goldSet = require('./services/goldSet');
 const { computeStats } = require('./services/adjudicationStats');
 const { parseFrontmatter } = require('./platform/FinalParser');
@@ -203,6 +204,15 @@ async function runMinerU(filePath, ext, options = {}) {
         const imgDir = path.join(jobOutputDir, 'ocr', 'images');
         listImageFiles(imgDir).forEach((name) => options.images.push(path.join(imgDir, name)));
       }
+      // 2026-11-18 AHS-UP2 P1-1：content_list.json 分流（LaTeX／HTML 表格／切圖＋頁碼），失敗不影響文字結果。
+      if (Array.isArray(options.blocks)) {
+        try {
+          const cjPath = path.join(jobOutputDir, 'ocr', `${jobId}_content_list.json`);
+          if (fs.existsSync(cjPath)) options.blocks.push(mineruContentList.splitContentList(JSON.parse(fs.readFileSync(cjPath, 'utf8'))));
+        } catch (error) {
+          console.warn(`content_list.json 解析失敗（略過結構化分流）：${error.message}`);
+        }
+      }
       return fs.readFileSync(mdPath, 'utf8');
     }
     // eslint-disable-next-line no-await-in-loop
@@ -248,7 +258,7 @@ async function extractTextFromFile(filePath, opts = {}) {
         }
         console.warn(`PDF 文字層品質可疑，改走 MinerU：${quality.reasons.join('；')}`);
         try {
-          return await runMinerU(filePath, ext, { images: opts.images });
+          return await runMinerU(filePath, ext, { images: opts.images, blocks: opts.blocks });
         } catch (error) {
           console.warn(`MinerU 解析失敗，沿用 PDF 文字層（品質可疑，公式可能亂碼）：${error.message}`);
           return pdfTextQuality.normalizeRadicals(result.text);
@@ -256,7 +266,7 @@ async function extractTextFromFile(filePath, opts = {}) {
       }
 
       try {
-        return await runMinerU(filePath, ext, { images: opts.images });
+        return await runMinerU(filePath, ext, { images: opts.images, blocks: opts.blocks });
       } catch (error) {
         console.warn(`MinerU 解析失敗，退回 Tesseract（辨識品質較低）：${error.message}`);
         return await ocrPdfPagesWithTesseract(parser);
@@ -268,7 +278,7 @@ async function extractTextFromFile(filePath, opts = {}) {
 
   if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
     try {
-      return await runMinerU(filePath, ext, { images: opts.images });
+      return await runMinerU(filePath, ext, { images: opts.images, blocks: opts.blocks });
     } catch (error) {
       console.warn(`MinerU 解析失敗，退回 Tesseract（辨識品質較低）：${error.message}`);
       return ocrImage(filePath);
@@ -818,7 +828,8 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
   try {
     files.forEach((file) => { file.originalname = decodeOriginalName(file.originalname); });
     const minerImages = [];
-    const parts = await extractTextFromFiles(files, { images: minerImages });
+    const minerBlocks = [];
+    const parts = await extractTextFromFiles(files, { images: minerImages, blocks: minerBlocks });
     // 2026-10-14：多個檔案時每段前加上檔案標記，原文辨識協助包才能把可疑文字對回是哪張照片。
     const mergedText = parts.length > 1
       ? parts.map((part) => `${ocrHelp.fileMarker(part.filename)}\n${part.text}`).join('\n\n')
@@ -829,11 +840,14 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
     const imagesDir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'images');
     if (minerImages.length) fs.mkdirSync(imagesDir, { recursive: true });
     minerImages.forEach((p) => fs.copyFileSync(p, path.join(imagesDir, path.basename(p))));
+    // 2026-11-18 AHS-UP2 P1-1：結構化分流結果（LaTeX／表格／切圖＋頁碼）存 mineru_outputs/<sessionId>/content_blocks.json。
+    if (minerBlocks.length) fs.writeFileSync(path.join(MINERU_OUTPUTS_DIR, sessionId, 'content_blocks.json'), JSON.stringify({ generatedAt: new Date().toISOString(), files: minerBlocks }, null, 2));
     return res.status(200).json({
       text: mergedText,
       sessionId,
       imagesId: sessionId,
       imageCount: minerImages.length,
+      blockCounts: minerBlocks.reduce((a, b) => ({ equations: a.equations + b.counts.equations, tables: a.tables + b.counts.tables, images: a.images + b.counts.images }), { equations: 0, tables: 0, images: 0 }),
       files: parts.map((part) => ({ filename: part.filename, length: part.text.length })),
     });
   } catch (error) {
