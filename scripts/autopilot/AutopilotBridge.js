@@ -111,10 +111,23 @@ $x.LoadXml('<toast ${url ? `activationType="protocol" launch="${esc(url)}"` : ''
   fs.writeFileSync(path.join(__dirname, 'LATEST_NOTIFICATION.txt'), `${new Date().toISOString()}\n${title}\n${message}\n${url || ''}\n`);
 }
 
+// 只接受本機與 Docker／WSL 虛擬網卡（172.16.0.0/12）來源；區網其他裝置一律拒絕（不需系統管理員權限的防火牆替代）
+function isLocalSource(addr) {
+  const a = String(addr || '').replace(/^::ffff:/, '');
+  if (a === '127.0.0.1' || a === '::1') return true;
+  const m = a.match(/^172\.(\d+)\./);
+  return !!m && Number(m[1]) >= 16 && Number(m[1]) <= 31;
+}
+
 const send = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
 const body = (req) => new Promise((ok) => { let b = ''; req.on('data', (d) => (b += d)); req.on('end', () => { try { ok(JSON.parse(b || '{}')); } catch (e) { ok({}); } }); });
 
 http.createServer(async (req, res) => {
+  if (!isLocalSource(req.socket.remoteAddress)) {
+    console.error('rejected non-local source', req.socket.remoteAddress);
+    req.socket.destroy();
+    return;
+  }
   const given = Buffer.from(String(req.headers['x-autopilot-token'] || ''));
   const want = Buffer.from(TOKEN);
   if (given.length !== want.length || !crypto.timingSafeEqual(given, want)) return send(res, 401, { error: 'unauthorized' });
