@@ -14,7 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # mineru 的 [pipeline] extras 缺了一個宣告依賴 `six`，首次真正執行時會立即
 # ModuleNotFoundError（已於 ef84367 記錄並確認）；這裡明確一併安裝。
-RUN pip install --no-cache-dir 'mineru[pipeline]' six
+# 2026-11-18 AHS-UP2 P1-0b：必須釘選版本。tools/mineru_watch.sh 用的是舊版 CLI（mineru -p -o -b pipeline -m ocr -l ch），
+# MinerU 4.x 改成 `mineru parse`、沒有這些選項，未釘選時重建映像會拉到 4.x，之後每次解析都失敗（No such option: -p）。
+# 2.7.6 與 3.4.5 實測都保留舊版 CLI；選 2.7.6（2.x 最後一版，另有 chinese_cht 語言選項）。
+# 2026-11-18 實測：2.7.6 解析 9 頁數學 PDF，公式轉成 LaTeX（255 組行內＋4 組區塊）、切出 33 張圖、無假名雜訊。
+RUN pip install --no-cache-dir 'mineru[pipeline]==2.7.6' six
 
 WORKDIR /data
 
