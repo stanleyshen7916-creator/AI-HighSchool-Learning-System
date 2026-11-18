@@ -71,10 +71,16 @@ PY
 
 echo "[mineru-watch] watching ${INPUT_DIR}"
 
+# 心跳：server.js 的 isMineruWatcherAlive() 靠這個檔案的 mtime 判斷 watch loop 是否還活著（超過 10 秒沒更新
+# 就放棄等待、改走 Tesseract fallback），/api/health 的 mineru 欄位也看它。
+# 2026-11-18 AHS-UP2 P1-0d：原本只在迴圈開頭更新，但解析一份 24 頁 PDF 要約 20 分鐘，期間迴圈卡在 mineru，
+# 心跳停止更新 → 健康檢查誤報 mineru:false，而且此時再上傳的第二份檔會被誤判成「MinerU 沒開」直接退回文字層。
+# 改成獨立的背景迴圈每 2 秒更新；watcher 結束（容器停止）時一併結束。
+( while true; do date +%s > "${OUTPUT_DIR}/.heartbeat"; sleep 2; done ) &
+HEARTBEAT_PID=$!
+trap 'kill "${HEARTBEAT_PID}" 2>/dev/null' EXIT
+
 while true; do
-  # 心跳：server.js 的 runMinerU() 靠這個檔案的 mtime 判斷 watch loop 是否還活著，
-  # 沒看到近期心跳就直接放棄等待、改走 Tesseract fallback，不會整個請求卡住空等逾時。
-  date +%s > "${OUTPUT_DIR}/.heartbeat"
 
   shopt -s nullglob
   for f in "${INPUT_DIR}"/*.pdf "${INPUT_DIR}"/*.png "${INPUT_DIR}"/*.jpg "${INPUT_DIR}"/*.jpeg; do
