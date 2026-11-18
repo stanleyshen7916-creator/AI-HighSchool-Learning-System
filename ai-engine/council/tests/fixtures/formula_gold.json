@@ -1,0 +1,107 @@
+{
+ "note": "區塊公式標準答案：由人工對照 MinerU 切圖（公式截圖）逐一轉寫，不是 MinerU 輸出。index＝該 PDF 內 equation 區塊的出現順序（0 起算）。範圍僅含區塊公式，不含行內公式。",
+ "items": [
+  {
+   "source": "50.pdf",
+   "index": 0,
+   "page": 1,
+   "latex": "(1)\\sin(\\theta+\\frac{\\pi}{3}),(2)\\cos(\\frac{2\\pi}{3}-\\theta),(3)\\tan(\\theta-\\frac{\\pi}{4})."
+  },
+  {
+   "source": "50.pdf",
+   "index": 1,
+   "page": 3,
+   "latex": "=(2+3\\cos\\alpha)\\sin x+(3\\sin\\alpha)\\cos x,"
+  },
+  {
+   "source": "50.pdf",
+   "index": 2,
+   "page": 4,
+   "latex": "y=a\\sin x+b\\cos x=r\\cos\\alpha\\sin x+r\\sin\\alpha\\cos x=r(\\sin x\\cos\\alpha+\\cos x\\sin\\alpha)=r\\sin(x+\\alpha)."
+  },
+  {
+   "source": "50.pdf",
+   "index": 3,
+   "page": 5,
+   "latex": "y=-\\sqrt{3}\\sin x+\\cos x=2\\cos\\frac{5\\pi}{6}\\cdot\\sin x+2\\sin\\frac{5\\pi}{6}\\cdot\\cos x=2(\\sin x\\cos\\frac{5\\pi}{6}+\\cos x\\sin\\frac{5\\pi}{6})=2\\sin(x+\\frac{5\\pi}{6})."
+  },
+  {
+   "source": "2.pdf",
+   "index": 0,
+   "page": 3,
+   "latex": "s=r\\theta."
+  },
+  {
+   "source": "2.pdf",
+   "index": 1,
+   "page": 6,
+   "latex": "\\sin^2\\frac{2\\pi}{3}+\\sin(-\\frac{5\\pi}{3})\\cos(-\\frac{5\\pi}{6})."
+  },
+  {
+   "source": "2.pdf",
+   "index": 2,
+   "page": 7,
+   "latex": "\\frac{\\pi}{6}\\xrightarrow{\\sin}\\sin\\frac{\\pi}{6}=\\frac{1}{2}."
+  },
+  {
+   "source": "2.pdf",
+   "index": 3,
+   "page": 20,
+   "latex": "\\cos(\\alpha+\\beta)=\\cos[\\alpha-(-\\beta)]=\\cos\\alpha\\cos(-\\beta)+\\sin\\alpha\\sin(-\\beta)"
+  },
+  {
+   "source": "2.pdf",
+   "index": 4,
+   "page": 21,
+   "latex": "\\sin(\\alpha+\\beta)=\\sin[\\alpha-(-\\beta)]=\\sin\\alpha\\cos(-\\beta)-\\cos\\alpha\\sin(-\\beta)=\\sin\\alpha\\cos\\beta+\\cos\\alpha\\sin\\beta."
+  },
+  {
+   "source": "2.pdf",
+   "index": 5,
+   "page": 21,
+   "latex": "\\cos(\\alpha+\\beta)=\\cos\\alpha\\cos\\beta-\\sin\\alpha\\sin\\beta=\\frac{5}{13}\\times(-\\frac{3}{5})-\\frac{12}{13}\\times\\frac{4}{5}=-\\frac{63}{65}."
+  },
+  {
+   "source": "2.pdf",
+   "index": 6,
+   "page": 22,
+   "latex": "\\tan(\\alpha+\\beta)=\\frac{\\sin(\\alpha+\\beta)}{\\cos(\\alpha+\\beta)}=\\frac{\\sin\\alpha\\cos\\beta+\\cos\\alpha\\sin\\beta}{\\cos\\alpha\\cos\\beta-\\sin\\alpha\\sin\\beta}"
+  },
+  {
+   "source": "2.pdf",
+   "index": 7,
+   "page": 22,
+   "latex": "=\\frac{\\frac{\\sin\\alpha}{\\cos\\alpha}+\\frac{\\sin\\beta}{\\cos\\beta}}{1-\\frac{\\sin\\alpha}{\\cos\\alpha}\\cdot\\frac{\\sin\\beta}{\\cos\\beta}}=\\frac{\\tan\\alpha+\\tan\\beta}{1-\\tan\\alpha\\tan\\beta}."
+  },
+  {
+   "source": "2.pdf",
+   "index": 8,
+   "page": 22,
+   "latex": "\\tan(\\alpha-\\beta)=\\tan[\\alpha+(-\\beta)]=\\frac{\\tan\\alpha+\\tan(-\\beta)}{1-\\tan\\alpha\\tan(-\\beta)}=\\frac{\\tan\\alpha-\\tan\\beta}{1+\\tan\\alpha\\tan\\beta}."
+  },
+  {
+   "source": "2.pdf",
+   "index": 9,
+   "page": 22,
+   "latex": "\\tan(\\alpha+\\beta)=\\frac{\\tan\\alpha+\\tan\\beta}{1-\\tan\\alpha\\tan\\beta},\\tan(\\alpha-\\beta)=\\frac{\\tan\\alpha-\\tan\\beta}{1+\\tan\\alpha\\tan\\beta},"
+  },
+  {
+   "source": "2.pdf",
+   "index": 10,
+   "page": 22,
+   "latex": "=\\frac{1+\\frac{1}{\\sqrt{3}}}{1-1\\times\\frac{1}{\\sqrt{3}}}=\\frac{\\sqrt{3}+1}{\\sqrt{3}-1}=\\frac{(\\sqrt{3}+1)^2}{2}=2+\\sqrt{3}."
+  },
+  {
+   "source": "2.pdf",
+   "index": 11,
+   "page": 22,
+   "latex": "\\frac{\\tan87^\\circ-\\tan27^\\circ}{1+\\tan87^\\circ\\tan27^\\circ}=\\tan(87^\\circ-27^\\circ)=\\tan60^\\circ=\\sqrt{3}."
+  },
+  {
+   "source": "2.pdf",
+   "index": 12,
+   "page": 23,
+   "latex": "\\tan(\\alpha-\\beta)=\\frac{\\tan\\alpha-\\tan\\beta}{1+\\tan\\alpha\\tan\\beta}=\\frac{7-\\frac{3}{4}}{1+7\\times\\frac{3}{4}}=1."
+  }
+ ]
+}

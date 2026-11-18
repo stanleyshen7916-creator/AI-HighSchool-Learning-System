@@ -23,6 +23,7 @@ const ocrHelp = require('./services/ocrHelp');
 const figureCards = require('./services/figureCards');
 const pdfTextQuality = require('./services/pdfTextQuality');
 const mineruContentList = require('./services/mineruContentList');
+const pageQuality = require('./services/pageQuality');
 const goldSet = require('./services/goldSet');
 const { computeStats } = require('./services/adjudicationStats');
 const { parseFrontmatter } = require('./platform/FinalParser');
@@ -208,7 +209,11 @@ async function runMinerU(filePath, ext, options = {}) {
       if (Array.isArray(options.blocks)) {
         try {
           const cjPath = path.join(jobOutputDir, 'ocr', `${jobId}_content_list.json`);
-          if (fs.existsSync(cjPath)) options.blocks.push(mineruContentList.splitContentList(JSON.parse(fs.readFileSync(cjPath, 'utf8'))));
+          if (fs.existsSync(cjPath)) {
+            const raw = JSON.parse(fs.readFileSync(cjPath, 'utf8'));
+            // 2026-11-18 AHS-UP2 P1-5：品質閘——逐頁可信度，低信心頁才需要管理者提供原檔。
+            options.blocks.push({ ...mineruContentList.splitContentList(raw), quality: pageQuality.assessPages(raw) });
+          }
         } catch (error) {
           console.warn(`content_list.json 解析失敗（略過結構化分流）：${error.message}`);
         }
@@ -847,6 +852,11 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
       sessionId,
       imagesId: sessionId,
       imageCount: minerImages.length,
+      pageQuality: {
+        lowPages: minerBlocks.flatMap((b) => b.quality.lowPages),
+        suspectPages: minerBlocks.flatMap((b) => b.quality.suspectPages),
+        totalPages: minerBlocks.reduce((n, b) => n + b.quality.totalPages, 0),
+      },
       blockCounts: minerBlocks.reduce((a, b) => ({ equations: a.equations + b.counts.equations, tables: a.tables + b.counts.tables, images: a.images + b.counts.images }), { equations: 0, tables: 0, images: 0 }),
       files: parts.map((part) => ({ filename: part.filename, length: part.text.length })),
     });

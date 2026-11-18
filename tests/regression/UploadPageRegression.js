@@ -158,6 +158,15 @@ async function main() {
   check("學校選單來自平台資料（長榮中學 cjsh）", [...fieldByLabel(doc, "學校").options].some((o) => o.value === "cjsh" && o.textContent === "長榮中學"));
   check("科目選單含平台所有科目（含地球科學）", [...fieldByLabel(doc, "科目").options].some((o) => o.value === "地球科學"));
   check("教材類型不提供「考卷」（AI 出題不能標為原題考卷）", [...fieldByLabel(doc, "教材類型").options].every((o) => o.value !== "EXAM"));
+  /* 2026-11-18 AHS-UP2 P1-6：出題章節模板依科目分流；國文維持原模板（回歸），數理科不含國文專用章節。 */
+  const sectionsFor = window.AHS.CouncilUpload.sectionsFor;
+  const chi = sectionsFor("國文");
+  const math = sectionsFor("數學");
+  check("國文模板不變：15 章且含修辭手法、文化脈絡、作者背景", chi.length === 15 && ["⑤修辭手法", "⑥文化脈絡", "⑦作者背景"].every((t) => chi.indexOf(t) !== -1));
+  check("數學／物理／化學／地科用數理模板：15 章、不含修辭手法／文化脈絡／作者背景",
+    ["數學", "物理", "化學", "地球科學"].every((s) => { const t = sectionsFor(s); return t.length === 15 && !/修辭|文化脈絡|作者背景/.test(t.join("")); }));
+  check("數理模板含公式與例題章節，並保留匯入端依標題擷取的章節", ["③重要定義與公式", "④例題與解題步驟", "①核心概念", "②章節摘要", "⑩易混淆概念", "⑪常考題型", "⑫易錯陷阱", "⑬跨課連結", "⑮Final Score"].every((t) => math.indexOf(t) !== -1));
+  check("英文等其他科目維持原模板", sectionsFor("英文").join("|") === chi.join("|"));
 
   console.log("\n[3] 未填必要欄位時不送出");
   click(buttonByText(doc, "執行雙方交叉審議"));
