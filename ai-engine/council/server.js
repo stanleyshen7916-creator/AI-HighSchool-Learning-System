@@ -152,7 +152,9 @@ const MINERU_HEARTBEAT_STALE_MS = 10000;
 // CPU pipeline 每次 mineru CLI 呼叫都要重新把模型載入記憶體（tools/mineru_watch.sh 是
 // 逐一啟動獨立行程，非常駐 API server），實測（含首次下載權重）約 100 秒，這裡保留數倍
 // 餘裕；權重快取後應該遠低於這個時間，逾時只在服務真的卡住時才會觸發。
-const MINERU_POLL_TIMEOUT_MS = 5 * 60 * 1000;
+// 2026-11-18 AHS-UP2 P1-0b：實測 CPU 上 9 頁數學 PDF（含 368 組公式辨識）約 7 分鐘，24 頁預估約 20 分鐘，
+// 第一次執行還要下載模型；5 分鐘會讓多頁 PDF 逾時後靜默退回文字層。預設改為 60 分鐘，可用 MINERU_POLL_TIMEOUT_MS 覆寫。
+const MINERU_POLL_TIMEOUT_MS = Number(process.env.MINERU_POLL_TIMEOUT_MS) || 60 * 60 * 1000;
 const MINERU_POLL_INTERVAL_MS = 2000;
 
 function isMineruWatcherAlive(outputsDir) {
