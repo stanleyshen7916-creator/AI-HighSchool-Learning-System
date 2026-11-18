@@ -66,6 +66,17 @@ services:
       dockerfile: Dockerfile.mineru
     environment:
       - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      # 2026-11-18 AHS-UP2 P1-0c：限制 torch／OpenMP 執行緒數，避免一次吃滿所有核心。
+      - OMP_NUM_THREADS=4
+      - MKL_NUM_THREADS=4
+    # 2026-11-18 AHS-UP2 P1-0c：MinerU 原本完全沒有資源上限（cpus=0、mem=0）。同日用 44 MB／24 頁的掃描 PDF
+    # 上傳時 CPU 幾乎滿載、數分鐘內整台電腦當機（Kernel-Power 41，非正常關機）。保守限制：一半核心、8 GB 記憶體；
+    # 超過記憶體時只會讓容器被殺掉（解析失敗、引擎退回文字層），不會拖垮主機。
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
     volumes:
       - ${COUNCIL_DATA_DIR:-./data}/mineru_inputs:/data/inputs
       - ${COUNCIL_DATA_DIR:-./data}/mineru_outputs:/data/outputs
