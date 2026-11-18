@@ -51,7 +51,8 @@ PY
         ;;
     esac
 
-    if mineru -p "${f}" -o "${OUTPUT_DIR}" -b pipeline -m ocr -l ch > "${job_dir}/mineru.log" 2>&1; then
+    # 2026-11-18 AHS-UP2 P1-0c：nice 降低優先權，解析期間電腦其餘工作仍能回應。
+    if nice -n 10 mineru -p "${f}" -o "${OUTPUT_DIR}" -b pipeline -m ocr -l ch > "${job_dir}/mineru.log" 2>&1; then
       touch "${done_marker}"
       echo "[mineru-watch] done ${base}"
     else
