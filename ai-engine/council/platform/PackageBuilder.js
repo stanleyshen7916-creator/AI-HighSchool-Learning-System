@@ -51,6 +51,7 @@ function loadPlatformGlobals(platformRoot) {
 function createPackageBuilder({ platformRoot, dataDir }) {
   const tmRoot = path.join(platformRoot, 'docs', 'TeachingMaterials');
   const materialsDir = path.join(tmRoot, 'materials');
+  const explanationsDir = path.join(tmRoot, 'explanations');
   const registryFile = path.join(dataDir, 'platform-drafts.json');
   const scripts = path.join(tmRoot, 'scripts');
   const lifecycle = () => require(path.join(scripts, 'MaterialLifecycle.js'));
@@ -166,6 +167,30 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       imgs.push(`<img class="q-figure-img" src="docs/TeachingMaterials/materials/${materialId}/figures/${name}" alt="附圖" loading="lazy">`);
     });
     return imgs.join('');
+  }
+
+  /* 2026-11-19 AHS-UP2 P2-3：詳解擴充 → docs/TeachingMaterials/explanations/<materialId>.json
+     （欄位與既有 tm_N.json 相同，規格 Specifications_ExplanationSupplementUpload_v0.1.md）。
+     只收一般題（變式題本期不產生）。寫檔前以與 GenerateExplanationSupplement.js 相同的規則驗證：
+     questionId 存在於題庫、concept 非空、steps 為非空字串陣列；不合格的題目不寫入並列入警告。
+     figures 一律為空（上傳流程不產生示意圖）。沒有任何合格項目時不建立檔案。 */
+  function buildSupplementEntries(materialId, parsed, questions) {
+    const ids = new Set(questions.map((q) => q.questionId));
+    const entries = [];
+    const warnings = [];
+    parsed.questions.forEach((q, i) => {
+      const sup = q.explanationSupplement;
+      if (!sup) return;
+      const questionId = `${materialId}_q${i + 1}`;
+      const ok = ids.has(questionId) && typeof sup.concept === 'string' && sup.concept
+        && Array.isArray(sup.steps) && sup.steps.length && sup.steps.every((t) => typeof t === 'string' && t);
+      if (!ok) { warnings.push(`Q${q.number}：詳解擴充未通過驗證，未寫入`); return; }
+      entries.push({
+        questionId, materialId, question: q.question,
+        concept: sup.concept, steps: sup.steps, pitfalls: sup.pitfalls || [], note: sup.note || '', figures: [],
+      });
+    });
+    return { entries, warnings };
   }
 
   function buildQuestions(materialId, parsed, createdDate, figureDirs, missing) {
@@ -326,7 +351,14 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     });
     writeJson(path.join(dir, 'summary.json'), { materialId, ...parsed.summary });
     const missingFigures = [];
-    writeJson(path.join(dir, 'questionbank.json'), { materialId, questions: buildQuestions(materialId, parsed, now, figureDirs, missingFigures) });
+    const builtQuestions = buildQuestions(materialId, parsed, now, figureDirs, missingFigures);
+    writeJson(path.join(dir, 'questionbank.json'), { materialId, questions: builtQuestions });
+    const supplement = buildSupplementEntries(materialId, parsed, builtQuestions);
+    if (supplement.entries.length) {
+      fs.mkdirSync(explanationsDir, { recursive: true });
+      writeJson(path.join(explanationsDir, `${materialId}.json`), { materialId, entries: supplement.entries });
+    }
+    missingFigures.push(...supplement.warnings);
     writeJson(path.join(dir, 'related.json'), { materialId, related: [] });
     fs.writeFileSync(path.join(dir, 'material.md'), materialMarkdown(materialId, meta, parsed, sourceNames[0], sourceNames), 'utf8');
 
@@ -574,6 +606,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       ...preview(materialId),
       changedPaths: [
         `docs/TeachingMaterials/materials/${materialId}/`,
+        ...(fs.existsSync(path.join(explanationsDir, `${materialId}.json`)) ? [`docs/TeachingMaterials/explanations/${materialId}.json`] : []),
         'docs/TeachingMaterials/index.json',
         'docs/TeachingMaterials/import-log.json',
         'js/data/TeachingMaterialData.js',
@@ -590,6 +623,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       if (lifecycle().resolveStage(materialId) === 'IMPORTED') throw new Error(`${materialId} 已在平台上，不能刪除`);
       fs.rmSync(dir, { recursive: true, force: true });
     }
+    fs.rmSync(path.join(explanationsDir, `${materialId}.json`), { force: true });
     const reg = registry();
     reg.drafts[materialId] = { ...entry, status: 'deleted', deletedAt: new Date().toISOString() };
     saveRegistry(reg);
@@ -612,6 +646,11 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       ? fs.readFileSync(path.join(dir, 'material.md'), 'utf8').split(/\r?\n/)[0].replace(/^#\s*/, '').trim() : '') || materialId;
     const removed = [materialId, ...supplements.supplementsOf(materialId).map((p) => p.materialId)];
     removed.forEach((id) => fs.rmSync(packageDir(id), { recursive: true, force: true }));
+    // 2026-11-19 P2-3：上傳教材的詳解擴充檔一併移除（只刪 explanations/<id>.json，不碰 build/ 與其他教材的檔案）
+    // 只處理登記在上傳草稿清單內的教材；手寫的既有詳解補強（build/ 模組產生）不動。
+    const owned = registry().drafts;
+    const removedSupplements = removed.filter((id) => owned[id] && fs.existsSync(path.join(explanationsDir, `${id}.json`)));
+    removedSupplements.forEach((id) => fs.rmSync(path.join(explanationsDir, `${id}.json`), { force: true }));
     const reg = registry();
     removed.forEach((id) => {
       if (reg.drafts[id]) reg.drafts[id] = { ...reg.drafts[id], status: 'deleted', deletedAt: new Date().toISOString() };
@@ -624,6 +663,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       removed,
       changedPaths: [
         ...removed.map((id) => `docs/TeachingMaterials/materials/${id}/`),
+        ...removedSupplements.map((id) => `docs/TeachingMaterials/explanations/${id}.json`),
         'docs/TeachingMaterials/index.json',
         'js/data/TeachingMaterialData.js',
         'js/data/RepositoryStatus.js',
