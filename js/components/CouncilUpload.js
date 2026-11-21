@@ -506,8 +506,32 @@ AHS.CouncilUpload = (function () {
     var pageStatus = el("p", { class: "upl-status" });
     var pageList = el("div", { class: "upl-pages" });
     var pageEdits = [];
+    var pageFlags = {};
+    var reviewSessionId = null;
+    /* 2026-11-21 漏圖補查結果：本機視覺模型看到的圖比 MinerU 抽到的多時，在該頁標示提醒（只是提示，請對照原圖確認）。 */
+    function applyRecheck(data) {
+      var suspect = 0;
+      var failed = 0;
+      (data.files || []).forEach(function (file) {
+        file.pages.forEach(function (page) {
+          var flag = pageFlags[file.index + ":" + page.page];
+          if (!flag) { return; }
+          if (page.error) { failed += 1; status(flag, "補查失敗：" + page.error, "warn"); return; }
+          if (page.suspect) {
+            suspect += 1;
+            status(flag, "⚠ 這頁可能有圖沒被抽到（MinerU " + page.mineruCount + " 張，補查看到 " + page.vlmCount + " 張" +
+              (page.labels && page.labels.length ? "：" + page.labels.join("、") : "") + "）。請對照左邊原圖，缺的圖請手動補上。", "warn");
+          } else {
+            status(flag, "補查：圖片數量一致（" + page.mineruCount + " 張）。", "ok");
+          }
+        });
+      });
+      return { suspect: suspect, failed: failed };
+    }
     function loadPageReview(sessionId) {
       pageEdits = [];
+      pageFlags = {};
+      reviewSessionId = sessionId;
       AHS.UI.mount(pageList, el("span"));
       if (!sessionId) { status(pageStatus, "這次上傳沒有 MinerU 的逐頁資料（可能是 .md／.txt，或 MinerU 未啟動而改用 Tesseract）。"); return; }
       status(pageStatus, "讀取逐頁資料中…");
@@ -518,6 +542,9 @@ AHS.CouncilUpload = (function () {
           var shown = el("div", { class: "upl-pages__file" }, [el("h3", { class: "upl-pages__title", text: file.filename + "（" + file.pageCount + " 頁）" })]);
           file.pages.forEach(function (page) {
             var blocks = el("div", { class: "upl-pages__blocks" });
+            var flag = el("p", { class: "upl-status" });
+            pageFlags[file.index + ":" + page.page] = flag;
+            blocks.appendChild(flag);
             page.blocks.forEach(function (block) {
               if (block.type === "image") { blocks.appendChild(el("p", { class: "upl-hint", text: "［圖片］" + (block.image || "") })); return; }
               if (!block.text) { return; }
@@ -538,8 +565,37 @@ AHS.CouncilUpload = (function () {
           pageList.appendChild(el("a", { class: "upl-link", href: client.structuredUrl(sessionId, file.index, "content_list"), text: "下載 " + file.filename + " 的 MinerU 結構化輸出（content_list.json）" }));
         });
         status(pageStatus, total ? "共 " + total + " 頁。改完按「套用校正到教材本文」。" : "沒有可顯示的頁面。");
+        client.recheckResult(sessionId).then(function (rr) { if (!rr.error && rr.data) { applyRecheck(rr.data); } });
       });
     }
+    var recheckBtn = button("補查漏圖（本機視覺模型）", null, function () {
+      if (!reviewSessionId) { status(pageStatus, "請先上傳含 MinerU 逐頁資料的檔案。", "error"); return; }
+      var progressId = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      recheckBtn.disabled = true;
+      status(pageStatus, "補查中…本機視覺模型逐頁檢查，每頁約數十秒，不會使用雲端 token。");
+      client.recheckStart(reviewSessionId, progressId).then(function (started) {
+        if (started.error) { recheckBtn.disabled = false; status(pageStatus, started.error.message, "error"); return; }
+        var poll = window.setInterval(function () {
+          client.uploadProgress(progressId).then(function (pr) {
+            if (pr.error || !pr.data) { return; }
+            var p = pr.data;
+            if (p.stage === "recheck" && p.total) {
+              status(pageStatus, "補查中…" + (p.fileCount > 1 ? "第 " + p.file + "／" + p.fileCount + " 個檔案，" : "") + "第 " + p.current + "／" + p.total + " 頁");
+            } else if (p.stage === "finished" || p.stage === "error") {
+              window.clearInterval(poll);
+              recheckBtn.disabled = false;
+              if (p.stage === "error") { status(pageStatus, "補查失敗：" + (p.error || "未知原因"), "error"); return; }
+              client.recheckResult(reviewSessionId).then(function (rr) {
+                if (rr.error || !rr.data) { status(pageStatus, rr.error ? rr.error.message : "讀取補查結果失敗", "error"); return; }
+                var sum = applyRecheck(rr.data);
+                status(pageStatus, "補查完成：" + sum.suspect + " 頁可能漏圖" + (sum.failed ? "、" + sum.failed + " 頁補查失敗" : "") + "。",
+                  sum.suspect || sum.failed ? "warn" : "ok");
+              });
+            }
+          });
+        }, 3000);
+      });
+    });
     var applyPagesBtn = button("套用校正到教材本文", null, function () {
       var applied = 0;
       var missed = 0;
@@ -557,7 +613,7 @@ AHS.CouncilUpload = (function () {
     });
     var pageReviewBox = el("details", { class: "upl-images" }, [
       el("summary", { text: "逐頁預覽與校正（MinerU 辨識結果對照原頁）" }),
-      el("div", { class: "upl-actions" }, [applyPagesBtn]),
+      el("div", { class: "upl-actions" }, [applyPagesBtn, recheckBtn]),
       pageStatus, pageList
     ]);
     var promptStatus = el("p", { class: "upl-status" });

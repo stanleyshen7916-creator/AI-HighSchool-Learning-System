@@ -1100,3 +1100,65 @@ describe('2026-11-21 MinerU：動態逾時、進度、結構化輸出與逐頁 A
     }
   });
 });
+
+describe('2026-11-21 MinerU 漏圖補查 API', () => {
+  const figureRecheck = require('../services/figureRecheck');
+  const { createCanvas } = require('@napi-rs/canvas');
+  const { UPLOAD_SESSIONS_DIR } = require('../server');
+
+  function pngBuffer() {
+    const canvas = createCanvas(200, 300);
+    canvas.getContext('2d').fillRect(0, 0, 200, 300);
+    return canvas.toBuffer('image/png');
+  }
+
+  afterEach(() => {
+    figureRecheck.fetchImpl = undefined;
+  });
+
+  test('POST：沒有 MinerU 逐頁資料的上傳回 404', async () => {
+    const res = await request(app).post('/api/uploads/no-such-session-xyz/recheck');
+    expect(res.status).toBe(404);
+  });
+
+  test('GET：沒有補查結果時回空陣列且未在執行', async () => {
+    const res = await request(app).get('/api/uploads/no-such-session-xyz/recheck');
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ running: false, files: [] });
+  });
+
+  test('POST 啟動背景補查（202）→ 完成後 GET 讀回 suspect 與進度為 finished', async () => {
+    const sessionId = `rechecktest${Date.now()}`;
+    const structDir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'structured');
+    const sessionDir = path.join(UPLOAD_SESSIONS_DIR, sessionId);
+    const progressId = `prog-${sessionId}`;
+    try {
+      fs.mkdirSync(structDir, { recursive: true });
+      fs.mkdirSync(sessionDir, { recursive: true });
+      fs.writeFileSync(path.join(sessionDir, 'page.png'), pngBuffer());
+      // MinerU 在第 1 頁抽到 1 張圖；視覺模型每塊都回 1 個 → 共 6 個 → suspect
+      fs.writeFileSync(path.join(structDir, '01_page.content_list.json'), JSON.stringify([{ type: 'image', img_path: 'images/a.jpg', page_idx: 0 }]));
+      fs.writeFileSync(path.join(structDir, 'index.json'), JSON.stringify({ files: [{ index: 0, filename: 'page.png', saved: 'page.png', contentList: '01_page.content_list.json' }] }));
+      figureRecheck.fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({ message: { content: '[{"label":"圖"}]' } }) });
+
+      const start = await request(app).post(`/api/uploads/${sessionId}/recheck?progressId=${progressId}`);
+      expect(start.status).toBe(202);
+
+      let result = null;
+      for (let i = 0; i < 100; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        // eslint-disable-next-line no-await-in-loop
+        const res = await request(app).get(`/api/uploads/${sessionId}/recheck`);
+        if (!res.body.running && res.body.files.length) { result = res.body; break; }
+      }
+      expect(result).not.toBeNull();
+      expect(result.files[0].pages[0]).toMatchObject({ page: 1, mineruCount: 1, vlmCount: 6, suspect: true });
+      const progress = await request(app).get(`/api/upload/progress/${progressId}`);
+      expect(progress.body.stage).toBe('finished');
+    } finally {
+      fs.rmSync(path.join(MINERU_OUTPUTS_DIR, sessionId), { recursive: true, force: true });
+      fs.rmSync(sessionDir, { recursive: true, force: true });
+    }
+  });
+});
