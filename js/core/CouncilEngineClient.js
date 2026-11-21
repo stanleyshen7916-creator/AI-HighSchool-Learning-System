@@ -103,6 +103,11 @@ AHS.CouncilEngineClient = (function () {
     structuredUrl: function (sessionId, fileIndex, kind) {
       return baseUrl() + "/api/uploads/" + enc(sessionId) + "/files/" + fileIndex + "/structured/" + kind;
     },
+    /* 2026-11-21 漏圖補查：背景執行（本機視覺模型逐頁檢查），進度走 uploadProgress，結果用 recheckResult 讀 */
+    recheckStart: function (sessionId, progressId) {
+      return request("POST", "/api/uploads/" + enc(sessionId) + "/recheck?progressId=" + enc(progressId), {});
+    },
+    recheckResult: function (sessionId) { return request("GET", "/api/uploads/" + enc(sessionId) + "/recheck"); },
     createJob: function (payload) { return request("POST", "/api/assemble-council/jobs", payload); },
     getJob: function (jobId) { return request("GET", "/api/assemble-council/jobs/" + enc(jobId)); },
     images: function (sourceId) { return request("GET", "/api/materials/" + enc(sourceId) + "/images"); },

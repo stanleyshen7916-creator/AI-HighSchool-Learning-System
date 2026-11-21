@@ -21,6 +21,7 @@ const { createWrongBookNotesJob } = require('./platform/WrongBookNotesJob');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
 const figureCards = require('./services/figureCards');
+const figureRecheck = require('./services/figureRecheck');
 const pdfTextQuality = require('./services/pdfTextQuality');
 const mineruContentList = require('./services/mineruContentList');
 const pageQuality = require('./services/pageQuality');
@@ -994,6 +995,94 @@ app.get('/api/uploads/:sessionId/files/:index/pages/:page/image', async (req, re
   }
 });
 
+// ---- 2026-11-21 MinerU 漏圖補查（本機視覺模型，說明見 services/figureRecheck.js）---------------------
+
+const recheckRunning = new Set();
+
+function mineruImageCountsByPage(contentListPath) {
+  const counts = new Map();
+  try {
+    JSON.parse(fs.readFileSync(contentListPath, 'utf8')).forEach((item) => {
+      if (item && item.type === 'image' && Number.isInteger(item.page_idx)) {
+        counts.set(item.page_idx + 1, (counts.get(item.page_idx + 1) || 0) + 1);
+      }
+    });
+  } catch {
+    // 讀不到 content_list 就當作每頁 0 張（補查結果仍可參考）
+  }
+  return counts;
+}
+
+async function runFigureRecheck(sessionId, progressId) {
+  const { dir, files } = readStructuredIndex(sessionId);
+  const sessionDir = assertInsideDir(UPLOAD_SESSIONS_DIR, path.join(UPLOAD_SESSIONS_DIR, safeSlug(String(sessionId))));
+  const options = { fetchImpl: figureRecheck.fetchImpl };
+  const resultFiles = [];
+  for (let i = 0; i < files.length; i += 1) {
+    const entry = files[i];
+    const originalPath = assertInsideDir(sessionDir, path.join(sessionDir, entry.saved));
+    const counts = mineruImageCountsByPage(path.join(dir, entry.contentList));
+    const progress = (current, total) => setUploadProgress(progressId, { stage: 'recheck', file: i + 1, fileCount: files.length, filename: entry.filename, current, total });
+    const pages = [];
+    if (path.extname(originalPath).toLowerCase() === '.pdf') {
+      const parser = new PDFParse({ data: fs.readFileSync(originalPath) });
+      try {
+        let total = 1;
+        for (let page = 1; page <= total; page += 1) {
+          // 逐頁渲染（高解析，約 2.5 倍），避免一次把整份 PDF 的圖留在記憶體。
+          // eslint-disable-next-line no-await-in-loop
+          const shot = await parser.getScreenshot({ partial: [page], imageBuffer: true, scale: 2.5 });
+          total = shot.total || total;
+          progress(page, total);
+          if (!shot.pages.length) break;
+          // eslint-disable-next-line no-await-in-loop
+          const [result] = await figureRecheck.recheckPages([{ page, mineruCount: counts.get(page) || 0, buffer: Buffer.from(shot.pages[0].data) }], options);
+          pages.push(result);
+        }
+      } finally {
+        await parser.destroy();
+      }
+    } else {
+      progress(1, 1);
+      const [result] = await figureRecheck.recheckPages([{ page: 1, mineruCount: counts.get(1) || 0, buffer: fs.readFileSync(originalPath) }], options);
+      pages.push(result);
+    }
+    resultFiles.push({ index: entry.index, filename: entry.filename, pages });
+  }
+  const result = { generatedAt: new Date().toISOString(), model: figureRecheck.visionModel(), files: resultFiles };
+  fs.writeFileSync(path.join(dir, 'recheck.json'), JSON.stringify(result, null, 2));
+  return result;
+}
+
+// 背景執行（每頁數十秒，整份可能數分鐘）：回 202，進度用 GET /api/upload/progress/:progressId，結果用 GET .../recheck。
+app.post('/api/uploads/:sessionId/recheck', (req, res) => {
+  const { files } = readStructuredIndex(req.params.sessionId);
+  if (!files.length) return res.status(404).json({ error: '這次上傳沒有 MinerU 逐頁資料，無法補查' });
+  if (recheckRunning.has(req.params.sessionId)) return res.status(409).json({ error: '這次上傳的補查正在進行中' });
+  const progressId = PROGRESS_ID_PATTERN.test(String(req.query.progressId || '')) ? String(req.query.progressId) : null;
+  recheckRunning.add(req.params.sessionId);
+  setUploadProgress(progressId, { stage: 'recheck' });
+  runFigureRecheck(req.params.sessionId, progressId)
+    .then(() => setUploadProgress(progressId, { stage: 'finished' }))
+    .catch((error) => {
+      console.warn(`漏圖補查失敗：${error.message}`);
+      setUploadProgress(progressId, { stage: 'error', error: String(error.message || error) });
+    })
+    .finally(() => recheckRunning.delete(req.params.sessionId));
+  return res.status(202).json({ started: true });
+});
+
+app.get('/api/uploads/:sessionId/recheck', (req, res) => {
+  const { dir } = readStructuredIndex(req.params.sessionId);
+  let result = { files: [] };
+  try {
+    result = JSON.parse(fs.readFileSync(path.join(dir, 'recheck.json'), 'utf8'));
+  } catch {
+    result = { files: [] };
+  }
+  return res.status(200).json({ running: recheckRunning.has(req.params.sessionId), ...result });
+});
+
 app.post('/api/upload', upload.array('files'), async (req, res) => {
   const files = req.files || [];
   if (files.length === 0) {
@@ -1547,6 +1636,7 @@ module.exports = {
   mineruTimeoutMs,
   readMineruProgress,
   contentListToPages,
+  runFigureRecheck,
   isMineruWatcherAlive,
   MINERU_INPUTS_DIR,
   MINERU_OUTPUTS_QUEUE_DIR,
