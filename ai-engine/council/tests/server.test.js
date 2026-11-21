@@ -52,6 +52,9 @@ const {
   PDF_MEANINGFUL_CHAR_THRESHOLD,
   runMinerU,
   isMineruWatcherAlive,
+  mineruTimeoutMs,
+  readMineruProgress,
+  contentListToPages,
 } = require('../server');
 const { extractSectionsFromDraft } = require('../services/multiAi');
 
@@ -1001,5 +1004,99 @@ describe('多模態圖片配套下載機制 GET /api/materials/:id/images(/downl
     );
     // ZIP 檔案的 local file header 簽章為 'PK\x03\x04'
     expect(downloadRes.body.slice(0, 4).toString('hex')).toBe('504b0304');
+  });
+});
+
+describe('2026-11-21 MinerU：動態逾時、進度、結構化輸出與逐頁 API', () => {
+  test('mineruTimeoutMs：取「基礎逾時」與「頁數×每頁」的較大者', () => {
+    expect(mineruTimeoutMs(undefined, 300000, 60000)).toBe(300000);
+    expect(mineruTimeoutMs(3, 300000, 60000)).toBe(300000);
+    expect(mineruTimeoutMs(20, 300000, 60000)).toBe(1200000);
+  });
+
+  test('readMineruProgress：取 mineru.log 最後一個 n/m，解析不到回 null', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mineru-progress-'));
+    try {
+      expect(readMineruProgress(dir)).toBeNull();
+      fs.writeFileSync(path.join(dir, 'mineru.log'), 'Layout Predict: 10%| 1/10\nOCR-det: 70%| 7/10\n');
+      expect(readMineruProgress(dir)).toEqual({ current: 7, total: 10 });
+      fs.writeFileSync(path.join(dir, 'mineru.log'), 'no progress here');
+      expect(readMineruProgress(dir)).toBeNull();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('contentListToPages：依 page_idx 分頁，表格去除標籤', () => {
+    const pages = contentListToPages([
+      { type: 'text', text: '第二頁', page_idx: 1 },
+      { type: 'text', text: '標題', text_level: 1, page_idx: 0 },
+      { type: 'table', table_body: '<table><tr><td>甲</td><td>乙</td></tr></table>', page_idx: 0 },
+      { type: 'image', img_path: 'images/a.jpg', page_idx: 0 },
+    ]);
+    expect(pages.map((p) => p.page)).toEqual([1, 2]);
+    expect(pages[0].blocks[0]).toMatchObject({ type: 'text', text: '標題', level: 1 });
+    expect(pages[0].blocks[1].text).toBe('甲 乙');
+    expect(pages[0].blocks[2].image).toBe('images/a.jpg');
+  });
+
+  test('runMinerU：回報進度並收集 content_list／middle 路徑', async () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'mineru-struct-'));
+    const inputsDir = path.join(tmpRoot, 'inputs');
+    const outputsDir = path.join(tmpRoot, 'outputs');
+    fs.mkdirSync(outputsDir, { recursive: true });
+    fs.writeFileSync(path.join(outputsDir, '.heartbeat'), String(Date.now()));
+    const sourceFile = path.join(tmpRoot, 'source.pdf');
+    fs.writeFileSync(sourceFile, 'fake');
+    const jobId = 'job-structured';
+    const ocrDir = path.join(outputsDir, jobId, 'ocr');
+    fs.mkdirSync(ocrDir, { recursive: true });
+    fs.writeFileSync(path.join(outputsDir, jobId, 'mineru.log'), 'OCR 2/5');
+    fs.writeFileSync(path.join(ocrDir, `${jobId}.md`), '本文');
+    fs.writeFileSync(path.join(ocrDir, `${jobId}_content_list.json`), '[]');
+    fs.writeFileSync(path.join(ocrDir, `${jobId}_middle.json`), '{}');
+    fs.writeFileSync(path.join(outputsDir, jobId, '.done'), '');
+    const structured = {};
+    const events = [];
+    try {
+      const text = await runMinerU(sourceFile, '.pdf', {
+        inputsDir, outputsDir, jobId, pollTimeoutMs: 5000, structured, onProgress: (info) => events.push(info),
+      });
+      expect(text).toBe('本文');
+      expect(structured.contentListPath).toBe(path.join(ocrDir, `${jobId}_content_list.json`));
+      expect(structured.middlePath).toBe(path.join(ocrDir, `${jobId}_middle.json`));
+      expect(events[events.length - 1]).toEqual({ stage: 'done' });
+    } finally {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('GET /api/upload/progress/:id：格式不符 400、未知 404', async () => {
+    expect((await request(app).get('/api/upload/progress/bad')).status).toBe(400);
+    expect((await request(app).get('/api/upload/progress/unknown-progress-id')).status).toBe(404);
+  });
+
+  test('GET /api/uploads/:sessionId/pages：讀取結構化輸出並分頁；沒有時回空陣列', async () => {
+    const sessionId = `structtest${Date.now()}`;
+    const dir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'structured');
+    try {
+      const empty = await request(app).get(`/api/uploads/${sessionId}/pages`);
+      expect(empty.status).toBe(200);
+      expect(empty.body.files).toEqual([]);
+
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, '01_a.content_list.json'), JSON.stringify([{ type: 'text', text: '甲', page_idx: 0 }]));
+      fs.writeFileSync(path.join(dir, 'index.json'), JSON.stringify({ files: [{ index: 0, filename: 'a.pdf', saved: 'a.pdf', contentList: '01_a.content_list.json' }] }));
+      const res = await request(app).get(`/api/uploads/${sessionId}/pages`);
+      expect(res.status).toBe(200);
+      expect(res.body.files[0]).toMatchObject({ filename: 'a.pdf', pageCount: 1 });
+      expect(res.body.files[0].pages[0].blocks[0].text).toBe('甲');
+
+      const raw = await request(app).get(`/api/uploads/${sessionId}/files/0/structured/content_list`);
+      expect(raw.status).toBe(200);
+      expect((await request(app).get(`/api/uploads/${sessionId}/files/0/structured/other`)).status).toBe(404);
+    } finally {
+      fs.rmSync(path.join(MINERU_OUTPUTS_DIR, sessionId), { recursive: true, force: true });
+    }
   });
 });

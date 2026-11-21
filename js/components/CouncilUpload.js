@@ -464,11 +464,30 @@ AHS.CouncilUpload = (function () {
         }));
       });
     }
+    /* 2026-11-21：解析期間每 2 秒問引擎一次進度（MinerU 逐頁處理，長 PDF 可能數分鐘）。 */
+    function progressText(p) {
+      var text = "解析中…";
+      if (p.fileCount > 1 && p.file) { text += "第 " + p.file + "／" + p.fileCount + " 個檔案"; }
+      if (p.filename) { text += "（" + p.filename + "）"; }
+      if (p.stage === "ocr") {
+        text += p.total ? " MinerU OCR " + p.current + "／" + p.total : " MinerU OCR 處理中";
+      }
+      return text + "。掃描檔每頁可能需要一分鐘以上。";
+    }
     var uploadBtn = button("上傳並解析", "primary", function () {
       if (!fileInput.files || !fileInput.files.length) { status(uploadStatus, "請先選擇檔案。", "error"); return; }
       uploadBtn.disabled = true;
+      var progressId = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       status(uploadStatus, "解析中…掃描檔會交給 MinerU OCR，每頁可能需要一分鐘以上。");
-      client.upload(fileInput.files).then(function (r) {
+      var timer = window.setInterval(function () {
+        client.uploadProgress(progressId).then(function (pr) {
+          if (!pr.error && pr.data && pr.data.stage !== "finished" && pr.data.stage !== "error") {
+            status(uploadStatus, progressText(pr.data));
+          }
+        });
+      }, 2000);
+      client.upload(fileInput.files, progressId).then(function (r) {
+        window.clearInterval(timer);
         uploadBtn.disabled = false;
         if (r.error) { status(uploadStatus, r.error.message, "error"); return; }
         state.sessionId = r.data.sessionId;
@@ -479,8 +498,68 @@ AHS.CouncilUpload = (function () {
         status(uploadStatus, "完成：" + r.data.files.map(function (f) { return f.filename + "（" + f.length + " 字）"; }).join("、") +
           "。原始檔已保存，建立教材包時會放進 source/。" + pageQualityNote(r.data.pageQuality), "ok");
         refreshImages();
+        loadPageReview(r.data.structuredCount ? r.data.sessionId : null);
       });
     });
+    /* 2026-11-21 逐頁預覽與校正：原頁圖片＋MinerU 辨識出的各區塊文字；改過的區塊在「套用」時
+       回寫到教材本文（只在該段文字於本文中恰好出現一次才替換，避免改錯地方）。 */
+    var pageStatus = el("p", { class: "upl-status" });
+    var pageList = el("div", { class: "upl-pages" });
+    var pageEdits = [];
+    function loadPageReview(sessionId) {
+      pageEdits = [];
+      AHS.UI.mount(pageList, el("span"));
+      if (!sessionId) { status(pageStatus, "這次上傳沒有 MinerU 的逐頁資料（可能是 .md／.txt，或 MinerU 未啟動而改用 Tesseract）。"); return; }
+      status(pageStatus, "讀取逐頁資料中…");
+      client.uploadPages(sessionId).then(function (r) {
+        if (r.error || !r.data) { status(pageStatus, r.error ? r.error.message : "讀取失敗", "error"); return; }
+        var total = 0;
+        r.data.files.forEach(function (file) {
+          var shown = el("div", { class: "upl-pages__file" }, [el("h3", { class: "upl-pages__title", text: file.filename + "（" + file.pageCount + " 頁）" })]);
+          file.pages.forEach(function (page) {
+            var blocks = el("div", { class: "upl-pages__blocks" });
+            page.blocks.forEach(function (block) {
+              if (block.type === "image") { blocks.appendChild(el("p", { class: "upl-hint", text: "［圖片］" + (block.image || "") })); return; }
+              if (!block.text) { return; }
+              if (block.type === "text" || block.type === "equation") {
+                var box = el("textarea", { class: "upl-textarea upl-pages__block", rows: String(Math.min(6, Math.max(2, Math.ceil(block.text.length / 40)))) });
+                box.value = block.text;
+                pageEdits.push({ orig: block.text, box: box });
+                blocks.appendChild(box);
+              } else {
+                blocks.appendChild(el("p", { class: "upl-hint", text: "［表格］" + block.text }));
+              }
+            });
+            var img = el("img", { class: "upl-pages__img", loading: "lazy", alt: "第 " + page.page + " 頁原圖", src: client.pageImageUrl(sessionId, file.index, page.page) });
+            shown.appendChild(el("div", { class: "upl-pages__row" }, [img, blocks]));
+            total += 1;
+          });
+          pageList.appendChild(shown);
+          pageList.appendChild(el("a", { class: "upl-link", href: client.structuredUrl(sessionId, file.index, "content_list"), text: "下載 " + file.filename + " 的 MinerU 結構化輸出（content_list.json）" }));
+        });
+        status(pageStatus, total ? "共 " + total + " 頁。改完按「套用校正到教材本文」。" : "沒有可顯示的頁面。");
+      });
+    }
+    var applyPagesBtn = button("套用校正到教材本文", null, function () {
+      var applied = 0;
+      var missed = 0;
+      pageEdits.forEach(function (edit) {
+        var next = edit.box.value;
+        if (next === edit.orig) { return; }
+        var parts = sourceText.value.split(edit.orig);
+        if (parts.length !== 2) { missed += 1; return; }
+        sourceText.value = parts[0] + next + parts[1];
+        edit.orig = next;
+        applied += 1;
+      });
+      status(pageStatus, applied + " 處已套用" + (missed ? "；" + missed + " 處在本文中找不到唯一對應段落（已被其他修改改動或重複出現），請直接改上方教材本文" : "") + "。",
+        missed ? "warn" : "ok");
+    });
+    var pageReviewBox = el("details", { class: "upl-images" }, [
+      el("summary", { text: "逐頁預覽與校正（MinerU 辨識結果對照原頁）" }),
+      el("div", { class: "upl-actions" }, [applyPagesBtn]),
+      pageStatus, pageList
+    ]);
     var promptStatus = el("p", { class: "upl-status" });
     function buildPrompt() {
       var m = councilMeta();
@@ -610,6 +689,7 @@ AHS.CouncilUpload = (function () {
       uploadStatus,
       field("教材本文（SOURCE）", sourceText),
       ocrHelpBox,
+      pageReviewBox,
       imagesSlot,
       el("div", { class: "upl-actions" }, [button("複製雙方 AI 專用 Prompt", null, function () {
         copyText(buildPrompt()).then(function () {

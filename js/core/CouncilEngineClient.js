@@ -89,10 +89,19 @@ AHS.CouncilEngineClient = (function () {
     ocrHelpMerge: function (payload) { return request("POST", "/api/ocr-help/merge", payload); },
     /* 2026-10-14: 送 Claude 最終審查的比例與標準答案集筆數 */
     adjudicationStats: function () { return request("GET", "/api/stats/adjudication"); },
-    upload: function (files) {
+    upload: function (files, progressId) {
       var form = new FormData();
       Array.prototype.forEach.call(files, function (f) { form.append("files", f, f.name); });
-      return request("POST", "/api/upload", form);
+      return request("POST", "/api/upload" + (progressId ? "?progressId=" + enc(progressId) : ""), form);
+    },
+    /* 2026-11-21 MinerU：解析進度、逐頁區塊、原頁圖片與結構化 JSON 下載 */
+    uploadProgress: function (progressId) { return request("GET", "/api/upload/progress/" + enc(progressId)); },
+    uploadPages: function (sessionId) { return request("GET", "/api/uploads/" + enc(sessionId) + "/pages"); },
+    pageImageUrl: function (sessionId, fileIndex, page) {
+      return baseUrl() + "/api/uploads/" + enc(sessionId) + "/files/" + fileIndex + "/pages/" + page + "/image";
+    },
+    structuredUrl: function (sessionId, fileIndex, kind) {
+      return baseUrl() + "/api/uploads/" + enc(sessionId) + "/files/" + fileIndex + "/structured/" + kind;
     },
     createJob: function (payload) { return request("POST", "/api/assemble-council/jobs", payload); },
     getJob: function (jobId) { return request("GET", "/api/assemble-council/jobs/" + enc(jobId)); },
