@@ -152,8 +152,34 @@ const MINERU_HEARTBEAT_STALE_MS = 10000;
 // CPU pipeline 每次 mineru CLI 呼叫都要重新把模型載入記憶體（tools/mineru_watch.sh 是
 // 逐一啟動獨立行程，非常駐 API server），實測（含首次下載權重）約 100 秒，這裡保留數倍
 // 餘裕；權重快取後應該遠低於這個時間，逾時只在服務真的卡住時才會觸發。
-const MINERU_POLL_TIMEOUT_MS = 5 * 60 * 1000;
+// 2026-11-21：逾時改為「基礎逾時＋每頁加時」取較大者（長 PDF 不再固定 5 分鐘就退回 Tesseract），
+// 兩個值都可用環境變數覆寫（毫秒）；無法判斷頁數時（圖片＝1 頁）只用基礎逾時。
+function positiveIntFromEnv(name, fallback) {
+  const value = Number.parseInt(process.env[name], 10);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+const MINERU_POLL_TIMEOUT_MS = positiveIntFromEnv('MINERU_POLL_TIMEOUT_MS', 5 * 60 * 1000);
+const MINERU_PER_PAGE_TIMEOUT_MS = positiveIntFromEnv('MINERU_PER_PAGE_TIMEOUT_MS', 60 * 1000);
 const MINERU_POLL_INTERVAL_MS = 2000;
+
+function mineruTimeoutMs(pageCount, baseMs = MINERU_POLL_TIMEOUT_MS, perPageMs = MINERU_PER_PAGE_TIMEOUT_MS) {
+  const pages = Number.isFinite(pageCount) && pageCount > 0 ? Math.floor(pageCount) : 0;
+  return Math.max(baseMs, pages * perPageMs);
+}
+
+// mineru CLI 的進度條會寫進 job 目錄的 mineru.log（例如 "Layout Predict: 40%|...| 4/10"）。
+// 取最後一個「n/m」當作目前進度；解析不到就回 null（進度只是顯示用，不影響結果）。
+function readMineruProgress(jobOutputDir) {
+  try {
+    const log = fs.readFileSync(path.join(jobOutputDir, 'mineru.log'), 'utf8').slice(-4000);
+    const matches = [...log.matchAll(/(\d+)\s*\/\s*(\d+)/g)].filter((m) => Number(m[2]) > 0 && Number(m[1]) <= Number(m[2]));
+    if (matches.length === 0) return null;
+    const last = matches[matches.length - 1];
+    return { current: Number(last[1]), total: Number(last[2]) };
+  } catch {
+    return null;
+  }
+}
 
 function isMineruWatcherAlive(outputsDir) {
   try {
@@ -174,7 +200,7 @@ async function runMinerU(filePath, ext, options = {}) {
   const inputsDir = options.inputsDir || MINERU_INPUTS_DIR;
   const outputsDir = options.outputsDir || MINERU_OUTPUTS_QUEUE_DIR;
   const pollIntervalMs = options.pollIntervalMs || MINERU_POLL_INTERVAL_MS;
-  const pollTimeoutMs = options.pollTimeoutMs ?? MINERU_POLL_TIMEOUT_MS;
+  const pollTimeoutMs = options.pollTimeoutMs ?? mineruTimeoutMs(options.pageCount);
 
   if (!isMineruWatcherAlive(outputsDir)) {
     throw new Error('MinerU 佇列服務未偵測到心跳（mineru-parser 容器可能未啟動）');
@@ -201,7 +227,18 @@ async function runMinerU(filePath, ext, options = {}) {
         const imgDir = path.join(jobOutputDir, 'ocr', 'images');
         listImageFiles(imgDir).forEach((name) => options.images.push(path.join(imgDir, name)));
       }
+      // 2026-11-21：保留 MinerU 的結構化輸出（逐頁區塊、表格、公式、座標），供逐頁預覽與校正使用。
+      if (options.structured && typeof options.structured === 'object') {
+        const contentListPath = path.join(jobOutputDir, 'ocr', `${jobId}_content_list.json`);
+        const middlePath = path.join(jobOutputDir, 'ocr', `${jobId}_middle.json`);
+        if (fs.existsSync(contentListPath)) options.structured.contentListPath = contentListPath;
+        if (fs.existsSync(middlePath)) options.structured.middlePath = middlePath;
+      }
+      if (typeof options.onProgress === 'function') options.onProgress({ stage: 'done' });
       return fs.readFileSync(mdPath, 'utf8');
+    }
+    if (typeof options.onProgress === 'function') {
+      options.onProgress({ stage: 'ocr', ...(readMineruProgress(jobOutputDir) || {}) });
     }
     // eslint-disable-next-line no-await-in-loop
     await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
@@ -225,6 +262,8 @@ async function ocrPdfPagesWithTesseract(parser) {
 
 async function extractTextFromFile(filePath, opts = {}) {
   const ext = path.extname(filePath).toLowerCase();
+  // opts：images（收集切圖）、structured（收集 content_list／middle 路徑）、onProgress（進度回報）。
+  const mineruOpts = (extra = {}) => ({ images: opts.images, structured: opts.structured, onProgress: opts.onProgress, ...extra });
 
   if (ext === '.txt' || ext === '.md') {
     return fs.readFileSync(filePath, 'utf8');
@@ -246,7 +285,7 @@ async function extractTextFromFile(filePath, opts = {}) {
         }
         console.warn(`PDF 文字層品質可疑，改走 MinerU：${quality.reasons.join('；')}`);
         try {
-          return await runMinerU(filePath, ext, { images: opts.images });
+          return await runMinerU(filePath, ext, mineruOpts({ pageCount: result.total }));
         } catch (error) {
           console.warn(`MinerU 解析失敗，沿用 PDF 文字層（品質可疑，公式可能亂碼）：${error.message}`);
           return pdfTextQuality.normalizeRadicals(result.text);
@@ -254,7 +293,7 @@ async function extractTextFromFile(filePath, opts = {}) {
       }
 
       try {
-        return await runMinerU(filePath, ext, { images: opts.images });
+        return await runMinerU(filePath, ext, mineruOpts({ pageCount: result.total }));
       } catch (error) {
         console.warn(`MinerU 解析失敗，退回 Tesseract（辨識品質較低）：${error.message}`);
         return await ocrPdfPagesWithTesseract(parser);
@@ -266,7 +305,7 @@ async function extractTextFromFile(filePath, opts = {}) {
 
   if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
     try {
-      return await runMinerU(filePath, ext, { images: opts.images });
+      return await runMinerU(filePath, ext, mineruOpts({ pageCount: 1 }));
     } catch (error) {
       console.warn(`MinerU 解析失敗，退回 Tesseract（辨識品質較低）：${error.message}`);
       return ocrImage(filePath);
@@ -775,9 +814,16 @@ app.post('/api/materials/:id/figure-cards', express.json(), async (req, res) => 
 async function extractTextFromFiles(files, opts = {}) {
   const sorted = [...files].sort((a, b) => a.originalname.localeCompare(b.originalname, 'zh-Hant'));
   const parts = [];
-  for (const file of sorted) {
-    const text = await extractTextFromFile(file.path, opts);
-    parts.push({ filename: file.originalname, text });
+  for (let i = 0; i < sorted.length; i += 1) {
+    const file = sorted[i];
+    const structured = {};
+    if (typeof opts.onProgress === 'function') opts.onProgress({ file: i + 1, fileCount: sorted.length, filename: file.originalname });
+    const onProgress = typeof opts.onProgress === 'function'
+      ? (info) => opts.onProgress({ file: i + 1, fileCount: sorted.length, filename: file.originalname, ...info })
+      : undefined;
+    // eslint-disable-next-line no-await-in-loop
+    const text = await extractTextFromFile(file.path, { ...opts, structured, onProgress });
+    parts.push({ filename: file.originalname, text, structured: structured.contentListPath ? structured : null });
   }
   return parts;
 }
@@ -793,7 +839,7 @@ function decodeOriginalName(name) {
 
 // 保留原始上傳檔：位元組完全相同、保留原檔名（僅取 basename 防止路徑穿越），
 // 供之後建立教材包時放進 source/（教材包標準：source/ 是原始上傳檔）。
-function keepOriginals(files) {
+function keepOriginals(files, savedNames) {
   const sessionId = crypto.randomUUID();
   const sessionDir = assertInsideDir(UPLOAD_SESSIONS_DIR, path.join(UPLOAD_SESSIONS_DIR, sessionId));
   fs.mkdirSync(sessionDir, { recursive: true });
@@ -803,9 +849,133 @@ function keepOriginals(files) {
     while (used.has(name)) name = `_${name}`;
     used.add(name);
     fs.copyFileSync(file.path, assertInsideDir(sessionDir, path.join(sessionDir, name)));
+    if (Array.isArray(savedNames)) savedNames.push({ originalname: file.originalname, saved: name });
   });
   return sessionId;
 }
+
+// ---- 2026-11-21 MinerU 結構化輸出、逐頁預覽與上傳進度 --------------------------------
+
+const PROGRESS_ID_PATTERN = /^[\w-]{8,64}$/;
+const PROGRESS_TTL_MS = 10 * 60 * 1000;
+const uploadProgress = new Map();
+
+function setUploadProgress(id, info) {
+  if (!id) return;
+  uploadProgress.set(id, { ...(uploadProgress.get(id) || {}), ...info, updatedAt: Date.now() });
+  for (const [key, value] of uploadProgress) {
+    if (Date.now() - value.updatedAt > PROGRESS_TTL_MS) uploadProgress.delete(key);
+  }
+}
+
+// MinerU content_list.json：每個區塊帶 page_idx（從 0 起算）。轉成「第 n 頁有哪些區塊」供前端逐頁對照。
+function contentListToPages(list) {
+  const pages = new Map();
+  (Array.isArray(list) ? list : []).forEach((item) => {
+    const index = Number.isInteger(item && item.page_idx) ? item.page_idx : 0;
+    if (!pages.has(index)) pages.set(index, []);
+    const type = item.type || 'text';
+    const text = type === 'table'
+      ? String(item.table_body || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+      : String(item.text || '');
+    pages.get(index).push({
+      type,
+      text,
+      level: item.text_level || 0,
+      image: type === 'image' ? String(item.img_path || '') : undefined,
+    });
+  });
+  return [...pages.keys()].sort((a, b) => a - b).map((index) => ({ page: index + 1, blocks: pages.get(index) }));
+}
+
+// 把本次上傳每個檔案的 MinerU 結構化輸出收進 mineru_outputs/<sessionId>/structured/，並寫 index.json。
+function saveStructuredOutputs(sessionId, parts, savedNames) {
+  const entries = [];
+  const dir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'structured');
+  parts.forEach((part, order) => {
+    if (!part.structured || !part.structured.contentListPath) return;
+    const match = savedNames.find((n) => n.originalname === part.filename);
+    const baseName = `${String(order + 1).padStart(2, '0')}_${safeSlug(path.basename(part.filename, path.extname(part.filename)))}`;
+    fs.mkdirSync(dir, { recursive: true });
+    const entry = { index: entries.length, filename: part.filename, saved: match ? match.saved : part.filename, contentList: `${baseName}.content_list.json` };
+    fs.copyFileSync(part.structured.contentListPath, path.join(dir, entry.contentList));
+    if (part.structured.middlePath) {
+      entry.middle = `${baseName}.middle.json`;
+      fs.copyFileSync(part.structured.middlePath, path.join(dir, entry.middle));
+    }
+    entries.push(entry);
+  });
+  if (entries.length) fs.writeFileSync(path.join(dir, 'index.json'), JSON.stringify({ files: entries }, null, 2));
+  return entries.length;
+}
+
+function readStructuredIndex(sessionId) {
+  const dir = assertInsideDir(MINERU_OUTPUTS_DIR, path.join(MINERU_OUTPUTS_DIR, safeSlug(String(sessionId)), 'structured'));
+  try {
+    return { dir, files: JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8')).files || [] };
+  } catch {
+    return { dir, files: [] };
+  }
+}
+
+app.get('/api/upload/progress/:id', (req, res) => {
+  if (!PROGRESS_ID_PATTERN.test(req.params.id)) return res.status(400).json({ error: '進度識別碼格式不正確' });
+  const info = uploadProgress.get(req.params.id);
+  if (!info) return res.status(404).json({ error: '找不到這個上傳的進度' });
+  return res.status(200).json(info);
+});
+
+// 逐頁資料：每個檔案的頁面區塊（文字、公式、表格、圖片）。沒有 MinerU 結構化輸出時回空陣列。
+app.get('/api/uploads/:sessionId/pages', (req, res) => {
+  const { dir, files } = readStructuredIndex(req.params.sessionId);
+  const result = files.map((entry) => {
+    let pages = [];
+    try {
+      pages = contentListToPages(JSON.parse(fs.readFileSync(path.join(dir, entry.contentList), 'utf8')));
+    } catch {
+      pages = [];
+    }
+    return { index: entry.index, filename: entry.filename, pageCount: pages.length, pages };
+  });
+  return res.status(200).json({ sessionId: req.params.sessionId, files: result });
+});
+
+// 下載 MinerU 原始結構化 JSON（kind=content_list｜middle）。
+app.get('/api/uploads/:sessionId/files/:index/structured/:kind', (req, res) => {
+  const { dir, files } = readStructuredIndex(req.params.sessionId);
+  const entry = files.find((f) => String(f.index) === req.params.index);
+  const name = entry && (req.params.kind === 'middle' ? entry.middle : req.params.kind === 'content_list' ? entry.contentList : null);
+  if (!name) return res.status(404).json({ error: '找不到這份結構化輸出' });
+  return res.status(200).sendFile(assertInsideDir(dir, path.join(dir, name)));
+});
+
+// 該檔案第 n 頁的原圖：PDF 即時渲染成 PNG，圖片檔直接回傳。
+app.get('/api/uploads/:sessionId/files/:index/pages/:page/image', async (req, res) => {
+  const { files } = readStructuredIndex(req.params.sessionId);
+  const entry = files.find((f) => String(f.index) === req.params.index);
+  const page = Number.parseInt(req.params.page, 10);
+  if (!entry || !Number.isInteger(page) || page < 1) return res.status(404).json({ error: '找不到這一頁' });
+  let originalPath;
+  try {
+    const sessionDir = assertInsideDir(UPLOAD_SESSIONS_DIR, path.join(UPLOAD_SESSIONS_DIR, safeSlug(String(req.params.sessionId))));
+    originalPath = assertInsideDir(sessionDir, path.join(sessionDir, entry.saved));
+  } catch {
+    return res.status(404).json({ error: '找不到原始檔' });
+  }
+  if (!fs.existsSync(originalPath)) return res.status(404).json({ error: '找不到原始檔' });
+  if (path.extname(originalPath).toLowerCase() !== '.pdf') return res.status(200).sendFile(originalPath);
+  const parser = new PDFParse({ data: fs.readFileSync(originalPath) });
+  try {
+    const shot = await parser.getScreenshot({ partial: [page], imageBuffer: true });
+    if (!shot.pages.length) return res.status(404).json({ error: '找不到這一頁' });
+    res.set('Content-Type', 'image/png');
+    return res.status(200).send(Buffer.from(shot.pages[0].data));
+  } catch (error) {
+    return res.status(500).json({ error: `頁面渲染失敗：${error.message}` });
+  } finally {
+    await parser.destroy();
+  }
+});
 
 app.post('/api/upload', upload.array('files'), async (req, res) => {
   const files = req.files || [];
@@ -813,15 +983,25 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
     return res.status(400).json({ error: '請選擇要上傳的檔案' });
   }
 
+  // 前端帶 ?progressId=<id> 時，解析期間可輪詢 GET /api/upload/progress/<id> 取得進度。
+  const progressId = PROGRESS_ID_PATTERN.test(String(req.query.progressId || '')) ? String(req.query.progressId) : null;
+
   try {
     files.forEach((file) => { file.originalname = decodeOriginalName(file.originalname); });
     const minerImages = [];
-    const parts = await extractTextFromFiles(files, { images: minerImages });
+    setUploadProgress(progressId, { stage: 'start', fileCount: files.length });
+    const parts = await extractTextFromFiles(files, {
+      images: minerImages,
+      onProgress: progressId ? (info) => setUploadProgress(progressId, info) : undefined,
+    });
     // 2026-10-14：多個檔案時每段前加上檔案標記，原文辨識協助包才能把可疑文字對回是哪張照片。
     const mergedText = parts.length > 1
       ? parts.map((part) => `${ocrHelp.fileMarker(part.filename)}\n${part.text}`).join('\n\n')
       : parts.map((part) => part.text).join('\n\n');
-    const sessionId = keepOriginals(files);
+    const savedNames = [];
+    const sessionId = keepOriginals(files, savedNames);
+    const structuredCount = saveStructuredOutputs(sessionId, parts, savedNames);
+    setUploadProgress(progressId, { stage: 'finished' });
     // 2026-11-16 B1：MinerU 切圖保存到 mineru_outputs/<sessionId>/images/（檔名不變，與本文的 ![](images/檔名) 一致），
     // 供「下載本教材圖片 zip」與建立草稿時【圖：檔名】的附圖來源。
     const imagesDir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'images');
@@ -832,9 +1012,11 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
       sessionId,
       imagesId: sessionId,
       imageCount: minerImages.length,
+      structuredCount,
       files: parts.map((part) => ({ filename: part.filename, length: part.text.length })),
     });
   } catch (error) {
+    setUploadProgress(progressId, { stage: 'error' });
     return res.status(500).json({ error: `檔案解析失敗：${error.message}` });
   } finally {
     files.forEach((file) => {
@@ -1335,6 +1517,9 @@ module.exports = {
   countMeaningfulChars,
   PDF_MEANINGFUL_CHAR_THRESHOLD,
   runMinerU,
+  mineruTimeoutMs,
+  readMineruProgress,
+  contentListToPages,
   isMineruWatcherAlive,
   MINERU_INPUTS_DIR,
   MINERU_OUTPUTS_QUEUE_DIR,
