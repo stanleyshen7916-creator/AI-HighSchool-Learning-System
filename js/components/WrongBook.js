@@ -645,6 +645,8 @@ AHS.WrongBook = (function () {
 
   /* ---- Question row ---------------------------------------------------- */
   function questionRow(item, index, onSelect, status, toggleFavorite, moreMenuController, startReviewSession, toggleArchive) {
+    /* 短文式克漏字：列表只列含本題空格的那一句，整篇短文留在詳細頁。 */
+    var rowText = window.AHS.ClozeGroup && AHS.ClozeGroup.isCloze(item) ? AHS.ClozeGroup.snippet(item) : item.question;
     var favBadge = el("span", {
       class: "wb-row__favbadge" + (item.bookmarked ? "" : " is-hidden")
     }, [
@@ -688,13 +690,13 @@ AHS.WrongBook = (function () {
     var row = el("article", {
       class: "wb-row",
       "data-subject": item.subject, "tabindex": "0", "role": "button",
-      "aria-label": "第 " + (index + 1) + " 題：" + item.question
+      "aria-label": "第 " + (index + 1) + " 題：" + rowText
     }, [
       chip(item.subject),
       el("div", { class: "wb-row__info" }, [
         el("h3", { class: "wb-row__title" }, [
           el("span", { class: "wb-row__index", text: "第 " + (index + 1) + " 題" }),
-          el("span", { class: "wb-row__question", text: item.question })
+          el("span", { class: "wb-row__question", text: rowText })
         ]),
         chapterLabel(item) ? el("p", { class: "wb-row__chapter", text: "章節：" + chapterLabel(item) }) : null,
         el("p", { class: "wb-row__meta", text: periodPrefix(item) + (item.knowledgePoint || "") }),

@@ -329,5 +329,28 @@ console.log("\n[英文單字克漏字] tm_103～tm_105（短文＋單選）");
   }
 }
 
+/* 2026-11-18 知識弱點：短文式克漏字答錯後，列表只列含該格的那一句，詳細頁仍有整篇短文與 4 個選項。 */
+console.log("\n[知識弱點] 克漏字錯題");
+{
+  const wb = loadPage("wrongbook.html");
+  const W = wb.window.AHS;
+  const wbIdMap = W.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {};
+  const pkg = W.TeachingMaterialData.find((e) => e.materialId === "tm_103");
+  const pq = pkg.questions.find((q) => /〈A Festival of Life〉/.test(q.question) && /【\(3\) ______】/.test(q.question));
+  W.WrongBookRuntime.sync({
+    subject: "english", title: pq.question, chapter: pq.knowledgePoint || "",
+    wrong: [{ questionId: pq.id, knowledgePoint: pq.knowledgePoint, text: pq.question,
+      options: pq.options.map((t, i) => ({ key: "ABCD"[i], text: t })), yourAnswer: "A",
+      correctAnswer: "ABCD"[pq.options.indexOf(pq.answer)], explanation: pq.explanation, materialId: wbIdMap.tm_103 }]
+  });
+  const view = W.WrongBook.create();
+  wb.doc.body.appendChild(view);
+  const rowText = view.querySelector(".wb-row__question").textContent;
+  check("錯題本列表：克漏字只列含該格的那一句，不重複整篇短文", /^〈A Festival of Life〉第 3 格：/.test(rowText) && rowText.length < 200 && rowText.indexOf("For most people") === -1);
+  click(view.querySelector("[aria-label^='第 1 題']"));
+  check("錯題本詳細頁：仍有整篇短文與該格的 4 個選項", wb.doc.querySelector(".wb-detail__question").textContent.indexOf("For most people") !== -1 && wb.doc.querySelectorAll(".wb-detail__option").length === 4);
+  check("Console errors = 0（克漏字錯題）", wb.consoleErrors.length === 0);
+}
+
 console.log("\nQuestionKindRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);

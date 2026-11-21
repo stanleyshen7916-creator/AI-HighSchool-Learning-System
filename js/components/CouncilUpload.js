@@ -34,6 +34,40 @@ AHS.CouncilUpload = (function () {
     "⑥文化脈絡", "⑦作者背景", "⑧段落結構", "⑨延伸思考", "⑩易混淆概念",
     "⑪常考題型", "⑫易錯陷阱", "⑬跨課連結", "⑭Cross Review", "⑮Final Score"
   ];
+  /* 2026-11-18 AHS-UP2 P1-6：數學／理化／地科的章節模板。國文模板的⑤修辭手法、⑥文化脈絡、⑦作者背景對它們不適用。
+     仍維持 15 章與圈號，且保留引擎 FinalParser 依標題關鍵字擷取的章節（核心概念、章節摘要、重要定義、
+     延伸思考、易混淆、常考題型、易錯、跨課連結），所以匯入端不用改。 */
+  var STEM_SUBJECTS = ["數學", "物理", "化學", "地球科學"];
+  var STEM_SECTIONS = [
+    "①核心概念", "②章節摘要", "③重要定義與公式", "④例題與解題步驟", "⑤計算技巧與驗算",
+    "⑥圖形與符號說明", "⑦前置知識與單位", "⑧公式推導脈絡", "⑨延伸思考", "⑩易混淆概念",
+    "⑪常考題型", "⑫易錯陷阱", "⑬跨課連結", "⑭Cross Review", "⑮Final Score"
+  ];
+  function sectionsFor(subject) {
+    return STEM_SUBJECTS.indexOf(subject) !== -1 ? STEM_SECTIONS : COUNCIL_SECTIONS;
+  }
+  var STEM_RULES = [
+    "【數理科規則】",
+    /* 2026-11-18（Stanley 決定走 Unicode 路線）：學習平台前端目前沒有 LaTeX 渲染（沒有 KaTeX／MathJax），
+       學生會直接看到 $\tan\theta$ 這種原始碼，所以輸出一律用一般文字與 Unicode 符號。教材本文（SOURCE）裡 MinerU
+       轉出的 LaTeX 是辨識出來的公式原始碼，要讀懂後改寫。前端渲染列為之後的 P1-7。 */
+    "- 公式與符號：教材本文裡的 LaTeX（$...$）是辨識出來的公式原始碼，請讀懂後改寫成一般文字與 Unicode 符號再輸出——學習平台目前無法顯示 LaTeX，輸出裡不得出現 $、\\frac、\\sqrt 等 LaTeX 語法。寫法：希臘字母與符號直接寫 θ、π、∠、△、≤、≥、×、÷、±；根號寫成 √(…)；上標寫成 ²、³ 或 ^n，下標寫成 x₁、x₂；分數寫成 a/b（分子或分母有運算時加括號，例如 (a+b)/(2c)）；單位寫在數值之後；看不清楚的符號不得推測或改寫。",
+    "- 題目與詳解：計算題的選項要是具體的數值或式子（含單位），且只有一個正確；答案請自行完整計算兩次、結果一致才寫；每題「詳解：」請分行寫出主要計算步驟（至少 3 步，用 (1)(2)(3) 編號），最後寫出結果與單位，再用一行「易錯：」寫最常見的錯誤。",
+    "- ④例題與解題步驟：每題列「已知／求／步驟（編號）／答案」；⑤計算技巧與驗算要說明如何檢查答案是否合理（單位、範圍、特例）。",
+    "- 教材本文沒有出現的公式或數據不可自行補，寫「SOURCE 未提供」。",
+    ""
+  ];
+  /* 2026-11-18 AHS-UP2 P1-5：品質閘。引擎逐頁估計辨識可信度；只有「低信心頁」才需要提供原檔，
+     「疑點頁」請抽查。沒有結構化結果（沒走 MinerU）時不顯示，不假裝每頁都沒問題。 */
+  function pageQualityNote(q) {
+    if (!q || !q.totalPages) { return ""; }
+    function pages(list) { return list.map(function (p) { return "第 " + p.page + " 頁"; }).join("、"); }
+    var low = q.lowPages || [];
+    var suspect = q.suspectPages || [];
+    if (!low.length && !suspect.length) { return " 辨識品質檢查：" + q.totalPages + " 頁都沒有發現明顯問題（僅為啟發式檢查）。"; }
+    return (low.length ? " 需要原檔人工處理：" + pages(low) + "。" : "") +
+      (suspect.length ? " 建議抽查：" + pages(suspect) + "（疑似公式辨識錯誤）。" : "");
+  }
   var POLL_MS = 3000;
 
   function card(title, hint, children) {
@@ -462,7 +496,7 @@ AHS.CouncilUpload = (function () {
         state.uploadFilename = r.data.files && r.data.files.length === 1 ? r.data.files[0].filename : null;
         sourceText.value = r.data.text || "";
         status(uploadStatus, "完成：" + r.data.files.map(function (f) { return f.filename + "（" + f.length + " 字）"; }).join("、") +
-          "。原始檔已保存，建立教材包時會放進 source/。", "ok");
+          "。原始檔已保存，建立教材包時會放進 source/。" + pageQualityNote(r.data.pageQuality), "ok");
         refreshImages();
         loadPageReview(r.data.structuredCount ? r.data.sessionId : null);
       });
@@ -533,8 +567,9 @@ AHS.CouncilUpload = (function () {
         "你是一位資深學科教材編審 AI，請依照以下規範，針對提供的教材本文進行深度分析，並產出完整的十五大章節結構文件。",
         "",
         "【15 大章節架構】（請依序完整輸出，標題請完全比照下列格式，含圈號數字）"
-      ].concat(COUNCIL_SECTIONS).concat([
-        "",
+      ].concat(sectionsFor(m.subject)).concat([
+        ""
+      ]).concat(STEM_SUBJECTS.indexOf(m.subject) !== -1 ? STEM_RULES : []).concat([
         "【練習題格式】（學習平台會自動匯入題庫，格式請務必一致）",
         /* 2026-10-06：10 → 30 題（每科題庫目標 100 題；一次出更多容易被 AI 回覆長度截斷，
            其餘發布後用「為既有教材加題」補足，發布完成時會提示還差幾題） */
@@ -1183,5 +1218,5 @@ AHS.CouncilUpload = (function () {
     return root;
   }
 
-  return { create: create };
+  return { create: create, sectionsFor: sectionsFor };
 })();

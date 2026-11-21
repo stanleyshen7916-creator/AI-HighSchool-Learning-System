@@ -23,12 +23,76 @@ MINERU_LANG="${MINERU_LANG:-ch}"
 MINERU_FORMULA="${MINERU_FORMULA:-true}"
 MINERU_TABLE="${MINERU_TABLE:-true}"
 
-echo "[mineru-watch] watching ${INPUT_DIR}（backend=${MINERU_BACKEND} method=${MINERU_METHOD} lang=${MINERU_LANG} formula=${MINERU_FORMULA} table=${MINERU_TABLE}）"
+# 2026-11-18 AHS-UP2 P1-0c-2：多頁 PDF 依頁數分段解析。24 頁一次解析的記憶體高峰太大（這台電腦當機過一次，
+# 主機可用記憶體本來就只剩 3 GB 左右）。每段 MINERU_CHUNK_PAGES 頁（預設 8），段與段之間依序執行、
+# 記憶體隨段釋放；解析完把各段的 md／圖片／content_list.json 合併成與單次解析相同的輸出結構。
+CHUNK_PAGES="${MINERU_CHUNK_PAGES:-8}"
+
+# $1=檔案 $2=輸出目錄 $3=起始頁（0 起算，可省略） $4=結束頁（含，可省略）
+mineru_once() {
+  # nice 降低優先權，解析期間電腦其餘工作仍能回應（P1-0c）。
+  nice -n 10 mineru -p "$1" -o "$2" -b "${MINERU_BACKEND}" -m "${MINERU_METHOD}" -l "${MINERU_LANG}" -f "${MINERU_FORMULA}" -t "${MINERU_TABLE}" ${3:+-s "$3"} ${4:+-e "$4"}
+}
+
+# $1=檔案 $2=工作目錄 $3=stem；成功回傳 0
+run_mineru() {
+  local f="$1" job_dir="$2" stem="$3" log="$2/mineru.log" pages=0
+  case "${f,,}" in
+    *.pdf) pages="$(python -c "import sys, pypdfium2 as p; print(len(p.PdfDocument(sys.argv[1])))" "${f}" 2>>"${log}" || echo 0)" ;;
+  esac
+  if [ "${pages}" -le "${CHUNK_PAGES}" ]; then
+    mineru_once "${f}" "${OUTPUT_DIR}" > "${log}" 2>&1
+    return $?
+  fi
+  echo "[chunk] ${pages} pages, ${CHUNK_PAGES} pages per chunk" > "${log}"
+  local s=0 k=0 e
+  while [ "${s}" -lt "${pages}" ]; do
+    e=$(( s + CHUNK_PAGES - 1 ))
+    [ "${e}" -ge "${pages}" ] && e=$(( pages - 1 ))
+    echo "[chunk ${k}] pages ${s}-${e}" >> "${log}"
+    mineru_once "${f}" "${job_dir}/_chunk_${k}" "${s}" "${e}" >> "${log}" 2>&1 || return 1
+    s=$(( e + 1 ))
+    k=$(( k + 1 ))
+  done
+  python - "${job_dir}" "${stem}" "${k}" "${CHUNK_PAGES}" >> "${log}" 2>&1 <<'PY' || return 1
+import json, os, shutil, sys
+job, stem, k, chunk = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+out = os.path.join(job, 'ocr')
+os.makedirs(os.path.join(out, 'images'), exist_ok=True)
+md, content = [], []
+for i in range(k):
+    d = os.path.join(job, '_chunk_%d' % i, stem, 'ocr')
+    md.append(open(os.path.join(d, stem + '.md'), encoding='utf8').read().strip())
+    cj = os.path.join(d, stem + '_content_list.json')
+    if os.path.exists(cj):
+        for item in json.load(open(cj, encoding='utf8')):
+            if isinstance(item.get('page_idx'), int):
+                item['page_idx'] += i * chunk
+            content.append(item)
+    img = os.path.join(d, 'images')
+    if os.path.isdir(img):
+        for name in os.listdir(img):
+            shutil.copy2(os.path.join(img, name), os.path.join(out, 'images', name))
+open(os.path.join(out, stem + '.md'), 'w', encoding='utf8').write('\n\n'.join(md) + '\n')
+json.dump(content, open(os.path.join(out, stem + '_content_list.json'), 'w', encoding='utf8'), ensure_ascii=False)
+print('[merge] %d chunks, %d images' % (k, len(os.listdir(os.path.join(out, 'images')))))
+PY
+  rm -rf "${job_dir}"/_chunk_*
+  return 0
+}
+
+echo "[mineru-watch] watching ${INPUT_DIR}（backend=${MINERU_BACKEND} method=${MINERU_METHOD} lang=${MINERU_LANG} formula=${MINERU_FORMULA} table=${MINERU_TABLE} chunk=${CHUNK_PAGES}）"
+
+# 心跳：server.js 的 isMineruWatcherAlive() 靠這個檔案的 mtime 判斷 watch loop 是否還活著（超過 10 秒沒更新
+# 就放棄等待、改走 Tesseract fallback），/api/health 的 mineru 欄位也看它。
+# 2026-11-18 AHS-UP2 P1-0d：原本只在迴圈開頭更新，但解析一份 24 頁 PDF 要約 20 分鐘，期間迴圈卡在 mineru，
+# 心跳停止更新 → 健康檢查誤報 mineru:false，而且此時再上傳的第二份檔會被誤判成「MinerU 沒開」直接退回文字層。
+# 改成獨立的背景迴圈每 2 秒更新；watcher 結束（容器停止）時一併結束。
+( while true; do date +%s > "${OUTPUT_DIR}/.heartbeat"; sleep 2; done ) &
+HEARTBEAT_PID=$!
+trap 'kill "${HEARTBEAT_PID}" 2>/dev/null' EXIT
 
 while true; do
-  # 心跳：server.js 的 runMinerU() 靠這個檔案的 mtime 判斷 watch loop 是否還活著，
-  # 沒看到近期心跳就直接放棄等待、改走 Tesseract fallback，不會整個請求卡住空等逾時。
-  date +%s > "${OUTPUT_DIR}/.heartbeat"
 
   shopt -s nullglob
   for f in "${INPUT_DIR}"/*.pdf "${INPUT_DIR}"/*.png "${INPUT_DIR}"/*.jpg "${INPUT_DIR}"/*.jpeg; do
@@ -63,7 +127,7 @@ PY
         ;;
     esac
 
-    if mineru -p "${f}" -o "${OUTPUT_DIR}" -b "${MINERU_BACKEND}" -m "${MINERU_METHOD}" -l "${MINERU_LANG}" -f "${MINERU_FORMULA}" -t "${MINERU_TABLE}" > "${job_dir}/mineru.log" 2>&1; then
+    if run_mineru "${f}" "${job_dir}" "${stem}"; then
       touch "${done_marker}"
       echo "[mineru-watch] done ${base}"
     else

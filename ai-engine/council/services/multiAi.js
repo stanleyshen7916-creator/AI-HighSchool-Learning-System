@@ -8,15 +8,18 @@ const { Agent, setGlobalDispatcher } = require('undici');
 const practiceAdjudicator = require('./practiceAdjudicator');
 setGlobalDispatcher(new Agent({ headersTimeout: 0, bodyTimeout: 0 }));
 
+// 2026-11-18 AHS-UP2 P1-6b：aliases＝同一圈號的別名標題。數學／物理／化學／地球科學的提示詞（CouncilUpload.js
+// STEM_SECTIONS）用另一組 ③～⑧ 標題；原本只認國文標題，數理科草稿的 ③～⑧ 會被併進前一節（②章節摘要）。
+// 內部鍵（keyOf）與輸出標題仍用主標題，所以下游（claim 檢查、組裝）不變。
 const SECTION_DEFS = [
   { num: '①', title: '核心概念' },
   { num: '②', title: '章節摘要' },
-  { num: '③', title: '重點詞彙' },
-  { num: '④', title: '文意理解' },
-  { num: '⑤', title: '修辭手法' },
-  { num: '⑥', title: '文化脈絡' },
-  { num: '⑦', title: '作者背景' },
-  { num: '⑧', title: '段落結構' },
+  { num: '③', title: '重點詞彙', aliases: ['重要定義與公式'] },
+  { num: '④', title: '文意理解', aliases: ['例題與解題步驟'] },
+  { num: '⑤', title: '修辭手法', aliases: ['計算技巧與驗算'] },
+  { num: '⑥', title: '文化脈絡', aliases: ['圖形與符號說明'] },
+  { num: '⑦', title: '作者背景', aliases: ['前置知識與單位'] },
+  { num: '⑧', title: '段落結構', aliases: ['公式推導脈絡'] },
   { num: '⑨', title: '延伸思考' },
   { num: '⑩', title: '易混淆概念' },
   { num: '⑪', title: '常考題型' },
@@ -208,7 +211,8 @@ function extractSectionsFromDraft(draftText) {
     const def = SECTION_DEFS.find((item) => {
       if (item.num !== num) return false;
       if (!rawTitle) return true;
-      return rawTitle.replace(/^[\s　:：\-—]+/, '').startsWith(item.title);
+      const title = rawTitle.replace(/^[\s　:：\-—]+/, '');
+      return [item.title, ...(item.aliases || [])].some((name) => title.startsWith(name));
     });
 
     if (!def) continue;

@@ -315,6 +315,72 @@ function parseExplanations(sections) {
 
 const FIGURE_TOKEN = /[【\[]\s*圖\s*[：:]\s*([^】\]\s]+)\s*[】\]]/g;
 
+// 2026-11-19 AHS-UP2 P2-2：詳解擴充（解題關鍵／步驟／易錯／補充），規格見
+// docs/Specifications/Specifications_ExplanationSupplementUpload_v0.1.md。
+// 只有出現「解題關鍵：」或「步驟：」行首標記才視為想寫擴充；只有「易錯：」（舊格式）不觸發、不警告。
+// 標記不完整時整題不產生補強（回傳 issue，由呼叫端寫 warning），不補完、不猜。
+const SUPPLEMENT_MARKER = /^\s*(?:\*\*)?\s*(解題關鍵|步驟|易錯|補充)\s*(?:\*\*)?\s*[:：]\s*(?:\*\*)?\s*(.*)$/;
+const STEP_LINE = /^\s*(?:[（(]\s*(\d{1,2})\s*[)）]|(\d{1,2})\s*[.．、)）]|([①-⑩]))\s*(.*)$/;
+const MIN_SUPPLEMENT_STEPS = 2;
+
+function parseExplanationSupplement(lines) {
+  let concept = null;
+  const steps = [];
+  const stepNumbers = [];
+  const pitfalls = [];
+  let note = null;
+  let mode = null;
+  let triggered = false;
+  const append = (list, text) => { if (list.length && text) list[list.length - 1] += ' ' + text; };
+  (lines || []).forEach((raw) => {
+    const marker = SUPPLEMENT_MARKER.exec(raw);
+    if (marker) {
+      mode = marker[1];
+      const rest = marker[2];
+      if (mode === '解題關鍵' || mode === '步驟') triggered = true;
+      if (mode === '解題關鍵') concept = (concept === null ? '' : concept + ' ') + rest;
+      else if (mode === '易錯') pitfalls.push(rest);
+      else if (mode === '補充') note = (note === null ? '' : note + ' ') + rest;
+      else if (rest) mode = '步驟';
+      if (mode === '步驟' && rest) handleStepLine(rest);
+      return;
+    }
+    if (!mode || !raw.trim()) return;
+    if (mode === '步驟') handleStepLine(raw);
+    else if (mode === '解題關鍵') concept += ' ' + raw.trim();
+    else if (mode === '易錯') append(pitfalls, raw.trim());
+    else if (mode === '補充') note += ' ' + raw.trim();
+  });
+  function handleStepLine(text) {
+    const m = STEP_LINE.exec(text);
+    if (m) {
+      const n = m[1] || m[2] || (m[3] ? m[3].charCodeAt(0) - 0x2460 + 1 : null);
+      stepNumbers.push(Number(n));
+      steps.push(m[4].trim());
+    } else if (steps.length) {
+      steps[steps.length - 1] += ' ' + text.trim();
+    }
+  }
+  if (!triggered) return { supplement: null, issue: null };
+  const clean = (t) => cleanText(t, MAX_EXPLANATION_LENGTH);
+  const conceptText = clean(concept || '');
+  const stepTexts = steps.map(clean).filter(Boolean);
+  const problems = [];
+  if (!conceptText) problems.push('缺解題關鍵');
+  if (stepTexts.length < MIN_SUPPLEMENT_STEPS) problems.push(`步驟不足 ${MIN_SUPPLEMENT_STEPS} 步`);
+  else if (stepTexts.length !== steps.length || stepNumbers.some((n, i) => n !== i + 1)) problems.push('步驟編號不連續或有空步驟');
+  if (problems.length) return { supplement: null, issue: problems.join('、') };
+  return {
+    supplement: {
+      concept: conceptText,
+      steps: stepTexts,
+      pitfalls: pitfalls.map(clean).filter(Boolean),
+      note: clean(note || ''),
+    },
+    issue: null,
+  };
+}
+
 function parseQuestions(sections) {
   const warnings = [];
   const practice = findSections(sections, ['練習題', '練習', '題目', '常考題型'], ['答案', '詳解', '解析']);
@@ -347,6 +413,7 @@ function parseQuestions(sections) {
     const options = parseOptions(block.optionLines);
     const letter = block.inlineAnswer || answers[block.number];
     const inlineExplanation = block.explanationLines ? cleanText(block.explanationLines.join(' '), MAX_EXPLANATION_LENGTH) : '';
+    const supplementResult = parseExplanationSupplement(block.explanationLines);
     if (!stem) { warnings.push(`${label}：找不到題幹，未收錄`); return; }
     const stemKey = stem.replace(/[\s\p{P}\p{S}]/gu, '');
     if (stems.has(stemKey)) { warnings.push(`${label}：與 Q${stems.get(stemKey)} 題幹相同，未重複收錄`); return; }
@@ -354,6 +421,7 @@ function parseQuestions(sections) {
     const chosen = options.find((o) => o.key === letter);
     if (!chosen) { warnings.push(`${label}：找不到答案或答案不在選項中，未收錄`); return; }
     if (/!\[[^\]]*\]\(/.test(block.stemLines.join(' '))) warnings.push(`${label}：題幹引用圖片，平台不會顯示該圖`);
+    if (supplementResult.issue) warnings.push(`${label}：詳解擴充不完整（${supplementResult.issue}），只保留一般詳解`);
     const number = renumber ? nextNumber : block.number;
     seen.add(number);
     nextNumber = Math.max(nextNumber, number + 1);
@@ -370,6 +438,7 @@ function parseQuestions(sections) {
       reference: block.reference || null,
       mapping: block.mapping || null,
       figures,
+      ...(supplementResult.supplement ? { explanationSupplement: supplementResult.supplement } : {}),
     });
   }));
 

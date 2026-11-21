@@ -22,6 +22,8 @@ const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
 const figureCards = require('./services/figureCards');
 const pdfTextQuality = require('./services/pdfTextQuality');
+const mineruContentList = require('./services/mineruContentList');
+const pageQuality = require('./services/pageQuality');
 const goldSet = require('./services/goldSet');
 const { computeStats } = require('./services/adjudicationStats');
 const { parseFrontmatter } = require('./platform/FinalParser');
@@ -152,13 +154,15 @@ const MINERU_HEARTBEAT_STALE_MS = 10000;
 // CPU pipeline 每次 mineru CLI 呼叫都要重新把模型載入記憶體（tools/mineru_watch.sh 是
 // 逐一啟動獨立行程，非常駐 API server），實測（含首次下載權重）約 100 秒，這裡保留數倍
 // 餘裕；權重快取後應該遠低於這個時間，逾時只在服務真的卡住時才會觸發。
-// 2026-11-21：逾時改為「基礎逾時＋每頁加時」取較大者（長 PDF 不再固定 5 分鐘就退回 Tesseract），
-// 兩個值都可用環境變數覆寫（毫秒）；無法判斷頁數時（圖片＝1 頁）只用基礎逾時。
+// 2026-11-21：逾時改為「基礎逾時＋每頁加時」取較大者，兩個值都可用環境變數覆寫（毫秒）；
+// 無法判斷頁數時（圖片＝1 頁）只用基礎逾時。
 function positiveIntFromEnv(name, fallback) {
   const value = Number.parseInt(process.env[name], 10);
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
-const MINERU_POLL_TIMEOUT_MS = positiveIntFromEnv('MINERU_POLL_TIMEOUT_MS', 5 * 60 * 1000);
+// 2026-11-18 AHS-UP2 P1-0b：實測 CPU 上 9 頁數學 PDF（含 368 組公式辨識）約 7 分鐘，24 頁預估約 20 分鐘，
+// 第一次執行還要下載模型；5 分鐘會讓多頁 PDF 逾時後靜默退回文字層。預設基礎逾時 60 分鐘，可用 MINERU_POLL_TIMEOUT_MS 覆寫。
+const MINERU_POLL_TIMEOUT_MS = positiveIntFromEnv('MINERU_POLL_TIMEOUT_MS', 60 * 60 * 1000);
 const MINERU_PER_PAGE_TIMEOUT_MS = positiveIntFromEnv('MINERU_PER_PAGE_TIMEOUT_MS', 60 * 1000);
 const MINERU_POLL_INTERVAL_MS = 2000;
 
@@ -235,6 +239,19 @@ async function runMinerU(filePath, ext, options = {}) {
         if (fs.existsSync(middlePath)) options.structured.middlePath = middlePath;
       }
       if (typeof options.onProgress === 'function') options.onProgress({ stage: 'done' });
+      // 2026-11-18 AHS-UP2 P1-1：content_list.json 分流（LaTeX／HTML 表格／切圖＋頁碼），失敗不影響文字結果。
+      if (Array.isArray(options.blocks)) {
+        try {
+          const cjPath = path.join(jobOutputDir, 'ocr', `${jobId}_content_list.json`);
+          if (fs.existsSync(cjPath)) {
+            const raw = JSON.parse(fs.readFileSync(cjPath, 'utf8'));
+            // 2026-11-18 AHS-UP2 P1-5：品質閘——逐頁可信度，低信心頁才需要管理者提供原檔。
+            options.blocks.push({ ...mineruContentList.splitContentList(raw), quality: pageQuality.assessPages(raw) });
+          }
+        } catch (error) {
+          console.warn(`content_list.json 解析失敗（略過結構化分流）：${error.message}`);
+        }
+      }
       return fs.readFileSync(mdPath, 'utf8');
     }
     if (typeof options.onProgress === 'function') {
@@ -263,7 +280,7 @@ async function ocrPdfPagesWithTesseract(parser) {
 async function extractTextFromFile(filePath, opts = {}) {
   const ext = path.extname(filePath).toLowerCase();
   // opts：images（收集切圖）、structured（收集 content_list／middle 路徑）、onProgress（進度回報）。
-  const mineruOpts = (extra = {}) => ({ images: opts.images, structured: opts.structured, onProgress: opts.onProgress, ...extra });
+  const mineruOpts = (extra = {}) => ({ images: opts.images, blocks: opts.blocks, structured: opts.structured, onProgress: opts.onProgress, ...extra });
 
   if (ext === '.txt' || ext === '.md') {
     return fs.readFileSync(filePath, 'utf8');
@@ -989,9 +1006,11 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
   try {
     files.forEach((file) => { file.originalname = decodeOriginalName(file.originalname); });
     const minerImages = [];
+    const minerBlocks = [];
     setUploadProgress(progressId, { stage: 'start', fileCount: files.length });
     const parts = await extractTextFromFiles(files, {
       images: minerImages,
+      blocks: minerBlocks,
       onProgress: progressId ? (info) => setUploadProgress(progressId, info) : undefined,
     });
     // 2026-10-14：多個檔案時每段前加上檔案標記，原文辨識協助包才能把可疑文字對回是哪張照片。
@@ -1007,12 +1026,20 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
     const imagesDir = path.join(MINERU_OUTPUTS_DIR, sessionId, 'images');
     if (minerImages.length) fs.mkdirSync(imagesDir, { recursive: true });
     minerImages.forEach((p) => fs.copyFileSync(p, path.join(imagesDir, path.basename(p))));
+    // 2026-11-18 AHS-UP2 P1-1：結構化分流結果（LaTeX／表格／切圖＋頁碼）存 mineru_outputs/<sessionId>/content_blocks.json。
+    if (minerBlocks.length) fs.writeFileSync(path.join(MINERU_OUTPUTS_DIR, sessionId, 'content_blocks.json'), JSON.stringify({ generatedAt: new Date().toISOString(), files: minerBlocks }, null, 2));
     return res.status(200).json({
       text: mergedText,
       sessionId,
       imagesId: sessionId,
       imageCount: minerImages.length,
       structuredCount,
+      pageQuality: {
+        lowPages: minerBlocks.flatMap((b) => b.quality.lowPages),
+        suspectPages: minerBlocks.flatMap((b) => b.quality.suspectPages),
+        totalPages: minerBlocks.reduce((n, b) => n + b.quality.totalPages, 0),
+      },
+      blockCounts: minerBlocks.reduce((a, b) => ({ equations: a.equations + b.counts.equations, tables: a.tables + b.counts.tables, images: a.images + b.counts.images }), { equations: 0, tables: 0, images: 0 }),
       files: parts.map((part) => ({ filename: part.filename, length: part.text.length })),
     });
   } catch (error) {
