@@ -22,6 +22,7 @@
 const fs = require("fs");
 const path = require("path");
 const { writeIfChanged } = require("./GenerateTeachingMaterialData.js");
+const lifecycle = require("./MaterialLifecycle.js");
 
 const REPO_ROOT = path.join(__dirname, "..", "..", "..");
 const MATERIALS_DIR = path.join(__dirname, "..", "materials");
@@ -57,6 +58,20 @@ function expandSources() {
   return out;
 }
 
+function scanUploadedSources(explanationsDir, coveredIds, isPublished) {
+  const sources = [];
+  const errors = [];
+  fs.readdirSync(explanationsDir).filter((f) => /^tm_\d+\.json$/.test(f)).sort().forEach((f) => {
+    const id = f.replace(/\.json$/, "");
+    if (coveredIds.has(id) || !isPublished(id)) { return; }
+    let data = null;
+    try { data = JSON.parse(fs.readFileSync(path.join(explanationsDir, f), "utf8")); } catch (e) { data = null; }
+    if (!data || data.materialId !== id) { errors.push(f + "：不是合法的 JSON，或 materialId 與檔名不符"); return; }
+    if (!Array.isArray(data.entries) || data.entries.some((e) => !e || typeof e !== "object")) { errors.push(f + "：entries 必須是物件陣列"); return; }
+    sources.push({ materialId: id, items: data.entries });
+  });
+  return { sources, errors };
+}
 const UNSAFE_SVG = [/<script/i, /\son[a-z]+\s*=/i, /javascript:/i, /<foreignObject/i, /(?:xlink:)?href\s*=/i, /<iframe/i, /<image/i];
 
 function validateSvg(svg) {
@@ -84,7 +99,10 @@ function build() {
   const byMaterial = {};
   const all = {};
   const errors = [];
-  expandSources().forEach((src) => {
+  const base = expandSources();
+  const scan = scanUploadedSources(EXPLANATIONS_DIR, new Set(base.map((s) => s.materialId)), (id) => lifecycle.resolveStage(id) === "IMPORTED");
+  scan.errors.forEach((e) => errors.push(e));
+  base.concat(scan.sources).forEach((src) => {
     const bankFile = path.join(MATERIALS_DIR, src.materialId, "questionbank.json");
     const bank = {};
     JSON.parse(fs.readFileSync(bankFile, "utf8")).questions.forEach((q) => { bank[q.questionId] = q; });
@@ -143,7 +161,7 @@ function generate(options) {
   return { count: Object.keys(result.all).length, stale: stale.map((f) => path.relative(REPO_ROOT, f)) };
 }
 
-module.exports = { generate, validateSvg };
+module.exports = { generate, validateSvg, scanUploadedSources };
 
 if (require.main === module) {
   const check = process.argv.indexOf("--check") !== -1;
