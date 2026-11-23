@@ -1,0 +1,21 @@
+{
+  "materialId": "tm_112",
+  "knowledgePoints": [
+    {
+      "name": "1-1｜眾神國度與人的世界",
+      "source": "question",
+      "refCount": 28
+    },
+    {
+      "name": "1-2｜基督教的發展與傳布",
+      "source": "question",
+      "refCount": 17
+    },
+    {
+      "name": "1-3｜理性曙光的再現",
+      "source": "question",
+      "refCount": 11
+    }
+  ],
+  "generatedAt": "2026-11-23T05:45:46.734Z"
+}
