@@ -1053,6 +1053,7 @@
     },
     {
       "questionId": "tm_68_q39",
+      "figureMissing": true,
       "materialId": "tm_68",
       "questionNumber": "K14",
       "type": "single_choice",

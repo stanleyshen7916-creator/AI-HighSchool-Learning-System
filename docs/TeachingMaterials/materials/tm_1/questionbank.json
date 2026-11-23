@@ -96,6 +96,7 @@
     },
     {
       "questionId": "tm_1_q6",
+      "figureMissing": true,
       "materialId": "tm_1",
       "questionNumber": "6",
       "type": "single_choice",
@@ -132,6 +133,7 @@
     },
     {
       "questionId": "tm_1_qB",
+      "figureMissing": true,
       "materialId": "tm_1",
       "questionNumber": "B",
       "type": "fill_blank",

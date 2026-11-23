@@ -267,6 +267,7 @@
     },
     {
       "questionId": "tm_110_q12",
+      "figureMissing": true,
       "materialId": "tm_110",
       "questionNumber": "12",
       "type": "single_choice",
@@ -724,6 +725,7 @@
     },
     {
       "questionId": "tm_110_q31",
+      "figureMissing": true,
       "materialId": "tm_110",
       "questionNumber": "31",
       "type": "single_choice",
@@ -1471,6 +1473,7 @@
     },
     {
       "questionId": "tm_110_q62",
+      "figureMissing": true,
       "materialId": "tm_110",
       "questionNumber": "62",
       "type": "single_choice",

@@ -1165,6 +1165,7 @@
     },
     {
       "questionId": "tm_56_q50",
+      "figureMissing": true,
       "materialId": "tm_56",
       "questionNumber": "P40基礎5",
       "type": "single_choice",

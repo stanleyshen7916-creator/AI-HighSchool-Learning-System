@@ -131,7 +131,8 @@ AHS.MonthExamRuntime = (function () {
     return null;
   }
 
-  function usable(q) { return !!spec(q); }
+  /* 2026-11-23 AHS-BUG：引用圖卻沒有附圖的題目暫不出題。 */
+  function usable(q) { return !(q && q.figureMissing && !q.figureSvg) && !!spec(q); }
 
   /* 題目的作答方式：single、multi、fill；不能出題時為 null。 */
   function kindOf(q) {

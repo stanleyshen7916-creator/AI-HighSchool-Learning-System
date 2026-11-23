@@ -81,6 +81,7 @@
     },
     {
       "questionId": "tm_12_q4",
+      "figureMissing": true,
       "materialId": "tm_12",
       "questionNumber": "1-1單選4",
       "type": "single_choice",
@@ -481,6 +482,7 @@
     },
     {
       "questionId": "tm_12_q20",
+      "figureMissing": true,
       "materialId": "tm_12",
       "questionNumber": "1-2練習13",
       "type": "fill_blank",

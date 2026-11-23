@@ -291,6 +291,7 @@
     },
     {
       "questionId": "tm_109_q13",
+      "figureMissing": true,
       "materialId": "tm_109",
       "questionNumber": "13",
       "type": "single_choice",
