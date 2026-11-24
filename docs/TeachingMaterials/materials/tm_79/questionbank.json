@@ -3,6 +3,7 @@
   "questions": [
     {
       "questionId": "tm_79_q1",
+      "figureMissing": true,
       "materialId": "tm_79",
       "questionNumber": "1",
       "type": "single_choice",

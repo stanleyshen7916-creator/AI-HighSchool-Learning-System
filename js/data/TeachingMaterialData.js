@@ -191,6 +191,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_1_q6",
+        "figureMissing": true,
         "materialId": "tm_1",
         "questionNumber": "6",
         "type": "single_choice",
@@ -234,6 +235,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_1_qB",
+        "figureMissing": true,
         "materialId": "tm_1",
         "questionNumber": "B",
         "type": "fill_blank",
@@ -925,6 +927,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q7",
+        "figureMissing": true,
         "materialId": "tm_2",
         "questionNumber": "7",
         "type": "single_choice",
@@ -1192,6 +1195,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q18",
+        "figureMissing": true,
         "materialId": "tm_2",
         "questionNumber": "18",
         "type": "single_choice",
@@ -1240,6 +1244,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q20",
+        "figureMissing": true,
         "materialId": "tm_2",
         "questionNumber": "20",
         "type": "single_choice",
@@ -1391,6 +1396,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q26",
+        "figureMissing": true,
         "materialId": "tm_2",
         "questionNumber": "26",
         "type": "single_choice",
@@ -2805,6 +2811,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_3_q47",
+        "figureMissing": true,
         "materialId": "tm_3",
         "questionNumber": "47",
         "type": "fill_blank",
@@ -3213,6 +3220,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q12",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "12",
         "type": "single_choice",
@@ -3465,6 +3473,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q23",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "23",
         "type": "single_choice",
@@ -3603,6 +3612,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q29",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "29",
         "type": "single_choice",
@@ -3673,6 +3683,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q32",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "32",
         "type": "single_choice",
@@ -3742,6 +3753,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q35",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "35",
         "type": "single_choice",
@@ -3811,6 +3823,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q38",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "38",
         "type": "single_choice",
@@ -4114,6 +4127,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q51",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "51",
         "type": "single_choice",
@@ -4160,6 +4174,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q53",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "53",
         "type": "single_choice",
@@ -4229,6 +4244,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q56",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "56",
         "type": "single_choice",
@@ -4252,6 +4268,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q57",
+        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "57",
         "type": "single_choice",
@@ -14699,6 +14716,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_11_q3",
+        "figureMissing": true,
         "materialId": "tm_11",
         "questionNumber": "3",
         "type": "single_choice",
@@ -14721,6 +14739,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_11_q4",
+        "figureMissing": true,
         "materialId": "tm_11",
         "questionNumber": "4",
         "type": "single_choice",
@@ -14743,6 +14762,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_11_q5",
+        "figureMissing": true,
         "materialId": "tm_11",
         "questionNumber": "5",
         "type": "single_choice",
@@ -16399,6 +16419,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_12_q4",
+        "figureMissing": true,
         "materialId": "tm_12",
         "questionNumber": "1-1單選4",
         "type": "single_choice",
@@ -16804,6 +16825,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_12_q20",
+        "figureMissing": true,
         "materialId": "tm_12",
         "questionNumber": "1-2練習13",
         "type": "fill_blank",
@@ -18280,6 +18302,7 @@ AHS.TeachingMaterialData = [
     "questions": [
       {
         "id": "tm_13_q1",
+        "figureMissing": true,
         "materialId": "tm_13",
         "questionNumber": "練一練1-(1)",
         "type": "fill_blank",
@@ -20411,6 +20434,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_41_q11",
+        "figureMissing": true,
         "materialId": "tm_15",
         "questionNumber": "11",
         "type": "single_choice",
@@ -24060,6 +24084,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_60_q68",
+        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "68",
         "type": "single_choice",
@@ -25858,6 +25883,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_68_q39",
+        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "K14",
         "type": "single_choice",
@@ -26719,6 +26745,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_69_q29",
+        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "T6-2",
         "type": "single_choice",
@@ -27060,6 +27087,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_69_q41",
+        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "T8-3",
         "type": "single_choice",
@@ -34135,6 +34163,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q18",
+        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題3",
         "type": "single_choice",
@@ -34331,6 +34360,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q25",
+        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題10",
         "type": "fill_blank",
@@ -34353,6 +34383,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q26",
+        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題11",
         "type": "calculation",
@@ -34419,6 +34450,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q29",
+        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題14",
         "type": "calculation",
@@ -42543,6 +42575,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_56_q50",
+        "figureMissing": true,
         "materialId": "tm_56",
         "questionNumber": "P40基礎5",
         "type": "single_choice",
@@ -47080,6 +47113,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_79_q1",
+        "figureMissing": true,
         "materialId": "tm_61",
         "questionNumber": "1",
         "type": "single_choice",
@@ -54281,6 +54315,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_67_q21",
+        "figureMissing": true,
         "materialId": "tm_67",
         "questionNumber": "21",
         "type": "single_choice",
@@ -55029,6 +55064,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_67_q55",
+        "figureMissing": true,
         "materialId": "tm_67",
         "questionNumber": "55",
         "type": "single_choice",
@@ -62539,6 +62575,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q8",
+        "figureMissing": true,
         "materialId": "tm_87",
         "questionNumber": "8",
         "type": "single_choice",
@@ -62587,6 +62624,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q10",
+        "figureMissing": true,
         "materialId": "tm_87",
         "questionNumber": "10",
         "type": "single_choice",
@@ -62611,6 +62649,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q11",
+        "figureMissing": true,
         "materialId": "tm_87",
         "questionNumber": "11",
         "type": "single_choice",
@@ -64085,6 +64124,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q72",
+        "figureMissing": true,
         "materialId": "tm_87",
         "questionNumber": "72",
         "type": "single_choice",
@@ -64672,6 +64712,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q18",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "18",
         "type": "single_choice",
@@ -64696,6 +64737,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q19",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "19",
         "type": "single_choice",
@@ -64987,6 +65029,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q31",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "31",
         "type": "single_choice",
@@ -65083,6 +65126,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q35",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "35",
         "type": "single_choice",
@@ -65132,6 +65176,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q37",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "37",
         "type": "single_choice",
@@ -65277,6 +65322,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q43",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "43",
         "type": "single_choice",
@@ -65520,6 +65566,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q53",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "53",
         "type": "single_choice",
@@ -65688,6 +65735,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q60",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "60",
         "type": "single_choice",
@@ -65736,6 +65784,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q62",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "62",
         "type": "single_choice",
@@ -65809,6 +65858,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q65",
+        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "65",
         "type": "single_choice",
@@ -66113,6 +66163,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q4",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "4",
         "type": "single_choice",
@@ -66186,6 +66237,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q7",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "7",
         "type": "single_choice",
@@ -66307,6 +66359,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q12",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "12",
         "type": "single_choice",
@@ -66404,6 +66457,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q16",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "16",
         "type": "single_choice",
@@ -66428,6 +66482,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q17",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "17",
         "type": "single_choice",
@@ -66476,6 +66531,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q19",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "19",
         "type": "single_choice",
@@ -66500,6 +66556,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q20",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "20",
         "type": "single_choice",
@@ -66693,6 +66750,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q28",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "28",
         "type": "single_choice",
@@ -66718,6 +66776,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q29",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "29",
         "type": "single_choice",
@@ -67032,6 +67091,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q42",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "42",
         "type": "single_choice",
@@ -67129,6 +67189,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q46",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "46",
         "type": "single_choice",
@@ -67177,6 +67238,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q48",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "48",
         "type": "single_choice",
@@ -67297,6 +67359,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q53",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "53",
         "type": "single_choice",
@@ -67321,6 +67384,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q54",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "54",
         "type": "single_choice",
@@ -67417,6 +67481,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q58",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "58",
         "type": "single_choice",
@@ -67805,6 +67870,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q74",
+        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "74",
         "type": "single_choice",
@@ -67990,6 +68056,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q4",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "4",
         "type": "single_choice",
@@ -68111,6 +68178,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q9",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "9",
         "type": "single_choice",
@@ -68184,6 +68252,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q12",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "12",
         "type": "single_choice",
@@ -68256,6 +68325,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q15",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "15",
         "type": "single_choice",
@@ -68329,6 +68399,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q18",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "18",
         "type": "single_choice",
@@ -68449,6 +68520,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q23",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "23",
         "type": "single_choice",
@@ -68497,6 +68569,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q25",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "25",
         "type": "single_choice",
@@ -68617,6 +68690,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q30",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "30",
         "type": "single_choice",
@@ -68642,6 +68716,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q31",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "31",
         "type": "single_choice",
@@ -68691,6 +68766,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q33",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "33",
         "type": "single_choice",
@@ -68787,6 +68863,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q37",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "37",
         "type": "single_choice",
@@ -68907,6 +68984,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q42",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "42",
         "type": "single_choice",
@@ -68931,6 +69009,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q43",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "43",
         "type": "single_choice",
@@ -69027,6 +69106,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q47",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "47",
         "type": "single_choice",
@@ -69245,6 +69325,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q56",
+        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "56",
         "type": "single_choice",
@@ -75017,6 +75098,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_97_q9",
+        "figureMissing": true,
         "materialId": "tm_97",
         "questionNumber": "9",
         "type": "single_choice",
@@ -75883,6 +75965,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_99_q3",
+        "figureMissing": true,
         "materialId": "tm_99",
         "questionNumber": "3",
         "type": "single_choice",
@@ -75981,6 +76064,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_99_q7",
+        "figureMissing": true,
         "materialId": "tm_99",
         "questionNumber": "7",
         "type": "single_choice",
@@ -76689,6 +76773,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_100_q13",
+        "figureMissing": true,
         "materialId": "tm_100",
         "questionNumber": "13",
         "type": "single_choice",
@@ -87278,6 +87363,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_109_q13",
+        "figureMissing": true,
         "materialId": "tm_109",
         "questionNumber": "13",
         "type": "single_choice",
@@ -88453,6 +88539,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_110_q12",
+        "figureMissing": true,
         "materialId": "tm_110",
         "questionNumber": "12",
         "type": "single_choice",
@@ -88911,6 +88998,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_110_q31",
+        "figureMissing": true,
         "materialId": "tm_110",
         "questionNumber": "31",
         "type": "single_choice",
@@ -89658,6 +89746,7 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_110_q62",
+        "figureMissing": true,
         "materialId": "tm_110",
         "questionNumber": "62",
         "type": "single_choice",

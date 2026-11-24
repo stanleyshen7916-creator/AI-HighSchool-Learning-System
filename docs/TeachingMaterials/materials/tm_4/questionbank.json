@@ -256,6 +256,7 @@
     },
     {
       "questionId": "tm_4_q12",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "12",
       "type": "single_choice",
@@ -508,6 +509,7 @@
     },
     {
       "questionId": "tm_4_q23",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "23",
       "type": "single_choice",
@@ -646,6 +648,7 @@
     },
     {
       "questionId": "tm_4_q29",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "29",
       "type": "single_choice",
@@ -716,6 +719,7 @@
     },
     {
       "questionId": "tm_4_q32",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "32",
       "type": "single_choice",
@@ -785,6 +789,7 @@
     },
     {
       "questionId": "tm_4_q35",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "35",
       "type": "single_choice",
@@ -854,6 +859,7 @@
     },
     {
       "questionId": "tm_4_q38",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "38",
       "type": "single_choice",
@@ -1157,6 +1163,7 @@
     },
     {
       "questionId": "tm_4_q51",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "51",
       "type": "single_choice",
@@ -1203,6 +1210,7 @@
     },
     {
       "questionId": "tm_4_q53",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "53",
       "type": "single_choice",
@@ -1272,6 +1280,7 @@
     },
     {
       "questionId": "tm_4_q56",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "56",
       "type": "single_choice",
@@ -1295,6 +1304,7 @@
     },
     {
       "questionId": "tm_4_q57",
+      "figureMissing": true,
       "materialId": "tm_4",
       "questionNumber": "57",
       "type": "single_choice",
