@@ -64,6 +64,14 @@
 
 .upl-link { font-size: 13px; font-weight: 600; color: var(--brand); }
 
+.upl-pages__title { margin: 12px 0 8px; font-size: 14px; }
+.upl-pages__row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 16px; }
+.upl-pages__img { width: 100%; max-height: 520px; object-fit: contain; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background-color: #ffffff; }
+.upl-pages__blocks { display: flex; flex-direction: column; gap: 8px; }
+@media (min-width: 720px) {
+  .upl-pages__row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
 .upl-gate {
   display: inline-block;
   margin-left: 8px;

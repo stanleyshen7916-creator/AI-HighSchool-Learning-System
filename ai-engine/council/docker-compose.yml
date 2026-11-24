@@ -26,6 +26,9 @@ services:
       - OLLAMA_URL=http://ollama:11434
       - MINERU_QUEUE_INPUTS_DIR=/data/mineru_inputs
       - MINERU_QUEUE_OUTPUTS_DIR=/data/mineru_outputs
+      # 2026-11-21：逾時＝max(基礎, 頁數×每頁)，毫秒
+      - MINERU_POLL_TIMEOUT_MS=${MINERU_POLL_TIMEOUT_MS:-3600000}
+      - MINERU_PER_PAGE_TIMEOUT_MS=${MINERU_PER_PAGE_TIMEOUT_MS:-60000}
     # 只綁本機：引擎沒有登入機制，不能開放給區網其他裝置
     ports:
       - "127.0.0.1:3000:3000"
@@ -66,6 +69,12 @@ services:
       dockerfile: Dockerfile.mineru
     environment:
       - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      # 2026-11-21：OCR 參數（預設值＝過去寫死的行為，說明見 tools/mineru_watch.sh）
+      - MINERU_BACKEND=${MINERU_BACKEND:-pipeline}
+      - MINERU_METHOD=${MINERU_METHOD:-ocr}
+      - MINERU_LANG=${MINERU_LANG:-ch}
+      - MINERU_FORMULA=${MINERU_FORMULA:-true}
+      - MINERU_TABLE=${MINERU_TABLE:-true}
       # 2026-11-18 AHS-UP2 P1-0c：限制 torch／OpenMP 執行緒數，避免一次吃滿所有核心。
       - OMP_NUM_THREADS=4
       - MKL_NUM_THREADS=4

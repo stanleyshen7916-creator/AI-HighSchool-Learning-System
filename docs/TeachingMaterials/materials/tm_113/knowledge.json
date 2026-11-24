@@ -1,0 +1,21 @@
+{
+  "materialId": "tm_113",
+  "knowledgePoints": [
+    {
+      "name": "2-1｜理性與自由的力量",
+      "source": "question",
+      "refCount": 14
+    },
+    {
+      "name": "2-2｜民主的內涵與建構",
+      "source": "question",
+      "refCount": 20
+    },
+    {
+      "name": "2-3｜工業革命的發展與影響",
+      "source": "question",
+      "refCount": 17
+    }
+  ],
+  "generatedAt": "2026-11-23T07:56:54.608Z"
+}

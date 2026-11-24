@@ -1,0 +1,45 @@
+name: vab-checks
+
+# VAB (M5): the required check for pull requests opened by the VAB bridge (and fine for human PRs too).
+# The job name "vab-checks" is the status-check name that branch protection requires on main.
+# Same commands as the executor's local checks (npm run verify, npm test), plus a guard that keeps
+# VAB branches (vab/*) from touching .github/.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  vab-checks:
+    name: vab-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard .github (VAB branches only)
+        if: startsWith(github.head_ref, 'vab/')
+        run: |
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '^\.github/'; then
+            echo "::error::PR modifies .github/ - not allowed for VAB tasks"; exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm run verify (VerifyPaths + VerifyForbiddenPatterns)
+        run: npm run verify
+
+      - name: npm test
+        run: npm test

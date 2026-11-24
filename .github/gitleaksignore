@@ -1,0 +1,19 @@
+# PLAT-M1-04：gitleaks 既有誤報白名單（2026-11-22 逐筆檢視）。
+# 全為 generic-api-key 誤報：試卷答案檔名 key:'xxx-ans.pdf'、資料庫欄位 origin_key、測試用 mock_student_key、Supabase 公開 publishable/anon key（設計上可公開）。
+033a6780aa1e5d822b1f858a90d116d154bc88dc:js/data/SupabaseConfig.js:generic-api-key:31
+135d9339a14b85fb52cbea01c2e5ba348f921fec:docs/TeachingMaterials/materials/tm_26/source/verify-past2.js:generic-api-key:13
+135d9339a14b85fb52cbea01c2e5ba348f921fec:docs/TeachingMaterials/materials/tm_26/source/verify-past2.js:generic-api-key:15
+135d9339a14b85fb52cbea01c2e5ba348f921fec:docs/TeachingMaterials/materials/tm_27/source/verify-past2.js:generic-api-key:13
+135d9339a14b85fb52cbea01c2e5ba348f921fec:docs/TeachingMaterials/materials/tm_27/source/verify-past2.js:generic-api-key:15
+1876bf0e2a908526870174c9faea4869fb15ad15:tests/supabase/RepositorySmoke.js:generic-api-key:104
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:758
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:763
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:768
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:773
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:778
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:783
+351d254263302a21431e090c5144ac03e7208f8a:supabase/seed/0002_materials.sql:generic-api-key:788
+3d2ec51b01c7a3f5c70edc257db105276779405b:docs/TeachingMaterials/materials/tm_32/source/verify-past-tm29.js:generic-api-key:12
+3d2ec51b01c7a3f5c70edc257db105276779405b:docs/TeachingMaterials/materials/tm_32/source/verify-past-tm29.js:generic-api-key:13
+3d2ec51b01c7a3f5c70edc257db105276779405b:docs/TeachingMaterials/materials/tm_32/source/verify-past-tm29.js:generic-api-key:14
+ba1563b671f0452abbf9dd72fb211d9b79d7fed8:tests/regression/VisualLessonRegression.js:generic-api-key:80
