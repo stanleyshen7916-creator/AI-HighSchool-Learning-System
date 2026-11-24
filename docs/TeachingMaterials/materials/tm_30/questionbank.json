@@ -371,6 +371,7 @@
     },
     {
       "questionId": "tm_30_q18",
+      "figureMissing": true,
       "materialId": "tm_30",
       "questionNumber": "習題3",
       "type": "single_choice",
@@ -560,6 +561,7 @@
     },
     {
       "questionId": "tm_30_q25",
+      "figureMissing": true,
       "materialId": "tm_30",
       "questionNumber": "習題10",
       "type": "fill_blank",
@@ -580,6 +582,7 @@
     },
     {
       "questionId": "tm_30_q26",
+      "figureMissing": true,
       "materialId": "tm_30",
       "questionNumber": "習題11",
       "type": "calculation",
@@ -640,6 +643,7 @@
     },
     {
       "questionId": "tm_30_q29",
+      "figureMissing": true,
       "materialId": "tm_30",
       "questionNumber": "習題14",
       "type": "calculation",

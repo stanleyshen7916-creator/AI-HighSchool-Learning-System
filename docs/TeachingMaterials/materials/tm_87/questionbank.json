@@ -171,6 +171,7 @@
     },
     {
       "questionId": "tm_87_q8",
+      "figureMissing": true,
       "materialId": "tm_87",
       "questionNumber": "8",
       "type": "single_choice",
@@ -219,6 +220,7 @@
     },
     {
       "questionId": "tm_87_q10",
+      "figureMissing": true,
       "materialId": "tm_87",
       "questionNumber": "10",
       "type": "single_choice",
@@ -243,6 +245,7 @@
     },
     {
       "questionId": "tm_87_q11",
+      "figureMissing": true,
       "materialId": "tm_87",
       "questionNumber": "11",
       "type": "single_choice",
@@ -1717,6 +1720,7 @@
     },
     {
       "questionId": "tm_87_q72",
+      "figureMissing": true,
       "materialId": "tm_87",
       "questionNumber": "72",
       "type": "single_choice",

@@ -414,6 +414,7 @@
     },
     {
       "questionId": "tm_88_q18",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "18",
       "type": "single_choice",
@@ -438,6 +439,7 @@
     },
     {
       "questionId": "tm_88_q19",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "19",
       "type": "single_choice",
@@ -729,6 +731,7 @@
     },
     {
       "questionId": "tm_88_q31",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "31",
       "type": "single_choice",
@@ -825,6 +828,7 @@
     },
     {
       "questionId": "tm_88_q35",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "35",
       "type": "single_choice",
@@ -874,6 +878,7 @@
     },
     {
       "questionId": "tm_88_q37",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "37",
       "type": "single_choice",
@@ -1019,6 +1024,7 @@
     },
     {
       "questionId": "tm_88_q43",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "43",
       "type": "single_choice",
@@ -1262,6 +1268,7 @@
     },
     {
       "questionId": "tm_88_q53",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "53",
       "type": "single_choice",
@@ -1430,6 +1437,7 @@
     },
     {
       "questionId": "tm_88_q60",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "60",
       "type": "single_choice",
@@ -1478,6 +1486,7 @@
     },
     {
       "questionId": "tm_88_q62",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "62",
       "type": "single_choice",
@@ -1551,6 +1560,7 @@
     },
     {
       "questionId": "tm_88_q65",
+      "figureMissing": true,
       "materialId": "tm_88",
       "questionNumber": "65",
       "type": "single_choice",

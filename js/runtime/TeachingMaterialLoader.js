@@ -307,6 +307,8 @@ AHS.TeachingMaterialLoader = (function () {
     var compatible = [];
     (entry.questions || []).forEach(function (q) {
       if (!q) { return; }
+      /* 2026-11-23 AHS-BUG：引用圖卻沒有附圖的題目無法作答，暫不出題。 */
+      if (q.figureMissing && !q.figureSvg) { return; }
       /* 2026-10-08 題型支援（js/utils/QuestionKind.js）：是非題以「正確／錯誤」
          兩個選項作答；多選題的答案為排序後相連的原 key（"BCD"）；計算／
          填充題看答案後自評，答案 key 固定為 SELF_CORRECT。答案仍是一個

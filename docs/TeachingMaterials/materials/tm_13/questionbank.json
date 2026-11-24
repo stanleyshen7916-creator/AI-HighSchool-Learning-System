@@ -3,6 +3,7 @@
   "questions": [
     {
       "questionId": "tm_13_q1",
+      "figureMissing": true,
       "materialId": "tm_13",
       "questionNumber": "練一練1-(1)",
       "type": "fill_blank",
