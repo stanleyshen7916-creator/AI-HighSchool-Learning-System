@@ -76,6 +76,7 @@
     {
       "questionId": "tm_90_q4",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q4.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "4",
       "type": "single_choice",
@@ -198,6 +199,7 @@
     {
       "questionId": "tm_90_q9",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q9.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "9",
       "type": "single_choice",
@@ -272,6 +274,7 @@
     {
       "questionId": "tm_90_q12",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q12.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "12",
       "type": "single_choice",
@@ -419,6 +422,7 @@
     {
       "questionId": "tm_90_q18",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "18",
       "type": "single_choice",
@@ -540,6 +544,7 @@
     {
       "questionId": "tm_90_q23",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q23.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "23",
       "type": "single_choice",
@@ -589,6 +594,7 @@
     {
       "questionId": "tm_90_q25",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q25.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "25",
       "type": "single_choice",
@@ -736,6 +742,7 @@
     {
       "questionId": "tm_90_q31",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q31.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "31",
       "type": "single_choice",
@@ -883,6 +890,7 @@
     {
       "questionId": "tm_90_q37",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q37.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "37",
       "type": "single_choice",
@@ -1004,6 +1012,7 @@
     {
       "questionId": "tm_90_q42",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q42.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "42",
       "type": "single_choice",
@@ -1029,6 +1038,7 @@
     {
       "questionId": "tm_90_q43",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q43.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "43",
       "type": "single_choice",
@@ -1126,6 +1136,7 @@
     {
       "questionId": "tm_90_q47",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q47.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "47",
       "type": "single_choice",
@@ -1345,6 +1356,7 @@
     {
       "questionId": "tm_90_q56",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q56.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_90",
       "questionNumber": "56",
       "type": "single_choice",

@@ -172,6 +172,7 @@
     {
       "questionId": "tm_87_q8",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q8.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_87",
       "questionNumber": "8",
       "type": "single_choice",
@@ -221,6 +222,7 @@
     {
       "questionId": "tm_87_q10",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q10.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_87",
       "questionNumber": "10",
       "type": "single_choice",
@@ -246,6 +248,7 @@
     {
       "questionId": "tm_87_q11",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q11.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_87",
       "questionNumber": "11",
       "type": "single_choice",
@@ -1721,6 +1724,7 @@
     {
       "questionId": "tm_87_q72",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q72.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_87",
       "questionNumber": "72",
       "type": "single_choice",
