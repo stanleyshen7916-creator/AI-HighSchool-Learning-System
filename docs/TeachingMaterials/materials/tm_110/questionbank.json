@@ -1476,6 +1476,7 @@
     {
       "questionId": "tm_110_q62",
       "figureMissing": true,
+      "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_110/figures/tm_110_q62.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
       "materialId": "tm_110",
       "questionNumber": "62",
       "type": "single_choice",

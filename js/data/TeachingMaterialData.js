@@ -928,6 +928,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_2_q7",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q7.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_2",
         "questionNumber": "7",
         "type": "single_choice",
@@ -1196,6 +1197,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_2_q18",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_2",
         "questionNumber": "18",
         "type": "single_choice",
@@ -1245,6 +1247,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_2_q20",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q20.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_2",
         "questionNumber": "20",
         "type": "single_choice",
@@ -2812,6 +2815,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_3_q47",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_3/figures/tm_3_q47.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_3",
         "questionNumber": "47",
         "type": "fill_blank",
@@ -14740,6 +14744,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_11_q4",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_11/figures/tm_11_q4.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_11",
         "questionNumber": "4",
         "type": "single_choice",
@@ -75138,6 +75143,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_97_q9",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_97/figures/tm_97_q9.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_97",
         "questionNumber": "9",
         "type": "single_choice",
@@ -89786,6 +89792,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_110_q62",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_110/figures/tm_110_q62.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_110",
         "questionNumber": "62",
         "type": "single_choice",
