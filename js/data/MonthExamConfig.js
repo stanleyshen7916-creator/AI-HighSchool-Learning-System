@@ -9,14 +9,12 @@ AHS.MonthExamConfig = {
   "ranges": {
     "cjsh|g2s1": {
       "國文": [
-        "tm_91",
         "tm_94",
         "tm_95",
         "tm_96",
         "tm_97"
       ],
       "英文": [
-        "tm_93",
         "tm_98",
         "tm_99",
         "tm_100",
@@ -41,7 +39,6 @@ AHS.MonthExamConfig = {
       ],
       "化學": [
         "tm_28",
-        "tm_76",
         "tm_108"
       ],
       "生物": [
