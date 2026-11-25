@@ -24,8 +24,14 @@ function generatedFiles() {
     path.join(TM_ROOT, "index.json"),
     path.join(TM_ROOT, "import-log.json"),
     path.join(REPO, "js", "data", "TeachingMaterialData.js"),
+    path.join(REPO, "js", "data", "TeachingMaterialIndex.js"),
     path.join(REPO, "js", "data", "RepositoryStatus.js")
   ];
+  // queue 9.4: one generated content file per material
+  const contentDir = path.join(REPO, "js", "data", "materials-content");
+  if (fs.existsSync(contentDir)) {
+    fs.readdirSync(contentDir).forEach(function (name) { files.push(path.join(contentDir, name)); });
+  }
   const materialsDir = path.join(TM_ROOT, "materials");
   fs.readdirSync(materialsDir, { withFileTypes: true }).forEach(function (entry) {
     if (!entry.isDirectory()) { return; }
@@ -39,7 +45,15 @@ function guard() {
   const snapshot = generatedFiles().map(function (file) {
     return { file: file, bytes: fs.existsSync(file) ? fs.readFileSync(file) : null };
   });
+  const contentDir = path.join(REPO, "js", "data", "materials-content");
+  const contentAtStart = fs.existsSync(contentDir) ? fs.readdirSync(contentDir) : [];
   process.on("exit", function () {
+    // a test that imports a temporary Package leaves its content file behind: remove files that did not exist at start
+    if (fs.existsSync(contentDir)) {
+      fs.readdirSync(contentDir).forEach(function (name) {
+        if (contentAtStart.indexOf(name) === -1) { fs.rmSync(path.join(contentDir, name), { force: true }); }
+      });
+    }
     snapshot.forEach(function (s) {
       if (s.bytes === null) {
         fs.rmSync(s.file, { force: true });
