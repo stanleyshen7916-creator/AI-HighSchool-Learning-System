@@ -76108,7 +76108,6 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_99_q7",
         "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_99/figures/tm_99_q7.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_99",
         "questionNumber": "7",
         "type": "single_choice",
@@ -76818,7 +76817,6 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_100_q13",
         "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_100/figures/tm_100_q13.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_100",
         "questionNumber": "13",
         "type": "single_choice",
