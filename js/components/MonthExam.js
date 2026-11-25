@@ -105,6 +105,9 @@ AHS.MonthExam = (function () {
         : range.source === "student" ? "範圍：你自行調整"
         : range.source === "period" ? "範圍：" + range.periodLabel + "的教材（目前要準備的月考）"
         : "範圍：全部課次（尚未設定月考範圍）";
+      /* AHS-EXAM-TOPIC：有設定主題時註明只出哪些主題。 */
+      var tr = RT().topicRule ? RT().topicRule(s.subject) : null;
+      if (tr) { srcText.textContent += "；只出" + (tr.label || ("主題 " + tr.from + "–" + tr.to)) + "的題目"; }
 
       var startBtn = button("開始作答", "primary", function () {
         var ids = selected();
