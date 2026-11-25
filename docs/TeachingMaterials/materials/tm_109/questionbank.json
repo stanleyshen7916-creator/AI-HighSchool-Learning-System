@@ -291,13 +291,12 @@
     },
     {
       "questionId": "tm_109_q13",
-      "figureMissing": true,
       "materialId": "tm_109",
       "questionNumber": "13",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "圖3-4 的口罩例子中，政府在疫情爆發後限制價格並實施實名制，這屬於什麼？",
+      "question": "課本口罩的例子中，政府在疫情爆發後限制價格並實施實名制，這屬於什麼？",
       "options": [
         "看得見的手：政府管制",
         "廠商聯合行為",

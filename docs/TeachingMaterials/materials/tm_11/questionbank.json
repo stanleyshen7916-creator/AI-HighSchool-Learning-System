@@ -47,7 +47,6 @@
     },
     {
       "questionId": "tm_11_q3",
-      "figureMissing": true,
       "materialId": "tm_11",
       "questionNumber": "3",
       "type": "single_choice",
@@ -70,7 +69,6 @@
     },
     {
       "questionId": "tm_11_q4",
-      "figureMissing": true,
       "materialId": "tm_11",
       "questionNumber": "4",
       "type": "single_choice",
@@ -93,7 +91,6 @@
     },
     {
       "questionId": "tm_11_q5",
-      "figureMissing": true,
       "materialId": "tm_11",
       "questionNumber": "5",
       "type": "single_choice",

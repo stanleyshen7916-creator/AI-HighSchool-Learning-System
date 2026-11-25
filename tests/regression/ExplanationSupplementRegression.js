@@ -127,6 +127,10 @@ console.log("\n[4] 教材包未被修改");
     /* 2026-11-04 Project Owner 同意（「補上三份資料」）：依補拍的 p.120～121、p.132～133、p.142 照片為物理第4章 tm_102 補 18 題、重點整理補三條；原有題目不變。 */
     "docs/TeachingMaterials/materials/tm_102/questionbank.json", "docs/TeachingMaterials/materials/tm_102/summary.json", "docs/TeachingMaterials/materials/tm_102/metadata.json", "docs/TeachingMaterials/materials/tm_102/manifest.json", "docs/TeachingMaterials/materials/tm_102/material.md", "docs/TeachingMaterials/materials/tm_102/knowledge.json", "docs/TeachingMaterials/materials/tm_102/report.md",
     /* 2026-11-16 Project Owner 要求：英文 L4～L6 克漏字改成短文＋每格單選（原為首字母提示的單句拼字）；題號與單字不變。 */
+    /* 2026-11-25 Project Owner 同意（AHS 補圖：資料已寫在題目內的圖改用 SVG 重繪）：為 tm_3_q47、tm_12_q4、tm_30_q18／q25／q29、tm_69_q29 加 figureSvg 並移除 figureMissing；題目、選項、答案不變。 */
+    "docs/TeachingMaterials/materials/tm_3/questionbank.json", "docs/TeachingMaterials/materials/tm_12/questionbank.json", "docs/TeachingMaterials/materials/tm_30/questionbank.json", "docs/TeachingMaterials/materials/tm_69/questionbank.json",
+    /* 2026-11-25 Project Owner 同意：資料已完整的 8 題（tm_11_q3／q4／q5、tm_56_q50、tm_110_q31、tm_69_q41、tm_1_qB、tm_109_q13）移除 figureMissing，並刪去題幹中「如右圖／附圖／依課本圖」等指向不存在附圖的字樣；題目意思、選項、答案不變。 */
+    "docs/TeachingMaterials/materials/tm_1/questionbank.json", "docs/TeachingMaterials/materials/tm_11/questionbank.json", "docs/TeachingMaterials/materials/tm_56/questionbank.json", "docs/TeachingMaterials/materials/tm_109/questionbank.json", "docs/TeachingMaterials/materials/tm_110/questionbank.json",
     ].concat(["tm_103", "tm_104", "tm_105"].reduce((acc, id) => acc.concat(
       ["questionbank.json", "summary.json", "metadata.json", "manifest.json", "material.md", "report.md", "source/README.md"].map((f) => "docs/TeachingMaterials/materials/" + id + "/" + f)), []));
   try {

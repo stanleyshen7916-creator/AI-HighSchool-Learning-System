@@ -727,13 +727,12 @@
     },
     {
       "questionId": "tm_110_q31",
-      "figureMissing": true,
       "materialId": "tm_110",
       "questionNumber": "31",
       "type": "single_choice",
       "questionSource": "AI_GENERATED",
       "origin": "AI",
-      "question": "2011 年三大乳品業者一起調漲鮮乳價格。依課本圖4-9，公平會的認定重點是？",
+      "question": "2011 年三大乳品業者一起調漲鮮乳價格。公平會的認定重點是？",
       "options": [
         "消費者提出抗議",
         "三家都是上市公司",

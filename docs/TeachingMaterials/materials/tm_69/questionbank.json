@@ -777,7 +777,6 @@
     },
     {
       "questionId": "tm_69_q29",
-      "figureMissing": true,
       "materialId": "tm_69",
       "questionNumber": "T6-2",
       "type": "single_choice",
@@ -801,7 +800,8 @@
       "createdDate": "2026-10-11T00:00:00Z",
       "knowledgePoint": "恆星的距離與宇宙階級",
       "difficulty": "中等",
-      "reference": "長榮中學高二地科講義 主題6 小試身手 第6-2題（講義第38頁）"
+      "reference": "長榮中學高二地科講義 主題6 小試身手 第6-2題（講義第38頁）",
+      "figureSvg": "<svg viewBox=\"0 0 380 132\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"190.0\" y=\"16\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">三顆恆星的基本資料（徑向速度負值表示靠近）</text>\n<rect x=\"1\" y=\"24\" width=\"378\" height=\"26\" fill=\"#eef0f5\"/>\n<line x1=\"1\" y1=\"24\" x2=\"379\" y2=\"24\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"50\" x2=\"379\" y2=\"50\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"76\" x2=\"379\" y2=\"76\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"102\" x2=\"379\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"128\" x2=\"379\" y2=\"128\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"24\" x2=\"1\" y2=\"128\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"81\" y1=\"24\" x2=\"81\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"171\" y1=\"24\" x2=\"171\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"261\" y1=\"24\" x2=\"261\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"379\" y1=\"24\" x2=\"379\" y2=\"128\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<text x=\"41\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">恆星</text>\n<text x=\"126\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">視星等</text>\n<text x=\"216\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">絕對星等</text>\n<text x=\"321\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">徑向速度</text>\n<text x=\"41\" y=\"67\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">天狼星</text>\n<text x=\"126\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">−1.47</text>\n<text x=\"216\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">1.42</text>\n<text x=\"321\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">−7.6 km/s</text>\n<text x=\"41\" y=\"93\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">老人星</text>\n<text x=\"126\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">−0.72</text>\n<text x=\"216\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">−5.71</text>\n<text x=\"321\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">20.5 km/s</text>\n<text x=\"41\" y=\"119\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">南門二</text>\n<text x=\"126\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">−0.01</text>\n<text x=\"216\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">4.38</text>\n<text x=\"321\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">−21.6 km/s</text>\n</svg>"
     },
     {
       "questionId": "tm_69_q30",
@@ -1107,7 +1107,6 @@
     },
     {
       "questionId": "tm_69_q41",
-      "figureMissing": true,
       "materialId": "tm_69",
       "questionNumber": "T8-3",
       "type": "single_choice",
@@ -1115,7 +1114,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 1,
       "needsReview": false,
-      "question": "（事件視界望遠鏡（EHT）是由 8 座位於地球表面上不同地點的長波望遠鏡陣列組成，形成一個口徑如同地球一般大的虛擬陣列望遠鏡，此陣列望遠鏡於 2018 年 4 月成功的拍攝到超大質量黑洞如附圖，此黑洞位於 M87 中心，而 M87 則是室女座星系團中的一個巨大的橢圓星系。）下列哪一個天體在宇宙的結構中，與 M87 屬於同一個階級？",
+      "question": "（事件視界望遠鏡（EHT）是由 8 座位於地球表面上不同地點的長波望遠鏡陣列組成，形成一個口徑如同地球一般大的虛擬陣列望遠鏡，此陣列望遠鏡於 2018 年 4 月成功的拍攝到超大質量黑洞，此黑洞位於 M87 中心，而 M87 則是室女座星系團中的一個巨大的橢圓星系。）下列哪一個天體在宇宙的結構中，與 M87 屬於同一個階級？",
       "options": [
         "(A) M1 蟹狀星雲",
         "(B) M31 仙女座星系",

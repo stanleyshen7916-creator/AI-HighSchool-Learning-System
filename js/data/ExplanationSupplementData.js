@@ -699,7 +699,7 @@ AHS.ExplanationSupplementData = {
   "tm_1_qB": {
     "questionId": "tm_1_qB",
     "materialId": "tm_1",
-    "question": "如右圖，△ABC中，D為BC上一點，若AB=7，BD=4，AD=5，CD=6，則 AC = ___。",
+    "question": "△ABC中，D為BC上一點，若AB=7，BD=4，AD=5，CD=6，則 AC = ___。",
     "concept": "D 在 BC 上，∠ADB 與 ∠ADC 互補（cos 值互為相反數）。先在已知三邊的 △ABD 求 cos∠ADB，再到 △ADC 用餘弦定理求 AC。",
     "steps": [
       "△ABD 三邊已知（AB = 7、BD = 4、AD = 5）：cos∠ADB = (5² + 4² − 7²)/(2·5·4) = (25 + 16 − 49)/40 = −1/5。",
@@ -5183,7 +5183,7 @@ AHS.ExplanationSupplementData = {
   "tm_56_q50": {
     "questionId": "tm_56_q50",
     "materialId": "tm_56",
-    "question": "附表為有關側根與根毛特性的比較（側根／根毛），何者有誤？",
+    "question": "下列為有關側根與根毛特性的比較（側根／根毛），何者有誤？",
     "concept": "側根與根毛來源不同：側根來自周鞘，根毛來自表皮細胞。",
     "steps": [
       "(B) 側根是多細胞、根毛是單細胞：正確。",
