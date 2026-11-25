@@ -16828,6 +16828,7 @@ AHS.TeachingMaterialData = [
       {
         "id": "tm_12_q20",
         "figureMissing": true,
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_12/figures/tm_12_q20.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_12",
         "questionNumber": "1-2練習13",
         "type": "fill_blank",
