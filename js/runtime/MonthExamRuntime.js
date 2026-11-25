@@ -308,19 +308,49 @@ AHS.MonthExamRuntime = (function () {
 
   /* 依段考結構出題：每一部分從同題型的題目抽，題組整組一起抽、不超過該部分題數；
      範圍內題目不夠時如實回報（sections[i].count < want）。 */
-  function buildBlueprintPaper(bp, materialIds, rng) {
+  /* 2026-11-25（QB3 月考模擬）：優先抽「最近幾次同科交卷沒出過的題目」。
+     抽題仍是隨機，只是把出過的題目排到後面：題庫夠大時連考幾份都不重複
+     （例：國文 151 題、每份 29 題，可連考 5 份不重複），題庫不夠時才重複。
+     依據是本機的交卷紀錄（最多 HISTORY_LIMIT 份），清除紀錄就重新計算。 */
+  function seenIds(subject) {
+    var seen = {};
+    (load(KEY_HISTORY, []) || []).forEach(function (h) {
+      if (!h || h.subject !== subject) { return; }
+      (h.rows || []).forEach(function (r) { if (r && r.qid) { seen[r.qid] = true; } });
+    });
+    return seen;
+  }
+  function preferUnseen(units, seen) {
+    var fresh = [], old = [];
+    units.forEach(function (u) { (u.some(function (q) { return seen[q.id]; }) ? old : fresh).push(u); });
+    return fresh.concat(old);
+  }
+  function buildBlueprintPaper(bp, materialIds, rng, seen) {
     var pool = questionsFor(materialIds);
     var used = {};
     var questions = [];
     var sections = bp.sections.map(function (sec, si) {
       var units = unitsOf(pool.filter(function (q) { return !used[q.id] && kindOf(q) === sec.kind; }));
       var n = 0;
-      shuffle(units, rng).forEach(function (u) {
+      preferUnseen(shuffle(units, rng), seen || {}).forEach(function (u) {
         if (n + u.length > sec.count) { return; }
         u.forEach(function (q) { used[q.id] = true; questions.push(Object.assign({}, q, { sectionIndex: si })); });
         n += u.length;
       });
-      return { title: sec.title, kind: sec.kind, want: sec.count, count: n, points: sec.points, scoring: sec.scoring || "" };
+      /* 2026-11-25（Stanley 決定 B）：選填題不夠時，用範圍內沒用到的單選題補足題數
+         （例：數學題庫全部附選項，沒有選填題可出，原本每份只有 7 題）。補上的題目依單選題作答、
+         以該部分配分計分，標題註明補了幾題。 */
+      var topUp = 0;
+      if (sec.kind === "fill" && n < sec.count) {
+        var singles = unitsOf(pool.filter(function (q) { return !used[q.id] && kindOf(q) === "single"; }));
+        preferUnseen(shuffle(singles, rng), seen || {}).forEach(function (u) {
+          if (n + u.length > sec.count) { return; }
+          u.forEach(function (q) { used[q.id] = true; questions.push(Object.assign({}, q, { sectionIndex: si })); });
+          n += u.length; topUp += u.length;
+        });
+      }
+      return { title: sec.title + (topUp ? "（選填題不足，以單選題補 " + topUp + " 題）" : ""), kind: sec.kind, want: sec.count, count: n,
+        points: sec.points, scoring: sec.scoring || "", topUp: topUp };
     });
     var kinds = {};
     pool.forEach(function (q) { var k = kindOf(q); kinds[k] = (kinds[k] || 0) + 1; });
@@ -339,7 +369,8 @@ AHS.MonthExamRuntime = (function () {
   function buildPaper(subject, materialIds, rng) {
     rng = rng || Math.random;
     var bp = blueprintFor(subject);
-    if (bp) { return buildBlueprintPaper(bp, materialIds, rng); }
+    var seen = seenIds(subject);
+    if (bp) { return buildBlueprintPaper(bp, materialIds, rng, seen); }
     /* 沒有段考結構：原本的出題方式（單選＋多選，不出選填）。 */
     var pool = questionsFor(materialIds).filter(function (q) { return kindOf(q) !== "fill"; });
     var groups = {};
@@ -357,7 +388,7 @@ AHS.MonthExamRuntime = (function () {
     var picked = [];
     var singles = 0;
     var total = 0;
-    shuffle(units, rng).forEach(function (u) {
+    preferUnseen(shuffle(units, rng), seen).forEach(function (u) {
       var isGroup = u.length > 1 || !!groupKeyOf(u[0]);
       if (total + u.length > TOTAL_LIMIT) { return; }
       if (isMath && !isGroup && singles >= MATH_SINGLE_LIMIT) { return; }
