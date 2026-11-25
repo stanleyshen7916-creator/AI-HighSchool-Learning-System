@@ -285,6 +285,10 @@ function generate(options) {
 
   writeIfChanged(OUTPUT_FILE, header + body);
   console.log("Generated " + path.relative(REPO_ROOT, OUTPUT_FILE) + " — " + entries.length + " material(s) included (" + ids.length + " scanned).");
+  /* queue 9.4: the same data, split into a small index + one content file per material (TeachingMaterialSplit.js).
+     TeachingMaterialData.js above stays the source the pages use until they are switched over. */
+  var split = require("./TeachingMaterialSplit.js").writeAll(dataEntries, writeIfChanged);
+  console.log("Generated " + split.index + " and " + split.contentFiles + " file(s) in js/data/materials-content/.");
 
   writeIndex(entries);
   writeKnowledgeAndReport(entries);

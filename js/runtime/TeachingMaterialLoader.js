@@ -435,7 +435,7 @@ AHS.TeachingMaterialLoader = (function () {
     });
     if (!sourceId) { return null; }
 
-    var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
+    var entries = sourceEntries();
     var entry = null;
     entries.forEach(function (e) { if (e && e.materialId === sourceId) { entry = e; } });
     if (entry && entry.material) {
@@ -693,11 +693,55 @@ AHS.TeachingMaterialLoader = (function () {
     if (dropRuntimeMaterial(materialId, idMap)) { saveIdMap(idMap); }
   }
 
+  /* queue 9.4 (T4) — where the entries come from.
+     Until now only AHS.TeachingMaterialData (the one 4.7 MB array). A page may instead load the small
+     AHS.TeachingMaterialIndex (js/data/TeachingMaterialIndex.js) and fetch a material's summary / questions on demand
+     (TeachingMaterialContentLoader): every material still gets its MaterialRuntime record from the index alone;
+     its Summary and Exam-Mode questions are imported when its content is there (already loaded, or via loadContent()).
+     With TeachingMaterialData present — every page today — behavior is exactly what it was. */
+  function entryFromIndex(rec, content) {
+    var e = { materialId: rec.materialId, material: rec.material, related: rec.related };
+    if (content) {
+      e.summary = content.summary;
+      e.questions = content.questions || [];
+      if (content.variants) { e.variants = content.variants; }
+    } else {
+      e.questions = [];
+    }
+    return e;
+  }
+  function sourceEntries() {
+    if (Array.isArray(AHS.TeachingMaterialData)) { return AHS.TeachingMaterialData; }
+    if (!Array.isArray(AHS.TeachingMaterialIndex)) { return []; }
+    var store = AHS.TeachingMaterialContentStore || {};
+    return AHS.TeachingMaterialIndex.map(function (rec) { return entryFromIndex(rec, store[rec.materialId]); });
+  }
+
+  /* loadContent(sourceId) — make sure one material's summary and questions are in their Runtimes. Resolves with the
+     MaterialRuntime id (null when the material is not for this Workspace / cannot be added). */
+  function loadContent(sourceId) {
+    var rec = (Array.isArray(AHS.TeachingMaterialIndex) ? AHS.TeachingMaterialIndex : []).filter(function (r) { return r && r.materialId === sourceId; })[0];
+    if (Array.isArray(AHS.TeachingMaterialData) || !rec) {
+      // the full array is already here (or the material is unknown to the index): nothing to fetch
+      return Promise.resolve(runtimeIdFor(sourceId));
+    }
+    if (!AHS.TeachingMaterialContentLoader) { return Promise.reject(new Error("TeachingMaterialContentLoader is not loaded")); }
+    return AHS.TeachingMaterialContentLoader.ensure(sourceId).then(function (content) {
+      var entry = entryFromIndex(rec, content);
+      if (!entry.material || !workspaceAllows(entry.material.school, entry.material.semester)) { return null; }
+      var idMap = loadIdMap();
+      var runtimeMaterialId = resolveMaterialId(entry, idMap);
+      if (!runtimeMaterialId) { return null; }
+      loadQuestions(entry, runtimeMaterialId);
+      return runtimeMaterialId;
+    });
+  }
+
   function load() {
     if (initialized) { return; }
     initialized = true;
     var idMap = loadIdMap();
-    var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
+    var entries = sourceEntries();
     var present = {};
     entries.forEach(function (entry) { if (entry && entry.materialId) { present[entry.materialId] = true; } });
     var deleted = pendingDeleted().filter(function (id) { return present[id]; });
@@ -734,6 +778,7 @@ AHS.TeachingMaterialLoader = (function () {
   return {
     initialize: load,
     load: load,
+    loadContent: loadContent,
     markDeleted: markDeleted,
     resolveExamMeta: resolveExamMeta,
     runtimeIdFor: runtimeIdFor,
