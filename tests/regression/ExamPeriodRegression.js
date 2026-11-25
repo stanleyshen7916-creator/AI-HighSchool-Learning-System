@@ -126,12 +126,33 @@ console.log("\n[3] 教材中心：卡片顯示月考範圍");
 console.log("\n[4] 模擬月考：預設範圍為第二次月考");
 {
   const { window } = loadPage("monthexam.html");
+  window.AHS.MonthExamConfig = { ranges: {} };   // 這一節驗證「沒有管理者設定時」的月考預設；管理者設定另在下一節驗證
   const RT = window.AHS.MonthExamRuntime;
   const r = RT.getRange("國文");
   check("國文預設範圍來源是「目前月考」", r.source === "period" && r.periodLabel === "第二次月考");
   check("國文預設範圍正好是第五～八課（tm_94～tm_97）", JSON.stringify(r.materialIds.slice().sort()) === JSON.stringify(["tm_94", "tm_95", "tm_96", "tm_97"]));
   const h = RT.getRange("歷史");
   check("歷史預設範圍是第3、4章（tm_85、tm_86）", JSON.stringify(h.materialIds.slice().sort()) === JSON.stringify(["tm_85", "tm_86"]));
+}
+
+console.log("\n[4b] 模擬月考：管理者設定的預設範圍（js/data/MonthExamConfig.js，長榮高二上）");
+{
+  const { window } = loadPage("monthexam.html");
+  const RT = window.AHS.MonthExamRuntime;
+  const want = {
+    "國文": ["tm_94", "tm_95", "tm_96", "tm_97"],
+    "英文": ["tm_100", "tm_103", "tm_104", "tm_105", "tm_98", "tm_99"],
+    "數學": ["tm_92"],
+    "歷史": ["tm_85", "tm_86"],
+    "公民與社會": ["tm_109", "tm_110"],
+    "物理": ["tm_101", "tm_102"],
+    "化學": ["tm_108", "tm_28"],
+    "生物": ["tm_106", "tm_107"]
+  };
+  Object.keys(want).forEach((subject) => {
+    const r = RT.getRange(subject);
+    check(subject + "預設範圍來自管理者設定", r.source === "admin" && JSON.stringify(r.materialIds.slice().sort()) === JSON.stringify(want[subject].slice().sort()));
+  });
 }
 
 console.log("\n[5] 知識弱點：月考範圍篩選與錯題標籤");
