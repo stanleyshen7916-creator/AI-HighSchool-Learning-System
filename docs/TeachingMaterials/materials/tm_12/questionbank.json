@@ -81,7 +81,6 @@
     },
     {
       "questionId": "tm_12_q4",
-      "figureMissing": true,
       "materialId": "tm_12",
       "questionNumber": "1-1單選4",
       "type": "single_choice",
@@ -104,7 +103,8 @@
       "version": "1",
       "createdDate": "2026-09-04T00:00:00Z",
       "knowledgePoint": "氣體體積比＝莫耳比",
-      "difficulty": "中等"
+      "difficulty": "中等",
+      "figureSvg": "<svg viewBox=\"0 0 340 106\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"170.0\" y=\"16\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">體積變化表</text>\n<rect x=\"1\" y=\"24\" width=\"338\" height=\"26\" fill=\"#eef0f5\"/>\n<line x1=\"1\" y1=\"24\" x2=\"339\" y2=\"24\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"50\" x2=\"339\" y2=\"50\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"76\" x2=\"339\" y2=\"76\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"102\" x2=\"339\" y2=\"102\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"24\" x2=\"1\" y2=\"102\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"81\" y1=\"24\" x2=\"81\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"146\" y1=\"24\" x2=\"146\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"211\" y1=\"24\" x2=\"211\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"276\" y1=\"24\" x2=\"276\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"339\" y1=\"24\" x2=\"339\" y2=\"102\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<text x=\"41\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\"></text>\n<text x=\"114\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">A(g)</text>\n<text x=\"178\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">B(g)</text>\n<text x=\"244\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">C(g)</text>\n<text x=\"308\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">D(g)</text>\n<text x=\"41\" y=\"67\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">反應前</text>\n<text x=\"114\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">150 mL</text>\n<text x=\"178\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">100 mL</text>\n<text x=\"244\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">0 mL</text>\n<text x=\"308\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">0 mL</text>\n<text x=\"41\" y=\"93\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">反應後</text>\n<text x=\"114\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">0 mL</text>\n<text x=\"178\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">50 mL</text>\n<text x=\"244\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">150 mL</text>\n<text x=\"308\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">100 mL</text>\n</svg>"
     },
     {
       "questionId": "tm_12_q5",

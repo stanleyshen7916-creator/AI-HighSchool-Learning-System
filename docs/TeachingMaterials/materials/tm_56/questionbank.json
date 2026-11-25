@@ -1165,7 +1165,6 @@
     },
     {
       "questionId": "tm_56_q50",
-      "figureMissing": true,
       "materialId": "tm_56",
       "questionNumber": "P40基礎5",
       "type": "single_choice",
@@ -1173,7 +1172,7 @@
       "origin": "Uploaded Material",
       "ocrConfidence": 0.95,
       "needsReview": false,
-      "question": "附表為有關側根與根毛特性的比較（側根／根毛），何者有誤？",
+      "question": "下列為有關側根與根毛特性的比較（側根／根毛），何者有誤？",
       "options": [
         "(A) 生長點分裂而來／表皮細胞外凸形成",
         "(B) 多細胞的形態／單細胞的形態",

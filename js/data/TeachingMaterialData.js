@@ -191,7 +191,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_1_q6",
-        "figureMissing": true,
         "materialId": "tm_1",
         "questionNumber": "6",
         "type": "single_choice",
@@ -212,7 +211,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.85,
         "needsReview": true,
-        "knowledgePoint": "單位圓上的三角函數定義"
+        "knowledgePoint": "單位圓上的三角函數定義",
+        "figureMissing": true
       },
       {
         "id": "tm_1_qA",
@@ -235,11 +235,10 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_1_qB",
-        "figureMissing": true,
         "materialId": "tm_1",
         "questionNumber": "B",
         "type": "fill_blank",
-        "question": "如右圖，△ABC中，D為BC上一點，若AB=7，BD=4，AD=5，CD=6，則 AC = ___。",
+        "question": "△ABC中，D為BC上一點，若AB=7，BD=4，AD=5，CD=6，則 AC = ___。",
         "options": [],
         "answer": "7",
         "explanation": "△ABD中cos∠ADB=(25+16−49)/(2·5·4)=−1/5。∠ADC=180°−∠ADB，cos∠ADC=1/5。△ADC中AC²=25+36−2(5)(6)(1/5)=61−12=49，AC=7。",
@@ -927,8 +926,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q7",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q7.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_2",
         "questionNumber": "7",
         "type": "single_choice",
@@ -950,7 +947,9 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.8,
         "needsReview": true,
         "knowledgePoint": "斑馬條紋演化假說（實驗數據判讀）",
-        "difficulty": "難"
+        "difficulty": "難",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q7.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true
       },
       {
         "id": "tm_2_q8",
@@ -1196,8 +1195,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q18",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_2",
         "questionNumber": "18",
         "type": "single_choice",
@@ -1218,7 +1215,9 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.75,
         "needsReview": true,
         "knowledgePoint": "三域系統親緣關係",
-        "difficulty": "難"
+        "difficulty": "難",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_2/figures/tm_2_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true
       },
       {
         "id": "tm_2_q19",
@@ -1246,7 +1245,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q20",
-        "figureMissing": true,
         "materialId": "tm_2",
         "questionNumber": "20",
         "type": "single_choice",
@@ -1267,7 +1265,8 @@ AHS.TeachingMaterialData = [
         "ocrConfidence": 0.7,
         "needsReview": true,
         "knowledgePoint": "生物分類特徵判斷",
-        "difficulty": "難"
+        "difficulty": "難",
+        "figureMissing": true
       },
       {
         "id": "tm_2_q21",
@@ -1398,7 +1397,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_2_q26",
-        "figureMissing": true,
         "materialId": "tm_2",
         "questionNumber": "26",
         "type": "single_choice",
@@ -1420,6 +1418,7 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "病毒核酸水解產物（非洲豬瘟）",
         "difficulty": "中等",
+        "figureMissing": true,
         "groupId": "tm_2_g2"
       },
       {
@@ -2813,7 +2812,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_3_q47",
-        "figureMissing": true,
         "materialId": "tm_3",
         "questionNumber": "47",
         "type": "fill_blank",
@@ -2833,7 +2831,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.7,
         "needsReview": true,
-        "knowledgePoint": "性別勞動參與率差異原因（題組二）"
+        "knowledgePoint": "性別勞動參與率差異原因（題組二）",
+        "figureSvg": "<svg viewBox=\"0 0 400 250\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"200.0\" y=\"16\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">2024 年我國按性別分之勞動參與率（%）</text>\n<line x1=\"44\" y1=\"205.0\" x2=\"390\" y2=\"205.0\" stroke=\"#333\" stroke-width=\"1.5\"/>\n<text x=\"38\" y=\"209.0\" text-anchor=\"end\" font-size=\"10\" fill=\"#666\">0</text>\n<line x1=\"44\" y1=\"170.0\" x2=\"390\" y2=\"170.0\" stroke=\"#ddd\" stroke-width=\"0.8\"/>\n<text x=\"38\" y=\"174.0\" text-anchor=\"end\" font-size=\"10\" fill=\"#666\">20</text>\n<line x1=\"44\" y1=\"135.0\" x2=\"390\" y2=\"135.0\" stroke=\"#ddd\" stroke-width=\"0.8\"/>\n<text x=\"38\" y=\"139.0\" text-anchor=\"end\" font-size=\"10\" fill=\"#666\">40</text>\n<line x1=\"44\" y1=\"100.0\" x2=\"390\" y2=\"100.0\" stroke=\"#ddd\" stroke-width=\"0.8\"/>\n<text x=\"38\" y=\"104.0\" text-anchor=\"end\" font-size=\"10\" fill=\"#666\">60</text>\n<line x1=\"44\" y1=\"65.0\" x2=\"390\" y2=\"65.0\" stroke=\"#ddd\" stroke-width=\"0.8\"/>\n<text x=\"38\" y=\"69.0\" text-anchor=\"end\" font-size=\"10\" fill=\"#666\">80</text>\n<line x1=\"44\" y1=\"30.0\" x2=\"390\" y2=\"30.0\" stroke=\"#ddd\" stroke-width=\"0.8\"/>\n<text x=\"38\" y=\"34.0\" text-anchor=\"end\" font-size=\"10\" fill=\"#666\">100</text>\n<rect x=\"63.2\" y=\"141.6\" width=\"22\" height=\"63.4\" fill=\"#3b82f6\" opacity=\"0.8\"/>\n<text x=\"74.2\" y=\"137.6\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">36.2</text>\n<rect x=\"89.2\" y=\"141.6\" width=\"22\" height=\"63.4\" fill=\"#ef4444\" opacity=\"0.8\"/>\n<text x=\"100.2\" y=\"137.6\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">36.2</text>\n<text x=\"87.2\" y=\"221\" text-anchor=\"middle\" font-size=\"11\">15-24歲</text>\n<rect x=\"149.8\" y=\"36.7\" width=\"22\" height=\"168.3\" fill=\"#3b82f6\" opacity=\"0.8\"/>\n<text x=\"160.8\" y=\"32.7\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">96.2</text>\n<rect x=\"175.8\" y=\"54.7\" width=\"22\" height=\"150.3\" fill=\"#ef4444\" opacity=\"0.8\"/>\n<text x=\"186.8\" y=\"50.7\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">85.9</text>\n<text x=\"173.8\" y=\"221\" text-anchor=\"middle\" font-size=\"11\">25-44歲</text>\n<rect x=\"236.2\" y=\"66.8\" width=\"22\" height=\"138.2\" fill=\"#3b82f6\" opacity=\"0.8\"/>\n<text x=\"247.2\" y=\"62.8\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">79.0</text>\n<rect x=\"262.2\" y=\"106.8\" width=\"22\" height=\"98.2\" fill=\"#ef4444\" opacity=\"0.8\"/>\n<text x=\"273.2\" y=\"102.8\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">56.1</text>\n<text x=\"260.2\" y=\"221\" text-anchor=\"middle\" font-size=\"11\">45-64歲</text>\n<rect x=\"322.8\" y=\"180.0\" width=\"22\" height=\"25.0\" fill=\"#3b82f6\" opacity=\"0.8\"/>\n<text x=\"333.8\" y=\"176.0\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">14.3</text>\n<rect x=\"348.8\" y=\"194.0\" width=\"22\" height=\"11.0\" fill=\"#ef4444\" opacity=\"0.8\"/>\n<text x=\"359.8\" y=\"190.0\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"700\">6.3</text>\n<text x=\"346.8\" y=\"221\" text-anchor=\"middle\" font-size=\"11\">65歲以上</text>\n<rect x=\"290\" y=\"232\" width=\"10\" height=\"10\" fill=\"#3b82f6\"/>\n<text x=\"304\" y=\"241\" font-size=\"11\">男</text>\n<rect x=\"334\" y=\"232\" width=\"10\" height=\"10\" fill=\"#ef4444\"/>\n<text x=\"348\" y=\"241\" font-size=\"11\">女</text>\n</svg>"
       },
       {
         "id": "tm_3_q48",
@@ -3222,7 +3221,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q12",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "12",
         "type": "single_choice",
@@ -3242,7 +3240,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.6,
         "needsReview": true,
-        "knowledgePoint": "熱帶栽培業（示意圖判讀）"
+        "knowledgePoint": "熱帶栽培業（示意圖判讀）",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q13",
@@ -3475,7 +3474,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q23",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "23",
         "type": "single_choice",
@@ -3495,7 +3493,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "中亞河流水資源組成（圖表判讀）"
+        "knowledgePoint": "中亞河流水資源組成（圖表判讀）",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q24",
@@ -3614,7 +3613,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q29",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "29",
         "type": "single_choice",
@@ -3634,7 +3632,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "臺灣多元族群宗教活動"
+        "knowledgePoint": "臺灣多元族群宗教活動",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q30",
@@ -3685,7 +3684,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q32",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "32",
         "type": "single_choice",
@@ -3705,7 +3703,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "人類發展指數的綜合性"
+        "knowledgePoint": "人類發展指數的綜合性",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q33",
@@ -3755,7 +3754,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q35",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "35",
         "type": "single_choice",
@@ -3775,7 +3773,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.6,
         "needsReview": true,
-        "knowledgePoint": "熊本半導體聚落地理位置"
+        "knowledgePoint": "熊本半導體聚落地理位置",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q36",
@@ -3825,7 +3824,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q38",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "38",
         "type": "single_choice",
@@ -3845,7 +3843,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "世界主要農作物生產國（棉花）"
+        "knowledgePoint": "世界主要農作物生產國（棉花）",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q39",
@@ -4129,7 +4128,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q51",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "51",
         "type": "single_choice",
@@ -4149,7 +4147,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.95,
         "needsReview": false,
-        "knowledgePoint": "橡膠貿易的不平等交換"
+        "knowledgePoint": "橡膠貿易的不平等交換",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q52",
@@ -4176,7 +4175,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q53",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "53",
         "type": "single_choice",
@@ -4196,7 +4194,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.55,
         "needsReview": true,
-        "knowledgePoint": "熱帶栽培業農業活動示意圖（橡膠）"
+        "knowledgePoint": "熱帶栽培業農業活動示意圖（橡膠）",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q54",
@@ -4246,7 +4245,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_4_q56",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "56",
         "type": "single_choice",
@@ -4266,11 +4264,11 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.5,
         "needsReview": true,
-        "knowledgePoint": "東亞高科技產業國際分工（原稿模糊，待覆核）"
+        "knowledgePoint": "東亞高科技產業國際分工（原稿模糊，待覆核）",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q57",
-        "figureMissing": true,
         "materialId": "tm_4",
         "questionNumber": "57",
         "type": "single_choice",
@@ -4290,7 +4288,8 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-08-03T00:00:00Z",
         "ocrConfidence": 0.45,
         "needsReview": true,
-        "knowledgePoint": "東亞高科技產業國際分工概念圖（原稿模糊，待覆核）"
+        "knowledgePoint": "東亞高科技產業國際分工概念圖（原稿模糊，待覆核）",
+        "figureMissing": true
       },
       {
         "id": "tm_4_q58",
@@ -14718,7 +14717,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_11_q3",
-        "figureMissing": true,
         "materialId": "tm_11",
         "questionNumber": "3",
         "type": "single_choice",
@@ -14741,7 +14739,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_11_q4",
-        "figureMissing": true,
         "materialId": "tm_11",
         "questionNumber": "4",
         "type": "single_choice",
@@ -14764,7 +14761,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_11_q5",
-        "figureMissing": true,
         "materialId": "tm_11",
         "questionNumber": "5",
         "type": "single_choice",
@@ -16421,7 +16417,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_12_q4",
-        "figureMissing": true,
         "materialId": "tm_12",
         "questionNumber": "1-1單選4",
         "type": "single_choice",
@@ -16444,7 +16439,8 @@ AHS.TeachingMaterialData = [
         "needsReview": false,
         "knowledgePoint": "氣體體積比＝莫耳比",
         "difficulty": "中等",
-        "section": "1-1 化學反應式的平衡及應用"
+        "section": "1-1 化學反應式的平衡及應用",
+        "figureSvg": "<svg viewBox=\"0 0 340 106\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"170.0\" y=\"16\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">體積變化表</text>\n<rect x=\"1\" y=\"24\" width=\"338\" height=\"26\" fill=\"#eef0f5\"/>\n<line x1=\"1\" y1=\"24\" x2=\"339\" y2=\"24\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"50\" x2=\"339\" y2=\"50\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"76\" x2=\"339\" y2=\"76\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"102\" x2=\"339\" y2=\"102\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"24\" x2=\"1\" y2=\"102\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"81\" y1=\"24\" x2=\"81\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"146\" y1=\"24\" x2=\"146\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"211\" y1=\"24\" x2=\"211\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"276\" y1=\"24\" x2=\"276\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"339\" y1=\"24\" x2=\"339\" y2=\"102\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<text x=\"41\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\"></text>\n<text x=\"114\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">A(g)</text>\n<text x=\"178\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">B(g)</text>\n<text x=\"244\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">C(g)</text>\n<text x=\"308\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">D(g)</text>\n<text x=\"41\" y=\"67\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">反應前</text>\n<text x=\"114\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">150 mL</text>\n<text x=\"178\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">100 mL</text>\n<text x=\"244\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">0 mL</text>\n<text x=\"308\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">0 mL</text>\n<text x=\"41\" y=\"93\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">反應後</text>\n<text x=\"114\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">0 mL</text>\n<text x=\"178\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">50 mL</text>\n<text x=\"244\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">150 mL</text>\n<text x=\"308\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">100 mL</text>\n</svg>"
       },
       {
         "id": "tm_12_q5",
@@ -16827,8 +16823,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_12_q20",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_12/figures/tm_12_q20.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_12",
         "questionNumber": "1-2練習13",
         "type": "fill_blank",
@@ -16851,7 +16845,9 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "赫斯定律加成性",
         "difficulty": "中等",
-        "section": "1-2.4 赫斯定律"
+        "section": "1-2.4 赫斯定律",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_12/figures/tm_12_q20.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true
       },
       {
         "id": "tm_12_q21",
@@ -18305,7 +18301,6 @@ AHS.TeachingMaterialData = [
     "questions": [
       {
         "id": "tm_13_q1",
-        "figureMissing": true,
         "materialId": "tm_13",
         "questionNumber": "練一練1-(1)",
         "type": "fill_blank",
@@ -18322,6 +18317,7 @@ AHS.TeachingMaterialData = [
         "needsReview": true,
         "knowledgePoint": "色層分析法、比移值Rf",
         "section": "色層分析法",
+        "figureMissing": true,
         "groupId": "tm_13_g1"
       },
       {
@@ -20437,7 +20433,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_41_q11",
-        "figureMissing": true,
         "materialId": "tm_15",
         "questionNumber": "11",
         "type": "single_choice",
@@ -20457,6 +20452,7 @@ AHS.TeachingMaterialData = [
         "createdDate": "2026-10-05T14:29:23.418Z",
         "knowledgePoint": "政教合作與衝突",
         "difficulty": "中等",
+        "figureMissing": true,
         "reference": "教材重點「神聖羅馬帝國（962年起）：鄂圖一世受教宗加冕為皇帝之始」",
         "supplementId": "tm_41"
       },
@@ -24087,7 +24083,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_60_q68",
-        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "68",
         "type": "single_choice",
@@ -24108,6 +24103,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "周日運動",
         "difficulty": "易",
         "section": "主題9 周日運動與不同緯度的星空",
+        "figureMissing": true,
         "reference": "AI 自編（非課本原題），依 tm_17 命題範圍「主題9 周日運動與不同緯度的星空：周日運動」出題；計算題答案經程式驗算（source/verify-es.js）",
         "supplementId": "tm_60"
       },
@@ -25886,7 +25882,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_68_q39",
-        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "K14",
         "type": "single_choice",
@@ -25910,6 +25905,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "生物大滅絕",
         "difficulty": "中等",
         "section": "單元1 關鍵考題",
+        "figureMissing": true,
         "reference": "長榮中學高二地科講義 單元1 關鍵考題 第14題（講義第17頁）",
         "supplementId": "tm_68"
       },
@@ -26748,7 +26744,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_69_q29",
-        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "T6-2",
         "type": "single_choice",
@@ -26772,6 +26767,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "恆星的距離與宇宙階級",
         "difficulty": "中等",
         "section": "主題6 小試身手",
+        "figureSvg": "<svg viewBox=\"0 0 380 132\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"190.0\" y=\"16\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">三顆恆星的基本資料（徑向速度負值表示靠近）</text>\n<rect x=\"1\" y=\"24\" width=\"378\" height=\"26\" fill=\"#eef0f5\"/>\n<line x1=\"1\" y1=\"24\" x2=\"379\" y2=\"24\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"50\" x2=\"379\" y2=\"50\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"76\" x2=\"379\" y2=\"76\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"102\" x2=\"379\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"128\" x2=\"379\" y2=\"128\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"24\" x2=\"1\" y2=\"128\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"81\" y1=\"24\" x2=\"81\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"171\" y1=\"24\" x2=\"171\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"261\" y1=\"24\" x2=\"261\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"379\" y1=\"24\" x2=\"379\" y2=\"128\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<text x=\"41\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">恆星</text>\n<text x=\"126\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">視星等</text>\n<text x=\"216\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">絕對星等</text>\n<text x=\"321\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">徑向速度</text>\n<text x=\"41\" y=\"67\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">天狼星</text>\n<text x=\"126\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">−1.47</text>\n<text x=\"216\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">1.42</text>\n<text x=\"321\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">−7.6 km/s</text>\n<text x=\"41\" y=\"93\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">老人星</text>\n<text x=\"126\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">−0.72</text>\n<text x=\"216\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">−5.71</text>\n<text x=\"321\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">20.5 km/s</text>\n<text x=\"41\" y=\"119\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">南門二</text>\n<text x=\"126\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">−0.01</text>\n<text x=\"216\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">4.38</text>\n<text x=\"321\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">−21.6 km/s</text>\n</svg>",
         "reference": "長榮中學高二地科講義 主題6 小試身手 第6-2題（講義第38頁）",
         "supplementId": "tm_69"
       },
@@ -27090,11 +27086,10 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_69_q41",
-        "figureMissing": true,
         "materialId": "tm_17",
         "questionNumber": "T8-3",
         "type": "single_choice",
-        "question": "（事件視界望遠鏡（EHT）是由 8 座位於地球表面上不同地點的長波望遠鏡陣列組成，形成一個口徑如同地球一般大的虛擬陣列望遠鏡，此陣列望遠鏡於 2018 年 4 月成功的拍攝到超大質量黑洞如附圖，此黑洞位於 M87 中心，而 M87 則是室女座星系團中的一個巨大的橢圓星系。）下列哪一個天體在宇宙的結構中，與 M87 屬於同一個階級？",
+        "question": "（事件視界望遠鏡（EHT）是由 8 座位於地球表面上不同地點的長波望遠鏡陣列組成，形成一個口徑如同地球一般大的虛擬陣列望遠鏡，此陣列望遠鏡於 2018 年 4 月成功的拍攝到超大質量黑洞，此黑洞位於 M87 中心，而 M87 則是室女座星系團中的一個巨大的橢圓星系。）下列哪一個天體在宇宙的結構中，與 M87 屬於同一個階級？",
         "options": [
           "(A) M1 蟹狀星雲",
           "(B) M31 仙女座星系",
@@ -34166,7 +34161,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q18",
-        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題3",
         "type": "single_choice",
@@ -34190,6 +34184,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "波以耳定律",
         "difficulty": "中等",
         "section": "習題 選擇題",
+        "figureSvg": "<svg viewBox=\"0 0 320 222\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"160\" y=\"16\" text-anchor=\"middle\" font-size=\"12\">活塞面積 100 cm²（重量不計），定溫</text>\n<path d=\"M30 50 V190 H120 V50\" fill=\"none\" stroke=\"#333\" stroke-width=\"2\"/>\n<rect x=\"32\" y=\"80\" width=\"86\" height=\"108\" fill=\"#cfe3ff\" opacity=\"0.7\"/>\n<rect x=\"31\" y=\"72\" width=\"88\" height=\"8\" fill=\"#888\"/>\n<text x=\"75\" y=\"139\" text-anchor=\"middle\" font-size=\"12\">100 mL</text>\n<text x=\"75\" y=\"212\" text-anchor=\"middle\" font-size=\"12\">不加砝碼</text>\n<path d=\"M200 50 V190 H290 V50\" fill=\"none\" stroke=\"#333\" stroke-width=\"2\"/>\n<rect x=\"202\" y=\"108\" width=\"86\" height=\"80\" fill=\"#cfe3ff\" opacity=\"0.7\"/>\n<rect x=\"201\" y=\"100\" width=\"88\" height=\"8\" fill=\"#888\"/>\n<text x=\"245\" y=\"153\" text-anchor=\"middle\" font-size=\"12\">80.0 mL</text>\n<text x=\"245\" y=\"212\" text-anchor=\"middle\" font-size=\"12\">加 1 個砝碼</text>\n<rect x=\"225\" y=\"74\" width=\"40\" height=\"26\" fill=\"#555\"/>\n<text x=\"245\" y=\"91\" text-anchor=\"middle\" font-size=\"12\" fill=\"#fff\" font-weight=\"700\">W kg</text>\n</svg>",
         "reference": "竹圍高中高二化學課本 第2章 氣體 習題3（課本第92頁）",
         "supplementId": "tm_30"
       },
@@ -34363,7 +34358,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q25",
-        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題10",
         "type": "fill_blank",
@@ -34381,12 +34375,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "理想氣體與真實氣體",
         "difficulty": "中等",
         "section": "習題 綜合題",
+        "figureSvg": "<svg viewBox=\"0 0 360 236\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<text x=\"180.0\" y=\"16\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">真實氣體在 STP 下的莫耳體積</text>\n<rect x=\"1\" y=\"24\" width=\"358\" height=\"26\" fill=\"#eef0f5\"/>\n<line x1=\"1\" y1=\"24\" x2=\"359\" y2=\"24\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"50\" x2=\"359\" y2=\"50\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"76\" x2=\"359\" y2=\"76\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"102\" x2=\"359\" y2=\"102\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"128\" x2=\"359\" y2=\"128\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"154\" x2=\"359\" y2=\"154\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"180\" x2=\"359\" y2=\"180\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"206\" x2=\"359\" y2=\"206\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"1\" y1=\"232\" x2=\"359\" y2=\"232\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"1\" y1=\"24\" x2=\"1\" y2=\"232\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<line x1=\"111\" y1=\"24\" x2=\"111\" y2=\"232\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"251\" y1=\"24\" x2=\"251\" y2=\"232\" stroke=\"#555\" stroke-width=\"0.6\"/>\n<line x1=\"359\" y1=\"24\" x2=\"359\" y2=\"232\" stroke=\"#555\" stroke-width=\"1.2\"/>\n<text x=\"56\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氣體</text>\n<text x=\"181\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">莫耳體積 (L/mol)</text>\n<text x=\"306\" y=\"41\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">分子量</text>\n<text x=\"56\" y=\"67\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氦 He</text>\n<text x=\"181\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">22.44</text>\n<text x=\"306\" y=\"67\" text-anchor=\"middle\" font-size=\"12\">4.000</text>\n<text x=\"56\" y=\"93\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氫 H₂</text>\n<text x=\"181\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">22.43</text>\n<text x=\"306\" y=\"93\" text-anchor=\"middle\" font-size=\"12\">2.020</text>\n<text x=\"56\" y=\"119\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氮 N₂</text>\n<text x=\"181\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">22.40</text>\n<text x=\"306\" y=\"119\" text-anchor=\"middle\" font-size=\"12\">28.02</text>\n<text x=\"56\" y=\"145\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">甲烷 CH₄</text>\n<text x=\"181\" y=\"145\" text-anchor=\"middle\" font-size=\"12\">22.36</text>\n<text x=\"306\" y=\"145\" text-anchor=\"middle\" font-size=\"12\">16.04</text>\n<text x=\"56\" y=\"171\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氯化氫 HCl</text>\n<text x=\"181\" y=\"171\" text-anchor=\"middle\" font-size=\"12\">22.25</text>\n<text x=\"306\" y=\"171\" text-anchor=\"middle\" font-size=\"12\">36.47</text>\n<text x=\"56\" y=\"197\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氨 NH₃</text>\n<text x=\"181\" y=\"197\" text-anchor=\"middle\" font-size=\"12\">22.08</text>\n<text x=\"306\" y=\"197\" text-anchor=\"middle\" font-size=\"12\">17.03</text>\n<text x=\"56\" y=\"223\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">氯 Cl₂</text>\n<text x=\"181\" y=\"223\" text-anchor=\"middle\" font-size=\"12\">22.18</text>\n<text x=\"306\" y=\"223\" text-anchor=\"middle\" font-size=\"12\">70.91</text>\n</svg>",
         "reference": "竹圍高中高二化學課本 第2章 氣體 習題10（課本第94頁）",
         "supplementId": "tm_30"
       },
       {
         "id": "tm_30_q26",
-        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題11",
         "type": "calculation",
@@ -34404,6 +34398,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "波以耳定律（汞柱封氣）",
         "difficulty": "難",
         "section": "習題 綜合題",
+        "figureMissing": true,
         "reference": "竹圍高中高二化學課本 第2章 氣體 習題11（課本第94頁）",
         "supplementId": "tm_30"
       },
@@ -34453,7 +34448,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_30_q29",
-        "figureMissing": true,
         "materialId": "tm_29",
         "questionNumber": "習題14",
         "type": "calculation",
@@ -34471,6 +34465,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "理想氣體方程式",
         "difficulty": "難",
         "section": "習題 綜合題",
+        "figureSvg": "<svg viewBox=\"0 0 360 210\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\">\n<rect x=\"20\" y=\"80\" width=\"130\" height=\"110\" fill=\"#fde2c8\" stroke=\"#c97a2b\"/>\n<text x=\"85\" y=\"182\" text-anchor=\"middle\" font-size=\"11\">油浴 127°C</text>\n<rect x=\"210\" y=\"80\" width=\"130\" height=\"110\" fill=\"#cfe7ff\" stroke=\"#3b82f6\"/>\n<text x=\"275\" y=\"182\" text-anchor=\"middle\" font-size=\"11\">水浴 27°C</text>\n<circle cx=\"85\" cy=\"110\" r=\"45\" fill=\"#fff\" fill-opacity=\"0.8\" stroke=\"#333\" stroke-width=\"2\"/>\n<text x=\"85\" y=\"116\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">A</text>\n<circle cx=\"275\" cy=\"110\" r=\"45\" fill=\"#fff\" fill-opacity=\"0.8\" stroke=\"#333\" stroke-width=\"2\"/>\n<text x=\"275\" y=\"116\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">B</text>\n<path d=\"M85 65 V35 H275 V65\" fill=\"none\" stroke=\"#333\" stroke-width=\"3\"/>\n<text x=\"180\" y=\"28\" text-anchor=\"middle\" font-size=\"11\">細管（體積忽略）</text>\n<text x=\"180\" y=\"205\" text-anchor=\"middle\" font-size=\"11\" fill=\"#555\">A、B 等體積，內含 H₂ 共 0.7 mol</text>\n</svg>",
         "reference": "竹圍高中高二化學課本 第2章 氣體 習題14（課本第95頁）",
         "supplementId": "tm_30"
       },
@@ -42578,11 +42573,10 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_56_q50",
-        "figureMissing": true,
         "materialId": "tm_56",
         "questionNumber": "P40基礎5",
         "type": "single_choice",
-        "question": "附表為有關側根與根毛特性的比較（側根／根毛），何者有誤？",
+        "question": "下列為有關側根與根毛特性的比較（側根／根毛），何者有誤？",
         "options": [
           "(A) 生長點分裂而來／表皮細胞外凸形成",
           "(B) 多細胞的形態／單細胞的形態",
@@ -47116,7 +47110,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_79_q1",
-        "figureMissing": true,
         "materialId": "tm_61",
         "questionNumber": "1",
         "type": "single_choice",
@@ -47137,6 +47130,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "代名詞：one … the other",
         "difficulty": "中",
         "section": "Grammar & Usage（段考綜合測驗型）",
+        "figureMissing": true,
         "reference": "AI 自編（非課本原題、非段考原題），依長榮 115-1 第一次段考的題型與 tm_61 的範圍命題；數值答案經 source/build-supplements.py 驗算",
         "supplementId": "tm_79"
       },
@@ -54318,7 +54312,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_67_q21",
-        "figureMissing": true,
         "materialId": "tm_67",
         "questionNumber": "21",
         "type": "single_choice",
@@ -54337,7 +54330,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-10-10T06:20:05.296Z",
         "knowledgePoint": "B. 30 題單選練習（Q1–Q30）",
-        "section": "B. 30 題單選練習（Q1–Q30）"
+        "section": "B. 30 題單選練習（Q1–Q30）",
+        "figureMissing": true
       },
       {
         "id": "tm_67_q22",
@@ -55067,7 +55061,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_67_q55",
-        "figureMissing": true,
         "materialId": "tm_67",
         "questionNumber": "55",
         "type": "single_choice",
@@ -55086,7 +55079,8 @@ AHS.TeachingMaterialData = [
         "version": "1",
         "createdDate": "2026-10-10T06:20:05.296Z",
         "knowledgePoint": "C. 練習題答案速查",
-        "section": "C. 練習題答案速查"
+        "section": "C. 練習題答案速查",
+        "figureMissing": true
       },
       {
         "id": "tm_67_q56",
@@ -62578,8 +62572,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q8",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q8.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_87",
         "questionNumber": "8",
         "type": "single_choice",
@@ -62600,6 +62592,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "氣候溫和溼潤",
         "difficulty": "中",
         "section": "第一節 自然環境",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q8.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第4章 歐洲文明的發展與擴散 p.88 的內容命題，非課本原題）"
       },
       {
@@ -62628,8 +62622,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q10",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q10.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_87",
         "questionNumber": "10",
         "type": "single_choice",
@@ -62650,12 +62642,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "歐洲氣候類型",
         "difficulty": "中",
         "section": "第一節 自然環境",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q10.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第4章 歐洲文明的發展與擴散 p.90 的內容命題，非課本原題）"
       },
       {
         "id": "tm_87_q11",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q11.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_87",
         "questionNumber": "11",
         "type": "single_choice",
@@ -62676,6 +62668,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "歐洲氣候類型",
         "difficulty": "易",
         "section": "第一節 自然環境",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q11.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第4章 歐洲文明的發展與擴散 p.90 的內容命題，非課本原題）"
       },
       {
@@ -64130,8 +64124,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_87_q72",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q72.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_87",
         "questionNumber": "72",
         "type": "single_choice",
@@ -64152,6 +64144,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "西方文化與生活",
         "difficulty": "中",
         "section": "問題探究 西方文化圈的形成與特色",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_87/figures/tm_87_q72.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第4章 歐洲文明的發展與擴散 p.108 的內容命題，非課本原題）"
       },
       {
@@ -64719,8 +64713,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q18",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "18",
         "type": "single_choice",
@@ -64741,12 +64733,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "多樣的氣候",
         "difficulty": "難",
         "section": "第一節 環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.117 的內容命題，非課本原題）"
       },
       {
         "id": "tm_88_q19",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q19.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "19",
         "type": "single_choice",
@@ -64767,6 +64759,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "多樣的氣候",
         "difficulty": "中",
         "section": "第一節 環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q19.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.117 的內容命題，非課本原題）"
       },
       {
@@ -65038,8 +65032,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q31",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q31.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "31",
         "type": "single_choice",
@@ -65060,6 +65052,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "移民的國度",
         "difficulty": "中",
         "section": "第二節 多元族群共同塑造的文化特色",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q31.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.121 的內容命題，非課本原題）"
       },
       {
@@ -65136,8 +65130,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q35",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q35.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "35",
         "type": "single_choice",
@@ -65158,6 +65150,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "多元族群與文化",
         "difficulty": "難",
         "section": "第二節 多元族群共同塑造的文化特色",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q35.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.122 的內容命題，非課本原題）"
       },
       {
@@ -65187,8 +65181,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q37",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q37.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "37",
         "type": "single_choice",
@@ -65209,6 +65201,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "多元族群與文化",
         "difficulty": "中",
         "section": "第二節 多元族群共同塑造的文化特色",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q37.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.124 的內容命題，非課本原題）"
       },
       {
@@ -65334,8 +65328,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q43",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q43.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "43",
         "type": "single_choice",
@@ -65356,6 +65348,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "農產出口大國",
         "difficulty": "難",
         "section": "第三節 產業發展與都市文明",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q43.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.126 的內容命題，非課本原題）"
       },
       {
@@ -65579,7 +65573,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q53",
-        "figureMissing": true,
         "materialId": "tm_88",
         "questionNumber": "53",
         "type": "single_choice",
@@ -65600,6 +65593,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "知識經濟",
         "difficulty": "中",
         "section": "第三節 產業發展與都市文明",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.128 的內容命題，非課本原題）"
       },
       {
@@ -65748,8 +65742,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q60",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q60.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "60",
         "type": "single_choice",
@@ -65770,6 +65762,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "郊區化與大都會帶",
         "difficulty": "中",
         "section": "第三節 產業發展與都市文明",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q60.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.131 的內容命題，非課本原題）"
       },
       {
@@ -65798,8 +65792,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q62",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q62.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "62",
         "type": "single_choice",
@@ -65820,6 +65812,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "大都會帶",
         "difficulty": "中",
         "section": "第三節 產業發展與都市文明",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q62.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.132 的內容命題，非課本原題）"
       },
       {
@@ -65873,8 +65867,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_88_q65",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q65.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_88",
         "questionNumber": "65",
         "type": "single_choice",
@@ -65895,6 +65887,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "人才與體育大國",
         "difficulty": "中",
         "section": "問題探究 美國發展的前景與挑戰",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_88/figures/tm_88_q65.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第5章 超級強國的興起與挑戰─美國 p.135 的內容命題，非課本原題）"
       },
       {
@@ -66179,8 +66173,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q4",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q4.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "4",
         "type": "single_choice",
@@ -66201,6 +66193,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "布朗特線",
         "difficulty": "中",
         "section": "第一節 南方區域的環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q4.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.140 的內容命題，非課本原題）"
       },
       {
@@ -66254,8 +66248,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q7",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q7.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "7",
         "type": "single_choice",
@@ -66276,6 +66268,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "複雜的地形",
         "difficulty": "易",
         "section": "第一節 南方區域的環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q7.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.141 的內容命題，非課本原題）"
       },
       {
@@ -66377,7 +66371,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q12",
-        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "12",
         "type": "single_choice",
@@ -66398,6 +66391,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "複雜的地形",
         "difficulty": "中",
         "section": "第一節 南方區域的環境背景",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.142 的內容命題，非課本原題）"
       },
       {
@@ -66475,8 +66469,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q16",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q16.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "16",
         "type": "single_choice",
@@ -66497,12 +66489,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "多樣的氣候",
         "difficulty": "中",
         "section": "第一節 南方區域的環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q16.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.144 的內容命題，非課本原題）"
       },
       {
         "id": "tm_89_q17",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q17.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "17",
         "type": "single_choice",
@@ -66523,6 +66515,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "多樣的氣候",
         "difficulty": "中",
         "section": "第一節 南方區域的環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q17.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.144 的內容命題，非課本原題）"
       },
       {
@@ -66551,8 +66545,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q19",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q19.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "19",
         "type": "single_choice",
@@ -66573,12 +66565,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "高地氣候與垂直分布",
         "difficulty": "中",
         "section": "第一節 南方區域的環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q19.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.145 的內容命題，非課本原題）"
       },
       {
         "id": "tm_89_q20",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q20.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "20",
         "type": "single_choice",
@@ -66599,6 +66591,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "高地氣候與垂直分布",
         "difficulty": "中",
         "section": "第一節 南方區域的環境背景",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q20.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.145 的內容命題，非課本原題）"
       },
       {
@@ -66772,8 +66766,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q28",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q28.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "28",
         "type": "single_choice",
@@ -66795,12 +66787,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "三角貿易",
         "difficulty": "中",
         "section": "第二節 列強入侵與殖民影響",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q28.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.148 的內容命題，非課本原題）"
       },
       {
         "id": "tm_89_q29",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q29.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "29",
         "type": "single_choice",
@@ -66821,6 +66813,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "三角貿易",
         "difficulty": "難",
         "section": "第二節 列強入侵與殖民影響",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q29.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.148 的內容命題，非課本原題）"
       },
       {
@@ -67115,8 +67109,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q42",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q42.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "42",
         "type": "single_choice",
@@ -67138,6 +67130,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "殖民地式經濟",
         "difficulty": "中",
         "section": "第三節 殖民地式經濟與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q42.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.152 的內容命題，非課本原題）"
       },
       {
@@ -67214,7 +67208,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q46",
-        "figureMissing": true,
         "materialId": "tm_89",
         "questionNumber": "46",
         "type": "single_choice",
@@ -67235,6 +67228,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "依賴式經濟",
         "difficulty": "中",
         "section": "第三節 殖民地式經濟與發展",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.153 的內容命題，非課本原題）"
       },
       {
@@ -67263,8 +67257,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q48",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q48.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "48",
         "type": "single_choice",
@@ -67285,6 +67277,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "大地主制",
         "difficulty": "中",
         "section": "第三節 殖民地式經濟與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q48.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.154 的內容命題，非課本原題）"
       },
       {
@@ -67385,8 +67379,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q53",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q53.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "53",
         "type": "single_choice",
@@ -67407,12 +67399,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "區域發展不均",
         "difficulty": "中",
         "section": "第三節 殖民地式經濟與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q53.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.155 的內容命題，非課本原題）"
       },
       {
         "id": "tm_89_q54",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q54.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "54",
         "type": "single_choice",
@@ -67433,6 +67425,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "區域發展不均",
         "difficulty": "中",
         "section": "第三節 殖民地式經濟與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q54.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.155 的內容命題，非課本原題）"
       },
       {
@@ -67509,8 +67503,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q58",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q58.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "58",
         "type": "single_choice",
@@ -67531,6 +67523,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "轉型過程",
         "difficulty": "中",
         "section": "第三節 殖民地式經濟與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q58.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.156 的內容命題，非課本原題）"
       },
       {
@@ -67899,8 +67893,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_89_q74",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q74.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_89",
         "questionNumber": "74",
         "type": "single_choice",
@@ -67921,6 +67913,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "委內瑞拉的困境",
         "difficulty": "中",
         "section": "問題探究 南方區域現代發展的優勢與挑戰",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_89/figures/tm_89_q74.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第6章 南方區域的發展與挑戰 p.161 的內容命題，非課本原題）"
       },
       {
@@ -68086,8 +68080,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q4",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q4.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "4",
         "type": "single_choice",
@@ -68109,6 +68101,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "全球化的四大面向",
         "difficulty": "中",
         "section": "第一節 全球化的意義與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q4.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.164 的內容命題，非課本原題）"
       },
       {
@@ -68209,8 +68203,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q9",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q9.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "9",
         "type": "single_choice",
@@ -68231,6 +68223,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "發展條件差異",
         "difficulty": "易",
         "section": "第一節 全球化的意義與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q9.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.166 的內容命題，非課本原題）"
       },
       {
@@ -68284,8 +68278,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q12",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q12.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "12",
         "type": "single_choice",
@@ -68306,6 +68298,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "互通有無",
         "difficulty": "中",
         "section": "第一節 全球化的意義與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q12.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.167 的內容命題，非課本原題）"
       },
       {
@@ -68358,7 +68352,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q15",
-        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "15",
         "type": "single_choice",
@@ -68379,6 +68372,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "時空壓縮",
         "difficulty": "中",
         "section": "第一節 全球化的意義與發展",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.168 的內容命題，非課本原題）"
       },
       {
@@ -68432,8 +68426,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q18",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "18",
         "type": "single_choice",
@@ -68454,6 +68446,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "交通革新",
         "difficulty": "中",
         "section": "第一節 全球化的意義與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q18.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.169 的內容命題，非課本原題）"
       },
       {
@@ -68554,8 +68548,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q23",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q23.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "23",
         "type": "single_choice",
@@ -68576,6 +68568,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "全球在地化",
         "difficulty": "中",
         "section": "第一節 全球化的意義與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q23.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.171 的內容命題，非課本原題）"
       },
       {
@@ -68604,8 +68598,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q25",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q25.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "25",
         "type": "single_choice",
@@ -68626,6 +68618,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "全球在地化",
         "difficulty": "中",
         "section": "第一節 全球化的意義與發展",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q25.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.172 的內容命題，非課本原題）"
       },
       {
@@ -68726,7 +68720,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q30",
-        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "30",
         "type": "single_choice",
@@ -68748,12 +68741,11 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "垂直分工",
         "difficulty": "中",
         "section": "第二節 經濟地理空間重組",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.173 的內容命題，非課本原題）"
       },
       {
         "id": "tm_90_q31",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q31.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "31",
         "type": "single_choice",
@@ -68774,6 +68766,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "水平分工",
         "difficulty": "易",
         "section": "第二節 經濟地理空間重組",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q31.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.173 的內容命題，非課本原題）"
       },
       {
@@ -68803,7 +68797,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q33",
-        "figureMissing": true,
         "materialId": "tm_90",
         "questionNumber": "33",
         "type": "single_choice",
@@ -68824,6 +68817,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "商品行銷全球",
         "difficulty": "中",
         "section": "第二節 經濟地理空間重組",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.176 的內容命題，非課本原題）"
       },
       {
@@ -68900,8 +68894,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q37",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q37.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "37",
         "type": "single_choice",
@@ -68922,6 +68914,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "國際經濟落差變化",
         "difficulty": "中",
         "section": "第二節 經濟地理空間重組",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q37.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.178 的內容命題，非課本原題）"
       },
       {
@@ -69022,8 +69016,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q42",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q42.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "42",
         "type": "single_choice",
@@ -69044,12 +69036,12 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "貧富差距擴大",
         "difficulty": "中",
         "section": "第二節 經濟地理空間重組",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q42.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.179 的內容命題，非課本原題）"
       },
       {
         "id": "tm_90_q43",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q43.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "43",
         "type": "single_choice",
@@ -69070,6 +69062,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "貧富差距擴大",
         "difficulty": "中",
         "section": "第二節 經濟地理空間重組",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q43.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.179 的內容命題，非課本原題）"
       },
       {
@@ -69146,8 +69140,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q47",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q47.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "47",
         "type": "single_choice",
@@ -69168,6 +69160,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "世界都市",
         "difficulty": "中",
         "section": "第三節 世界都市",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q47.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.180 的內容命題，非課本原題）"
       },
       {
@@ -69366,8 +69360,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_90_q56",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q56.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_90",
         "questionNumber": "56",
         "type": "single_choice",
@@ -69388,6 +69380,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "被關閉的美國工廠",
         "difficulty": "中",
         "section": "問題探究 全球化的貢獻與挑戰—美國工廠",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_90/figures/tm_90_q56.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依竹圍高中高二地理課本 第7章 全球化 p.185 的內容命題，非課本原題）"
       },
       {
@@ -75140,8 +75134,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_97_q9",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_97/figures/tm_97_q9.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_97",
         "questionNumber": "9",
         "type": "single_choice",
@@ -75162,6 +75154,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "第八課題解",
         "difficulty": "中",
         "section": "第八課 祖靈遺忘的孩子（題解、作者）",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_97/figures/tm_97_q9.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依長榮高中高二國文課本 第八課 祖靈遺忘的孩子（題解、作者） p.126 的內容命題，非課本原題）"
       },
       {
@@ -76008,8 +76002,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_99_q3",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_99/figures/tm_99_q3.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_99",
         "questionNumber": "3",
         "type": "single_choice",
@@ -76030,6 +76022,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 課文理解",
         "difficulty": "中",
         "section": "Lesson 5 Kyoto: The Heart of Japan",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_99/figures/tm_99_q3.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依長榮高中高二英文課本 Lesson 5 Kyoto: The Heart of Japan p.107 的內容命題，非課本原題）"
       },
       {
@@ -76108,7 +76102,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_99_q7",
-        "figureMissing": true,
         "materialId": "tm_99",
         "questionNumber": "7",
         "type": "single_choice",
@@ -76129,6 +76122,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L5 課文理解",
         "difficulty": "中",
         "section": "Lesson 5 Kyoto: The Heart of Japan",
+        "figureMissing": true,
         "reference": "AI 自編（依長榮高中高二英文課本 Lesson 5 Kyoto: The Heart of Japan p.111 的內容命題，非課本原題）"
       },
       {
@@ -76817,7 +76811,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_100_q13",
-        "figureMissing": true,
         "materialId": "tm_100",
         "questionNumber": "13",
         "type": "single_choice",
@@ -76838,6 +76831,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "L6 背景與寫作鉤子",
         "difficulty": "中",
         "section": "Lesson 6 The Country of the Blind",
+        "figureMissing": true,
         "reference": "AI 自編（依長榮高中高二英文課本 Lesson 6 The Country of the Blind p.134 的內容命題，非課本原題）"
       },
       {
@@ -87407,11 +87401,10 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_109_q13",
-        "figureMissing": true,
         "materialId": "tm_109",
         "questionNumber": "13",
         "type": "single_choice",
-        "question": "圖3-4 的口罩例子中，政府在疫情爆發後限制價格並實施實名制，這屬於什麼？",
+        "question": "課本口罩的例子中，政府在疫情爆發後限制價格並實施實名制，這屬於什麼？",
         "options": [
           "看得見的手：政府管制",
           "廠商聯合行為",
@@ -87893,7 +87886,6 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_109",
         "questionNumber": "33",
         "type": "single_choice",
-        "figureSvg": "<svg viewBox=\"0 0 300 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><line x1=\"70\" y1=\"40\" x2=\"250\" y2=\"190\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"252\" y=\"188\" font-size=\"13\" fill=\"#2563eb\">D 需求線</text><line x1=\"70\" y1=\"190\" x2=\"250\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"252\" y=\"45\" font-size=\"13\" fill=\"#dc2626\">S 供給線</text><line x1=\"50\" y1=\"115\" x2=\"160\" y2=\"115\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><circle cx=\"160\" cy=\"115\" r=\"3\" fill=\"#333\"/><text x=\"8\" y=\"119\" font-size=\"12\">市場價格</text><text x=\"150\" y=\"216\" font-size=\"12\">Q*</text></svg>",
         "question": "圖形上，消費者剩餘是哪一塊區域？",
         "options": [
           "需求線以下、市場價格以上",
@@ -87911,6 +87903,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "消費者剩餘",
         "difficulty": "易",
         "section": "3-3 市場機能與經濟效率",
+        "figureSvg": "<svg viewBox=\"0 0 300 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><line x1=\"70\" y1=\"40\" x2=\"250\" y2=\"190\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"252\" y=\"188\" font-size=\"13\" fill=\"#2563eb\">D 需求線</text><line x1=\"70\" y1=\"190\" x2=\"250\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"252\" y=\"45\" font-size=\"13\" fill=\"#dc2626\">S 供給線</text><line x1=\"50\" y1=\"115\" x2=\"160\" y2=\"115\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><circle cx=\"160\" cy=\"115\" r=\"3\" fill=\"#333\"/><text x=\"8\" y=\"119\" font-size=\"12\">市場價格</text><text x=\"150\" y=\"216\" font-size=\"12\">Q*</text></svg>",
         "reference": "AI 自編（依長榮高中高二公民與社會課本 p.74 的內容命題，非課本原題）"
       },
       {
@@ -87918,7 +87911,6 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_109",
         "questionNumber": "34",
         "type": "single_choice",
-        "figureSvg": "<svg viewBox=\"0 0 300 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><line x1=\"70\" y1=\"40\" x2=\"250\" y2=\"190\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"252\" y=\"188\" font-size=\"13\" fill=\"#2563eb\">D 需求線</text><line x1=\"70\" y1=\"190\" x2=\"250\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"252\" y=\"45\" font-size=\"13\" fill=\"#dc2626\">S 供給線</text><line x1=\"50\" y1=\"115\" x2=\"160\" y2=\"115\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><circle cx=\"160\" cy=\"115\" r=\"3\" fill=\"#333\"/><text x=\"8\" y=\"119\" font-size=\"12\">市場價格</text><text x=\"150\" y=\"216\" font-size=\"12\">Q*</text></svg>",
         "question": "圖形上，生產者剩餘是哪一塊區域？",
         "options": [
           "供給線以下、市場價格以上",
@@ -87936,6 +87928,7 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "生產者剩餘",
         "difficulty": "易",
         "section": "3-3 市場機能與經濟效率",
+        "figureSvg": "<svg viewBox=\"0 0 300 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><line x1=\"70\" y1=\"40\" x2=\"250\" y2=\"190\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"252\" y=\"188\" font-size=\"13\" fill=\"#2563eb\">D 需求線</text><line x1=\"70\" y1=\"190\" x2=\"250\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"252\" y=\"45\" font-size=\"13\" fill=\"#dc2626\">S 供給線</text><line x1=\"50\" y1=\"115\" x2=\"160\" y2=\"115\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><circle cx=\"160\" cy=\"115\" r=\"3\" fill=\"#333\"/><text x=\"8\" y=\"119\" font-size=\"12\">市場價格</text><text x=\"150\" y=\"216\" font-size=\"12\">Q*</text></svg>",
         "reference": "AI 自編（依長榮高中高二公民與社會課本 p.75 的內容命題，非課本原題）"
       },
       {
@@ -88561,7 +88554,6 @@ AHS.TeachingMaterialData = [
         "materialId": "tm_110",
         "questionNumber": "11",
         "type": "single_choice",
-        "figureSvg": "<svg viewBox=\"0 0 320 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><polygon points=\"50,40 120,80 120,120 50,120\" fill=\"#bfdbfe\"/><polygon points=\"50,160 50,120 120,120\" fill=\"#fecaca\"/><polygon points=\"120,80 155,100 120,120\" fill=\"#e5e7eb\"/><line x1=\"50\" y1=\"40\" x2=\"260\" y2=\"160\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"262\" y=\"164\" font-size=\"12\" fill=\"#2563eb\">D</text><line x1=\"50\" y1=\"160\" x2=\"260\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"262\" y=\"44\" font-size=\"12\" fill=\"#dc2626\">S</text><line x1=\"50\" y1=\"120\" x2=\"240\" y2=\"120\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"6 3\"/><text x=\"243\" y=\"124\" font-size=\"11\">價格上限 40</text><line x1=\"120\" y1=\"80\" x2=\"120\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"155\" y1=\"100\" x2=\"155\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><text x=\"24\" y=\"44\" font-size=\"11\">80</text><text x=\"24\" y=\"104\" font-size=\"11\">50</text><text x=\"24\" y=\"164\" font-size=\"11\">20</text><text x=\"112\" y=\"216\" font-size=\"11\">200</text><text x=\"147\" y=\"216\" font-size=\"11\">300</text><text x=\"190\" y=\"226\" font-size=\"11\">（萬斤）</text><text x=\"75\" y=\"105\" font-size=\"14\" font-weight=\"bold\">H</text><text x=\"62\" y=\"137\" font-size=\"14\" font-weight=\"bold\">I</text><text x=\"127\" y=\"105\" font-size=\"12\" font-weight=\"bold\">J</text></svg>",
         "question": "限價後，如果盡可能讓願付價格最高的消費者買到雞蛋，消費者剩餘是圖形的哪一塊？",
         "options": [
           "整個需求線以下的區域",
@@ -88579,15 +88571,14 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "價格上限",
         "difficulty": "中",
         "section": "4-1 價格管制與經濟效率",
+        "figureSvg": "<svg viewBox=\"0 0 320 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><polygon points=\"50,40 120,80 120,120 50,120\" fill=\"#bfdbfe\"/><polygon points=\"50,160 50,120 120,120\" fill=\"#fecaca\"/><polygon points=\"120,80 155,100 120,120\" fill=\"#e5e7eb\"/><line x1=\"50\" y1=\"40\" x2=\"260\" y2=\"160\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"262\" y=\"164\" font-size=\"12\" fill=\"#2563eb\">D</text><line x1=\"50\" y1=\"160\" x2=\"260\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"262\" y=\"44\" font-size=\"12\" fill=\"#dc2626\">S</text><line x1=\"50\" y1=\"120\" x2=\"240\" y2=\"120\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"6 3\"/><text x=\"243\" y=\"124\" font-size=\"11\">價格上限 40</text><line x1=\"120\" y1=\"80\" x2=\"120\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"155\" y1=\"100\" x2=\"155\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><text x=\"24\" y=\"44\" font-size=\"11\">80</text><text x=\"24\" y=\"104\" font-size=\"11\">50</text><text x=\"24\" y=\"164\" font-size=\"11\">20</text><text x=\"112\" y=\"216\" font-size=\"11\">200</text><text x=\"147\" y=\"216\" font-size=\"11\">300</text><text x=\"190\" y=\"226\" font-size=\"11\">（萬斤）</text><text x=\"75\" y=\"105\" font-size=\"14\" font-weight=\"bold\">H</text><text x=\"62\" y=\"137\" font-size=\"14\" font-weight=\"bold\">I</text><text x=\"127\" y=\"105\" font-size=\"12\" font-weight=\"bold\">J</text></svg>",
         "reference": "AI 自編（依長榮高中高二公民與社會課本 p.86 的內容命題，非課本原題）"
       },
       {
         "id": "tm_110_q12",
-        "figureMissing": true,
         "materialId": "tm_110",
         "questionNumber": "12",
         "type": "single_choice",
-        "figureSvg": "<svg viewBox=\"0 0 320 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><polygon points=\"50,40 120,80 120,120 50,120\" fill=\"#bfdbfe\"/><polygon points=\"50,160 50,120 120,120\" fill=\"#fecaca\"/><polygon points=\"120,80 155,100 120,120\" fill=\"#e5e7eb\"/><line x1=\"50\" y1=\"40\" x2=\"260\" y2=\"160\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"262\" y=\"164\" font-size=\"12\" fill=\"#2563eb\">D</text><line x1=\"50\" y1=\"160\" x2=\"260\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"262\" y=\"44\" font-size=\"12\" fill=\"#dc2626\">S</text><line x1=\"50\" y1=\"120\" x2=\"240\" y2=\"120\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"6 3\"/><text x=\"243\" y=\"124\" font-size=\"11\">價格上限 40</text><line x1=\"120\" y1=\"80\" x2=\"120\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"155\" y1=\"100\" x2=\"155\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><text x=\"24\" y=\"44\" font-size=\"11\">80</text><text x=\"24\" y=\"104\" font-size=\"11\">50</text><text x=\"24\" y=\"164\" font-size=\"11\">20</text><text x=\"112\" y=\"216\" font-size=\"11\">200</text><text x=\"147\" y=\"216\" font-size=\"11\">300</text><text x=\"190\" y=\"226\" font-size=\"11\">（萬斤）</text><text x=\"75\" y=\"105\" font-size=\"14\" font-weight=\"bold\">H</text><text x=\"62\" y=\"137\" font-size=\"14\" font-weight=\"bold\">I</text><text x=\"127\" y=\"105\" font-size=\"12\" font-weight=\"bold\">J</text></svg>",
         "question": "圖4-3 中，限價前的生產者剩餘 F 變成限價後的 I。這表示生產者如何？",
         "options": [
           "剩餘增加，願意多生產",
@@ -88605,6 +88596,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "價格上限",
         "difficulty": "中",
         "section": "4-1 價格管制與經濟效率",
+        "figureSvg": "<svg viewBox=\"0 0 320 230\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\"><line x1=\"50\" y1=\"200\" x2=\"50\" y2=\"30\" stroke=\"#333\" stroke-width=\"2\"/><line x1=\"50\" y1=\"200\" x2=\"275\" y2=\"200\" stroke=\"#333\" stroke-width=\"2\"/><text x=\"40\" y=\"28\" font-size=\"13\">P</text><text x=\"278\" y=\"205\" font-size=\"13\">Q</text><polygon points=\"50,40 120,80 120,120 50,120\" fill=\"#bfdbfe\"/><polygon points=\"50,160 50,120 120,120\" fill=\"#fecaca\"/><polygon points=\"120,80 155,100 120,120\" fill=\"#e5e7eb\"/><line x1=\"50\" y1=\"40\" x2=\"260\" y2=\"160\" stroke=\"#2563eb\" stroke-width=\"2\"/><text x=\"262\" y=\"164\" font-size=\"12\" fill=\"#2563eb\">D</text><line x1=\"50\" y1=\"160\" x2=\"260\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"262\" y=\"44\" font-size=\"12\" fill=\"#dc2626\">S</text><line x1=\"50\" y1=\"120\" x2=\"240\" y2=\"120\" stroke=\"#111\" stroke-width=\"1.5\" stroke-dasharray=\"6 3\"/><text x=\"243\" y=\"124\" font-size=\"11\">價格上限 40</text><line x1=\"120\" y1=\"80\" x2=\"120\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><line x1=\"155\" y1=\"100\" x2=\"155\" y2=\"200\" stroke=\"#666\" stroke-dasharray=\"4 3\"/><text x=\"24\" y=\"44\" font-size=\"11\">80</text><text x=\"24\" y=\"104\" font-size=\"11\">50</text><text x=\"24\" y=\"164\" font-size=\"11\">20</text><text x=\"112\" y=\"216\" font-size=\"11\">200</text><text x=\"147\" y=\"216\" font-size=\"11\">300</text><text x=\"190\" y=\"226\" font-size=\"11\">（萬斤）</text><text x=\"75\" y=\"105\" font-size=\"14\" font-weight=\"bold\">H</text><text x=\"62\" y=\"137\" font-size=\"14\" font-weight=\"bold\">I</text><text x=\"127\" y=\"105\" font-size=\"12\" font-weight=\"bold\">J</text></svg>",
+        "figureMissing": true,
         "reference": "AI 自編（依長榮高中高二公民與社會課本 p.86 的內容命題，非課本原題）"
       },
       {
@@ -89042,11 +89035,10 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_110_q31",
-        "figureMissing": true,
         "materialId": "tm_110",
         "questionNumber": "31",
         "type": "single_choice",
-        "question": "2011 年三大乳品業者一起調漲鮮乳價格。依課本圖4-9，公平會的認定重點是？",
+        "question": "2011 年三大乳品業者一起調漲鮮乳價格。公平會的認定重點是？",
         "options": [
           "消費者提出抗議",
           "三家都是上市公司",
@@ -89790,8 +89782,6 @@ AHS.TeachingMaterialData = [
       },
       {
         "id": "tm_110_q62",
-        "figureMissing": true,
-        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_110/figures/tm_110_q62.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
         "materialId": "tm_110",
         "questionNumber": "62",
         "type": "single_choice",
@@ -89812,6 +89802,8 @@ AHS.TeachingMaterialData = [
         "knowledgePoint": "課稅或補貼",
         "difficulty": "易",
         "section": "4-3 外部效果的因應",
+        "figureSvg": "<img class=\"q-figure-img\" src=\"docs/TeachingMaterials/materials/tm_110/figures/tm_110_q62.jpg\" alt=\"附圖（取自原課本，自動裁切）\" loading=\"lazy\">",
+        "figureMissing": true,
         "reference": "AI 自編（依長榮高中高二公民與社會課本 p.106 的內容命題，非課本原題）"
       },
       {
