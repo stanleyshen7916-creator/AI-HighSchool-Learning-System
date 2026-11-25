@@ -183,5 +183,37 @@ console.log("\n[6] 2026-10-27 依段考結構出題、配分與選填題");
   AHS.MonthExamBlueprint = null;
 }
 
+console.log("\n[QB3] 優先抽沒出過的題目（2026-11-25）");
+{
+  delete mem["monthexam:history"]; delete mem["monthexam:active"];
+  const tq = 1e12;
+  const p1 = RT.start("化學", ["tm_91"], { now: tq });
+  const r1 = RT.submit({ now: tq + 1 });
+  const first = new Set(r1.rows.map((x) => x.qid));
+  const p2 = RT.buildPaper("化學", ["tm_91"]);
+  const unseen = p2.questions.filter((x) => !first.has(x.id)).length;
+  check("第二份先收完沒出過的 20 題，不足的 30 題才從出過的補", p1.items.length === 50 && unseen === 20 && p2.questions.length === 50);
+  const ids = new Set(p2.questions.map((x) => x.id));
+  check("同一份考卷內沒有重複題目", ids.size === p2.questions.length);
+  const other = RT.buildPaper("數學", ["tm_90"]);
+  check("別科的交卷紀錄不影響本科抽題", other.questions.length > 0 && other.questions.every((x) => !first.has(x.id)));
+  delete mem["monthexam:history"];
+  const a1 = RT.buildPaper("化學", ["tm_91"]).questions.map((x) => x.id).join();
+  const a2 = RT.buildPaper("化學", ["tm_91"]).questions.map((x) => x.id).join();
+  check("沒有交卷紀錄時維持原本的隨機抽題", a1 !== a2);
+}
+{
+  AHS.MonthExamBlueprint = { blueprints: { "zwsh|g2s1": { "化學": { source: "t", sections: [
+    { title: "單選題", kind: "single", count: 4, points: 5 },
+    { title: "選填題", kind: "fill", count: 10, points: 5 } ] } } } };
+  const bp = RT.buildPaper("化學", ["tm_91"]);
+  const fillSec = bp.sections[1];
+  check("選填題不足時以單選題補足（B 方案）", bp.questions.length === 14 && fillSec.count === 10 && fillSec.topUp === 10 &&
+    /以單選題補 10 題/.test(fillSec.title));
+  const ids = new Set(bp.questions.map((x) => x.id));
+  check("補題不與單選部分重複", ids.size === 14);
+  AHS.MonthExamBlueprint = null;
+}
+
 console.log("\nMonthExamRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);
