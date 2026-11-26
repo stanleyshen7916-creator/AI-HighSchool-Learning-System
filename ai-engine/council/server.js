@@ -20,6 +20,8 @@ const { createGitPublishQueue } = require('./platform/GitPublishQueue');
 const { createWrongBookNotesJob } = require('./platform/WrongBookNotesJob');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
+const localWriter = require('./services/localWriter');
+const draftReview = require('./services/draftReview');
 const figureCards = require('./services/figureCards');
 const figureRecheck = require('./services/figureRecheck');
 const pdfTextQuality = require('./services/pdfTextQuality');
@@ -423,7 +425,7 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     `category: ${safeCategory}`,
     `engine: ${safeEngine}`,
     `review_engine: ${REVIEW_ENGINE}`,
-    `ai_team: ${meta.team ?? 'GPT + Claude'}`,
+    `ai_team: ${meta.team ?? '本機模型 A + 本機模型 B'}`,
     `review_mode: ${meta.reviewMode ?? 'Independent → Cross Review → Adjudication'}`,
     `council_pipeline: ${meta.pipeline ?? 'Council Pipeline: SIMULATED'}`,
     `generated_at: ${generatedAt}`,
@@ -440,7 +442,7 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     `教材類別：${safeCategory}`,
     `AI 引擎：${safeEngine}`,
     `審查引擎：${REVIEW_ENGINE}`,
-    `產出 AI 團隊：${meta.team ?? 'GPT + Claude'}`,
+    `產出 AI 團隊：${meta.team ?? '本機模型 A + 本機模型 B'}`,
     `審查模式：${meta.reviewMode ?? 'Independent → Cross Review → Adjudication'}`,
     `審議管線：${meta.pipeline ?? 'Council Pipeline: SIMULATED'}`,
     '',
@@ -453,8 +455,8 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
   const phaseAudit = [
     '### 審查紀錄',
     '',
-    `Phase 1 獨立初稿自評：GPT ${phase1Scores.GPT ?? 'N/A'}/100；${phase1Scores.Gemini != null ? `Gemini ${phase1Scores.Gemini}/100；` : ''}Claude ${phase1Scores.Claude ?? 'N/A'}/100`,
-    'Phase 2 交叉比對修訂：GPT-Revised；Claude-Revised',
+    `Phase 1 獨立初稿自評：本機模型 A ${phase1Scores.LocalA ?? 'N/A'}/100；本機模型 B ${phase1Scores.LocalB ?? 'N/A'}/100`,
+    'Phase 2 交叉比對修訂：LocalA-Revised；LocalB-Revised',
     `Phase 3 首席審議裁決：Quality Gate ${meta.qualityGate ?? 'PENDING_MANUAL_REVIEW'}`,
     '',
     `Self-QA：${meta.finalScore ?? 'N/A'} / 100`,
@@ -496,21 +498,20 @@ const SYNC_ADJUDICATION_TIMEOUT_MS = 20000;
 
 function validateAssembleCouncilPayload(body) {
   const { school, grade, subject, unit, category, sourceText, sourceRef, drafts } = body || {};
-  const chatgpt = drafts?.chatgpt;
-  const gemini = drafts?.gemini;
-  const claude = drafts?.claude;
+  // 2026-11-26 AHS-A3：兩份初稿都由本機模型撰寫（localA、localB）。舊前端／舊資料的 chatgpt、claude 欄位依序對應 A、B，Gemini 不再使用。
+  const localA = drafts?.localA ?? drafts?.chatgpt;
+  const localB = drafts?.localB ?? drafts?.claude;
 
   if (!school || !grade || !subject || !unit || !category) {
     return { error: 'school, grade, subject, unit, category 為必填欄位' };
   }
-  // 2026-11-16：初稿改為 ChatGPT＋Claude 雙方；Gemini 為選填（舊資料／舊前端仍可送三方）。
-  if (!chatgpt?.trim() || !claude?.trim()) {
-    return { error: '請提供 ChatGPT (Web)、Claude (Web) 雙方初稿內容' };
+  if (!localA?.trim() || !localB?.trim()) {
+    return { error: '請提供本機模型 A、B 兩份初稿內容' };
   }
 
   return {
     metadata: { school, grade, subject, unit, category },
-    drafts: gemini?.trim() ? { chatgpt, gemini, claude } : { chatgpt, claude },
+    drafts: { localA, localB },
     sourceText: sourceText || '',
     sourceRef: sourceRef || null,
   };
@@ -546,8 +547,8 @@ async function runAssembleCouncil({ metadata, drafts, sourceText, sourceRef }, {
   // P0-05 Provenance：每一次 assemble-council 都必須留下可追溯的 claim-level
   // adjudication record，不得只有 Final.md 而沒有可查核的裁決過程。
   fs.writeFileSync(adjudicationOutputsPath, JSON.stringify(council.adjudicationRecord, null, 2), 'utf8');
-  // 2026-10-06：保存這次的三方初稿。審議結果不理想或題目遺失時，可在上傳頁「使用既有的
-  // Final.md」直接載回三方初稿重跑，不必重貼三家；建立教材包時也一併放進 source/。
+  // 2026-10-06：保存這次的初稿（2026-11-26 起為本機模型 A、B 兩份）。審議結果不理想或題目遺失時，可在上傳頁
+  // 「使用既有的 Final.md」直接載回初稿重跑，不必重新產生；建立教材包時也一併放進 source/。
   fs.writeFileSync(path.join(OUTPUTS_DIR, `${filename}.drafts.json`), JSON.stringify({
     savedAt: new Date().toISOString(), runId, metadata, sourceRef: sourceRef || null, drafts,
     // 2026-10-14：一併保存教材本文，標準答案集（goldSet）記錄裁決時需要當時的本文快照。
@@ -1143,7 +1144,7 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
   }
 });
 
-// 2026-10-14 原文辨識協助包：找出 OCR 看不清楚的照片，只列出那些檔名給 ChatGPT／Claude 網頁版轉錄（2026-11-16 Gemini→Claude）。
+// 2026-10-14 原文辨識協助包：找出 OCR 看不清楚的照片。2026-11-26 AHS-A3 起由本機視覺模型轉錄（POST /api/local-ai/jobs kind=transcribe），不再交給網頁版 AI。
 // 單一檔案上傳的教材本文沒有檔案標記，此時以 filename 當作整份本文的檔名。
 function withFileMarker(sourceText, filename) {
   const text = String(sourceText || '');
@@ -1163,15 +1164,81 @@ app.post('/api/ocr-help/check', async (req, res) => {
   }
 });
 
-// 貼回 ChatGPT 與 Claude 的轉錄（Claude 的轉錄沿用 gemini 欄位，也接受 claude 欄位），逐句三方比對後回傳更正後的教材本文與待選定的衝突。
+// 本機視覺模型的轉錄（local；舊前端的 gpt／gemini／claude 欄位仍接受）與 OCR 逐句比對，回傳更正後的教材本文與待選定的衝突。
 app.post('/api/ocr-help/merge', (req, res) => {
-  const { sourceText, gpt, filename } = req.body || {};
-  const gemini = req.body?.claude || req.body?.gemini;
-  if (!sourceText || (!gpt && !gemini)) return res.status(400).json({ error: '需要教材本文與至少一份轉錄' });
+  const { sourceText, filename } = req.body || {};
+  const local = req.body?.local || req.body?.gpt || '';
+  const second = req.body?.second || req.body?.claude || req.body?.gemini || '';
+  if (!sourceText || (!local && !second)) return res.status(400).json({ error: '需要教材本文與至少一份轉錄' });
   const text = withFileMarker(sourceText, filename);
-  const result = ocrHelp.mergeTranscriptions(text, gpt || '', gemini || '');
+  const result = ocrHelp.mergeTranscriptions(text, local, second);
   if (text !== String(sourceText)) result.text = ocrHelp.stripMarkers(result.text);
   return res.status(200).json(result);
+});
+
+// ---- 2026-11-26 AHS-A3 本機模型工作（services/localWriter.js）--------------------------------------
+// 全部走本機 Ollama，不呼叫任何外部 AI。一次只跑一個工作（本機只能載入一個模型），其餘排隊。
+//   kind=drafts      { prompt }               本機模型 A、B 各寫一份初稿 → { localA, localB, models }
+//   kind=author      { prompt }               補題：本機模型 A 出題 → { text, model }
+//   kind=solve       { prompt }               補題：本機模型 B 獨立作答 → { text, model }
+//   kind=transcribe  { sessionId, files[] }   原文辨識協助包：本機視覺模型轉錄 → { text, failed, model }
+const localJobs = new Map();
+let localQueue = Promise.resolve();
+
+function transcribePagesFor(sessionId, files) {
+  const sessionDir = assertInsideDir(UPLOAD_SESSIONS_DIR, path.join(UPLOAD_SESSIONS_DIR, safeSlug(String(sessionId))));
+  return files.map((name) => {
+    const p = assertInsideDir(sessionDir, path.join(sessionDir, path.basename(String(name))));
+    if (!fs.existsSync(p)) throw new Error(`找不到上傳的原始檔：${name}`);
+    if (!/\.(png|jpe?g|webp|bmp|gif)$/i.test(p)) throw new Error(`本機轉錄只支援照片檔：${name}`);
+    return { name: path.basename(String(name)), buffer: fs.readFileSync(p) };
+  });
+}
+
+async function runLocalJob(job, body) {
+  if (body.kind === 'drafts') {
+    job.step = 'A';
+    const a = await localWriter.writeDraft(body.prompt, 'A');
+    job.step = 'B';
+    const b = await localWriter.writeDraft(body.prompt, 'B');
+    return { localA: a.text, localB: b.text, models: { localA: a.model, localB: b.model } };
+  }
+  if (body.kind === 'author') return localWriter.writeDraft(body.prompt, 'A');
+  if (body.kind === 'solve') return localWriter.writeDraft(body.prompt, 'B');
+  return localWriter.transcribe(transcribePagesFor(body.sessionId, body.files), {
+    onProgress: (done, total) => { job.step = `${done}/${total}`; },
+  });
+}
+
+app.post('/api/local-ai/jobs', (req, res) => {
+  const body = req.body || {};
+  if (['drafts', 'author', 'solve'].indexOf(body.kind) >= 0 && !String(body.prompt || '').trim()) return res.status(400).json({ error: '缺少 Prompt' });
+  if (body.kind === 'transcribe') {
+    if (!body.sessionId || !Array.isArray(body.files) || !body.files.length) return res.status(400).json({ error: '缺少上傳識別碼或要轉錄的檔名' });
+    try { transcribePagesFor(body.sessionId, body.files); } catch (error) { return res.status(400).json({ error: error.message }); }
+  } else if (['drafts', 'author', 'solve'].indexOf(body.kind) < 0) {
+    return res.status(400).json({ error: 'kind 必須是 drafts、author、solve 或 transcribe' });
+  }
+  const job = { jobId: crypto.randomUUID(), kind: body.kind, status: 'queued', step: null, createdAt: new Date().toISOString(), result: null, error: null };
+  localJobs.set(job.jobId, job);
+  localQueue = localQueue.then(async () => {
+    job.status = 'running';
+    try {
+      job.result = await runLocalJob(job, body);
+      job.status = 'completed';
+    } catch (error) {
+      job.error = error.message || String(error);
+      job.status = 'failed';
+    }
+    job.updatedAt = new Date().toISOString();
+  });
+  return res.status(202).json({ jobId: job.jobId, status: job.status });
+});
+
+app.get('/api/local-ai/jobs/:jobId', (req, res) => {
+  const job = localJobs.get(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'job 不存在' });
+  return res.status(200).json(job);
 });
 
 // ---- 學習平台整合（2026-09-29）----------------------------------------------
@@ -1347,6 +1414,91 @@ app.post('/api/finals/:filename/practice-review', (req, res) => {
     claimsConfirmed: claimResult.confirmed.length, claimsRemoved: claimResult.removed.length,
     claimsPending: record.claimReview ? record.claimReview.pending.length : 0,
   });
+});
+
+// ---- 2026-11-26 AHS-A3 Claude 最後檢核（services/draftReview.js）------------------------------------
+// GET  產生檢核包：程式逐句對照 SOURCE（不耗 token）的標記＋要貼到 Claude 網頁版的 Prompt。
+// POST { reply } 貼回 Claude 的判定：通過 → passed；需修正且修正未滿 2 輪 → needs_revision；滿 2 輪 → needs_human（需人工處理）。
+// POST .../revise 由本機模型 A 只修正被指出的句子，換回 Final.md（備份 .orig），修正輪數 +1，之後再檢核一次。
+function finalCheckContext(filename) {
+  const finalPath = finalPathFor(filename);
+  const recordPath = assertInsideDir(OUTPUTS_DIR, path.join(OUTPUTS_DIR, `${path.basename(finalPath)}.adjudication.json`));
+  const record = fs.existsSync(recordPath) ? JSON.parse(fs.readFileSync(recordPath, 'utf8')) : {};
+  const draftsPath = `${finalPath}.drafts.json`;
+  const saved = fs.existsSync(draftsPath) ? JSON.parse(fs.readFileSync(draftsPath, 'utf8')) : {};
+  const content = fs.readFileSync(finalPath, 'utf8');
+  const check = draftReview.checkUnits(content, saved.sourceText || '');
+  const state = record.finalCheck || { status: 'pending', revisionsDone: 0, rounds: [] };
+  const pendingCount = ((record.practice && record.practice.pending) || []).length + ((record.claimReview && record.claimReview.pending) || []).length;
+  return { finalPath, recordPath, record, saved, content, check, state, pendingCount };
+}
+
+function saveFinalCheck(ctx, state) {
+  ctx.record.finalCheck = state;
+  fs.writeFileSync(ctx.recordPath, JSON.stringify(ctx.record, null, 2), 'utf8');
+  const catalog = readCatalog();
+  const entry = catalog.items.find((item) => item.filename === path.basename(ctx.finalPath));
+  if (entry) {
+    entry.final_check = state.status;
+    if (state.status === 'needs_human') entry.qualityGate = 'PENDING_MANUAL_REVIEW';
+    fs.writeFileSync(CATALOG_PATH, JSON.stringify(catalog, null, 2), 'utf8');
+  }
+}
+
+app.get('/api/finals/:filename/final-check', (req, res) => {
+  let ctx;
+  try { ctx = finalCheckContext(req.params.filename); } catch (error) { return res.status(404).json({ error: error.message }); }
+  const { frontmatter } = parseFrontmatter(ctx.content);
+  return res.status(200).json({
+    status: ctx.state.status, revisionsDone: ctx.state.revisionsDone, maxRevisions: draftReview.MAX_REVISION_ROUNDS,
+    units: ctx.check.units.length, flagged: ctx.check.flagged, pendingCount: ctx.pendingCount,
+    flags: ctx.check.units.filter((u) => u.flags.length).map((u) => ({ id: u.id, section: u.section, text: u.text, flags: u.flags })),
+    prompt: draftReview.buildFinalCheckPrompt({ metadata: frontmatter, sourceText: ctx.saved.sourceText, units: ctx.check.units, round: ctx.state.rounds.length + 1, pendingCount: ctx.pendingCount }),
+  });
+});
+
+app.post('/api/finals/:filename/final-check', (req, res) => {
+  let ctx;
+  try { ctx = finalCheckContext(req.params.filename); } catch (error) { return res.status(404).json({ error: error.message }); }
+  if (ctx.state.status === 'passed' || ctx.state.status === 'needs_human') return res.status(409).json({ error: `這份定稿的最後檢核已結束（${ctx.state.status}）` });
+  let parsed;
+  try { parsed = draftReview.parseFinalCheck(req.body && req.body.reply, ctx.check.units); } catch (error) { return res.status(400).json({ error: error.message }); }
+  const status = draftReview.nextStatus(parsed.verdict, ctx.state.revisionsDone);
+  const state = {
+    status, revisionsDone: ctx.state.revisionsDone,
+    rounds: ctx.state.rounds.concat([{ at: new Date().toISOString(), verdict: parsed.verdict, issues: parsed.issues.map((x) => Object.assign({ text: (ctx.check.units.find((u) => u.id === x.id) || {}).text }, x)) }]),
+  };
+  saveFinalCheck(ctx, state);
+  return res.status(200).json({ status, revisionsDone: state.revisionsDone, maxRevisions: draftReview.MAX_REVISION_ROUNDS, issues: parsed.issues });
+});
+
+const reviseRunning = new Set();
+app.post('/api/finals/:filename/final-check/revise', async (req, res) => {
+  let ctx;
+  try { ctx = finalCheckContext(req.params.filename); } catch (error) { return res.status(404).json({ error: error.message }); }
+  if (ctx.state.status !== 'needs_revision') return res.status(409).json({ error: '目前沒有需要修正的檢核意見' });
+  const last = ctx.state.rounds[ctx.state.rounds.length - 1];
+  const issues = last.issues.filter((x) => ctx.content.indexOf(x.text) >= 0);
+  if (reviseRunning.has(ctx.finalPath)) return res.status(409).json({ error: '這份定稿正在修正中' });
+  reviseRunning.add(ctx.finalPath);
+  try {
+    const units = ctx.check.units.filter((u) => issues.some((x) => x.text === u.text));
+    const idOf = (x) => (units.find((u) => u.text === x.text) || {}).id;
+    const current = issues.map((x) => ({ id: idOf(x), comment: x.comment })).filter((x) => x.id);
+    const revision = await localWriter.revise(draftReview.buildRevisionPrompt({ sourceText: ctx.saved.sourceText, units, issues: current }));
+    const applied = draftReview.applyRevisions(ctx.content, units, revision.text, current.map((x) => x.id));
+    const backup = `${ctx.finalPath}.orig`;
+    if (!fs.existsSync(backup)) fs.copyFileSync(ctx.finalPath, backup);
+    fs.writeFileSync(ctx.finalPath, applied.markdown, 'utf8');
+    const state = Object.assign({}, ctx.state, { status: 'pending', revisionsDone: ctx.state.revisionsDone + 1 });
+    state.rounds[state.rounds.length - 1].revision = { model: revision.model, applied: applied.applied, skipped: applied.skipped };
+    saveFinalCheck(ctx, state);
+    return res.status(200).json({ status: state.status, revisionsDone: state.revisionsDone, applied: applied.applied, skipped: applied.skipped, content: applied.markdown });
+  } catch (error) {
+    return res.status(500).json({ error: `本機模型修正失敗：${error.message}` });
+  } finally {
+    reviseRunning.delete(ctx.finalPath);
+  }
 });
 
 // 2026-10-14（⑥）：送 Claude 最終審查的比例，以及標準答案集（⑤）累積的筆數。

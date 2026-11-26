@@ -28,12 +28,12 @@ function fakeModel(answers) {
 }
 
 describe('practiceAdjudicator', () => {
-  test('格式、三方比對、Qwen 獨立作答依序判斷', async () => {
+  test('格式、雙方比對、Qwen 獨立作答依序判斷', async () => {
     const r = await adjudicatePractice(drafts, SOURCE, fakeModel({ '弧長為何': 'B', 'θ 的單位': 'C' }));
     expect(r.total).toBe(4);
     expect(r.accepted.map((x) => x.question)).toEqual(['半徑 2、圓心角 3 弳的弧長為何？']);
     const reasons = r.pending.map((p) => p.reason).join('\n');
-    expect(reasons).toMatch(/三方答案不一致（ChatGPT：B、Gemini：C）/);
+    expect(reasons).toMatch(/雙方答案不一致（ChatGPT：B、Gemini：C）/);
     expect(reasons).toMatch(/格式不符：選項內容重複/);
     expect(reasons).toMatch(/Qwen 獨立作答為 \(C\)，初稿答案為 \(B\)/);
     expect(r.accepted[0].checks.quote).toBe('弧長公式 s = rθ');

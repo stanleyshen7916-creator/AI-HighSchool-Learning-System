@@ -5,8 +5,10 @@
 在管理者自己的電腦以 Docker 執行（需要 GPU 跑 Ollama、CPU 跑 MinerU OCR），學習平台的 `upload.html`（僅 Admin 可見）透過它完成整條上架流程：
 
 1. **上傳原始檔**：PDF、掃描／拍照的課本頁、MinerU 的 .md/.txt。OCR 用 MinerU，沒啟動時退回 Tesseract。原始檔會保留下來。
-2. **三方初稿**：把上傳頁產生的 Prompt 貼到 ChatGPT、Gemini、Claude 網頁版，再把三份輸出貼回上傳頁。
-3. **交叉審議**：本地 Qwen2.5 逐條對照教材本文裁決，產出 `Final.md`。
+2. **本機初稿**（2026-11-26 AHS-A3）：引擎用兩個不同的本機模型（A＝`qwen3:8b`、B＝`gpt-oss:20b`，環境變數 `LOCAL_WRITER_MODEL_A`／`_B` 可改）依同一份 Prompt 各寫一份初稿（`services/localWriter.js`，`POST /api/local-ai/jobs`）。不使用 ChatGPT／Gemini，Claude 也不寫初稿。
+3. **本機交叉審議**：本地 Qwen2.5 逐條對照教材本文裁決兩份初稿，產出 `Final.md`；無法判定的練習題與陳述列為「待 Claude 判定」。
+   - **Claude 最後檢核**（`services/draftReview.js`）：程式先逐句對照教材本文（不耗 token）並標記，Claude 網頁版只逐句判定、指出錯誤，不重寫全文；需修正時由本機模型只改被指出的句子，最多 2 輪，仍不通過就標記需人工處理。
+   - 原文辨識協助包（OCR 看不清楚的照片）改由本機視覺模型（`qwen2.5vl:7b`）轉錄。
 4. **建立教材包草稿**：`platform/PackageBuilder.js` 把 Final.md 轉成新的 `docs/TeachingMaterials/materials/tm_N/`。草稿的 `manifest.status` 為 `draft`，學生看不到。原始檔放進 `source/`。
 5. **預覽 → 發布**：發布時走 repo 既有的 `RepositoryManager.prepare()` + `ImportManager.importAll()`。
    - 平台上已有同校、同年級、同科目、同一章的教材時，會先跳確認框，避免選錯學校或重複上傳。
@@ -19,11 +21,11 @@
 
 ## 為既有教材加題（2026-10-01）
 
-上傳頁的「為既有教材加題」分頁，用來為已上架的教材補出新的練習題（`platform/SupplementBuilder.js`）。不呼叫任何 AI API，所有 AI 步驟都由管理者在網頁版操作：
+上傳頁的「為既有教材加題」分頁，用來為已上架的教材補出新的練習題（`platform/SupplementBuilder.js`）。2026-11-26 AHS-A3 起出題與作答核對改由本機模型執行，Claude 只做最後檢核，不使用 ChatGPT／Gemini：
 
-1. **選教材與題數**：引擎依該教材的 `summary.json`（核心概念、定義、重點、易錯）與既有題目，產生出題 Prompt，貼到 Claude 網頁版。
-2. **擷取題目**：貼回 Claude 的輸出。引擎擷取每題的題幹、選項、答案、詳解、知識點、難度，再產生只有題目、沒有答案的作答 Prompt。
-3. **獨立作答**：把作答 Prompt 貼到**新的** Claude 對話。三方模式另外貼到 ChatGPT、Gemini。再把作答結果貼回。
+1. **選教材與題數**：引擎依該教材的 `summary.json`（核心概念、定義、重點、易錯）與既有題目，產生出題 Prompt，由本機模型 A 出題。
+2. **擷取題目**：出題結果可先檢視、修改。引擎擷取每題的題幹、選項、答案、詳解、知識點、難度，再產生只有題目、沒有答案的作答 Prompt。
+3. **獨立作答**：本機模型 B 自動作答；另把作答 Prompt 貼到**新的** Claude 對話（最後檢核），再把作答結果貼回。
 4. **核對**：
    - 作答答案和出題答案不一致、作答者認為題目有問題、缺詳解、選項不足或重複、與既有題目相似 → **需人工確認**，預設不勾選。
    - 與既有題目或本批其他題重複 → **不能加入**。

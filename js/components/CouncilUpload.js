@@ -6,8 +6,10 @@
      1 教材資訊        school/semester/subject from the platform's own data
      2 上傳原始檔      OCR via the engine (MinerU → Tesseract fallback);
                        originals are kept for the package's source/
-     3 雙方初稿        paste ChatGPT/Claude (Web) drafts (Gemini removed 2026-11-16)
-     4 交叉審議        engine job → Final.md (or pick an existing Final)
+     3 本機初稿        two local models (A, B) each write a draft in the engine
+                       (2026-11-26 AHS-A3: no ChatGPT/Gemini/Claude drafts)
+     4 交叉審議        local cross-check job → Final.md (or pick an existing Final),
+                       then Claude 最後檢核 (judge only, no rewrite) → local revision, max 2 rounds
      5 建立教材包草稿  Final.md → docs/TeachingMaterials/materials/tm_N
                        (draft — students can't see it), preview, then
                        發布 (runs the repo's own import) or 刪除
@@ -70,6 +72,26 @@ AHS.CouncilUpload = (function () {
   }
   var POLL_MS = 3000;
 
+  /* 2026-11-26 AHS-A3：本機模型工作（POST /api/local-ai/jobs）背景執行，每 POLL_MS 問一次結果。
+     onTick(job) 顯示進度；resolve(result)，失敗時 reject(Error)。 */
+  function waitLocalJob(client, payload, onTick) {
+    return client.localJob(payload).then(function (r) {
+      if (r.error) { throw new Error(r.error.message); }
+      return new Promise(function (resolve, reject) {
+        function tick() {
+          client.getLocalJob(r.data.jobId).then(function (j) {
+            if (j.error) { reject(new Error(j.error.message)); return; }
+            if (j.data.status === "completed") { resolve(j.data.result); return; }
+            if (j.data.status === "failed") { reject(new Error(j.data.error || "本機模型工作失敗")); return; }
+            if (onTick) { onTick(j.data); }
+            setTimeout(tick, POLL_MS);
+          });
+        }
+        tick();
+      });
+    });
+  }
+
   function card(title, hint, children) {
     return el("section", { class: "card upl-card" }, [
       el("div", { class: "card__head" }, [el("h2", { class: "card__title", text: title })]),
@@ -129,9 +151,9 @@ AHS.CouncilUpload = (function () {
   }
 
   /* ---- 為既有教材加題（2026-10-01） --------------------------------------
-     1 選教材與題數 → 複製出題 Prompt（貼到 Claude）
-     2 貼回出題結果 → 擷取題目、複製「只有題目」的作答 Prompt
-     3 貼回獨立作答結果（新的 Claude 對話；三方模式另加 ChatGPT）
+     1 選教材與題數 → 本機模型 A 出題（2026-11-26 AHS-A3 起不再貼到網頁版 AI）
+     2 出題結果（可修改）→ 擷取題目：本機模型 B 自動作答，並複製「只有題目」的作答 Prompt 給 Claude
+     3 獨立作答結果：本機模型 B ＋ 新的 Claude 對話（最後檢核）
      4 核對結果：一致 → 預設勾選；需人工確認 → 預設不勾；重複 → 不能勾
        → 建立補充題庫草稿（新的 tm_N，原教材不修改）→ 共用的預覽／發布。 */
   var OPTION_LETTERS = ["A", "B", "C", "D", "E"];
@@ -163,27 +185,26 @@ AHS.CouncilUpload = (function () {
     }
     countInput.addEventListener("input", autoDifficulty);
     autoDifficulty();
-    var modeSingle = el("input", { type: "radio", name: "upl-sup-mode", value: "single", checked: "checked" });
-    var modeTri = el("input", { type: "radio", name: "upl-sup-mode", value: "tri" });
+    var modeLocal = el("input", { type: "radio", name: "upl-sup-mode", value: "local", checked: "checked" });
     /* 2026-10-01: 歷屆試題 — official past exam questions pasted verbatim with
        「出處：」 lines; official answers, so no independent solve. */
     var modePast = el("input", { type: "radio", name: "upl-sup-mode", value: "past" });
-    function mode() { return modePast.checked ? "past" : modeTri.checked ? "tri" : "single"; }
+    function mode() { return modePast.checked ? "past" : "local"; }
     var subjectHint = el("p", { class: "upl-hint upl-hint--warn", hidden: "hidden" });
     function selectedParent() {
       return state.parents.filter(function (p) { return p.materialId === materialSel.value; })[0] || null;
     }
     function updateSubjectHint() {
       var p = selectedParent();
-      if (p && CALC_SUBJECTS.indexOf(p.subject) !== -1 && mode() === "single") {
-        subjectHint.textContent = p.subject + "的計算與圖表題答案出錯的機率較高，建議改用三方核對，或至少逐題看過被標示的題目。";
+      if (p && CALC_SUBJECTS.indexOf(p.subject) !== -1 && mode() === "local") {
+        subjectHint.textContent = p.subject + "的計算與圖表題答案出錯的機率較高，請逐題看過被標示的題目。";
         subjectHint.removeAttribute("hidden");
       } else {
         subjectHint.setAttribute("hidden", "hidden");
       }
     }
     materialSel.addEventListener("change", updateSubjectHint);
-    [modeSingle, modeTri, modePast].forEach(function (r) { r.addEventListener("change", function () { updateSubjectHint(); updateSolverFields(); }); });
+    [modeLocal, modePast].forEach(function (r) { r.addEventListener("change", function () { updateSubjectHint(); updateSolverFields(); }); });
 
     var promptStatus = el("p", { class: "upl-status" });
     var promptPreview = el("div");
@@ -206,20 +227,26 @@ AHS.CouncilUpload = (function () {
         updateSubjectHint();
       });
     }
-    var authorBtn = button("複製出題 Prompt", "primary", function () {
+    var authorBtn = button("由本機模型 A 出題", "primary", function () {
       if (!materialSel.value) { status(promptStatus, "請先選擇教材。", "error"); return; }
+      if (mode() === "past") { status(promptStatus, "歷屆試題請直接在步驟 2 貼上官方題目，不需要出題。", "error"); return; }
       var payload = { parentId: materialSel.value, count: Number(countInput.value), difficulty: {} };
       Object.keys(diff).forEach(function (k) { payload.difficulty[k] = Number(diff[k].value) || 0; });
       client.supplementAuthorPrompt(payload).then(function (r) {
         if (r.error) { status(promptStatus, r.error.message, "error"); return; }
         AHS.UI.mount(promptPreview, el("details", { class: "upl-details" }, [
-          el("summary", { text: "預覽出題 Prompt（若複製失敗可從這裡手動複製）" }),
+          el("summary", { text: "預覽出題 Prompt" }),
           el("pre", { class: "upl-pre", text: r.data.prompt })
         ]));
-        copyText(r.data.prompt).then(function () {
-          status(promptStatus, "已複製（出 " + r.data.count + " 題：易 " + r.data.difficulty["易"] + "、中等 " + r.data.difficulty["中等"] +
-            "、難 " + r.data.difficulty["難"] + "；已避開既有 " + r.data.existingCount + " 題）。請貼到 Claude 網頁版，再把輸出貼到下一步。", "ok");
-        }, function () { status(promptStatus, "瀏覽器不允許複製，請展開下方預覽手動複製。", "warn"); });
+        var plan = "出 " + r.data.count + " 題：易 " + r.data.difficulty["易"] + "、中等 " + r.data.difficulty["中等"] +
+          "、難 " + r.data.difficulty["難"] + "；已避開既有 " + r.data.existingCount + " 題";
+        authorBtn.disabled = true;
+        status(promptStatus, "本機模型 A 出題中（" + plan + "）…約需數分鐘，請勿關閉本頁。");
+        waitLocalJob(client, { kind: "author", prompt: r.data.prompt }).then(function (result) {
+          authorBtn.disabled = false;
+          authorText.value = result.text;
+          status(promptStatus, "本機模型 A（" + result.model + "）已出題（" + plan + "），結果在步驟 2，可先檢視或修改。", "ok");
+        }, function (e) { authorBtn.disabled = false; status(promptStatus, "本機模型出題失敗：" + e.message, "error"); });
       });
     });
     var pickCard = card("1　選擇教材與題數", "補充題目會存成一份新的「補充題庫」，發布後併入該課題庫；原本的教材資料不會被修改。", [
@@ -228,8 +255,7 @@ AHS.CouncilUpload = (function () {
         field("易", diff["易"]), field("中等", diff["中等"]), field("難", diff["難"])
       ]),
       el("div", { class: "upl-radios" }, [
-        el("label", { class: "upl-radio" }, [modeSingle, el("span", { text: "Claude 出題＋另開新對話獨立作答核對（建議）" })]),
-        el("label", { class: "upl-radio" }, [modeTri, el("span", { text: "三方核對：Claude 出題，Claude 新對話、ChatGPT 各自作答" })]),
+        el("label", { class: "upl-radio" }, [modeLocal, el("span", { text: "本機模型 A 出題，本機模型 B 與 Claude 新對話各自獨立作答核對（Claude 只做最後檢核）" })]),
         el("label", { class: "upl-radio" }, [modePast, el("span", { text: "歷屆試題：逐字貼上官方題目與官方答案，每題加上「出處：年度、考試、考科、題號」「對應課程：第X章 …」（至少對應到課）「對應程度：完全對應／部分對應」，可另加「對應節次：」「對應說明：」（不需獨立作答）" })])
       ]),
       subjectHint,
@@ -239,10 +265,10 @@ AHS.CouncilUpload = (function () {
     ]);
 
     /* 2 貼上出題結果 */
-    var authorText = el("textarea", { class: "upl-textarea", rows: "14", placeholder: "把 Claude 依出題 Prompt 產出的完整內容貼在這裡。" });
+    var authorText = el("textarea", { class: "upl-textarea", rows: "14", placeholder: "本機模型 A 的出題結果會出現在這裡（可修改）；歷屆試題請直接貼上。" });
     var solverPromptStatus = el("p", { class: "upl-status" });
     var solverPromptPreview = el("div");
-    var solverBtn = button("擷取題目並複製作答 Prompt", "primary", function () {
+    var solverBtn = button("擷取題目、本機模型 B 作答並複製 Claude 作答 Prompt", "primary", function () {
       client.supplementSolverPrompt({ authorText: authorText.value }).then(function (r) {
         if (r.error) { status(solverPromptStatus, r.error.message, "error"); return; }
         AHS.UI.mount(solverPromptPreview, el("div", {}, [
@@ -252,14 +278,20 @@ AHS.CouncilUpload = (function () {
             el("pre", { class: "upl-pre", text: r.data.prompt })
           ])
         ]));
-        var where = mode() === "tri" ? "請分別貼到「新的」Claude 對話、ChatGPT，" : "請開一個「新的」Claude 對話貼上（不要用出題的同一個對話），";
-        copyText(r.data.prompt).then(function () {
-          status(solverPromptStatus, "擷取到 " + r.data.count + " 題，作答 Prompt 已複製。" + where + "再把作答結果貼到下一步。", "ok");
-        }, function () { status(solverPromptStatus, "擷取到 " + r.data.count + " 題；瀏覽器不允許複製，請展開下方預覽手動複製後，" + where + "再把作答結果貼到下一步。", "warn"); });
+        if (mode() === "past") { status(solverPromptStatus, "擷取到 " + r.data.count + " 題（歷屆試題不需要獨立作答）。", "ok"); return; }
+        var where = "請開一個新的 Claude 對話貼上作答 Prompt（最後檢核），再把作答結果貼到下一步。";
+        var copied = copyText(r.data.prompt).then(function () { return "作答 Prompt 已複製。"; }, function () { return "瀏覽器不允許複製，請展開下方預覽手動複製。"; });
+        solverBtn.disabled = true;
+        copied.then(function (msg) { status(solverPromptStatus, "擷取到 " + r.data.count + " 題。" + msg + where + "本機模型 B 作答中…", "ok"); });
+        waitLocalJob(client, { kind: "solve", prompt: r.data.prompt }).then(function (result) {
+          solverBtn.disabled = false;
+          solverFields[0].input.value = result.text;
+          copied.then(function (msg) { status(solverPromptStatus, "擷取到 " + r.data.count + " 題。本機模型 B（" + result.model + "）已作答（步驟 3）。" + msg + where, "ok"); });
+        }, function (e) { solverBtn.disabled = false; status(solverPromptStatus, "本機模型 B 作答失敗：" + e.message + "（仍可只用 Claude 作答核對）", "error"); });
       });
     });
     var authorCard = card("2　貼上出題結果", "引擎會擷取題號、選項、答案、詳解、知識點與難度；格式不完整的題目不收錄，並列在警告中。", [
-      field("Claude 出題結果", authorText),
+      field("出題結果（本機模型 A；可修改）", authorText),
       el("div", { class: "upl-actions" }, [solverBtn]),
       solverPromptStatus,
       solverPromptPreview
@@ -267,8 +299,8 @@ AHS.CouncilUpload = (function () {
 
     /* 3 貼上獨立作答結果 */
     var solverFields = [
-      { id: "claude-fresh", name: "Claude（新對話）", tri: false },
-      { id: "chatgpt", name: "ChatGPT", tri: true }
+      { id: "local-b", name: "本機模型 B" },
+      { id: "claude-fresh", name: "Claude（新對話，最後檢核）" }
     ].map(function (s) {
       s.input = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "例如：\nQ1：B\nQ2：D" });
       s.field = field(s.name + " 作答結果", s.input);
@@ -276,15 +308,14 @@ AHS.CouncilUpload = (function () {
     });
     function updateSolverFields() {
       solverFields.forEach(function (s) {
-        var show = mode() !== "past" && (!s.tri || mode() === "tri");
+        var show = mode() !== "past";
         if (show) { s.field.removeAttribute("hidden"); } else { s.field.setAttribute("hidden", "hidden"); }
       });
     }
     updateSolverFields();
     function currentSolvers() {
       if (mode() === "past") { return []; }
-      return solverFields.filter(function (s) { return !s.tri || mode() === "tri"; })
-        .map(function (s) { return { id: s.id, text: s.input.value }; });
+      return solverFields.map(function (s) { return { id: s.id, text: s.input.value }; });
     }
     var checkStatus = el("p", { class: "upl-status" });
     var resultSlot = el("div", { class: "upl-sup-results" });
@@ -302,7 +333,7 @@ AHS.CouncilUpload = (function () {
         renderResults(r.data);
       });
     });
-    var solverCard = card("3　貼上獨立作答結果", "作答者看不到出題答案；答案和出題不一致、或作答者認為題目有問題時，會標示為需人工確認。", [
+    var solverCard = card("3　獨立作答結果", "本機模型 B 自動作答；Claude 新對話的作答是最後檢核。作答者看不到出題答案；任何一方答案和出題不一致、或認為題目有問題時，會標示為需人工確認。", [
       el("div", { class: "upl-drafts" }, solverFields.map(function (s) { return s.field; })),
       el("div", { class: "upl-actions" }, [checkBtn]),
       checkStatus
@@ -460,7 +491,7 @@ AHS.CouncilUpload = (function () {
         AHS.UI.mount(imagesSlot, el("span"));
         if (r.error || !r.data || !r.data.count) { return; }
         AHS.UI.mount(imagesSlot, el("a", {
-          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip），可拖進 ChatGPT／Claude 對話框（出題引用圖時用【圖：檔名】）"
+          class: "upl-link", href: client.imagesZipUrl(id), text: "下載本教材 " + r.data.count + " 張圖片（.zip；出題引用圖時用【圖：檔名】）"
         }));
       });
     }
@@ -672,15 +703,13 @@ AHS.CouncilUpload = (function () {
         "請開始依序輸出完整十五章節內容。"
       ]).join("\n");
     }
-    /* 2026-10-14 原文辨識協助包：本機 Qwen 找出 OCR 看不清楚的照片，只把那些檔名交給
-       ChatGPT／Claude 網頁版逐字轉錄；貼回後逐句比對，兩方一致就自動更正，三方都不同才讓管理者選。
-       2026-11-16：Gemini 改由 Claude 轉錄；送引擎時沿用 gemini 欄位名（引擎相容），畫面一律顯示 Claude。 */
+    /* 2026-10-14 原文辨識協助包：本機 Qwen 找出 OCR 看不清楚的照片。2026-11-26 AHS-A3 起由本機視覺模型
+       逐字轉錄這些照片（不再交給 ChatGPT／Claude 網頁版），再與 OCR 逐句比對；不一致的句子由管理者選定。 */
     var ocrStatus = el("p", { class: "upl-status" });
     var ocrPages = el("div");
     var ocrConflicts = el("div");
-    var ocrGpt = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 ChatGPT 的轉錄（以「=== 檔名 ===」分段）" });
-    var ocrGemini = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "貼上 Claude 的轉錄（以「=== 檔名 ===」分段）" });
-    var ocrPrompt = null;
+    var ocrLocal = el("textarea", { class: "upl-textarea", rows: "6", placeholder: "本機視覺模型的轉錄會出現在這裡（以「=== 檔名 ===」分段，可修改）" });
+    var ocrFiles = [];
     var ocrCheckBtn = button("檢查 OCR 看不清楚的頁面", null, function () {
       if (!sourceText.value.trim()) { status(ocrStatus, "請先上傳或貼上教材本文。", "error"); return; }
       ocrCheckBtn.disabled = true;
@@ -688,7 +717,7 @@ AHS.CouncilUpload = (function () {
       client.ocrHelpCheck(sourceText.value, state.uploadFilename).then(function (r) {
         ocrCheckBtn.disabled = false;
         if (r.error) { status(ocrStatus, r.error.message, "error"); return; }
-        ocrPrompt = r.data.prompt;
+        ocrFiles = (r.data.pages || []).map(function (p) { return p.file; }).filter(Boolean);
         AHS.UI.mount(ocrPages, el("ul", {}, (r.data.pages || []).map(function (p) {
           return el("li", { text: (p.file || "（整份教材本文）") + "：" + p.reasons.join("；") });
         })));
@@ -696,20 +725,28 @@ AHS.CouncilUpload = (function () {
           status(ocrStatus, r.data.checked ? "沒有找到看不清楚的頁面，不需要轉錄。" : "本機 Qwen 無法完成檢查（" + (r.data.reason || "未知原因") + "），可稍後再試。", r.data.checked ? "ok" : "error");
           return;
         }
-        status(ocrStatus, "共 " + r.data.pages.length + " 頁需要轉錄。" + (ocrPrompt ? "按「複製轉錄 Prompt」，連同這些照片貼到 ChatGPT 與 Claude 網頁版。" : "上傳時沒有檔名，請把整份照片交給 ChatGPT 與 Claude 轉錄。"), "ok");
+        status(ocrStatus, "共 " + r.data.pages.length + " 頁需要轉錄。" + (ocrFiles.length ? "按「本機轉錄」由本機視覺模型逐字轉錄。" : "上傳時沒有檔名，無法自動轉錄；請直接修改教材本文。"), "ok");
       });
     });
-    var ocrCopyBtn = button("複製轉錄 Prompt", null, function () {
-      if (!ocrPrompt) { status(ocrStatus, "請先檢查 OCR 看不清楚的頁面。", "error"); return; }
-      copyText(ocrPrompt).then(function () { status(ocrStatus, "已複製。轉錄完成後把兩份結果貼到下面。", "ok"); },
-        function () { status(ocrStatus, "瀏覽器不允許複製，請改用 Ctrl+C。", "error"); });
+    var ocrTranscribeBtn = button("本機轉錄", null, function () {
+      if (!ocrFiles.length) { status(ocrStatus, "請先檢查 OCR 看不清楚的頁面。", "error"); return; }
+      if (!state.sessionId) { status(ocrStatus, "本機轉錄需要用本頁上傳的照片；請先在上方上傳原始檔。", "error"); return; }
+      ocrTranscribeBtn.disabled = true;
+      status(ocrStatus, "本機視覺模型轉錄中…每頁約需數十秒。");
+      waitLocalJob(client, { kind: "transcribe", sessionId: state.sessionId, files: ocrFiles }, function (job) {
+        if (job.step) { status(ocrStatus, "本機視覺模型轉錄中（" + job.step + " 頁）…"); }
+      }).then(function (result) {
+        ocrTranscribeBtn.disabled = false;
+        ocrLocal.value = result.text;
+        status(ocrStatus, "已轉錄（" + result.model + "）" + (result.failed.length ? "；" + result.failed.length + " 頁失敗：" + result.failed.map(function (f) { return f.name; }).join("、") : "") + "。請檢視後按「比對並套用到教材本文」。", result.failed.length ? "warn" : "ok");
+      }, function (e) { ocrTranscribeBtn.disabled = false; status(ocrStatus, "本機轉錄失敗：" + e.message, "error"); });
     });
     function showConflicts(conflicts) {
       AHS.UI.mount(ocrConflicts, el("div", {}, conflicts.map(function (c) {
         var row = el("div", { class: "upl-status" });
-        var choices = [["保留 OCR", c.local], ["用 ChatGPT", c.gpt], ["用 Claude", c.gemini]].filter(function (x) { return x[1]; });
+        var choices = [["保留 OCR", c.local], ["用本機轉錄", c.transcribed], ["用第二份轉錄", c.second]].filter(function (x) { return x[1]; });
         AHS.UI.mount(row, el("div", {}, [
-          el("p", { text: c.id + "（" + c.file + "）　OCR：" + c.local + (c.gpt ? "　／ChatGPT：" + c.gpt : "") + (c.gemini ? "　／Claude：" + c.gemini : "") }),
+          el("p", { text: c.id + "（" + c.file + "）　OCR：" + c.local + (c.transcribed ? "　／本機轉錄：" + c.transcribed : "") + (c.second ? "　／第二份轉錄：" + c.second : "") }),
           el("div", { class: "upl-actions" }, choices.map(function (x) {
             return button(x[0], null, function () {
               if (x[1] !== c.local) sourceText.value = sourceText.value.replace(c.local, x[1]);
@@ -721,21 +758,21 @@ AHS.CouncilUpload = (function () {
       })));
     }
     var ocrMergeBtn = button("比對並套用到教材本文", "primary", function () {
-      if (!ocrGpt.value.trim() && !ocrGemini.value.trim()) { status(ocrStatus, "請至少貼上一份轉錄。", "error"); return; }
-      client.ocrHelpMerge({ sourceText: sourceText.value, filename: state.uploadFilename, gpt: ocrGpt.value, gemini: ocrGemini.value }).then(function (r) {
+      if (!ocrLocal.value.trim()) { status(ocrStatus, "請先按「本機轉錄」。", "error"); return; }
+      client.ocrHelpMerge({ sourceText: sourceText.value, filename: state.uploadFilename, local: ocrLocal.value }).then(function (r) {
         if (r.error) { status(ocrStatus, r.error.message, "error"); return; }
         sourceText.value = r.data.text;
         showConflicts(r.data.conflicts || []);
         status(ocrStatus, "自動更正 " + r.data.corrections.length + " 句、補回 " + r.data.additions.length + " 句" +
-          (r.data.conflicts.length ? "；" + r.data.conflicts.length + " 句三方不一致，請在下面選定。" : "。") +
-          "已寫回教材本文；若這份教材已審議過，請重新執行雙方交叉審議。", "ok");
+          (r.data.conflicts.length ? "；" + r.data.conflicts.length + " 句與 OCR 不一致，請在下面選定。" : "。") +
+          "已寫回教材本文；若這份教材已審議過，請重新產生本機初稿並執行交叉審議。", "ok");
       });
     });
     var ocrHelpBox = el("details", { class: "upl-images" }, [
       el("summary", { text: "原文辨識協助包（OCR 有錯字或整頁辨識不出來時使用）" }),
-      el("div", { class: "upl-actions" }, [ocrCheckBtn, ocrCopyBtn]),
+      el("div", { class: "upl-actions" }, [ocrCheckBtn, ocrTranscribeBtn]),
       ocrStatus, ocrPages,
-      field("ChatGPT 轉錄", ocrGpt), field("Claude 轉錄", ocrGemini),
+      field("本機轉錄", ocrLocal),
       el("div", { class: "upl-actions" }, [ocrMergeBtn]),
       ocrConflicts
     ]);
@@ -746,23 +783,40 @@ AHS.CouncilUpload = (function () {
       field("教材本文（SOURCE）", sourceText),
       ocrHelpBox,
       pageReviewBox,
-      imagesSlot,
-      el("div", { class: "upl-actions" }, [button("複製雙方 AI 專用 Prompt", null, function () {
-        copyText(buildPrompt()).then(function () {
-          status(promptStatus, "已複製。請分別貼到 ChatGPT、Claude 網頁版，再把兩方輸出貼到下一步。", "ok");
-        }, function () { status(promptStatus, "瀏覽器不允許複製，請改用 Ctrl+C。", "error"); });
-      })]),
-      promptStatus
+      imagesSlot
     ]);
 
-    /* ---- 3. 雙方初稿 ---------------------------------------------------- */
+    /* ---- 3. 本機初稿（2026-11-26 AHS-A3）：兩個本機模型依同一份 Prompt 各寫一份 ------------- */
     var drafts = {
-      chatgpt: el("textarea", { class: "upl-textarea", rows: "12" }),
-      claude: el("textarea", { class: "upl-textarea", rows: "12" })
+      localA: el("textarea", { class: "upl-textarea", rows: "12" }),
+      localB: el("textarea", { class: "upl-textarea", rows: "12" })
     };
-    var draftsCard = card("3　雙方初稿", "把 ChatGPT、Claude 網頁版依 Prompt 產出的完整內容分別貼上。", [
+    var promptPreviewPre = el("pre", { class: "upl-pre" });
+    var writeBtn = button("由本機模型 A、B 撰寫初稿", "primary", function () {
+      if (!sourceText.value.trim()) { status(promptStatus, "請先上傳或貼上教材本文。", "error"); return; }
+      var filled = drafts.localA.value.trim() || drafts.localB.value.trim();
+      if (filled && !window.confirm("步驟 3 已有初稿，重新撰寫會取代目前的內容。要繼續嗎？")) { return; }
+      writeBtn.disabled = true;
+      status(promptStatus, "本機模型撰寫初稿中…兩份依序產生，可能需要十幾分鐘，請勿關閉本頁。");
+      waitLocalJob(client, { kind: "drafts", prompt: buildPrompt() }, function (job) {
+        status(promptStatus, "本機模型 " + (job.step || "A") + " 撰寫初稿中…兩份依序產生，可能需要十幾分鐘，請勿關閉本頁。");
+      }).then(function (result) {
+        writeBtn.disabled = false;
+        drafts.localA.value = result.localA;
+        drafts.localB.value = result.localB;
+        status(promptStatus, "初稿完成（A：" + result.models.localA + "、B：" + result.models.localB + "）。可先檢視，再執行步驟 4 的交叉審議。", "ok");
+      }, function (e) { writeBtn.disabled = false; status(promptStatus, "本機模型撰寫初稿失敗：" + e.message, "error"); });
+    });
+    var draftsCard = card("3　本機初稿", "兩個不同的本機模型（A、B）依同一份 Prompt 各寫一份初稿，全部在這台電腦產生；Claude 不寫初稿，只做最後檢核。", [
+      el("div", { class: "upl-actions" }, [writeBtn]),
+      promptStatus,
       el("div", { class: "upl-drafts" }, [
-        field("ChatGPT (Web)", drafts.chatgpt), field("Claude (Web)", drafts.claude)
+        field("本機模型 A 初稿", drafts.localA), field("本機模型 B 初稿", drafts.localB)
+      ]),
+      el("details", { class: "upl-details" }, [
+        el("summary", { text: "預覽撰寫 Prompt" }),
+        el("div", { class: "upl-actions" }, [button("產生預覽", null, function () { promptPreviewPre.textContent = buildPrompt(); })]),
+        promptPreviewPre
       ])
     ]);
 
@@ -878,7 +932,7 @@ AHS.CouncilUpload = (function () {
             });
           });
           finalSlot.appendChild(el("details", { class: "upl-details", open: "open" }, [
-            el("summary", { text: "Claude 最終審查（練習題 " + d.pending.length + " 題、陳述 " + claims.length + " 條）" }),
+            el("summary", { text: "待 Claude 判定（練習題 " + d.pending.length + " 題、陳述 " + claims.length + " 條）" }),
             summary,
             el("ul", { class: "upl-list" }, d.pending.map(function (p) { return el("li", { text: p.id + "　" + p.reason + "　" + p.question.slice(0, 40) }); })),
             claims.length ? el("ul", { class: "upl-list" }, claims.map(function (c) { return el("li", { text: c.id + "　" + (c.escalate ? "【兩次判斷或分段結論不一致】" : "") + c.claim.slice(0, 50) }); })) : null,
@@ -890,6 +944,68 @@ AHS.CouncilUpload = (function () {
             reviewStatus
           ]));
         });
+        /* 2026-11-26 AHS-A3：Claude 最後檢核。引擎先用程式逐句對照教材本文（不耗 token）並標記，
+           Claude 只逐句判定、不重寫；需修正時由本機模型只改被指出的句子，最多 2 輪，仍不通過標為需人工處理。 */
+        var checkSlot = el("div");
+        finalSlot.appendChild(checkSlot);
+        function renderFinalCheck() {
+          client.finalCheck(filename).then(function (fc) {
+            if (fc.error || !fc.data) { return; }
+            var d = fc.data;
+            var checkStatus = el("p", { class: "upl-status" });
+            var LABEL = { pending: "待檢核", needs_revision: "需修正", passed: "已通過", needs_human: "需人工處理" };
+            var head = "Claude 最後檢核（" + LABEL[d.status] + "，已修正 " + d.revisionsDone + "／" + d.maxRevisions + " 輪；共 " + d.units + " 句，程式標記 " + d.flagged + " 句）";
+            if (d.status === "passed" || d.status === "needs_human") {
+              AHS.UI.mount(checkSlot, el("p", { class: "upl-hint" + (d.status === "passed" ? "" : " upl-hint--warn"),
+                text: d.status === "passed" ? head + "：Claude 判定通過。" : head + "：修正 2 輪後仍未通過，請人工檢查 Final.md 後再決定是否建立草稿。" }));
+              return;
+            }
+            var promptBox = el("textarea", { class: "upl-textarea", rows: "10", readonly: "readonly", spellcheck: "false" });
+            promptBox.value = d.prompt;
+            var replyBox = el("textarea", { class: "upl-textarea", rows: "6", spellcheck: "false", placeholder: "把 Claude 的回覆貼在這裡（例如「S12：錯誤：…」，最後一行「結論：通過」或「結論：需修正」）" });
+            var copyBtn = button("複製檢核包", null, function () {
+              copyText(promptBox.value).then(function () { status(checkStatus, "已複製。請貼到 Claude 網頁版，再把回覆貼回下方。", "ok"); },
+                function () { status(checkStatus, "瀏覽器不允許複製，請改用 Ctrl+C。", "error"); });
+            });
+            var reviseBtn = button("由本機模型修正被指出的句子", "primary", function () {
+              reviseBtn.disabled = true;
+              status(checkStatus, "本機模型修正中…");
+              client.reviseFinal(filename).then(function (rv) {
+                reviseBtn.disabled = false;
+                if (rv.error) { status(checkStatus, rv.error.message, "error"); return; }
+                saved = rv.data.content;
+                editor.value = saved;
+                renderFinalCheck();
+              });
+            });
+            if (d.status !== "needs_revision") { reviseBtn.setAttribute("hidden", "hidden"); }
+            var applyBtn = button("套用 Claude 檢核結果", "primary", function () {
+              if (!replyBox.value.trim()) { status(checkStatus, "請先貼上 Claude 的回覆。", "error"); return; }
+              applyBtn.disabled = true;
+              client.applyFinalCheck(filename, replyBox.value).then(function (ap) {
+                applyBtn.disabled = false;
+                if (ap.error) { status(checkStatus, ap.error.message, "error"); return; }
+                if (ap.data.status === "needs_revision") {
+                  status(checkStatus, "Claude 指出 " + ap.data.issues.length + " 句需要修正。請按「由本機模型修正被指出的句子」，修正後再檢核一次。", "warn");
+                  reviseBtn.removeAttribute("hidden");
+                  return;
+                }
+                renderFinalCheck();
+              });
+            });
+            AHS.UI.mount(checkSlot, el("details", { class: "upl-details", open: "open" }, [
+              el("summary", { text: head }),
+              d.flags.length ? el("ul", { class: "upl-list" }, d.flags.map(function (f) { return el("li", { text: f.id + "［" + f.section + "］" + f.flags.join("；") + "　" + f.text.slice(0, 40) }); })) : null,
+              el("p", { class: "upl-hint", text: "Claude 只逐句判定、指出錯誤，不重寫全文。程式標記只是提醒，教學補充不算錯。" }),
+              promptBox,
+              el("div", { class: "upl-actions" }, [copyBtn]),
+              replyBox,
+              el("div", { class: "upl-actions" }, [applyBtn, reviseBtn]),
+              checkStatus
+            ]));
+          });
+        }
+        renderFinalCheck();
         if (fillMeta) {
           var filled = applyFrontmatter(saved);
           if (filled.length) {
@@ -916,12 +1032,12 @@ AHS.CouncilUpload = (function () {
         refreshCatalog();
       });
     }
-    var runBtn = button("執行雙方交叉審議", "primary", function () {
+    var runBtn = button("執行本機交叉審議", "primary", function () {
       if (state.polling) { return; }
       var m = councilMeta();
       if (!m.unit) { status(councilStatus, "請先在步驟 1 填寫章節。", "error"); return; }
-      if (!drafts.chatgpt.value.trim() || !drafts.claude.value.trim()) {
-        status(councilStatus, "請先貼上雙方初稿。", "error"); return;
+      if (!drafts.localA.value.trim() || !drafts.localB.value.trim()) {
+        status(councilStatus, "請先在步驟 3 產生本機模型 A、B 兩份初稿。", "error"); return;
       }
       runBtn.disabled = true;
       state.polling = true;
@@ -929,7 +1045,7 @@ AHS.CouncilUpload = (function () {
       client.createJob({
         school: m.school, grade: m.grade, subject: m.subject, unit: m.unit, category: m.category,
         sourceText: sourceText.value,
-        drafts: { chatgpt: drafts.chatgpt.value, claude: drafts.claude.value }
+        drafts: { localA: drafts.localA.value, localB: drafts.localB.value }
       }).then(function (r) {
         if (r.error) { state.polling = false; runBtn.disabled = false; status(councilStatus, r.error.message, "error"); return; }
         poll(r.data.jobId);
@@ -944,7 +1060,7 @@ AHS.CouncilUpload = (function () {
         });
       });
     }
-    var councilCard = card("4　交叉審議產出 Final.md", "由本地 Qwen 逐條對照教材本文裁決雙方內容；未通過驗證的陳述不會進入 Final。", [
+    var councilCard = card("4　交叉審議產出 Final.md", "由本地 Qwen 逐條對照教材本文裁決兩份本機初稿；未通過驗證的陳述不會進入 Final，無法判定的列為「待 Claude 判定」，最後再交 Claude 檢核。", [
       el("div", { class: "upl-actions" }, [runBtn]),
       councilStatus,
       el("div", { class: "upl-or" }, [
@@ -953,14 +1069,15 @@ AHS.CouncilUpload = (function () {
           if (!catalogSel.value) { return; }
           var item = catalogSel.options[catalogSel.selectedIndex].text.match(/\[(.+)\]$/);
           showFinal(catalogSel.value, item ? item[1] : null, null, true);
-          /* 2026-10-06：載回這份 Final 審議時保存的三方初稿，可直接重跑交叉審議 */
+          /* 2026-10-06：載回這份 Final 審議時保存的初稿，可直接重跑交叉審議（舊資料的 ChatGPT／Claude 初稿依序放進 A、B） */
           client.finalDrafts(catalogSel.value).then(function (r) {
             if (r.error || !r.data || !r.data.drafts) { return; }
             var saved = r.data.drafts;
             var filled = Object.keys(drafts).some(function (k) { return drafts[k].value.trim(); });
-            if (filled && !window.confirm("這份 Final 有保存當時的三方初稿。要用它取代步驟 3 目前的內容嗎？")) { return; }
-            Object.keys(drafts).forEach(function (k) { drafts[k].value = saved[k] || ""; });
-            status(councilStatus, "已載回 " + new Date(r.data.savedAt).toLocaleString() + " 審議時保存的三方初稿（步驟 3），可直接重新執行交叉審議。", "ok");
+            if (filled && !window.confirm("這份 Final 有保存當時的初稿。要用它取代步驟 3 目前的內容嗎？")) { return; }
+            drafts.localA.value = saved.localA || saved.chatgpt || "";
+            drafts.localB.value = saved.localB || saved.claude || "";
+            status(councilStatus, "已載回 " + new Date(r.data.savedAt).toLocaleString() + " 審議時保存的初稿（步驟 3），可直接重新執行交叉審議。", "ok");
           });
         })
       ]),
@@ -1238,9 +1355,9 @@ AHS.CouncilUpload = (function () {
 
     var modes = [
       { id: "new", name: "上傳新教材", cards: [metaCard, uploadCard, draftsCard, councilCard, packageCard],
-        sub: "上傳課本或講義 → ChatGPT＋Claude 分析 → 交叉審議 → 預覽確認後上架。僅管理者可見。" },
+        sub: "上傳課本或講義 → 本機模型 A、B 各寫初稿 → 本機交叉審議 → Claude 最後檢核 → 預覽確認後上架。僅管理者可見。" },
       { id: "supplement", name: "為既有教材加題", cards: supplementCards.cards,
-        sub: "為已上架的教材補出新的練習題：Claude 出題 → 另開新對話獨立作答核對 → 預覽確認後併入該課題庫。僅管理者可見。" },
+        sub: "為已上架的教材補出新的練習題：本機模型 A 出題 → 本機模型 B 與 Claude 新對話各自作答核對 → 預覽確認後併入該課題庫。僅管理者可見。" },
       { id: "stats", name: "審議統計", cards: [statsCard],
         sub: "本機 Qwen 沒有定論、送 Claude 最終審查的比例，以及標準答案集的累積情形。僅管理者可見。" }
     ];

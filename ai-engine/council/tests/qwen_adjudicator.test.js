@@ -725,9 +725,8 @@ describe('Gate 2 — Council Section Coverage（section-level completeness）', 
       verdict: 'SUPPORTED',
     };
     const draftSectionMaps = {
-      gpt: { '①核心概念': '內容', '②章節摘要': '內容' },
-      gemini: {},
-      claude: {},
+      localA: { '①核心概念': '內容', '②章節摘要': '內容' },
+      localB: {},
     };
 
     // 1) computeSectionCoverage：兩個小節都必須算「有 claim 覆蓋」，沒有任何一個是缺口。
@@ -892,7 +891,7 @@ describe('computeSectionCoverage / computeDocumentCompleteness（單元測試，
   };
 
   test('schema：回傳結構符合 total_sections / sections_with_source_content / sections_with_claims / sections_unresolved / coverage_rate / uncovered_sections / unresolved_sections', () => {
-    const drafts = { gpt: sectionMapWithContent(['①核心概念']), gemini: {}, claude: {} };
+    const drafts = { localA: sectionMapWithContent(['①核心概念']), localB: {} };
     const claims = [{ claim_id: 'c1', section: '①核心概念', sections: ['①核心概念'], verdict: 'SUPPORTED' }];
 
     const coverage = computeSectionCoverage(drafts, claims);
@@ -909,7 +908,7 @@ describe('computeSectionCoverage / computeDocumentCompleteness（單元測試，
   });
 
   test('明確回報的 unresolved_sections：不計入 sections_with_claims，但算進 coverage_rate（已處理，非缺口）', () => {
-    const drafts = { gpt: sectionMapWithContent(['①核心概念', '④文意理解']), gemini: {}, claude: {} };
+    const drafts = { localA: sectionMapWithContent(['①核心概念', '④文意理解']), localB: {} };
     const claims = [{ claim_id: 'c1', section: '①核心概念', sections: ['①核心概念'], verdict: 'SUPPORTED' }];
     const unresolvedSections = [{ section: '④文意理解', reason: '三方分歧過大' }];
 
@@ -923,7 +922,7 @@ describe('computeSectionCoverage / computeDocumentCompleteness（單元測試，
   });
 
   test('同一小節同時出現在 claims 與 unresolved_sections：claim 優先，不重複計入 unresolved', () => {
-    const drafts = { gpt: sectionMapWithContent(['①核心概念']), gemini: {}, claude: {} };
+    const drafts = { localA: sectionMapWithContent(['①核心概念']), localB: {} };
     const claims = [{ claim_id: 'c1', section: '①核心概念', sections: ['①核心概念'], verdict: 'SUPPORTED' }];
     const unresolvedSections = [{ section: '①核心概念', reason: '模型自相矛盾的回報' }];
 
@@ -935,7 +934,7 @@ describe('computeSectionCoverage / computeDocumentCompleteness（單元測試，
   });
 
   test('一個 claim 同時支持多個小節（sections 陣列）：兩個小節都算有覆蓋', () => {
-    const drafts = { gpt: sectionMapWithContent(['①核心概念', '②章節摘要']), gemini: {}, claude: {} };
+    const drafts = { localA: sectionMapWithContent(['①核心概念', '②章節摘要']), localB: {} };
     const claims = [
       { claim_id: 'c1', section: '①核心概念', sections: ['①核心概念', '②章節摘要'], verdict: 'SUPPORTED' },
     ];
@@ -947,14 +946,14 @@ describe('computeSectionCoverage / computeDocumentCompleteness（單元測試，
   });
 
   test('沒有任何小節有內容時，coverage_rate 為 null（避免除以零）', () => {
-    const coverage = computeSectionCoverage({ gpt: {}, gemini: {}, claude: {} }, []);
+    const coverage = computeSectionCoverage({ localA: {}, localB: {} }, []);
     expect(coverage.sections_with_source_content).toBe(0);
     expect(coverage.coverage_rate).toBeNull();
   });
 
   test('computeDocumentCompleteness：只計入真正 SUPPORTED 的小節，INSUFFICIENT_EVIDENCE 不計入', () => {
     const coverage = computeSectionCoverage(
-      { gpt: sectionMapWithContent(['①核心概念', '②章節摘要']), gemini: {}, claude: {} },
+      { localA: sectionMapWithContent(['①核心概念', '②章節摘要']), localB: {} },
       [],
     );
     const claims = [

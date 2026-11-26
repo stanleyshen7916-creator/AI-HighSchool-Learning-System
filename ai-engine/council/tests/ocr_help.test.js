@@ -34,13 +34,13 @@ describe('ocrHelp 模組', () => {
     expect(pack.prompt).not.toMatch(/p1\.jpg/);
   });
 
-  test('GPT 與 Gemini 一致 → 自動更正；三份都不同 → 衝突；兩份都有、OCR 漏掉 → 補回', () => {
+  test('兩份轉錄一致 → 自動更正；三份都不同 → 衝突；兩份都有、OCR 漏掉 → 補回', () => {
     const src = `${ocrHelp.fileMarker('p2.jpg')}\n板塊在中洋脊分難，在海溝隱沒。岩石圈較為鋼硬。`;
     const gpt = '=== p2.jpg ===\n板塊在中洋脊分離，在海溝隱沒。岩石圈較為剛硬。軟流圈可塑性高。';
     const gem = '=== p2.jpg ===\n板塊在中洋脊分離，在海溝隱沒。岩石圈較為堅硬。軟流圈可塑性高。';
     const r = ocrHelp.mergeTranscriptions(src, gpt, gem);
     expect(r.corrections).toEqual([{ file: 'p2.jpg', from: '板塊在中洋脊分難，在海溝隱沒。', to: '板塊在中洋脊分離，在海溝隱沒。' }]);
-    expect(r.conflicts).toEqual([{ id: 'X1', file: 'p2.jpg', local: '岩石圈較為鋼硬。', gpt: '岩石圈較為剛硬。', gemini: '岩石圈較為堅硬。' }]);
+    expect(r.conflicts).toEqual([{ id: 'X1', file: 'p2.jpg', local: '岩石圈較為鋼硬。', transcribed: '岩石圈較為剛硬。', second: '岩石圈較為堅硬。' }]);
     expect(r.additions).toEqual([{ file: 'p2.jpg', text: '軟流圈可塑性高。' }]);
     expect(r.text).toMatch(/中洋脊分離/);
     expect(r.text).toMatch(/鋼硬/);
@@ -51,7 +51,7 @@ describe('ocrHelp 模組', () => {
     const r = ocrHelp.mergeTranscriptions(src, '地函的物質會緩慢對流。', '');
     expect(r.corrections).toEqual([]);
     expect(r.conflicts).toHaveLength(1);
-    expect(r.conflicts[0]).toMatchObject({ local: '地函的物質會緩漫對流。', gpt: '地函的物質會緩慢對流。', gemini: null });
+    expect(r.conflicts[0]).toMatchObject({ local: '地函的物質會緩漫對流。', transcribed: '地函的物質會緩慢對流。', second: null });
   });
 });
 
@@ -74,8 +74,8 @@ describe('/api/ocr-help 端點', () => {
     const res = await request(app).post('/api/ocr-help/merge').send({
       sourceText: '地函的物質會緩漫對流。',
       filename: 'p1.jpg',
-      gpt: '地函的物質會緩慢對流。',
-      gemini: '地函的物質會緩慢對流。',
+      local: '地函的物質會緩慢對流。',
+      second: '地函的物質會緩慢對流。',
     });
     expect(res.status).toBe(200);
     expect(res.body.text).toBe('地函的物質會緩慢對流。');
