@@ -45,7 +45,7 @@ function evidenceOf(q) {
 /* 難度：q.difficulty，或（舊題）詳解裡的「難度：易／中／難」。 */
 function difficultyOf(q) {
   if (q.difficulty != null && q.difficulty !== '') return String(q.difficulty);
-  const m = /難度s*[:：]s*(易|中|難)/.exec(String(q.explanation || ''));
+  const m = /難度\s*[:：]\s*(易|中|難)/.exec(String(q.explanation || '')); // 佇列 9 修正：原本寫成 s*，「難度 ：中」讀不到
   return m ? m[1] : null;
 }
 
@@ -159,7 +159,9 @@ function createEmbedCache(embed, { file = null, model = '' } = {}) {
 
 const GATES = ['structure', 'source', 'blind', 'dedupe'];
 
-/* ctx: { judge, answer, embed, sourceText, existing: [既有題目], dedupeThreshold, onProgress } */
+/* ctx: { judge, answer, embed, sourceText, existing: [既有題目], dedupeThreshold, onProgress,
+          extraStructure(q) -> [原因]（佇列 9：防洩題 A、教訓庫 F，併入關卡 1）,
+          reviewFlags(q) -> [待複核原因]（佇列 9：詳解逐項驗證 D，通過關卡 2 後記錄，不淘汰） } */
 async function runGates(questions, ctx = {}) {
   const index = createDedupeIndex({ embed: ctx.embed, threshold: ctx.dedupeThreshold });
   for (const q of ctx.existing || []) await index.add(q);
@@ -168,7 +170,7 @@ async function runGates(questions, ctx = {}) {
   for (const q of questions) {
     let failedAt = null, reasons = [];
     const steps = [
-      ['structure', async () => gateStructure(q)],
+      ['structure', async () => gateStructure(q).concat(ctx.extraStructure ? ctx.extraStructure(q) : [])],
       ['source', async () => gateSource(q, ctx)],
       ['blind', async () => gateBlind(q, ctx)],
       ['dedupe', async () => (await index.check(q)).reasons],
@@ -179,7 +181,9 @@ async function runGates(questions, ctx = {}) {
       if (r.length) { failedAt = name; reasons = r; break; }
     }
     if (failedAt) eliminated[failedAt]++; else await index.add(q);
-    const row = { id: q.id || q.questionId, passed: !failedAt, failedAt, reasons };
+    let review = [];
+    if (!failedAt && ctx.reviewFlags) { try { review = ctx.reviewFlags(q) || []; } catch (e) { review = [`待複核檢查錯誤：${e.message}`]; } }
+    const row = { id: q.id || q.questionId, passed: !failedAt, failedAt, reasons, review };
     results.push(row);
     if (ctx.onProgress) ctx.onProgress(row, results.length, questions.length);
   }
