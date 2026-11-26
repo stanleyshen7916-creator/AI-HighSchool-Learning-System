@@ -38,9 +38,9 @@ function sourceText(list) {
 (async () => {
   const meta = read(id, 'metadata.json');
   const ranged = all('--mineru-range').flatMap((spec) => {
-    const m = /^(.*):(d+)-(d+)$/.exec(spec);
+    const m = /^(.*):(\d+)-(\d+)$/.exec(spec);
     if (!m) throw new Error('--mineru-range 格式：<資料夾>:<起>-<迄>');
-    return fs.readdirSync(m[1]).filter((d) => { const t = Number((/^mineru-(d+)-/.exec(d) || [])[1]); return t >= Number(m[2]) && t <= Number(m[3]); }).map((d) => path.join(m[1], d));
+    return fs.readdirSync(m[1]).filter((d) => { const t = Number((/^mineru-(\d+)-/.exec(d) || [])[1]); return t >= Number(m[2]) && t <= Number(m[3]); }).map((d) => path.join(m[1], d));
   });
   const src = sourceText(all('--source').concat(ranged));
   if (!src.files) console.warn('沒有 --source：詳解逐項驗證會把每題標成待複核');
@@ -60,7 +60,13 @@ function sourceText(list) {
   const others = fs.readdirSync(MATERIALS).filter((d) => /^tm_\d+$/.test(d) && d !== id && fs.existsSync(path.join(MATERIALS, d, 'questionbank.json')));
   const sameSubject = others.filter((d) => { try { return read(d, 'metadata.json').subject === meta.subject; } catch (e) { return false; } });
   const existing = sameSubject.flatMap((d) => read(d, 'questionbank.json').questions || []);
-  const goldPool = args.includes('--no-gold') ? [] : existing.filter((q) => q.questionSource === 'ORIGINAL');
+  // 金標準優先用同科目原題；同科目沒有（例如歷史目前沒有講義原題）就退回其他科目的原題，報告記下來源。
+  let goldPool = args.includes('--no-gold') ? [] : existing.filter((q) => q.questionSource === 'ORIGINAL');
+  let goldSource = goldPool.length ? 'same-subject' : 'none';
+  if (!goldPool.length && !args.includes('--no-gold')) {
+    goldPool = others.flatMap((d) => read(d, 'questionbank.json').questions || []).filter((q) => q.questionSource === 'ORIGINAL');
+    goldSource = goldPool.length ? 'other-subjects' : 'none';
+  }
   const limit = Number(arg('--limit', 0)) || Infinity;
   const qs = (read(id, 'questionbank.json').questions || []).slice(0, limit);
 
@@ -72,7 +78,7 @@ function sourceText(list) {
   });
   process.stdout.write('\n');
   if (cache) cache.save();
-  const report = Object.assign({ materialId: id, subject: meta.subject, models: { judge, answer, review: reviewModel, embed: cache ? embedName : null }, sourceFiles: src.files, goldPool: goldPool.length, existingCompared: existing.length, totalSeconds: Math.round((Date.now() - t0) / 1000) }, out.report);
+  const report = Object.assign({ materialId: id, subject: meta.subject, models: { judge, answer, review: reviewModel, embed: cache ? embedName : null }, sourceFiles: src.files, goldPool: goldPool.length, goldSource, existingCompared: existing.length, totalSeconds: Math.round((Date.now() - t0) / 1000) }, out.report);
   console.log(JSON.stringify(report, null, 2));
   const file = arg('--out', null);
   if (file) fs.writeFileSync(file, JSON.stringify({ report, rows: out.rows, gold: out.goldRows, sample: out.sample }, null, 2));
