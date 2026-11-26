@@ -671,13 +671,16 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     });
     saveRegistry(reg);
     require(path.join(scripts, 'GenerateTeachingMaterialData.js')).generate();
+    const supplement = removedSupplements.length ? regenerateSupplements() : { paths: [], warning: null };
     return {
       materialId,
       title,
       removed,
+      ...(supplement.warning ? { supplementWarning: supplement.warning } : {}),
       changedPaths: [
         ...removed.map((id) => `docs/TeachingMaterials/materials/${id}/`),
         ...removedSupplements.map((id) => `docs/TeachingMaterials/explanations/${id}.json`),
+        ...supplement.paths,
         'docs/TeachingMaterials/index.json',
         'js/data/TeachingMaterialData.js',
         'js/data/RepositoryStatus.js',
