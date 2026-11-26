@@ -9,7 +9,8 @@
    修正最多 MAX_REVISION_ROUNDS 輪；仍不通過就標記需人工處理（nextStatus）。 */
 
 const MAX_REVISION_ROUNDS = 2;
-const LOW_SUPPORT = 0.35;
+// 2026-11-26 實跑：0.35 會把大量「改寫正確」的題目標成低重疊（130 句標了 70 句），改 0.25；標記只是提醒。
+const LOW_SUPPORT = 0.25;
 const CONTENT_HEADING = /^##\s*([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬])/;
 const OTHER_HEADING = /^#{1,6}\s/;
 const ATTACH_TO_PREVIOUS = /^\s*(?:[（(][A-Ea-e][)）]|答案\s*[:：]|詳解\s*[:：]|解析\s*[:：])/;
@@ -34,7 +35,8 @@ function extractUnits(markdown) {
     const head = CONTENT_HEADING.exec(line);
     if (head) { section = line.replace(/^##\s*/, '').trim(); return; }
     if (OTHER_HEADING.test(line)) { if (!/^###/.test(line)) section = null; return; }
-    if (!section || !line.trim() || /^<!--/.test(line.trim())) return;
+    // 引擎自己加的說明（> 開頭，例如「另有 N 題未通過自動裁決」）與 HTML 註解不是教材內容，不檢核。
+    if (!section || !line.trim() || /^(<!--|>)/.test(line.trim())) return;
     if (ATTACH_TO_PREVIOUS.test(line) && units.length && units[units.length - 1].section === section) {
       units[units.length - 1].text += `\n${line}`;
       return;
@@ -151,6 +153,7 @@ function applyRevisions(markdown, units, revisionText, issueIds) {
     applied.push(id);
   });
   issueIds.forEach((id) => { if (!blocks[id] && skipped.indexOf(id) < 0) skipped.push(id); });
+  if (applied.length) out = out.replace(/\n{3,}/g, '\n\n'); // 刪除句子後留下的空行收成一行
   return { markdown: crlf ? out.replace(/\n/g, '\r\n') : out, applied, skipped };
 }
 

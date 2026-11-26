@@ -202,7 +202,8 @@ function extractSectionsFromDraft(draftText) {
     return sections;
   }
 
-  const headerRegex = /(?:^|\r?\n)\s*(?:##\s*)?([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮])[\s　]*([^\r\n]*)/g;
+  // 2026-11-26 AHS-A3：本機模型常用「# ①…」或「**①…**」當小節標題（網頁版多為「## ①…」），一律接受。
+  const headerRegex = /(?:^|\r?\n)\s*(?:#{1,6}\s*)?(?:\*\*)?([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮])[\s　]*([^\r\n]*?)(?:\*\*)?[ \t　]*(?=\r?\n|$)/g;
   const matches = [];
   let match;
 
@@ -1522,9 +1523,10 @@ async function assembleCouncilFinal(metadata, rawDrafts, sourceText = '', option
   const localASections = extractSectionsFromDraft(drafts.localA || '');
   const localBSections = extractSectionsFromDraft(drafts.localB || '');
 
+  // 只算 ①～⑬ 內容小節（⑭⑮ 是流程小節）；2026-11-26 AHS-A3 實跑發現原本會顯示「15/13」。
   const countContributions = (sections) =>
-    Object.values(sections).filter(
-      (value) => typeof value === 'string' && value.trim().length > 0,
+    CONTENT_SECTION_KEYS.filter(
+      (key) => typeof sections[key] === 'string' && sections[key].trim().length > 0,
     ).length;
 
   let mode = 'fallback_concat';

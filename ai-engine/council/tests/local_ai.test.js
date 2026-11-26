@@ -17,7 +17,7 @@ const SOURCE = '希臘神話豐富的故事性是歐洲文化藝術的創作題�
 const FINAL = [
   '---', 'school: 長榮', 'grade: 高二', 'subject: 歷史', 'unit: 第1章', '---', '',
   '# 歷史 第1章 Final', '',
-  '## ①核心概念', '', '希臘神話是歐洲文化藝術的創作題材。宙斯住在火星上。', '',
+  '## ①核心概念', '', '希臘神話是歐洲文化藝術的創作題材。雅典娜每天搭火箭去月球上班。', '',
   '## ⑪常考題型', '', '**Q1.** 宙斯住在哪裡？', '(A) 奧林帕斯山 (B) 火星', '答案：A', '詳解：課本說「宙斯是眾神之王，住在奧林帕斯山」', '',
   '## ⑭Cross Review', '', '不檢查這一節。', '',
 ].join('\n');
@@ -116,9 +116,9 @@ describe('draftReview：程式逐句對照 SOURCE＋Claude 最後檢核', () => 
     expect(r.applied).toEqual(['S2']);
     expect(r.skipped).toEqual(['S3']);
     expect(r.markdown).toContain('宙斯住在奧林帕斯山。');
-    expect(r.markdown).not.toContain('宙斯住在火星上');
+    expect(r.markdown).not.toContain('雅典娜每天搭火箭去月球上班');
     expect(r.markdown).toContain('希臘神話是歐洲文化藝術的創作題材。');
-    expect(draftReview.applyRevisions(FINAL, units, 'S2：刪除', ['S2']).markdown).not.toContain('宙斯住在火星上');
+    expect(draftReview.applyRevisions(FINAL, units, 'S2：刪除', ['S2']).markdown).not.toContain('雅典娜每天搭火箭去月球上班');
   });
 });
 
@@ -195,5 +195,23 @@ describe('/api/finals/:filename/final-check', () => {
     const record = JSON.parse(fs.readFileSync(path.join(OUTPUTS, `${name}.adjudication.json`), 'utf8'));
     expect(record.finalCheck.rounds).toHaveLength(3);
     expect(record.finalCheck.status).toBe('needs_human');
+  });
+});
+
+describe('2026-11-26 實跑後修正', () => {
+  test('引擎自己的「> …」說明不列入檢核；刪除句子後不留下多餘空行', () => {
+    const md = ['## ①核心概念', '', '甲句。', '', '乙句。', '', '丙句。', '', '> 另有 3 題未通過自動裁決，尚未收錄。'].join('\n');
+    const { units } = draftReview.checkUnits(md, '甲句乙句丙句');
+    expect(units.map((u) => u.text)).toEqual(['甲句。', '乙句。', '丙句。']);
+    const r = draftReview.applyRevisions(md, units, 'S2：刪除', ['S2']);
+    expect(r.markdown).toBe(['## ①核心概念', '', '甲句。', '', '丙句。', '', '> 另有 3 題未通過自動裁決，尚未收錄。'].join('\n'));
+  });
+
+  test('交叉審議的貢獻節數只算 ①～⑬（不再出現 15/13）', async () => {
+    const { assembleCouncilFinal } = require('../services/multiAi');
+    const all = ['①核心概念', '②章節摘要', '③重點詞彙', '④文意理解', '⑤修辭手法', '⑥文化脈絡', '⑦作者背景', '⑧段落結構', '⑨延伸思考', '⑩易混淆概念', '⑪常考題型', '⑫易錯陷阱', '⑬跨課連結', '⑭Cross Review', '⑮Final Score']
+      .map((t) => `# ${t}\n內容`).join('\n');
+    const council = await assembleCouncilFinal({ school: 's', grade: 'g', subject: '地球科學', unit: 'u', category: 'c' }, { localA: all, localB: all }, '');
+    expect(council.contributions).toEqual({ localA: 13, localB: 13 });
   });
 });
