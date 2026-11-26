@@ -10,7 +10,7 @@
 
    只做判斷、不改題目、不碰線上出題。模型一律由呼叫端注入：
      judge(prompt)  -> 回覆文字（關卡 2）       answer(prompt) -> 回覆文字（關卡 3，要用與出題不同的模型）
-     embed(text)    -> 數字陣列（關卡 4，可省略：沒有 embedding 模型時改用字元雙字組相似度）
+     embed(text)    -> 數字陣列（關卡 4，本機用 bge-m3，餘弦 ≥0.95 為重複；可省略：沒有 embedding 模型時改用字元雙字組相似度）
    createOllamaModels() 是接本機 Ollama 的預設實作。 */
 
 const LETTERS = 'ABCDEFGH';
@@ -122,6 +122,41 @@ function createDedupeIndex({ embed = null, threshold = null } = {}) {
   };
 }
 
+/* 關卡 4 的向量快取（2026-11-26，bge-m3）：同一段文字只算一次 embedding，存成檔案（Float32 base64），
+   下次只算新題。換模型時整份快取作廢。file 為 null 時只在記憶體裡快取。 */
+function createEmbedCache(embed, { file = null, model = '' } = {}) {
+  const fs = require('fs');
+  const path = require('path');
+  const crypto = require('crypto');
+  let vectors = {};
+  if (file && fs.existsSync(file)) {
+    try { const d = JSON.parse(fs.readFileSync(file, 'utf8')); if (d.model === model) vectors = d.vectors || {}; } catch (e) { vectors = {}; }
+  }
+  let hits = 0, misses = 0, dirty = false;
+  const keyOf = (t) => crypto.createHash('sha1').update(t).digest('hex');
+  const encode = (v) => Buffer.from(new Float32Array(v).buffer).toString('base64');
+  const decode = (s) => Array.from(new Float32Array(new Uint8Array(Buffer.from(s, 'base64')).buffer));
+  return {
+    async embed(text) {
+      const k = keyOf(text);
+      if (vectors[k]) { hits++; return decode(vectors[k]); }
+      misses++;
+      const v = await embed(text);
+      vectors[k] = encode(v);
+      dirty = true;
+      return v;
+    },
+    save() {
+      if (!file || !dirty) return false;
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, JSON.stringify({ model, vectors }));
+      dirty = false;
+      return true;
+    },
+    stats() { return { hits, misses, size: Object.keys(vectors).length }; },
+  };
+}
+
 const GATES = ['structure', 'source', 'blind', 'dedupe'];
 
 /* ctx: { judge, answer, embed, sourceText, existing: [既有題目], dedupeThreshold, onProgress } */
@@ -175,4 +210,4 @@ function createOllamaModels({ url = process.env.OLLAMA_URL || 'http://127.0.0.1:
   };
 }
 
-module.exports = { GATES, difficultyOf, gateStructure, gateSource, gateBlind, createDedupeIndex, runGates, createOllamaModels, answerIndex, evidenceOf, letterOf };
+module.exports = { GATES, difficultyOf, gateStructure, gateSource, gateBlind, createDedupeIndex, createEmbedCache, runGates, createOllamaModels, answerIndex, evidenceOf, letterOf };

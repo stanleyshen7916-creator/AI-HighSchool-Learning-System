@@ -1,6 +1,9 @@
 'use strict';
 /* AHS-QB1 品質關卡 1–4（platform/QualityGates.js）。模型全部用假的，不連 Ollama。 */
-const { gateStructure, gateSource, gateBlind, createDedupeIndex, runGates, answerIndex, evidenceOf, difficultyOf, letterOf } = require('../platform/QualityGates');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { gateStructure, gateSource, gateBlind, createDedupeIndex, createEmbedCache, runGates, answerIndex, evidenceOf, difficultyOf, letterOf } = require('../platform/QualityGates');
 
 const good = (over = {}) => Object.assign({
   id: 'tm_x_q1', type: 'single_choice', question: '希臘神話與歐洲文化有什麼關聯？',
@@ -105,6 +108,40 @@ describe('gate 4 dedupe', () => {
     const idx = createDedupeIndex();
     await idx.add(good());
     expect((await idx.check(good())).reasons).toEqual([]);
+  });
+});
+
+describe('embedding cache (gate 4, bge-m3)', () => {
+  const tmp = () => path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'qg-cache-')), 'bge-m3.json');
+  test('the same text is embedded once, the vector survives a save and reload', async () => {
+    const file = tmp();
+    const embed = jest.fn(async (t) => [t.length, 0.5, -0.25]);
+    const c1 = createEmbedCache(embed, { file, model: 'bge-m3' });
+    expect(await c1.embed('甲乙丙')).toEqual([3, 0.5, -0.25]);
+    expect(await c1.embed('甲乙丙')).toEqual([3, 0.5, -0.25]);
+    expect(embed).toHaveBeenCalledTimes(1);
+    expect(c1.save()).toBe(true);
+    expect(c1.save()).toBe(false);                     // nothing new to write
+    const c2 = createEmbedCache(embed, { file, model: 'bge-m3' });
+    expect(await c2.embed('甲乙丙')).toEqual([3, 0.5, -0.25]);
+    expect(embed).toHaveBeenCalledTimes(1);
+    expect(c2.stats()).toEqual({ hits: 1, misses: 0, size: 1 });
+  });
+  test('a cache made with another model is ignored', async () => {
+    const file = tmp();
+    const c1 = createEmbedCache(async () => [1, 2], { file, model: 'old-model' });
+    await c1.embed('文字');
+    c1.save();
+    const embed = jest.fn(async () => [3, 4]);
+    expect(await createEmbedCache(embed, { file, model: 'bge-m3' }).embed('文字')).toEqual([3, 4]);
+    expect(embed).toHaveBeenCalledTimes(1);
+  });
+  test('runGates uses the cached embed for dedupe', async () => {
+    const embed = jest.fn(async (t) => (t.includes('希臘') ? [1, 0] : [0, 1]));
+    const cache = createEmbedCache(embed);
+    const { results } = await runGates([good({ id: 'new', question: '希臘神話與歐洲文化有何關聯？' })], { embed: cache.embed, existing: [good({ id: 'old' })] });
+    expect(results[0]).toMatchObject({ failedAt: 'dedupe' });
+    expect(results[0].reasons[0]).toMatch(/與 old 太相似（1\.00）/);
   });
 });
 
