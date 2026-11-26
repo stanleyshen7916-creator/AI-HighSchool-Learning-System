@@ -1,11 +1,11 @@
 // ai-engine/council/platform/SupplementBuilder.js — 2026-10-01 為既有教材加題。
 //
-// 題庫太小（每課 10～60 題）時，用網頁版 AI 為「已上架」的教材補出新題目。不呼叫任何
-// AI API：引擎只負責產生 Prompt、擷取貼回來的結果、核對，由管理者複製貼上。
+// 題庫太小（每課 10～60 題）時，為「已上架」的教材補出新題目。2026-11-26 AHS-A3 起：出題由本機模型 A、
+// 獨立作答由本機模型 B（POST /api/local-ai/jobs），Claude 只做最後檢核（新對話獨立作答）；不再使用 ChatGPT／Gemini。
 //
-//   1. authorPrompt()   依原教材的核心概念／定義／重點／易錯點與既有題目，產生出題 Prompt。
+//   1. authorPrompt()   依原教材的核心概念／定義／重點／易錯點與既有題目，產生出題 Prompt（交本機模型 A）。
 //   2. solverPrompt()   擷取出題結果，產生「只有題目、沒有答案」的作答 Prompt，
-//                       交給「新的」Claude 對話（三方模式再加 ChatGPT、Gemini）獨立作答。
+//                       交本機模型 B 與「新的」Claude 對話各自獨立作答。
 //   3. check()          逐題核對：作答答案與出題答案不一致、作答者認為題目有問題、
 //                       缺詳解、選項不足或重複 → 需人工確認；與既有題目或本批其他題
 //                       重複 → 重複（不能加入）。
@@ -26,7 +26,7 @@ const MAX_COUNT = 40;
 // 0.7～0.9 但選項不同 → 需人工確認（可能只是改了數字）。
 const DUPLICATE_THRESHOLD = 0.9;
 const SIMILAR_THRESHOLD = 0.7;
-const SOLVER_NAMES = { 'claude-fresh': 'Claude（新對話）', chatgpt: 'ChatGPT', gemini: 'Gemini' };
+const SOLVER_NAMES = { 'local-b': '本機模型 B', 'claude-fresh': 'Claude（新對話，最後檢核）' };
 
 function readJson(file, fallback) {
   try {

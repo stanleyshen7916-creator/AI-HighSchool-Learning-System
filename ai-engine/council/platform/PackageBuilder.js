@@ -147,12 +147,12 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       '',
       '## 產出過程（自動轉換，誠實揭露）',
       '',
-      `本教材包由學習平台「教材上傳」頁（upload.html）呼叫本機教材上傳引擎（ai-engine/council）建立：原始教材經 OCR 取得本文後，由 ChatGPT (Web)、Gemini (Web)、Claude (Web) 三方獨立分析，再經 Council 交叉審議產出 \`source/${finalFilename}\`。`,
+      `本教材包由學習平台「教材上傳」頁（upload.html）呼叫本機教材上傳引擎（ai-engine/council）建立：原始教材經 OCR 取得本文後，由兩個本機模型（Ollama）各自獨立撰寫初稿、本機交叉比對，再由 Claude 做最後檢核，經 Council 交叉審議產出 \`source/${finalFilename}\`。`,
       '',
       `- 審議模式：${fm.mode || '（未標示）'}；裁決：${fm.adjudicator || '（未標示）'}${fm.adjudication_mode ? `（${fm.adjudication_mode}）` : ''}`,
       `- Quality Gate：${parsed.qualityGate || '（未標示）'}；Final Score：${parsed.finalScore || '（未標示）'}${fm.run_id ? `；run_id：\`${fm.run_id}\`` : ''}`,
       '- `summary.json`、`questionbank.json` 由 FinalParser 從 Final.md 逐字擷取，不補寫、不猜測；題目一律標示為 `AI_GENERATED`，`page` 無法可靠對應，一律為 `null`。',
-      '- `manifest.json` 的 `analysisEngine` 為 Schema 唯一允許的值 `"Claude"`，實際來源為上述三方 AI 與 Council 審議。',
+      '- `manifest.json` 的 `analysisEngine` 為 Schema 唯一允許的值 `"Claude"`，實際來源為上述本機模型初稿、Council 審議與 Claude 最後檢核。',
       '- 管理者已在上傳頁預覽擷取結果後才發布。',
     ];
     if (parsed.warnings.length) {
@@ -390,8 +390,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     const m = parent.metadata;
     const solved = (checkResult.solvers || []).length > 0;
     const pastExam = !!checkResult.pastExam;
-    const modeLabel = pastExam ? '歷屆試題：題目與選項逐字取自官方公布的試卷，答案依官方公布的答案，不另做獨立作答核對' : !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
-      : '單一 Claude（Claude 出題；另開新的 Claude 對話獨立作答）';
+    const modeLabel = pastExam ? '歷屆試題：題目與選項逐字取自官方公布的試卷，答案依官方公布的答案，不另做獨立作答核對' : !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : '本機核對（本機模型 A 出題；本機模型 B 與 Claude 新對話各自獨立作答核對）';
     const reviewed = accepted.filter((q) => q.status === 'review');
     const lines = [
       `# ${materialId} — 補充題庫：${parent.materialId}「${m.chapter || ''}」`,
@@ -454,7 +453,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       sourceNames.push(name);
     });
     writeJson(path.join(sourceDir, 'check-report.json'), {
-      parentId, mode: mode === 'tri' ? 'tri' : 'single', createdAt: now,
+      parentId, mode: 'local', createdAt: now,
       accepted: chosen.map((q) => q.number), reviewNote: reviewNote ? String(reviewNote) : null, ...result,
     });
     sourceNames.push('check-report.json');

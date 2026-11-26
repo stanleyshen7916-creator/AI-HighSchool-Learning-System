@@ -42,3 +42,10 @@ describe('extractSectionsFromDraft 章節別名', () => {
     expect(s['③重點詞彙']).toContain('計算技巧與驗算');
   });
 });
+
+describe('extractSectionsFromDraft 標題格式（2026-11-26 AHS-A3 本機模型初稿）', () => {
+  test('「# ①…」「**②…**」「③…」與「## ④…」都算小節標題，標題後的空白不影響', () => {
+    const s = extractSectionsFromDraft(['# ①核心概念  ', '甲', '**②章節摘要**', '乙', '③重點詞彙', '丙', '## ④文意理解', '丁'].join('\n'));
+    expect([s['①核心概念'], s['②章節摘要'], s['③重點詞彙'], s['④文意理解']]).toEqual(['甲', '乙', '丙', '丁']);
+  });
+});

@@ -78,17 +78,24 @@ AHS.CouncilEngineClient = (function () {
     health: function () { return request("GET", "/api/health"); },
     catalog: function () { return request("GET", "/api/catalog"); },
     finalContent: function (filename) { return request("GET", "/api/finals/" + enc(filename)); },
-    /* 2026-10-06 審議時保存的初稿（2026-11-16 起為 ChatGPT＋Claude 雙方） */
+    /* 2026-10-06 審議時保存的初稿（2026-11-26 起為本機模型 A、B 兩份） */
     finalDrafts: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/drafts"); },
     saveFinal: function (filename, content) { return request("PUT", "/api/finals/" + enc(filename), { content: content }); },
     /* 2026-10-12: 練習題 Claude 最終審查包 */
     practiceReview: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/practice-review"); },
     applyPracticeReview: function (filename, reply) { return request("POST", "/api/finals/" + enc(filename) + "/practice-review", { reply: reply }); },
-    /* 2026-10-14: 原文辨識協助包（OCR 看不清楚的照片交給 ChatGPT／Claude 網頁版轉錄） */
+    /* 2026-10-14: 原文辨識協助包（2026-11-26 起 OCR 看不清楚的照片由本機視覺模型轉錄） */
     ocrHelpCheck: function (sourceText, filename) { return request("POST", "/api/ocr-help/check", { sourceText: sourceText, filename: filename || null }); },
     ocrHelpMerge: function (payload) { return request("POST", "/api/ocr-help/merge", payload); },
     /* 2026-10-14: 送 Claude 最終審查的比例與標準答案集筆數 */
     adjudicationStats: function () { return request("GET", "/api/stats/adjudication"); },
+    /* 2026-11-26 AHS-A3：本機模型工作（kind＝drafts｜author｜solve｜transcribe），背景執行、輪詢結果 */
+    localJob: function (payload) { return request("POST", "/api/local-ai/jobs", payload); },
+    getLocalJob: function (jobId) { return request("GET", "/api/local-ai/jobs/" + enc(jobId)); },
+    /* 2026-11-26 AHS-A3：Claude 最後檢核（只判定、不重寫）；需修正時由本機模型修正，最多 2 輪 */
+    finalCheck: function (filename) { return request("GET", "/api/finals/" + enc(filename) + "/final-check"); },
+    applyFinalCheck: function (filename, reply) { return request("POST", "/api/finals/" + enc(filename) + "/final-check", { reply: reply }); },
+    reviseFinal: function (filename) { return request("POST", "/api/finals/" + enc(filename) + "/final-check/revise", {}); },
     upload: function (files, progressId) {
       var form = new FormData();
       Array.prototype.forEach.call(files, function (f) { form.append("files", f, f.name); });

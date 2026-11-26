@@ -3,7 +3,7 @@
 // 過去 ⑪ 的練習題（題幹＋選項＋答案）原樣附在 Final.md，標「未經 Qwen 逐題裁決」，答案正確性
 // 只能靠人工檢查。現在每一題依序檢查：
 //   1. 格式（程式判斷）：選項至少 2 個、不重複；答案必須是其中一個選項（FinalParser 已保證）。
-//   2. 三方比對（程式判斷）：題幹相同的題目若出現在多份初稿，答案必須一致。
+//   2. 雙方比對（程式判斷）：題幹相同的題目若出現在多份初稿，答案必須一致。
 //   3. Qwen 獨立作答：只給教材原文、題幹與選項（不給答案），請 Qwen 作答並逐字引用依據；
 //      作答與初稿答案一致才通過。
 // 全部通過的題目收進 Final.md；其餘整理成「Claude 最終審查包」，由管理者貼到 Claude 網頁版
@@ -11,7 +11,8 @@
 // 正確、答案應為 X → 收錄；刪除、無法判斷 → 不收錄（Project Owner 2026-10-11 決定）。
 const { parseQuestionText } = require('../platform/FinalParser');
 
-const DRAFT_LABEL = { chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude' };
+// 2026-11-26 AHS-A3：兩份初稿都由本機模型撰寫（A、B）；chatgpt／gemini／claude 鍵名只為舊資料保留。
+const DRAFT_LABEL = { localA: '本機模型 A', localB: '本機模型 B', chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude' };
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const PRACTICE_START = '<!-- practice:start -->';
 const PRACTICE_END = '<!-- practice:end -->';
@@ -92,7 +93,7 @@ async function adjudicatePractice(practiceTexts, sourceText, deps) {
     const answers = Array.from(new Set(group.map((g) => g.q.answer)));
     if (answers.length > 1) {
       item.checks.drafts = group.map((g) => `${DRAFT_LABEL[g.origin]}：${letterOf(q, g.q.answer) || g.q.answer}`).join('、');
-      pending.push(Object.assign(item, { reason: `三方答案不一致（${item.checks.drafts}）` }));
+      pending.push(Object.assign(item, { reason: `雙方答案不一致（${item.checks.drafts}）` }));
       continue;
     }
     let solved = null;
@@ -132,7 +133,7 @@ function renderQuestions(list) {
 function renderPracticeBlock(accepted, pendingCount) {
   return [
     PRACTICE_START,
-    '### 練習題（已逐題裁決：格式、三方比對、Qwen 獨立作答皆通過）',
+    '### 練習題（已逐題裁決：格式、雙方比對、Qwen 獨立作答皆通過）',
     '',
     accepted.length ? renderQuestions(accepted) : '（本輪沒有通過自動裁決的練習題）',
     ...(pendingCount ? [`> 另有 ${pendingCount} 題未通過自動裁決，尚未收錄；請於上傳頁產生「Claude 最終審查包」。`] : []),

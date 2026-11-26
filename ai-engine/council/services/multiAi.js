@@ -35,7 +35,7 @@ function keyOf(def) {
 
 const SECTION_KEYS = SECTION_DEFS.map(keyOf);
 
-// Gate 2（section-level completeness）：①~⑬ 是從三方初稿抽取實質教材內容的小節；
+// Gate 2（section-level completeness）：①~⑬ 是從雙方初稿抽取實質教材內容的小節；
 // ⑭Cross Review、⑮Final Score 是管線自己產生的流程／裁決摘要小節，不是從初稿內容
 // 抽取claim的對象，計算「小節覆蓋率」時必須排除，否則分母會被稀釋、覆蓋率虛高。
 const CONTENT_SECTION_KEYS = SECTION_KEYS.slice(0, 13);
@@ -171,8 +171,10 @@ const FAILURE_REASON = Object.freeze({
   SOURCE_TRUTH_GATE_HARD_FAIL: 'SOURCE_TRUTH_GATE_HARD_FAIL',
 });
 
-// ChatGPT/Gemini/Claude 觀點標籤不得殘留於 Qwen 語意裁決後的正式內容（Source Attribution Leakage Gate）。
+// 初稿來源的觀點標籤不得殘留於 Qwen 語意裁決後的正式內容（Source Attribution Leakage Gate）。
+// 2026-11-26 AHS-A3：兩份初稿都由本機模型撰寫；ChatGPT／Gemini／Claude 樣式保留，舊初稿重跑時仍會被擋。
 const ATTRIBUTION_LEAK_PATTERNS = [
+  /本機模型\s*[AB]?\s*(?:觀點|認為)/,
   /ChatGPT\s*(?:\(Web\))?\s*(?:觀點|認為)/,
   /Gemini\s*(?:\(Web\))?\s*(?:觀點|認為)/,
   /Claude\s*(?:\(Web\))?\s*(?:觀點|認為)/,
@@ -200,7 +202,8 @@ function extractSectionsFromDraft(draftText) {
     return sections;
   }
 
-  const headerRegex = /(?:^|\r?\n)\s*(?:##\s*)?([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮])[\s　]*([^\r\n]*)/g;
+  // 2026-11-26 AHS-A3：本機模型常用「# ①…」或「**①…**」當小節標題（網頁版多為「## ①…」），一律接受。
+  const headerRegex = /(?:^|\r?\n)\s*(?:#{1,6}\s*)?(?:\*\*)?([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮])[\s　]*([^\r\n]*?)(?:\*\*)?[ \t　]*(?=\r?\n|$)/g;
   const matches = [];
   let match;
 
@@ -338,7 +341,7 @@ async function callOllamaAdjudication(
 // Claim-level Semantic Cross-Council Adjudication
 //
 // Canonical SOURCE 是唯一 Truth Anchor。Qwen2.5 不是第四份 Draft、不是投票者，
-// 是 Semantic Cross-Council Adjudicator：對三方 Draft 抽取出的 Claim 逐一比對
+// 是 Semantic Cross-Council Adjudicator：對雙方 Draft 抽取出的 Claim 逐一比對
 // Canonical SOURCE evidence 後裁決，裁決優先序固定為
 //   Canonical SOURCE evidence > SOURCE-grounded semantic reasoning >
 //   Claim-level evidence > Draft quality > Cross-draft agreement（majority vote 禁止使用）。
@@ -347,7 +350,7 @@ async function callOllamaAdjudication(
 function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
   return [
     '你是 AI-Study-Council 的 Semantic Cross-Council Adjudicator（語意裁決者）。',
-    '你不是第四份初稿，也不是投票者；你的任務是針對三方初稿中的每一個 Claim（陳述），',
+    '你不是第四份初稿，也不是投票者；你的任務是針對雙方初稿中的每一個 Claim（陳述），',
     '對照下方【CANONICAL SOURCE】逐一裁決，並輸出結構化 JSON。',
     '',
     '裁決優先順序（固定，不得更動）：',
@@ -355,28 +358,27 @@ function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
     '2. SOURCE-grounded semantic reasoning',
     '3. Claim-level evidence',
     '4. Draft 本身品質',
-    '5. 三方初稿是否一致（禁止使用：不得因為兩份初稿意見相同就判定為正確，即禁止 majority vote）',
+    '5. 雙方初稿是否一致（禁止使用：不得因為兩份初稿意見相同就判定為正確，即禁止 majority vote）',
     '',
     '範例（必須遵守的行為）：',
     '若 SOURCE 寫「頭觸硬壁，驀然而踣」，',
-    '而 ChatGPT 初稿與 Gemini 初稿都寫「頭觸硬壁，蹶然而踣」（兩份意見相同），',
-    'Claude 初稿寫「頭觸硬壁，驀然而踣」且引用 SOURCE 頁碼，',
+    '而本機模型 A 初稿寫「頭觸硬壁，蹶然而踣」，',
+    '本機模型 B 初稿寫「頭觸硬壁，驀然而踣」且引用 SOURCE 頁碼，',
     '你必須裁決「驀然而踣」為正確（SUPPORTED），「蹶然而踣」為錯誤（CONTRADICTED）——',
-    '即使那是兩份初稿一致的說法。不得因為兩票對一票而選擇「蹶然而踣」。',
+    '只看 SOURCE，不看是哪一份初稿寫的，也不因兩份初稿寫法相同就判定為正確。',
     '',
     `學校：${metadata.school}　年級：${metadata.grade}　科目：${metadata.subject}　單元：${metadata.unit}`,
     '',
     '【CANONICAL SOURCE（唯一 Truth Anchor，逐字引用時必須與此完全一致）】',
     sourceText,
     '',
-    '【ChatGPT 初稿】',
-    drafts.chatgpt || '',
+    '【本機模型 A 初稿】',
+    drafts.localA || '',
     '',
-    ...(drafts.gemini ? ['【Gemini 初稿】', drafts.gemini, ''] : []),
-    '【Claude 初稿】',
-    drafts.claude || '',
+    '【本機模型 B 初稿】',
+    drafts.localB || '',
     '',
-    '請將三方初稿中的重要 Claim 抽取出來（可合併重複／近似重複的 Claim 為同一項），',
+    '請將雙方初稿中的重要 Claim 抽取出來（可合併重複／近似重複的 Claim 為同一項），',
     '這個階段「只負責抽取與初步分類」，不需要裁決 verdict、不需要逐字引用 SOURCE——',
     '這兩件事會由後續針對「單一 Claim」的獨立步驟處理（避免同時處理多個 Claim 時，',
     '逐字引用罕見字元的精確度下降）。',
@@ -398,7 +400,7 @@ function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
     '4. 如果同一個 claim 內容確實同時對應到多個小節，可以在 "sections" 陣列裡列出全部',
     '   對應的小節（見下方 schema），不要只挑一個。',
     '5. 如果一個小節「確實有內容」，但三份初稿的說法你認為不足以形成一個可驗證的',
-    '   claim（例如內容太模糊、太片段、三方分歧過大無法整合），「不得」為了湊數而捏造',
+    '   claim（例如內容太模糊、太片段、雙方分歧過大無法整合），「不得」為了湊數而捏造',
     '   或過度延伸出一個 claim。但也「不得」什麼都不回報、直接略過——這正是這一步曾經',
     '   真正發生過的失敗模式（省略等同於讓這個小節憑空消失）。正確做法：把這個小節列進',
     '   "unresolved_sections" 陣列，簡短說明為什麼無法形成可驗證 claim（見下方 schema）。',
@@ -414,7 +416,7 @@ function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
     '      "claim_id": "c1",',
     '      "section": "①核心概念",',
     '      "sections": ["①核心概念"],',
-    '      "claim": "融合後的最終陳述文字（繁體中文，不得出現 ChatGPT/Gemini/Claude 字樣）"',
+    '      "claim": "融合後的最終陳述文字（繁體中文，不得出現「本機模型 A／B」等初稿來源字樣）"',
     '    }',
     '  ],',
     '  "unresolved_sections": [',
@@ -444,7 +446,7 @@ function buildClaimAdjudicationPrompt(metadata, sourceText, drafts) {
 function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, draftSnippets) {
   return [
     '你是 AI-Study-Council 的 Semantic Cross-Council Adjudicator（語意裁決者）。',
-    '你不是第四份初稿，也不是投票者；你的任務是針對三方初稿中的 Claim（陳述），',
+    '你不是第四份初稿，也不是投票者；你的任務是針對雙方初稿中的 Claim（陳述），',
     '對照下方【CANONICAL SOURCE】逐一裁決，並輸出結構化 JSON。',
     '',
     '這一次「只」需要處理一個小節：' + sectionKey + '。下面只會給你三份初稿裡',
@@ -455,7 +457,7 @@ function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, dra
     '2. SOURCE-grounded semantic reasoning',
     '3. Claim-level evidence',
     '4. Draft 本身品質',
-    '5. 三方初稿是否一致（禁止使用：不得因為兩份初稿意見相同就判定為正確，即禁止 majority vote）',
+    '5. 雙方初稿是否一致（禁止使用：不得因為兩份初稿意見相同就判定為正確，即禁止 majority vote）',
     '',
     `學校：${metadata.school}　年級：${metadata.grade}　科目：${metadata.subject}　單元：${metadata.unit}`,
     '',
@@ -463,15 +465,14 @@ function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, dra
     sourceText,
     '',
     `【各方初稿中，屬於「${sectionKey}」的內容】`,
-    'ChatGPT：',
-    draftSnippets.chatgpt || '（這份初稿在這個小節沒有內容）',
+    '本機模型 A：',
+    draftSnippets.localA || '（這份初稿在這個小節沒有內容）',
     '',
-    ...(draftSnippets.gemini ? ['Gemini：', draftSnippets.gemini, ''] : []),
-    'Claude：',
-    draftSnippets.claude || '（這份初稿在這個小節沒有內容）',
+    '本機模型 B：',
+    draftSnippets.localB || '（這份初稿在這個小節沒有內容）',
     '',
     '請把上面三份初稿中，屬於這個小節的重要 Claim 抽取出來（可合併重複／近似重複的',
-    '說法為同一項——三方講的是同一件事時，合併成一個 claim，不要各自重複列出）。',
+    '說法為同一項——雙方講的是同一件事時，合併成一個 claim，不要各自重複列出）。',
     '這個階段「只負責抽取與初步分類」，不需要裁決 verdict、不需要逐字引用 SOURCE——',
     '這兩件事會由後續針對「單一 Claim」的獨立步驟處理。',
     '',
@@ -483,17 +484,17 @@ function buildSectionClaimExtractionPrompt(metadata, sourceText, sectionKey, dra
     '4. claims 依教學順序排列：先定義，再說明，再舉例，最後提醒。',
     '',
     '這個小節「一定」有內容（至少一份初稿寫了東西），所以你「必須」在下面兩者之一',
-    '回應：抽出至少一個 claim，或是回報 unresolved（三方說法都不足以形成一個可驗證',
+    '回應：抽出至少一個 claim，或是回報 unresolved（雙方說法都不足以形成一個可驗證',
     '的陳述時使用——不得為了湊數而捏造或過度延伸，直接誠實回報 unresolved 即可，',
     '不要什麼都不回應）。',
     '',
     '「只」輸出一個 JSON 物件，不得輸出任何 JSON 以外的文字：',
     '',
     '有 claim 時：',
-    '{ "claims": [ { "claim_id": "c1", "claim": "融合後的陳述文字（繁體中文，不得出現 ChatGPT/Gemini/Claude 字樣）", "type": "fact 或 teaching" } ] }',
+    '{ "claims": [ { "claim_id": "c1", "claim": "融合後的陳述文字（繁體中文，不得出現「本機模型 A／B」等初稿來源字樣）", "type": "fact 或 teaching" } ] }',
     '',
     '無法形成可驗證 claim 時：',
-    '{ "claims": [], "unresolved": { "reason": "簡短說明為什麼三方說法不足以形成可驗證陳述" } }',
+    '{ "claims": [], "unresolved": { "reason": "簡短說明為什麼雙方說法不足以形成可驗證陳述" } }',
   ].join('\n');
 }
 
@@ -516,9 +517,8 @@ async function extractClaimsPerSection(metadata, sourceText, draftSectionMaps, m
 
   for (const sectionKey of CONTENT_SECTION_KEYS) {
     const snippets = {
-      chatgpt: draftSectionMaps.gpt?.[sectionKey] || '',
-      gemini: draftSectionMaps.gemini?.[sectionKey] || '',
-      claude: draftSectionMaps.claude?.[sectionKey] || '',
+      localA: draftSectionMaps.localA?.[sectionKey] || '',
+      localB: draftSectionMaps.localB?.[sectionKey] || '',
     };
 
     const hasContent = Object.values(snippets).some((text) => text.trim().length > 0);
@@ -557,7 +557,7 @@ async function extractClaimsPerSection(metadata, sourceText, draftSectionMaps, m
     }
 
     anySectionSucceeded = true;
-    const bySource = { gpt: snippets.chatgpt, gemini: snippets.gemini, claude: snippets.claude };
+    const bySource = { localA: snippets.localA, localB: snippets.localB };
     const extracted = parsedSection.claims.map((c) => ({ ...c, origins: provenanceOf(c.claim, bySource) }));
     // 模型明確回報 unresolved（沒有抽出任何陳述）時尊重它的判斷，不補入。
     claims.push(...extracted, ...(extracted.length ? uncoveredDraftClaims(sectionKey, bySource, extracted) : []));
@@ -635,7 +635,7 @@ const TEACHING_SECTIONS = new Set(['⑨延伸思考', '⑩易混淆概念', '⑪
 
 // 第 3 階段：每條陳述出自哪幾家，由程式判斷（不靠模型自報）：陳述的雙字詞有一半以上出現在
 // 某家初稿這個小節的內容中，就算出自那一家；都不到一半時，取重疊最多的一家。
-const DRAFT_NAMES = { gpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude' };
+const DRAFT_NAMES = { localA: '本機模型 A', localB: '本機模型 B' };
 function provenanceOf(claimText, snippetsByDraft) {
   const cb = bigramsOf(claimText);
   if (!cb.size) return [];
@@ -778,9 +778,9 @@ function findApproxMatch(needle, sourceText) {
 // allDraftsText（選填，預設空字串——3 個既有單元測試直接以 2 個參數呼叫本函式，
 // 行為必須維持完全不變）：實測發現 near-miss（edit distance 很小）有兩種完全不同的成因，
 // 不能用同一套規則處理：
-//   (a) 三方初稿中「真的」有一方寫錯（例如「蹶然而踣」實際出現在 ChatGPT／Gemini 初稿中）——
+//   (a) 雙方初稿中「真的」有一方寫錯（例如「蹶然而踣」實際出現在本機模型 A 初稿中）——
 //       這是真實的跨初稿衝突，即使只差一兩個字也必須嚴格判 CONTRADICTED（P0-02 acceptance fixture）。
-//   (b) 三方初稿全部都寫對，錯字是 Qwen 自己在同一次生成內部產生的字元誤植（例如「弳」被生成成
+//   (b) 雙方初稿全部都寫對，錯字是 Qwen 自己在同一次生成內部產生的字元誤植（例如「弳」被生成成
 //       「弹」，但三份原始初稿裡完全找不到「弹」這個字）——這不是任何一方初稿真正主張的內容，只是
 //       模型自己的生成雜訊，不該被當成「初稿衝突」而降級，應直接採用我們已經算出的 SOURCE 正確
 //       片段修正為 SUPPORTED。
@@ -821,7 +821,7 @@ function applySourceTruthGate(claims, sourceText, allDraftsText = '') {
           source_ref: approx.matchedText,
           quoted_source_span: approx.matchedText,
           reason: `模型輸出的引用「${span}」與 SOURCE 實際內容「${approx.matchedText}」僅有些微字元差異（edit distance=${approx.distance}），` +
-            `且三方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），` +
+            `且雙方初稿原文皆未出現這個版本的說法，判定為模型生成過程中的字元誤植（而非任何一方初稿真正主張的內容），` +
             `自動採用 SOURCE 原文修正為 SUPPORTED（deterministic SOURCE Truth Gate 確認）。`,
           overridden: claim.verdict !== VERDICTS.SUPPORTED,
         };
@@ -1162,7 +1162,7 @@ function sectionsOfClaim(claim) {
 // claim 優先（已經有真正可驗證的內容，不需要再看 unresolved 狀態）。
 function computeSectionCoverage(draftSectionMaps, claims, unresolvedSections = []) {
   const contentSections = new Set();
-  [draftSectionMaps.gpt, draftSectionMaps.gemini, draftSectionMaps.claude].forEach((sections) => {
+  [draftSectionMaps.localA, draftSectionMaps.localB].forEach((sections) => {
     CONTENT_SECTION_KEYS.forEach((key) => {
       if (sections && typeof sections[key] === 'string' && sections[key].trim()) {
         contentSections.add(key);
@@ -1246,7 +1246,7 @@ function draftSentences(text) {
   return String(text || '')
     .split(/\n+|(?<=[。！？；])/)
     .map((t) => t.replace(/^[\s>*\-•#\d.、（）()]+/, '').replace(/\*\*/g, '').trim())
-    .filter((t) => t.length >= 8 && !/ChatGPT|Gemini|Claude/.test(t) && !/^(\(?[A-E]\)|Q\s*\d|答案|詳解)/.test(t));
+    .filter((t) => t.length >= 8 && !/本機模型|ChatGPT|Gemini|Claude/.test(t) && !/^(\(?[A-E]\)|Q\s*\d|答案|詳解)/.test(t));
 }
 function uncoveredDraftClaims(sectionKey, bySource, extracted) {
   const covered = new Set();
@@ -1355,29 +1355,33 @@ function assembleClaimsIntoSections(claims) {
   return { sections, hardFail: leaked };
 }
 
-// 2026-11-16：初稿改為 ChatGPT＋Claude 雙方；只有實際提供 Gemini 初稿時才列入來源。
-function draftSourcesLabel(drafts = {}) {
-  return String(drafts.gemini || '').trim()
-    ? 'ChatGPT (Web) + Gemini (Web) + Claude (Web)'
-    : 'ChatGPT (Web) + Claude (Web)';
+// 2026-11-26 AHS-A3：兩份初稿都由本機模型撰寫（services/localWriter.js，A＝qwen、B＝gpt-oss），在這裡交叉比對、
+// 不一致處對照 SOURCE 由 Qwen 裁決，無法判定的交 Claude 最後檢核（上傳頁，services/draftReview.js）。Claude 不寫初稿。
+const DRAFT_SOURCES_LABEL = '本機模型 A + 本機模型 B (Ollama)，Claude 最後檢核';
+
+/* 舊資料重跑時（ChatGPT＋Claude 雙方、或含 Gemini 的三方初稿）：ChatGPT 那份放 A、Claude 那份放 B，Gemini 不再使用。 */
+function normalizeDrafts(drafts = {}) {
+  return {
+    localA: drafts.localA != null ? drafts.localA : (drafts.chatgpt || ''),
+    localB: drafts.localB != null ? drafts.localB : (drafts.claude || ''),
+  };
 }
 
-function buildFallbackSections(gpt, gemini, claude) {
+function buildFallbackSections(localA, localB) {
   const merged = {};
 
   SECTION_DEFS.forEach((def) => {
     const key = keyOf(def);
     const parts = [];
 
-    if (gpt[key]) parts.push(`ChatGPT 認為：\n${gpt[key]}`);
-    if (gemini[key]) parts.push(`Gemini 認為：\n${gemini[key]}`);
-    if (claude[key]) parts.push(`Claude 認為：\n${claude[key]}`);
+    if (localA[key]) parts.push(`本機模型 A 認為：\n${localA[key]}`);
+    if (localB[key]) parts.push(`本機模型 B 認為：\n${localB[key]}`);
 
     merged[key] = parts.join('\n\n');
   });
 
   merged['⑭Cross Review'] =
-    '盲點修正：已保留三方 Web 初稿差異；萃取各自優勢，填補考題與結構，本次未完成本地語意裁決，需人工覆核。';
+    '盲點修正：已保留雙方初稿差異；萃取各自優勢，填補考題與結構，本次未完成本地語意裁決，需人工覆核。';
 
   merged['⑮Final Score'] =
     'Self-QA：N/A\nQuality Gate 判定：PENDING_MANUAL_REVIEW';
@@ -1391,10 +1395,10 @@ async function runTriCouncil(sourceText, meta = {}) {
   const isTooShort = trimmed.length < 10;
 
   const phase1Scores = isEmpty
-    ? { GPT: 70, Gemini: 70, Claude: 70 }
+    ? { LocalA: 70, LocalB: 70 }
     : isTooShort
-      ? { GPT: 85, Gemini: 85, Claude: 85 }
-      : { GPT: 100, Gemini: 100, Claude: 100 };
+      ? { LocalA: 85, LocalB: 85 }
+      : { LocalA: 100, LocalB: 100 };
 
   const finalScore = isEmpty ? 75 : isTooShort ? 85 : 100;
   const qualityGate = finalScore >= 98 ? 'PASS' : 'FAIL';
@@ -1413,11 +1417,11 @@ async function runTriCouncil(sourceText, meta = {}) {
 
   sections['⑪常考題型'] = isEmpty
     ? '未提供來源文本，無法建立來源導向題型。'
-    : 'Phase 1 獨立初稿自評：三方均完成來源導向分析。';
+    : 'Phase 1 獨立初稿自評：雙方均完成來源導向分析。';
 
   sections['⑭Cross Review'] = isEmpty
     ? '未提供來源文本，無法完成有效交叉比對。'
-    : 'Phase 2 交叉比對修訂：GPT-Revised、Gemini-Revised、Claude-Revised。';
+    : 'Phase 2 交叉比對修訂：LocalA-Revised、LocalB-Revised。';
 
   sections['⑮Final Score'] = isEmpty
     ? '未提供來源文本。\nSelf-QA：75 / 100\nQuality Gate 判定：未通過，建議人工覆核'
@@ -1433,11 +1437,11 @@ async function runTriCouncil(sourceText, meta = {}) {
       unit: meta.unit || 'L01',
       category: meta.category || '課本',
       engine: meta.engine || 'Tri-Council',
-      team: 'GPT + Gemini + Claude',
+      team: '本機模型 A + 本機模型 B',
       reviewMode: 'Independent → Cross Review → Adjudication',
       pipeline: 'Council Pipeline: SIMULATED',
-      mode: 'Human-in-the-Loop Tri-Web Council',
-      sources: 'ChatGPT (Web) + Gemini (Web) + Claude (Web)',
+      mode: 'Local Dual-Draft Council',
+      sources: DRAFT_SOURCES_LABEL,
       adjudicator: 'AI-Study-Council Core Engine',
       phase1Scores,
       finalScore,
@@ -1471,7 +1475,7 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     `category: ${category}`,
     `engine: ${engine}`,
     'review_engine: AI-Study-Council Cross-Reviewer v1.1',
-    `ai_team: ${meta.team || 'GPT + Gemini + Claude'}`,
+    `ai_team: ${meta.team || '本機模型 A + 本機模型 B'}`,
     `review_mode: ${meta.reviewMode || 'Independent → Cross Review → Adjudication'}`,
     `council_pipeline: ${meta.pipeline || 'Council Pipeline: SIMULATED'}`,
     `source_length: ${(text || '').length}`,
@@ -1487,7 +1491,7 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     `教材類別：${category}`,
     `AI 引擎：${engine}`,
     `審查引擎：AI-Study-Council Cross-Reviewer v1.1`,
-    `產出 AI 團隊：${meta.team || 'GPT + Gemini + Claude'}`,
+    `產出 AI 團隊：${meta.team || '本機模型 A + 本機模型 B'}`,
     `審查模式：${meta.reviewMode || 'Independent → Cross Review → Adjudication'}`,
     `審議管線：${meta.pipeline || 'Council Pipeline: SIMULATED'}`,
     '',
@@ -1495,11 +1499,10 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
     '',
     '### 審查紀錄',
     '',
-    `- ${meta.phases?.phase1 || 'Phase 1 獨立初稿自評'}（GPT ${meta.phase1Scores?.GPT ?? 'N/A'}/100, Gemini ${meta.phase1Scores?.Gemini ?? 'N/A'}/100, Claude ${meta.phase1Scores?.Claude ?? 'N/A'}/100）`,
+    `- ${meta.phases?.phase1 || 'Phase 1 獨立初稿自評'}（本機模型 A ${meta.phase1Scores?.LocalA ?? 'N/A'}/100, 本機模型 B ${meta.phase1Scores?.LocalB ?? 'N/A'}/100）`,
     `- ${meta.phases?.phase2 || 'Phase 2 交叉比對修訂'}`,
-    '  - GPT-Revised',
-    '  - Gemini-Revised',
-    '  - Claude-Revised',
+    '  - LocalA-Revised',
+    '  - LocalB-Revised',
     `- ${meta.phases?.phase3 || 'Phase 3 首席審議裁決'}`,
     `- Quality Gate：${meta.qualityGate || 'PENDING_MANUAL_REVIEW'}`,
     '',
@@ -1508,7 +1511,8 @@ function generateStudyMarkdown({ school, grade, subject, unit, category, engine,
   ].join('\n');
 }
 
-async function assembleCouncilFinal(metadata, drafts, sourceText = '', options = {}) {
+async function assembleCouncilFinal(metadata, rawDrafts, sourceText = '', options = {}) {
+  const drafts = normalizeDrafts(rawDrafts);
   const model = options.model || 'qwen2.5:7b-instruct-q4_K_M';
   const url = options.url || process.env.OLLAMA_URL || 'http://ollama:11434';
   const timeoutMs = options.timeoutMs || DEFAULT_ADJUDICATION_TIMEOUT_MS;
@@ -1516,13 +1520,13 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
   const sourceId = options.sourceId || null;
   const runId = options.runId || null;
 
-  const claudeSections = extractSectionsFromDraft(drafts.claude || '');
-  const geminiSections = extractSectionsFromDraft(drafts.gemini || '');
-  const gptSections = extractSectionsFromDraft(drafts.chatgpt || '');
+  const localASections = extractSectionsFromDraft(drafts.localA || '');
+  const localBSections = extractSectionsFromDraft(drafts.localB || '');
 
+  // 只算 ①～⑬ 內容小節（⑭⑮ 是流程小節）；2026-11-26 AHS-A3 實跑發現原本會顯示「15/13」。
   const countContributions = (sections) =>
-    Object.values(sections).filter(
-      (value) => typeof value === 'string' && value.trim().length > 0,
+    CONTENT_SECTION_KEYS.filter(
+      (key) => typeof sections[key] === 'string' && sections[key].trim().length > 0,
     ).length;
 
   let mode = 'fallback_concat';
@@ -1548,7 +1552,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
       const extracted = await extractClaimsPerSection(
         metadata,
         trimmedSource,
-        { gpt: gptSections, gemini: geminiSections, claude: claudeSections },
+        { localA: localASections, localB: localBSections },
         model,
         url,
         timeoutMs,
@@ -1561,12 +1565,12 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
         failureReason = extracted.lastFailureReason || FAILURE_REASON.CONNECTION_ERROR;
       } else if (!extracted.anySectionAttempted) {
         // 三份初稿在①~⑬全部小節都沒有實質內容：理論上不太會發生（validateAssembleCouncilPayload
-        // 已要求三方初稿非空白），但誠實處理這個邊界情況，不假裝做過語意裁決。
+        // 已要求雙方初稿非空白），但誠實處理這個邊界情況，不假裝做過語意裁決。
         failureReason = FAILURE_REASON.SCHEMA_INVALID;
       } else {
         const verified = await verifyAllClaims(extracted.claims, trimmedSource, model, url, timeoutMs); // 逐一裁決，低負載
         sourceWindowed = Boolean(extracted.sourceWindowed) || verified.some((c) => c.source_windowed);
-        const allDraftsText = [drafts.chatgpt, drafts.gemini, drafts.claude].filter(Boolean).join('\n');
+        const allDraftsText = [drafts.localA, drafts.localB].filter(Boolean).join('\n');
         const firstPass = applySourceTruthGate(verified, trimmedSource, allDraftsText);
         const gated = markTeachingSupplements(await retryDowngradedClaims(firstPass, trimmedSource, model, url, timeoutMs)); // 防禦性第二次確認；教學型內容不矛盾即收
 
@@ -1576,7 +1580,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
         });
 
         if (detectAttributionLeakage(claimTextMap)) {
-          // Source Attribution Leakage Gate：正式內容不得殘留 ChatGPT/Gemini/Claude 觀點標籤。
+          // Source Attribution Leakage Gate：正式內容不得殘留初稿來源的觀點標籤。
           failureReason = FAILURE_REASON.ATTRIBUTION_LEAKAGE;
         } else {
           claims = gated;
@@ -1599,12 +1603,12 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     const assembled = assembleClaimsIntoSections(claims);
     sections = assembled.sections;
     hardFail = assembled.hardFail;
-    // 2026-10-06：⑪ 由 claims 重組後，三方初稿的練習題會消失，所以另外處理。
-    // 2026-10-12（審議改版第 1 階段）：不再原樣附回，改為逐題自動裁決（格式、三方比對、
+    // 2026-10-06：⑪ 由 claims 重組後，雙方初稿的練習題會消失，所以另外處理。
+    // 2026-10-12（審議改版第 1 階段）：不再原樣附回，改為逐題自動裁決（格式、雙方比對、
     // Qwen 獨立作答），通過的收進 Final.md，其餘留給「Claude 最終審查包」
     // （services/practiceAdjudicator.js）。
     practice = await practiceAdjudicator.adjudicatePractice(
-      { chatgpt: gptSections['⑪常考題型'], gemini: geminiSections['⑪常考題型'], claude: claudeSections['⑪常考題型'] },
+      { localA: localASections['⑪常考題型'], localB: localBSections['⑪常考題型'] },
       trimmedSource,
       {
         callModel: (prompt) => callOllamaAdjudication(prompt, model, url, timeoutMs),
@@ -1624,7 +1628,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
 
     finalScore = computeFinalScoreFromClaims(claims);
     sectionCoverage = computeSectionCoverage(
-      { gpt: gptSections, gemini: geminiSections, claude: claudeSections },
+      { localA: localASections, localB: localBSections },
       claims,
       unresolvedSections,
     );
@@ -1659,7 +1663,7 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
       qualityGate = 'PASS';
     }
   } else {
-    sections = buildFallbackSections(gptSections, geminiSections, claudeSections);
+    sections = buildFallbackSections(localASections, localBSections);
     finalScore = 'N/A';
     qualityGate = 'PENDING_MANUAL_REVIEW';
   }
@@ -1670,13 +1674,11 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
     adjudicator,
     sourceProvided: Boolean(trimmedSource),
     contributions: {
-      claude: countContributions(claudeSections),
-      gemini: countContributions(geminiSections),
-      gpt: countContributions(gptSections),
+      localA: countContributions(localASections),
+      localB: countContributions(localBSections),
     },
-    claudeSections,
-    geminiSections,
-    gptSections,
+    localASections,
+    localBSections,
     claims,
     sections,
     practice,
@@ -1685,8 +1687,8 @@ async function assembleCouncilFinal(metadata, drafts, sourceText = '', options =
       mode:
         mode === 'llm_semantic'
           ? 'Qwen Semantic Cross-Council Adjudication'
-          : 'Human-in-the-Loop Tri-Web Council',
-      sources: draftSourcesLabel(drafts),
+          : 'Local Dual-Draft Council',
+      sources: DRAFT_SOURCES_LABEL,
       adjudicator,
       finalScore,
       // Gate 2：finalScore（沿用舊欄位名，維持既有相容性）此後只代表 claim 驗證品質，
@@ -1777,8 +1779,8 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `subject: ${subject}`,
     `unit: ${unit}`,
     `category: ${category}`,
-    `Mode: ${meta.mode || council.mode || 'Human-in-the-Loop Tri-Web Council'}`,
-    `Sources: ${meta.sources || 'ChatGPT (Web) + Claude (Web)'}`,
+    `Mode: ${meta.mode || council.mode || 'Local Dual-Draft Council'}`,
+    `Sources: ${meta.sources || DRAFT_SOURCES_LABEL}`,
     `Adjudicator: ${meta.adjudicator || council.adjudicator || 'AI-Study-Council Core Engine'}`,
     `adjudication_mode: "${meta.adjudication_mode || council.mode || 'fallback_concat'}"`,
     `quality_gate: "${meta.qualityGate || 'PENDING_MANUAL_REVIEW'}"`,
@@ -1802,17 +1804,16 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
     `單元：${unit}`,
     `教材類別：${category}`,
     '',
-    `Mode: ${meta.mode || council.mode || 'Human-in-the-Loop Tri-Web Council'}`,
-    `Sources: ${meta.sources || 'ChatGPT (Web) + Claude (Web)'}`,
+    `Mode: ${meta.mode || council.mode || 'Local Dual-Draft Council'}`,
+    `Sources: ${meta.sources || DRAFT_SOURCES_LABEL}`,
     `Adjudicator: ${meta.adjudicator || council.adjudicator || 'AI-Study-Council Core Engine'}`,
     '',
     body,
     '',
     `## ⑭Cross Review`,
     '',
-    `ChatGPT/Web 貢獻節數：${council.contributions?.gpt ?? 0}/13`,
-    ...(council.contributions?.gemini ? [`Gemini/Web 貢獻節數：${council.contributions.gemini}/13`] : []),
-    `Claude/Web 貢獻節數：${council.contributions?.claude ?? 0}/13`,
+    `本機模型 A 貢獻節數：${council.contributions?.localA ?? 0}/13`,
+    `本機模型 B 貢獻節數：${council.contributions?.localB ?? 0}/13`,
     ...(council.mergeReport ? [
       '',
       `整合依據：正文共採用 ${council.mergeReport.adopted} 條陳述（其中教學補充 ${council.mergeReport.teaching} 條）。各家被採用的條數與獨家貢獻（只有這一家寫到的內容）：`,
@@ -1839,7 +1840,7 @@ function generateCouncilMarkdown({ school, grade, subject, unit, category, counc
           `Document Completeness（有內容小節中，真正產出已驗證內容的比例）：${meta.documentCompleteness ?? 'N/A'}%`,
           ...(meta.sectionCoverage.unresolved_sections.length > 0
             ? [
-                'Unresolved Sections（有內容，但三方初稿不足以形成可驗證 claim——已處理，非缺口）：',
+                'Unresolved Sections（有內容，但雙方初稿不足以形成可驗證 claim——已處理，非缺口）：',
                 ...meta.sectionCoverage.unresolved_sections.map((s) => `- ${s.section_title}（${s.reason}）`),
               ]
             : []),
