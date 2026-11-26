@@ -34,13 +34,15 @@ describe('關卡 5 本機自主 QA', () => {
     const r = await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('EXPLANATION: YES', 'EXPLANATION: NO') }), cfg });
     expect(r.reasons.join()).toMatch(/詳解不支持/);
   });
-  test('3 選項品質：兩個正確選項 → 淘汰；以上皆是 → 淘汰（不呼叫模型）；沒有誘答力 → 待複核', async () => {
+  test('3 選項品質：兩個正確選項 → 淘汰；以上皆是 → 淘汰（不呼叫模型）；沒有誘答力 → 只記錄（notes），仍通過', async () => {
     expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') }), cfg })).reasons.join()).toMatch(/不只一個正確選項/);
     const lazy = fakeReview();
     const r = await L.gateLocalQA(q({ options: ['執政官', '護民官', '獨裁官', '以上皆是'] }), { review: lazy, cfg });
     expect(r.reasons.join()).toMatch(/偷懶選項/);
     expect(lazy.calls).toHaveLength(0);
-    expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('ABSURD: NONE', 'ABSURD: D') }), cfg })).status).toBe('review');
+    const absurd = await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('ABSURD: NONE', 'ABSURD: D') }), cfg });
+    expect(absurd.status).toBe('pass');
+    expect(absurd.notes.join()).toMatch(/D 可能沒有誘答力/);
   });
   test('4 超出範圍 → 淘汰', async () => {
     expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('SCOPE: IN', 'SCOPE: OUT') }), cfg })).reasons.join()).toMatch(/超出單元範圍/);

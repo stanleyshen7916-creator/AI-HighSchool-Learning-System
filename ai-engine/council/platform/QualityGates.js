@@ -76,10 +76,22 @@ function letterOf(reply) {
   return m ? m[1].toUpperCase() : null;
 }
 
+/* 依據與原文的比對：exact＝逐字出現；near＝逐字不符但雙字組覆蓋 ≥ NEAR_MATCH（OCR 異體字／漏字，例如臘／腊、注／註）；
+   none＝找不到。佇列 9 tm_112 實跑：56 題有 3 題只因 OCR 差一兩個字被當成捏造淘汰，Claude 對照原文確認依據是真的。 */
+const NEAR_MATCH = 0.9;
+function evidenceMatch(ev, sourceText) {
+  const e = norm(ev), s = norm(sourceText);
+  if (!s) return 'unknown';
+  if (s.includes(e)) return 'exact';
+  const eb = bigrams(ev), sb = bigrams(sourceText);
+  let hit = 0; eb.forEach((x) => { if (sb.has(x)) hit++; });
+  return eb.size && hit / eb.size >= NEAR_MATCH ? 'near' : 'none';
+}
+
 async function gateSource(q, ctx) {
   const ev = evidenceOf(q);
   if (norm(ev).length < 6) return ['缺教材原文依據'];
-  if (ctx.sourceText && !norm(ctx.sourceText).includes(norm(ev))) return ['依據不在教材原文裡（可能是模型捏造）'];
+  if (ctx.sourceText && evidenceMatch(ev, ctx.sourceText) === 'none') return ['依據不在教材原文裡（可能是模型捏造）'];
   if (!ctx.judge) return [];
   const prompt = `你是高中題目審查員。只根據「依據」判斷「答案」是否能被推出，不要用其他知識。\n依據：${ev}\n題目：${q.question}\n${optionsBlock(q)}\n答案：(${LETTERS[answerIndex(q)]})\n最後一行只寫 VERDICT: YES 或 VERDICT: NO。`;
   const m = [...String(await ctx.judge(prompt)).matchAll(/VERDICT\s*[:：]\s*(YES|NO)/gi)].pop();
@@ -214,4 +226,4 @@ function createOllamaModels({ url = process.env.OLLAMA_URL || 'http://127.0.0.1:
   };
 }
 
-module.exports = { GATES, difficultyOf, gateStructure, gateSource, gateBlind, createDedupeIndex, createEmbedCache, runGates, createOllamaModels, answerIndex, evidenceOf, letterOf };
+module.exports = { GATES, difficultyOf, gateStructure, gateSource, gateBlind, createDedupeIndex, createEmbedCache, runGates, createOllamaModels, answerIndex, evidenceOf, letterOf, evidenceMatch, NEAR_MATCH };

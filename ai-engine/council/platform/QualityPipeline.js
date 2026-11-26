@@ -11,7 +11,7 @@
 
    每題最後狀態：fail（任一關淘汰）／review（待複核，一定進抽樣）／pass。 */
 
-const { runGates } = require('./QualityGates');
+const { runGates, evidenceOf, evidenceMatch } = require('./QualityGates');
 const { leakChecks, bloomDistribution, explanationClaims, loadConfig } = require('./QualityRules');
 const { runLessons } = require('./QualityLessons');
 const { gateLocalQA, buildGoldItems, mixGold, scoreGold, selectSample } = require('./LocalQA');
@@ -33,7 +33,8 @@ async function runPipeline(questions, ctx = {}) {
       if (leak.warn.length) warns[idOf(q)] = leak.warn;
       return leak.fail.concat(runLessons(q));
     },
-    reviewFlags: (q) => explanationClaims(q, ctx.sourceText, cfg).review,
+    reviewFlags: (q) => explanationClaims(q, ctx.sourceText, cfg).review
+      .concat(evidenceMatch(evidenceOf(q), ctx.sourceText) === 'near' ? ['出處依據與原文有少量差異（可能是 OCR 異體字或漏字），請確認'] : []),
     onProgress: ctx.onProgress ? (r, n, total) => ctx.onProgress('關卡1-4', n, total) : null,
   }));
   const t14 = Date.now();
@@ -58,6 +59,7 @@ async function runPipeline(questions, ctx = {}) {
     const base = { id: idOf(q), unit: q.section || q.knowledgePoint || '', warn: warns[idOf(q)] || [] };
     if (!g.passed) return Object.assign(base, { status: 'fail', failedAt: g.failedAt, reasons: g.reasons, review: [] });
     const r5 = qa[idOf(q)];
+    base.warn = base.warn.concat(r5.notes || []); // 只記錄、不影響狀態（例如「沒有誘答力」）
     const review = (g.review || []).concat(r5.review || []);
     if (r5.status === 'fail') return Object.assign(base, { status: 'fail', failedAt: 'localqa', reasons: r5.reasons, review, bloom: r5.bloom || null });
     return Object.assign(base, { status: review.length ? 'review' : 'pass', failedAt: null, reasons: [], review, bloom: r5.bloom || null });

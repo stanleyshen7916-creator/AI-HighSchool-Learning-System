@@ -101,8 +101,9 @@ async function gateLocalQA(q, ctx) {
   if (q.type !== 'multiple_choice' && chk.correct.length > 1) reasons.push(`審查認為不只一個正確選項：${chk.correct.join('、')}`);
   if (chk.correct.length && !chk.correct.includes(cons.want)) reasons.push(`審查認為正確選項是 ${chk.correct.join('、')}，答案是 ${cons.want}`);
   if (!chk.scope) reasons.push('超出單元範圍或高中程度');
-  if (chk.absurd.length) review.push(`錯誤選項 ${chk.absurd.join('、')} 可能沒有誘答力`);
-  return { status: reasons.length ? 'fail' : (review.length ? 'review' : 'pass'), reasons, review, bloom: chk.bloom, detail: { consistency: cons, check: chk } };
+  // 11/26 tm_112 實跑：gpt-oss 把 36/56 題的錯誤選項標成「沒有誘答力」，待複核被淹沒；改成只記錄（notes），不進待複核。
+  const notes = chk.absurd.length ? [`錯誤選項 ${chk.absurd.join('、')} 可能沒有誘答力`] : [];
+  return { status: reasons.length ? 'fail' : (review.length ? 'review' : 'pass'), reasons, review, notes, bloom: chk.bloom, detail: { consistency: cons, check: chk } };
 }
 
 /* C. 金標準：從有官方答案的題目（questionSource ORIGINAL）抽 n 題，每題一份正本（應通過）和一份

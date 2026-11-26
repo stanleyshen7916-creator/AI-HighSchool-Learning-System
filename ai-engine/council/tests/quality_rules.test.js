@@ -135,3 +135,18 @@ describe('A4 接點（佇列 9）', () => {
     expect(report.eliminated.structure).toBe(1);
   });
 });
+
+describe('關卡 2 出處比對容許 OCR 差異（佇列 9 tm_112 實跑）', () => {
+  const { evidenceMatch, gateSource } = require('../platform/QualityGates');
+  const SRC = '羅馬城建造的源頭也可追溯到希腊神話中的特洛伊戰爭，連結羅馬人與希腊神話的關係。';
+  test('逐字＝exact；異體字（臘／腊）＝near；換一句話＝none', () => {
+    expect(evidenceMatch('羅馬城建造的源頭也可追溯到希腊神話', SRC)).toBe('exact');
+    expect(evidenceMatch('羅馬城建造的源頭也可追溯到希臘神話中的特洛伊戰爭，連結羅馬人與希腊神話的關係', SRC)).toBe('near');
+    expect(evidenceMatch('雅典娜每天搭火箭去月球上班', SRC)).toBe('none');
+  });
+  test('near 不淘汰；none 仍淘汰', async () => {
+    const mk = (quote) => ({ question: '羅馬城的建城傳說和哪一場戰爭有關？', options: ['特洛伊戰爭', '布匿克戰爭'], answer: 'A', explanation: `出處：「${quote}」` });
+    expect(await gateSource(mk('羅馬城建造的源頭也可追溯到希臘神話中的特洛伊戰爭，連結羅馬人與希腊神話的關係'), { sourceText: SRC })).toEqual([]);
+    expect(await gateSource(mk('雅典娜每天搭火箭去月球上班賺錢'), { sourceText: SRC })).toEqual(['依據不在教材原文裡（可能是模型捏造）']);
+  });
+});
