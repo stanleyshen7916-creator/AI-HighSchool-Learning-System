@@ -58,6 +58,16 @@ function createPackageBuilder({ platformRoot, dataDir }) {
   const adapter = () => require(path.join(scripts, 'TeachingMaterialAdapter.js'));
   const repoManager = () => require(path.join(scripts, 'RepositoryManager.js'));
   const importManager = () => require(path.join(scripts, 'ImportManager.js'));
+  // 2026-11-22 AHS-UP2 P2-4：重新產生 js/data/ExplanationSupplementData.js（只收已發布教材的詳解擴充檔）。
+  // 回傳 { paths, warning }：失敗不讓發布／刪除回頭（教材已匯入或已刪除），改回報警告。
+  const regenerateSupplements = () => {
+    try {
+      const { stale } = require(path.join(scripts, 'GenerateExplanationSupplement.js')).generate();
+      return { paths: stale.map((f) => f.split(path.sep).join('/')).includes('js/data/ExplanationSupplementData.js') ? ['js/data/ExplanationSupplementData.js'] : [], warning: null };
+    } catch (error) {
+      return { paths: [], warning: `詳解補強資料產生失敗，學生端暫時看不到補強：${error.message}` };
+    }
+  };
   const supplements = createSupplementBuilder({ platformRoot });
 
   function registry() {
@@ -602,11 +612,15 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     const reg = registry();
     reg.drafts[materialId] = { ...reg.drafts[materialId], status: 'published', publishedAt: new Date().toISOString() };
     saveRegistry(reg);
+    const hasSupplement = fs.existsSync(path.join(explanationsDir, `${materialId}.json`));
+    const supplement = hasSupplement ? regenerateSupplements() : { paths: [], warning: null };
     return {
       ...preview(materialId),
+      ...(supplement.warning ? { supplementWarning: supplement.warning } : {}),
       changedPaths: [
         `docs/TeachingMaterials/materials/${materialId}/`,
-        ...(fs.existsSync(path.join(explanationsDir, `${materialId}.json`)) ? [`docs/TeachingMaterials/explanations/${materialId}.json`] : []),
+        ...(hasSupplement ? [`docs/TeachingMaterials/explanations/${materialId}.json`] : []),
+        ...supplement.paths,
         'docs/TeachingMaterials/index.json',
         'docs/TeachingMaterials/import-log.json',
         'js/data/TeachingMaterialData.js',
