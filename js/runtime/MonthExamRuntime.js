@@ -277,6 +277,32 @@ AHS.MonthExamRuntime = (function () {
     return a;
   }
 
+  /* AHS-EXAM-TOPIC（2026-11-25）：依 js/data/MonthExamTopics.js 只出指定主題的題目。 */
+  var TOPIC_RE = /主題\s*([0-9０-９]+)/;
+  function topicRule(subject) {
+    var all = (AHS.MonthExamTopics && AHS.MonthExamTopics.topics) || {};
+    var ws = workspace();
+    if (!ws) { return null; }
+    var hit = null;
+    (ws.semesterIds || []).forEach(function (sem) {
+      var bySubject = all[ws.schoolId + "|" + sem];
+      if (!hit && bySubject && bySubject[subject]) { hit = bySubject[subject]; }
+    });
+    return hit;
+  }
+  function topicOf(q) {
+    var src = [q.section, q.knowledgePoint, q.question];
+    for (var i = 0; i < src.length; i += 1) {
+      var m = TOPIC_RE.exec(String(src[i] || ""));
+      if (m) { return Number(m[1].replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })); }
+    }
+    return null;
+  }
+  function inTopic(q, rule) {
+    if (!rule) { return true; }
+    var t = topicOf(q);
+    return t != null && t >= rule.from && t <= rule.to;
+  }
   function questionsFor(materialIds) {
     var byId = {};
     entries().forEach(function (e) { byId[e.materialId] = e; });
@@ -284,8 +310,9 @@ AHS.MonthExamRuntime = (function () {
     materialIds.forEach(function (id) {
       var e = byId[id];
       if (!e) { return; }
+      var rule = topicRule(e.material && e.material.subject);
       (e.questions || []).forEach(function (q) {
-        if (usable(q)) { out.push(Object.assign({ materialId: id }, q)); }
+        if (usable(q) && inTopic(q, rule)) { out.push(Object.assign({ materialId: id }, q)); }
       });
     });
     return out;
@@ -663,7 +690,7 @@ AHS.MonthExamRuntime = (function () {
 
   function history() { return load(KEY_HISTORY, []) || []; }
 
-  return {
+  return { topicRule: topicRule, topicOf: topicOf,
     DURATION_MS: DURATION_MS,
     pullFromRepository: pullFromRepository,
     subjectCode: subjectCode,

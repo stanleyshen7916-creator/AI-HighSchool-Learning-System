@@ -215,5 +215,25 @@ console.log("\n[QB3] 優先抽沒出過的題目（2026-11-25）");
   AHS.MonthExamBlueprint = null;
 }
 
+console.log("\n[AHS-EXAM-TOPIC] 依主題篩題（2026-11-25）");
+{
+  delete mem["monthexam:history"];
+  const tq = [];
+  for (let i = 1; i <= 12; i++) tq.push(q("tm_96", i, { section: "主題" + ((i % 6) + 5) + " 小試身手" }));
+  tq.push(q("tm_96", 50, { section: "單元2 歷屆試題" }));
+  tq.push(q("tm_96", 51, { knowledgePoint: "主題７ 星等" }));
+  AHS.TeachingMaterialData.push({ materialId: "tm_96", material: { subject: "地球科學", school: "zwsh", semester: "g2s1", chapter: "講義" }, questions: tq });
+  const all = RT.buildPaper("地球科學", ["tm_96"]).questions.length;
+  AHS.MonthExamTopics = { topics: { "zwsh|g2s1": { "地球科學": { from: 6, to: 8, label: "主題 6–8" } } } };
+  const p = RT.buildPaper("地球科學", ["tm_96"]);
+  const topics = p.questions.map((x) => RT.topicOf(x));
+  check("沒設定主題時全部出題（14 題）", all === 14);
+  check("設定主題 6–8 後只出該範圍、沒有主題標記的不出", p.questions.length === 7 && topics.every((t) => t >= 6 && t <= 8));
+  check("全形數字的主題標記也能判斷", topics.indexOf(7) !== -1 && p.questions.some((x) => x.id === "tm_96_q51"));
+  check("別科不受主題設定影響", RT.buildPaper("化學", ["tm_91"]).questions.length === 50);
+  AHS.MonthExamTopics = null;
+  AHS.TeachingMaterialData.pop();
+}
+
 console.log("\nMonthExamRegression: " + pass + " PASS / " + fail + " FAIL");
 process.exit(fail ? 1 : 0);
