@@ -36,7 +36,7 @@ AHS.OptionOrder = (function () {
   function packageSource(id) {
     if (!sourceIndex) {
       sourceIndex = {};
-      (Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : []).forEach(function (e) {
+      ((AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []))).forEach(function (e) {
         (e && e.questions || []).forEach(function (q) { if (q && q.id) { sourceIndex[q.id] = q.questionSource || ""; } });
       });
     }

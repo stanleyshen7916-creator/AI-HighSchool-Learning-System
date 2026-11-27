@@ -198,7 +198,7 @@ AHS.MaterialDetailRepositorySource = (function () {
       if (record) { return fromRepositoryRecord(record); }
     }
 
-    var entries = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
+    var entries = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     var entry = null;
     entries.forEach(function (e) { if (e && e.materialId === sourceId) { entry = e; } });
     if (entry) { return fromPackageEntry(entry); }

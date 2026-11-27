@@ -78,7 +78,7 @@ AHS.MonthExamRuntime = (function () {
   }
 
   function allEntries() {
-    return (AHS.TeachingMaterialData || []).concat(repoEntries());
+    return (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || [])).concat(repoEntries());
   }
 
   /* 目前 Workspace（學校＋學期）可用的教材，依科目分組。 */

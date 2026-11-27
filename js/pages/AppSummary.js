@@ -57,7 +57,11 @@ window.AHS = window.AHS || {};
      On core-load failure (e.g. a 404'd script), show a diagnostic
      instead of a white page. */
   function guardedInit() {
-    if (coreReady()) { init(); return; }
+    if (coreReady()) {
+      /* queue 9.4 T5: the page's teaching-material content first (synchronous no-op while the full data file is on the page). */
+      if (AHS.TeachingMaterialSource) { AHS.TeachingMaterialSource.ready("all", init); } else { init(); }
+      return;
+    }
     var app = document.getElementById("app");
     if (app) {
       app.textContent = "系統資源載入失敗（js/core/UI.js 或 AppShell 未載入）。請重新整理；若持續發生，請回報 PMO 檢查部署檔案。";

@@ -204,7 +204,7 @@ AHS.QuizParts = AHS.QuizParts || {};
       });
     }
 
-    (Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : []).forEach(function (entry) {
+    ((AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []))).forEach(function (entry) {
       if (!entry || !entry.materialId || !entry.material) { return; }
       addEntry(entry.materialId, {
         subjectKey: subjectKeyFromChineseName(entry.material.subject) || entry.material.subject,

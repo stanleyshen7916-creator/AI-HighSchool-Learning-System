@@ -208,13 +208,36 @@ window.AHS = window.AHS || {};
               AHS.AppShell && typeof AHS.AppShell.create === "function");
   }
 
+  /* queue 9.4 T5: the materials this student's wrong-book records come from. Any record that cannot be tied to a
+     package material (repository-track, or no question id) can be looked up by its text across every material, so
+     then everything is loaded — the page must find exactly what it found before. */
+  function wrongBookMaterialIds() {
+    var S = AHS.TeachingMaterialSource;
+    var W = AHS.WrongBookRuntime;
+    var L = AHS.TeachingMaterialLoader;
+    if (!W || typeof W.list !== "function") { return "all"; }
+    var ids = {};
+    var all = false;
+    W.list().forEach(function (item) {
+      var id = S.materialIdOfQuestion(item.questionId) ||
+        (/^tm_\d+$/.test(String(item.materialId || "")) ? item.materialId : null) ||
+        (L && typeof L.sourceIdFor === "function" && item.materialId ? L.sourceIdFor(item.materialId) : null);
+      if (id && /^tm_\d+$/.test(id)) { ids[id] = true; } else { all = true; }
+    });
+    return all ? "all" : Object.keys(ids);
+  }
+
   /* EO-S7.0-HOTFIX-001 · Initialization Order gate: Browser -> window.AHS
      -> Core Runtime -> AppShell -> Page Runtime -> Component -> Render.
      Components are never created before AppShell's dependencies exist.
      On core-load failure (e.g. a 404'd script), show a diagnostic
      instead of a white page. */
   function guardedInit() {
-    if (coreReady()) { init(); return; }
+    if (coreReady()) {
+      /* queue 9.4 T5: the page's teaching-material content first (synchronous no-op while the full data file is on the page). */
+      if (AHS.TeachingMaterialSource) { AHS.TeachingMaterialSource.ready(wrongBookMaterialIds(), init); } else { init(); }
+      return;
+    }
     var app = document.getElementById("app");
     if (app) {
       app.textContent = "系統資源載入失敗（js/core/UI.js 或 AppShell 未載入）。請重新整理；若持續發生，請回報 PMO 檢查部署檔案。";

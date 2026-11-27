@@ -34,7 +34,7 @@ AHS.ExamPeriod = (function () {
   }
 
   function entryFor(materialId) {
-    var all = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : [];
+    var all = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     for (var i = 0; i < all.length; i += 1) {
       if (all[i] && all[i].materialId === materialId) { return all[i]; }
     }

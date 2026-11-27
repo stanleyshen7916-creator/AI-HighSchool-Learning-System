@@ -19,7 +19,11 @@ window.AHS = window.AHS || {};
   }
 
   function guardedInit() {
-    if (coreReady()) { init(); return; }
+    if (coreReady()) {
+      /* queue 9.4 T5: the page's teaching-material content first (synchronous no-op while the full data file is on the page). */
+      if (AHS.TeachingMaterialSource) { AHS.TeachingMaterialSource.ready(AHS.TeachingMaterialSource.workspaceIds(), init); } else { init(); }
+      return;
+    }
     var app = document.getElementById("app");
     if (app) { app.textContent = "系統資源載入失敗，請重新整理。"; }
   }
