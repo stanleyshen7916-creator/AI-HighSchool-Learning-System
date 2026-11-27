@@ -131,6 +131,8 @@ console.log("\n[4] 教材包未被修改");
     "docs/TeachingMaterials/materials/tm_3/questionbank.json", "docs/TeachingMaterials/materials/tm_12/questionbank.json", "docs/TeachingMaterials/materials/tm_30/questionbank.json", "docs/TeachingMaterials/materials/tm_69/questionbank.json",
     /* 2026-11-25 Project Owner 同意：資料已完整的 8 題（tm_11_q3／q4／q5、tm_56_q50、tm_110_q31、tm_69_q41、tm_1_qB、tm_109_q13）移除 figureMissing，並刪去題幹中「如右圖／附圖／依課本圖」等指向不存在附圖的字樣；題目意思、選項、答案不變。 */
     "docs/TeachingMaterials/materials/tm_1/questionbank.json", "docs/TeachingMaterials/materials/tm_11/questionbank.json", "docs/TeachingMaterials/materials/tm_56/questionbank.json", "docs/TeachingMaterials/materials/tm_109/questionbank.json", "docs/TeachingMaterials/materials/tm_110/questionbank.json",
+    /* 2026-11-27 Project Owner 同意：tm_112_q28、tm_112_q29、tm_112_q30、tm_113_q27、tm_113_q28、tm_113_q39、tm_113_q40、tm_114_q6、tm_115_q11 詳解寫的選項字母與答案不符（選項已打亂），改為寫出答案文字；題目、選項、答案不變。 */
+    "docs/TeachingMaterials/materials/tm_112/questionbank.json", "docs/TeachingMaterials/materials/tm_113/questionbank.json", "docs/TeachingMaterials/materials/tm_114/questionbank.json", "docs/TeachingMaterials/materials/tm_115/questionbank.json",
     ].concat(["tm_103", "tm_104", "tm_105"].reduce((acc, id) => acc.concat(
       ["questionbank.json", "summary.json", "metadata.json", "manifest.json", "material.md", "report.md", "source/README.md"].map((f) => "docs/TeachingMaterials/materials/" + id + "/" + f)), []));
   try {
