@@ -92,7 +92,7 @@ function loadPage(htmlFile, opts) {
   scripts.forEach((src) => {
     var p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; }
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
     /* A developer machine may also have the git-ignored
        SupabaseConfig.local.js, which takes priority — blank both. */
     if (mode === "offline" && /^js\/data\/SupabaseConfig(\.local)?\.js$/.test(src)) {

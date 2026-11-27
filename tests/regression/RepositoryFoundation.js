@@ -79,7 +79,7 @@ function loadPage(htmlFile, { seedSession, url, skipLogin } = {}) {
   scripts.forEach((src) => {
     var p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors };
@@ -105,7 +105,9 @@ console.log("\n[1] Repository 建立");
      (docs/TeachingMaterials/materials/tm_1/) — this array is no longer
      honestly empty; it must reflect that real Package, not a stale "still
      empty" assumption from before any Package track material existed. */
-  check("AHS.TeachingMaterialData（Package track）存在，含真實 Package 教材（tm_1）", Array.isArray(A.TeachingMaterialData) && A.TeachingMaterialData.some((m) => m.materialId === "tm_1"));
+  /* queue 9.4 T7: pages load the index + per-material content instead of the whole TeachingMaterialData array */
+  check("Package track 教材資料存在（TeachingMaterialSource），含真實 Package 教材（tm_1）",
+    !!A.TeachingMaterialSource && A.TeachingMaterialSource.entries().some((m) => m.materialId === "tm_1" && m.questions.length > 0));
 }
 
 /* ---- 2. Index 更新 ---------------------------------------------------

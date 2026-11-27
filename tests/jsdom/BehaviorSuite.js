@@ -127,14 +127,27 @@ function loadPage(htmlFile, { seedSession, excludeScripts, url, skipLogin } = {}
   }
   // Execute the page's ordered scripts manually (runScripts outside-only
   // keeps subresource loading deterministic).
+  /* queue 9.4 T7: pages load js/data/TeachingMaterialIndex.js and fetch each material's content with a dynamic
+     <script>, which jsdom (runScripts "outside-only") never runs. Here every content / explanation-supplement file is
+     evaluated right after its index — the same data the old TeachingMaterialData.js / ExplanationSupplementData.js
+     gave, so the pages initialize synchronously exactly as before. Excluding the old whole-data file (the "no package
+     data" scenario of several checks below) now excludes the index that replaced it. */
+  const excluded = (excludeScripts || []).concat(
+    (excludeScripts || []).some(x => "js/data/TeachingMaterialData.js".includes(x)) ? ["js/data/TeachingMaterialIndex.js"] : []);
   const scripts = [...dom.window.document.querySelectorAll("script[src]")]
     .map(s => s.getAttribute("src"))
-    .filter(src => !(excludeScripts && excludeScripts.some(x => src.includes(x))));
+    .filter(src => !excluded.some(x => src.includes(x)));
   for (const src of scripts) {
     const p = path.join(REPO, src);
     if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
     const code = fs.readFileSync(p, "utf8");
     window.eval(code);
+    const splitDir = src === "js/data/TeachingMaterialIndex.js" ? "js/data/materials-content"
+      : src === "js/data/ExplanationSupplementIndex.js" ? "js/data/explanations-content" : null;
+    if (splitDir) {
+      fs.readdirSync(path.join(REPO, splitDir)).filter(n => /^tm_\d+\.js$/.test(n)).sort()
+        .forEach(n => window.eval(fs.readFileSync(path.join(REPO, splitDir, n), "utf8")));
+    }
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, dom, consoleErrors };
@@ -1546,7 +1559,7 @@ console.log("\n[34] Sprint AI-111 — End-to-End Learning Loop（AI-608/609/610/
     let correctText = ((item.options || []).find(o => o.key === item.correctAnswer) || {}).text;
     if (pw.window.document.querySelector(".wb-variant__label")) {
       const shown = pw.window.document.querySelector(".wb-variant .wb-detail__question").textContent.replace(/^題目：/, "");
-      const bankQ = [].concat(...pw.window.AHS.TeachingMaterialData.map(e => e.questions || [])).find(q => q.question === shown);
+      const bankQ = [].concat(...pw.window.AHS.TeachingMaterialSource.entries().map(e => e.questions || [])).find(q => q.question === shown);
       correctText = bankQ && bankQ.answer;
     }
     const correctOpt = [...pw.window.document.querySelectorAll(".wb-detail__option")].find(li => li.querySelector(".wb-detail__option-text").textContent === correctText);

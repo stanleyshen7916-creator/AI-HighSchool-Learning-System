@@ -76,11 +76,13 @@ function loadPage(htmlFile, { seedSession, url, skipLogin, excludeScripts } = {}
   }
   const scripts = [...dom.window.document.querySelectorAll("script[src]")]
     .map((s) => s.getAttribute("src"))
-    .filter((src) => !(excludeScripts && excludeScripts.some((x) => src.includes(x))));
+    /* queue 9.4 T7: excluding the old whole-data file ("no package data") now excludes the index that replaced it */
+    .filter((src) => !(excludeScripts && excludeScripts.some((x) => src.includes(x) ||
+      (x === "js/data/TeachingMaterialData.js" && src === "js/data/TeachingMaterialIndex.js"))));
   scripts.forEach((src) => {
     var p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors };

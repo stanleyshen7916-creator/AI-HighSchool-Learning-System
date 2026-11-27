@@ -56,8 +56,21 @@ function loadPage(htmlFile, { workspace, seed, split }) {
   const requested = [];
   const supplements = [];
   const srcs = [...w.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
+  /* The page may carry either the whole-data tags (before T7) or the index + loader tags (from T7 on); each mode is
+     built from whichever is there, at the same position. */
+  const DATA = ["js/data/TeachingMaterialData.js", "js/data/TeachingMaterialIndex.js"];
+  const SUP = ["js/data/ExplanationSupplementData.js", "js/data/ExplanationSupplementIndex.js"];
   for (const src of srcs) {
-    if (split && src === "js/data/TeachingMaterialData.js") {
+    if (src === "js/runtime/TeachingMaterialContentLoader.js") { continue; }   // loaded with the data below
+    if (!split && DATA.indexOf(src) !== -1) {
+      w.eval(fs.readFileSync(path.join(REPO, "js/data/TeachingMaterialData.js"), "utf8"));
+      continue;
+    }
+    if (!split && SUP.indexOf(src) !== -1) {
+      w.eval(fs.readFileSync(path.join(REPO, "js/data/ExplanationSupplementData.js"), "utf8"));
+      continue;
+    }
+    if (split && DATA.indexOf(src) !== -1) {
       w.eval(fs.readFileSync(path.join(REPO, "js/data/TeachingMaterialIndex.js"), "utf8"));
       w.eval(fs.readFileSync(path.join(REPO, "js/runtime/TeachingMaterialContentLoader.js"), "utf8"));
       /* jsdom does not run dynamically added <script>s here: serve ensure() from the real content file instead. */
@@ -75,7 +88,7 @@ function loadPage(htmlFile, { workspace, seed, split }) {
       };
       continue;
     }
-    if (split && src === "js/data/ExplanationSupplementData.js") {
+    if (split && SUP.indexOf(src) !== -1) {
       /* T6: the per-material supplements instead of the whole file */
       w.eval(fs.readFileSync(path.join(REPO, "js/data/ExplanationSupplementIndex.js"), "utf8"));
       continue;

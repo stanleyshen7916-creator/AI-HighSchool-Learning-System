@@ -47,7 +47,7 @@ function loadTutor(opts) {
   [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; }
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
     if (/^js\/data\/SupabaseConfig(\.local)?\.js$/.test(src)) {
       window.AHS.SupabaseConfig = { url: "", anonKey: "" };
       window.AHS.SupabaseConfigLocal = null;

@@ -55,7 +55,7 @@ function loadPage(htmlFile, { seedSession, url } = {}) {
   scripts.forEach((src) => {
     var p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors };
@@ -174,7 +174,7 @@ console.log("\n[3] Student B／竹圍高中／高二上學期 — 讀到自己�
   });
   /* 2026-10-05: 上傳頁發布後會自動推送，竹圍高中的教材數會隨上架增減，
      改由實際資料算出應看到的筆數（至少含 tm_13、tm_29），不再寫死。 */
-  const zwshIds = window.AHS.TeachingMaterialData
+  const zwshIds = window.AHS.TeachingMaterialSource.entries()
     .filter(e => e.material && e.material.school === "zwsh" && e.material.semester === "g2s1")
     .map(e => e.materialId);
   check("Student B（竹圍高中）看到自己學校全部的 Repository 教材（" + zwshIds.join("、") + "）",

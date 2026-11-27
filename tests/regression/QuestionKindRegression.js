@@ -42,7 +42,7 @@ function loadPage(htmlFile) {
   window.sessionStorage.setItem("ahs:workspace", JSON.stringify({ studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] }));
   [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
-    if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); }
+    if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p); }
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, doc: window.document, consoleErrors };
@@ -335,7 +335,7 @@ console.log("\n[知識弱點] 克漏字錯題");
   const wb = loadPage("wrongbook.html");
   const W = wb.window.AHS;
   const wbIdMap = W.PersistenceAdapter.load("teachingMaterialLoaderIdMap") || {};
-  const pkg = W.TeachingMaterialData.find((e) => e.materialId === "tm_103");
+  const pkg = W.TeachingMaterialSource.entries().find((e) => e.materialId === "tm_103");
   const pq = pkg.questions.find((q) => /〈A Festival of Life〉/.test(q.question) && /【\(3\) ______】/.test(q.question));
   W.WrongBookRuntime.sync({
     subject: "english", title: pq.question, chapter: pq.knowledgePoint || "",

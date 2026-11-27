@@ -83,8 +83,12 @@ console.log("\n[3] 頁面整合");
 {
   ["quiz", "wrongbook", "review", "materials", "tutor"].forEach((p) => {
     const html = fs.readFileSync(path.join(REPO, p + ".html"), "utf8");
-    const a = html.indexOf("js/data/ExplanationSupplementData.js"), b = html.indexOf("js/utils/ExplanationSupplement.js");
-    check(p + ".html 載入資料、顯示模組與 CSS", a !== -1 && b > a && html.indexOf("css/components/explanation.css") !== -1);
+    /* queue 9.4 T7: the page loads the small supplement index; the per-material files come with the material's content
+       (TeachingMaterialSource + TeachingMaterialContentLoader) */
+    const a = html.indexOf("js/data/ExplanationSupplementIndex.js"), b = html.indexOf("js/utils/ExplanationSupplement.js");
+    check(p + ".html 載入資料、顯示模組與 CSS", a !== -1 && b > a && html.indexOf("css/components/explanation.css") !== -1 &&
+      html.indexOf("js/runtime/TeachingMaterialSource.js") !== -1 && html.indexOf("js/runtime/TeachingMaterialContentLoader.js") !== -1 &&
+      html.indexOf("js/data/ExplanationSupplementData.js") === -1);
   });
   ["js/components/quiz/QuizShared.js", "js/components/WrongBook.js", "js/components/AiTutor.js", "js/ui/MaterialQuestionCard.js", "js/utils/TutorEngine.js"].forEach((f) => {
     check(f + " 使用補強詳解", fs.readFileSync(path.join(REPO, f), "utf8").indexOf("AHS.ExplanationSupplement") !== -1);

@@ -59,7 +59,7 @@ function openMaterials(opts) {
   for (const src of [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"))) {
     var p = path.join(REPO, src);
     if (!fs.existsSync(p)) { continue; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
   }
   const ctx = { window, doc: window.document, consoleErrors, lastBlob: () => lastBlob };
   return new Promise((resolve) => setTimeout(() => resolve(ctx), 60));
