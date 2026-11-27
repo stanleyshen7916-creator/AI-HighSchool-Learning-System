@@ -10,6 +10,8 @@
      ensureAll(ids)    -> Promise<{ [id]: content }>
      has(id), get(id)  -> synchronous: already loaded?  / the content or null
      setBase(path)     -> where the content files live (default "js/data/materials-content/")
+     loadScript(src)   -> Promise: add any other generated data file the same way (T6: the per-material explanation
+                          supplements in js/data/explanations-content/); each src at most once
 
    Not wired into any page yet: until the pages switch from TeachingMaterialData.js to TeachingMaterialIndex.js
    (queue 9.4 T5–T7) nothing calls it. */
@@ -60,5 +62,24 @@ AHS.TeachingMaterialContentLoader = (function () {
     });
   }
 
-  return { ensure: ensure, ensureAll: ensureAll, has: has, get: get, setBase: setBase };
+  var scripts = {};
+  function loadScript(src) {
+    if (!/^js\/data\/[A-Za-z0-9_\-\/]+\.js$/.test(String(src))) { return Promise.reject(new Error("資料檔路徑不正確：" + src)); }
+    if (scripts[src]) { return scripts[src]; }
+    scripts[src] = new Promise(function (resolve, reject) {
+      var script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.onload = function () { resolve(); };
+      script.onerror = function () {
+        delete scripts[src];
+        if (script.parentNode) { script.parentNode.removeChild(script); }
+        reject(new Error("載入資料檔失敗：" + src));
+      };
+      (document.head || document.documentElement).appendChild(script);
+    });
+    return scripts[src];
+  }
+
+  return { ensure: ensure, ensureAll: ensureAll, has: has, get: get, setBase: setBase, loadScript: loadScript };
 })();

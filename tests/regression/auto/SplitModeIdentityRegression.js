@@ -25,6 +25,8 @@ function check(name, ok, detail) {
 global.window = global;
 require(path.join(REPO, "js/data/TeachingMaterialIndex.js"));
 const INDEX = global.AHS.TeachingMaterialIndex;
+require(path.join(REPO, "js/data/ExplanationSupplementData.js"));
+const SUPPLEMENTS = global.AHS.ExplanationSupplementData;
 function content(id) {
   const sandbox = { AHS: {} };
   sandbox.window = sandbox;
@@ -52,6 +54,7 @@ function loadPage(htmlFile, { workspace, seed, split }) {
   w.sessionStorage.setItem("ahs:workspace", JSON.stringify(workspace));
   Object.entries(seed || {}).forEach(([k, v]) => w.sessionStorage.setItem("ahs:" + ns + ":" + k, JSON.stringify(v)));
   const requested = [];
+  const supplements = [];
   const srcs = [...w.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
   for (const src of srcs) {
     if (split && src === "js/data/TeachingMaterialData.js") {
@@ -60,12 +63,21 @@ function loadPage(htmlFile, { workspace, seed, split }) {
       /* jsdom does not run dynamically added <script>s here: serve ensure() from the real content file instead. */
       const L = w.AHS.TeachingMaterialContentLoader;
       L.ensure = function (id) {
-        requested.push(id); 
+        requested.push(id);
         return new w.Promise((resolve) => setTimeout(() => {
           w.eval(fs.readFileSync(path.join(REPO, "js/data/materials-content", id + ".js"), "utf8"));
           resolve(w.AHS.TeachingMaterialContentStore[id]);
         }, 0));
       };
+      L.loadScript = function (s) {
+        supplements.push(s);
+        return new w.Promise((resolve) => setTimeout(() => { w.eval(fs.readFileSync(path.join(REPO, s), "utf8")); resolve(); }, 0));
+      };
+      continue;
+    }
+    if (split && src === "js/data/ExplanationSupplementData.js") {
+      /* T6: the per-material supplements instead of the whole file */
+      w.eval(fs.readFileSync(path.join(REPO, "js/data/ExplanationSupplementIndex.js"), "utf8"));
       continue;
     }
     const p = path.join(REPO, src);
@@ -73,7 +85,7 @@ function loadPage(htmlFile, { workspace, seed, split }) {
     w.eval(fs.readFileSync(p, "utf8"));
   }
   w.document.dispatchEvent(new w.Event("DOMContentLoaded", { bubbles: true }));
-  return { w, errors, requested };
+  return { w, errors, requested, supplements };
 }
 function settle() { return new Promise((r) => setTimeout(r, 50)); }
 
@@ -81,7 +93,7 @@ function settle() { return new Promise((r) => setTimeout(r, 50)); }
 function norm(html) { return String(html).replace(/\b(id|for|aria-controls|aria-labelledby|aria-describedby)="[^"]*"/g, ""); }
 
 async function wrongBookSnapshot(workspace, items, split) {
-  const { w, errors, requested } = loadPage("wrongbook.html", { workspace, seed: { wrongBookRuntime: { items, seq: items.length } }, split });
+  const { w, errors, requested, supplements } = loadPage("wrongbook.html", { workspace, seed: { wrongBookRuntime: { items, seq: items.length } }, split });
   await settle();
   const app = w.document.getElementById("app");
   const out = { list: norm(app.innerHTML), details: [] };
@@ -90,11 +102,13 @@ async function wrongBookSnapshot(workspace, items, split) {
     const r = [...w.document.getElementById("app").querySelectorAll("article")][i];
     if (!r) { break; }
     r.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
-    out.details.push(norm(w.document.getElementById("app").innerHTML));
+    out.details.push(norm(w.document.body.innerHTML));   // the detail panel / dialog may live outside #app
   }
   out.stored = JSON.stringify(w.AHS.WrongBookRuntime.list());
   out.errors = errors;
   out.requested = [...new Set(requested)].sort();
+  out.supplements = [...new Set(supplements)].sort();
+  out.richCount = (out.details.join("").match(/class="xsup"/g) || []).length;
   return out;
 }
 
@@ -122,7 +136,11 @@ function wrongBookItemsFor(workspace, extra) {
     if (mi % 3 !== 0) { return; }               // every third material: the subset must really be a subset
     const c = content(rec.materialId);
     const qs = (c && c.questions || []).filter((q) => Array.isArray(q.options) && q.options.length >= 2 && q.answer);
-    const picked = qs.slice(0, 2).concat(qs.filter((q) => q.figureSvg).slice(0, 1), qs.filter((q) => /題組/.test(q.question || "")).slice(0, 1));
+    /* T6: also questions that have an explanation supplement, including ones from a merged package (tm_60_q* in tm_17) */
+    const withSup = qs.filter((q) => SUPPLEMENTS[q.id]);
+    const merged = withSup.filter((q) => q.id.indexOf(rec.materialId + "_") !== 0);
+    const picked = qs.slice(0, 2).concat(qs.filter((q) => q.figureSvg).slice(0, 1), qs.filter((q) => /題組/.test(q.question || "")).slice(0, 1),
+      withSup.slice(0, 1), merged.slice(0, 1));
     picked.forEach((q, i) => {
       items.push({
         id: "wb_" + rec.materialId + "_" + i, questionId: q.id, subject: "history", title: rec.material.title,
@@ -157,6 +175,11 @@ function wrongBookItemsFor(workspace, extra) {
     check(label + "：只載入錯題用到的 " + want.length + " 份教材", JSON.stringify(split.requested) === JSON.stringify(want),
       "載入：" + split.requested.join(",") + "　預期：" + want.join(","));
     check(label + "：兩種模式都沒有錯誤", !full.errors.length && !split.errors.length, full.errors.concat(split.errors).join(" | "));
+    const supWant = [...new Set(items.filter((it) => SUPPLEMENTS[it.questionId]).map((it) => SUPPLEMENTS[it.questionId].materialId))].sort();
+    check(label + "：詳解補強 " + full.richCount + " 筆，兩種模式相同；只載入用到的 " + supWant.length + " 份補強檔",
+      full.richCount === split.richCount && full.richCount === items.filter((it) => SUPPLEMENTS[it.questionId]).length &&
+      supWant.every((id) => split.supplements.indexOf("js/data/explanations-content/" + id + ".js") !== -1),
+      "補強：" + full.richCount + "／" + split.richCount + "　載入：" + split.supplements.join(","));
 
     /* On these pages the data file comes BEFORE WrongBookRuntime, so the load-time canonicalization sees the original
        questions; in the split mode it must wait for the content (isPending) and give the same records. */

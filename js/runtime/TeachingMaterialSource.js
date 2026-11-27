@@ -122,19 +122,48 @@ AHS.TeachingMaterialSource = (function () {
     });
   }
 
+  /* T6: the explanation supplements of these materials. Only on a page that loads the small
+     js/data/ExplanationSupplementIndex.js instead of the whole ExplanationSupplementData.js; a supplement file is named
+     by the package its questions were written for, so a material's merged packages are included. */
+  function missingSupplements(ids) {
+    var list = Array.isArray(AHS.ExplanationSupplementIndex) ? AHS.ExplanationSupplementIndex : null;
+    if (!list || fullData()) { return []; }
+    var has = {};
+    list.forEach(function (id) { has[id] = true; });
+    var loaded = AHS.ExplanationSupplementLoaded || {};
+    var byId = {};
+    index().forEach(function (r) { if (r && r.materialId) { byId[r.materialId] = r; } });
+    var out = [];
+    (ids === "all" ? allIds() : (Array.isArray(ids) ? ids : [])).forEach(function (id) {
+      var rec = byId[id];
+      if (!rec) { return; }
+      [id].concat(rec.merged || []).forEach(function (pkg) {
+        if (has[pkg] && !loaded[pkg] && out.indexOf(pkg) === -1) { out.push(pkg); }
+      });
+    });
+    return out;
+  }
+
   function ready(ids, fn) {
     var need = missing(ids);
+    var sup = missingSupplements(ids);
+    var L = AHS.TeachingMaterialContentLoader;
     errors = [];
-    if (!need.length || !AHS.TeachingMaterialContentLoader) {
-      if (need.length && window.console) { console.warn("TeachingMaterialContentLoader is not loaded; " + need.length + " material(s) have no content"); }
+    if ((!need.length && !sup.length) || !L) {
+      if ((need.length || sup.length) && window.console) { console.warn("TeachingMaterialContentLoader is not loaded; " + need.length + " material(s) have no content"); }
       fn();
       return;
     }
-    var pending = need.length;
-    need.forEach(function (id) {
-      AHS.TeachingMaterialContentLoader.ensure(id).catch(function (err) {
-        errors.push({ materialId: id, message: String(err && err.message || err) });
-        if (window.console) { console.warn("教材內容載入失敗：" + id); }
+    var jobs = need.map(function (id) {
+      return { id: id, run: function () { return L.ensure(id); }, label: "教材內容" };
+    }).concat(sup.map(function (id) {
+      return { id: id, run: function () { return L.loadScript("js/data/explanations-content/" + id + ".js"); }, label: "詳解補強" };
+    }));
+    var pending = jobs.length;
+    jobs.forEach(function (job) {
+      job.run().catch(function (err) {
+        errors.push({ materialId: job.id, message: String(err && err.message || err) });
+        if (window.console) { console.warn(job.label + "載入失敗：" + job.id); }
       }).then(function () {
         pending -= 1;
         if (pending === 0) { runHooks(); fn(); }

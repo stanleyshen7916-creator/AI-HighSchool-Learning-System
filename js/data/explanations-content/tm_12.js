@@ -1,0 +1,7 @@
+/* js/data/explanations-content/tm_12.js — GENERATED FILE, do not hand-edit.
+   Explanation supplements of tm_12 (see GenerateExplanationSupplement.js). */
+window.AHS = window.AHS || {};
+AHS.ExplanationSupplementData = AHS.ExplanationSupplementData || {};
+AHS.ExplanationSupplementLoaded = AHS.ExplanationSupplementLoaded || {};
+(function (d, add) { Object.keys(add).forEach(function (k) { d[k] = add[k]; }); })(AHS.ExplanationSupplementData, {"tm_12_q39":{"questionId":"tm_12_q39","materialId":"tm_12","question":"碳的莫耳燃燒熱為-394kJ/mol，若取60公克的碳完全燃燒，理論上可以放熱多少kJ？","concept":"莫耳燃燒熱是「每 1 莫耳」燃燒放出的熱，先把質量換成莫耳數。","steps":["碳的莫耳質量 12 g/mol：60 g ÷ 12 = 5 mol。","放熱 = 5 mol × 394 kJ/mol = 1970 kJ。","−394 的負號表示放熱，問「放熱多少」答正值。"],"pitfalls":["直接用 60 × 394，忘了換算莫耳數。"],"note":"","figures":[]}});
+AHS.ExplanationSupplementLoaded["tm_12"] = true;
