@@ -11,7 +11,17 @@
 const LETTERS = 'ABCDEFGH';
 const LAZY_OPTION = /以上皆(是|非)|以上都(對|錯|是|不是)|皆(正確|錯誤)$/;
 const FIGURE_REF = /如圖|下圖|右圖|左圖|上圖|附圖|圖中|附表|如表|下表/;
-const stripLabel = (o) => String(o == null ? '' : o).replace(/^\s*[（(]?\s*[A-Ha-h]\s*[)）.．、]\s*/, '').trim();
+/* 題幹提到圖表但沒有圖檔時，題幹已經用文字把圖表內容寫出來（例：「依原課本附圖以文字描述」、
+   「下表的數據：…」、「下表…（婚前財產：…）」），就不是缺圖。 */
+const FIGURE_DESCRIBED = /以文字描述|依原(?:課本|題)?附?圖|圖形為|[（(](?!情境同)[^（）()]{6,}[）)]|[：:]\s*[^\s，。？?]{4,}/;
+/* 'fail'＝缺圖（標記 figureMissing，或提到圖表卻沒有圖也沒有文字描述）；'review'＝沒有圖檔但已文字描述；null＝沒問題。 */
+function figureProblem(q) {
+  const stem = String(q.question || '');
+  if (!FIGURE_REF.test(stem) || q.figureSvg) return null;
+  if (q.figureMissing) return 'fail';
+  return FIGURE_DESCRIBED.test(stem) ? 'review' : 'fail';
+}
+const stripLabel =(o) => String(o == null ? '' : o).replace(/^\s*[（(]?\s*[A-Ha-h]\s*[)）.．、]\s*/, '').trim();
 const norm = (s) => String(s == null ? '' : s).replace(/\s/g, '');
 
 function answerLetter(q) {
@@ -86,7 +96,9 @@ async function gateLocalQA(q, ctx) {
   const reasons = [], review = [];
   const opts = (q.options || []).map(stripLabel);
   if (opts.some((o) => LAZY_OPTION.test(o))) reasons.push('有「以上皆是／皆非」之類的偷懶選項');
-  if (FIGURE_REF.test(String(q.question || '')) && !q.figureSvg) reasons.push('題幹提到圖表但沒有圖');
+  const fig = figureProblem(q);
+  if (fig === 'fail') reasons.push('題幹提到圖表但沒有圖');
+  if (fig === 'review') review.push('題幹提到圖表，沒有圖檔但題幹已用文字描述，請確認描述足以作答');
   if (!answerLetter(q)) reasons.push('答案對不到選項');
   if (reasons.length) return { status: 'fail', reasons, review };
 
@@ -94,13 +106,22 @@ async function gateLocalQA(q, ctx) {
   if (cons.verdict === 'fail') return { status: 'fail', reasons: [`一致性：3 次作答只有 ${cons.same} 次與答案相同（${cons.got.join('')}，答案 ${cons.want}）`], review, detail: { consistency: cons } };
   if (cons.verdict === 'review') review.push(`一致性：3 次作答 2 次與答案相同（${cons.got.join('')}）`);
 
-  let chk = parseCheck(await ctx.review(checkPrompt(q, ctx.meta || {}, ctx.examples), { temperature: 0 }));
-  if (chk.missing.length) chk = parseCheck(await ctx.review(checkPrompt(q, ctx.meta || {}, ctx.examples) + '\n\n（上一次回覆缺少欄位，請完整回覆五行。）', { temperature: 0 }));
+  // 題目自帶科目時（例如跨科目借來的金標準原題）用題目自己的科目，不要用這批教材的科目去判斷是否超綱。
+  const meta = Object.assign({}, ctx.meta || {}, q.subject ? { subject: q.subject, grade: q.grade || (ctx.meta || {}).grade } : {});
+  let chk = parseCheck(await ctx.review(checkPrompt(q, meta, ctx.examples), { temperature: 0 }));
+  if (chk.missing.length) chk = parseCheck(await ctx.review(checkPrompt(q, meta, ctx.examples) +'\n\n（上一次回覆缺少欄位，請完整回覆五行。）', { temperature: 0 }));
   if (chk.missing.length) return { status: 'fail', reasons: [`審查回覆缺欄位：${chk.missing.join('、')}（fail-closed）`], review, detail: { consistency: cons } };
-  if (!chk.explanation) reasons.push('詳解不支持標準答案');
-  if (q.type !== 'multiple_choice' && chk.correct.length > 1) reasons.push(`審查認為不只一個正確選項：${chk.correct.join('、')}`);
   if (chk.correct.length && !chk.correct.includes(cons.want)) reasons.push(`審查認為正確選項是 ${chk.correct.join('、')}，答案是 ${cons.want}`);
-  if (!chk.scope) reasons.push('超出單元範圍或高中程度');
+  // 11/27 金標準誤殺：單次（溫度 0）的模型判斷不能單獨淘汰題目。審題模型 3 次作答都和答案一致、
+  // 而且認同答案時，「詳解不支持／不只一個正確選項／超綱」只標待複核（一定進 Claude 抽樣）；
+  // 模型自己的作答也不同意答案時才淘汰。
+  const corroborated = cons.verdict === 'pass' && (!chk.correct.length || chk.correct.includes(cons.want));
+  const judged = [];
+  if (!chk.explanation) judged.push('詳解不支持標準答案');
+  if (q.type !== 'multiple_choice' && chk.correct.length > 1) judged.push(`審查認為不只一個正確選項：${chk.correct.join('、')}`);
+  if (!chk.scope) judged.push('超出單元範圍或高中程度');
+  if (corroborated) review.push(...judged.map((r) => `${r}（審題模型 3 次作答都與答案一致，待複核）`));
+  else reasons.push(...judged);
   // 11/26 tm_112 實跑：gpt-oss 把 36/56 題的錯誤選項標成「沒有誘答力」，待複核被淹沒；改成只記錄（notes），不進待複核。
   const notes = chk.absurd.length ? [`錯誤選項 ${chk.absurd.join('、')} 可能沒有誘答力`] : [];
   return { status: reasons.length ? 'fail' : (review.length ? 'review' : 'pass'), reasons, review, notes, bloom: chk.bloom, detail: { consistency: cons, check: chk } };
@@ -108,16 +129,24 @@ async function gateLocalQA(q, ctx) {
 
 /* C. 金標準：從有官方答案的題目（questionSource ORIGINAL）抽 n 題，每題一份正本（應通過）和一份
    「答案被改錯」的副本（應淘汰）。副本只存在於這一批、絕不寫回題庫。 */
+/* 11/27：只有「本身完整、可以單獨作答」的原題才能當金標準——缺原圖（L003）、題組題拆散（L001）、
+   詳解字母與答案不符（L002）的原題不是已知正確的題目，放進來只會量到假的誤判率。 */
+function goldEligible(q) {
+  const { runLessons } = require('./QualityLessons');
+  return q.questionSource === 'ORIGINAL' && q.type === 'single_choice' && !!answerLetter(q) && (q.options || []).length >= 3
+    && figureProblem(q) !== 'fail' && runLessons(q).length === 0;
+}
 function buildGoldItems(pool, n, rng = Math.random) {
-  const usable = pool.filter((q) => q.questionSource === 'ORIGINAL' && q.type === 'single_choice' && answerLetter(q) && (q.options || []).length >= 3);
+  const usable = pool.filter(goldEligible);
   const picked = [...usable].sort(() => rng() - 0.5).slice(0, n);
   const items = [];
   picked.forEach((q, i) => {
     const want = answerLetter(q);
     const others = LETTERS.slice(0, q.options.length).split('').filter((l) => l !== want);
     const wrong = others[Math.floor(rng() * others.length)];
-    items.push({ q: Object.assign({}, q, { id: `gold_${i}_ok`, questionId: `gold_${i}_ok` }), gold: 'correct' });
-    items.push({ q: Object.assign({}, q, { id: `gold_${i}_bad`, questionId: `gold_${i}_bad`, answer: wrong }), gold: 'corrupted' });
+    const from = q.questionId || q.id;
+    items.push({ q: Object.assign({}, q, { id: `gold_${i}_ok`, questionId: `gold_${i}_ok` }), gold: 'correct', from });
+    items.push({ q: Object.assign({}, q, { id: `gold_${i}_bad`, questionId: `gold_${i}_bad`, answer: wrong }), gold: 'corrupted', from });
   });
   return items;
 }
@@ -210,7 +239,7 @@ function nextSamplingRate(history, cfg) {
 }
 
 module.exports = {
-  gateLocalQA, consistency, checkPrompt, parseCheck, answerLetter,
-  buildGoldItems, mixGold, scoreGold,
+  gateLocalQA, consistency, checkPrompt, parseCheck, answerLetter, figureProblem,
+  goldEligible, buildGoldItems, mixGold, scoreGold,
   selectSample, buildClaudePack, parseClaudeReview, applyClaudeReview, nextSamplingRate,
 };

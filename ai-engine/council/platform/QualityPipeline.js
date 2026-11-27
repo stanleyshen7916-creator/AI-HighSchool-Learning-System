@@ -64,7 +64,8 @@ async function runPipeline(questions, ctx = {}) {
     if (r5.status === 'fail') return Object.assign(base, { status: 'fail', failedAt: 'localqa', reasons: r5.reasons, review, bloom: r5.bloom || null });
     return Object.assign(base, { status: review.length ? 'review' : 'pass', failedAt: null, reasons: [], review, bloom: r5.bloom || null });
   });
-  const goldRows = Object.keys(goldIds).map((id) => ({ id, status: qa[id].status, reasons: qa[id].reasons }));
+  const goldFrom = Object.fromEntries(goldItems.map((g) => [g.q.questionId, g.from]));
+  const goldRows = Object.keys(goldIds).map((id) => ({ id, from: goldFrom[id] || null, status: qa[id].status, reasons: qa[id].reasons, review: qa[id].review || [] }));
   const gold = goldItems.length ? scoreGold(goldRows, goldIds) : null;
 
   const kept = rows.filter((r) => r.status !== 'fail');

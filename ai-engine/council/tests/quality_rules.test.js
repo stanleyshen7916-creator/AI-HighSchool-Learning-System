@@ -109,6 +109,10 @@ describe('F 教訓庫', () => {
     expect(runLessons(q({ explanation: '護民官保障平民，故選(A)。' })).join()).toMatch(/\[L002\] 詳解寫選 A，答案是 B/);
     expect(runLessons(q({ explanation: '護民官保障平民，故選(B)。' }))).toEqual([]);
   });
+  test('L002 也擋「正確答案為 C」（佇列 8.7：tm_112_q28 等 9 題，選項打亂後詳解字母沒跟著改）', () => {
+    expect(runLessons(q({ explanation: '護民官保障平民，因此正確答案為 C。' })).join()).toMatch(/\[L002\] 詳解寫選 C，答案是 B/);
+    expect(runLessons(q({ explanation: '護民官保障平民，因此正確答案為 「護民官」。' }))).toEqual([]);
+  });
   test('L003 缺原圖', () => {
     expect(runLessons(q({ figureMissing: true })).join()).toMatch(/\[L003\]/);
   });

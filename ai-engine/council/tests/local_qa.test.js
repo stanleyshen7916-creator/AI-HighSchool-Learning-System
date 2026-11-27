@@ -30,12 +30,19 @@ describe('關卡 5 本機自主 QA', () => {
     expect(f.status).toBe('fail');
     expect(f.reasons.join()).toMatch(/只有 1 次/);
   });
-  test('2 詳解不支持答案 → 淘汰', async () => {
-    const r = await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('EXPLANATION: YES', 'EXPLANATION: NO') }), cfg });
-    expect(r.reasons.join()).toMatch(/詳解不支持/);
+  test('2 詳解不支持答案：模型作答也不同意 → 淘汰；3 次作答都同意答案 → 只標待複核（單次判斷不能單獨淘汰）', async () => {
+    const NO = GOOD.replace('EXPLANATION: YES', 'EXPLANATION: NO');
+    const f = await L.gateLocalQA(q(), { review: fakeReview({ answers: ['B', 'B', 'C'], check: NO }), cfg });
+    expect(f.status).toBe('fail');
+    expect(f.reasons.join()).toMatch(/詳解不支持/);
+    const r = await L.gateLocalQA(q(), { review: fakeReview({ check: NO }), cfg });
+    expect(r.status).toBe('review');
+    expect(r.review.join()).toMatch(/詳解不支持.*待複核/);
   });
-  test('3 選項品質：兩個正確選項 → 淘汰；以上皆是 → 淘汰（不呼叫模型）；沒有誘答力 → 只記錄（notes），仍通過', async () => {
-    expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') }), cfg })).reasons.join()).toMatch(/不只一個正確選項/);
+  test('3 選項品質：兩個正確選項（未佐證）→ 淘汰；以上皆是 → 淘汰（不呼叫模型）；沒有誘答力 → 只記錄（notes），仍通過', async () => {
+    expect((await L.gateLocalQA(q(), { review: fakeReview({ answers: ['B', 'D', 'B'], check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') }), cfg })).reasons.join()).toMatch(/不只一個正確選項/);
+    expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') }), cfg })).status).toBe('review');
+    expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('CORRECT: B', 'CORRECT: D') }), cfg })).reasons.join()).toMatch(/正確選項是 D，答案是 B/);
     const lazy = fakeReview();
     const r = await L.gateLocalQA(q({ options: ['執政官', '護民官', '獨裁官', '以上皆是'] }), { review: lazy, cfg });
     expect(r.reasons.join()).toMatch(/偷懶選項/);
@@ -44,11 +51,23 @@ describe('關卡 5 本機自主 QA', () => {
     expect(absurd.status).toBe('pass');
     expect(absurd.notes.join()).toMatch(/D 可能沒有誘答力/);
   });
-  test('4 超出範圍 → 淘汰', async () => {
-    expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('SCOPE: IN', 'SCOPE: OUT') }), cfg })).reasons.join()).toMatch(/超出單元範圍/);
+  test('4 超出範圍（未佐證）→ 淘汰；3 次作答都同意 → 待複核', async () => {
+    const OUT = GOOD.replace('SCOPE: IN', 'SCOPE: OUT');
+    expect((await L.gateLocalQA(q(), { review: fakeReview({ answers: ['B', 'B', 'A'], check: OUT }), cfg })).reasons.join()).toMatch(/超出單元範圍/);
+    expect((await L.gateLocalQA(q(), { review: fakeReview({ check: OUT }), cfg })).status).toBe('review');
   });
-  test('5 題幹提到圖但沒有圖 → 淘汰', async () => {
+  test('5 題幹提到圖但沒有圖 → 淘汰；標記缺圖 → 淘汰；已用文字描述圖表 → 待複核', async () => {
     expect((await L.gateLocalQA(q({ question: '如圖所示，下列何者是保障平民的官職？' }), { review: fakeReview(), cfg })).reasons.join()).toMatch(/提到圖表但沒有圖/);
+    expect(L.figureProblem(q({ question: '（依原課本附圖以文字描述）甲：…，下圖何者正確？', figureMissing: true }))).toBe('fail');
+    const described = await L.gateLocalQA(q({ question: '依據下表羅馬官職的比較（執政官：統領軍隊；護民官：保障平民），下列何者保障平民？' }), { review: fakeReview(), cfg });
+    expect(described.status).toBe('review');
+    expect(described.review.join()).toMatch(/已用文字描述/);
+    expect(L.figureProblem(q({ question: '如圖所示，下列何者正確？', figureSvg: '<svg/>' }))).toBeNull();
+  });
+  test('題目自帶科目（跨科目金標準）→ 審查提示用題目自己的科目', async () => {
+    const review = fakeReview();
+    await L.gateLocalQA(q({ subject: '數學' }), { review, cfg, meta: { subject: '歷史', grade: '高二' } });
+    expect(review.calls.find((c) => /審查員/.test(c.prompt)).prompt).toMatch(/科目：數學/);
   });
   test('缺欄位：重問一次，仍缺 → 淘汰（fail-closed）；沒有審題模型 → 淘汰', async () => {
     const half = fakeReview({ check: 'EXPLANATION: YES\nCORRECT: B' });
@@ -79,6 +98,44 @@ describe('C 金標準', () => {
     const s = L.scoreGold([{ id: 'gold_0_ok', status: 'fail' }, { id: 'gold_1_ok', status: 'pass' }, { id: 'gold_0_bad', status: 'pass' }, { id: 'gold_1_bad', status: 'fail' }],
       { gold_0_ok: 'correct', gold_1_ok: 'correct', gold_0_bad: 'corrupted', gold_1_bad: 'corrupted' });
     expect(s).toEqual({ correctItems: 2, falseRejectRate: 0.5, corruptedItems: 2, missRate: 0.5 });
+  });
+  test('缺原圖、題組拆散、詳解字母與答案不符的原題不能當金標準；金標準記下來源題號', () => {
+    expect(L.goldEligible(q({ questionSource: 'ORIGINAL' }))).toBe(true);
+    expect(L.goldEligible(q({ questionSource: 'ORIGINAL', question: '如圖，下列何者正確？', figureMissing: true }))).toBe(false);
+    expect(L.goldEligible(q({ questionSource: 'ORIGINAL', question: '承上題，該官職的主要權力為何？' }))).toBe(false);
+    expect(L.goldEligible(q({ questionSource: 'ORIGINAL', explanation: '因此正確答案為 C。' }))).toBe(false);
+    expect(L.buildGoldItems(pool, 1, () => 0.3)[0].from).toMatch(/^o\d$/);
+  });
+});
+
+/* 11/27 cloud：金標準是官方原題，被淘汰＝關卡誤殺。回歸測試：題庫裡每一題可當金標準的原題，
+   遇到「答得出正確答案、但對詳解／範圍／選項很挑剔」的審題模型，都不得被淘汰；
+   同一題答案被改錯的副本仍要被淘汰（漏檢不能因此變多）。 */
+describe('金標準題不得被淘汰（全題庫回歸）', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const DIR = path.join(__dirname, '..', '..', '..', 'docs', 'TeachingMaterials', 'materials');
+  const gold = fs.readdirSync(DIR).filter((d) => fs.existsSync(path.join(DIR, d, 'questionbank.json')))
+    .flatMap((d) => JSON.parse(fs.readFileSync(path.join(DIR, d, 'questionbank.json'), 'utf8')).questions || [])
+    .filter(L.goldEligible);
+  const picky = (want) => fakeReview({ answers: [want], check: `EXPLANATION: NO\nCORRECT: ${want}, ${want === 'A' ? 'B' : 'A'}\nABSURD: A\nSCOPE: OUT\nBLOOM: 理解` });
+  test('題庫有足夠的金標準原題', () => {
+    expect(gold.length).toBeGreaterThan(500);
+  });
+  test('每一題金標準正本都不被淘汰；改錯副本都被淘汰', async () => {
+    const killed = [], missed = [];
+    for (const g of gold) {
+      const want = L.answerLetter(g);
+      // eslint-disable-next-line no-await-in-loop
+      const ok = await L.gateLocalQA(g, { review: picky(want), cfg, meta: { subject: '歷史' } });
+      if (ok.status === 'fail') killed.push(`${g.questionId}：${ok.reasons.join('；')}`);
+      const wrong = 'ABCDEFGH'.split('').find((l) => l !== want);
+      // eslint-disable-next-line no-await-in-loop
+      const bad = await L.gateLocalQA(Object.assign({}, g, { answer: wrong }), { review: picky(want), cfg });
+      if (bad.status !== 'fail') missed.push(g.questionId);
+    }
+    expect(killed).toEqual([]);
+    expect(missed).toEqual([]);
   });
 });
 

@@ -64,7 +64,9 @@ function sourceText(list) {
   let goldPool = args.includes('--no-gold') ? [] : existing.filter((q) => q.questionSource === 'ORIGINAL');
   let goldSource = goldPool.length ? 'same-subject' : 'none';
   if (!goldPool.length && !args.includes('--no-gold')) {
-    goldPool = others.flatMap((d) => read(d, 'questionbank.json').questions || []).filter((q) => q.questionSource === 'ORIGINAL');
+    // 跨科目借題時帶上原題自己的科目，關卡 5 才不會用「歷史」去判斷數學題是否超綱。
+    const subjectOf = (d) => { try { return read(d, 'metadata.json').subject || ''; } catch (e) { return ''; } };
+    goldPool = others.flatMap((d) => (read(d, 'questionbank.json').questions || []).map((q) => Object.assign({ subject: subjectOf(d) }, q))).filter((q) => q.questionSource === 'ORIGINAL');
     goldSource = goldPool.length ? 'other-subjects' : 'none';
   }
   const limit = Number(arg('--limit', 0)) || Infinity;
