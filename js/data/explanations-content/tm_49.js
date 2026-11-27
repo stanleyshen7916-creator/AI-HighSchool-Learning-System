@@ -1,0 +1,7 @@
+/* js/data/explanations-content/tm_49.js — GENERATED FILE, do not hand-edit.
+   Explanation supplements of tm_49 (see GenerateExplanationSupplement.js). */
+window.AHS = window.AHS || {};
+AHS.ExplanationSupplementData = AHS.ExplanationSupplementData || {};
+AHS.ExplanationSupplementLoaded = AHS.ExplanationSupplementLoaded || {};
+(function (d, add) { Object.keys(add).forEach(function (k) { d[k] = add[k]; }); })(AHS.ExplanationSupplementData, {"tm_49_q40":{"questionId":"tm_49_q40","materialId":"tm_49","question":"Some kinds of bats ______ insects, which helps farmers with pest control.","concept":"feed on ＝ 以……為食（主詞是吃的一方）。","steps":["蝙蝠吃昆蟲 → bats feed on insects。","同義片語：live on。","feed A with B 是「用 B 餵 A」，主詞是餵食者。"],"pitfalls":["誤選 feed with。"],"note":"","figures":[]},"tm_49_q46":{"questionId":"tm_49_q46","materialId":"tm_49","question":"At a time ______ there were all-powerful gods in the universe, Prometheus created humans.","concept":"先行詞是「時間」，關係副詞用 when（＝ in which）。","steps":["a time 表示時間。","空格後是完整句子 there were all-powerful gods...，不缺主詞或受詞，要用關係副詞。","時間 → when；地點 → where。"],"pitfalls":["選 which：which 後面的子句要缺主詞或受詞。"],"note":"","figures":[]}});
+AHS.ExplanationSupplementLoaded["tm_49"] = true;

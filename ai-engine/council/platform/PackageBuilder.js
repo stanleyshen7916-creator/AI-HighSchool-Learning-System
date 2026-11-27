@@ -63,7 +63,11 @@ function createPackageBuilder({ platformRoot, dataDir }) {
   const regenerateSupplements = () => {
     try {
       const { stale } = require(path.join(scripts, 'GenerateExplanationSupplement.js')).generate();
-      return { paths: stale.map((f) => f.split(path.sep).join('/')).includes('js/data/ExplanationSupplementData.js') ? ['js/data/ExplanationSupplementData.js'] : [], warning: null };
+      const rel = stale.map((f) => f.split(path.sep).join('/'));
+      const paths = ['js/data/ExplanationSupplementData.js', 'js/data/ExplanationSupplementIndex.js'].filter((p) => rel.includes(p));
+      // queue 9.4 T6: the per-material split files the pages read from T7 on
+      if (rel.some((p) => p.indexOf('js/data/explanations-content/') === 0)) paths.push('js/data/explanations-content/');
+      return { paths, warning: null };
     } catch (error) {
       return { paths: [], warning: `詳解補強資料產生失敗，學生端暫時看不到補強：${error.message}` };
     }
