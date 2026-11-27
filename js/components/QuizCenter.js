@@ -392,6 +392,44 @@ AHS.QuizCenter = (function () {
       return session.examId;
     }
 
+    /* tryWeakPracticeEntry(sourceId) — 2026-11-27 AHS-FEAT 加強練習：學習統計頁「需加強」
+       單元的「加強練習」按鈕（quiz.html?mode=weak&materialId=tm_N）。題目由
+       AHS.WeakChapterRuntime.pickPractice() 依「錯題本未精熟 → 從未作答 → 其餘」挑選，
+       之後走和綜合隨機練習完全相同的 ExamRuntime／AutoGrader／錯題本／歷史流程。 */
+    function tryWeakPracticeEntry(sourceId) {
+      var loader = AHS.TeachingMaterialLoader;
+      var runtimeId = loader && typeof loader.runtimeIdFor === "function" ? loader.runtimeIdFor(sourceId) : null;
+      if (!runtimeId || !AHS.WeakChapterRuntime) { return null; }
+      var examId = "teaching_material_" + runtimeId;
+      var entry = repositoryExamCatalog().filter(function (it) { return it._repoExamId === examId; })[0];
+      if (!entry) { return null; }
+      var bank = AHS.QuestionBankRuntime;
+      var hasBank = bank && typeof bank.hasBank === "function" && bank.hasBank(examId);
+      var pool = hasBank ? bank.getBank(examId)
+        : (AHS.QuestionRuntime && typeof AHS.QuestionRuntime.getSet === "function" ? AHS.QuestionRuntime.getSet(examId) : []);
+      var inputs = AHS.WeakChapterRuntime.practiceInputs(sourceId);
+      var picked = AHS.WeakChapterRuntime.pickPractice({ questions: pool, weakIds: inputs.weakIds, attemptedIds: inputs.attemptedIds });
+      if (!picked.length) { return null; }
+      var src = sourceMetaFor(examId, entry);
+      var questions = tagSource(picked, src).map(function (q, i) {
+        var out = {};
+        Object.keys(q).forEach(function (k) { if (k.charAt(0) !== "_") { out[k] = q[k]; } });
+        out.index = i + 1;
+        return out;
+      });
+      var derivedExamId = "weak_practice_" + Date.now();
+      AHS.QuestionRuntime.importQuestions(derivedExamId, questions);
+      var session = AHS.ExamRuntime.startFromExam(derivedExamId, {
+        subject: entry.subject,
+        title: (src.title || entry.title || "") + "加強練習",
+        chapter: src.chapter || entry.chapter || "",
+        grade: entry.grade || ""
+      });
+      if (!session) { return null; }
+      showExam(session.examId);
+      return session.examId;
+    }
+
     /* openCombinedPractice(examIds) — Feature B, 考前總複習 sibling: real
        already-imported questions (realExamQuestionsFor(), the same
        source onRealPractice's single-chapter drill-down already reads)
@@ -540,6 +578,8 @@ AHS.QuizCenter = (function () {
     var resumeSession = AHS.ExamRuntime.getCurrent();
     if (resumeSession) {
       showExam(resumeSession.examId);
+    } else if (initialMode === "weak" && initialMaterialId) {
+      if (!tryWeakPracticeEntry(initialMaterialId)) { showList(); }
     } else if (directExamId && initialMode === "retest") {
       tryRetestEntry(directExamId);
     } else if (directExamId && initialMode !== "practice") {

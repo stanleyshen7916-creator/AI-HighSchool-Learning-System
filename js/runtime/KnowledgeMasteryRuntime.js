@@ -86,7 +86,20 @@ AHS.KnowledgeMasteryRuntime = (function () {
      here, honestly, same discipline AHS.StatisticsRuntime.
      knowledgeAnalytics() already used for WrongBookRuntime's own kp
      field). */
-  function recordAttempt(knowledgePoint, wasCorrect, subject, materialId) {
+  /* 2026-11-27 AHS-FEAT 弱點單元：每筆作答記下「來源教材 tm_N」。呼叫端傳來的
+     materialId 有時是 MaterialRuntime 的執行期 id、有時是 tm_N、有時沒有；
+     題號（tm_N_qM）本身就帶著來源教材，優先用它，其次用 tm_N，再其次用
+     TeachingMaterialLoader 的對照表反查。都查不到就留空，不猜。 */
+  function sourceMaterialIdOf(materialId, questionId) {
+    var fromQid = /^(tm_\d+)_/.exec(questionId || "");
+    if (fromQid) { return fromQid[1]; }
+    if (/^tm_\d+$/.test(materialId || "")) { return materialId; }
+    var loader = AHS.TeachingMaterialLoader;
+    if (materialId && loader && typeof loader.sourceIdFor === "function") { return loader.sourceIdFor(materialId) || ""; }
+    return "";
+  }
+
+  function recordAttempt(knowledgePoint, wasCorrect, subject, materialId, questionId) {
     if (!knowledgePoint) { return; }
     subject = subjectKeyOf(subject);
     var kp = store.points[knowledgePoint];
@@ -104,7 +117,11 @@ AHS.KnowledgeMasteryRuntime = (function () {
        by a later attempt that genuinely has none (e.g. a Mock question). */
     if (materialId) { kp.materialId = materialId; }
     var now = new Date();
-    kp.attempts.push({ correct: !!wasCorrect, day: dayKey(now), ts: now.toISOString() });
+    var attempt = { correct: !!wasCorrect, day: dayKey(now), ts: now.toISOString() };
+    var sourceId = sourceMaterialIdOf(materialId, questionId);
+    if (sourceId) { attempt.materialId = sourceId; }
+    if (questionId) { attempt.questionId = String(questionId); }
+    kp.attempts.push(attempt);
     if (kp.attempts.length > MAX_ATTEMPTS_PER_POINT) {
       kp.attempts.splice(0, kp.attempts.length - MAX_ATTEMPTS_PER_POINT);
     }
@@ -249,7 +266,7 @@ AHS.KnowledgeMasteryRuntime = (function () {
   function recordGraded(gradedResult) {
     if (!gradedResult || !Array.isArray(gradedResult.results)) { return; }
     gradedResult.results.forEach(function (r) {
-      recordAttempt(r.knowledgePoint, r.isCorrect, gradedResult.subject, r.materialId);
+      recordAttempt(r.knowledgePoint, r.isCorrect, gradedResult.subject, r.materialId, r.questionId);
     });
   }
 
@@ -367,6 +384,25 @@ AHS.KnowledgeMasteryRuntime = (function () {
     return typeof limit === "number" ? withGrowth.slice(0, limit) : withGrowth;
   }
 
+  /* attempts() — 2026-11-27 AHS-FEAT：每一筆真實作答攤平成一個清單（舊到新），
+     給 AHS.WeakChapterRuntime 依單元彙總。materialId 優先用該筆作答自己記下的
+     來源教材；舊紀錄沒有時，退回這個知識點最近一次的教材（同一份真實資料，只是
+     粒度較粗，不寫回、不捏造）。questionId 舊紀錄沒有就是空字串。 */
+  function attempts() {
+    var out = [];
+    Object.keys(store.points).forEach(function (k) {
+      var kp = store.points[k];
+      var fallback = sourceMaterialIdOf(kp.materialId, "");
+      kp.attempts.forEach(function (a) {
+        out.push({
+          knowledgePoint: k, subject: kp.subject || "", correct: !!a.correct, ts: a.ts || "",
+          materialId: a.materialId || fallback, questionId: a.questionId || ""
+        });
+      });
+    });
+    return out.sort(function (a, b) { return a.ts < b.ts ? -1 : (a.ts > b.ts ? 1 : 0); });
+  }
+
   /* reset() — test helper; mirrors every other Runtime's own reset(). */
   function reset() {
     store = { points: {} };
@@ -376,6 +412,7 @@ AHS.KnowledgeMasteryRuntime = (function () {
   return {
     recordAttempt: recordAttempt,
     recordGraded: recordGraded,
+    attempts: attempts,
     get: get,
     list: list,
     masteryByDay: masteryByDay,

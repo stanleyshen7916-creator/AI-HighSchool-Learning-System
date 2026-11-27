@@ -40,6 +40,10 @@ window.AHS = window.AHS || {};
     var tip = AHS.TutorContextTip && AHS.TutorContextTip.create({ page: "summary", materialId: materialId });
     if (tip) { shell.main.appendChild(tip); }
 
+    /* 2026-11-27 AHS-FEAT：弱點單元（總覽時才顯示；沒有可歸到單元的作答時不顯示）。 */
+    var weak = !materialId && AHS.WeakChapterCard ? AHS.WeakChapterCard.create() : null;
+    if (weak) { shell.main.appendChild(weak); }
+
     shell.main.appendChild(AHS.SummaryCenter.create(undefined, materialId));
   }
   function coreReady() {

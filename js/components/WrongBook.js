@@ -1515,7 +1515,7 @@ AHS.WrongBook = (function () {
          call through ReviewRuntime, so it must feed
          AHS.KnowledgeMasteryRuntime itself too. */
       if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
-        AHS.KnowledgeMasteryRuntime.recordAttempt(pair.item.knowledgePoint, wasCorrect, pair.item.subject);
+        AHS.KnowledgeMasteryRuntime.recordAttempt(pair.item.knowledgePoint, wasCorrect, pair.item.subject, pair.item.materialId, pair.item.questionId);
       }
       refreshRowChips(pair);
       if (summary && summary.refresh) { summary.refresh(runtime.list()); }

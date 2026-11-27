@@ -361,7 +361,7 @@ AHS.StudyAssistant = (function () {
   function answer(question, chosenKey) {
     var correct = chosenKey === question.correctAnswer;
     if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function" && question.knowledgePoint) {
-      AHS.KnowledgeMasteryRuntime.recordAttempt(question.knowledgePoint, correct, question.subject, question.runtimeId || "");
+      AHS.KnowledgeMasteryRuntime.recordAttempt(question.knowledgePoint, correct, question.subject, question.runtimeId || "", question.id);
     }
     var addedToWrongBook = false;
     if (AHS.WrongBookRuntime) {
