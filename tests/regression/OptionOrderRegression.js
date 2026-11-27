@@ -104,7 +104,7 @@ console.log("\n[4] 知識弱點：顯示的代號與測驗中心一致");
   [...w.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; }
-    w.eval(fs.readFileSync(p, "utf8"));
+    w.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(w, p);
     if (/^js\/data\/SupabaseConfig(\.local)?\.js$/.test(src)) { w.AHS.SupabaseConfig = { url: "", anonKey: "" }; w.AHS.SupabaseConfigLocal = null; }
   });
   w.document.dispatchEvent(new w.Event("DOMContentLoaded", { bubbles: true }));

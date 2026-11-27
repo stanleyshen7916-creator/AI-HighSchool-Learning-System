@@ -13,8 +13,8 @@
      loadScript(src)   -> Promise: add any other generated data file the same way (T6: the per-material explanation
                           supplements in js/data/explanations-content/); each src at most once
 
-   Not wired into any page yet: until the pages switch from TeachingMaterialData.js to TeachingMaterialIndex.js
-   (queue 9.4 T5–T7) nothing calls it. */
+   Since queue 9.4 T7 every page that used to load TeachingMaterialData.js loads TeachingMaterialIndex.js and this file;
+   AHS.TeachingMaterialSource.ready() calls it for the materials the page needs. */
 window.AHS = window.AHS || {};
 AHS.TeachingMaterialContentLoader = (function () {
   "use strict";

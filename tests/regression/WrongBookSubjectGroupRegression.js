@@ -84,7 +84,7 @@ AHS.RepositoryFactory = {
     Object.entries(seed).forEach(([k, v]) => w.sessionStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v)));
     [...w.document.querySelectorAll("script[src]")].map((x) => x.getAttribute("src")).forEach((src) => {
       const f = path.join(REPO, src);
-      if (fs.existsSync(f)) { w.eval(fs.readFileSync(f, "utf8")); }
+      if (fs.existsSync(f)) { w.eval(fs.readFileSync(f, "utf8")); require("./SplitDataHarness.js")(w, f); }
     });
     w.document.dispatchEvent(new w.Event("DOMContentLoaded", { bubbles: true }));
     return { w, errors };
