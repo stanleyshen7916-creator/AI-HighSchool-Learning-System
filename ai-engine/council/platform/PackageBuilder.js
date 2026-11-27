@@ -623,6 +623,9 @@ function createPackageBuilder({ platformRoot, dataDir }) {
         'docs/TeachingMaterials/index.json',
         'docs/TeachingMaterials/import-log.json',
         'js/data/TeachingMaterialData.js',
+        // queue 9.4 T5: the split files the pages read from T7 on (index + one content file per material)
+        'js/data/TeachingMaterialIndex.js',
+        'js/data/materials-content/',
         'js/data/RepositoryStatus.js',
       ],
     };
@@ -682,6 +685,9 @@ function createPackageBuilder({ platformRoot, dataDir }) {
         ...supplement.paths,
         'docs/TeachingMaterials/index.json',
         'js/data/TeachingMaterialData.js',
+        // queue 9.4 T5: the split files the pages read from T7 on (index + one content file per material)
+        'js/data/TeachingMaterialIndex.js',
+        'js/data/materials-content/',
         'js/data/RepositoryStatus.js',
       ],
     };

@@ -81,7 +81,7 @@ AHS.QuestionGroups = (function () {
   /* contextFor(questionId) — 同題組中排在這題之前的題目（情境題），取自
      AHS.TeachingMaterialData；不是題組或找不到時回傳 []。 */
   function contextFor(questionId) {
-    var data = window.AHS && window.AHS.TeachingMaterialData;
+    var data = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     if (!questionId || !Array.isArray(data)) { return []; }
     for (var i = 0; i < data.length; i++) {
       var qs = data[i] && data[i].questions;

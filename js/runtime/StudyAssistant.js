@@ -142,7 +142,7 @@ AHS.StudyAssistant = (function () {
     var key = ws ? ws.schoolId + "|" + ws.semesterIds.join(",") : "*";
     if (cache.key === key && cache.sources) { return cache.sources; }
     var list = [];
-    (Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : []).forEach(function (e) {
+    ((AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []))).forEach(function (e) {
       var s = e && e.material ? packageSource(e) : null;
       if (s) { list.push(s); }
     });

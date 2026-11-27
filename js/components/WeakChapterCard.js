@@ -12,7 +12,7 @@ AHS.WeakChapterCard = (function () {
 
   function unitName(materialId) {
     /* 兩份產生檔的教材紀錄都是 { materialId, material }，頁面載了哪一份就用哪一份。 */
-    var idx = AHS.TeachingMaterialIndex || AHS.TeachingMaterialData || [];
+    var idx = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     for (var i = 0; i < idx.length; i++) {
       if (idx[i].materialId === materialId) {
         var m = idx[i].material || {};

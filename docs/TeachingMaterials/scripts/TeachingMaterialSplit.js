@@ -42,6 +42,16 @@ function indexRecord(entry) {
     hasSummary: !!entry.summary
   };
   rec.content = { file: "js/data/materials-content/" + entry.materialId + ".js", bytes: Buffer.byteLength(JSON.stringify(content), "utf8"), hash: fingerprint(content) };
+  /* T5: supplement packages merged into this material keep their own question ids ("tm_26_q1" inside tm_13), and
+     have no index record of their own. List those prefixes so a page can tell which content file holds a question. */
+  const own = entry.materialId + "_";
+  const merged = {};
+  (entry.questions || []).concat(entry.variants || []).forEach((q) => {
+    const m = /^(tm_\d+)_/.exec(String(q && q.id || ""));
+    if (m && (m[1] + "_") !== own) { merged[m[1]] = true; }
+  });
+  const list = Object.keys(merged).sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
+  if (list.length) { rec.merged = list; }
   return rec;
 }
 

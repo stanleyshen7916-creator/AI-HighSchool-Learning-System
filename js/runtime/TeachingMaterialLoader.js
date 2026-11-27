@@ -710,7 +710,10 @@ AHS.TeachingMaterialLoader = (function () {
     }
     return e;
   }
+  /* T5: the same entries every other reader gets (AHS.TeachingMaterialSource); the fallback keeps pages and tests that
+     do not load that file working exactly as before. */
   function sourceEntries() {
+    if (AHS.TeachingMaterialSource) { return AHS.TeachingMaterialSource.entries(); }
     if (Array.isArray(AHS.TeachingMaterialData)) { return AHS.TeachingMaterialData; }
     if (!Array.isArray(AHS.TeachingMaterialIndex)) { return []; }
     var store = AHS.TeachingMaterialContentStore || {};

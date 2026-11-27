@@ -52,15 +52,14 @@ console.log("\n[1] 完整度：index＋全部內容檔 重組後與 TeachingMate
   const qa = data.reduce((n, e) => n + e.questions.length, 0);
   check("題數相同（" + qa + "）", rebuilt && rebuilt.reduce((n, e) => n + e.questions.length, 0) === qa);
   const identical = !!rebuilt && JSON.stringify(canon(rebuilt)) === JSON.stringify(canon(data));
-  if (!identical && process.env.AHS_SPLIT_STRICT !== "1") {
-    /* Until the pages are switched to the index (queue 9.4 T5-T7) nothing reads the split files, while the figure
-       flow (n8n WF-AHS-FIG) and other data PRs still patch questionbank.json + TeachingMaterialData.js only. A stale
-       split must not block those PRs: warn here, enforce with AHS_SPLIT_STRICT=1 (turn that on in npm test at T5). */
-    console.log("  WARN  拆分檔與 TeachingMaterialData.js 不同步：請執行 node docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js 後提交（過渡期只警告；AHS_SPLIT_STRICT=1 時失敗）");
-    check("逐教材、逐題、逐欄位完全相同（過渡期：不同步只警告）", true);
-  } else {
-    check("逐教材、逐題、逐欄位完全相同（題目、選項、答案、詳解、附圖、補強、變體）", identical);
+  /* queue 9.4 T5: strict again (the transition-time warning is gone). Pages read the split files from T7 on, so a
+     data PR that changes TeachingMaterialData.js without the split files would ship stale content: regenerate with
+     node docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js and commit TeachingMaterialIndex.js and
+     js/data/materials-content/ with it. */
+  if (!identical) {
+    console.log("  請執行 node docs/TeachingMaterials/scripts/GenerateTeachingMaterialData.js，並一併提交 js/data/TeachingMaterialIndex.js 與 js/data/materials-content/");
   }
+  check("逐教材、逐題、逐欄位完全相同（題目、選項、答案、詳解、附圖、補強、變體）", identical);
   check("index 與資料的教材順序相同", index.map((r) => r.materialId).join() === data.map((e) => e.materialId).join());
 }
 

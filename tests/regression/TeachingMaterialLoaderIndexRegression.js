@@ -38,6 +38,10 @@ function loadPage(variant) {
   if (variant === "index") {
     if (html.indexOf(DATA_TAG) === -1) { throw new Error("quiz.html no longer has the TeachingMaterialData tag"); }
     html = html.replace(DATA_TAG, '<script src="js/data/TeachingMaterialIndex.js"></script>\n<script src="js/runtime/TeachingMaterialContentLoader.js"></script>');
+    /* T5 added AHS.TeachingMaterialSource, which makes the page wait for its content before init. This test is about the
+       Loader on its own (index only, content later via loadContent), so leave it out here; the page-level preload is
+       covered by tests/regression/auto/SplitModeIdentityRegression.js. */
+    html = html.replace('<script src="js/runtime/TeachingMaterialSource.js"></script>', "");
   }
   const errors = [];
   const vc = new VirtualConsole();
