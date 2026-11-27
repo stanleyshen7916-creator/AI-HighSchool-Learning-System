@@ -172,3 +172,24 @@
 @media (max-width: 480px) {
   .sum-guide__title { font-size: 15px; }
 }
+
+/* ---- 2026-11-27 AHS-FEAT 弱點單元（頁面頂端卡片） ---------------------------- */
+.weak-unit { margin-bottom: 16px; }
+.weak-unit__summary { font-size: 12px; color: var(--text-muted); }
+.weak-unit__group + .weak-unit__group { margin-top: 12px; }
+.weak-unit__subject { margin: 0 0 6px; font-size: 13px; font-weight: 700; color: var(--text); }
+.weak-unit__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.weak-unit__row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background-color: var(--bg); }
+.weak-unit__row.is-weak { background-color: var(--brand-soft); }
+.weak-unit__info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.weak-unit__name { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.weak-unit__detail { font-size: 12px; color: var(--text-muted); }
+.weak-unit__pct { flex: 0 0 auto; width: 44px; text-align: right; font-size: 13px; font-weight: 700; }
+.weak-unit__badge { flex: 0 0 auto; font-size: 12px; padding: 2px 8px; border-radius: var(--radius-pill); background-color: var(--card); border: 1px solid var(--line); color: var(--text-muted); }
+.weak-unit__row.is-weak .weak-unit__badge { color: var(--brand-ink); font-weight: 700; }
+.weak-unit__go { flex: 0 0 auto; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: var(--radius-pill); background-color: var(--brand); color: #fff; text-decoration: none; }
+.weak-unit__go:focus-visible { outline: 2px solid var(--brand-ink); outline-offset: 2px; }
+@media (max-width: 600px) {
+  .weak-unit__row { flex-wrap: wrap; }
+  .weak-unit__info { flex-basis: 100%; }
+}

@@ -98,7 +98,7 @@ AHS.ReviewRuntime = (function () {
        real source (AHS.KnowledgeMasteryRuntime) the fresh-exam grading
        path in js/components/QuizCenter.js already feeds. */
     if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
-      AHS.KnowledgeMasteryRuntime.recordAttempt(item.knowledgePoint, wasCorrect, item.subject);
+      AHS.KnowledgeMasteryRuntime.recordAttempt(item.knowledgePoint, wasCorrect, item.subject, item.materialId, item.questionId);
     }
 
     if (wasCorrect) { session.results.correct += 1; } else { session.results.wrong += 1; }
