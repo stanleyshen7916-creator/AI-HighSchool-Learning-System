@@ -676,7 +676,7 @@ AHS.MonthExamRuntime = (function () {
     }
     if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
       result.rows.forEach(function (r) {
-        if (r.knowledgePoint) { AHS.KnowledgeMasteryRuntime.recordAttempt(r.knowledgePoint, r.correct, subjectCode(result.subject), r.materialId); }
+        if (r.knowledgePoint) { AHS.KnowledgeMasteryRuntime.recordAttempt(r.knowledgePoint, r.correct, subjectCode(result.subject), r.materialId, r.qid); }
       });
     }
   }
