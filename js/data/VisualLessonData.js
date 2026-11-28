@@ -604,6 +604,30 @@ AHS.VisualLessonData = [
     ]
   },
   {
+    lessonId: "MAT_H2_Ch1_Space",
+    href: "docs/TeachingMaterials/lessons/MAT_H2_Ch1_Space.html",
+    title: "高二數學 1-1 空間概念・圖解教材",
+    subject: "數學",
+    materialIds: ["tm_116"],
+    source: "長榮版數學 第1章 空間向量 1-1 空間概念，p.2～18（含習題1-1）",
+    sections: [
+      { id: "1", title: "1 空間中直線與直線的關係" },
+      { id: "2", title: "2 空間中直線與平面的關係" },
+      { id: "3", title: "3 空間中平面與平面的關係" },
+      { id: "4", title: "4 三垂線定理" }
+    ],
+    cards: [
+      { id: "F1", section: "1", title: "三點定一面：三腳架為什麼不會晃", keywords: ["公設與決定平面", "決定平面", "公設", "不共線", "三腳架"] },
+      { id: "F2", section: "1", title: "兩直線的三種關係：平行、相交、歪斜", keywords: ["兩直線的關係", "歪斜", "平行", "相交"] },
+      { id: "F3", section: "2", title: "直線垂直平面：只要檢查兩條線（法線定理）", keywords: ["直線與平面垂直", "法線定理", "法線", "垂線"] },
+      { id: "F4", section: "2", title: "空間長度：連用兩次畢氏定理", keywords: ["空間長度計算", "空間對角線", "正四面體的高", "四角錐的高"] },
+      { id: "F5", section: "2", title: "投影與夾角：看直線在平面上的影子", keywords: ["直線與平面的夾角", "投影點", "投影直線", "日晷"] },
+      { id: "F6", section: "3", title: "兩面角：像打開一扇門", keywords: ["兩面角", "平面與平面", "兩平面垂直"] },
+      { id: "F7", section: "4", title: "三垂線定理：兩個垂直推出第三個", keywords: ["三垂線定理", "三垂線"] },
+      { id: "F8", section: "4", title: "最短距離：拉繩子固定樹木", keywords: ["最短距離", "繩子", "花圃"] }
+    ]
+  },
+  {
     lessonId: "ENG_H2_S2",
     href: "docs/TeachingMaterials/lessons/ENG_H2_S2.html",
     title: "高二英文 Lessons 4–6・圖解教材",
