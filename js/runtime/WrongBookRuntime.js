@@ -75,7 +75,7 @@ AHS.WrongBookRuntime = (function () {
     var qid = String(item.questionId || "").split("__v")[0];
     var m = /^(tm_\d+)_q/.exec(qid);
     var materialId = m ? m[1] : item.materialId;
-    var data = AHS.TeachingMaterialData;
+    var data = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     if (materialId && Array.isArray(data)) {
       for (var i = 0; i < data.length; i++) {
         if (data[i] && data[i].materialId === materialId && data[i].material && data[i].material.subject) {
@@ -136,7 +136,7 @@ AHS.WrongBookRuntime = (function () {
   var KEYS = ["A", "B", "C", "D", "E", "F", "G"];
   function originalQuestion(questionId) {
     if (!questionId) { return null; }
-    var data = AHS.TeachingMaterialData;
+    var data = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     if (Array.isArray(data)) {
       for (var i = 0; i < data.length; i++) {
         var qs = (data[i] && data[i].questions) || [];
@@ -156,6 +156,9 @@ AHS.WrongBookRuntime = (function () {
   function optionText(o) { return o && typeof o === "object" ? String(o.text) : String(o); }
   function canonicalize(item) {
     if (!item) { return false; }
+    /* T5 (queue 9.4): a page that loads materials on demand runs this before the material's content is here; leave
+       such an item alone until it is (TeachingMaterialSource.onContent below runs the pass again). */
+    if (AHS.TeachingMaterialSource && AHS.TeachingMaterialSource.isPending(item.questionId)) { return false; }
     var stored = Array.isArray(item.options) ? item.options : [];
     var orig = originalQuestion(item.questionId);
     var source = orig && Array.isArray(orig.options) && orig.options.length ? orig.options : stored;
@@ -186,6 +189,9 @@ AHS.WrongBookRuntime = (function () {
     return changed;
   }
   var canonicalizedOnLoad = canonicalizeAll();
+  if (AHS.TeachingMaterialSource) {
+    AHS.TeachingMaterialSource.onContent(function () { canonicalizedOnLoad = canonicalizedOnLoad.concat(canonicalizeAll()); });
+  }
 
   /* --- Sprint AI-126B Part 2, Task 4: Supabase sync (additive only) ---
      Every existing write path below still returns exactly what it did

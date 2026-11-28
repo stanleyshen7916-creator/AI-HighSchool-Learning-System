@@ -192,7 +192,7 @@ AHS.SettingsPanel = (function () {
     function refreshCounts() {
       var repoCount = (AHS.MaterialRepository && typeof AHS.MaterialRepository.list === "function")
         ? AHS.MaterialRepository.list().length : 0;
-      var packageCount = Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData.length : 0;
+      var packageCount = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || [])).length;
       countLine.textContent = "Repository 教材：" + repoCount + " 筆｜Package 教材：" + packageCount + " 筆";
       workspaceLine.innerHTML = "";
       var wsLine = workspaceRepositoryLine();

@@ -9,6 +9,9 @@
      docs/TeachingMaterials/explanations/build/*.js        (source)
        -> docs/TeachingMaterials/explanations/tm_N.json     (reviewable data)
        -> js/data/ExplanationSupplementData.js              (loaded by pages)
+       -> js/data/ExplanationSupplementIndex.js + js/data/explanations-content/tm_N.js
+          (queue 9.4 T6: the same entries split per package, loaded with that
+           material's content by js/runtime/TeachingMaterialSource.js)
 
    Every entry is validated before anything is written: the questionId must
    exist in that package's questionbank.json, steps must be non-empty, and
@@ -28,6 +31,8 @@ const REPO_ROOT = path.join(__dirname, "..", "..", "..");
 const MATERIALS_DIR = path.join(__dirname, "..", "materials");
 const EXPLANATIONS_DIR = path.join(__dirname, "..", "explanations");
 const OUTPUT_FILE = path.join(REPO_ROOT, "js", "data", "ExplanationSupplementData.js");
+const SPLIT_INDEX_FILE = path.join(REPO_ROOT, "js", "data", "ExplanationSupplementIndex.js");
+const SPLIT_DIR = path.join(REPO_ROOT, "js", "data", "explanations-content");
 const SOURCES = [
   { materialId: "tm_7", module: "MathTm7.js" },
   { materialId: "tm_1", module: "MathTm1.js" },
@@ -141,6 +146,28 @@ function render(result) {
     "   Shown by js/utils/ExplanationSupplement.js. */\n" +
     "window.AHS = window.AHS || {};\n";
   files[OUTPUT_FILE] = header + "AHS.ExplanationSupplementData = " + JSON.stringify(result.all, null, 2) + ";\n";
+  /* queue 9.4 T6: one file per package (named by the package the questions were written for, which may be a supplement
+     merged into another material — TeachingMaterialIndex's "merged" says where), each adding its entries to the same
+     AHS.ExplanationSupplementData object, plus the list of packages that have one. */
+  const ids = Object.keys(result.byMaterial).filter((id) => result.byMaterial[id].length)
+    .sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)));
+  ids.forEach((id) => {
+    const entries = {};
+    result.byMaterial[id].forEach((e) => { entries[e.questionId] = e; });
+    files[path.join(SPLIT_DIR, id + ".js")] =
+      "/* js/data/explanations-content/" + id + ".js — GENERATED FILE, do not hand-edit.\n" +
+      "   Explanation supplements of " + id + " (see GenerateExplanationSupplement.js). */\n" +
+      "window.AHS = window.AHS || {};\n" +
+      "AHS.ExplanationSupplementData = AHS.ExplanationSupplementData || {};\n" +
+      "AHS.ExplanationSupplementLoaded = AHS.ExplanationSupplementLoaded || {};\n" +
+      "(function (d, add) { Object.keys(add).forEach(function (k) { d[k] = add[k]; }); })(AHS.ExplanationSupplementData, " + JSON.stringify(entries) + ");\n" +
+      "AHS.ExplanationSupplementLoaded[" + JSON.stringify(id) + "] = true;\n";
+  });
+  files[SPLIT_INDEX_FILE] =
+    "/* js/data/ExplanationSupplementIndex.js — GENERATED FILE, do not hand-edit.\n" +
+    "   Packages that have a js/data/explanations-content/<id>.js (queue 9.4 T6). */\n" +
+    "window.AHS = window.AHS || {};\n" +
+    "AHS.ExplanationSupplementIndex = " + JSON.stringify(ids) + ";\n";
   return files;
 }
 
@@ -157,11 +184,19 @@ function generate(options) {
     try { existing = fs.readFileSync(f, "utf8").replace(/\r\n/g, "\n"); } catch (e) { existing = null; }
     return existing !== files[f];
   });
-  if (!options.check) { Object.keys(files).forEach((f) => writeIfChanged(f, files[f])); }
+  /* a package that no longer has supplements must not leave its split file behind */
+  const orphans = fs.existsSync(SPLIT_DIR) ? fs.readdirSync(SPLIT_DIR)
+    .filter((n) => /^tm_\d+\.js$/.test(n) && !files[path.join(SPLIT_DIR, n)]).map((n) => path.join(SPLIT_DIR, n)) : [];
+  orphans.forEach((f) => stale.push(f));
+  if (!options.check) {
+    fs.mkdirSync(SPLIT_DIR, { recursive: true });
+    Object.keys(files).forEach((f) => writeIfChanged(f, files[f]));
+    orphans.forEach((f) => fs.rmSync(f, { force: true }));
+  }
   return { count: Object.keys(result.all).length, stale: stale.map((f) => path.relative(REPO_ROOT, f)) };
 }
 
-module.exports = { generate, validateSvg, scanUploadedSources };
+module.exports = { generate, validateSvg, scanUploadedSources, SPLIT_INDEX_FILE, SPLIT_DIR };
 
 if (require.main === module) {
   const check = process.argv.indexOf("--check") !== -1;

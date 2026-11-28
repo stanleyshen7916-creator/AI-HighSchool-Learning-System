@@ -710,7 +710,10 @@ AHS.TeachingMaterialLoader = (function () {
     }
     return e;
   }
+  /* T5: the same entries every other reader gets (AHS.TeachingMaterialSource); the fallback keeps pages and tests that
+     do not load that file working exactly as before. */
   function sourceEntries() {
+    if (AHS.TeachingMaterialSource) { return AHS.TeachingMaterialSource.entries(); }
     if (Array.isArray(AHS.TeachingMaterialData)) { return AHS.TeachingMaterialData; }
     if (!Array.isArray(AHS.TeachingMaterialIndex)) { return []; }
     var store = AHS.TeachingMaterialContentStore || {};
@@ -775,6 +778,17 @@ AHS.TeachingMaterialLoader = (function () {
     return loadIdMap()[sourceId] || null;
   }
 
+  /* sourceIdFor(runtimeId) — 2026-11-27 AHS-FEAT: the reverse of
+     runtimeIdFor(); null when that runtime id isn't a loaded source. */
+  function sourceIdFor(runtimeId) {
+    var idMap = loadIdMap();
+    var keys = Object.keys(idMap);
+    for (var i = 0; i < keys.length; i++) {
+      if (idMap[keys[i]] === runtimeId) { return keys[i]; }
+    }
+    return null;
+  }
+
   return {
     initialize: load,
     load: load,
@@ -782,6 +796,7 @@ AHS.TeachingMaterialLoader = (function () {
     markDeleted: markDeleted,
     resolveExamMeta: resolveExamMeta,
     runtimeIdFor: runtimeIdFor,
+    sourceIdFor: sourceIdFor,
     reset: reset,
     /* Sprint AI-117 AI-117-08: exposed so
        tests/regression/AnalyticsRegression.js can exercise the real

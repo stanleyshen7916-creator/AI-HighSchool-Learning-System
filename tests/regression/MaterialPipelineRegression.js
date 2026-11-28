@@ -89,7 +89,7 @@ function loadPage(htmlFile, { seedSession, skipLogin } = {}) {
   scripts.forEach((src) => {
     var p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; } /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, consoleErrors };

@@ -33,11 +33,21 @@ const same = (a, b) => JSON.stringify(canon(JSON.parse(JSON.stringify(a)))) === 
 const WORKSPACE = { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g2s1"] };
 const DATA_TAG = '<script src="js/data/TeachingMaterialData.js"></script>';
 
+const INDEX_TAGS = /<script src="js\/data\/TeachingMaterialIndex\.js"><\/script>\s*<script src="js\/runtime\/TeachingMaterialContentLoader\.js"><\/script>/;
+
 function loadPage(variant) {
   let html = fs.readFileSync(path.join(REPO, "quiz.html"), "utf8");
+  /* queue 9.4 T7: quiz.html now carries the index + loader tags; variant "data" puts the whole-data tag back */
+  if (variant === "data" && INDEX_TAGS.test(html)) { html = html.replace(INDEX_TAGS, DATA_TAG); }
   if (variant === "index") {
-    if (html.indexOf(DATA_TAG) === -1) { throw new Error("quiz.html no longer has the TeachingMaterialData tag"); }
-    html = html.replace(DATA_TAG, '<script src="js/data/TeachingMaterialIndex.js"></script>\n<script src="js/runtime/TeachingMaterialContentLoader.js"></script>');
+    if (html.indexOf(DATA_TAG) !== -1) {
+      html = html.replace(DATA_TAG, '<script src="js/data/TeachingMaterialIndex.js"></script>\n<script src="js/runtime/TeachingMaterialContentLoader.js"></script>');
+    }
+    if (!INDEX_TAGS.test(html)) { throw new Error("quiz.html has neither the TeachingMaterialData tag nor the index + loader tags"); }
+    /* T5 added AHS.TeachingMaterialSource, which makes the page wait for its content before init. This test is about the
+       Loader on its own (index only, content later via loadContent), so leave it out here; the page-level preload is
+       covered by tests/regression/auto/SplitModeIdentityRegression.js. */
+    html = html.replace('<script src="js/runtime/TeachingMaterialSource.js"></script>', "");
   }
   const errors = [];
   const vc = new VirtualConsole();

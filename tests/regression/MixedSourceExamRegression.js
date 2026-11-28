@@ -39,7 +39,7 @@ function loadPage(htmlFile, workspace) {
   window.sessionStorage.setItem("ahs:workspace", JSON.stringify(workspace || { studentId: "student_a", schoolId: "cjsh", semesterIds: ["g1s2"] }));
   [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
-    if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); }
+    if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p); }
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return { window, doc: window.document, consoleErrors };

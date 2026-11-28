@@ -39,10 +39,10 @@ AHS.WrongBook = (function () {
      comes up empty — never a fuzzy/partial match, so it never risks
      resolving to the WRONG question. */
   function findMaterialQuestion(item) {
-    if (!Array.isArray(window.AHS.TeachingMaterialData)) { return null; }
+    var all = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     var found = null;
     if (item.questionId) {
-      window.AHS.TeachingMaterialData.forEach(function (entry) {
+      all.forEach(function (entry) {
         if (found || !entry || !Array.isArray(entry.questions)) { return; }
         var match = entry.questions.filter(function (q) { return q.id === item.questionId; })[0];
         if (match) { found = match; }
@@ -50,7 +50,7 @@ AHS.WrongBook = (function () {
       if (found) { return found; }
     }
     if (item.question) {
-      window.AHS.TeachingMaterialData.forEach(function (entry) {
+      all.forEach(function (entry) {
         if (found || !entry || !Array.isArray(entry.questions)) { return; }
         var match = entry.questions.filter(function (q) { return q.question === item.question; })[0];
         if (match) { found = match; }
@@ -334,7 +334,7 @@ AHS.WrongBook = (function () {
   var SECTION_RE = /^(\d+-\d|第.{1,4}[章節課]|主題\s*\d|單元\s*\d|Lesson)/i;
 
   function materialEntryOf(item) {
-    var all = Array.isArray(window.AHS.TeachingMaterialData) ? window.AHS.TeachingMaterialData : [];
+    var all = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     var m = /^(tm_\d+)_q/.exec(String(item.questionId || ""));
     var id = m ? m[1] : item.materialId;
     for (var i = 0; i < all.length; i += 1) {
@@ -907,7 +907,7 @@ AHS.WrongBook = (function () {
      都找不到才維持原題重做。 */
   var FIGURE_RE = /如圖|下圖|附圖|上圖|右圖|左圖|圖中|圖示|見圖/;
   function bankVariantFor(item) {
-    var data = window.AHS && AHS.TeachingMaterialData;
+    var data = (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []));
     if (!Array.isArray(data)) { return null; }
     var src = findMaterialQuestion(item);
     var kp = (src && src.knowledgePoint) || item.knowledgePoint;
@@ -1515,7 +1515,7 @@ AHS.WrongBook = (function () {
          call through ReviewRuntime, so it must feed
          AHS.KnowledgeMasteryRuntime itself too. */
       if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
-        AHS.KnowledgeMasteryRuntime.recordAttempt(pair.item.knowledgePoint, wasCorrect, pair.item.subject);
+        AHS.KnowledgeMasteryRuntime.recordAttempt(pair.item.knowledgePoint, wasCorrect, pair.item.subject, pair.item.materialId, pair.item.questionId);
       }
       refreshRowChips(pair);
       if (summary && summary.refresh) { summary.refresh(runtime.list()); }

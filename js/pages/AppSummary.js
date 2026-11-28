@@ -40,6 +40,10 @@ window.AHS = window.AHS || {};
     var tip = AHS.TutorContextTip && AHS.TutorContextTip.create({ page: "summary", materialId: materialId });
     if (tip) { shell.main.appendChild(tip); }
 
+    /* 2026-11-27 AHS-FEAT：弱點單元（總覽時才顯示；沒有可歸到單元的作答時不顯示）。 */
+    var weak = !materialId && AHS.WeakChapterCard ? AHS.WeakChapterCard.create() : null;
+    if (weak) { shell.main.appendChild(weak); }
+
     shell.main.appendChild(AHS.SummaryCenter.create(undefined, materialId));
   }
   function coreReady() {
@@ -53,7 +57,11 @@ window.AHS = window.AHS || {};
      On core-load failure (e.g. a 404'd script), show a diagnostic
      instead of a white page. */
   function guardedInit() {
-    if (coreReady()) { init(); return; }
+    if (coreReady()) {
+      /* queue 9.4 T5: the page's teaching-material content first (synchronous no-op while the full data file is on the page). */
+      if (AHS.TeachingMaterialSource) { AHS.TeachingMaterialSource.ready("all", init); } else { init(); }
+      return;
+    }
     var app = document.getElementById("app");
     if (app) {
       app.textContent = "系統資源載入失敗（js/core/UI.js 或 AppShell 未載入）。請重新整理；若持續發生，請回報 PMO 檢查部署檔案。";

@@ -23,6 +23,7 @@ AHS.ExplanationSupplement = (function () {
   "use strict";
 
   var byText = null;
+  var byTextSize = -1;
 
   function data() { return window.AHS.ExplanationSupplementData || {}; }
 
@@ -36,9 +37,13 @@ AHS.ExplanationSupplement = (function () {
     if (typeof q === "string") { return null; }
     var text = normalize(q.question || q.text);
     if (!text) { return null; }
-    if (!byText) {
+    /* queue 9.4 T6: on a page that loads supplements per material (js/data/explanations-content/) the data grows after
+       the first lookup, so the text map is rebuilt whenever the number of entries changed. */
+    var keys = Object.keys(all);
+    if (!byText || byTextSize !== keys.length) {
       byText = {};
-      Object.keys(all).forEach(function (k) { if (all[k].question) { byText[normalize(all[k].question)] = all[k]; } });
+      byTextSize = keys.length;
+      keys.forEach(function (k) { if (all[k].question) { byText[normalize(all[k].question)] = all[k]; } });
     }
     return byText[text] || null;
   }

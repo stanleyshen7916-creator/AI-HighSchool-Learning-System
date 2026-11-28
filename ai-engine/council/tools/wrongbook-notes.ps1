@@ -241,7 +241,7 @@ function Run-Once([string]$reason) {
   if ($branch -ne 'main') { return (& $fail 'not_main' "repo is on branch '$branch', not main") }
   # a notes file left over from an earlier failed run is discarded (only that one file),
   # and the four generated data files git-publisher.ps1 rebuilds on every publish are reset
-  $generated = @('docs/TeachingMaterials/index.json', 'docs/TeachingMaterials/import-log.json', 'js/data/TeachingMaterialData.js', 'js/data/RepositoryStatus.js')
+  $generated = @('docs/TeachingMaterials/index.json', 'docs/TeachingMaterials/import-log.json', 'js/data/TeachingMaterialData.js', 'js/data/TeachingMaterialIndex.js', 'js/data/materials-content', 'js/data/RepositoryStatus.js')
   Invoke-Git (@('checkout', '--', $NotesFile) + $generated) | Out-Null
   if ((Changed-Paths).Count -gt 0) { return (& $fail 'dirty' ('uncommitted changes: ' + ((Changed-Paths) -join ', '))) }
   $r = Invoke-Git @('fetch', 'origin', 'main')

@@ -4,10 +4,10 @@
 //   1. 上傳時每個檔案的文字前插入 <!-- 檔案：檔名 --> 標記，之後才知道哪段文字來自哪張照片。
 //   2. 找出看不清楚的頁面：本機 Qwen 的原文合理性檢查（checkSourcePlausibility）找到可疑片段，
 //      或該檔 OCR 幾乎沒有文字。
-//   3. 協助包只列出這些頁面的檔名（Project Owner 決定：只記錄無法判讀的頁面）；管理者把照片
-//      交給 ChatGPT 與 Gemini 網頁版逐字轉錄（不使用 API），再把兩份結果貼回。
-//   4. 逐句比對三份文字（本機 OCR、GPT、Gemini）：GPT 與 Gemini 一致且與 OCR 不同 → 自動更正；
-//      三份都不一樣 → 列出讓管理者選定；OCR 漏掉、但 GPT 與 Gemini 都有的句子 → 補回。
+//   3. 協助包只列出這些頁面的檔名（Project Owner 決定：只記錄無法判讀的頁面）。2026-11-26 AHS-A3 起由
+//      本機視覺模型逐字轉錄（services/localWriter.js transcribe），不再交給 ChatGPT／Gemini 網頁版。
+//   4. 逐句比對 OCR 與轉錄：兩份轉錄（transcribed、second）一致且與 OCR 不同 → 自動更正；只有一份轉錄
+//      或彼此不同 → 列出讓管理者選定；OCR 漏掉、但兩份轉錄都有的句子 → 補回。
 const MARKER = /<!--\s*檔案：(.+?)\s*-->/g;
 const SHORT_OCR_CHARS = 40;
 
@@ -117,8 +117,9 @@ function bestMatch(sentence, candidates) {
   return score >= 0.5 ? best : null;
 }
 
-// 三方比對。回傳自動更正後的 SOURCE、更正清單、待選定的衝突、補回的句子。
-function mergeTranscriptions(sourceText, gptText, geminiText) {
+// OCR 與轉錄逐句比對。回傳自動更正後的 SOURCE、更正清單、待選定的衝突、補回的句子。
+// 衝突欄位：local＝OCR 原句、transcribed＝本機視覺模型轉錄、second＝第二份轉錄（目前流程只有一份）。
+function mergeTranscriptions(sourceText, transcribedText, secondText) {
   let text = String(sourceText || '');
   // 只有一張照片時網頁版常省略「=== 檔名 ===」，整份轉錄就屬於那張照片。
   const named = segmentsOf(text).filter((s) => s.file);
@@ -127,8 +128,8 @@ function mergeTranscriptions(sourceText, gptText, geminiText) {
     if (!Object.keys(out).length && String(t || '').trim() && named.length === 1) out[named[0].file] = String(t).trim();
     return out;
   };
-  const gpt = parse(gptText);
-  const gem = parse(geminiText);
+  const gpt = parse(transcribedText);
+  const gem = parse(secondText);
   const corrections = [];
   const conflicts = [];
   const additions = [];
@@ -145,10 +146,10 @@ function mergeTranscriptions(sourceText, gptText, geminiText) {
         segText = segText.replace(local, g);
         corrections.push({ file: seg.file, from: local, to: g });
       } else if (g && m && norm(g) !== norm(m) && norm(g) !== norm(local) && norm(m) !== norm(local)) {
-        conflicts.push({ file: seg.file, local, gpt: g, gemini: m });
+        conflicts.push({ file: seg.file, local, transcribed: g, second: m });
       } else if (!gs.length !== !ms.length && (g || m) && norm(g || m) !== norm(local)) {
-        // 只貼回一份轉錄：沒有第二方可以確認，差異一律交給管理者選定。
-        conflicts.push({ file: seg.file, local, gpt: g, gemini: m });
+        // 只有一份轉錄：沒有第二方可以確認，差異一律交給管理者選定。
+        conflicts.push({ file: seg.file, local, transcribed: g || m, second: null });
       }
     });
     const localSentences = sentences(segText);

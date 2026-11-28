@@ -171,13 +171,11 @@ describe('generateStudyMarkdown + runTriCouncil（三階段三方審議管線）
 
     // Phase 1 獨立初稿自評、Phase 2 交叉比對修訂、Phase 3 首席審議裁決，三階段紀錄需完整出現
     expect(markdown).toContain('Phase 1 獨立初稿自評');
-    expect(markdown).toContain('GPT 100/100');
-    expect(markdown).toContain('Gemini 100/100');
-    expect(markdown).toContain('Claude 100/100');
+    expect(markdown).toContain('本機模型 A 100/100');
+    expect(markdown).toContain('本機模型 B 100/100');
     expect(markdown).toContain('Phase 2 交叉比對修訂');
-    expect(markdown).toContain('GPT-Revised');
-    expect(markdown).toContain('Gemini-Revised');
-    expect(markdown).toContain('Claude-Revised');
+    expect(markdown).toContain('LocalA-Revised');
+    expect(markdown).toContain('LocalB-Revised');
     expect(markdown).toContain('Phase 3 首席審議裁決');
     expect(markdown).toContain('Quality Gate');
 
@@ -194,9 +192,8 @@ describe('generateStudyMarkdown + runTriCouncil（三階段三方審議管線）
   test('來源文本為空時，Phase 1 三方初稿自評應誠實扣分，Quality Gate 最終分數低於 98（證明非寫死固定值）', async () => {
     const council = await runTriCouncil('', { school: '長榮高中', subject: '國文', unit: 'L01' });
 
-    expect(council.meta.phase1Scores.GPT).toBeLessThan(95);
-    expect(council.meta.phase1Scores.Gemini).toBeLessThan(95);
-    expect(council.meta.phase1Scores.Claude).toBeLessThan(95);
+    expect(council.meta.phase1Scores.LocalA).toBeLessThan(95);
+    expect(council.meta.phase1Scores.LocalB).toBeLessThan(95);
     expect(council.meta.finalScore).toBeLessThan(98);
     expect(council.sections['⑮Final Score']).toContain('未提供來源文本');
     expect(council.sections['⑮Final Score']).toContain('未通過，建議人工覆核');
@@ -395,7 +392,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+        drafts: { localA: chatgptDraft, localB: claudeDraft },
       });
 
     expect(res.status).toBe(200);
@@ -404,7 +401,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
     const markdown = res.body.content;
     expect(markdown).toContain(`年級：${grade}`);
     expect(markdown).toContain('Mode: Qwen Semantic Cross-Council Adjudication');
-    expect(markdown).toContain('Sources: ChatGPT (Web) + Gemini (Web) + Claude (Web)');
+    expect(markdown).toContain('Sources: 本機模型 A + 本機模型 B (Ollama)，Claude 最後檢核');
     expect(markdown).toContain('adjudication_mode: "llm_semantic"');
     expect(markdown).toContain('王生入勞山拜師習得穿牆術');
     expect(markdown).toContain('驀然而踣');
@@ -450,7 +447,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
       unit,
       category,
       sourceText,
-      drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+      drafts: { localA: chatgptDraft, localB: claudeDraft },
     };
 
     await request(app).post('/api/assemble-council').send(payload);
@@ -471,7 +468,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: '' },
+        drafts: { localA: chatgptDraft, localB: '' },
       });
 
     expect(res.status).toBe(400);
@@ -479,14 +476,15 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
     expect(fs.existsSync(distFile)).toBe(false);
   });
 
-  test('2026-11-16：只送 ChatGPT＋Claude 雙方初稿（無 Gemini）可正常產出，來源不列 Gemini', async () => {
+  test('2026-11-26 AHS-A3：舊前端送 chatgpt＋claude 欄位時，依序當作本機模型 A、B 初稿，來源不列 ChatGPT／Gemini', async () => {
     const res = await request(app)
       .post('/api/assemble-council')
       .send({ school, grade, subject, unit, category, sourceText, drafts: { chatgpt: chatgptDraft, claude: claudeDraft } });
     expect(res.status).toBe(200);
     const markdown = fs.readFileSync(outputFile, 'utf8');
-    expect(markdown).toContain('Sources: ChatGPT (Web) + Claude (Web)');
+    expect(markdown).toContain('Sources: 本機模型 A + 本機模型 B (Ollama)，Claude 最後檢核');
     expect(markdown).not.toContain('Gemini (Web)');
+    expect(markdown).not.toContain('ChatGPT (Web)');
   });
 
   test('缺少必填 metadata（科目）時回應 400', async () => {
@@ -499,7 +497,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+        drafts: { localA: chatgptDraft, localB: claudeDraft },
       });
 
     expect(res.status).toBe(400);
@@ -514,7 +512,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+        drafts: { localA: chatgptDraft, localB: claudeDraft },
       });
 
     expect(res.status).toBe(400);
@@ -530,13 +528,13 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         subject,
         unit,
         category,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+        drafts: { localA: chatgptDraft, localB: claudeDraft },
       });
 
     expect(res.status).toBe(200);
     expect(global.fetch).not.toHaveBeenCalled();
     const markdown = res.body.content;
-    expect(markdown).toContain('Mode: Human-in-the-Loop Tri-Web Council');
+    expect(markdown).toContain('Mode: Local Dual-Draft Council');
     expect(markdown).toContain('adjudication_mode: "fallback_concat"');
     expect(markdown).toContain('quality_gate: "PENDING_MANUAL_REVIEW"');
     expect(markdown).toContain('ChatGPT 認為核心概念是甲');
@@ -559,7 +557,7 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+        drafts: { localA: chatgptDraft, localB: claudeDraft },
       });
 
     expect(res.status).toBe(200);
@@ -589,12 +587,12 @@ describe('POST /api/assemble-council（Qwen Semantic Cross-Council Adjudication�
         unit,
         category,
         sourceText,
-        drafts: { chatgpt: chatgptDraft, gemini: geminiDraft, claude: claudeDraft },
+        drafts: { localA: chatgptDraft, localB: claudeDraft },
       });
 
     expect(res.status).toBe(200);
     const markdown = res.body.content;
-    expect(markdown).toContain('Mode: Human-in-the-Loop Tri-Web Council');
+    expect(markdown).toContain('Mode: Local Dual-Draft Council');
     expect(markdown).toContain('adjudication_mode: "fallback_concat"');
     expect(markdown).toContain('Failure Reason：OLLAMA_CONNECTION_ERROR');
     // 降級後仍須完成真實交叉比對（非模擬佔位文字）
@@ -645,7 +643,7 @@ describe('POST /api/assemble-council/jobs（P0-06 Async Job — 可靠的 long-r
         unit,
         category,
         sourceText: '任意 SOURCE 內容供非同步測試使用。',
-        drafts: { chatgpt: '①核心概念\nA', gemini: '①核心概念\nB', claude: '①核心概念\nC' },
+        drafts: { localA: '①核心概念\nA', localB: '①核心概念\nB' },
       });
 
     expect(createRes.status).toBe(202);

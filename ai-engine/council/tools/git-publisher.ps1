@@ -86,7 +86,7 @@ function Publish-Request($req, [string]$id) {
   # this checkout's copies always conflict once GitHub main has moved on (tm_68 and
   # tm_72 sat unpushed for days with "local edits conflict"). Restore them, fast-forward,
   # then regenerate them so they include this request's package on top of the newest main.
-  $generated = @('docs/TeachingMaterials/index.json', 'docs/TeachingMaterials/import-log.json', 'js/data/TeachingMaterialData.js', 'js/data/RepositoryStatus.js')
+  $generated = @('docs/TeachingMaterials/index.json', 'docs/TeachingMaterials/import-log.json', 'js/data/TeachingMaterialData.js', 'js/data/TeachingMaterialIndex.js', 'js/data/materials-content', 'js/data/RepositoryStatus.js')
   $r = Invoke-Git (@('checkout', '--') + $generated); $log.Add("git checkout (generated files): $($r.out)")
   $r = Invoke-Git @('merge', '--ff-only', 'origin/main'); $log.Add("git merge --ff-only: $($r.out)")
   if ($r.code -ne 0) { return (& $fail 'could not update local main to GitHub main (local edits conflict); not pushed' $null) }

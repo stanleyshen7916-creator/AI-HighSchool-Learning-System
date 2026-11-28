@@ -51,6 +51,18 @@ function fakeEngine(window, log, mode) {
       const name = decodeURIComponent(u.slice("/api/finals/".length));
       return reply(200, { filename: name, content: body.content, backup: name + ".orig" });
     }
+    /* 2026-11-26 AHS-A3：本機模型工作與 Claude 最後檢核 */
+    if (u === "/api/local-ai/jobs" && method === "POST") { return reply(202, { jobId: "lj-" + body.kind, status: "queued" }); }
+    if (u.indexOf("/api/local-ai/jobs/lj-") === 0) {
+      const kind = u.slice("/api/local-ai/jobs/lj-".length);
+      const result = kind === "drafts" ? { localA: "①核心概念\nA", localB: "①核心概念\nB", models: { localA: "qwen3:8b", localB: "gpt-oss:20b" } }
+        : { text: kind === "author" ? "Q1. 本機出題" : "Q1：C", model: kind === "author" ? "qwen3:8b" : "gpt-oss:20b" };
+      return reply(200, { jobId: "lj-" + kind, kind: kind, status: "completed", result: result });
+    }
+    if (/\/final-check$/.test(u) && method === "GET") {
+      return reply(200, { status: "pending", revisionsDone: 0, maxRevisions: 2, units: 3, flagged: 1, pendingCount: 0,
+        flags: [{ id: "S2", section: "①核心概念", text: "宙斯住在火星上。", flags: ["與教材原文重疊低（0%）"] }], prompt: "檢核 PROMPT" });
+    }
     if (u === "/api/finals/" + encodeURIComponent(OLD_FINAL)) { return reply(200, { filename: OLD_FINAL, content: OLD_FINAL_CONTENT }); }
     if (u.indexOf("/api/finals/") === 0) { return reply(200, { filename: FINAL, content: "# Final" }); }
     if (u === "/api/assemble-council/jobs" && method === "POST") { return reply(202, { jobId: "job-1", status: "running" }); }
@@ -113,7 +125,7 @@ function loadUpload(studentId, mode) {
   [...window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
     if (!fs.existsSync(p)) { return; }
-    window.eval(fs.readFileSync(p, "utf8"));
+    window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p);
     /* engine I/O only: keep the committed Supabase config out of the way */
     if (/^js\/data\/SupabaseConfig(\.local)?\.js$/.test(src)) {
       window.AHS.SupabaseConfig = { url: "", anonKey: "" };
@@ -169,7 +181,7 @@ async function main() {
   check("英文等其他科目維持原模板", sectionsFor("英文").join("|") === chi.join("|"));
 
   console.log("\n[3] 未填必要欄位時不送出");
-  click(buttonByText(doc, "執行雙方交叉審議"));
+  click(buttonByText(doc, "執行本機交叉審議"));
   await settle();
   check("未填章節：提示且不建立 job", doc.body.textContent.indexOf("請先在步驟 1 填寫章節") !== -1 && !log.some((c) => c.url.indexOf("/jobs") !== -1));
   click(buttonByText(doc, "建立教材包草稿"));
@@ -179,13 +191,24 @@ async function main() {
   console.log("\n[4] 審議 → 建立草稿 → 預覽");
   fieldByLabel(doc, "科目").value = "數學";
   fieldByLabel(doc, "章節").value = "第一章";
-  fieldByLabel(doc, "ChatGPT (Web)").value = "①核心概念\nA";
-  fieldByLabel(doc, "Claude (Web)").value = "①核心概念\nC";
-  click(buttonByText(doc, "執行雙方交叉審議"));
+  /* 2026-11-26 AHS-A3：初稿由本機模型 A、B 在引擎產生；頁面沒有 ChatGPT／Gemini／Claude 初稿欄 */
+  check("沒有 ChatGPT／Gemini／Claude 初稿欄", !fieldByLabel(doc, "ChatGPT (Web)") && !fieldByLabel(doc, "Gemini (Web)") && !fieldByLabel(doc, "Claude (Web)"));
+  fieldByLabel(doc, "教材本文（SOURCE）").value = "弧度的定義。";
+  click(buttonByText(doc, "由本機模型 A、B 撰寫初稿"));
+  await settle();
+  const writeJob = log.find((c) => c.method === "POST" && /\/api\/local-ai\/jobs$/.test(c.url));
+  check("撰寫初稿送出本機工作（kind=drafts，含教材本文的 Prompt）", !!writeJob && writeJob.body.kind === "drafts" && writeJob.body.prompt.indexOf("弧度的定義。") !== -1);
+  check("兩份本機初稿填入步驟 3", fieldByLabel(doc, "本機模型 A 初稿").value === "①核心概念\nA" && fieldByLabel(doc, "本機模型 B 初稿").value === "①核心概念\nB" &&
+    doc.body.textContent.indexOf("A：qwen3:8b、B：gpt-oss:20b") !== -1);
+  click(buttonByText(doc, "執行本機交叉審議"));
   await settle();
   const job = log.find((c) => c.method === "POST" && /\/api\/assemble-council\/jobs$/.test(c.url));
-  check("送出審議 job，含雙方初稿（無 Gemini）與 Council 用的學校名稱", !!job && job.body.school === "長榮中學" && job.body.drafts.claude === "①核心概念\nC" && !("gemini" in job.body.drafts) && !fieldByLabel(doc, "Gemini (Web)") && job.body.unit === "第一章");
+  check("送出審議 job，含本機 A、B 兩份初稿與 Council 用的學校名稱", !!job && job.body.school === "長榮中學" && job.body.drafts.localA === "①核心概念\nA" &&
+    job.body.drafts.localB === "①核心概念\nB" && Object.keys(job.body.drafts).length === 2 && job.body.unit === "第一章");
   check("審議完成後顯示 Final 檔名與 Quality Gate", doc.body.textContent.indexOf(FINAL) !== -1 && doc.body.textContent.indexOf("PASS · 98") !== -1);
+  check("Final 下方有 Claude 最後檢核（程式標記與檢核包）", doc.body.textContent.indexOf("Claude 最後檢核（待檢核，已修正 0／2 輪") !== -1 &&
+    doc.body.textContent.indexOf("S2［①核心概念］與教材原文重疊低") !== -1 && [...doc.querySelectorAll("textarea")].some((t) => t.value === "檢核 PROMPT"));
+  check("整個頁面不再出現 ChatGPT／Gemini", !/ChatGPT|Gemini/.test(doc.body.textContent));
 
   click(buttonByText(doc, "建立教材包草稿"));
   await settle();
@@ -243,29 +266,32 @@ async function main() {
   check("切換後只顯示加題的四個步驟＋引擎＋草稿預覽", visibleCards().length === 6 && !visibleCards().some((c) => c.textContent.indexOf("雙方初稿") !== -1));
   const parentSel = fieldByLabel(doc, "教材");
   check("教材清單來自引擎（含原題數）", !!parentSel && [...parentSel.options].some((o) => o.value === "tm_7" && o.textContent.indexOf("原有 23 題") !== -1));
-  check("預設單一 Claude 模式：只有 Claude（新對話）作答欄", !!fieldByLabel(doc, "Claude（新對話） 作答結果") &&
-    fieldByLabel(doc, "ChatGPT 作答結果").closest(".upl-field").hasAttribute("hidden"));
+  check("作答欄：本機模型 B ＋ Claude（新對話，最後檢核），沒有 ChatGPT", !!fieldByLabel(doc, "本機模型 B 作答結果") &&
+    !!fieldByLabel(doc, "Claude（新對話，最後檢核） 作答結果") && !fieldByLabel(doc, "ChatGPT 作答結果"));
   parentSel.value = "tm_7";
   parentSel.dispatchEvent(new window.Event("change"));
-  check("數學教材在單一模式下提示建議三方核對", doc.body.textContent.indexOf("建議改用三方核對") !== -1);
+  check("數學教材提示逐題檢查被標示的題目", doc.body.textContent.indexOf("請逐題看過被標示的題目") !== -1);
   const countInput = fieldByLabel(doc, "題數（1～40）");
   countInput.value = "10";
   countInput.dispatchEvent(new window.Event("input"));
   check("題數改變時自動分配難度（3/5/2）", fieldByLabel(doc, "易").value === "3" && fieldByLabel(doc, "中等").value === "5" && fieldByLabel(doc, "難").value === "2");
-  click(buttonByText(doc, "複製出題 Prompt"));
+  click(buttonByText(doc, "由本機模型 A 出題"));
   await settle();
   const ap = log.find((c) => /\/supplements\/author-prompt$/.test(c.url));
   check("出題 Prompt 送出教材、題數與難度", !!ap && ap.body.parentId === "tm_7" && ap.body.count === 10 && ap.body.difficulty["難"] === 2);
   check("出題 Prompt 可預覽", doc.body.textContent.indexOf("出題 PROMPT") !== -1);
-  fieldByLabel(doc, "Claude 出題結果").value = "Q1. …";
-  click(buttonByText(doc, "擷取題目並複製作答 Prompt"));
+  const authorJob = log.find((c) => c.method === "POST" && /\/api\/local-ai\/jobs$/.test(c.url) && c.body.kind === "author");
+  check("本機模型 A 出題，結果填入步驟 2", !!authorJob && authorJob.body.prompt === "出題 PROMPT" && fieldByLabel(doc, "出題結果（本機模型 A；可修改）").value === "Q1. 本機出題");
+  fieldByLabel(doc, "出題結果（本機模型 A；可修改）").value = "Q1. …";
+  click(buttonByText(doc, "擷取題目、本機模型 B 作答並複製 Claude 作答 Prompt"));
   await settle();
-  check("擷取題目並提示開新的 Claude 對話", doc.body.textContent.indexOf("擷取到 3 題") !== -1 && doc.body.textContent.indexOf("「新的」Claude 對話") !== -1);
-  fieldByLabel(doc, "Claude（新對話） 作答結果").value = "Q1：B";
+  check("擷取題目、本機模型 B 作答，並提示開新的 Claude 對話", doc.body.textContent.indexOf("擷取到 3 題") !== -1 && doc.body.textContent.indexOf("新的 Claude 對話") !== -1 &&
+    fieldByLabel(doc, "本機模型 B 作答結果").value === "Q1：C");
+  fieldByLabel(doc, "Claude（新對話，最後檢核） 作答結果").value = "Q1：B";
   click(buttonByText(doc, "核對"));
   await settle();
   const ck = log.find((c) => /\/supplements\/check$/.test(c.url));
-  check("核對送出單一作答者", !!ck && ck.body.solvers.length === 1 && ck.body.solvers[0].id === "claude-fresh" && ck.body.mode === "single");
+  check("核對送出本機模型 B 與 Claude 兩位作答者", !!ck && ck.body.solvers.map((s) => s.id).join(",") === "local-b,claude-fresh" && ck.body.mode === "local");
   const boxes = [...doc.querySelectorAll(".upl-sup-results input[type=checkbox]")];
   check("一致預設勾選、需人工確認不勾、重複不能勾", boxes.length === 3 && boxes[0].checked && !boxes[1].checked && boxes[2].disabled);
   check("顯示需人工確認的原因", doc.body.textContent.indexOf("答 C，出題答案為 B") !== -1);

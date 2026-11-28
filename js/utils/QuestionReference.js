@@ -26,7 +26,7 @@ AHS.QuestionReference = (function () {
     if (byId) { return; }
     byId = {};
     byText = {};
-    (window.AHS.TeachingMaterialData || []).forEach(function (entry) {
+    ((AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []))).forEach(function (entry) {
       (entry && entry.questions || []).forEach(function (q) {
         if (!q || !q.reference) { return; }
         byId[q.id] = q;

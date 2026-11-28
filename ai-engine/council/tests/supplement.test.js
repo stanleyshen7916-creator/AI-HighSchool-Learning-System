@@ -148,7 +148,7 @@ describe('SupplementBuilder', () => {
     const byNo = Object.fromEntries(r.questions.map((q) => [q.number, q]));
     expect(byNo[1]).toMatchObject({ status: 'ok', answerKey: 'C', reasons: [] });
     expect(byNo[2].status).toBe('review');
-    expect(byNo[2].reasons).toContain('Claude（新對話）答 B，出題答案為 A');
+    expect(byNo[2].reasons).toContain('Claude（新對話，最後檢核）答 B，出題答案為 A');
     expect(byNo[3].status).toBe('duplicate');
     expect(byNo[3].reasons[0]).toContain(`與既有題目 ${parentBank[2].questionId} 重複`);
     expect(byNo[4].status).toBe('review');
@@ -160,15 +160,16 @@ describe('SupplementBuilder', () => {
     expect(r.counts).toEqual({ ok: 1, review: 3, duplicate: 2 });
   });
 
-  test('三方模式：任何一方答案不同都要人工確認；沒有作答結果時全部需人工確認', () => {
+  test('本機模型 B＋Claude 各自作答：任何一方答案不同都要人工確認；不再接受 ChatGPT／Gemini；沒有作答結果時全部需人工確認', () => {
     const r = sb.check({
       parentId: PARENT, authorText: AUTHOR,
-      solvers: [{ id: 'claude-fresh', text: SOLVER }, { id: 'chatgpt', text: 'Q1：C' }, { id: 'gemini', text: 'Q1：D' }],
+      solvers: [{ id: 'claude-fresh', text: SOLVER }, { id: 'local-b', text: 'Q1：D' }, { id: 'chatgpt', text: 'Q1：A' }, { id: 'gemini', text: 'Q1：A' }],
     });
     const q1 = r.questions.find((q) => q.number === 1);
     expect(q1.status).toBe('review');
-    expect(q1.reasons).toEqual(['Gemini答 D，出題答案為 C']);
-    expect(r.questions.find((q) => q.number === 2).reasons).toContain('ChatGPT沒有作答本題');
+    expect(q1.reasons).toEqual(['本機模型 B答 D，出題答案為 C']);
+    expect(r.questions.find((q) => q.number === 2).reasons).toContain('本機模型 B沒有作答本題');
+    expect(JSON.stringify(r)).not.toMatch(/ChatGPT|Gemini/);
     const none = sb.check({ parentId: PARENT, authorText: AUTHOR, solvers: [] });
     expect(none.questions.find((q) => q.number === 1).reasons).toEqual(['尚未獨立作答核對']);
   });

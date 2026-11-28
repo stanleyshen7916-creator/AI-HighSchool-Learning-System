@@ -58,6 +58,20 @@ function createPackageBuilder({ platformRoot, dataDir }) {
   const adapter = () => require(path.join(scripts, 'TeachingMaterialAdapter.js'));
   const repoManager = () => require(path.join(scripts, 'RepositoryManager.js'));
   const importManager = () => require(path.join(scripts, 'ImportManager.js'));
+  // 2026-11-22 AHS-UP2 P2-4：重新產生 js/data/ExplanationSupplementData.js（只收已發布教材的詳解擴充檔）。
+  // 回傳 { paths, warning }：失敗不讓發布／刪除回頭（教材已匯入或已刪除），改回報警告。
+  const regenerateSupplements = () => {
+    try {
+      const { stale } = require(path.join(scripts, 'GenerateExplanationSupplement.js')).generate();
+      const rel = stale.map((f) => f.split(path.sep).join('/'));
+      const paths = ['js/data/ExplanationSupplementData.js', 'js/data/ExplanationSupplementIndex.js'].filter((p) => rel.includes(p));
+      // queue 9.4 T6: the per-material split files the pages read from T7 on
+      if (rel.some((p) => p.indexOf('js/data/explanations-content/') === 0)) paths.push('js/data/explanations-content/');
+      return { paths, warning: null };
+    } catch (error) {
+      return { paths: [], warning: `詳解補強資料產生失敗，學生端暫時看不到補強：${error.message}` };
+    }
+  };
   const supplements = createSupplementBuilder({ platformRoot });
 
   function registry() {
@@ -137,12 +151,12 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       '',
       '## 產出過程（自動轉換，誠實揭露）',
       '',
-      `本教材包由學習平台「教材上傳」頁（upload.html）呼叫本機教材上傳引擎（ai-engine/council）建立：原始教材經 OCR 取得本文後，由 ChatGPT (Web)、Gemini (Web)、Claude (Web) 三方獨立分析，再經 Council 交叉審議產出 \`source/${finalFilename}\`。`,
+      `本教材包由學習平台「教材上傳」頁（upload.html）呼叫本機教材上傳引擎（ai-engine/council）建立：原始教材經 OCR 取得本文後，由兩個本機模型（Ollama）各自獨立撰寫初稿、本機交叉比對，再由 Claude 做最後檢核，經 Council 交叉審議產出 \`source/${finalFilename}\`。`,
       '',
       `- 審議模式：${fm.mode || '（未標示）'}；裁決：${fm.adjudicator || '（未標示）'}${fm.adjudication_mode ? `（${fm.adjudication_mode}）` : ''}`,
       `- Quality Gate：${parsed.qualityGate || '（未標示）'}；Final Score：${parsed.finalScore || '（未標示）'}${fm.run_id ? `；run_id：\`${fm.run_id}\`` : ''}`,
       '- `summary.json`、`questionbank.json` 由 FinalParser 從 Final.md 逐字擷取，不補寫、不猜測；題目一律標示為 `AI_GENERATED`，`page` 無法可靠對應，一律為 `null`。',
-      '- `manifest.json` 的 `analysisEngine` 為 Schema 唯一允許的值 `"Claude"`，實際來源為上述三方 AI 與 Council 審議。',
+      '- `manifest.json` 的 `analysisEngine` 為 Schema 唯一允許的值 `"Claude"`，實際來源為上述本機模型初稿、Council 審議與 Claude 最後檢核。',
       '- 管理者已在上傳頁預覽擷取結果後才發布。',
     ];
     if (parsed.warnings.length) {
@@ -380,8 +394,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     const m = parent.metadata;
     const solved = (checkResult.solvers || []).length > 0;
     const pastExam = !!checkResult.pastExam;
-    const modeLabel = pastExam ? '歷屆試題：題目與選項逐字取自官方公布的試卷，答案依官方公布的答案，不另做獨立作答核對' : !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : mode === 'tri' ? '三方核對（Claude 出題；Claude 新對話、ChatGPT、Gemini 各自獨立作答）'
-      : '單一 Claude（Claude 出題；另開新的 Claude 對話獨立作答）';
+    const modeLabel = pastExam ? '歷屆試題：題目與選項逐字取自官方公布的試卷，答案依官方公布的答案，不另做獨立作答核對' : !solved ? `未經獨立作答核對${reviewNote ? `；改以「${reviewNote}」確認` : ''}` : '本機核對（本機模型 A 出題；本機模型 B 與 Claude 新對話各自獨立作答核對）';
     const reviewed = accepted.filter((q) => q.status === 'review');
     const lines = [
       `# ${materialId} — 補充題庫：${parent.materialId}「${m.chapter || ''}」`,
@@ -444,7 +457,7 @@ function createPackageBuilder({ platformRoot, dataDir }) {
       sourceNames.push(name);
     });
     writeJson(path.join(sourceDir, 'check-report.json'), {
-      parentId, mode: mode === 'tri' ? 'tri' : 'single', createdAt: now,
+      parentId, mode: 'local', createdAt: now,
       accepted: chosen.map((q) => q.number), reviewNote: reviewNote ? String(reviewNote) : null, ...result,
     });
     sourceNames.push('check-report.json');
@@ -602,14 +615,21 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     const reg = registry();
     reg.drafts[materialId] = { ...reg.drafts[materialId], status: 'published', publishedAt: new Date().toISOString() };
     saveRegistry(reg);
+    const hasSupplement = fs.existsSync(path.join(explanationsDir, `${materialId}.json`));
+    const supplement = hasSupplement ? regenerateSupplements() : { paths: [], warning: null };
     return {
       ...preview(materialId),
+      ...(supplement.warning ? { supplementWarning: supplement.warning } : {}),
       changedPaths: [
         `docs/TeachingMaterials/materials/${materialId}/`,
-        ...(fs.existsSync(path.join(explanationsDir, `${materialId}.json`)) ? [`docs/TeachingMaterials/explanations/${materialId}.json`] : []),
+        ...(hasSupplement ? [`docs/TeachingMaterials/explanations/${materialId}.json`] : []),
+        ...supplement.paths,
         'docs/TeachingMaterials/index.json',
         'docs/TeachingMaterials/import-log.json',
         'js/data/TeachingMaterialData.js',
+        // queue 9.4 T5: the split files the pages read from T7 on (index + one content file per material)
+        'js/data/TeachingMaterialIndex.js',
+        'js/data/materials-content/',
         'js/data/RepositoryStatus.js',
       ],
     };
@@ -657,15 +677,21 @@ function createPackageBuilder({ platformRoot, dataDir }) {
     });
     saveRegistry(reg);
     require(path.join(scripts, 'GenerateTeachingMaterialData.js')).generate();
+    const supplement = removedSupplements.length ? regenerateSupplements() : { paths: [], warning: null };
     return {
       materialId,
       title,
       removed,
+      ...(supplement.warning ? { supplementWarning: supplement.warning } : {}),
       changedPaths: [
         ...removed.map((id) => `docs/TeachingMaterials/materials/${id}/`),
         ...removedSupplements.map((id) => `docs/TeachingMaterials/explanations/${id}.json`),
+        ...supplement.paths,
         'docs/TeachingMaterials/index.json',
         'js/data/TeachingMaterialData.js',
+        // queue 9.4 T5: the split files the pages read from T7 on (index + one content file per material)
+        'js/data/TeachingMaterialIndex.js',
+        'js/data/materials-content/',
         'js/data/RepositoryStatus.js',
       ],
     };

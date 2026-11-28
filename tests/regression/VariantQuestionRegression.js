@@ -26,7 +26,7 @@ function loadPage(htmlFile, seedSession) {
   Object.entries(seed).forEach(([k, v]) => window.sessionStorage.setItem(k, JSON.stringify(v)));
   [...dom.window.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src")).forEach((src) => {
     const p = path.join(REPO, src);
-    if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); }
+    if (fs.existsSync(p)) { window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p); }
   });
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
   return window;
@@ -55,7 +55,7 @@ const session = carry(p1);
 
 /* 2. 錯題本頁：替這題的教材包加一題專屬變式題，點「做一題類題」 */
 const pw = loadPage("wrongbook.html", session);
-const data = pw.AHS.TeachingMaterialData;
+const data = pw.AHS.TeachingMaterialSource.entries();
 const entry = data.find((e) => (e.questions || []).some((q) => q.id === wrongQ.id));
 check("測試前提：錯題對得上教材包題目", !!entry);
 const VARIANT = {
@@ -78,7 +78,7 @@ check("標示為「類題練習」而非「題庫中另一題」", /^類題練�
 
 /* 3. 沒有專屬變式題 → 維持原行為，且絕不會出別題的變式題 */
 const pn = loadPage("wrongbook.html", session);
-const e2 = pn.AHS.TeachingMaterialData.find((e) => (e.questions || []).some((q) => q.id === wrongQ.id));
+const e2 = pn.AHS.TeachingMaterialSource.entries().find((e) => (e.questions || []).some((q) => q.id === wrongQ.id));
 e2.variants = [Object.assign({}, VARIANT, { variantOf: "tm_other_q1" })];
 pn.document.body.appendChild(pn.AHS.WrongBook.create());
 pn.document.querySelector(".wb-row").click();

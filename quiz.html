@@ -20,6 +20,7 @@
 
   <!-- Ordered scripts sharing the window.AHS namespace (no modules, no build). -->
   <script src="js/core/UI.js"></script>
+  <script src="js/runtime/TeachingMaterialSource.js"></script>
   <script src="js/utils/QuestionGroups.js"></script>
   <script src="js/utils/ClozeGroup.js"></script>
   <script src="js/ui/EmptyState.js"></script>
@@ -45,12 +46,13 @@
   <script src="js/ui/SettingsPanel.js"></script>
   <script src="js/data/AppConfig.js"></script>
   <script src="js/data/RepositoryStatus.js"></script>
-  <script src="js/data/TeachingMaterialData.js"></script>
+  <script src="js/data/TeachingMaterialIndex.js"></script>
+  <script src="js/runtime/TeachingMaterialContentLoader.js"></script>
   <script src="js/data/ExamPeriodConfig.js"></script>
   <script src="js/utils/ExamPeriod.js"></script>
   <script src="js/utils/QuestionKind.js"></script>
   <script src="js/utils/OptionOrder.js"></script>
-  <script src="js/data/ExplanationSupplementData.js"></script>
+  <script src="js/data/ExplanationSupplementIndex.js"></script>
   <script src="js/utils/ExplanationSupplement.js"></script>
   <script src="js/utils/QuestionReference.js"></script>
   <script src="js/core/Qiaoqiao.js"></script>
@@ -90,6 +92,9 @@
   <script src="data/materials/BiologyG11Ch1HandoutReview.js"></script>
   <script src="js/runtime/QuestionBankRuntime.js"></script>
   <script src="js/runtime/RandomPracticeRuntime.js"></script>
+  <!-- 2026-11-27 AHS-FEAT 加強練習（mode=weak）出題。 -->
+  <script src="js/data/WeakChapterConfig.js"></script>
+  <script src="js/runtime/WeakChapterRuntime.js"></script>
   <script src="js/runtime/TeachingMaterialLoader.js"></script>
   <!-- Sprint AI-126C: must load after every Repository-integrated Runtime
        above (MaterialRuntime/WrongBookRuntime/KnowledgeMasteryRuntime/

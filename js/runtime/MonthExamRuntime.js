@@ -78,7 +78,7 @@ AHS.MonthExamRuntime = (function () {
   }
 
   function allEntries() {
-    return (AHS.TeachingMaterialData || []).concat(repoEntries());
+    return (AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || [])).concat(repoEntries());
   }
 
   /* 目前 Workspace（學校＋學期）可用的教材，依科目分組。 */
@@ -676,7 +676,7 @@ AHS.MonthExamRuntime = (function () {
     }
     if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function") {
       result.rows.forEach(function (r) {
-        if (r.knowledgePoint) { AHS.KnowledgeMasteryRuntime.recordAttempt(r.knowledgePoint, r.correct, subjectCode(result.subject), r.materialId); }
+        if (r.knowledgePoint) { AHS.KnowledgeMasteryRuntime.recordAttempt(r.knowledgePoint, r.correct, subjectCode(result.subject), r.materialId, r.qid); }
       });
     }
   }

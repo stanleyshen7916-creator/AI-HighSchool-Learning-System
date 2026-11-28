@@ -1,16 +1,15 @@
-// 2026-10-13 審議改版第 3 階段：三家整合（出處、事實型／教學型、整合依據）。
+// 2026-10-13 審議改版第 3 階段：多份初稿整合（出處、事實型／教學型、整合依據）。2026-11-26 AHS-A3：兩份初稿都由本機模型（A、B）撰寫。
 const { provenanceOf, markTeachingSupplements, computeMergeReport, assembleClaimsIntoSections, generateCouncilMarkdown } = require('../services/multiAi');
 
 const snippets = {
-  gpt: '蒲松齡，字留仙，號柳泉，著有聊齋志異。',
-  gemini: '聊齋志異是文言短篇小說集，作者蒲松齡字留仙。',
-  claude: '記憶口訣：留仙柳泉聊齋志異，一口氣背下作者資料。',
+  localA: '蒲松齡，字留仙，號柳泉，著有聊齋志異。聊齋志異是文言短篇小說集。',
+  localB: '作者蒲松齡字留仙。記憶口訣：留仙柳泉聊齋志異，一口氣背下作者資料。',
 };
 
 test('出處由程式判斷：多家都寫到 → 列出多家；只有一家寫到 → 獨家', () => {
-  expect(provenanceOf('蒲松齡字留仙', snippets).sort()).toEqual(['ChatGPT', 'Gemini']);
-  expect(provenanceOf('記憶口訣：留仙柳泉聊齋志異', snippets)).toEqual(['Claude']);
-  expect(provenanceOf('完全無關的句子', { gpt: 'abc' })).toEqual([]);
+  expect(provenanceOf('蒲松齡字留仙', snippets).sort()).toEqual(['本機模型 A', '本機模型 B']);
+  expect(provenanceOf('記憶口訣：一口氣背下作者資料', snippets)).toEqual(['本機模型 B']);
+  expect(provenanceOf('完全無關的句子', { localA: 'abc' })).toEqual([]);
 });
 
 test('教學型內容沒有教材依據但不矛盾 → 教學補充；事實型仍待覆核；不一致者仍交 Claude', () => {
@@ -47,12 +46,11 @@ test('獨家內容不遺漏：模型只抽出一家的說法時，程式補入�
   global.fetch = async () => ({ ok: true, json: async () => ({ response: JSON.stringify({ claims: [{ claim_id: 'c1', claim: '蒲松齡，字留仙，號柳泉，山東淄川人。', type: 'fact' }] }), prompt_eval_count: 10 }) });
   const sec = (t) => ({ '⑦作者背景': t });
   const r = await extractClaimsPerSection({}, '原文', {
-    gpt: sec('蒲松齡，字留仙，號柳泉，山東淄川人。'),
-    gemini: sec('蒲松齡十九歲考中秀才第一名，之後屢試不第。'),
-    claude: sec('記憶口訣：「留仙柳泉寫聊齋」，一句記住字、號與作品。'),
+    localA: sec('蒲松齡，字留仙，號柳泉，山東淄川人。'),
+    localB: sec('蒲松齡十九歲考中秀才第一名，之後屢試不第。記憶口訣：「留仙柳泉寫聊齋」，一句記住字、號與作品。'),
   }, 'm', 'http://x', 1000);
   delete global.fetch;
   const added = r.claims.filter((c) => c.auto_added);
-  expect(added.map((c) => [c.origins[0], c.type])).toEqual([['Gemini', 'fact'], ['Claude', 'teaching']]);
-  expect(r.claims.filter((c) => !c.auto_added)[0].origins).toEqual(['ChatGPT']);
+  expect(added.map((c) => [c.origins[0], c.type])).toEqual([['本機模型 B', 'fact'], ['本機模型 B', 'teaching']]);
+  expect(r.claims.filter((c) => !c.auto_added)[0].origins).toEqual(['本機模型 A']);
 });

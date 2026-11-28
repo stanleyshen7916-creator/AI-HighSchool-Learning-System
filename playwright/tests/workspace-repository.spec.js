@@ -47,7 +47,7 @@ async function expectedMaterialCount(page) {
     const ws = window.AHS.WorkspaceRuntime.getCurrent();
     const allowed = (school, semester) =>
       (!school || school === ws.schoolId) && (!semester || ws.semesterIds.indexOf(semester) !== -1);
-    const pkg = (window.AHS.TeachingMaterialData || [])
+    const pkg = (window.AHS.TeachingMaterialSource ? window.AHS.TeachingMaterialSource.entries() : (window.AHS.TeachingMaterialData || []))
       .filter((e) => allowed(e.material.school, e.material.semester)).length;
     const repo = (window.AHS.MaterialRepository ? window.AHS.MaterialRepository.list() : [])
       .filter((r) => allowed((r.metadata || {}).workspaceSchool, (r.metadata || {}).workspaceSemester)).length;

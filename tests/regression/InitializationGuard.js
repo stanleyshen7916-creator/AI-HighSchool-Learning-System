@@ -24,7 +24,7 @@ function loadIndex({ skip }) {
     if (skip && skip.includes(src)) continue;          /* simulate the 404 */
     const p = path.join(ROOT, src);
     if (!fs.existsSync(p)) continue;                   /* optional, git-ignored local-only script (e.g. SupabaseConfig.local.js) */
-    try { window.eval(fs.readFileSync(p, "utf8")); }
+    try { window.eval(fs.readFileSync(p, "utf8")); require("./SplitDataHarness.js")(window, p); }
     catch (e) { thrown.push(src + ": " + e.message); }
   }
   window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));

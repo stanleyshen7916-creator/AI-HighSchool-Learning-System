@@ -142,7 +142,7 @@ AHS.StudyAssistant = (function () {
     var key = ws ? ws.schoolId + "|" + ws.semesterIds.join(",") : "*";
     if (cache.key === key && cache.sources) { return cache.sources; }
     var list = [];
-    (Array.isArray(AHS.TeachingMaterialData) ? AHS.TeachingMaterialData : []).forEach(function (e) {
+    ((AHS.TeachingMaterialSource ? AHS.TeachingMaterialSource.entries() : (AHS.TeachingMaterialData || []))).forEach(function (e) {
       var s = e && e.material ? packageSource(e) : null;
       if (s) { list.push(s); }
     });
@@ -361,7 +361,7 @@ AHS.StudyAssistant = (function () {
   function answer(question, chosenKey) {
     var correct = chosenKey === question.correctAnswer;
     if (AHS.KnowledgeMasteryRuntime && typeof AHS.KnowledgeMasteryRuntime.recordAttempt === "function" && question.knowledgePoint) {
-      AHS.KnowledgeMasteryRuntime.recordAttempt(question.knowledgePoint, correct, question.subject, question.runtimeId || "");
+      AHS.KnowledgeMasteryRuntime.recordAttempt(question.knowledgePoint, correct, question.subject, question.runtimeId || "", question.id);
     }
     var addedToWrongBook = false;
     if (AHS.WrongBookRuntime) {
