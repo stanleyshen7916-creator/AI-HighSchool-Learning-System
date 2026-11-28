@@ -21,7 +21,8 @@
    上傳成功的紀錄（synced 不是 true）也在這時補傳。
    計時：開始作答即記錄開始時間，以開始時間為準（重新整理或離開頁面不暫停），
    時間到自動交卷，未作答視為答錯。作答與進行中的考卷存在 PersistenceAdapter
-   （依 Workspace 分開），重新整理後可接續。 */
+   （依 Workspace 分開），重新整理後可接續。2026-11-28：進行中的考卷另備份到
+   Supabase month_exam_active，分頁暫存被清掉（iPad Safari）或換裝置也能接回。 */
 window.AHS = window.AHS || {};
 AHS.MonthExamRuntime = (function () {
   "use strict";
@@ -469,6 +470,7 @@ AHS.MonthExamRuntime = (function () {
       answers: {}
     };
     save(KEY_ACTIVE, session);
+    backupActive(true);
     return session;
   }
 
@@ -496,6 +498,7 @@ AHS.MonthExamRuntime = (function () {
       s.answers[qid] = optionText;
     }
     save(KEY_ACTIVE, s);
+    backupActive(false);
     return true;
   }
 
@@ -560,6 +563,7 @@ AHS.MonthExamRuntime = (function () {
     history.unshift(result);
     save(KEY_HISTORY, history.slice(0, HISTORY_LIMIT));
     save(KEY_ACTIVE, null);
+    cancelBackup();
     syncWrong(result);
     pushResult(result);
     return result;
@@ -609,11 +613,121 @@ AHS.MonthExamRuntime = (function () {
     var send = function () {
       return c.repo.insert("month_exam_results", toRow(result, c)).then(function (r) {
         /* 23505 = 已經有同一份考卷（重送）——視為已上傳。 */
-        if (!r.error || String(r.error.code || "") === "23505" || /duplicate/i.test(String(r.error.message || ""))) { markSynced(result.id); }
+        if (!r.error || isDuplicate(r)) {
+          markSynced(result.id);
+          /* 成績已在雲端：作答中的備份可以刪了。 */
+          return removeActive(c, result.id).then(function () { return r; });
+        }
         return r;
       });
     };
     if (typeof AHS.SyncBridge.pushFireAndForget === "function") { AHS.SyncBridge.pushFireAndForget(send); } else { send(); }
+  }
+
+  function isDuplicate(r) {
+    return !!(r && r.error && (String(r.error.code || "") === "23505" || /duplicate/i.test(String(r.error.message || ""))));
+  }
+
+  /* ---- 2026-11-28 作答中的考卷備份到雲端（Supabase month_exam_active）----
+     PO 回報：iPad 考國文模擬月考時，Safari 分頁的 sessionStorage 被清掉（被要求重新
+     登入），作答與成績一起消失、沒有上傳，電腦版查不到。現在開始作答與每次作答後
+     （1.5 秒內合併成一次）把進行中的考卷寫到雲端；交卷且成績上傳成功後刪除。頁面
+     載入（pullFromRepository）時本機沒有進行中的考卷，就從雲端接回來。 */
+  var ACTIVE_TABLE = "month_exam_active";
+  var BACKUP_DELAY_MS = 1500;
+  var backupTimer = null;
+  var activeRowIds = {}; /* local_id -> 雲端已有這一列（之後用 update） */
+
+  function activeQuery(c, localId) {
+    return "student_profile_id=eq." + c.identity.studentProfileId + "&local_id=eq." + encodeURIComponent(localId);
+  }
+
+  function cancelBackup() {
+    if (backupTimer) { clearTimeout(backupTimer); backupTimer = null; }
+  }
+
+  function backupActive(immediate) {
+    cancelBackup();
+    if (immediate) { pushActive(); return; }
+    backupTimer = setTimeout(function () { backupTimer = null; pushActive(); }, BACKUP_DELAY_MS);
+  }
+
+  function flushBackup() {
+    if (backupTimer) { cancelBackup(); pushActive(); }
+  }
+
+  function pushActive() {
+    var c = cloud();
+    var s0 = active();
+    if (!c || !s0) { return; }
+    var localId = s0.id;
+    var send = function () {
+      /* 送出時才讀最新的作答；已交卷（或換了一份）就不再寫，避免把已刪除的備份寫回來。 */
+      var s = active();
+      if (!s || s.id !== localId) { return Promise.resolve({ data: null, error: null }); }
+      var patch = { session: s };
+      if (activeRowIds[localId]) { return c.repo.update(ACTIVE_TABLE, activeQuery(c, localId), patch); }
+      return c.repo.insert(ACTIVE_TABLE, {
+        user_id: c.identity.userId,
+        student_profile_id: c.identity.studentProfileId,
+        school_code: c.scope ? c.scope.school : null,
+        semester_code: c.scope ? c.scope.semester : null,
+        local_id: localId,
+        subject_name: s.subject,
+        started_at: new Date(s.startedAt).toISOString(),
+        session: s
+      }).then(function (r) {
+        if (!r.error) { activeRowIds[localId] = true; return r; }
+        if (isDuplicate(r)) {
+          activeRowIds[localId] = true;
+          return c.repo.update(ACTIVE_TABLE, activeQuery(c, localId), patch);
+        }
+        return r;
+      });
+    };
+    if (typeof AHS.SyncBridge.pushFireAndForget === "function") { AHS.SyncBridge.pushFireAndForget(send); } else { send(); }
+  }
+
+  function removeActive(c, localId) {
+    delete activeRowIds[localId];
+    if (!c.repo || typeof c.repo.delete !== "function") { return Promise.resolve(null); }
+    return c.repo.delete(ACTIVE_TABLE, activeQuery(c, localId)).catch(function () { return null; });
+  }
+
+  /* 本機沒有進行中的考卷時，從雲端接回最近一份（只看目前學校／學期）。已經交卷的
+     （本機或雲端成績已有同一份）只刪掉備份。回傳接回的考卷 id 或 null。 */
+  function restoreActive(c, knownIds) {
+    if (active()) { return Promise.resolve(null); }
+    var query = "student_profile_id=eq." + c.identity.studentProfileId + "&order=updated_at.desc&limit=5";
+    if (c.scope) {
+      query += "&school_code=eq." + encodeURIComponent(c.scope.school) + "&semester_code=eq." + encodeURIComponent(c.scope.semester);
+    }
+    return c.repo.read(ACTIVE_TABLE, query).then(function (r) {
+      if (r.error || !Array.isArray(r.data)) { return null; }
+      var restored = null;
+      var cleanups = [];
+      r.data.forEach(function (row) {
+        var s = row.session;
+        if (!s || !s.id || !Array.isArray(s.items)) { return; }
+        if (knownIds[s.id] || restored || active()) {
+          if (knownIds[s.id]) { cleanups.push(removeActive(c, s.id)); }
+          return;
+        }
+        s.answers = s.answers || {};
+        save(KEY_ACTIVE, s);
+        activeRowIds[s.id] = true;
+        restored = s.id;
+      });
+      return Promise.all(cleanups).then(function () { return restored; });
+    });
+  }
+
+  /* 切到背景或離開頁面前，把還在等待合併的作答立刻送出（iPad 切換 App 時常見）。 */
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("pagehide", flushBackup);
+    if (typeof document !== "undefined" && document && typeof document.addEventListener === "function") {
+      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") { flushBackup(); } });
+    }
   }
 
   function fromRow(row) {
@@ -650,7 +764,13 @@ AHS.MonthExamRuntime = (function () {
       save(KEY_HISTORY, kept);
       var pending = kept.filter(function (h) { return !h.synced; });
       pending.forEach(pushResult);
-      return { pulled: pulled, repushed: pending.length };
+      var summary = { pulled: pulled, repushed: pending.length, restored: null };
+      /* 本機有進行中的考卷：補一次雲端備份；沒有：從雲端接回。 */
+      if (active()) { backupActive(true); return summary; }
+      var known = {};
+      history.forEach(function (h) { known[h.id] = true; });
+      r.data.forEach(function (row) { known[row.local_id] = true; });
+      return restoreActive(c, known).then(function (id) { summary.restored = id; return summary; });
     }).catch(function (err) {
       return { pulled: 0, error: { message: String(err && err.message || err) } };
     });

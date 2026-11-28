@@ -37,7 +37,17 @@ AHS.MonthExam = (function () {
     var onList = false;
     /* 2026-10-09: 雲端撈回歷次成績後（RepositorySync），停在科目列表時重畫，
        讓「作答紀錄」顯示其他裝置的成績。作答中或看結果時不打擾。 */
-    window.addEventListener("ahs:repository-pulled", function () { if (onList && !RT().active()) { renderList(); } });
+    window.addEventListener("ahs:repository-pulled", function () {
+      if (!onList) { return; }
+      /* 2026-11-28：雲端接回了進行中的考卷（分頁暫存被清掉或換裝置）→ 超時就自動交卷，否則接續作答。 */
+      if (RT().active()) {
+        var expired = RT().settleExpired();
+        if (expired) { renderResult(expired, "從雲端接回上次的模擬月考：已超過 60 分鐘，已自動交卷，未作答的題目視為答錯。"); }
+        else { renderExam(); }
+        return;
+      }
+      renderList();
+    });
 
     function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
     function show(node) { onList = false; stopTimer(); AHS.UI.mount(root, node); window.scrollTo(0, 0); }
