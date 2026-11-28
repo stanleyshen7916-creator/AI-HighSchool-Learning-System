@@ -1,0 +1,25 @@
+{
+  "_note": "AHS 佇列 9（2026-11-26）品質關卡 5–6 與 A–F 標準的門檻。改門檻只改這個檔，每條規則在 tests/quality_rules.test.js 都有會觸發它的測試。",
+  "leak": {
+    "lengthWarn": 1.5,
+    "lengthFail": 2.0,
+    "minLeakBigrams": 2,
+    "convergenceWarn": 0.5,
+    "absoluteWords": ["一定", "絕不", "絕對", "所有", "只有", "必定", "完全", "從不", "總是"],
+    "lengthSpreadWarn": 3.0,
+    "maxOptionChars": { "default": 60, "英文": 120, "國文": 80, "歷史": 70 }
+  },
+  "bloom": {
+    "levels": ["記憶", "理解", "應用", "分析"],
+    "target": { "記憶": 0.3, "理解": 0.3, "應用": 0.3, "分析": 0.1 },
+    "maxDeviation": 0.15
+  },
+  "claims": { "minSupport": 0.5, "minChars": 8 },
+  "consistency": { "temperatures": [0, 0.4, 0.8] },
+  "sampling": { "base": 0.10, "low": 0.05, "high": 0.20, "lowAfterBatches": 3, "lowMissRate": 0.02, "highMissRate": 0.05 },
+  "gold": { "ratio": 0.2, "minRatio": 0.15, "maxRatio": 0.25 },
+  "exam": {
+    "minCoverage": 0.7,
+    "maxStemChars": { "數學": 120, "物理": 150, "化學": 150, "生物": 150, "地球科學": 150, "地科": 150 }
+  }
+}
