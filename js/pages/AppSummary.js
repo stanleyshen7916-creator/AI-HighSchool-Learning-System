@@ -59,7 +59,7 @@ window.AHS = window.AHS || {};
   function guardedInit() {
     if (coreReady()) {
       /* queue 9.4 T5: the page's teaching-material content first (synchronous no-op while the full data file is on the page). */
-      if (AHS.TeachingMaterialSource) { AHS.TeachingMaterialSource.ready("all", init); } else { init(); }
+      if (AHS.TeachingMaterialSource) { AHS.TeachingMaterialSource.ready(AHS.TeachingMaterialSource.workspaceIds(), init); } else { init(); }
       return;
     }
     var app = document.getElementById("app");
