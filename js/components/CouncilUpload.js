@@ -436,7 +436,11 @@ AHS.CouncilUpload = (function () {
       ? [el("p", { class: "upl-hint", text: "本頁由教材上傳引擎直接提供（" + client.displayUrl() + "）。" })]
       : [
         field("引擎網址", engineUrl),
-        el("p", { class: "upl-hint", text: "建議改從 http://localhost:3000/upload.html 開啟本頁（由引擎直接提供，不受瀏覽器跨網域限制）。" })
+        el("p", { class: "upl-hint", text: "建議改從 http://localhost:3000/upload.html 開啟本頁（由引擎直接提供，不受瀏覽器跨網域限制）。" }),
+        /* 2026-11-28：線上版（https）常被 Chrome「本機網路存取」擋下，一鍵改開本機版。 */
+        el("div", { class: "upl-actions" }, [
+          el("a", { class: "upl-btn upl-btn--primary", href: "http://localhost:3000/upload.html", text: "改開本機版上傳頁（http://localhost:3000）" })
+        ])
       ];
     var engineCard = card("教材上傳引擎", "教材的 OCR 與 AI 交叉審議在這台電腦的 Docker 內執行（原 AI-Study-Council）。尚未啟動請先執行 ai-engine\\council\\啟動教材上傳引擎.bat。",
       engineControls.concat([

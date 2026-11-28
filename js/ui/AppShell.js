@@ -24,6 +24,13 @@ AHS.AppShell = (function () {
     upload: "upload.html"
   };
 
+  /* 2026-11-28：GitHub Pages（https）上的 upload.html 連不到這台電腦的教材上傳引擎
+     ——Chrome 的「本機網路存取」會擋公開網站呼叫 localhost，頁面只會顯示「無法連線」。
+     線上版的「教材上傳」直接開引擎自己提供的那一頁（同網域，不受限制；需在該頁重新登入）。 */
+  if (window.location && window.location.protocol === "https:") {
+    ROUTES.upload = "http://localhost:3000/upload.html";
+  }
+
   /* ---- Notification menu (HOME-F009) ------------------------------------
      Extends the existing bell icon-button (already in topbar) with a
      real dropdown driven by AHS.AppConfig.notifications. Empty state reuses
