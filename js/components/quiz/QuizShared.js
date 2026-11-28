@@ -22,7 +22,7 @@ AHS.QuizParts = AHS.QuizParts || {};
     return sup ? el("div", { class: cls }, [sup]) : null;
   }
 
-  var DIFF_TONE = { "易": "#22b573", "易~中等": "#22b573", "中等": "#f59e0b", "難": "#ef4444" };
+  var DIFF_TONE = { "易": "#22b573", "易~中等": "#22b573", "中": "#f59e0b", "中等": "#f59e0b", "難": "#ef4444" };
 
   /* difficultyBadge(label) — Sprint AI-137: a small colored pill (reuses
      the existing `.chip` visual treatment, same DIFF_TONE palette
@@ -108,10 +108,13 @@ AHS.QuizParts = AHS.QuizParts || {};
      (same "contains" discipline itemMatchesFilters() above already uses
      for this exact reason). -1 (never guessed as a rank) when the
      record genuinely carries no difficulty text at all. */
+  /* 2026-11-28：題庫有兩種寫法——1,074 題標「中」、721 題標「中等」（引擎與雲端產題都用「中」）。
+     原本只認「中等」，「中」被當成沒有難度（-1），選「中等」時對不到任何題目，
+     filterByDifficulty 就退回列出最難的題目（tm_92、tm_116 實測）。 */
   function difficultyRank(label) {
     if (!label) { return -1; }
     if (label.indexOf("難") !== -1) { return 2; }
-    if (label.indexOf("中等") !== -1) { return 1; }
+    if (label.indexOf("中") !== -1) { return 1; }
     if (label.indexOf("易") !== -1) { return 0; }
     return -1;
   }
