@@ -123,14 +123,34 @@ describe('draftReview：程式逐句對照 SOURCE＋Claude 最後檢核', () => 
 });
 
 describe('POST /api/local-ai/jobs', () => {
-  test('drafts：本機模型 A、B 依序各寫一份，回傳兩份與模型名稱', async () => {
-    fakeOllama((body) => `①核心概念\n${body.model} 的初稿`);
+  test('drafts：本機模型 A、B 依序各寫一份；格式不全時各補寫一次，仍不全的列在 formatIssues（11/28 B1）', async () => {
+    fakeOllama((body) => (/【補寫】/.test(body.prompt) ? `${body.model} 的補寫` : `①核心概念\n${body.model} 的初稿`));
     const res = await request(app).post('/api/local-ai/jobs').send({ kind: 'drafts', prompt: '出題 Prompt' });
     expect(res.status).toBe(202);
     const job = await waitJob(res.body.jobId);
     expect(job.status).toBe('completed');
-    expect(job.result).toEqual({ localA: '①核心概念\nqwen3:8b 的初稿', localB: '①核心概念\ngpt-oss:20b 的初稿', models: { localA: 'qwen3:8b', localB: 'gpt-oss:20b' } });
-    expect(calls.map((c) => c.url)).toEqual(['http://ollama.test:11434/api/generate', 'http://ollama.test:11434/api/generate']);
+    expect(job.result.localA).toBe('①核心概念\nqwen3:8b 的初稿\n\nqwen3:8b 的補寫\n');
+    expect(job.result.localB).toBe('①核心概念\ngpt-oss:20b 的初稿\n\ngpt-oss:20b 的補寫\n');
+    expect(job.result.models).toEqual({ localA: 'qwen3:8b', localB: 'gpt-oss:20b' });
+    expect(job.result.repaired).toEqual({ localA: true, localB: true });
+    expect(job.result.formatIssues.localA.join()).toMatch(/缺少章節：②章節摘要/);
+    expect(job.result.formatIssues.localA.join()).toMatch(/缺少練習題：Q1/);
+    // 初稿 A、補寫 A、初稿 B、補寫 B；補寫只要求缺漏的部分
+    expect(calls.map((c) => c.url)).toEqual(Array(4).fill('http://ollama.test:11434/api/generate'));
+    expect(calls[1].body.prompt).toMatch(/這次只輸出缺漏的部分/);
+  });
+
+  test('drafts：格式完整的初稿不補寫', async () => {
+    const C = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮';
+    const T = ['核心概念', '章節摘要', '重點詞彙', '文意理解', '修辭手法', '文化脈絡', '作者背景', '段落結構', '延伸思考', '易混淆概念', '常考題型', '易錯陷阱', '跨課連結', 'Cross Review', 'Final Score'];
+    const item = (k, n) => `**${k}${n}.** 題幹\n(A) 甲　(B) 乙　(C) 丙　(D) 丁\n答案：B\n詳解：因為乙。`;
+    const full = T.map((t, i) => `## ${C[i]}${t}\n${i === 10 ? Array.from({ length: 30 }, (_, j) => item('Q', j + 1)).join('\n\n') : '內容'}`).join('\n\n') +
+      `\n\n## 變式題\n${Array.from({ length: 30 }, (_, j) => item('V', j + 1)).join('\n\n')}`;
+    fakeOllama(() => full);
+    const job = await waitJob((await request(app).post('/api/local-ai/jobs').send({ kind: 'drafts', prompt: '出題 Prompt' })).body.jobId);
+    expect(job.result.formatIssues).toEqual({ localA: [], localB: [] });
+    expect(job.result.repaired).toEqual({ localA: false, localB: false });
+    expect(calls).toHaveLength(2);
   });
 
   test('參數檢查：缺 Prompt、未知 kind、轉錄找不到上傳檔或不是照片', async () => {

@@ -21,6 +21,7 @@ const { createWrongBookNotesJob } = require('./platform/WrongBookNotesJob');
 const practiceAdjudicator = require('./services/practiceAdjudicator');
 const ocrHelp = require('./services/ocrHelp');
 const localWriter = require('./services/localWriter');
+const draftFormat = require('./services/draftFormat');
 const draftReview = require('./services/draftReview');
 const figureCards = require('./services/figureCards');
 const figureRecheck = require('./services/figureRecheck');
@@ -1195,13 +1196,33 @@ function transcribePagesFor(sessionId, files) {
   });
 }
 
+/* 2026-11-28 AHS-B1：初稿寫完先做格式檢查（services/draftFormat.js）；有缺節、缺題或題目欄位不全時，
+   只請同一個模型補寫缺漏部分一次並接在原稿後面，仍有缺漏就列在 formatIssues 給上傳頁顯示。 */
+async function writeCheckedDraft(job, prompt, which) {
+  job.step = which;
+  const first = await localWriter.writeDraft(prompt, which);
+  let text = first.text;
+  let report = draftFormat.checkDraft(text);
+  const repair = draftFormat.repairPrompt(prompt, report);
+  let repaired = false;
+  if (repair) {
+    job.step = `${which}（補寫）`;
+    const extra = await localWriter.writeDraft(repair, which);
+    text = draftFormat.appendRepair(text, extra.text);
+    report = draftFormat.checkDraft(text);
+    repaired = true;
+  }
+  return { text, model: first.model, repaired, issues: draftFormat.summary(report) };
+}
+
 async function runLocalJob(job, body) {
   if (body.kind === 'drafts') {
-    job.step = 'A';
-    const a = await localWriter.writeDraft(body.prompt, 'A');
-    job.step = 'B';
-    const b = await localWriter.writeDraft(body.prompt, 'B');
-    return { localA: a.text, localB: b.text, models: { localA: a.model, localB: b.model } };
+    const a = await writeCheckedDraft(job, body.prompt, 'A');
+    const b = await writeCheckedDraft(job, body.prompt, 'B');
+    return {
+      localA: a.text, localB: b.text, models: { localA: a.model, localB: b.model },
+      formatIssues: { localA: a.issues, localB: b.issues }, repaired: { localA: a.repaired, localB: b.repaired },
+    };
   }
   if (body.kind === 'author') return localWriter.writeDraft(body.prompt, 'A');
   if (body.kind === 'solve') return localWriter.writeDraft(body.prompt, 'B');

@@ -655,6 +655,9 @@ AHS.CouncilUpload = (function () {
         "",
         "【15 大章節架構】（請依序完整輸出，標題請完全比照下列格式，含圈號數字）"
       ].concat(sectionsFor(m.subject)).concat([
+        /* 2026-11-28 AHS-B1：11/26 實跑本機模型 B 只寫 12/15 節、標題「# ①」與「①」混用。 */
+        "- 15 節都必須輸出，不可省略任何一節；沒有內容的節寫「SOURCE 未提供」。",
+        "- 每一節標題一律寫成「## ①核心概念」這種格式（兩個井號＋圈號數字＋章節名稱），不要用其他層級、粗體或省略井號。",
         ""
       ]).concat(STEM_SUBJECTS.indexOf(m.subject) !== -1 ? STEM_RULES : []).concat([
         "【練習題格式】（學習平台會自動匯入題庫，格式請務必一致）",
@@ -677,7 +680,7 @@ AHS.CouncilUpload = (function () {
         "【變式題】",
         "- 在全部 30 題之後，另起一個標題為「## 變式題」的章節，替每一題各出 1 題變式題（V1～V30，V5 代表 Q5 的變式題）。",
         "- 變式題與原題考同一個知識點與題型，但要換情境、數值或選項，題幹不可與原題相同；仍是單選、只有一個正解。",
-        "- 變式題格式與一般題相同，答案與詳解必須寫在該題下方：",
+        "- 變式題格式與一般題相同，每一題都必須有 (A)(B)(C)(D) 選項、答案與詳解，寫在該題下方；只有題幹的變式題無法收錄：",
         "**V1.** 題幹",
         "(A) 選項　(B) 選項　(C) 選項　(D) 選項",
         "答案：B",
@@ -804,7 +807,13 @@ AHS.CouncilUpload = (function () {
         writeBtn.disabled = false;
         drafts.localA.value = result.localA;
         drafts.localB.value = result.localB;
-        status(promptStatus, "初稿完成（A：" + result.models.localA + "、B：" + result.models.localB + "）。可先檢視，再執行步驟 4 的交叉審議。", "ok");
+        /* 2026-11-28 AHS-B1：引擎檢查初稿格式，缺漏時已請模型補寫一次；仍有缺漏就列出來。 */
+        var issues = result.formatIssues || {};
+        var lines = [["A", issues.localA], ["B", issues.localB]].filter(function (p) { return p[1] && p[1].length; })
+          .map(function (p) { return "初稿 " + p[0] + "：" + p[1].join("；"); });
+        status(promptStatus, "初稿完成（A：" + result.models.localA + "、B：" + result.models.localB + "）。" +
+          (lines.length ? "格式仍有缺漏（已自動補寫一次）——" + lines.join("。") + "。可手動補齊後再執行步驟 4。" : "可先檢視，再執行步驟 4 的交叉審議。"),
+          lines.length ? "error" : "ok");
       }, function (e) { writeBtn.disabled = false; status(promptStatus, "本機模型撰寫初稿失敗：" + e.message, "error"); });
     });
     var draftsCard = card("3　本機初稿", "兩個不同的本機模型（A、B）依同一份 Prompt 各寫一份初稿，全部在這台電腦產生；Claude 不寫初稿，只做最後檢核。", [
