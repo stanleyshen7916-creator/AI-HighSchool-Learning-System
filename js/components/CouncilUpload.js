@@ -48,6 +48,12 @@ AHS.CouncilUpload = (function () {
   function sectionsFor(subject) {
     return STEM_SUBJECTS.indexOf(subject) !== -1 ? STEM_SECTIONS : COUNCIL_SECTIONS;
   }
+  /* 2026-11-28：送給本機模型的教材本文拿掉 MinerU 的圖片連結 ![](images/<64 位雜湊>.jpg)。本機文字模型看不到圖，
+     出題引用圖用的是【圖：檔名】，這些連結只占長度：1-1 空間概念 61 個連結約 4,300 字，
+     讓 Prompt 超過本機模型的 context，寫到一半把開頭的指示擠掉。教材本文欄位本身不動（最後檢核仍對照完整本文）。 */
+  function promptSourceText(text) {
+    return String(text || "").replace(/!\[[^\]\n]*\]\(images\/[^)\s]+\)[ \t]*\n?/g, "").replace(/\n{3,}/g, "\n\n").trim();
+  }
   var STEM_RULES = [
     "【數理科規則】",
     /* 2026-11-18（Stanley 決定走 Unicode 路線）：學習平台前端目前沒有 LaTeX 渲染（沒有 KaTeX／MathJax），
@@ -716,7 +722,7 @@ AHS.CouncilUpload = (function () {
         "",
         "【教材本文（SOURCE）】",
         "<<<",
-        sourceText.value.trim() || "（尚未提供教材本文）",
+        promptSourceText(sourceText.value) || "（尚未提供教材本文）",
         ">>>",
         "",
         "【多模態圖片對齊指引】",
@@ -1419,5 +1425,5 @@ AHS.CouncilUpload = (function () {
     return root;
   }
 
-  return { create: create, sectionsFor: sectionsFor };
+  return { create: create, sectionsFor: sectionsFor, promptSourceText: promptSourceText };
 })();
