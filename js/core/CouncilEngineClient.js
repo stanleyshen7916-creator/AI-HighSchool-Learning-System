@@ -64,9 +64,20 @@ AHS.CouncilEngineClient = (function () {
     }).catch(function () {
       return {
         data: null,
-        error: { status: 0, message: "無法連線到教材上傳引擎（" + displayUrl() + "）。請先在這台電腦執行「啟動教材上傳引擎.bat」。" }
+        error: { status: 0, message: offlineMessage() }
       };
     });
+  }
+
+  // An https page (GitHub Pages) reaching http://localhost also needs Chrome's
+  // "Local network access" permission for the site; when it is blocked the
+  // engine is running but every request fails exactly like an engine that is down.
+  function offlineMessage() {
+    var msg = "無法連線到教材上傳引擎（" + displayUrl() + "）。";
+    if ((window.location || {}).protocol === "https:") {
+      msg += "如果引擎已經在執行，通常是 Chrome 封鎖了這個網站存取本機網路：按網址列左邊的網站設定圖示，把「本機網路存取」改為「允許」後重新整理；或改開 " + DEFAULT_URL + "/upload.html。如果引擎還沒啟動，";
+    }
+    return msg + "請先在這台電腦執行「啟動教材上傳引擎.bat」。";
   }
 
   function enc(value) { return encodeURIComponent(value); }
