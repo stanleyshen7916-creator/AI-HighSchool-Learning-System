@@ -41,7 +41,7 @@ function seededRandom(seed) {
 }
 
 function loadPage(htmlFile, { workspace, seed, split }) {
-  const html = fs.readFileSync(path.join(REPO, htmlFile), "utf8");
+  const html = fs.readFileSync(path.join(REPO, htmlFile.split("?")[0]), "utf8");
   const errors = [];
   const vc = new VirtualConsole();
   vc.on("error", (m) => errors.push(String(m)));
@@ -103,7 +103,13 @@ function loadPage(htmlFile, { workspace, seed, split }) {
 function settle() { return new Promise((r) => setTimeout(r, 50)); }
 
 /* Strip ids that come from a counter / clock so two runs compare on content only. */
-function norm(html) { return String(html).replace(/\b(id|for|aria-controls|aria-labelledby|aria-describedby)="[^"]*"/g, ""); }
+/* Also drops the home page's random decorations (quote, 巧巧老師 pose): how many Math.random() calls happen before
+   them depends on async timing, and neither comes from the teaching materials. */
+function norm(html) {
+  return String(html).replace(/\b(id|for|aria-controls|aria-labelledby|aria-describedby)="[^"]*"/g, "")
+    .replace(/(<p class="hero-quote">)[^<]*(<\/p>)/g, "$1$2")
+    .replace(/src="assets\/avatars\/[^"]*"/g, "").replace(/alt="AI 巧巧老師[^"]*"/g, "");
+}
 
 async function wrongBookSnapshot(workspace, items, split) {
   const { w, errors, requested, supplements } = loadPage("wrongbook.html", { workspace, seed: { wrongBookRuntime: { items, seq: items.length } }, split });
@@ -215,6 +221,45 @@ function wrongBookItemsFor(workspace, extra) {
     const wsIds = INDEX.filter((r) => r.material.school === ws.schoolId && ws.semesterIds.indexOf(r.material.semester) !== -1).map((r) => r.materialId).sort();
     check(label + "：只載入這個學校／學期的 " + wsIds.length + " 份教材", JSON.stringify(ms.requested) === JSON.stringify(wsIds));
     check(label + "：兩種模式都沒有錯誤", !mf.errors.length && !ms.errors.length, mf.errors.concat(ms.errors).join(" | "));
+  }
+
+  /* 2026-11-28 per-page preload: every other student page, the whole rendered page in both modes, with a wrong book
+     and attempt history in the session (the home tips, weak-unit card and tutor read those), plus each page opened on
+     one material of the workspace (materials / summary / quiz detail). */
+  console.log("\n[各頁整頁比對]");
+  const PAGES = ["index.html", "learning.html", "materials.html", "quiz.html", "review.html", "summary.html", "tutor.html"];
+  for (const ws of workspaces) {
+    const label = ws.schoolId + "/" + ws.semesterIds.join("+");
+    /* plus a few records from another school / semester (a wrong book synced from the cloud can hold those) */
+    const other = workspaces.filter((o) => o !== ws)[0];
+    const items = wrongBookItemsFor(ws).concat(wrongBookItemsFor(other).slice(0, 3).map((it) => Object.assign({}, it, { id: it.id + "_x" })));
+    const attempts = {};
+    items.forEach((it, i) => {
+      attempts["kp-" + i] = { subject: "history", materialId: "", attempts: [{ correct: i % 2 === 0, day: "2026/11/27", ts: new Date(Date.UTC(2026, 10, 27, 1, 0, i)).toISOString(), materialId: it.materialId, questionId: it.questionId }] };
+    });
+    const seed = { wrongBookRuntime: { items, seq: items.length }, knowledgeMasteryRuntime: { points: attempts } };
+    const wsIds = INDEX.filter((r) => r.material.school === ws.schoolId && ws.semesterIds.indexOf(r.material.semester) !== -1).map((r) => r.materialId);
+    const firstId = wsIds[0];
+    for (const page of PAGES) {
+      const a = loadPage(page, { workspace: ws, seed, split: false });
+      const b = loadPage(page, { workspace: ws, seed, split: true });
+      await settle();
+      const same = norm(a.w.document.body.innerHTML) === norm(b.w.document.body.innerHTML);
+      const req = [...new Set(b.requested)];
+      check(label + "：" + page + " 整頁相同（只載入 " + req.length + " 份）", same && !a.errors.length && !b.errors.length,
+        (same ? "" : "畫面不同；") + a.errors.concat(b.errors).join(" | "));
+      /* deep link to one material: the runtime id is the same in both modes (records come from the index) */
+      const rid = a.w.AHS.TeachingMaterialLoader ? a.w.AHS.TeachingMaterialLoader.runtimeIdFor(firstId) : null;
+      const q = { "materials.html": "?id=" + rid, "summary.html": "?materialId=" + rid, "quiz.html": "?mode=practice&materialId=" + rid }[page];
+      if (q && rid) {
+        const c = loadPage(page + q, { workspace: ws, seed, split: false });
+        const d = loadPage(page + q, { workspace: ws, seed, split: true });
+        await settle();
+        const same2 = norm(c.w.document.body.innerHTML) === norm(d.w.document.body.innerHTML);
+        check(label + "：" + page + q + " 整頁相同", same2 && !c.errors.length && !d.errors.length,
+          (same2 ? "" : "畫面不同；") + c.errors.concat(d.errors).join(" | "));
+      }
+    }
   }
 
   console.log("\n[wrongbook.html] 有一筆無法對應到教材的紀錄 → 全部載入");

@@ -15,6 +15,8 @@
                            shows what it has instead of a blank screen.
      allIds()           -> every package material id
      workspaceIds()     -> the ids the current Workspace (school + semester) may see; same rule as the Loader
+     wrongBookIds()     -> the ids the wrong-book records come from, or "all" when one cannot be tied to a material
+     union(a, b, ...)   -> merged id lists ("all" wins)
      materialIdOfQuestion(questionId) -> "tm_N" for a package question id ("tm_N_q.."), else null
      isPending(questionId) -> true when that package question's material is in the index but its content is not loaded
                            yet (never true while the full array is on the page): code that runs before ready() must not
@@ -75,6 +77,34 @@ AHS.TeachingMaterialSource = (function () {
       if (m.semester && (ws.semesterIds || []).indexOf(m.semester) === -1) { return false; }
       return true;
     }).map(function (e) { return e.materialId; });
+  }
+
+  /* wrongBookIds() — the materials the student's wrong-book records come from (they may be synced from another device
+     or semester). A record that cannot be tied to a package material (repository track, no question id) can only be
+     looked up by its text across every material, so then the answer is "all". */
+  function wrongBookIds() {
+    var W = AHS.WrongBookRuntime;
+    var L = AHS.TeachingMaterialLoader;
+    if (!W || typeof W.list !== "function") { return "all"; }
+    var ids = {};
+    var all = false;
+    W.list().forEach(function (item) {
+      var id = materialIdOfQuestion(item.questionId) ||
+        (/^tm_\d+$/.test(String(item.materialId || "")) ? item.materialId : null) ||
+        (L && typeof L.sourceIdFor === "function" && item.materialId ? L.sourceIdFor(item.materialId) : null);
+      if (id && /^tm_\d+$/.test(id)) { ids[id] = true; } else { all = true; }
+    });
+    return all ? "all" : Object.keys(ids);
+  }
+
+  /* union(a, b, ...) — id lists merged; "all" wins. */
+  function union() {
+    var out = {};
+    for (var i = 0; i < arguments.length; i++) {
+      if (arguments[i] === "all") { return "all"; }
+      (arguments[i] || []).forEach(function (id) { out[id] = true; });
+    }
+    return Object.keys(out);
   }
 
   /* A question's id starts with the package it was written for; a supplement package merged into another material
@@ -178,6 +208,8 @@ AHS.TeachingMaterialSource = (function () {
     ready: ready,
     allIds: allIds,
     workspaceIds: workspaceIds,
+    wrongBookIds: wrongBookIds,
+    union: union,
     materialIdOfQuestion: materialIdOfQuestion,
     isPending: isPending,
     onContent: onContent,
