@@ -48,6 +48,8 @@
   color: var(--text);
   background-color: var(--card);
   cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
 }
 .upl-btn:hover { border-color: var(--brand); color: var(--brand-ink); }
 .upl-btn:disabled { opacity: 0.55; cursor: not-allowed; }
