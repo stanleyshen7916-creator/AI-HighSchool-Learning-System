@@ -113,6 +113,11 @@ AHS.CouncilUpload = (function () {
     return node;
   }
 
+  /* 引擎接受的上傳格式（ai-engine/council/server.js ALLOWED_UPLOAD_EXTENSIONS）；
+     .heic／.heif（iPhone 照片）由引擎轉成 JPEG（2026-11-28）。 */
+  var UPLOAD_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".heic", ".heif", ".md", ".txt"];
+  var UPLOAD_ACCEPT = UPLOAD_EXTENSIONS.join(",");
+
   function button(text, variant, onClick) {
     var node = el("button", { type: "button", class: "upl-btn" + (variant ? " upl-btn--" + variant : ""), text: text });
     node.addEventListener("click", onClick);
@@ -480,7 +485,7 @@ AHS.CouncilUpload = (function () {
     ]);
 
     /* ---- 2. 上傳原始檔 --------------------------------------------------- */
-    var fileInput = el("input", { class: "upl-input", type: "file", multiple: "multiple", accept: ".pdf,.png,.jpg,.jpeg,.md,.txt" });
+    var fileInput = el("input", { class: "upl-input", type: "file", multiple: "multiple", accept: UPLOAD_ACCEPT });
     var uploadStatus = el("p", { class: "upl-status" });
     var sourceText = el("textarea", { class: "upl-textarea", rows: "10", placeholder: "上傳後會出現解析出的教材本文，可直接修正 OCR 錯字；也可以直接貼上 MinerU 解析好的 Markdown。" });
     var imagesSlot = el("div", { class: "upl-images" });
@@ -507,6 +512,16 @@ AHS.CouncilUpload = (function () {
     }
     var uploadBtn = button("上傳並解析", "primary", function () {
       if (!fileInput.files || !fileInput.files.length) { status(uploadStatus, "請先選擇檔案。", "error"); return; }
+      /* 2026-11-28：不支援的格式先在這裡擋下。送到引擎才被拒絕時，瀏覽器還在送其他檔案，
+         Chrome 只看到連線被切斷，會誤顯示「無法連線到教材上傳引擎」。 */
+      var unsupported = Array.prototype.filter.call(fileInput.files, function (f) {
+        var m = /\.[^.]+$/.exec(f.name);
+        return !m || UPLOAD_EXTENSIONS.indexOf(m[0].toLowerCase()) === -1;
+      }).map(function (f) { return f.name; });
+      if (unsupported.length) {
+        status(uploadStatus, "不支援這些檔案的格式：" + unsupported.join("、") + "。可上傳 " + UPLOAD_EXTENSIONS.join(" ") + "。", "error");
+        return;
+      }
       uploadBtn.disabled = true;
       var progressId = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       status(uploadStatus, "解析中…掃描檔會交給 MinerU OCR，每頁可能需要一分鐘以上。");
@@ -779,7 +794,7 @@ AHS.CouncilUpload = (function () {
       el("div", { class: "upl-actions" }, [ocrMergeBtn]),
       ocrConflicts
     ]);
-    var uploadCard = card("2　上傳原始檔", "支援 PDF、圖片（掃描或拍照的課本頁）與 MinerU 解析好的 .md／.txt；多個檔案依檔名順序合併。", [
+    var uploadCard = card("2　上傳原始檔", "支援 PDF、圖片（掃描或拍照的課本頁，含 iPhone 的 HEIC 照片）與 MinerU 解析好的 .md／.txt；多個檔案依檔名順序合併。", [
       field("選擇檔案", fileInput),
       el("div", { class: "upl-actions" }, [uploadBtn]),
       uploadStatus,
