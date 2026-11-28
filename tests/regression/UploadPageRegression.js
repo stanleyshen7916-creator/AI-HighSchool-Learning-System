@@ -322,6 +322,7 @@ async function main() {
     const { doc: d2, consoleErrors: e2 } = loadUpload("admin", "down");
     await settle();
     check("顯示啟動提示", d2.body.textContent.indexOf("請先在這台電腦執行「啟動教材上傳引擎.bat」") !== -1);
+    check("https 頁面另外提示 Chrome 本機網路存取權限與本機網址", d2.body.textContent.indexOf("「本機網路存取」改為「允許」") !== -1 && d2.body.textContent.indexOf("http://localhost:3000/upload.html") !== -1);
     check("Console errors = 0", e2.length === 0);
   }
 
