@@ -28,7 +28,8 @@ const LESSONS = [
     rule: '詳解明寫「故選／答案為／正解」某選項時，必須與答案一致',
     check: (q) => {
       const ex = String(q.explanation || '');
-      const said = [...ex.matchAll(/(?:故選|答案(?:為|是)|正解(?:為|是)?|應選)\s*[（(]?\s*([A-H])\s*[)）]?/g)].map((m) => m[1]);
+      // 11/28：也抓「正確選項為／是 X」「答案應為 X」（tm_112_q27 等 5 題詳解寫「正確選項為 C」漏網）
+      const said = [...ex.matchAll(/(?:故選|(?:正確)?(?:答案|選項)(?:應)?(?:為|是)|正解(?:為|是)?|應選)\s*[：:]?\s*[（(]?\s*([A-H])\s*[)）]?(?![A-Za-z])/g)].map((m) => m[1]);
       const want = answerLetter(q);
       if (!said.length || !want) return [];
       return said.some((x) => x !== want) ? [`詳解寫選 ${said.join('、')}，答案是 ${want}`] : [];

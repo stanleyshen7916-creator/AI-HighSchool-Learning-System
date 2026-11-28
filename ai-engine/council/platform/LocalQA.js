@@ -59,7 +59,9 @@ function checkPrompt(q, meta, examples) {
   return [
     '你是高中題目審查員，逐項檢查下列單選題，每項只回一行，依照格式：',
     'EXPLANATION: YES 或 NO（詳解的結論是否支持標準答案，沒有自相矛盾）',
-    'CORRECT: 你認為正確的所有選項字母，以逗號分隔（例如 B 或 A,C）',
+    q.type === 'multiple_choice'
+      ? 'CORRECT: 你認為正確的所有選項字母，以逗號分隔（例如 A,C）'
+      : 'CORRECT: 你認為正確的那一個選項字母（單選題只寫一個字母，例如 B）',
     'ABSURD: NONE 或 一看就錯、沒有誘答力的錯誤選項字母',
     'SCOPE: IN 或 OUT（題目是否屬於本單元、符合高中程度、沒有超綱）',
     'BLOOM: 記憶、理解、應用、分析 擇一（題目主要考的認知層次）',
@@ -72,9 +74,24 @@ function checkPrompt(q, meta, examples) {
     `詳解：${q.explanation || ''}`,
   ].filter((l) => l !== '').join('\n');
 }
-function parseCheck(reply) {
+/* 11/28（cloud 11/27）：CORRECT 只接受符合題型的格式——單選題只能一個字母、字母不能超出選項、
+   一次列出全部選項（gpt-oss 在 tm_112 重跑時把五個選項全列）都算無效（correctInvalid），由呼叫端重問一次。 */
+function correctLetters(raw, q) {
+  if (!raw) return { letters: [], invalid: false };
+  const text = String(raw).trim();
+  if (!/^[（(]?[A-Ha-h][）)]?([\s,，、]+[（(]?[A-Ha-h][）)]?)*$/.test(text)) return { letters: [], invalid: true };
+  const letters = [...new Set(text.toUpperCase().match(/[A-H]/g) || [])];
+  const n = q && Array.isArray(q.options) ? q.options.length : 0;
+  const keys = 'ABCDEFGH'.slice(0, n || 8).split('');
+  const outOfRange = letters.some((l) => keys.indexOf(l) === -1);
+  const all = n > 1 && letters.length >= n;
+  const tooMany = (!q || q.type !== 'multiple_choice') && letters.length > 1;
+  return { letters, invalid: outOfRange || all || tooMany };
+}
+function parseCheck(reply, q) {
   const ex = field(reply, 'EXPLANATION');
   const correct = field(reply, 'CORRECT');
+  const cl = correctLetters(correct, q);
   const absurd = field(reply, 'ABSURD');
   const scope = field(reply, 'SCOPE');
   const bloom = field(reply, 'BLOOM');
@@ -82,7 +99,8 @@ function parseCheck(reply) {
   return {
     missing,
     explanation: ex && /^YES/i.test(ex),
-    correct: correct ? [...new Set((correct.toUpperCase().match(/[A-H]/g) || []))] : [],
+    correct: cl.invalid ? [] : cl.letters,
+    correctInvalid: cl.invalid,
     absurd: absurd && !/NONE|無/i.test(absurd) ? (absurd.toUpperCase().match(/[A-H]/g) || []) : [],
     scope: scope && /^IN/i.test(scope),
     bloom: bloom ? (['記憶', '理解', '應用', '分析'].find((l) => bloom.includes(l)) || null) : null,
@@ -108,9 +126,16 @@ async function gateLocalQA(q, ctx) {
 
   // 題目自帶科目時（例如跨科目借來的金標準原題）用題目自己的科目，不要用這批教材的科目去判斷是否超綱。
   const meta = Object.assign({}, ctx.meta || {}, q.subject ? { subject: q.subject, grade: q.grade || (ctx.meta || {}).grade } : {});
-  let chk = parseCheck(await ctx.review(checkPrompt(q, meta, ctx.examples), { temperature: 0 }));
-  if (chk.missing.length) chk = parseCheck(await ctx.review(checkPrompt(q, meta, ctx.examples) +'\n\n（上一次回覆缺少欄位，請完整回覆五行。）', { temperature: 0 }));
+  let chk = parseCheck(await ctx.review(checkPrompt(q, meta, ctx.examples), { temperature: 0 }), q);
+  if (chk.missing.length || chk.correctInvalid) {
+    const why = chk.missing.length ? '（上一次回覆缺少欄位，請完整回覆五行。）'
+      : (q.type === 'multiple_choice' ? '（上一次 CORRECT 欄格式不對：只寫你認為正確的選項字母，不要列出全部選項。）'
+        : '（上一次 CORRECT 欄格式不對：這是單選題，只寫一個字母。）');
+    chk = parseCheck(await ctx.review(checkPrompt(q, meta, ctx.examples) + '\n\n' + why, { temperature: 0 }), q);
+  }
   if (chk.missing.length) return { status: 'fail', reasons: [`審查回覆缺欄位：${chk.missing.join('、')}（fail-closed）`], review, detail: { consistency: cons } };
+  // 重問後 CORRECT 仍無效：不採用這一欄（不據以淘汰），標待複核交 Claude 抽樣。
+  if (chk.correctInvalid) review.push('審查模型的 CORRECT 欄重問後仍無效（例如一次列出全部選項），未採用，待複核');
   if (chk.correct.length && !chk.correct.includes(cons.want)) reasons.push(`審查認為正確選項是 ${chk.correct.join('、')}，答案是 ${cons.want}`);
   // 11/27 金標準誤殺：單次（溫度 0）的模型判斷不能單獨淘汰題目。審題模型 3 次作答都和答案一致、
   // 而且認同答案時，「詳解不支持／不只一個正確選項／超綱」只標待複核（一定進 Claude 抽樣）；
@@ -239,7 +264,7 @@ function nextSamplingRate(history, cfg) {
 }
 
 module.exports = {
-  gateLocalQA, consistency, checkPrompt, parseCheck, answerLetter, figureProblem,
+  gateLocalQA, consistency, checkPrompt, parseCheck, correctLetters, answerLetter, figureProblem,
   goldEligible, buildGoldItems, mixGold, scoreGold,
   selectSample, buildClaudePack, parseClaudeReview, applyClaudeReview, nextSamplingRate,
 };

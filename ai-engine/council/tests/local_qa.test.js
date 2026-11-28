@@ -39,8 +39,12 @@ describe('關卡 5 本機自主 QA', () => {
     expect(r.status).toBe('review');
     expect(r.review.join()).toMatch(/詳解不支持.*待複核/);
   });
-  test('3 選項品質：兩個正確選項（未佐證）→ 淘汰；以上皆是 → 淘汰（不呼叫模型）；沒有誘答力 → 只記錄（notes），仍通過', async () => {
-    expect((await L.gateLocalQA(q(), { review: fakeReview({ answers: ['B', 'D', 'B'], check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') }), cfg })).reasons.join()).toMatch(/不只一個正確選項/);
+  test('3 選項品質：單選題 CORRECT 填兩個字母 → 無效、重問，仍無效 → 不採用、待複核；以上皆是 → 淘汰（不呼叫模型）；沒有誘答力 → 只記錄（notes），仍通過', async () => {
+    const two = fakeReview({ answers: ['B', 'D', 'B'], check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') });
+    const r2 = await L.gateLocalQA(q(), { review: two, cfg });
+    expect(r2.status).toBe('review');
+    expect(r2.review.join()).toMatch(/CORRECT 欄重問後仍無效/);
+    expect(two.calls.filter((c) => /只寫一個字母。）$/.test(c.prompt))).toHaveLength(1);
     expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('CORRECT: B', 'CORRECT: B, D') }), cfg })).status).toBe('review');
     expect((await L.gateLocalQA(q(), { review: fakeReview({ check: GOOD.replace('CORRECT: B', 'CORRECT: D') }), cfg })).reasons.join()).toMatch(/正確選項是 D，答案是 B/);
     const lazy = fakeReview();
@@ -75,6 +79,27 @@ describe('關卡 5 本機自主 QA', () => {
     expect(r.reasons.join()).toMatch(/缺欄位：SCOPE、BLOOM/);
     expect(half.calls.filter((c) => /缺少欄位/.test(c.prompt))).toHaveLength(1);
     expect((await L.gateLocalQA(q(), { cfg })).status).toBe('fail');
+  });
+  test('CORRECT 欄解析：只接受符合題型的格式（11/28，cloud 11/27）', async () => {
+    const single = q();
+    const multi = q({ type: 'multiple_choice', answer: '(A)(C)' });
+    expect(L.correctLetters('B', single)).toEqual({ letters: ['B'], invalid: false });
+    expect(L.correctLetters('(B)', single)).toEqual({ letters: ['B'], invalid: false });
+    expect(L.correctLetters('B, D', single).invalid).toBe(true);            // 單選只能一個字母
+    expect(L.correctLetters('A,B,C,D', single).invalid).toBe(true);         // 一次列出全部選項
+    expect(L.correctLetters('A,B,C,D', multi).invalid).toBe(true);
+    expect(L.correctLetters('A, C', multi)).toEqual({ letters: ['A', 'C'], invalid: false });
+    expect(L.correctLetters('E', single).invalid).toBe(true);               // 超出 4 個選項
+    expect(L.correctLetters('我認為是 B', single).invalid).toBe(true);       // 不是純字母
+    expect(L.checkPrompt(single, {})).toMatch(/單選題只寫一個字母/);
+    expect(L.checkPrompt(multi, {})).toMatch(/所有選項字母/);
+    // 第一次列出全部選項、重問後只回一個字母 → 採用重問結果，照常判斷
+    let n = 0;
+    const fixed = async (prompt) => (/ANSWER: 字母/.test(prompt) ? 'ANSWER: B'
+      : (n++ === 0 ? GOOD.replace('CORRECT: B', 'CORRECT: A, B, C, D') : GOOD));
+    const r = await L.gateLocalQA(q(), { review: fixed, cfg });
+    expect(r.status).toBe('pass');
+    expect(n).toBe(2);
   });
   test('漏檢反例會放進審查提示', () => {
     expect(L.checkPrompt(q(), {}, ['tm_1_q6：答案應為 C'])).toMatch(/過去本機審查放行、但後來被判定有錯[\s\S]*tm_1_q6/);

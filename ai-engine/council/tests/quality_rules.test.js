@@ -113,6 +113,12 @@ describe('F 教訓庫', () => {
     expect(runLessons(q({ explanation: '護民官保障平民，因此正確答案為 C。' })).join()).toMatch(/\[L002\] 詳解寫選 C，答案是 B/);
     expect(runLessons(q({ explanation: '護民官保障平民，因此正確答案為 「護民官」。' }))).toEqual([]);
   });
+  test('L002 也擋「正確選項為 C」「答案應為 C」（11/28：tm_112_q27 等 5 題漏網）', () => {
+    expect(runLessons(q({ explanation: '護民官保障平民，因此正確選項為 C。' })).join()).toMatch(/\[L002\] 詳解寫選 C，答案是 B/);
+    expect(runLessons(q({ explanation: '護民官保障平民，答案應為 (C)。' })).join()).toMatch(/\[L002\] 詳解寫選 C，答案是 B/);
+    expect(runLessons(q({ explanation: '護民官保障平民，因此正確選項為 B。' }))).toEqual([]);
+    expect(runLessons(q({ explanation: '選項是 Apple 的譯名' }))).toEqual([]);
+  });
   test('L003 缺原圖', () => {
     expect(runLessons(q({ figureMissing: true })).join()).toMatch(/\[L003\]/);
   });
