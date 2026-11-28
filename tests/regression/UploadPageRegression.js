@@ -179,6 +179,11 @@ async function main() {
     ["數學", "物理", "化學", "地球科學"].every((s) => { const t = sectionsFor(s); return t.length === 15 && !/修辭|文化脈絡|作者背景/.test(t.join("")); }));
   check("數理模板含公式與例題章節，並保留匯入端依標題擷取的章節", ["③重要定義與公式", "④例題與解題步驟", "①核心概念", "②章節摘要", "⑩易混淆概念", "⑪常考題型", "⑫易錯陷阱", "⑬跨課連結", "⑮Final Score"].every((t) => math.indexOf(t) !== -1));
   check("英文等其他科目維持原模板", sectionsFor("英文").join("|") === chi.join("|"));
+  /* 2026-11-28：送本機模型的教材本文拿掉 MinerU 圖片連結（只占長度，曾讓 Prompt 超過 context），文字與公式不動。 */
+  const promptSourceText = window.AHS.CouncilUpload.promptSourceText;
+  const srcWithImg = "第一段 $\\overline{AB}$\n\n![](images/" + "a".repeat(64) + ".jpg)\n圖 1　說明\n\n![](images/" + "b".repeat(64) + ".jpg)\n\n\n最後一段";
+  check("Prompt 的教材本文拿掉圖片連結、保留文字與 LaTeX 與圖說", promptSourceText(srcWithImg) === "第一段 $\\overline{AB}$\n\n圖 1　說明\n\n最後一段");
+  check("沒有圖片連結的本文原樣保留（只去頭尾空白）", promptSourceText("  甲\n乙  ") === "甲\n乙");
 
   console.log("\n[3] 未填必要欄位時不送出");
   click(buttonByText(doc, "執行本機交叉審議"));

@@ -60,8 +60,40 @@ describe('localWriter：兩個不同的本機模型各寫一份初稿', () => {
   test('context 依 Prompt 長度調整；超過本機模型上限就拒絕', async () => {
     fakeOllama('ok');
     await localWriter.writeDraft('短', 'A');
-    expect(calls[0].body.options.num_ctx).toBe(10240);
+    expect(calls[0].body.options.num_predict).toBe(localWriter.DRAFT_OUTPUT);
+    expect(calls[0].body.options.num_ctx).toBe(18432);
     await expect(localWriter.writeDraft('字'.repeat(localWriter.MAX_CTX), 'A')).rejects.toThrow('教材本文太長');
+  });
+
+  /* 2026-11-28：1-1 空間概念實跑 Prompt 實際 14,675 tokens、舊估算約 11,700，num_ctx 只給 20,480，
+     初稿寫到一半超過 context、開頭的寫作指示被丟掉。 */
+  test('Prompt＋輸出一定放得進 num_ctx，不讓 Ollama 中途丟掉開頭', async () => {
+    fakeOllama('ok');
+    const prompt = '說明文字'.repeat(1000) + '$\overline{AB} \perp L_1$ '.repeat(300);
+    await localWriter.writeDraft(prompt, 'B');
+    const { num_ctx: ctx, num_predict: out } = calls[0].body.options;
+    expect(localWriter.estimateTokens(prompt) + out).toBeLessThanOrEqual(ctx);
+    expect(ctx).toBeLessThanOrEqual(localWriter.MAX_CTX);
+    expect(out).toBeGreaterThanOrEqual(8192);
+  });
+
+  test('放不下完整輸出時縮小輸出量；連 8,192 都放不下才拒絕', () => {
+    const big = '字'.repeat(18000);
+    expect(localWriter.outputBudget(big, 16384)).toBeLessThan(16384);
+    expect(localWriter.outputBudget(big, 16384)).toBeGreaterThanOrEqual(8192);
+    expect(() => localWriter.outputBudget('字'.repeat(24000), 16384)).toThrow('教材本文太長');
+  });
+
+  test('估算不低估：圖片雜湊與 LaTeX 以 1.5 字／token 計', () => {
+    const hash = '![](images/' + 'f'.repeat(64) + '.jpg)';
+    expect(localWriter.estimateTokens(hash)).toBe(Math.ceil(hash.length / 1.5));
+    expect(localWriter.estimateTokens('空間概念')).toBe(4);
+  });
+
+  test('寫到輸出上限被切斷時回報 truncated', async () => {
+    global.fetch = async () => ({ ok: true, json: async () => ({ response: '①核心概念', done_reason: 'length' }) });
+    const r = await localWriter.writeDraft('寫初稿', 'A');
+    expect(r.truncated).toBe(true);
   });
 
   test('轉錄：每頁「=== 檔名 ===」分段，單頁失敗不中斷', async () => {
