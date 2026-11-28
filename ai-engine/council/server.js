@@ -26,6 +26,7 @@ const draftReview = require('./services/draftReview');
 const figureCards = require('./services/figureCards');
 const figureRecheck = require('./services/figureRecheck');
 const pdfTextQuality = require('./services/pdfTextQuality');
+const heicImage = require('./services/heicImage');
 const mineruContentList = require('./services/mineruContentList');
 const pageQuality = require('./services/pageQuality');
 const goldSet = require('./services/goldSet');
@@ -93,7 +94,8 @@ app.use(express.json({ limit: '5mb' }));
 // 供前端讀取 MinerU 解析後的教材圖片（縮圖預覽用），唯讀靜態掛載
 app.use('/mineru_outputs', express.static(MINERU_OUTPUTS_DIR));
 
-const ALLOWED_UPLOAD_EXTENSIONS = new Set(['.txt', '.md', '.pdf', '.png', '.jpg', '.jpeg']);
+// 2026-11-28：.heic／.heif（iPhone 照片）上傳後先轉成 JPEG（services/heicImage.js）。
+const ALLOWED_UPLOAD_EXTENSIONS = new Set(['.txt', '.md', '.pdf', '.png', '.jpg', '.jpeg', '.heic', '.heif']);
 
 const uploadStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOADS_DIR),
@@ -1096,6 +1098,7 @@ app.post('/api/upload', upload.array('files'), async (req, res) => {
 
   try {
     files.forEach((file) => { file.originalname = decodeOriginalName(file.originalname); });
+    await heicImage.normalizeUploadedFiles(files);
     const minerImages = [];
     const minerBlocks = [];
     setUploadProgress(progressId, { stage: 'start', fileCount: files.length });
