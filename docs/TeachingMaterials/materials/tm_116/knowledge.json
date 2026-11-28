@@ -1,0 +1,41 @@
+{
+  "materialId": "tm_116",
+  "knowledgePoints": [
+    {
+      "name": "三垂線定理",
+      "source": "both",
+      "refCount": 9
+    },
+    {
+      "name": "兩直線的關係",
+      "source": "question",
+      "refCount": 8
+    },
+    {
+      "name": "兩面角",
+      "source": "both",
+      "refCount": 11
+    },
+    {
+      "name": "公設與決定平面",
+      "source": "question",
+      "refCount": 6
+    },
+    {
+      "name": "直線與平面垂直",
+      "source": "both",
+      "refCount": 6
+    },
+    {
+      "name": "直線與平面的夾角",
+      "source": "both",
+      "refCount": 4
+    },
+    {
+      "name": "空間長度計算",
+      "source": "question",
+      "refCount": 9
+    }
+  ],
+  "generatedAt": "2026-11-28T14:21:50.420Z"
+}
